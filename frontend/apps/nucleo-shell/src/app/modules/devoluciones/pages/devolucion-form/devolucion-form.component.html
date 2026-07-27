@@ -1,0 +1,140 @@
+<div class="devolucion-form">
+  <div class="devolucion-form__header">
+    <h2>Nueva devolución / cambio</h2>
+    <a routerLink="/devoluciones">Volver a la lista</a>
+  </div>
+
+  @if (!ventaOrigen()) {
+    <section class="devolucion-form__seccion">
+      <h3>Venta origen</h3>
+      <div class="devolucion-form__buscar-venta">
+        <label for="devolucion-venta-id">Número de venta</label>
+        <input
+          pInputText
+          type="number"
+          id="devolucion-venta-id"
+          [ngModel]="ventaIdBusqueda()"
+          (ngModelChange)="ventaIdBusqueda.set($event)"
+        />
+        <p-button label="Buscar" icon="pi pi-search" [loading]="cargandoVenta()" [disabled]="ventaIdBusqueda() === null" (click)="buscarVenta()" />
+      </div>
+    </section>
+  } @else {
+    <section class="devolucion-form__seccion">
+      <h3>Venta origen</h3>
+      <p>
+        Venta #{{ ventaOrigen()!.id }} — {{ ventaOrigen()!.cliente?.nombre ?? '—' }} — Total: ${{ ventaOrigen()!.total }}
+        <p-button label="Cambiar venta" [text]="true" size="small" (click)="cambiarVenta()" />
+      </p>
+
+      @if (ventaEsSombra()) {
+        <p class="devolucion-form__aviso">
+          Esta venta es una venta sombra (resultado de un cambio anterior).
+          @if (tipo() === 'devolucion') {
+            No puede ser origen de una devolución normal — solo de un nuevo "cambio". Cambia el tipo abajo o elige otra venta.
+          }
+        </p>
+      }
+    </section>
+
+    <section class="devolucion-form__seccion">
+      <h3>Tipo</h3>
+      <div class="devolucion-form__tipo">
+        <label>
+          <input type="radio" name="tipo" [checked]="tipo() === 'devolucion'" (change)="cambiarTipo('devolucion')" />
+          Devolución
+        </label>
+        <label>
+          <input type="radio" name="tipo" [checked]="tipo() === 'cambio'" (change)="cambiarTipo('cambio')" />
+          Cambio
+        </label>
+      </div>
+    </section>
+
+    <section class="devolucion-form__seccion">
+      <h3>Items a devolver</h3>
+      <table class="devolucion-form__tabla">
+        <thead>
+          <tr>
+            <th>Producto</th>
+            <th>Vendido</th>
+            <th>Cantidad a devolver</th>
+            <th>Va a merma</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (linea of lineasDevueltas(); track linea.variante_id) {
+            <tr>
+              <td>{{ linea.etiqueta }}</td>
+              <td>{{ linea.cantidadMaxima }}</td>
+              <td>
+                <input
+                  pInputText
+                  type="number"
+                  min="0"
+                  [max]="linea.cantidadMaxima"
+                  class="devolucion-form__input-cantidad"
+                  [ngModel]="linea.cantidad"
+                  (ngModelChange)="actualizarCantidadDevuelta($index, $event)"
+                />
+              </td>
+              <td>
+                <p-checkbox [binary]="true" [ngModel]="linea.vaAMerma" (ngModelChange)="actualizarMerma($index, $event)" />
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+      <p class="devolucion-form__resumen-stock">
+        Regresan a stock: {{ unidadesRegresanAStock() }} unidad(es) · Merma: {{ unidadesMerma() }} unidad(es)
+      </p>
+    </section>
+
+    @if (tipo() === 'cambio') {
+      <section class="devolucion-form__seccion">
+        <h3>Items nuevos</h3>
+        <nucleo-lineas-producto (cambio)="onLineasNuevasCambio($event)" />
+      </section>
+    }
+
+    <section class="devolucion-form__seccion devolucion-form__totales">
+      <p>Monto a devolver: ${{ montoDevolucionEstimado() }}</p>
+      @if (tipo() === 'cambio') {
+        <p>Monto del cambio: ${{ montoCambio() }}</p>
+      }
+      <p
+        class="devolucion-form__diferencia"
+        [class.devolucion-form__diferencia--reembolso]="diferenciaEstimada() < 0"
+        [class.devolucion-form__diferencia--cobro]="diferenciaEstimada() > 0"
+      >
+        @if (diferenciaEstimada() < 0) {
+          Reembolso al cliente: ${{ -diferenciaEstimada() }}
+        } @else if (diferenciaEstimada() > 0) {
+          Cobro adicional: ${{ diferenciaEstimada() }}
+        } @else {
+          Sin diferencia que liquidar
+        }
+      </p>
+    </section>
+
+    @if (pagoNecesario()) {
+      <section class="devolucion-form__seccion">
+        <h3>Pago de la diferencia</h3>
+        <nucleo-lineas-pago [montoObjetivo]="montoAPagar()" (cambio)="onPagosCambio($event)" />
+      </section>
+    }
+
+    <section class="devolucion-form__seccion">
+      <h3>Motivo (opcional)</h3>
+      <textarea pTextarea rows="2" [ngModel]="motivo()" (ngModelChange)="motivo.set($event)"></textarea>
+    </section>
+
+    <p-button
+      label="Registrar"
+      icon="pi pi-check"
+      [loading]="registrando()"
+      [disabled]="!puedeRegistrar()"
+      (click)="registrarDevolucion()"
+    />
+  }
+</div>

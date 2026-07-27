@@ -1,0 +1,68 @@
+<div class="apartados-list">
+  <div class="apartados-list__header">
+    <h2>Apartados</h2>
+    @if (permisos().crear) {
+      <a routerLink="/apartados/nuevo"><p-button label="Nuevo apartado" icon="pi pi-plus" /></a>
+    }
+  </div>
+
+  <input
+    pInputText
+    type="text"
+    placeholder="Buscar por cliente..."
+    class="apartados-list__buscar"
+    (input)="onBuscarInput($any($event.target).value)"
+  />
+
+  <nucleo-data-table
+    [columns]="columns"
+    [value]="apartados()"
+    [totalRecords]="total()"
+    [loading]="loading()"
+    [virtualScroll]="false"
+    emptyMessage="No hay apartados registrados todavía."
+    (lazyLoad)="onLazyLoad($event)"
+  >
+    <ng-template nucleoDataTableCell="cliente" let-row>
+      {{ row.cliente?.nombre ?? '—' }}
+    </ng-template>
+
+    <ng-template nucleoDataTableCell="avance" let-row>
+      <div class="apartados-list__avance">
+        <div class="apartados-list__barra">
+          <div class="apartados-list__barra-relleno" [style.width.%]="porcentajeAbonado(row)"></div>
+        </div>
+        <span>${{ row.total_abonado }} / ${{ row.total }}</span>
+      </div>
+    </ng-template>
+
+    <ng-template nucleoDataTableCell="estado" let-row>
+      <nucleo-status-badge
+        [value]="row.estado"
+        [colorMap]="{ activo: 'info', completado: 'success', cancelado: 'neutral' }"
+      />
+    </ng-template>
+
+    <ng-template nucleoDataTableCell="fecha_vencimiento" let-row>
+      @if (row.fecha_vencimiento) {
+        <span
+          [class.apartados-list__vencimiento--vencido]="estadoVencimiento(row) === 'vencido'"
+          [class.apartados-list__vencimiento--proximo]="estadoVencimiento(row) === 'proximo'"
+        >
+          {{ row.fecha_vencimiento | date: 'shortDate' }}
+          @if (estadoVencimiento(row) === 'vencido') {
+            (vencido)
+          } @else if (estadoVencimiento(row) === 'proximo') {
+            (por vencer)
+          }
+        </span>
+      } @else {
+        —
+      }
+    </ng-template>
+
+    <ng-template nucleoDataTableCell="acciones" let-row>
+      <a [routerLink]="['/apartados', row.id]"><p-button icon="pi pi-eye" [text]="true" size="small" aria-label="Ver apartado" /></a>
+    </ng-template>
+  </nucleo-data-table>
+</div>

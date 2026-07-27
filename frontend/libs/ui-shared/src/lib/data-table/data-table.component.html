@@ -1,0 +1,55 @@
+<p-table
+  [value]="value"
+  [columns]="columns"
+  [lazy]="true"
+  [dataKey]="dataKey"
+  [loading]="loading"
+  [totalRecords]="totalRecords"
+  [paginator]="!virtualScroll"
+  [rows]="rows"
+  [rowsPerPageOptions]="rowsPerPageOptions"
+  [scrollable]="true"
+  [scrollHeight]="scrollHeight"
+  [virtualScroll]="virtualScroll"
+  [virtualScrollItemSize]="virtualScrollItemSize"
+  (onLazyLoad)="onLazyLoad($event)"
+>
+  <ng-template #header let-cols>
+    <tr>
+      @for (col of cols; track col.field) {
+        <th [style.width]="col.width" [pSortableColumn]="col.sortable ? col.field : undefined">
+          {{ col.header }}
+          @if (col.sortable) {
+            <p-sort-icon [field]="col.field" />
+          }
+        </th>
+      }
+    </tr>
+  </ng-template>
+
+  <ng-template #body let-rowData let-cols="columns">
+    <tr>
+      @for (col of cols; track col.field) {
+        <td [style.width]="col.width">
+          @if (templateFor(col.field); as celda) {
+            <ng-container *ngTemplateOutlet="celda; context: { $implicit: rowData }" />
+          } @else {
+            {{ rowData[col.field] }}
+          }
+        </td>
+      }
+    </tr>
+  </ng-template>
+
+  <ng-template #emptymessage>
+    <tr>
+      <td [attr.colspan]="columns.length">{{ emptyMessage }}</td>
+    </tr>
+  </ng-template>
+
+  <ng-template #loadingbody>
+    <tr>
+      <td [attr.colspan]="columns.length">Cargando...</td>
+    </tr>
+  </ng-template>
+</p-table>

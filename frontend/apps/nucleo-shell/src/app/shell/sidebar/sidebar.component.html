@@ -1,0 +1,84 @@
+<aside class="sidebar" [class.sidebar--collapsed]="collapsed()">
+  <div class="sidebar__header">
+    @if (!collapsed()) {
+      <span class="sidebar__brand">Núcleo</span>
+    }
+    <p-button
+      [icon]="collapsed() ? 'pi pi-angle-right' : 'pi pi-angle-left'"
+      [text]="true"
+      [rounded]="true"
+      size="small"
+      (click)="toggleCollapsed()"
+      [attr.aria-label]="collapsed() ? 'Expandir menu' : 'Colapsar menu'"
+    />
+  </div>
+
+  <!-- Inicio: fuera de cualquier grupo a proposito, primer item (ver el reporte). -->
+  <nav class="sidebar__nav sidebar__nav--inicio">
+    <a
+      class="sidebar__link"
+      [routerLink]="'/' + itemInicio.path"
+      routerLinkActive="sidebar__link--active"
+      [title]="itemInicio.label"
+    >
+      <i [class]="itemInicio.icon"></i>
+      @if (!collapsed()) {
+        <span>{{ itemInicio.label }}</span>
+      }
+    </a>
+  </nav>
+
+  <nav class="sidebar__nav">
+    @for (grupo of groups; track grupo.key) {
+      <div class="sidebar__grupo">
+        <button
+          type="button"
+          class="sidebar__grupo-header"
+          (click)="toggleGroup(grupo.key)"
+          [attr.aria-expanded]="grupoExpandido(grupo.key)"
+        >
+          @if (!collapsed()) {
+            <span>{{ grupo.label }}</span>
+            <i class="pi" [class.pi-chevron-down]="grupoExpandido(grupo.key)" [class.pi-chevron-right]="!grupoExpandido(grupo.key)"></i>
+          } @else {
+            <i class="pi pi-ellipsis-h" [title]="grupo.label"></i>
+          }
+        </button>
+
+        @if (grupoExpandido(grupo.key) || collapsed()) {
+          @for (item of grupo.items; track item.key) {
+            @if (item.separadorAntes) {
+              <div class="sidebar__separador"></div>
+            }
+            <a
+              class="sidebar__link"
+              [routerLink]="'/' + item.path"
+              routerLinkActive="sidebar__link--active"
+              [title]="item.label"
+            >
+              <i [class]="item.icon"></i>
+              @if (!collapsed()) {
+                <span>{{ item.label }}</span>
+              }
+            </a>
+          }
+        }
+      </div>
+    }
+  </nav>
+
+  <!-- Temporal: demuestra RecordTabsComponent + @defer, se quita cuando un modulo real lo use. -->
+  <nav class="sidebar__nav sidebar__nav--demo">
+    <a
+      class="sidebar__link"
+      routerLink="/demo/vista-registro"
+      routerLinkActive="sidebar__link--active"
+      title="Demo: vista de registro"
+    >
+      <i class="pi pi-sparkles"></i>
+      @if (!collapsed()) {
+        <span>Demo: vista de registro</span>
+      }
+    </a>
+  </nav>
+</aside>

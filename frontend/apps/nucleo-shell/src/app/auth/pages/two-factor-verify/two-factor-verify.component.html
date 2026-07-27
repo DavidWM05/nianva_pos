@@ -1,0 +1,8 @@
+<div class="auth-page">
+  <div class="auth-card">
+    <h1>Verificación en dos pasos</h1>
+    <p class="auth-card__subtitle">Ingresa el código de 6 dígitos de tu app de autenticación.</p>
+
+    <nucleo-two-factor-code-input [enviando]="enviando()" [error]="error()" (codeSubmit)="onCodeSubmit($event)" />
+  </div>
+</div>

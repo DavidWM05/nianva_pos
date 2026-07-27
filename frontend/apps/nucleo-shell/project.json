@@ -1,0 +1,84 @@
+{
+  "name": "nucleo-shell",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "application",
+  "prefix": "nucleo",
+  "sourceRoot": "apps/nucleo-shell/src",
+  "tags": [],
+  "targets": {
+    "build": {
+      "executor": "@angular/build:application",
+      "outputs": ["{options.outputPath}"],
+      "defaultConfiguration": "production",
+      "options": {
+        "outputPath": "dist/apps/nucleo-shell",
+        "browser": "apps/nucleo-shell/src/main.ts",
+        "tsConfig": "apps/nucleo-shell/tsconfig.app.json",
+        "inlineStyleLanguage": "scss",
+        "assets": [
+          {
+            "glob": "**/*",
+            "input": "apps/nucleo-shell/public"
+          }
+        ],
+        "styles": ["apps/nucleo-shell/src/styles.scss"],
+        "stylePreprocessorOptions": {
+          "includePaths": ["libs/design-tokens/src/styles"]
+        }
+      },
+      "configurations": {
+        "production": {
+          "budgets": [
+            {
+              "type": "initial",
+              "maximumWarning": "500kb",
+              "maximumError": "1mb"
+            },
+            {
+              "type": "anyComponentStyle",
+              "maximumWarning": "4kb",
+              "maximumError": "8kb"
+            }
+          ],
+          "outputHashing": "all"
+        },
+        "development": {
+          "optimization": false,
+          "extractLicenses": false,
+          "sourceMap": true
+        }
+      }
+    },
+    "serve": {
+      "continuous": true,
+      "executor": "@angular/build:dev-server",
+      "defaultConfiguration": "development",
+      "configurations": {
+        "production": {
+          "buildTarget": "nucleo-shell:build:production"
+        },
+        "development": {
+          "buildTarget": "nucleo-shell:build:development"
+        }
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    },
+    "test": {
+      "executor": "@angular/build:unit-test",
+      "options": {
+        "watch": false
+      }
+    },
+    "serve-static": {
+      "continuous": true,
+      "executor": "@nx/web:file-server",
+      "options": {
+        "buildTarget": "nucleo-shell:build",
+        "staticFilePath": "dist/apps/nucleo-shell/browser",
+        "spa": true
+      }
+    }
+  }
+}

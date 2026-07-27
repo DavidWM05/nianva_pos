@@ -1,0 +1,13 @@
+@if (error; as mensaje) {
+  <p class="two-factor-code-input__error">{{ mensaje }}</p>
+}
+
+<form (submit)="onSubmit($event)">
+  <p-inputotp [formControl]="code" [length]="6" [integerOnly]="true" />
+  <p-button
+    type="submit"
+    [label]="submitLabel"
+    [disabled]="enviando || code.value.length !== 6"
+    styleClass="two-factor-code-input__submit"
+  />
+</form>

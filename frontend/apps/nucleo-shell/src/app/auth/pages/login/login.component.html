@@ -1,0 +1,14 @@
+<div class="auth-page">
+  <div class="auth-card">
+    <h1>Núcleo</h1>
+    <p class="auth-card__subtitle">Inicia sesión con tu correo y contraseña.</p>
+
+    @if (errorGeneral(); as error) {
+      <p class="auth-card__error">{{ error }}</p>
+    }
+
+    <nucleo-dynamic-form [fields]="fields" submitLabel="Iniciar sesión" (formSubmit)="onSubmit($event)" />
+
+    <a routerLink="/forgot-password" class="auth-card__link">¿Olvidaste tu contraseña?</a>
+  </div>
+</div>

@@ -1,0 +1,33 @@
+<div class="departamento-detalle">
+  @if (cargando()) {
+    <p>Cargando departamento...</p>
+  } @else if (departamento(); as departamentoActual) {
+    <h1>{{ departamentoActual.nombre }}</h1>
+
+    <nucleo-record-tabs [tabs]="tabs">
+      <ng-template>
+        <div class="departamento-detalle__tab">
+          @if (!puedeEditar()) {
+            <p class="departamento-detalle__aviso">No tienes permiso para editar departamentos -- solo visualizar.</p>
+          }
+          <nucleo-departamento-form
+            [valorInicial]="departamentoActual"
+            [readonly]="!puedeEditar()"
+            submitLabel="Guardar cambios"
+            (guardar)="onGuardar($event)"
+          />
+        </div>
+      </ng-template>
+
+      <ng-template>
+        @defer (on viewport) {
+          <nucleo-audit-log-viewer [tabla]="'departamentos'" [registroId]="departamentoActual.id" />
+        } @placeholder {
+          <p>Auditoría (se carga al hacer scroll hasta aquí)...</p>
+        } @loading (minimum 200ms) {
+          <p>Cargando auditoría...</p>
+        }
+      </ng-template>
+    </nucleo-record-tabs>
+  }
+</div>

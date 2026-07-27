@@ -1,0 +1,20 @@
+.devoluciones-list {
+  padding: var(--nucleo-spacing-6);
+}
+
+.devoluciones-list__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--nucleo-spacing-4);
+}
+
+.devoluciones-list__diferencia--reembolso {
+  color: var(--nucleo-color-danger);
+  font-weight: 600;
+}
+
+.devoluciones-list__diferencia--cobro {
+  color: var(--nucleo-color-success);
+  font-weight: 600;
+}

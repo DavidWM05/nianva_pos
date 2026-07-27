@@ -1,0 +1,39 @@
+@use '../../auth-page';
+
+.auth-card--wide {
+  max-width: 480px;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--nucleo-spacing-6);
+  margin-top: var(--nucleo-spacing-4);
+}
+
+.two-factor-setup__qr {
+  display: block;
+  margin: 0 auto var(--nucleo-spacing-3);
+  width: 200px;
+  height: 200px;
+}
+
+.two-factor-setup__secret {
+  text-align: center;
+  font-size: var(--nucleo-font-size-sm);
+  color: var(--nucleo-color-surface-600);
+  word-break: break-all;
+}
+
+.recovery-codes {
+  list-style: none;
+  margin: 0 0 var(--nucleo-spacing-6);
+  padding: var(--nucleo-spacing-4);
+  background: var(--nucleo-color-surface-50);
+  border-radius: var(--nucleo-radius-md);
+  font-family: monospace;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--nucleo-spacing-2);
+}

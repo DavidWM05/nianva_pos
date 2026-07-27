@@ -1,0 +1,51 @@
+.apartados-list {
+  padding: var(--nucleo-spacing-6);
+}
+
+.apartados-list__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--nucleo-spacing-4);
+}
+
+.apartados-list__buscar {
+  margin-bottom: var(--nucleo-spacing-4);
+  width: 100%;
+  max-width: 24rem;
+}
+
+.apartados-list__avance {
+  display: flex;
+  flex-direction: column;
+  gap: var(--nucleo-spacing-1);
+  min-width: 8rem;
+
+  span {
+    font-size: var(--nucleo-font-size-xs);
+    color: var(--nucleo-color-surface-600);
+  }
+}
+
+.apartados-list__barra {
+  height: 0.375rem;
+  border-radius: var(--nucleo-radius-full);
+  background: var(--nucleo-color-surface-100);
+  overflow: hidden;
+}
+
+.apartados-list__barra-relleno {
+  height: 100%;
+  background: var(--nucleo-color-success);
+  border-radius: var(--nucleo-radius-full);
+}
+
+.apartados-list__vencimiento--vencido {
+  color: var(--nucleo-color-danger);
+  font-weight: 600;
+}
+
+.apartados-list__vencimiento--proximo {
+  color: var(--nucleo-color-warning);
+  font-weight: 600;
+}

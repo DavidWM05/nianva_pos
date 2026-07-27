@@ -1,0 +1,17 @@
+:host {
+  display: block;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--nucleo-spacing-6);
+}
+
+.two-factor-code-input__error {
+  color: var(--nucleo-color-danger);
+  font-size: var(--nucleo-font-size-sm);
+  margin: 0 0 var(--nucleo-spacing-4);
+  text-align: center;
+}

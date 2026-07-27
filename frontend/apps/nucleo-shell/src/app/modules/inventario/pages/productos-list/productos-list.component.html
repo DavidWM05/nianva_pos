@@ -1,0 +1,61 @@
+<div class="productos-list">
+  <div class="productos-list__header">
+    <h1>Productos</h1>
+    @if (permisos().crear) {
+      <a routerLink="/inventario/productos/nuevo"><p-button label="Nuevo producto" icon="pi pi-plus" /></a>
+    }
+  </div>
+
+  <input
+    pInputText
+    type="text"
+    placeholder="Buscar por nombre..."
+    class="productos-list__buscar"
+    (input)="onBuscarInput($any($event.target).value)"
+  />
+
+  <nucleo-data-table
+    [columns]="columns"
+    [value]="productos()"
+    [totalRecords]="total()"
+    [loading]="loading()"
+    [virtualScroll]="false"
+    emptyMessage="No hay productos que coincidan con la búsqueda."
+    (lazyLoad)="onLazyLoad($event)"
+  >
+    <ng-template nucleoDataTableCell="categoria" let-row>
+      {{ row.categoria?.nombre ?? '—' }}
+    </ng-template>
+
+    <ng-template nucleoDataTableCell="departamento" let-row>
+      {{ row.departamento?.nombre ?? '—' }}
+    </ng-template>
+
+    <ng-template nucleoDataTableCell="precio_venta" let-row> ${{ row.precio_venta }} </ng-template>
+
+    <ng-template nucleoDataTableCell="activo" let-row>
+      <nucleo-status-badge
+        [value]="row.activo ? 'activo' : 'inactivo'"
+        [colorMap]="{ activo: 'success', inactivo: 'neutral' }"
+      />
+    </ng-template>
+
+    <ng-template nucleoDataTableCell="acciones" let-row>
+      <div class="productos-list__acciones">
+        @if (permisos().editar) {
+          <p-button icon="pi pi-pencil" [text]="true" size="small" aria-label="Editar" (click)="irADetalle(row)" />
+        }
+        @if (permisos().eliminar) {
+          <p-button
+            icon="pi pi-ban"
+            severity="danger"
+            [text]="true"
+            size="small"
+            aria-label="Desactivar"
+            (click)="onDesactivar(row)"
+          />
+        }
+      </div>
+    </ng-template>
+  </nucleo-data-table>
+</div>

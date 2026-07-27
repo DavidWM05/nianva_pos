@@ -1,0 +1,100 @@
+<div class="auditoria-global">
+  <h1>Auditoría</h1>
+
+  <div class="auditoria-global__filtros">
+    <div class="auditoria-global__filtro">
+      <label for="auditoria-tabla">Tabla</label>
+      <p-select
+        inputId="auditoria-tabla"
+        [options]="tablas()"
+        [ngModel]="filtroTabla()"
+        (ngModelChange)="filtroTabla.set($event); onFiltrar()"
+        [showClear]="true"
+        placeholder="Todas"
+      />
+    </div>
+
+    <div class="auditoria-global__filtro">
+      <label for="auditoria-usuario">Usuario</label>
+      <p-select
+        inputId="auditoria-usuario"
+        [options]="usuarios"
+        optionLabel="nombre"
+        optionValue="id"
+        [ngModel]="filtroUsuarioId()"
+        (ngModelChange)="filtroUsuarioId.set($event); onFiltrar()"
+        [showClear]="true"
+        [filter]="true"
+        placeholder="Todos"
+      />
+    </div>
+
+    <div class="auditoria-global__filtro">
+      <label for="auditoria-desde">Desde</label>
+      <p-datepicker
+        inputId="auditoria-desde"
+        [ngModel]="filtroFechaDesde()"
+        (ngModelChange)="filtroFechaDesde.set($event); onFiltrar()"
+      />
+    </div>
+
+    <div class="auditoria-global__filtro">
+      <label for="auditoria-hasta">Hasta</label>
+      <p-datepicker
+        inputId="auditoria-hasta"
+        [ngModel]="filtroFechaHasta()"
+        (ngModelChange)="filtroFechaHasta.set($event); onFiltrar()"
+      />
+    </div>
+  </div>
+
+  <nucleo-data-table
+    [columns]="columns"
+    [value]="entradas()"
+    [totalRecords]="total()"
+    [loading]="loading()"
+    [virtualScroll]="false"
+    emptyMessage="No hay actividad registrada con estos filtros."
+    (lazyLoad)="onLazyLoad($event)"
+  >
+    <ng-template nucleoDataTableCell="fecha" let-row>
+      {{ row.fecha | date: 'short' }}
+    </ng-template>
+
+    <ng-template nucleoDataTableCell="accion" let-row>
+      <nucleo-status-badge
+        [value]="row.accion"
+        [colorMap]="{ create: 'success', update: 'info', delete: 'danger' }"
+      />
+    </ng-template>
+
+    <ng-template nucleoDataTableCell="usuario_nombre" let-row>
+      {{ row.usuario_nombre ?? 'Sistema' }}
+    </ng-template>
+
+    <ng-template nucleoDataTableCell="cambios" let-row>
+      @if (row.cambios) {
+        <p-button label="Ver cambios" [text]="true" size="small" (click)="verCambios(row)" />
+      }
+    </ng-template>
+  </nucleo-data-table>
+</div>
+
+<p-dialog
+  header="Cambios registrados"
+  [visible]="entradaSeleccionada() !== null"
+  (visibleChange)="cerrarCambios()"
+  [modal]="true"
+  [dismissableMask]="true"
+  [style]="{ width: '32rem' }"
+>
+  @if (entradaSeleccionada(); as entrada) {
+    <ul class="auditoria-global__cambios">
+      @for (cambio of entrada.cambios | keyvalue; track cambio.key) {
+        <li>
+          <strong>{{ cambio.key }}</strong>: {{ cambio.value.antes ?? '—' }} &rarr; {{ cambio.value.despues ?? '—' }}
+        </li>
+      }
+    </ul>
+  }
+</p-dialog>

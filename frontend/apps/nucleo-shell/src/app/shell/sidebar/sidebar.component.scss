@@ -1,0 +1,99 @@
+:host {
+  display: block;
+  height: 100%;
+}
+
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  width: 260px;
+  height: 100%;
+  background: var(--nucleo-color-surface-0);
+  border-right: 1px solid var(--nucleo-color-surface-200);
+  transition: width 0.15s ease-in-out;
+  overflow-x: hidden;
+}
+
+.sidebar--collapsed {
+  width: 64px;
+}
+
+.sidebar__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--nucleo-spacing-4);
+  border-bottom: 1px solid var(--nucleo-color-surface-200);
+}
+
+.sidebar__brand {
+  font-weight: 700;
+  font-size: var(--nucleo-font-size-lg);
+  color: var(--nucleo-color-primary-700);
+}
+
+.sidebar__nav {
+  display: flex;
+  flex-direction: column;
+  padding: var(--nucleo-spacing-2);
+  gap: var(--nucleo-spacing-1);
+  overflow-y: auto;
+}
+
+.sidebar__nav--demo {
+  margin-top: auto;
+  border-top: 1px dashed var(--nucleo-color-surface-200);
+}
+
+.sidebar__link {
+  display: flex;
+  align-items: center;
+  gap: var(--nucleo-spacing-3);
+  padding: var(--nucleo-spacing-3);
+  border-radius: var(--nucleo-radius-md);
+  color: var(--nucleo-color-surface-700);
+  text-decoration: none;
+  font-size: var(--nucleo-font-size-sm);
+  white-space: nowrap;
+
+  &:hover {
+    background: var(--nucleo-color-surface-50);
+  }
+}
+
+.sidebar__link--active {
+  background: var(--nucleo-color-primary-50);
+  color: var(--nucleo-color-primary-700);
+  font-weight: 600;
+}
+
+.sidebar__grupo {
+  display: flex;
+  flex-direction: column;
+  gap: var(--nucleo-spacing-1);
+}
+
+.sidebar__separador {
+  border-top: 1px solid var(--nucleo-color-surface-200);
+  margin: var(--nucleo-spacing-2) var(--nucleo-spacing-2) 0;
+}
+
+.sidebar__grupo-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--nucleo-spacing-2);
+  padding: var(--nucleo-spacing-2) var(--nucleo-spacing-3);
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: var(--nucleo-font-size-xs);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--nucleo-color-surface-500);
+
+  &:hover {
+    color: var(--nucleo-color-surface-700);
+  }
+}

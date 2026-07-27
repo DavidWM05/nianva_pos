@@ -1,0 +1,35 @@
+<?php
+
+namespace App\Modules\Nucleo\Database\Seeders;
+
+use App\Modules\Nucleo\Models\MetodoPago;
+use Illuminate\Database\Seeder;
+
+/**
+ * Catalogo global de metodos de pago (tenant_id NULL -- ver la migracion
+ * create_metodos_pago_table). Sin este seeder, un tenant nuevo no tiene
+ * ningun metodo de pago para elegir en la pantalla de venta: no se siembra
+ * desde un TenantObserver (como "Publico General" en Crm) porque esto es
+ * un catalogo *compartido*, no algo propio de cada tenant.
+ */
+class MetodosPagoSeeder extends Seeder
+{
+    /**
+     * @var list<array{nombre: string, tipo: string}>
+     */
+    private const METODOS = [
+        ['nombre' => 'Efectivo', 'tipo' => 'efectivo'],
+        ['nombre' => 'Tarjeta', 'tipo' => 'tarjeta'],
+        ['nombre' => 'Transferencia', 'tipo' => 'transferencia'],
+    ];
+
+    public function run(): void
+    {
+        foreach (self::METODOS as $metodo) {
+            MetodoPago::firstOrCreate(
+                ['tenant_id' => null, 'nombre' => $metodo['nombre']],
+                ['tipo' => $metodo['tipo'], 'incluir_en_financiero' => true, 'activo' => true],
+            );
+        }
+    }
+}

@@ -1,0 +1,37 @@
+:host {
+  display: block;
+}
+
+.audit-log-viewer__empty {
+  color: var(--nucleo-color-surface-500);
+  font-size: var(--nucleo-font-size-sm);
+}
+
+.audit-log-viewer__entry {
+  display: flex;
+  flex-direction: column;
+  gap: var(--nucleo-spacing-1);
+}
+
+.audit-log-viewer__header {
+  display: flex;
+  align-items: center;
+  gap: var(--nucleo-spacing-2);
+}
+
+.audit-log-viewer__usuario {
+  font-weight: 600;
+  font-size: var(--nucleo-font-size-sm);
+}
+
+.audit-log-viewer__fecha {
+  color: var(--nucleo-color-surface-500);
+  font-size: var(--nucleo-font-size-xs);
+}
+
+.audit-log-viewer__cambios {
+  margin: 0;
+  padding-left: var(--nucleo-spacing-4);
+  font-size: var(--nucleo-font-size-sm);
+  color: var(--nucleo-color-surface-700);
+}

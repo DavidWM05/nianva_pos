@@ -1,0 +1,33 @@
+<div class="cupon-detalle">
+  @if (cargando()) {
+    <p>Cargando cupón...</p>
+  } @else if (cupon(); as cuponActual) {
+    <h1>{{ cuponActual.codigo }}</h1>
+
+    <nucleo-record-tabs [tabs]="tabs">
+      <ng-template>
+        <div class="cupon-detalle__tab">
+          @if (!puedeEditar()) {
+            <p class="cupon-detalle__aviso">No tienes permiso para editar cupones -- solo visualizar.</p>
+          }
+          <nucleo-cupon-form
+            [valorInicial]="cuponActual"
+            [readonly]="!puedeEditar()"
+            submitLabel="Guardar cambios"
+            (guardar)="onGuardar($event)"
+          />
+        </div>
+      </ng-template>
+
+      <ng-template>
+        @defer (on viewport) {
+          <nucleo-audit-log-viewer [tabla]="'cupones'" [registroId]="cuponActual.id" />
+        } @placeholder {
+          <p>Auditoría (se carga al hacer scroll hasta aquí)...</p>
+        } @loading (minimum 200ms) {
+          <p>Cargando auditoría...</p>
+        }
+      </ng-template>
+    </nucleo-record-tabs>
+  }
+</div>

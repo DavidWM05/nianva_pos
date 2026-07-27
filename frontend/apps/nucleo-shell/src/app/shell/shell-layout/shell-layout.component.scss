@@ -1,0 +1,27 @@
+:host {
+  display: block;
+  height: 100vh;
+}
+
+.shell {
+  display: flex;
+  height: 100%;
+}
+
+.shell__main {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+}
+
+.shell__header {
+  padding: var(--nucleo-spacing-3) var(--nucleo-spacing-6);
+  border-bottom: 1px solid var(--nucleo-color-surface-200);
+  background: var(--nucleo-color-surface-0);
+}
+
+.shell__content {
+  flex: 1;
+  overflow-y: auto;
+}

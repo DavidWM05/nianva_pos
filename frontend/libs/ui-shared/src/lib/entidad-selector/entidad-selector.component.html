@@ -1,0 +1,32 @@
+<div class="entidad-selector">
+  <label for="entidad-selector-principal">{{ label }}</label>
+  <p-autocomplete
+    inputId="entidad-selector-principal"
+    [(ngModel)]="entidadElegida"
+    [suggestions]="sugerencias()"
+    (completeMethod)="buscar($event)"
+    (onSelect)="onSeleccionar($event.value)"
+    optionLabel="nombre"
+    [placeholder]="placeholder"
+    [minQueryLength]="1"
+    [disabled]="disabled"
+  />
+
+  @if (buscadorHijos && entidadElegida) {
+    <label for="entidad-selector-hijo">{{ labelHijos }}</label>
+    @if (hijos().length === 0) {
+      <p class="entidad-selector__aviso">No hay elementos disponibles.</p>
+    } @else {
+      <p-select
+        inputId="entidad-selector-hijo"
+        [options]="hijos()"
+        optionLabel="nombre"
+        optionValue="id"
+        [ngModel]="hijoElegidoId"
+        (ngModelChange)="onSeleccionarHijo($event)"
+        placeholder="Selecciona una opción"
+        [disabled]="disabled"
+      />
+    }
+  }
+</div>

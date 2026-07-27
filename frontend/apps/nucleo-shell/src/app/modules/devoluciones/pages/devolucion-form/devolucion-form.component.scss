@@ -1,0 +1,99 @@
+.devolucion-form {
+  padding: var(--nucleo-spacing-6);
+  max-width: 48rem;
+  display: flex;
+  flex-direction: column;
+  gap: var(--nucleo-spacing-4);
+}
+
+.devolucion-form__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.devolucion-form__seccion {
+  display: flex;
+  flex-direction: column;
+  gap: var(--nucleo-spacing-2);
+  padding-bottom: var(--nucleo-spacing-4);
+  border-bottom: 1px solid var(--nucleo-color-surface-200);
+
+  h3 {
+    margin: 0;
+    font-size: var(--nucleo-font-size-sm);
+    text-transform: uppercase;
+    color: var(--nucleo-color-surface-600);
+  }
+}
+
+.devolucion-form__buscar-venta {
+  display: flex;
+  align-items: center;
+  gap: var(--nucleo-spacing-3);
+
+  input {
+    width: 8rem;
+  }
+}
+
+.devolucion-form__tipo {
+  display: flex;
+  gap: var(--nucleo-spacing-4);
+
+  label {
+    display: flex;
+    align-items: center;
+    gap: var(--nucleo-spacing-1);
+  }
+}
+
+.devolucion-form__tabla {
+  width: 100%;
+  border-collapse: collapse;
+
+  th,
+  td {
+    text-align: left;
+    padding: var(--nucleo-spacing-2);
+    border-bottom: 1px solid var(--nucleo-color-surface-100);
+  }
+}
+
+.devolucion-form__input-cantidad {
+  width: 5rem;
+}
+
+.devolucion-form__resumen-stock {
+  color: var(--nucleo-color-surface-600);
+  font-size: var(--nucleo-font-size-sm);
+  margin: 0;
+}
+
+.devolucion-form__totales {
+  align-items: flex-end;
+  border-bottom: none;
+}
+
+.devolucion-form__diferencia {
+  font-size: var(--nucleo-font-size-lg);
+  font-weight: 700;
+}
+
+.devolucion-form__diferencia--reembolso {
+  color: var(--nucleo-color-danger);
+}
+
+.devolucion-form__diferencia--cobro {
+  color: var(--nucleo-color-success);
+}
+
+.devolucion-form__aviso {
+  color: var(--nucleo-color-warning);
+  font-weight: 600;
+}
+
+.devolucion-form__error {
+  color: var(--nucleo-color-danger);
+  font-size: var(--nucleo-font-size-sm);
+}

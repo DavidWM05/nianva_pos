@@ -1,0 +1,46 @@
+.cliente-detalle {
+  padding: var(--nucleo-spacing-6);
+  max-width: 720px;
+
+  h1 {
+    margin: 0 0 var(--nucleo-spacing-6);
+    font-size: var(--nucleo-font-size-2xl);
+  }
+}
+
+.cliente-detalle__tab {
+  padding-top: var(--nucleo-spacing-4);
+}
+
+.cliente-detalle__aviso {
+  color: var(--nucleo-color-surface-500);
+  font-size: var(--nucleo-font-size-sm);
+}
+
+.cliente-detalle__estado {
+  color: var(--nucleo-color-success);
+  font-size: var(--nucleo-font-size-sm);
+  margin: 0 0 var(--nucleo-spacing-4);
+}
+
+.cliente-detalle__ventas {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--nucleo-spacing-2);
+
+  li {
+    display: flex;
+    gap: var(--nucleo-spacing-4);
+    padding: var(--nucleo-spacing-3);
+    border: 1px solid var(--nucleo-color-surface-200);
+    border-radius: var(--nucleo-radius-md);
+    font-size: var(--nucleo-font-size-sm);
+  }
+}
+
+.cliente-detalle__venta--anulada {
+  color: var(--nucleo-color-danger);
+}

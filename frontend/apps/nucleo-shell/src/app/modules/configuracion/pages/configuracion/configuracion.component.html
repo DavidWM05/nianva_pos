@@ -1,0 +1,66 @@
+<div class="configuracion">
+  @if (cargando()) {
+    <p>Cargando configuración...</p>
+  } @else {
+    <h1>Configuración</h1>
+
+    <nucleo-record-tabs [tabs]="tabs">
+      <ng-template>
+        <div class="configuracion__tab">
+          @if (visible() && configuracion(); as configuracionActual) {
+            <nucleo-configuracion-form [valorInicial]="configuracionActual" (guardar)="onGuardar($event)" />
+          }
+
+          @if (seguridadVisible() && seguridadConfiguracion(); as seguridadActual) {
+            <section class="configuracion__seccion">
+              <h2>Dispositivos confiables</h2>
+              <p class="configuracion__descripcion">
+                Días que un dispositivo se recuerda como confiable antes de pedir el código de verificación de nuevo.
+              </p>
+              <nucleo-configuracion-seguridad-form
+                [valorInicial]="seguridadActual"
+                (guardar)="onGuardarSeguridad($event)"
+              />
+            </section>
+          }
+
+          @if (!visible() && !seguridadVisible()) {
+            <p class="configuracion__aviso">No tienes permiso para ver esta sección.</p>
+          }
+        </div>
+      </ng-template>
+
+      <ng-template>
+        <div class="configuracion__tab">
+          @if (licenciaCargando()) {
+            <p>Cargando licencia...</p>
+          } @else if (licencia(); as licenciaActual) {
+            <div class="configuracion__licencia-estado">
+              <nucleo-status-badge
+                [value]="licenciaActual.estado"
+                [colorMap]="{ activa: 'success', prueba: 'info', vencida: 'warning', revocada: 'danger' }"
+              />
+              @if (licenciaActual.en_periodo_gracia) {
+                <span class="configuracion__licencia-gracia">
+                  Última validación exitosa hace {{ licenciaActual.dias_desde_ultima_validacion }}
+                  día(s), reintentando conexión con el servidor de licencias.
+                </span>
+              }
+            </div>
+
+            <dl class="configuracion__licencia-detalle">
+              <dt>Tipo</dt>
+              <dd>{{ licenciaActual.tipo }}</dd>
+              <dt>Vence</dt>
+              <dd>{{ licenciaActual.fecha_expiracion ? (licenciaActual.fecha_expiracion | date: 'mediumDate') : 'Sin vencimiento' }}</dd>
+              <dt>Última validación</dt>
+              <dd>{{ licenciaActual.ultima_validacion ? (licenciaActual.ultima_validacion | date: 'medium') : 'Nunca' }}</dd>
+            </dl>
+          } @else {
+            <p class="configuracion__proximamente">Este tenant todavía no tiene una licencia activada.</p>
+          }
+        </div>
+      </ng-template>
+    </nucleo-record-tabs>
+  }
+</div>

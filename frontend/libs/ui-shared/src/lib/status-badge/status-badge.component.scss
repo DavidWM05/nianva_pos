@@ -1,0 +1,40 @@
+:host {
+  display: inline-flex;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--nucleo-spacing-1) var(--nucleo-spacing-3);
+  border-radius: var(--nucleo-radius-full);
+  font-size: var(--nucleo-font-size-xs);
+  font-weight: 600;
+  line-height: 1.4;
+  white-space: nowrap;
+  text-transform: capitalize;
+}
+
+.badge--success {
+  background: color-mix(in srgb, var(--nucleo-color-success) 15%, white);
+  color: var(--nucleo-color-success);
+}
+
+.badge--warning {
+  background: color-mix(in srgb, var(--nucleo-color-warning) 15%, white);
+  color: var(--nucleo-color-warning);
+}
+
+.badge--danger {
+  background: color-mix(in srgb, var(--nucleo-color-danger) 15%, white);
+  color: var(--nucleo-color-danger);
+}
+
+.badge--info {
+  background: color-mix(in srgb, var(--nucleo-color-info) 15%, white);
+  color: var(--nucleo-color-info);
+}
+
+.badge--neutral {
+  background: var(--nucleo-color-surface-100);
+  color: var(--nucleo-color-surface-700);
+}

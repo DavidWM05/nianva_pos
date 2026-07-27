@@ -1,0 +1,89 @@
+<div class="ventas-list">
+  <div class="ventas-list__header">
+    <h2>Ventas</h2>
+  </div>
+
+  <input
+    pInputText
+    type="text"
+    placeholder="Buscar por cliente..."
+    class="ventas-list__buscar"
+    (input)="onBuscarInput($any($event.target).value)"
+  />
+
+  <nucleo-data-table
+    [columns]="columns"
+    [value]="ventas()"
+    [totalRecords]="total()"
+    [loading]="loading()"
+    [virtualScroll]="false"
+    emptyMessage="No hay ventas registradas todavía."
+    (lazyLoad)="onLazyLoad($event)"
+  >
+    <ng-template nucleoDataTableCell="cliente" let-row>
+      {{ row.cliente?.nombre ?? '—' }}
+    </ng-template>
+
+    <ng-template nucleoDataTableCell="total" let-row> ${{ row.total }} </ng-template>
+
+    <ng-template nucleoDataTableCell="metodos_pago" let-row>
+      {{ etiquetaMetodosPago(row) }}
+    </ng-template>
+
+    <ng-template nucleoDataTableCell="fecha" let-row>
+      {{ row.fecha | date: 'short' }}
+    </ng-template>
+
+    <ng-template nucleoDataTableCell="estado" let-row>
+      <nucleo-status-badge
+        [value]="row.estado === 'completada' ? 'completada' : 'anulada'"
+        [colorMap]="{ completada: 'success', anulada: 'danger' }"
+      />
+    </ng-template>
+
+    <ng-template nucleoDataTableCell="acciones" let-row>
+      <div class="ventas-list__acciones">
+        <p-button icon="pi pi-eye" [text]="true" size="small" aria-label="Ver detalle" (click)="irADetalle(row)" />
+        @if (permisos().anular && row.estado === 'completada') {
+          <p-button
+            icon="pi pi-ban"
+            severity="danger"
+            [text]="true"
+            size="small"
+            aria-label="Anular"
+            (click)="abrirAnulacion(row)"
+          />
+        }
+      </div>
+    </ng-template>
+  </nucleo-data-table>
+</div>
+
+<p-dialog
+  header="Anular venta"
+  [visible]="ventaEnAnulacion() !== null"
+  (visibleChange)="cerrarAnulacion()"
+  [modal]="true"
+  [dismissableMask]="true"
+  [style]="{ width: '28rem' }"
+>
+  @if (ventaEnAnulacion(); as venta) {
+    <p>¿Anular la venta #{{ venta.id }}? Esta acción no se puede deshacer.</p>
+    <label for="motivo-anulacion">Motivo</label>
+    <textarea
+      pTextarea
+      id="motivo-anulacion"
+      rows="3"
+      maxlength="255"
+      [ngModel]="motivoAnulacion()"
+      (ngModelChange)="motivoAnulacion.set($event)"
+    ></textarea>
+    <p-button
+      label="Confirmar anulación"
+      severity="danger"
+      [loading]="anulando()"
+      [disabled]="!motivoAnulacion().trim()"
+      (click)="confirmarAnulacion()"
+    />
+  }
+</p-dialog>

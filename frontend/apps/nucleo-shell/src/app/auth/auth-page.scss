@@ -1,0 +1,63 @@
+// Partial SCSS compartido por las 5 pantallas de auth (login, 2fa-verify,
+// 2fa-setup, forgot-password, reset-password) -- mismo layout de tarjeta
+// centrada en todas, no vale la pena un componente aparte solo por esto.
+
+.auth-page {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background: var(--nucleo-color-surface-50);
+  padding: var(--nucleo-spacing-4);
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 400px;
+  background: var(--nucleo-color-surface-0);
+  border-radius: var(--nucleo-radius-lg);
+  padding: var(--nucleo-spacing-8);
+  box-shadow: 0 1px 3px rgb(0 0 0 / 10%);
+
+  h1 {
+    margin: 0 0 var(--nucleo-spacing-2);
+    color: var(--nucleo-color-primary-700);
+    font-size: var(--nucleo-font-size-2xl);
+  }
+}
+
+.auth-card__subtitle {
+  margin: 0 0 var(--nucleo-spacing-6);
+  color: var(--nucleo-color-surface-600);
+  font-size: var(--nucleo-font-size-sm);
+}
+
+.auth-card__error {
+  background: color-mix(in srgb, var(--nucleo-color-danger) 10%, white);
+  color: var(--nucleo-color-danger);
+  padding: var(--nucleo-spacing-3);
+  border-radius: var(--nucleo-radius-md);
+  font-size: var(--nucleo-font-size-sm);
+  margin-bottom: var(--nucleo-spacing-4);
+}
+
+.auth-card__status {
+  background: color-mix(in srgb, var(--nucleo-color-success) 10%, white);
+  color: var(--nucleo-color-success);
+  padding: var(--nucleo-spacing-3);
+  border-radius: var(--nucleo-radius-md);
+  font-size: var(--nucleo-font-size-sm);
+  margin-bottom: var(--nucleo-spacing-4);
+}
+
+.auth-card__link {
+  display: inline-block;
+  margin-top: var(--nucleo-spacing-4);
+  color: var(--nucleo-color-primary-600);
+  font-size: var(--nucleo-font-size-sm);
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}

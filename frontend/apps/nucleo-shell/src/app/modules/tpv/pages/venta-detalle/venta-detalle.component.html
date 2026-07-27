@@ -1,0 +1,83 @@
+<div class="venta-detalle">
+  @if (cargando()) {
+    <p>Cargando venta...</p>
+  } @else if (venta(); as ventaActual) {
+    <h1>Venta #{{ ventaActual.id }}</h1>
+
+    <nucleo-record-tabs [tabs]="tabs">
+      <ng-template>
+        <div class="venta-detalle__tab">
+          <dl class="venta-detalle__resumen">
+            <dt>Cliente</dt>
+            <dd>{{ ventaActual.cliente?.nombre ?? '—' }}</dd>
+            <dt>Fecha</dt>
+            <dd>{{ ventaActual.fecha | date: 'short' }}</dd>
+            <dt>Total</dt>
+            <dd>${{ ventaActual.total }}</dd>
+            <dt>Estado</dt>
+            <dd>
+              <nucleo-status-badge
+                [value]="ventaActual.estado === 'completada' ? 'completada' : 'anulada'"
+                [colorMap]="{ completada: 'success', anulada: 'danger' }"
+              />
+            </dd>
+            @if (ventaActual.estado === 'anulada') {
+              <dt>Motivo de anulación</dt>
+              <dd>{{ ventaActual.motivo_anulacion }}</dd>
+            }
+            <dt>Pago</dt>
+            <dd>{{ etiquetaMetodosPago(ventaActual) }}</dd>
+          </dl>
+
+          @if (ventaActual.estado === 'completada') {
+            <a [routerLink]="['/devoluciones/nueva']" [queryParams]="{ venta_id: ventaActual.id }">
+              <p-button label="Devolver" icon="pi pi-replay" severity="secondary" />
+            </a>
+          }
+        </div>
+      </ng-template>
+
+      <ng-template>
+        <div class="venta-detalle__tab">
+          <table class="venta-detalle__tabla-lineas">
+            <thead>
+              <tr>
+                <th>Producto</th>
+                <th>Cantidad</th>
+                <th>Precio</th>
+                <th>Descuento</th>
+                <th>Subtotal</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (detalle of ventaActual.detalles; track detalle.id) {
+                <tr>
+                  <td>
+                    {{ detalle.variante?.producto_nombre }}
+                    @if (detalle.variante?.talla || detalle.variante?.color) {
+                      ({{ detalle.variante.talla }} / {{ detalle.variante.color }})
+                    }
+                  </td>
+                  <td>{{ detalle.cantidad }}</td>
+                  <td>${{ detalle.precio_unitario }}</td>
+                  <td>${{ detalle.descuento_aplicado }}</td>
+                  <td>${{ detalle.subtotal }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </ng-template>
+
+      <ng-template>
+        @defer (on viewport) {
+          <nucleo-audit-log-viewer [tabla]="'ventas'" [registroId]="ventaActual.id" />
+        } @placeholder {
+          <p>Auditoría (se carga al hacer scroll hasta aquí)...</p>
+        } @loading (minimum 200ms) {
+          <p>Cargando auditoría...</p>
+        }
+      </ng-template>
+    </nucleo-record-tabs>
+  }
+</div>

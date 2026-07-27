@@ -1,0 +1,48 @@
+<div class="devoluciones-list">
+  <div class="devoluciones-list__header">
+    <h2>Devoluciones y cambios</h2>
+    @if (permisos().crear) {
+      <a routerLink="/devoluciones/nueva"><p-button label="Nueva devolución / cambio" icon="pi pi-plus" /></a>
+    }
+  </div>
+
+  <nucleo-data-table
+    [columns]="columns"
+    [value]="devoluciones()"
+    [totalRecords]="total()"
+    [loading]="loading()"
+    [virtualScroll]="false"
+    emptyMessage="No hay devoluciones registradas todavía."
+    (lazyLoad)="onLazyLoad($event)"
+  >
+    <ng-template nucleoDataTableCell="venta" let-row>
+      Venta #{{ row.venta?.id ?? '—' }}
+      @if (row.venta?.cliente_nombre) {
+        — {{ row.venta.cliente_nombre }}
+      }
+    </ng-template>
+
+    <ng-template nucleoDataTableCell="tipo" let-row>
+      {{ row.tipo === 'cambio' ? 'Cambio' : 'Devolución' }}
+    </ng-template>
+
+    <ng-template nucleoDataTableCell="diferencia" let-row>
+      <span
+        [class.devoluciones-list__diferencia--reembolso]="+row.diferencia < 0"
+        [class.devoluciones-list__diferencia--cobro]="+row.diferencia > 0"
+      >
+        @if (+row.diferencia < 0) {
+          -${{ montoAbsoluto(row.diferencia) }} (reembolso)
+        } @else if (+row.diferencia > 0) {
+          +${{ row.diferencia }} (cobro)
+        } @else {
+          Sin diferencia
+        }
+      </span>
+    </ng-template>
+
+    <ng-template nucleoDataTableCell="acciones" let-row>
+      <a [routerLink]="['/devoluciones', row.id]"><p-button icon="pi pi-eye" [text]="true" size="small" aria-label="Ver detalle" /></a>
+    </ng-template>
+  </nucleo-data-table>
+</div>

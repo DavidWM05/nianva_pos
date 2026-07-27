@@ -1,0 +1,8 @@
+<div class="producto-crear">
+  <div class="producto-crear__header">
+    <h1>Nuevo producto</h1>
+    <a routerLink="/inventario">Volver a la lista</a>
+  </div>
+
+  <nucleo-producto-form submitLabel="Crear producto" (guardar)="onGuardar($event)" />
+</div>

@@ -1,0 +1,58 @@
+import { HttpClient, HttpParams } from '@angular/common/http';
+import { Injectable, inject } from '@angular/core';
+import { DataTableLazyEvent } from '@nucleo/ui-shared';
+import { Observable, map } from 'rxjs';
+
+import { API_BASE_URL } from '../../core/api-config';
+import { Venta, VentaCotizacion, VentaFormPayload, VentaItemPayload, VentasPagina } from './venta.types';
+
+@Injectable({ providedIn: 'root' })
+export class VentaService {
+  private readonly http = inject(HttpClient);
+
+  /** Mismo contrato que ClienteService/ProductoService.listar(). */
+  listar(evento: DataTableLazyEvent, busqueda: string): Observable<VentasPagina> {
+    const rows = evento.rows || 25;
+    const page = Math.floor(evento.first / rows) + 1;
+
+    let params = new HttpParams().set('page', page).set('rows', rows);
+
+    if (evento.sortField) {
+      params = params.set('sort_field', evento.sortField).set('sort_order', evento.sortOrder === -1 ? 'desc' : 'asc');
+    }
+    if (busqueda.trim()) {
+      params = params.set('filtro_cliente', busqueda.trim());
+    }
+
+    return this.http
+      .get<{ data: Venta[]; meta: { total: number; permisos: VentasPagina['permisos'] } }>(`${API_BASE_URL}/api/ventas`, {
+        params,
+      })
+      .pipe(map((r) => ({ data: r.data, total: r.meta.total, permisos: r.meta.permisos })));
+  }
+
+  obtener(id: number): Observable<Venta> {
+    return this.http.get<{ data: Venta }>(`${API_BASE_URL}/api/ventas/${id}`).pipe(map((r) => r.data));
+  }
+
+  registrar(payload: VentaFormPayload): Observable<Venta> {
+    return this.http.post<{ data: Venta }>(`${API_BASE_URL}/api/ventas`, payload).pipe(map((r) => r.data));
+  }
+
+  anular(id: number, motivo: string): Observable<Venta> {
+    return this.http
+      .patch<{ data: Venta }>(`${API_BASE_URL}/api/ventas/${id}/anular`, { motivo })
+      .pipe(map((r) => r.data));
+  }
+
+  /**
+   * Precio siempre resuelto por el backend (PrecioService), nunca
+   * calculado en el frontend -- se llama cada vez que la pantalla de
+   * venta agrega o cambia la cantidad de una linea.
+   */
+  cotizar(items: VentaItemPayload[]): Observable<VentaCotizacion> {
+    return this.http
+      .post<{ data: VentaCotizacion }>(`${API_BASE_URL}/api/ventas/cotizar`, { items })
+      .pipe(map((r) => r.data));
+  }
+}

@@ -1,0 +1,99 @@
+<div class="lineas-producto">
+  <section class="lineas-producto__seccion">
+    <h3>Agregar producto</h3>
+    <nucleo-entidad-selector
+      [buscador]="buscadorProducto"
+      [buscadorHijos]="buscadorVarianteDeProducto"
+      label="Producto"
+      labelHijos="Variante"
+      placeholder="Buscar producto por nombre..."
+      [valorInicial]="productoSeleccionadoId()"
+      (seleccionado)="onProductoSeleccionado($event)"
+      (hijoSeleccionado)="onVarianteSeleccionada($event)"
+    />
+
+    @if (varianteSeleccionadaId() !== null && stockVarianteSeleccionada() !== null) {
+      <p class="lineas-producto__stock" [class.lineas-producto__stock--agotado]="stockVarianteSeleccionada() === 0">
+        @if (stockVarianteSeleccionada() === 0) {
+          Sin stock disponible en esta sucursal.
+        } @else {
+          Disponible: {{ stockVarianteSeleccionada() }}
+        }
+      </p>
+    }
+
+    <div class="lineas-producto__alta-linea">
+      <label for="lineas-producto-cantidad">Cantidad</label>
+      <input
+        pInputText
+        type="number"
+        id="lineas-producto-cantidad"
+        min="1"
+        [max]="stockVarianteSeleccionada()"
+        [ngModel]="cantidadNueva()"
+        (ngModelChange)="cantidadNueva.set($event)"
+      />
+      @if (cantidadExcedeStock()) {
+        <p class="lineas-producto__stock lineas-producto__stock--agotado">
+          Solo hay {{ stockVarianteSeleccionada() }} disponible(s).
+        </p>
+      }
+      <p-button
+        label="Agregar línea"
+        icon="pi pi-plus"
+        [disabled]="varianteSeleccionadaId() === null || cantidadExcedeStock()"
+        (click)="agregarLinea()"
+      />
+    </div>
+  </section>
+
+  <section class="lineas-producto__seccion">
+    <h3>Líneas</h3>
+    @if (lineas().length === 0) {
+      <p>Todavía no hay líneas.</p>
+    } @else {
+      <table class="lineas-producto__tabla">
+        <thead>
+          <tr>
+            <th>Producto</th>
+            <th>Cantidad</th>
+            <th>Precio unitario</th>
+            <th>Descuento</th>
+            <th>Subtotal</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (linea of lineas(); track $index) {
+            <tr>
+              <td>{{ linea.etiqueta }}</td>
+              <td>
+                <input
+                  pInputText
+                  type="number"
+                  min="1"
+                  [max]="linea.stockDisponible ?? null"
+                  class="lineas-producto__input-cantidad"
+                  [ngModel]="linea.cantidad"
+                  (ngModelChange)="cambiarCantidad($index, $event)"
+                />
+              </td>
+              <td>${{ linea.precio_unitario ?? '…' }}</td>
+              <td>
+                @if (linea.descuento_aplicado) {
+                  -${{ linea.descuento_aplicado }}
+                } @else {
+                  —
+                }
+              </td>
+              <td>${{ linea.subtotal ?? '…' }}</td>
+              <td>
+                <p-button icon="pi pi-trash" [text]="true" severity="danger" size="small" aria-label="Quitar" (click)="quitarLinea($index)" />
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    }
+  </section>
+</div>

@@ -1,0 +1,33 @@
+<div class="categoria-detalle">
+  @if (cargando()) {
+    <p>Cargando categoría...</p>
+  } @else if (categoria(); as categoriaActual) {
+    <h1>{{ categoriaActual.nombre }}</h1>
+
+    <nucleo-record-tabs [tabs]="tabs">
+      <ng-template>
+        <div class="categoria-detalle__tab">
+          @if (!puedeEditar()) {
+            <p class="categoria-detalle__aviso">No tienes permiso para editar categorías -- solo visualizar.</p>
+          }
+          <nucleo-categoria-form
+            [valorInicial]="categoriaActual"
+            [readonly]="!puedeEditar()"
+            submitLabel="Guardar cambios"
+            (guardar)="onGuardar($event)"
+          />
+        </div>
+      </ng-template>
+
+      <ng-template>
+        @defer (on viewport) {
+          <nucleo-audit-log-viewer [tabla]="'categorias'" [registroId]="categoriaActual.id" />
+        } @placeholder {
+          <p>Auditoría (se carga al hacer scroll hasta aquí)...</p>
+        } @loading (minimum 200ms) {
+          <p>Cargando auditoría...</p>
+        }
+      </ng-template>
+    </nucleo-record-tabs>
+  }
+</div>

@@ -1,0 +1,48 @@
+<div class="auth-page">
+  <div class="auth-card auth-card--wide">
+    @if (recoveryCodes(); as codigos) {
+      <h1>Guarda tus códigos de recuperación</h1>
+      <p class="auth-card__subtitle">
+        Úsalos si pierdes acceso a tu app de autenticación. Cada uno solo sirve una vez y no
+        se muestran de nuevo.
+      </p>
+      <ul class="recovery-codes">
+        @for (codigo of codigos; track codigo) {
+          <li>{{ codigo }}</li>
+        }
+      </ul>
+      <p-button label="Ya los guardé, continuar" (click)="continuar()" styleClass="auth-card__submit" />
+    } @else {
+      <h1>Configura la verificación en dos pasos</h1>
+      <p class="auth-card__subtitle">
+        Es obligatoria para tu rol. Escanea este código con Google Authenticator, Authy o
+        similar.
+      </p>
+
+      @if (error(); as mensaje) {
+        <p class="auth-card__error">{{ mensaje }}</p>
+      }
+
+      @if (cargando()) {
+        <p>Generando código...</p>
+      } @else {
+        @if (qrDataUrl(); as qr) {
+          <img [src]="qr" alt="Código QR para configurar 2FA" class="two-factor-setup__qr" />
+        }
+        @if (secret(); as codigoSecreto) {
+          <p class="two-factor-setup__secret">O ingresa manualmente: <code>{{ codigoSecreto }}</code></p>
+        }
+
+        <form (submit)="onSubmit($event)">
+          <p-inputotp [formControl]="code" [length]="6" [integerOnly]="true" />
+          <p-button
+            type="submit"
+            label="Confirmar"
+            [disabled]="enviando() || code.value.length !== 6"
+            styleClass="auth-card__submit"
+          />
+        </form>
+      }
+    }
+  </div>
+</div>

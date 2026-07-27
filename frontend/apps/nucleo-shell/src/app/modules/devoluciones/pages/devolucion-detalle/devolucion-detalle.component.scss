@@ -1,0 +1,61 @@
+.devolucion-detalle {
+  padding: var(--nucleo-spacing-6);
+}
+
+.devolucion-detalle__header {
+  margin-bottom: var(--nucleo-spacing-4);
+}
+
+.devolucion-detalle__tab {
+  display: flex;
+  flex-direction: column;
+  gap: var(--nucleo-spacing-3);
+  padding: var(--nucleo-spacing-4) 0;
+
+  h4 {
+    margin: var(--nucleo-spacing-2) 0 0;
+  }
+}
+
+.devolucion-detalle__resumen {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: var(--nucleo-spacing-2) var(--nucleo-spacing-4);
+  margin: 0;
+
+  dt {
+    color: var(--nucleo-color-surface-600);
+  }
+
+  dd {
+    margin: 0;
+    font-weight: 600;
+  }
+}
+
+.devolucion-detalle__diferencia--reembolso {
+  color: var(--nucleo-color-danger);
+}
+
+.devolucion-detalle__diferencia--cobro {
+  color: var(--nucleo-color-success);
+}
+
+.devolucion-detalle__tabla {
+  width: 100%;
+  border-collapse: collapse;
+
+  th,
+  td {
+    text-align: left;
+    padding: var(--nucleo-spacing-2);
+    border-bottom: 1px solid var(--nucleo-color-surface-100);
+  }
+}
+
+.devolucion-detalle__merma {
+  color: var(--nucleo-color-warning);
+  font-weight: 600;
+  font-size: var(--nucleo-font-size-xs);
+  text-transform: uppercase;
+}

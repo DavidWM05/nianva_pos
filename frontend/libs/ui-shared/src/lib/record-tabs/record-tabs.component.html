@@ -1,0 +1,19 @@
+<p-tabs value="0">
+  <p-tablist>
+    @for (tab of tabs; track trackByLabel($index, tab); let i = $index) {
+      <p-tab [value]="i.toString()">
+        @if (tab.icon) {
+          <i [class]="tab.icon"></i>
+        }
+        {{ tab.label }}
+      </p-tab>
+    }
+  </p-tablist>
+  <p-tabpanels>
+    @for (tab of tabs; track trackByLabel($index, tab); let i = $index) {
+      <p-tabpanel [value]="i.toString()">
+        <ng-container [ngTemplateOutlet]="templates.get(i) ?? null" />
+      </p-tabpanel>
+    }
+  </p-tabpanels>
+</p-tabs>

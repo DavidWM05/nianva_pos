@@ -1,0 +1,74 @@
+// Espejo en CSS custom properties de lib/tokens.ts -- para estilos de
+// componente (SCSS de ui-shared, del shell, o de futuros modulos) que no
+// pueden importar el TypeScript directamente. Los VALORES deben ser
+// identicos a tokens.ts; si cambias uno aqui, cambia el mismo en tokens.ts
+// (y viceversa). Ver README.md de esta libreria.
+//
+// PrimeNG NO lee estas variables -- su paleta viene de primeng-preset.ts
+// (que si importa tokens.ts directamente). Este archivo es solo para
+// nuestros propios componentes.
+
+:root {
+  // Color primario
+  --nucleo-color-primary-50: #eff6ff;
+  --nucleo-color-primary-100: #dbeafe;
+  --nucleo-color-primary-200: #bfdbfe;
+  --nucleo-color-primary-300: #93c5fd;
+  --nucleo-color-primary-400: #60a5fa;
+  --nucleo-color-primary-500: #3b82f6;
+  --nucleo-color-primary-600: #2563eb;
+  --nucleo-color-primary-700: #1d4ed8;
+  --nucleo-color-primary-800: #1e40af;
+  --nucleo-color-primary-900: #1e3a8a;
+  --nucleo-color-primary-950: #172554;
+
+  // Superficie (fondos, bordes, texto neutro)
+  --nucleo-color-surface-0: #ffffff;
+  --nucleo-color-surface-50: #f8fafc;
+  --nucleo-color-surface-100: #f1f5f9;
+  --nucleo-color-surface-200: #e2e8f0;
+  --nucleo-color-surface-300: #cbd5e1;
+  --nucleo-color-surface-400: #94a3b8;
+  --nucleo-color-surface-500: #64748b;
+  --nucleo-color-surface-600: #475569;
+  --nucleo-color-surface-700: #334155;
+  --nucleo-color-surface-800: #1e293b;
+  --nucleo-color-surface-900: #0f172a;
+  --nucleo-color-surface-950: #020617;
+
+  // Semanticos (usados por app-status-badge y mensajes de validacion)
+  --nucleo-color-success: #16a34a;
+  --nucleo-color-warning: #d97706;
+  --nucleo-color-danger: #dc2626;
+  --nucleo-color-info: #0891b2;
+
+  // Espaciado (base 4px)
+  --nucleo-spacing-0: 0;
+  --nucleo-spacing-1: 0.25rem;
+  --nucleo-spacing-2: 0.5rem;
+  --nucleo-spacing-3: 0.75rem;
+  --nucleo-spacing-4: 1rem;
+  --nucleo-spacing-5: 1.25rem;
+  --nucleo-spacing-6: 1.5rem;
+  --nucleo-spacing-8: 2rem;
+  --nucleo-spacing-10: 2.5rem;
+  --nucleo-spacing-12: 3rem;
+  --nucleo-spacing-16: 4rem;
+
+  // Radios de borde
+  --nucleo-radius-sm: 0.25rem;
+  --nucleo-radius-md: 0.375rem;
+  --nucleo-radius-lg: 0.5rem;
+  --nucleo-radius-xl: 0.75rem;
+  --nucleo-radius-full: 9999px;
+
+  // Tipografia
+  --nucleo-font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --nucleo-font-size-xs: 0.75rem;
+  --nucleo-font-size-sm: 0.8125rem;
+  --nucleo-font-size-base: 0.875rem;
+  --nucleo-font-size-md: 1rem;
+  --nucleo-font-size-lg: 1.125rem;
+  --nucleo-font-size-xl: 1.25rem;
+  --nucleo-font-size-2xl: 1.5rem;
+}

@@ -1,0 +1,28 @@
+@if (loading()) {
+  <p>Cargando auditoria...</p>
+} @else if (entries().length === 0) {
+  <p class="audit-log-viewer__empty">Sin actividad registrada.</p>
+} @else {
+  <p-timeline [value]="entries()">
+    <ng-template #content let-entry>
+      <div class="audit-log-viewer__entry">
+        <div class="audit-log-viewer__header">
+          <nucleo-status-badge [value]="entry.accion" [colorMap]="accionColorMap" />
+          <span class="audit-log-viewer__usuario">{{ entry.usuario_nombre ?? 'Sistema' }}</span>
+          <span class="audit-log-viewer__fecha">{{ entry.fecha | date: 'short' }}</span>
+        </div>
+
+        @if (entry.cambios) {
+          <ul class="audit-log-viewer__cambios">
+            @for (cambio of entry.cambios | keyvalue; track cambio.key) {
+              <li>
+                <strong>{{ cambio.key }}</strong>:
+                {{ cambio.value.antes ?? '—' }} &rarr; {{ cambio.value.despues ?? '—' }}
+              </li>
+            }
+          </ul>
+        }
+      </div>
+    </ng-template>
+  </p-timeline>
+}

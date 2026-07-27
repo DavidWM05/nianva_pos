@@ -1,0 +1,27 @@
+.categorias-list {
+  padding: var(--nucleo-spacing-6);
+}
+
+.categorias-list__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--nucleo-spacing-4);
+
+  h1 {
+    margin: 0;
+    font-size: var(--nucleo-font-size-2xl);
+  }
+}
+
+.categorias-list__buscar {
+  display: block;
+  width: 100%;
+  max-width: 320px;
+  margin-bottom: var(--nucleo-spacing-4);
+}
+
+.categorias-list__acciones {
+  display: flex;
+  gap: var(--nucleo-spacing-1);
+}

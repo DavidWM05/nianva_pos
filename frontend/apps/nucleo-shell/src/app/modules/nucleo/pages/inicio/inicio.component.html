@@ -1,0 +1,62 @@
+<div class="inicio">
+  <h1>Inicio</h1>
+
+  <div class="inicio__tiles">
+    <div class="inicio__tile">
+      <h2>Ventas de hoy</h2>
+      @if (cargandoResumen()) {
+        <p>Cargando...</p>
+      } @else if (resumen(); as resumenActual) {
+        <p class="inicio__tile-valor">{{ resumenActual.ventas_hoy.cantidad }}</p>
+        <p class="inicio__tile-detalle">${{ resumenActual.ventas_hoy.total }} en total</p>
+      }
+    </div>
+
+    <div class="inicio__tile">
+      <h2>Caja</h2>
+      @if (cargandoCaja()) {
+        <p>Cargando...</p>
+      } @else if (caja(); as cajaActual) {
+        @if (cajaActual.sesion) {
+          <p class="inicio__tile-valor inicio__tile-valor--abierta">Abierta</p>
+          @if (cajaActual.resumen) {
+            <p class="inicio__tile-detalle">
+              {{ cajaActual.resumen.ventas_count }} ventas · ${{ cajaActual.resumen.total_ventas }}
+            </p>
+          }
+        } @else {
+          <p class="inicio__tile-valor inicio__tile-valor--cerrada">Cerrada</p>
+          <p class="inicio__tile-detalle">
+            <a routerLink="/tpv/caja">Abrir caja</a>
+          </p>
+        }
+      }
+    </div>
+  </div>
+
+  <section class="inicio__apartados">
+    <h2>Apartados por vencer (próximos 7 días)</h2>
+    @if (cargandoResumen()) {
+      <p>Cargando...</p>
+    } @else if (resumen(); as resumenActual) {
+      @if (resumenActual.apartados_por_vencer.length === 0) {
+        <p class="inicio__aviso">No hay apartados próximos a vencer.</p>
+      } @else {
+        <ul class="inicio__lista-apartados">
+          @for (apartado of resumenActual.apartados_por_vencer; track apartado.id) {
+            <li>
+              <a [routerLink]="['/apartados', apartado.id]">
+                <span>{{ apartado.cliente_nombre ?? '—' }}</span>
+                <span>{{ apartado.fecha_vencimiento | date: 'shortDate' }}</span>
+                <span [class.inicio__apartado--vencido]="diasParaVencer(apartado) < 0">
+                  {{ diasParaVencer(apartado) < 0 ? 'Vencido' : diasParaVencer(apartado) + ' día(s)' }}
+                </span>
+                <span>${{ apartado.total_abonado }} / ${{ apartado.total }}</span>
+              </a>
+            </li>
+          }
+        </ul>
+      }
+    }
+  </section>
+</div>

@@ -1,0 +1,72 @@
+@if (variantes.length === 0) {
+  <p class="variantes-list__estado">Este producto todavía no tiene variantes.</p>
+} @else {
+  <ul class="variantes-list">
+    @for (variante of variantes; track variante.id) {
+      <li class="variantes-list__item">
+        <div class="variantes-list__header">
+          <span class="variantes-list__nombre">
+            {{ etiquetaVariante(variante) }}
+            <nucleo-status-badge
+              [value]="variante.activo ? 'activo' : 'inactivo'"
+              [colorMap]="{ activo: 'success', inactivo: 'neutral' }"
+            />
+          </span>
+
+          <div class="variantes-list__acciones">
+            <p-button label="Kardex" [text]="true" size="small" (click)="verKardex.emit(variante)" />
+            @if (puedeRegistrarCompra) {
+              <p-button
+                label="Registrar compra"
+                icon="pi pi-download"
+                [text]="true"
+                size="small"
+                (click)="registrarCompra.emit(variante)"
+              />
+            }
+            @if (puedeEditar) {
+              <p-button icon="pi pi-pencil" [text]="true" size="small" aria-label="Editar variante" (click)="editar.emit(variante)" />
+            }
+            @if (puedeDesactivar && variante.activo) {
+              <p-button
+                icon="pi pi-ban"
+                severity="danger"
+                [text]="true"
+                size="small"
+                aria-label="Desactivar variante"
+                (click)="onDesactivar(variante)"
+              />
+            }
+          </div>
+        </div>
+
+        @if (variante.codigo_barras) {
+          <p class="variantes-list__codigo">Código de barras: <code>{{ variante.codigo_barras }}</code></p>
+        }
+
+        @if (!variante.stock || variante.stock.length === 0) {
+          <p class="variantes-list__estado">Sin movimientos de stock registrados todavía.</p>
+        } @else {
+          <table class="variantes-list__stock">
+            <thead>
+              <tr>
+                <th>Sucursal</th>
+                <th>Stock actual</th>
+                <th>Stock mínimo</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (fila of variante.stock; track fila.sucursal_id) {
+                <tr [class.variantes-list__stock-bajo]="fila.stock_actual <= fila.stock_minimo">
+                  <td>{{ fila.sucursal_nombre }}</td>
+                  <td>{{ fila.stock_actual }}</td>
+                  <td>{{ fila.stock_minimo }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        }
+      </li>
+    }
+  </ul>
+}

@@ -1,0 +1,42 @@
+<div class="dispositivos-list__header">
+  <h2>Mis dispositivos</h2>
+  @if (dispositivos.length > 1) {
+    <p-button
+      label="Revocar todos"
+      severity="danger"
+      [outlined]="true"
+      size="small"
+      (click)="onRevocarTodos()"
+    />
+  }
+</div>
+
+@if (cargando) {
+  <p class="dispositivos-list__estado">Cargando dispositivos...</p>
+} @else if (dispositivos.length === 0) {
+  <p class="dispositivos-list__estado">No tienes dispositivos confiados registrados.</p>
+} @else {
+  <ul class="dispositivos-list">
+    @for (dispositivo of dispositivos; track dispositivo.id) {
+      <li class="dispositivos-list__item">
+        <div class="dispositivos-list__info">
+          <span class="dispositivos-list__nombre">
+            {{ resumirUserAgent(dispositivo.user_agent) }}
+            @if (dispositivo.es_actual) {
+              <span class="dispositivos-list__badge">Este dispositivo</span>
+            }
+          </span>
+          <span class="dispositivos-list__detalle">
+            IP de registro: {{ dispositivo.ip_registro ?? 'desconocida' }}
+          </span>
+          <span class="dispositivos-list__detalle">
+            Confiado el {{ dispositivo.fecha_creacion | date: 'medium' }} · Expira el
+            {{ dispositivo.fecha_expiracion | date: 'medium' }}
+          </span>
+        </div>
+
+        <p-button label="Revocar" severity="danger" [text]="true" size="small" (click)="onRevocar(dispositivo)" />
+      </li>
+    }
+  </ul>
+}

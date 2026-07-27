@@ -1,0 +1,88 @@
+.caja {
+  padding: var(--nucleo-spacing-6);
+  max-width: 32rem;
+  display: flex;
+  flex-direction: column;
+  gap: var(--nucleo-spacing-4);
+}
+
+.caja__panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--nucleo-spacing-4);
+  padding: var(--nucleo-spacing-5);
+  border: 1px solid var(--nucleo-color-surface-200);
+  border-radius: var(--nucleo-radius-md);
+}
+
+.caja__detalle {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: var(--nucleo-spacing-2) var(--nucleo-spacing-4);
+  margin: 0;
+
+  dt {
+    color: var(--nucleo-color-surface-600);
+  }
+
+  dd {
+    margin: 0;
+    font-weight: 600;
+    text-align: right;
+  }
+}
+
+.caja__form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--nucleo-spacing-2);
+
+  label {
+    font-size: var(--nucleo-font-size-sm);
+    font-weight: 500;
+  }
+}
+
+.caja__error {
+  color: var(--nucleo-color-danger);
+  font-size: var(--nucleo-font-size-sm);
+  margin: 0;
+}
+
+.caja__diferencia--positiva {
+  color: var(--nucleo-color-success);
+}
+
+.caja__diferencia--negativa {
+  color: var(--nucleo-color-danger);
+}
+
+.caja__tabla-gastos {
+  width: 100%;
+  border-collapse: collapse;
+
+  th,
+  td {
+    text-align: left;
+    padding: var(--nucleo-spacing-2);
+    border-bottom: 1px solid var(--nucleo-color-surface-100);
+  }
+}
+
+.caja__aviso {
+  color: var(--nucleo-color-surface-600);
+  font-size: var(--nucleo-font-size-sm);
+  margin: 0;
+}
+
+.caja__campo {
+  display: flex;
+  flex-direction: column;
+  gap: var(--nucleo-spacing-1);
+  margin-bottom: var(--nucleo-spacing-3);
+
+  label {
+    font-size: var(--nucleo-font-size-sm);
+    font-weight: 500;
+  }
+}

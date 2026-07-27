@@ -1,0 +1,59 @@
+<div class="roles-list">
+  <div class="roles-list__header">
+    <h1>Roles</h1>
+    @if (permisos().crear) {
+      <a routerLink="/roles/nuevo"><p-button label="Nuevo rol" icon="pi pi-plus" /></a>
+    }
+  </div>
+
+  <input
+    pInputText
+    type="text"
+    placeholder="Buscar por nombre..."
+    class="roles-list__buscar"
+    (input)="onBuscarInput($any($event.target).value)"
+  />
+
+  <nucleo-data-table
+    [columns]="columns"
+    [value]="roles()"
+    [totalRecords]="total()"
+    [loading]="loading()"
+    [virtualScroll]="false"
+    emptyMessage="No hay roles que coincidan con la búsqueda."
+    (lazyLoad)="onLazyLoad($event)"
+  >
+    <ng-template nucleoDataTableCell="descripcion" let-row>
+      {{ row.descripcion ?? '—' }}
+    </ng-template>
+
+    <ng-template nucleoDataTableCell="usuarios_count" let-row>
+      {{ row.usuarios_count ?? 0 }}
+    </ng-template>
+
+    <ng-template nucleoDataTableCell="es_sistema" let-row>
+      <nucleo-status-badge
+        [value]="row.es_sistema ? 'sistema' : 'personalizado'"
+        [colorMap]="{ sistema: 'info', personalizado: 'neutral' }"
+      />
+    </ng-template>
+
+    <ng-template nucleoDataTableCell="acciones" let-row>
+      <div class="roles-list__acciones">
+        @if (permisos().editar) {
+          <p-button icon="pi pi-pencil" [text]="true" size="small" aria-label="Editar" (click)="irADetalle(row)" />
+        }
+        @if (permisos().eliminar && !row.es_sistema) {
+          <p-button
+            icon="pi pi-trash"
+            severity="danger"
+            [text]="true"
+            size="small"
+            aria-label="Eliminar"
+            (click)="onEliminar(row)"
+          />
+        }
+      </div>
+    </ng-template>
+  </nucleo-data-table>
+</div>

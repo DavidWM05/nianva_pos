@@ -1,0 +1,28 @@
+<nucleo-dynamic-form [fields]="fields" [submitLabel]="submitLabel" [readonly]="readonly" (formSubmit)="onSubmit($event)" />
+
+<div class="usuario-form__extra">
+  <label for="usuario-sucursal">Sucursal</label>
+  <p-select
+    inputId="usuario-sucursal"
+    [options]="sucursales"
+    optionLabel="nombre"
+    optionValue="id"
+    [ngModel]="sucursalId()"
+    (ngModelChange)="sucursalId.set($event)"
+    [showClear]="true"
+    placeholder="Sin sucursal asignada"
+    [disabled]="readonly"
+  />
+
+  <label for="usuario-roles">Roles</label>
+  <p-multiselect
+    inputId="usuario-roles"
+    [options]="roles"
+    optionLabel="nombre"
+    optionValue="id"
+    [ngModel]="rolesIds()"
+    (ngModelChange)="rolesIds.set($event)"
+    placeholder="Selecciona uno o más roles"
+    [disabled]="readonly"
+  />
+</div>

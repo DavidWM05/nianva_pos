@@ -1,0 +1,53 @@
+.apartado-form {
+  padding: var(--nucleo-spacing-6);
+  max-width: 48rem;
+  display: flex;
+  flex-direction: column;
+  gap: var(--nucleo-spacing-4);
+}
+
+.apartado-form__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.apartado-form__seccion {
+  display: flex;
+  flex-direction: column;
+  gap: var(--nucleo-spacing-2);
+  padding-bottom: var(--nucleo-spacing-4);
+  border-bottom: 1px solid var(--nucleo-color-surface-200);
+
+  h3 {
+    margin: 0;
+    font-size: var(--nucleo-font-size-sm);
+    text-transform: uppercase;
+    color: var(--nucleo-color-surface-600);
+  }
+}
+
+.apartado-form__campo {
+  display: flex;
+  flex-direction: column;
+  gap: var(--nucleo-spacing-1);
+
+  label {
+    font-size: var(--nucleo-font-size-sm);
+    font-weight: 500;
+  }
+}
+
+.apartado-form__totales {
+  align-items: flex-end;
+}
+
+.apartado-form__total {
+  font-size: var(--nucleo-font-size-lg);
+  font-weight: 700;
+}
+
+.apartado-form__error {
+  color: var(--nucleo-color-danger);
+  font-size: var(--nucleo-font-size-sm);
+}

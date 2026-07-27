@@ -1,0 +1,22 @@
+.kardex-list__estado {
+  color: var(--nucleo-color-surface-500);
+  font-size: var(--nucleo-font-size-sm);
+}
+
+.kardex-list {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--nucleo-font-size-sm);
+
+  th,
+  td {
+    text-align: left;
+    padding: var(--nucleo-spacing-2) var(--nucleo-spacing-3);
+    border-bottom: 1px solid var(--nucleo-color-surface-100);
+  }
+
+  th {
+    color: var(--nucleo-color-surface-500);
+    font-weight: 500;
+  }
+}

@@ -1,0 +1,17 @@
+.entidad-selector {
+  display: flex;
+  flex-direction: column;
+  gap: var(--nucleo-spacing-2);
+  margin-bottom: var(--nucleo-spacing-4);
+
+  label {
+    font-size: var(--nucleo-font-size-sm);
+    font-weight: 500;
+  }
+}
+
+.entidad-selector__aviso {
+  color: var(--nucleo-color-surface-500);
+  font-size: var(--nucleo-font-size-sm);
+  margin: 0;
+}

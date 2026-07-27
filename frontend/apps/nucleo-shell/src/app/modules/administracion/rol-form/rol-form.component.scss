@@ -1,0 +1,15 @@
+:host {
+  display: block;
+}
+
+.rol-form__permisos {
+  display: flex;
+  flex-direction: column;
+  gap: var(--nucleo-spacing-2);
+  margin-top: var(--nucleo-spacing-4);
+
+  label {
+    font-weight: 600;
+    font-size: var(--nucleo-font-size-sm);
+  }
+}

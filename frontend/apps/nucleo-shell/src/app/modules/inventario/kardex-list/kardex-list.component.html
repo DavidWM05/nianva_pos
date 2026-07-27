@@ -1,0 +1,37 @@
+@if (cargando) {
+  <p>Cargando kardex...</p>
+} @else if (movimientos.length === 0) {
+  <p class="kardex-list__estado">Sin movimientos registrados todavía.</p>
+} @else {
+  <table class="kardex-list">
+    <thead>
+      <tr>
+        <th>Tipo</th>
+        <th>Cantidad</th>
+        <th>Motivo</th>
+        <th>Sucursal</th>
+        <th>Usuario</th>
+        <th>Fecha</th>
+        <th>Stock resultante</th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (movimiento of movimientos; track movimiento.id) {
+        <tr>
+          <td>
+            <nucleo-status-badge
+              [value]="movimiento.tipo"
+              [colorMap]="{ entrada: 'success', salida: 'warning' }"
+            />
+          </td>
+          <td>{{ movimiento.cantidad }}</td>
+          <td>{{ movimiento.motivo }}</td>
+          <td>{{ movimiento.sucursal_nombre ?? '—' }}</td>
+          <td>{{ movimiento.usuario_nombre ?? '—' }}</td>
+          <td>{{ movimiento.fecha | date: 'short' }}</td>
+          <td>{{ movimiento.stock_resultante }}</td>
+        </tr>
+      }
+    </tbody>
+  </table>
+}

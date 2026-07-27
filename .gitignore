@@ -1,0 +1,15 @@
+# Gitignore minimo de la raiz del monorepo -- solo lo que es realmente
+# transversal (no pertenece a backend/ ni a frontend/, cada uno ya tiene
+# el suyo con las reglas especificas de su propio toolchain).
+
+# Archivos de sistema operativo
+.DS_Store
+Thumbs.db
+
+# Configuracion de IDE a nivel de monorepo completo (si se abre como un solo workspace)
+/.vscode
+/.idea
+
+# Estado local/personal de Claude Code (no compartido entre maquinas)
+.claude/settings.local.json
+.claude/scheduled_tasks.lock

@@ -1,0 +1,31 @@
+<div class="preferencias">
+  <h1>Preferencias</h1>
+
+  <section class="preferencias__seccion">
+    <nucleo-dispositivos-confiables-list
+      [dispositivos]="dispositivos()"
+      [cargando]="cargandoDispositivos()"
+      (revocar)="onRevocarDispositivo($event)"
+      (revocarTodos)="onRevocarTodosLosDispositivos()"
+    />
+  </section>
+
+  <section class="preferencias__seccion">
+    <h2>Cambiar contraseña</h2>
+
+    <nucleo-cambiar-password-form (guardar)="onGuardarPassword($event)" />
+
+    @if (pendientePassword()) {
+      <p class="preferencias__descripcion">
+        Para confirmar el cambio de contraseña, ingresa tu código de verificación actual.
+      </p>
+      <nucleo-two-factor-code-input
+        [enviando]="enviandoPassword()"
+        [error]="errorCodigo()"
+        submitLabel="Confirmar cambio"
+        (codeSubmit)="onCodigoPassword($event)"
+      />
+      <button type="button" class="preferencias__cancelar" (click)="cancelarCodigo()">Cancelar</button>
+    }
+  </section>
+</div>

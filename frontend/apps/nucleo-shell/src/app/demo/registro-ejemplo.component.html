@@ -1,0 +1,25 @@
+<div class="registro-ejemplo">
+  <p class="registro-ejemplo__nota">
+    Demo de scaffolding -- muestra el patron de vista de registro con pestañas
+    (<code>RecordTabsComponent</code>) y un <code>&#64;defer (on viewport)</code> real en la pestaña
+    "Auditoría". Se reemplaza cuando el primer modulo real lo necesite.
+  </p>
+
+  <nucleo-record-tabs [tabs]="tabs">
+    <ng-template>
+      <p>Contenido de ejemplo para la pestaña "General".</p>
+    </ng-template>
+    <ng-template>
+      <p>Contenido de ejemplo para la pestaña "Relacionado".</p>
+    </ng-template>
+    <ng-template>
+      @defer (on viewport) {
+        <nucleo-audit-log-viewer tabla="ventas" [registroId]="1" />
+      } @placeholder {
+        <p>Auditoría (se carga al hacer scroll hasta aquí)...</p>
+      } @loading (minimum 200ms) {
+        <p>Cargando auditoría...</p>
+      }
+    </ng-template>
+  </nucleo-record-tabs>
+</div>

@@ -1,0 +1,57 @@
+<div class="cliente-detalle">
+  @if (cargando()) {
+    <p>Cargando cliente...</p>
+  } @else if (cliente(); as clienteActual) {
+    <h1>{{ clienteActual.nombre }}</h1>
+
+    <nucleo-record-tabs [tabs]="tabs">
+      <ng-template>
+        <div class="cliente-detalle__tab">
+          @if (clienteActual.es_sistema) {
+            <p class="cliente-detalle__aviso">
+              Este es un cliente de sistema ("Público General") y no se puede editar -- solo visualizar.
+            </p>
+          } @else if (!puedeEditar()) {
+            <p class="cliente-detalle__aviso">No tienes permiso para editar clientes -- solo visualizar.</p>
+          }
+          <nucleo-cliente-form
+            [valorInicial]="clienteActual"
+            [readonly]="clienteActual.es_sistema || !puedeEditar()"
+            submitLabel="Guardar cambios"
+            (guardar)="onGuardar($event)"
+          />
+        </div>
+      </ng-template>
+
+      <ng-template>
+        <div class="cliente-detalle__tab">
+          @if (cargandoVentas()) {
+            <p>Cargando historial...</p>
+          } @else if (ventas().length === 0) {
+            <p>Este cliente todavía no tiene ventas registradas.</p>
+          } @else {
+            <ul class="cliente-detalle__ventas">
+              @for (venta of ventas(); track venta.id) {
+                <li>
+                  <span>{{ venta.fecha | date: 'short' }}</span>
+                  <span>${{ venta.total }}</span>
+                  <span [class.cliente-detalle__venta--anulada]="venta.estado === 'anulada'">{{ venta.estado }}</span>
+                </li>
+              }
+            </ul>
+          }
+        </div>
+      </ng-template>
+
+      <ng-template>
+        @defer (on viewport) {
+          <nucleo-audit-log-viewer [tabla]="'clientes'" [registroId]="clienteActual.id" />
+        } @placeholder {
+          <p>Auditoría (se carga al hacer scroll hasta aquí)...</p>
+        } @loading (minimum 200ms) {
+          <p>Cargando auditoría...</p>
+        }
+      </ng-template>
+    </nucleo-record-tabs>
+  }
+</div>

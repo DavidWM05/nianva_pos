@@ -1,0 +1,37 @@
+<div class="metodo-pago-detalle">
+  @if (cargando()) {
+    <p>Cargando método de pago...</p>
+  } @else if (metodoPago(); as metodoPagoActual) {
+    <h1>{{ metodoPagoActual.nombre }}</h1>
+
+    <nucleo-record-tabs [tabs]="tabs">
+      <ng-template>
+        <div class="metodo-pago-detalle__tab">
+          @if (metodoPagoActual.es_global) {
+            <p class="metodo-pago-detalle__aviso">
+              Este es un método de pago del catálogo global y no se puede editar -- solo visualizar.
+            </p>
+          } @else if (!puedeEditar()) {
+            <p class="metodo-pago-detalle__aviso">No tienes permiso para editar métodos de pago -- solo visualizar.</p>
+          }
+          <nucleo-metodo-pago-form
+            [valorInicial]="metodoPagoActual"
+            [readonly]="metodoPagoActual.es_global || !puedeEditar()"
+            submitLabel="Guardar cambios"
+            (guardar)="onGuardar($event)"
+          />
+        </div>
+      </ng-template>
+
+      <ng-template>
+        @defer (on viewport) {
+          <nucleo-audit-log-viewer [tabla]="'metodos_pago'" [registroId]="metodoPagoActual.id" />
+        } @placeholder {
+          <p>Auditoría (se carga al hacer scroll hasta aquí)...</p>
+        } @loading (minimum 200ms) {
+          <p>Cargando auditoría...</p>
+        }
+      </ng-template>
+    </nucleo-record-tabs>
+  }
+</div>

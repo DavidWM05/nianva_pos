@@ -1,0 +1,77 @@
+<div class="venta">
+  @if (cargandoCaja()) {
+    <p>Verificando estado de caja...</p>
+  } @else if (!cajaAbierta()) {
+    <div class="venta__bloqueo">
+      <h2>No se puede vender todavía</h2>
+      <p>No hay una caja abierta para tu sucursal. Abre la caja antes de registrar una venta.</p>
+      <a routerLink="/tpv/caja"><p-button label="Ir a Caja" icon="pi pi-arrow-right" /></a>
+    </div>
+  } @else if (ventaRegistrada(); as venta) {
+    <div class="venta__confirmacion">
+      <h2>Venta #{{ venta.id }} registrada</h2>
+      <p>Total: ${{ venta.total }}</p>
+      <p-button label="Nueva venta" icon="pi pi-plus" (click)="nuevaVenta()" />
+    </div>
+  } @else {
+    <h2>Nueva venta</h2>
+
+    <section class="venta__seccion">
+      <h3>Cliente</h3>
+      <nucleo-entidad-selector
+        [buscador]="buscadorCliente"
+        label="Cliente"
+        placeholder="Buscar cliente por nombre..."
+        [valorInicial]="clienteId()"
+        (seleccionado)="clienteId.set($event)"
+      />
+    </section>
+
+    <section class="venta__seccion">
+      <nucleo-lineas-producto (cambio)="onLineasCambio($event)" />
+    </section>
+
+    <section class="venta__seccion">
+      <h3>Cupón</h3>
+      @if (cuponAplicado(); as cupon) {
+        <p>
+          Cupón <strong>{{ cupon.cupon.codigo }}</strong> aplicado: -${{ cupon.descuento }}
+          <p-button label="Quitar" [text]="true" size="small" (click)="quitarCupon()" />
+        </p>
+      } @else {
+        <div class="venta__cupon">
+          <input
+            pInputText
+            type="text"
+            placeholder="Código de cupón"
+            maxlength="50"
+            [ngModel]="cuponCodigo()"
+            (ngModelChange)="cuponCodigo.set($event)"
+          />
+          <p-button label="Aplicar" [loading]="validandoCupon()" [disabled]="!cuponCodigo().trim()" (click)="aplicarCupon()" />
+        </div>
+      }
+    </section>
+
+    <section class="venta__seccion venta__totales">
+      <p>Subtotal: ${{ subtotal() }}</p>
+      @if (cuponAplicado(); as cupon) {
+        <p>Descuento cupón: -${{ cupon.descuento }}</p>
+      }
+      <p class="venta__total">Total: ${{ total() }}</p>
+    </section>
+
+    <section class="venta__seccion">
+      <h3>Pago</h3>
+      <nucleo-lineas-pago [montoObjetivo]="total()" (cambio)="onPagosCambio($event)" />
+    </section>
+
+    <p-button
+      label="Registrar venta"
+      icon="pi pi-check"
+      [loading]="registrando()"
+      [disabled]="!pagoCuadra()"
+      (click)="registrarVenta()"
+    />
+  }
+</div>

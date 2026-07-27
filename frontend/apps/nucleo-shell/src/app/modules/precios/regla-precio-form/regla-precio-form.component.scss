@@ -1,0 +1,17 @@
+:host {
+  display: block;
+}
+
+.regla-precio-form__aplica-a {
+  margin-top: var(--nucleo-spacing-4);
+  padding-top: var(--nucleo-spacing-4);
+  border-top: 1px solid var(--nucleo-color-surface-200);
+  display: flex;
+  flex-direction: column;
+  gap: var(--nucleo-spacing-2);
+
+  label {
+    font-size: var(--nucleo-font-size-sm);
+    font-weight: 500;
+  }
+}

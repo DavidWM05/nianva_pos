@@ -1,0 +1,55 @@
+<nucleo-dynamic-form [fields]="fields" [submitLabel]="submitLabel" [readonly]="readonly" (formSubmit)="onSubmit($event)" />
+
+<div class="regla-precio-form__aplica-a">
+  <label for="regla-precio-aplica-a">Aplica a</label>
+  <p-select
+    inputId="regla-precio-aplica-a"
+    [options]="opcionesAplicaA"
+    optionLabel="label"
+    optionValue="value"
+    [ngModel]="aplicaA()"
+    (ngModelChange)="onCambiarAplicaA($event)"
+    [disabled]="readonly"
+  />
+
+  @if (aplicaA() === 'categoria') {
+    <label for="regla-precio-categoria">Categoría</label>
+    <p-select
+      inputId="regla-precio-categoria"
+      [options]="categorias"
+      optionLabel="nombre"
+      optionValue="id"
+      [ngModel]="categoriaId()"
+      (ngModelChange)="categoriaId.set($event)"
+      [filter]="true"
+      placeholder="Selecciona una categoría"
+      [disabled]="readonly"
+    />
+  }
+
+  @if (aplicaA() === 'producto') {
+    <nucleo-entidad-selector
+      [buscador]="buscadorProducto"
+      label="Producto"
+      placeholder="Buscar producto por nombre..."
+      [valorInicial]="productoId()"
+      (seleccionado)="productoId.set($event)"
+      [disabled]="readonly"
+    />
+  }
+
+  @if (aplicaA() === 'variante') {
+    <nucleo-entidad-selector
+      [buscador]="buscadorProducto"
+      [buscadorHijos]="buscadorVarianteDeProducto"
+      label="Producto"
+      labelHijos="Variante"
+      placeholder="Buscar producto por nombre..."
+      [valorInicial]="productoId()"
+      [valorInicialHijo]="varianteId()"
+      (seleccionado)="productoId.set($event)"
+      (hijoSeleccionado)="varianteId.set($event)"
+      [disabled]="readonly"
+    />
+  }
+</div>

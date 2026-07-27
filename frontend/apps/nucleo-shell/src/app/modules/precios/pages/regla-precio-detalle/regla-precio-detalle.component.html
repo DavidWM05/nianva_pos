@@ -1,0 +1,33 @@
+<div class="regla-precio-detalle">
+  @if (cargando()) {
+    <p>Cargando regla de precio...</p>
+  } @else if (regla(); as reglaActual) {
+    <h1>{{ reglaActual.nombre }}</h1>
+
+    <nucleo-record-tabs [tabs]="tabs">
+      <ng-template>
+        <div class="regla-precio-detalle__tab">
+          @if (!puedeEditar()) {
+            <p class="regla-precio-detalle__aviso">No tienes permiso para editar reglas de precio -- solo visualizar.</p>
+          }
+          <nucleo-regla-precio-form
+            [valorInicial]="reglaActual"
+            [readonly]="!puedeEditar()"
+            submitLabel="Guardar cambios"
+            (guardar)="onGuardar($event)"
+          />
+        </div>
+      </ng-template>
+
+      <ng-template>
+        @defer (on viewport) {
+          <nucleo-audit-log-viewer [tabla]="'reglas_precio'" [registroId]="reglaActual.id" />
+        } @placeholder {
+          <p>Auditoría (se carga al hacer scroll hasta aquí)...</p>
+        } @loading (minimum 200ms) {
+          <p>Cargando auditoría...</p>
+        }
+      </ng-template>
+    </nucleo-record-tabs>
+  }
+</div>

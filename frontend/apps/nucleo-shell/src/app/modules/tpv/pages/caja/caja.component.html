@@ -1,0 +1,171 @@
+<div class="caja">
+  <h2>Caja</h2>
+
+  @if (cargando()) {
+    <p>Cargando estado de caja...</p>
+  } @else if (estado(); as estadoActual) {
+    @if (cajaRecienCerrada(); as cerrada) {
+      <div class="caja__panel caja__panel--resultado">
+        <h3>Caja cerrada</h3>
+        <dl class="caja__detalle">
+          <dt>Monto de apertura</dt>
+          <dd>${{ cerrada.monto_apertura }}</dd>
+          <dt>Ventas del sistema</dt>
+          <dd>${{ cerrada.total_ventas_sistema }}</dd>
+          <dt>Monto físico contado</dt>
+          <dd>${{ cerrada.monto_cierre }}</dd>
+          <dt>Diferencia</dt>
+          <dd
+            [class.caja__diferencia--positiva]="+cerrada.diferencia! > 0"
+            [class.caja__diferencia--negativa]="+cerrada.diferencia! < 0"
+          >
+            ${{ cerrada.diferencia }}
+          </dd>
+        </dl>
+        <p-button label="Continuar" (click)="cerrarResumenDeCierre()" />
+      </div>
+    } @else if (estadoActual.sesion; as sesion) {
+      <div class="caja__panel">
+        <h3>Caja abierta</h3>
+        <dl class="caja__detalle">
+          <dt>Abierta desde</dt>
+          <dd>{{ sesion.fecha_apertura | date: 'short' }}</dd>
+          <dt>Monto de apertura</dt>
+          <dd>${{ sesion.monto_apertura }}</dd>
+          <dt>Ventas de la sesión</dt>
+          <dd>{{ estadoActual.resumen?.ventas_count ?? 0 }}</dd>
+          <dt>Total acumulado</dt>
+          <dd>${{ estadoActual.resumen?.total_ventas ?? 0 }}</dd>
+          <dt>Gastos</dt>
+          <dd>${{ estadoActual.resumen?.total_gastos ?? 0 }}</dd>
+        </dl>
+
+        @if (estadoActual.permisos.cerrar) {
+          <div class="caja__form">
+            <label for="caja-monto-fisico">Monto físico contado</label>
+            <input
+              pInputText
+              type="number"
+              id="caja-monto-fisico"
+              min="0"
+              step="0.01"
+              [ngModel]="montoFisico()"
+              (ngModelChange)="montoFisico.set($event)"
+            />
+            <p-button
+              label="Cerrar caja"
+              severity="danger"
+              [loading]="cerrando()"
+              [disabled]="montoFisico() === null"
+              (click)="cerrarCaja()"
+            />
+          </div>
+        }
+      </div>
+
+      <div class="caja__panel">
+        <h3>Gastos de esta sesión</h3>
+
+        @if (estadoActual.permisos.gastos_ver) {
+          @if (cargandoGastos()) {
+            <p>Cargando gastos...</p>
+          } @else if (gastos().length === 0) {
+            <p>No hay gastos registrados en esta sesión.</p>
+          } @else {
+            <table class="caja__tabla-gastos">
+              <thead>
+                <tr>
+                  <th>Descripción</th>
+                  <th>Monto</th>
+                  <th>Fecha</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (gasto of gastos(); track gasto.id) {
+                  <tr>
+                    <td>{{ gasto.descripcion }}</td>
+                    <td>${{ gasto.monto }}</td>
+                    <td>{{ gasto.fecha | date: 'short' }}</td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          }
+        } @else {
+          <p class="caja__aviso">No tienes permiso para ver los gastos registrados.</p>
+        }
+
+        @if (estadoActual.permisos.gastos_crear) {
+          <p-button label="Registrar gasto" icon="pi pi-plus" [text]="true" size="small" (click)="abrirModalGasto()" />
+        }
+      </div>
+    } @else {
+      <div class="caja__panel">
+        <h3>No hay caja abierta</h3>
+        <p>Debes abrir la caja antes de poder registrar ventas en esta sucursal.</p>
+
+        @if (estadoActual.permisos.abrir) {
+          <div class="caja__form">
+            <label for="caja-monto-apertura">Monto de apertura</label>
+            <input
+              pInputText
+              type="number"
+              id="caja-monto-apertura"
+              min="0"
+              step="0.01"
+              [ngModel]="montoApertura()"
+              (ngModelChange)="montoApertura.set($event)"
+            />
+            <p-button
+              label="Abrir caja"
+              [loading]="abriendo()"
+              [disabled]="montoApertura() === null"
+              (click)="abrirCaja()"
+            />
+          </div>
+        } @else {
+          <p class="caja__error">No tienes permiso para abrir la caja.</p>
+        }
+      </div>
+    }
+  }
+</div>
+
+<p-dialog
+  header="Registrar gasto"
+  [visible]="mostrarModalGasto()"
+  (visibleChange)="cerrarModalGasto()"
+  [modal]="true"
+  [dismissableMask]="true"
+  [style]="{ width: '24rem' }"
+>
+  <div class="caja__campo">
+    <label for="gasto-descripcion">Descripción</label>
+    <input
+      pInputText
+      type="text"
+      id="gasto-descripcion"
+      maxlength="255"
+      [ngModel]="descripcionGasto()"
+      (ngModelChange)="descripcionGasto.set($event)"
+    />
+  </div>
+  <div class="caja__campo">
+    <label for="gasto-monto">Monto</label>
+    <input
+      pInputText
+      type="number"
+      id="gasto-monto"
+      min="0.01"
+      step="0.01"
+      [ngModel]="montoGasto()"
+      (ngModelChange)="montoGasto.set($event)"
+    />
+  </div>
+  <p-button
+    label="Registrar"
+    [loading]="registrandoGasto()"
+    [disabled]="!descripcionGasto().trim() || montoGasto() === null || montoGasto()! <= 0"
+    (click)="registrarGasto()"
+  />
+</p-dialog>

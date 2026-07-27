@@ -1,0 +1,50 @@
+<div class="apartado-form">
+  <div class="apartado-form__header">
+    <h2>Nuevo apartado</h2>
+    <a routerLink="/apartados">Volver a la lista</a>
+  </div>
+
+  <section class="apartado-form__seccion">
+    <h3>Cliente</h3>
+    <nucleo-entidad-selector
+      [buscador]="buscadorCliente"
+      label="Cliente"
+      placeholder="Buscar cliente por nombre..."
+      [valorInicial]="clienteId()"
+      (seleccionado)="clienteId.set($event)"
+    />
+  </section>
+
+  <section class="apartado-form__seccion">
+    <nucleo-lineas-producto (cambio)="onLineasCambio($event)" />
+  </section>
+
+  <section class="apartado-form__seccion apartado-form__totales">
+    <p class="apartado-form__total">Total: ${{ subtotal() }}</p>
+  </section>
+
+  <section class="apartado-form__seccion">
+    <h3>Detalles</h3>
+    <div class="apartado-form__campo">
+      <label for="apartado-fecha-vencimiento">Fecha de vencimiento (opcional)</label>
+      <p-datepicker
+        inputId="apartado-fecha-vencimiento"
+        dateFormat="yy-mm-dd"
+        [ngModel]="fechaVencimiento()"
+        (ngModelChange)="fechaVencimiento.set($event)"
+      />
+    </div>
+    <div class="apartado-form__campo">
+      <label for="apartado-notas">Notas (opcional)</label>
+      <textarea pTextarea id="apartado-notas" rows="2" [ngModel]="notas()" (ngModelChange)="notas.set($event)"></textarea>
+    </div>
+  </section>
+
+  <p-button
+    label="Crear apartado"
+    icon="pi pi-check"
+    [loading]="guardando()"
+    [disabled]="clienteId() === null || itemsActuales().length === 0"
+    (click)="crearApartado()"
+  />
+</div>

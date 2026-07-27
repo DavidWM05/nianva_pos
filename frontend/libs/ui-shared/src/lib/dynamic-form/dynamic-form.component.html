@@ -1,0 +1,73 @@
+<form [formGroup]="form" (ngSubmit)="onSubmit()" class="dynamic-form">
+  @for (field of fields; track field.name) {
+    @if (esVisible(field)) {
+      <div class="dynamic-form__field">
+      <label [for]="field.name">
+        {{ field.label }}
+        @if (field.required) {
+          <span class="dynamic-form__required">*</span>
+        }
+      </label>
+
+      @switch (field.type) {
+        @case ('text') {
+          <input
+            pInputText
+            [id]="field.name"
+            [formControlName]="field.name"
+            [placeholder]="field.placeholder ?? ''"
+            [attr.maxlength]="field.maxLength ?? null"
+          />
+        }
+        @case ('password') {
+          <input
+            pInputText
+            type="password"
+            [id]="field.name"
+            [formControlName]="field.name"
+            [placeholder]="field.placeholder ?? ''"
+            autocomplete="current-password"
+          />
+        }
+        @case ('number') {
+          <input pInputText type="number" [id]="field.name" [formControlName]="field.name" [placeholder]="field.placeholder ?? ''" />
+        }
+        @case ('textarea') {
+          <textarea
+            pTextarea
+            [id]="field.name"
+            [formControlName]="field.name"
+            [placeholder]="field.placeholder ?? ''"
+            [attr.maxlength]="field.maxLength ?? null"
+            rows="3"
+          ></textarea>
+        }
+        @case ('select') {
+          <p-select
+            [id]="field.name"
+            [formControlName]="field.name"
+            [options]="field.options ?? []"
+            optionLabel="label"
+            optionValue="value"
+            [placeholder]="field.placeholder ?? ''"
+          />
+        }
+        @case ('checkbox') {
+          <p-checkbox [id]="field.name" [formControlName]="field.name" [binary]="true" />
+        }
+        @case ('date') {
+          <p-datepicker [id]="field.name" [formControlName]="field.name" [placeholder]="field.placeholder ?? ''" />
+        }
+      }
+
+      @if (errorFor(field); as error) {
+        <small class="dynamic-form__error">{{ error }}</small>
+      }
+      </div>
+    }
+  }
+
+  @if (!readonly) {
+    <p-button type="submit" [label]="submitLabel" />
+  }
+</form>

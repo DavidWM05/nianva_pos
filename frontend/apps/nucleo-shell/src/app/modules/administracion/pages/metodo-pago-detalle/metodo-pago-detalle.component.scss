@@ -1,0 +1,18 @@
+.metodo-pago-detalle {
+  padding: var(--nucleo-spacing-6);
+  max-width: 720px;
+
+  h1 {
+    margin: 0 0 var(--nucleo-spacing-6);
+    font-size: var(--nucleo-font-size-2xl);
+  }
+}
+
+.metodo-pago-detalle__tab {
+  padding-top: var(--nucleo-spacing-4);
+}
+
+.metodo-pago-detalle__aviso {
+  color: var(--nucleo-color-surface-500);
+  font-size: var(--nucleo-font-size-sm);
+}

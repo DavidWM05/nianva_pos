@@ -1,0 +1,19 @@
+<nucleo-dynamic-form [fields]="fields" [submitLabel]="submitLabel" [readonly]="readonly" (formSubmit)="onSubmit($event)" />
+
+<div class="rol-form__permisos">
+  <label for="rol-permisos">Permisos</label>
+  <p-multiselect
+    inputId="rol-permisos"
+    [options]="grupos"
+    [group]="true"
+    optionLabel="nombre"
+    optionValue="id"
+    optionGroupLabel="modulo"
+    optionGroupChildren="permisos"
+    [ngModel]="permisosIds()"
+    (ngModelChange)="permisosIds.set($event)"
+    placeholder="Selecciona los permisos de este rol"
+    [disabled]="readonly"
+    [filter]="true"
+  />
+</div>

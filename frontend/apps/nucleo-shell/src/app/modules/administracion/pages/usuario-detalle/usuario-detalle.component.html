@@ -1,0 +1,60 @@
+<div class="usuario-detalle">
+  @if (cargando()) {
+    <p>Cargando usuario...</p>
+  } @else if (usuario(); as usuarioActual) {
+    <h1>{{ usuarioActual.nombre }} {{ usuarioActual.apellido }}</h1>
+
+    <nucleo-record-tabs [tabs]="tabs">
+      <ng-template>
+        <div class="usuario-detalle__tab">
+          @if (!puedeEditar()) {
+            <p class="usuario-detalle__aviso">No tienes permiso para editar usuarios -- solo visualizar.</p>
+          }
+          <nucleo-usuario-form
+            [valorInicial]="usuarioActual"
+            [readonly]="!puedeEditar()"
+            submitLabel="Guardar cambios"
+            (guardar)="onGuardar($event)"
+          />
+
+          @if (puedeEditar() && usuarioActual.dos_factor_confirmado) {
+            <section class="usuario-detalle__seccion-2fa">
+              <h2>Verificación en dos pasos</h2>
+
+              @if (!confirmandoDesactivar2fa()) {
+                <p class="usuario-detalle__descripcion">Este usuario tiene la verificación en dos pasos activada.</p>
+                <p-button
+                  label="Desactivar 2FA de este usuario"
+                  severity="danger"
+                  [outlined]="true"
+                  (click)="iniciarDesactivar2fa()"
+                />
+              } @else {
+                <p class="usuario-detalle__descripcion">
+                  Para desactivar la verificación en dos pasos de este usuario, confirma TU código de verificación actual.
+                </p>
+                <nucleo-two-factor-code-input
+                  [enviando]="enviandoDesactivar2fa()"
+                  [error]="errorCodigo2fa()"
+                  submitLabel="Confirmar desactivación"
+                  (codeSubmit)="onCodigoDesactivar2fa($event)"
+                />
+                <button type="button" class="usuario-detalle__cancelar" (click)="cancelarDesactivar2fa()">Cancelar</button>
+              }
+            </section>
+          }
+        </div>
+      </ng-template>
+
+      <ng-template>
+        @defer (on viewport) {
+          <nucleo-audit-log-viewer [tabla]="'usuarios'" [registroId]="usuarioActual.id" />
+        } @placeholder {
+          <p>Auditoría (se carga al hacer scroll hasta aquí)...</p>
+        } @loading (minimum 200ms) {
+          <p>Cargando auditoría...</p>
+        }
+      </ng-template>
+    </nucleo-record-tabs>
+  }
+</div>

@@ -1,0 +1,26 @@
+.ventas-list {
+  padding: var(--nucleo-spacing-6);
+}
+
+.ventas-list__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--nucleo-spacing-4);
+}
+
+.ventas-list__buscar {
+  margin-bottom: var(--nucleo-spacing-4);
+  width: 100%;
+  max-width: 24rem;
+}
+
+.ventas-list__acciones {
+  display: flex;
+  gap: var(--nucleo-spacing-2);
+}
+
+.ventas-list__error {
+  color: var(--nucleo-color-danger);
+  font-size: var(--nucleo-font-size-sm);
+}
