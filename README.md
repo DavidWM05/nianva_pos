@@ -8,6 +8,10 @@ Gastos, Configuración). Lo específico de cada vertical (expediente clínico, c
 odontograma, boletas escolares, ...) vive **fuera** del núcleo, en el propio proyecto que lo
 clonó.
 
+Este repositorio es, además, el clon concreto para **Nianva POS** (punto de venta para tienda de
+ropa): sobre los 10 módulos base se construyeron los módulos de negocio propios de ese vertical
+— ver la sección "Módulos de negocio (Nianva POS)" más abajo.
+
 Ver [`docs/nucleo_arquitectura.md`](docs/nucleo_arquitectura.md) para la decisión de
 arquitectura completa (por qué monolito modular, por qué shared-database multi-tenant, el
 schema SQL de las 42 tablas).
@@ -32,6 +36,34 @@ Cada carpeta tiene su propio README con el detalle de setup y arquitectura inter
 - **[docs/nucleo_arquitectura.md](docs/nucleo_arquitectura.md)** — la decisión de arquitectura
   original (por qué monolito modular, por qué shared-database multi-tenant) y el schema SQL
   completo de las 42 tablas.
+
+## Módulos de negocio (Nianva POS)
+
+Construidos sobre los 10 módulos base, en `backend/app/Modules/<Modulo>` igual que ellos —
+respetan la misma dirección de dependencia (nunca importan el `Service` de un módulo fuera de lo
+documentado en `backend/README.md`). Cada uno activable/desactivable por tenant vía
+`modulo:<slug>` (middleware `ModuloActivo`) y protegido por su propio catálogo de permisos
+(`NucleoRolesPermisosSeeder`).
+
+| Módulo | Carpeta | Resuelve |
+|---|---|---|
+| Cotizaciones | `app/Modules/Cotizaciones` | cotizaciones de venta, editables hasta que se convierten en una venta real |
+| CRM Avanzado | `app/Modules/CrmAvanzado` | interacciones con clientes (llamadas, visitas...), programa de puntos de lealtad, envío de campañas |
+| Cuentas por Cobrar | `app/Modules/CuentasCobrar` | crédito a clientes generado desde una venta, abonos, antigüedad de saldos |
+| Cuentas por Pagar | `app/Modules/CuentasPagar` | crédito de proveedores generado desde una compra, pagos, antigüedad de saldos |
+| Pedidos (Delivery) | `app/Modules/Delivery` | pedidos a domicilio, asignación de repartidor, cambio de estado |
+| Gift Cards | `app/Modules/GiftCards` | emisión, recarga, canje y cancelación de tarjetas de regalo |
+| Notas de Crédito | `app/Modules/NotasCredito` | notas de crédito generadas automáticamente desde una devolución (solo lectura) |
+| Payroll (Nómina) | `app/Modules/Payroll` | empleados y generación/pago de nóminas |
+| Préstamos | `app/Modules/Prestamos` | préstamos a empleados/terceros con interés, registro de pagos |
+| Producción | `app/Modules/Produccion` | insumos, recetas, órdenes de producción y transformaciones de producto (negocios con manufactura propia) |
+| Unidades de Medida | `app/Modules/UnidadesMedida` | catálogo transversal (kg, litro, pieza...) usado por Producción |
+| Ventas a Plazos | vive en `Crm\Http\Controllers\PlanPagoController` | planes de pago con interés sobre una venta ya entregada (distinto de Apartados: aquí el producto ya se entregó) |
+| Reportes | sin módulo propio — un método `reporte()` en el controller dueño de cada dato | antigüedad de saldos (CxC/CxP), CRM (segmentos/interacciones/loyalty/campañas), ventas por periodo (`Tpv\VentaController`) |
+
+Todo esto tiene su contraparte de frontend en `frontend/apps/nucleo-shell/src/app/modules/`
+(carpetas con los mismos nombres, en kebab-case) — ver
+[frontend/README.md](frontend/README.md) para las convenciones de pantalla.
 
 ## Cómo levantar el proyecto para probar
 

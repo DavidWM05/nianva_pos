@@ -4,7 +4,7 @@ API Laravel 13 (PHP 8.3) del núcleo reutilizable. Monolito modular: cada domini
 vive en su propia carpeta bajo `app/Modules/<Modulo>` (migraciones, modelos, servicios,
 controllers, providers propios), no hay una carpeta `app/Http`/`app/Models` compartida entre
 módulos. Ver [`docs/nucleo_arquitectura.md`](../docs/nucleo_arquitectura.md) para el detalle
-completo de arquitectura y el schema SQL de las 42 tablas.
+completo de arquitectura y el schema SQL base.
 
 ## Setup
 
@@ -17,119 +17,95 @@ php artisan test
 ```
 
 `--seed` corre `NucleoRolesPermisosSeeder` (roles `admin`/`vendedor` y su catálogo de
-permisos `modulo.accion`) y `MetodosPagoSeeder` (catálogo global Efectivo/Tarjeta/
-Transferencia). Ninguno de los dos crea tenants ni usuarios — ver la sección
-["Usuarios de prueba para desarrollo"](#usuarios-de-prueba-para-desarrollo) más abajo para
-eso.
+permisos `modulo.accion`), `MetodosPagoSeeder` (catálogo global de métodos de pago),
+`UnidadesMedidaSeeder` (12 unidades por defecto), y `poblarModulosActivos()` (asigna la
+lista de módulos habilitados a todos los tenants). Ninguno crea tenants ni usuarios — ver
+la sección "Usuarios de prueba para desarrollo" para eso.
 
-## Los 10 módulos
+## Los 14 módulos
+
+### Núcleo (10 originales)
 
 | Módulo | Carpeta | Resuelve |
 |---|---|---|
-| Núcleo | `app/Modules/Nucleo` | tenants, sucursales, usuarios, roles/permisos, autenticación (login, 2FA, dispositivos confiables), métodos de pago |
+| Núcleo | `app/Modules/Nucleo` | tenants, sucursales, usuarios, roles/permisos, autenticación (login, 2FA, dispositivos confiables), métodos de pago, feature gating |
 | Auditoría | `app/Modules/Auditoria` | historial de create/update/delete de los modelos listados en `config/auditoria.php`, errores del sistema |
 | Inventario | `app/Modules/Inventario` | catálogo (productos/variantes), stock por sucursal, kardex, compras, proveedores |
 | Precios y Promociones | `app/Modules/Precios` | reglas de descuento (%, monto fijo, nxm, bundle) y cupones |
-| CRM | `app/Modules/Crm` | clientes y financiamiento propio del negocio (`planes_pago_cliente`) |
-| TPV / Ventas | `app/Modules/Tpv` | ventas, pagos mixtos, apertura/cierre de caja |
+| CRM | `app/Modules/Crm` | clientes, financiamiento propio del negocio, ventas a plazos |
+| TPV / Ventas | `app/Modules/Tpv` | ventas, pagos mixtos, apertura/cierre de caja, reporte de ventas |
 | Apartados | `app/Modules/Apartados` | layaway con abonos y pagos mixtos por abono |
-| Devoluciones | `app/Modules/Devoluciones` | devoluciones y cambios, con pago/reembolso mixto |
-| Gastos | `app/Modules/Gastos` | egresos de caja (sin pantalla propia — vive dentro de la vista de caja de TPV) |
-| Configuración | `app/Modules/Configuracion` | datos de la empresa (moneda, ticket, logo) y ajustes de backup |
+| Devoluciones | `app/Modules/Devoluciones` | devoluciones y cambios, nota de crédito como reembolso |
+| Gastos | `app/Modules/Gastos` | egresos de caja (vive dentro de la vista de caja de TPV) |
+| Configuración | `app/Modules/Configuracion` | datos de la empresa (moneda, ticket, logo, módulos activos) |
+
+### Extensión CRM (1)
+
+| Módulo | Carpeta | Resuelve |
+|---|---|---|
+| CRM Avanzado | `app/Modules/CrmAvanzado` | interacciones con clientes, segmentación automática, loyalty/puntos, campañas por email |
+
+### Nuevos (10)
+
+| Módulo | Carpeta | Resuelve |
+|---|---|---|
+| Unidades de Medida | `app/Modules/UnidadesMedida` | catálogo de unidades (kg, und, l, m, etc.), tipo entero/fraccionario |
+| Cotizaciones | `app/Modules/Cotizaciones` | presupuestos, cotizaciones, conversión a venta |
+| Cuentas por Cobrar (CxC) | `app/Modules/CuentasCobrar` | cuentas por cobrar, abonos, saldos, aging report |
+| Cuentas por Pagar (CxP) | `app/Modules/CuentasPagar` | cuentas por pagar, pagos, saldos, aging report |
+| Delivery / Pedidos | `app/Modules/Delivery` | pedidos, máquina de estados, asignación de repartidor |
+| Gift Cards | `app/Modules/GiftCards` | tarjetas de regalo, emisión, recargas, pago en POS |
+| Notas de Crédito | `app/Modules/NotasCredito` | notas de crédito desde devoluciones, uso en ventas |
+| Producción | `app/Modules/Produccion` | insumos, recetas, órdenes de producción, transformaciones |
+| Payroll / Nómina | `app/Modules/Payroll` | empleados, generación de nóminas, cálculo de percepciones |
+| Préstamos | `app/Modules/Prestamos` | préstamos recibidos, pagos, saldos |
+
+## Feature Gating
+
+El middleware `ModuloActivo` (`app/Modules/Nucleo/Http/Middleware/ModuloActivo.php`) controla
+qué módulos están habilitados para cada tenant. Se usa como alias `modulo:slug` en las rutas:
+
+```php
+Route::middleware(['auth:sanctum', 'modulo:cotizaciones'])->group(function () { ... });
+```
+
+La lista de módulos activos vive en `configuracion_tenant.modulos_activos` (columna JSON).
+Si no existe configuración para el tenant, se usan los 11 slugs por defecto:
+
+```
+cotizaciones, cxc, cxp, crm_avanzado, delivery, gift_cards,
+notas_credito, produccion, ventas_plazos, payroll, prestamos
+```
+
+Cuando el módulo no está activo, responde `403` con `error_code: "modulo_no_activo"`.
+
+Las rutas de cada módulo tienen dos niveles de protección:
+1. **Feature gate:** `modulo:slug` — verifica que el tenant tenga el módulo habilitado
+2. **Permiso:** `permiso:modulo.accion` — verifica que el usuario tenga el permiso específico
 
 ## Aislamiento de tenant
 
 Shared database con `tenant_id` en cada tabla de negocio. El tenant activo de la request vive
-en `TenantContext` (`app/Modules/Nucleo/Services/TenantContext.php`) — resuelto por el
-middleware `ResolveTenant` a partir del usuario autenticado, nunca leído directo de
-`Auth::user()->tenant_id` desde otro módulo. Sobre esa base, cada modelo Eloquent usa uno de
-tres patrones:
+en `TenantContext` — resuelto por el middleware `ResolveTenant` a partir del usuario autenticado.
+Cada modelo Eloquent usa uno de tres patrones:
 
-**1. `BelongsToTenant`** — el modelo tiene su propia columna `tenant_id`. El trait registra un
-global scope que filtra automáticamente cada consulta.
+**1. `BelongsToTenant`** — el modelo tiene su propia columna `tenant_id`. Scope global que filtra
+automáticamente cada consulta.
 
-```php
-// app/Modules/Nucleo/Models/Sucursal.php
-class Sucursal extends Model
-{
-    use BelongsToTenant;
-    // ...
-}
-```
+**2. `BelongsToTenantViaRelacion`** — el modelo NO tiene `tenant_id` propio; el aislamiento se
+resuelve consultando una relación `belongsTo`. Ej: `ProductoVariante` → `producto`.
 
-**2. `BelongsToTenantViaRelacion`** — el modelo NO tiene columna `tenant_id` propia; el
-aislamiento se resuelve consultando una relación `belongsTo` (vía `whereHas`, con soporte
-nativo de Eloquent para notación de puntos cuando el tenant está a más de un salto de
-distancia):
+**3. Sin ninguno de los dos** — modelos del núcleo sin tenant_id (Tenant, Permiso, etc.).
 
-```php
-// app/Modules/Gastos/Models/Gasto.php -- gastos no tiene tenant_id, pero
-// caja_sesiones -> sucursales sí. Dos saltos, notación de puntos:
-class Gasto extends Model
-{
-    use BelongsToTenantViaRelacion;
-
-    public static function tenantRelacion(): string
-    {
-        return 'cajaSesion.sucursal';
-    }
-}
-```
-
-Otro ejemplo de dos saltos: `ApartadoAbonoPago::tenantRelacion()` devuelve `'abono.apartado'`.
-La mayoría de los casos son de un solo salto (`ProductoVariante` → `'producto'`,
-`VentaDetalle` → `'venta'`, etc.).
-
-Ambos traits exponen el mismo bypass explícito para cruzar la frontera de tenant a propósito
-(paneles de superadmin, mantenimiento): `Modelo::sinTenant()->find($id)`. Nunca es implícito.
-
-**3. Sin ninguno de los dos traits** — 7 modelos, todos en `app/Modules/Nucleo/Models`:
-
-- `Tenant` — es el propio agregado raíz; no puede aislarse de sí mismo.
-- `Permiso` y `PlanSuscripcion` — catálogos globales (sus tablas no tienen columna
-  `tenant_id`): el RBAC usa el mismo catálogo de permisos `modulo.accion` para todos los
-  tenants, y los planes de suscripción son datos de la plataforma, no del negocio de un tenant.
-- `RolPermiso` y `UsuarioRol` — pivots (`Illuminate\Database\Eloquent\Relations\Pivot`); sus
-  tablas tampoco tienen `tenant_id`, el aislamiento ya lo aplican `Rol`/`Usuario` (que sí usan
-  `BelongsToTenant`) en el lado padre de la relación.
-- `DispositivoConfiable` — su tabla tampoco tiene `tenant_id`. A diferencia de los anteriores,
-  **el código no documenta explícitamente por qué no usa `BelongsToTenantViaRelacion`** (podría
-  hacerlo vía `usuario`, igual que otros modelos de un salto); en la práctica
-  `DispositivosConfiablesController` siempre filtra manualmente por
-  `usuario_id = $request->user()->id`, así que el aislamiento existe pero no pasa por el
-  mecanismo de scope global. Si se agrega una nueva vía de acceso a este modelo sin ese filtro
-  manual, quedaría sin aislar — vale la pena revisarlo si el modelo gana un segundo consumidor.
-- `InstalacionNucleo` — tabla `instalacion_nucleo`, **una sola fila, global**. A diferencia de
-  todos los anteriores, no es un catálogo ni un pivot: identifica la instalación física/lógica
-  de Núcleo en sí (potencialmente varios tenants sobre la misma base de datos), no un tenant en
-  particular — por eso no tiene ni puede tener `tenant_id`. Su valor (`InstalacionNucleo::identificador()`)
-  lo usa `LicenciaClienteService` en cada llamada al servidor central de licencias (ver
-  `docs/MANUAL_TECNICO.md` §2.6).
+Ambos traits exponen el bypass explícito `Modelo::sinTenant()` para cruzar la frontera.
 
 ## Auditoría desacoplada
 
-Una sola tabla `auditoria` (create/update/delete con diff en JSON) para toda la app. El
-mecanismo vive enteramente en el módulo Auditoría y ningún otro módulo lo importa:
-
-- `config/auditoria.php` — array `auditables` con el FQCN de cada modelo que se audita. Es
-  **el único archivo de toda la app que conoce a los 10 módulos a la vez**; ninguno de ellos
-  importa nada de los otros para esto.
-- `AuditoriaServiceProvider::boot()` recorre ese array y llama `$modelo::observe(AuditObserver::class)`
-  por cada uno.
-- `AuditObserver` (`app/Modules/Auditoria/Observers/AuditObserver.php`) es genérico — no conoce
-  ningún modelo en particular, solo reacciona a los eventos `created`/`updated`/`deleted` de
-  Eloquent y escribe el diff en `auditoria`.
-
-**Agregar auditoría a un modelo nuevo es una sola línea**: añadir su FQCN al array
-`auditables` en `config/auditoria.php`. No requiere tocar el modelo ni el módulo Auditoría. El
-propio archivo de config documenta, modelo por modelo, el criterio para incluir o excluir cada
-uno (p. ej. las tablas "detalle"/"pago" de cada módulo transaccional quedan fuera porque su
-propio registro fijo ya es su historial — ver los comentarios de `auditoria.php`).
+Una sola tabla `auditoria` (create/update/delete con diff en JSON). El mecanismo vive en
+`config/auditoria.php` — array `auditables` con el FQCN de cada modelo auditado.
+Agregar auditoría a un modelo nuevo es una línea en ese archivo.
 
 ## Direcciones de dependencia entre módulos
-
-Los `Services` de un módulo solo pueden importar de módulos "anteriores" en este orden, nunca
-al revés:
 
 ```
 Nucleo
@@ -145,85 +121,379 @@ Inventario         Crm
            /    \
           /      \
    Apartados   Devoluciones    (Apartados -> Crm+Inventario+Precios+Tpv)
-                                (Devoluciones -> Inventario+Tpv)
-      Gastos                   (Gastos -> Tpv, solo Model/Exception, NUNCA Service --
-                                 ver el docblock de CajaService)
+                               (Devoluciones -> Inventario+Tpv)
+      Gastos                   (Gastos -> Tpv, solo Model/Exception)
 
-Configuracion, Auditoria: sin dependencias de negocio.
+   Cotizaciones                (Cotizaciones -> Precios + Tpv)
+   Delivery                    (Delivery -> Tpv)
+   CuentasCobrar               (CxC -> Tpv)
+   CuentasPagar                (CxP -> Inventario)
+
+   CrmAvanzado, GiftCards, NotasCredito, Produccion, Payroll, Prestamos,
+   UnidadesMedida, VentasPlazos: sin dependencias de negocio hacia otros modulos nuevos.
 ```
 
-**Regla explícita, con 3 excepciones documentadas hoy** (la primera, `CajaController`, ya
-citada arriba como ejemplo — ver el detalle de las 3 y el porqué de cada una en
-[docs/MANUAL_TECNICO.md](../docs/MANUAL_TECNICO.md#regla-de-orquestación-controllers-sí-services-nunca)):
-`CajaController::cerrar()` (Tpv, capa Http) importa `GastoService` (Gastos) para calcular
-`total_gastos` de forma autoritativa al cerrar caja — un módulo "anterior" (Tpv) cruzando hacia
-uno "posterior" (Gastos). El patrón, explícito en el docblock de ese método, es: **los
-`Controllers` pueden orquestar entre módulos para presentación o cálculo autoritativo; los
-`Services` nunca** — `CajaService` en sí mismo sigue sin conocer `Gastos`.
+**Regla explícita:** los `Controllers` pueden orquestar entre módulos para presentación o
+cálculo autoritativo; los `Services` nunca.
 
-## Esquema de `error_code` para excepciones de negocio
+## Orquestación entre módulos — 6 instancias documentadas
 
-Las excepciones de negocio (`CajaYaAbiertaException`, `StockInsuficienteException`, etc.) son
-`RuntimeException` planas, sin `render()` propio — sin registro previo, Laravel las convertía
-en un 500 genérico. Se mapean todas en `bootstrap/app.php`, dentro de `withExceptions()`, con
-el mismo patrón: un `$exceptions->render(fn (TalException $e) => ...)` por excepción, que
-responde `422` con `message` + un `error_code` estable + los campos propios de esa excepción.
-El frontend distingue el error por `error_code`, nunca parseando `message`:
+| # | Controller | Importa de | Para qué |
+|---|---|---|---|
+| 1 | `CajaController::cerrar()` (Tpv) | `GastoService` | total_gastos autoritativo al cerrar caja |
+| 2 | `ProductoVarianteController::store()` (Inventario) | `ConfiguracionTenant` | flag `codigo_barras_automatico` |
+| 3 | `InicioController::resumen()` (Núcleo) | `Venta`, `Apartado` | resumen de inicio |
+| 4 | `VentaController::store()` (Tpv) | `GiftCardService`, `NotaCreditoService` | pago con Gift Card / Nota de Crédito |
+| 5 | `DevolucionController::store()` (Devoluciones) | `NotaCreditoService` | crear Nota de Crédito desde devolución |
+| 6 | `CajaController::cerrar()` (Tpv) | `AbonoCuenta`, `GiftCardRecarga`, `AbonoPagar` | desglose CxC/GC/CxP en cierre de caja |
 
-```php
-$exceptions->render(fn (CajaSesionNoAbiertaException $e) => response()->json([
-    'message' => $e->getMessage(),
-    'error_code' => 'caja_no_abierta',
-    'sucursal_id' => $e->sucursalId,
-], 422));
-```
+## Catálogo de `error_code`
 
-Las 10 excepciones mapeadas hoy: `caja_no_abierta`, `caja_ya_abierta`, `pago_no_cuadra`,
-`stock_insuficiente`, `cupon_invalido`, `abono_pago_no_cuadra`, `apartado_estado_invalido`,
-`apartado_saldo_insuficiente`, `devolucion_pago_no_cuadra`, `devolucion_sobre_venta_sombra`.
-Agregar una nueva es el mismo patrón: una excepción propia del módulo + un bloque
-`$exceptions->render()` en `bootstrap/app.php`.
+Todas las excepciones de negocio son `RuntimeException` planas mapeadas en `bootstrap/app.php`
+con `$exceptions->render()`. El frontend distingue el error por `error_code`, nunca por `message`.
 
-## Arquitectura completa
+### Feature Gating
+| error_code | HTTP | Descripción |
+|---|---|---|
+| `modulo_no_activo` | 403 | El módulo no está habilitado para este tenant |
 
-Ver **[docs/nucleo_arquitectura.md](../docs/nucleo_arquitectura.md)** para el mapa completo de
-módulos, las decisiones de diseño (fuente única de verdad de stock, variantes siempre presentes,
-RBAC real, venta sombra, patrón de pago mixto, etc.) y el schema SQL completo de las 42 tablas.
+### TPV / Ventas
+| error_code | HTTP | Descripción |
+|---|---|---|
+| `caja_no_abierta` | 422 | No hay sesión de caja abierta para la sucursal |
+| `caja_ya_abierta` | 422 | Ya hay una sesión de caja abierta |
+| `pago_no_cuadra` | 422 | La suma de pagos no coincide con el total |
+| `cupon_invalido` | 422 | Cupón no válido (expirado, código incorrecto, etc.) |
 
-Ver **[docs/MANUAL_TECNICO.md](../docs/MANUAL_TECNICO.md)** para el mapa de dependencias entre
-módulos con diagrama de texto, el catálogo completo de patrones establecidos, y el runbook para
-arrancar un producto nuevo clonando este repo.
+### Inventario
+| error_code | HTTP | Descripción |
+|---|---|---|
+| `stock_insuficiente` | 422 | No hay stock suficiente de una variante |
+
+### Apartados
+| error_code | HTTP | Descripción |
+|---|---|---|
+| `abono_pago_no_cuadra` | 422 | La suma de pagos de un abono no coincide |
+| `apartado_estado_invalido` | 422 | Estado del apartado no permite la operación |
+| `apartado_saldo_insuficiente` | 422 | Saldo abonado insuficiente para liquidar |
+
+### Devoluciones
+| error_code | HTTP | Descripción |
+|---|---|---|
+| `devolucion_pago_no_cuadra` | 422 | La suma de pagos no coincide con la diferencia |
+| `devolucion_sobre_venta_sombra` | 422 | No se puede devolver una venta sombra |
+
+### CxC — Cuentas por Cobrar
+| error_code | HTTP | Descripción |
+|---|---|---|
+| `abono_excede_saldo` | 422 | Monto del abono > saldo pendiente |
+| `cuenta_ya_pagada` | 422 | La cuenta ya está pagada |
+| `cuenta_anulada` | 422 | La cuenta está anulada |
+| `cuenta_con_abonos` | 422 | Tiene abonos registrados, no se puede anular |
+
+### CxP — Cuentas por Pagar
+| error_code | HTTP | Descripción |
+|---|---|---|
+| `pago_excede_saldo` | 422 | Monto del pago > saldo pendiente |
+| `cuenta_ya_pagada` | 422 | La cuenta ya está pagada |
+| `cuenta_anulada` | 422 | La cuenta está anulada |
+| `cuenta_con_abonos` | 422 | Tiene pagos registrados, no se puede anular |
+
+### Cotizaciones
+| error_code | HTTP | Descripción |
+|---|---|---|
+| `cotizacion_no_editable` | 422 | Estado no permite edición |
+| `cotizacion_vencida` | 422 | Fecha de vencimiento pasada |
+| `cotizacion_ya_convertida` | 422 | Ya fue convertida a venta |
+| `sin_cliente` | 422 | Cotización sin cliente no se puede convertir |
+
+### Delivery / Pedidos
+| error_code | HTTP | Descripción |
+|---|---|---|
+| `transicion_estado_invalida` | 422 | Salto de estado no permitido |
+| `pedido_no_asignable` | 422 | No se puede asignar repartidor (entregado/cancelado) |
+
+### Gift Cards
+| error_code | HTTP | Descripción |
+|---|---|---|
+| `monto_invalido` | 422 | Monto ≤ 0 |
+| `gift_card_expirada` | 422 | Fecha de expiración pasada |
+| `gift_card_cancelada` | 422 | Gift card cancelada |
+| `gift_card_saldo_insuficiente` | 422 | Saldo insuficiente para el descuento |
+| `gift_card_ya_cancelada` | 422 | Ya está cancelada |
+| `gift_card_sin_saldo` | 422 | No tiene saldo disponible |
+
+### Notas de Crédito
+| error_code | HTTP | Descripción |
+|---|---|---|
+| `nota_credito_expirada` | 422 | Fecha de expiración pasada |
+| `nota_credito_sin_saldo` | 422 | Saldo disponible insuficiente |
+| `nota_credito_saldo_insuficiente` | 422 | Monto excede el saldo disponible |
+
+### CRM Avanzado
+| error_code | HTTP | Descripción |
+|---|---|---|
+| `ajuste_puntos_invalido` | 422 | El ajuste de puntos no puede ser cero |
+| `puntos_insuficientes` | 422 | El cliente no tiene suficientes puntos |
+| `puntos_no_generados` | 422 | El total de la venta no genera puntos |
+
+### Unidades de Medida
+| error_code | HTTP | Descripción |
+|---|---|---|
+| `unidad_en_uso` | 422 | No se puede eliminar si está referenciada |
+
+### Producción
+| error_code | HTTP | Descripción |
+|---|---|---|
+| `stock_insumos_insuficiente` | 422 | No hay materia prima suficiente |
+| `orden_produccion_no_completable` | 422 | Estado no permite completar la orden |
+
+### Payroll
+| error_code | HTTP | Descripción |
+|---|---|---|
+| `nomina_ya_pagada` | 422 | La nómina ya fue pagada |
+| `empleado_ya_existe` | 422 | El usuario ya está registrado como empleado |
+| `sin_empleados` | 422 | No hay empleados activos en la sucursal |
+
+### Préstamos
+| error_code | HTTP | Descripción |
+|---|---|---|
+| `prestamo_ya_pagado` | 422 | El préstamo ya está pagado |
+| `pago_excede_saldo_prestamo` | 422 | Monto del pago > saldo pendiente |
+
+## Seeders
+
+| Seeder | Archivo | ¿Corre con `--seed`? | Descripción |
+|---|---|---|---|
+| `NucleoRolesPermisosSeeder` | `app/Modules/Nucleo/Database/Seeders/` | ✅ Sí | Roles admin/vendedor + catálogo de ~60 permisos `modulo.accion` |
+| `MetodosPagoSeeder` | `app/Modules/Nucleo/Database/Seeders/` | ✅ Sí | Efectivo, Tarjeta, Transferencia, Gift Card, Nota de Crédito, Yape/Plin, Cheque |
+| `UnidadesMedidaSeeder` | `app/Modules/UnidadesMedida/Database/Seeders/` | ✅ Sí | 12 unidades globales (und, kg, l, m, bal, bol, cja, rol, par, pli, var, tbo) |
+| `poblarModulosActivos()` | `database/seeders/DatabaseSeeder.php` | ✅ Sí | Asigna los 11 slugs de módulos activos a todos los tenants |
+| `DesarrolloSeeder` | `app/Modules/Nucleo/Database/Seeders/` | ❌ Manual | Crea tenant demo + admin/vendedor con 2FA preconfigurado |
+
+## Permisos sembrados por módulo
+
+| Módulo | Permisos |
+|---|---|
+| `tenants` | ver, crear, editar, eliminar |
+| `sucursales` | ver, crear, editar, eliminar |
+| `usuarios` | ver, crear, editar, eliminar |
+| `roles` | ver, crear, editar, eliminar |
+| `permisos` | ver, crear, editar, eliminar |
+| `metodos_pago` | ver, crear, editar, eliminar |
+| `inventario` | ver, crear, editar, eliminar |
+| `compras` | ver, crear |
+| `clientes` | ver, crear, editar, eliminar |
+| `ventas` | ver, crear, anular |
+| `caja` | ver, abrir, cerrar |
+| `apartados` | ver, crear, abonar, cancelar |
+| `devoluciones` | ver, crear |
+| `gastos` | ver, crear |
+| `reglas_precio` | ver, crear, editar, eliminar |
+| `cupones` | ver, crear, editar, eliminar |
+| `configuracion` | ver, editar |
+| `reportes` | ver |
+| `auditoria` | ver |
+| `cotizaciones` | ver, crear, editar, eliminar, convertir |
+| `cuentas_cobrar` | ver, crear, registrar_abono, anular |
+| `cuentas_pagar` | ver, registrar_pago |
+| `pedidos` | ver, crear, cambiar_estado, asignar_repartidor |
+| `gift_cards` | ver, emitir, recargar, cancelar |
+| `notas_credito` | ver |
+| `crm_interacciones` | ver, crear |
+| `crm_campanas` | enviar |
+| `loyalty` | ver, ajustar |
+| `produccion` | ver, crear, completar, transformar |
+| `payroll` | ver, crear, pagar |
+| `prestamos` | ver, crear, pagar |
+| `ventas_plazos` | ver, crear |
+| `reportes_cuentas_cobrar` | ver |
+| `reportes_cuentas_pagar` | ver |
+| `reportes_crm` | ver |
+
+## API Reference — Nuevos endpoints
+
+### Cotizaciones (`modulo:cotizaciones`)
+
+| Método | Ruta | Permiso | Descripción |
+|---|---|---|---|
+| GET | `/api/cotizaciones` | `cotizaciones.ver` | Lista paginada con filtros por estado, cliente, fechas y búsqueda por número |
+| POST | `/api/cotizaciones` | `cotizaciones.crear` | Crear cotización con items |
+| GET | `/api/cotizaciones/{cotizacion}` | `cotizaciones.ver` | Detalle completo + items |
+| PUT | `/api/cotizaciones/{id}` | `cotizaciones.editar` | Editar cotización (solo pendiente) |
+| DELETE | `/api/cotizaciones/{id}` | `cotizaciones.eliminar` | Anular cotización (marca estado, no borra) |
+| POST | `/api/cotizaciones/{id}/convertir` | `cotizaciones.convertir` | Convertir en venta (descuenta stock) |
+
+### CxC — Cuentas por Cobrar (`modulo:cxc`)
+
+| Método | Ruta | Permiso | Descripción |
+|---|---|---|---|
+| GET | `/api/cuentas-cobrar` | `cuentas_cobrar.ver` | Lista paginada con filtros |
+| GET | `/api/cuentas-cobrar/reporte` | `reportes_cuentas_cobrar.ver` | Aging report: totales, antigüedad, top clientes |
+| GET | `/api/cuentas-cobrar/{cuentaCobrar}` | `cuentas_cobrar.ver` | Detalle + abonos |
+| POST | `/api/cuentas-cobrar/{id}/abonos` | `cuentas_cobrar.registrar_abono` | Registrar abono (actualiza saldo) |
+| POST | `/api/cuentas-cobrar/{id}/anular` | `cuentas_cobrar.anular` | Anular (solo sin abonos) |
+
+### CxP — Cuentas por Pagar (`modulo:cxp`)
+
+| Método | Ruta | Permiso | Descripción |
+|---|---|---|---|
+| GET | `/api/cuentas-pagar` | `cuentas_pagar.ver` | Lista paginada con filtros |
+| GET | `/api/cuentas-pagar/reporte` | `reportes_cuentas_pagar.ver` | Aging report: totales, antigüedad, top proveedores |
+| GET | `/api/cuentas-pagar/{cuentaPagar}` | `cuentas_pagar.ver` | Detalle + pagos |
+| POST | `/api/cuentas-pagar/{id}/pagos` | `cuentas_pagar.registrar_pago` | Registrar pago (actualiza saldo) |
+| POST | `/api/cuentas-pagar/{id}/anular` | `cuentas_pagar.ver` | Anular (solo sin pagos) |
+
+### CRM Avanzado (`modulo:crm_avanzado`)
+
+| Método | Ruta | Permiso | Descripción |
+|---|---|---|---|
+| GET | `/api/clientes/{cliente}/interacciones` | `crm_interacciones.ver` | Historial de interacciones del cliente |
+| POST | `/api/clientes/{cliente}/interacciones` | `crm_interacciones.crear` | Crear interacción (llamada, email, whatsapp, etc.) |
+| GET | `/api/clientes/{cliente}/loyalty` | `loyalty.ver` | Puntos y transacciones de fidelidad |
+| POST | `/api/clientes/{cliente}/loyalty/ajustar` | `loyalty.ajustar` | Ajuste manual de puntos |
+| POST | `/api/crm/campanas/enviar` | `crm_campanas.enviar` | Enviar campaña por email a un segmento |
+| GET | `/api/crm/reporte` | `reportes_crm.ver` | Reporte CRM: segmentos, interacciones, loyalty, campañas |
+
+### Delivery / Pedidos (`modulo:delivery`)
+
+| Método | Ruta | Permiso | Descripción |
+|---|---|---|---|
+| GET | `/api/pedidos` | `pedidos.ver` | Lista paginada con filtros |
+| POST | `/api/pedidos` | `pedidos.crear` | Crear pedido con items |
+| GET | `/api/pedidos/{pedido}` | `pedidos.ver` | Detalle completo |
+| PATCH | `/api/pedidos/{id}/estado` | `pedidos.cambiar_estado` | Máquina de estados (pendiente→preparando→en_camino→entregado) |
+| PATCH | `/api/pedidos/{id}/repartidor` | `pedidos.asignar_repartidor` | Asignar/remplazar repartidor |
+
+### Gift Cards (`modulo:gift_cards`)
+
+| Método | Ruta | Permiso | Descripción |
+|---|---|---|---|
+| GET | `/api/gift-cards` | `gift_cards.ver` | Lista paginada |
+| POST | `/api/gift-cards` | `gift_cards.emitir` | Emitir nueva gift card con código único |
+| GET | `/api/gift-cards/{giftCard}` | `gift_cards.ver` | Detalle + recargas |
+| POST | `/api/gift-cards/{id}/recargar` | `gift_cards.recargar` | Recargar saldo |
+| POST | `/api/gift-cards/{id}/cancelar` | `gift_cards.cancelar` | Cancelar gift card |
+
+### Notas de Crédito (`modulo:notas_credito`)
+
+| Método | Ruta | Permiso | Descripción |
+|---|---|---|---|
+| GET | `/api/notas-credito` | `notas_credito.ver` | Lista paginada |
+| GET | `/api/notas-credito/{notaCredito}` | `notas_credito.ver` | Detalle + usos |
+| GET | `/api/clientes/{cliente}/notas-credito` | `notas_credito.ver` | Notas activas de un cliente |
+
+### Ventas a Plazos (`modulo:ventas_plazos`)
+
+| Método | Ruta | Permiso | Descripción |
+|---|---|---|---|
+| GET | `/api/planes-pago-cliente` | `ventas_plazos.ver` | Lista paginada de planes |
+| GET | `/api/planes-pago-cliente/{plan}` | `ventas_plazos.ver` | Detalle del plan + cuotas |
+| POST | `/api/ventas/{venta}/plan-pago` | `ventas_plazos.crear` | Crear plan con N cuotas e interés |
+| POST | `/api/planes-pago-cliente/{plan}/pagar-cuota` | `ventas_plazos.crear` | Pagar una cuota específica |
+
+### Unidades de Medida (sin feature gate)
+
+| Método | Ruta | Permiso | Descripción |
+|---|---|---|---|
+| GET | `/api/unidades-medida` | — | Lista de unidades activas |
+| POST | `/api/unidades-medida` | — | Crear unidad |
+| PUT | `/api/unidades-medida/{id}` | — | Editar unidad |
+| DELETE | `/api/unidades-medida/{id}` | — | Eliminar (solo si no está en uso) |
+
+### Producción (`modulo:produccion`)
+
+| Método | Ruta | Permiso | Descripción |
+|---|---|---|---|
+| GET | `/api/insumos` | `produccion.ver` | Lista paginada de insumos |
+| POST | `/api/insumos` | `produccion.crear` | Crear insumo |
+| GET | `/api/insumos/{insumo}/stocks` | `produccion.ver` | Stock del insumo por sucursal + lote |
+| POST | `/api/insumos/{insumo}/stocks` | `produccion.crear` | Agregar/recibir stock (upsert por lote) |
+| GET | `/api/recetas` | `produccion.ver` | Lista paginada de recetas |
+| POST | `/api/recetas` | `produccion.crear` | Crear receta con ingredientes |
+| GET | `/api/ordenes-produccion` | `produccion.ver` | Lista paginada de órdenes |
+| POST | `/api/ordenes-produccion` | `produccion.crear` | Crear orden de producción |
+| PATCH | `/api/ordenes-produccion/{id}/estado` | `produccion.crear` | Cambiar estado/completar (descuenta insumos, incrementa producto) |
+| GET | `/api/transformaciones` | `produccion.ver` | Lista paginada de transformaciones |
+| POST | `/api/transformaciones` | `produccion.transformar` | Registrar transformación entre variantes |
+
+### Payroll / Nómina (`modulo:payroll`)
+
+| Método | Ruta | Permiso | Descripción |
+|---|---|---|---|
+| GET | `/api/empleados` | `payroll.ver` | Lista paginada de empleados |
+| GET | `/api/empleados/{empleado}` | `payroll.ver` | Detalle del empleado |
+| POST | `/api/empleados` | `payroll.crear` | Registrar empleado vinculado a un usuario |
+| GET | `/api/nominas` | `payroll.ver` | Lista paginada de nóminas |
+| GET | `/api/nominas/{nomina}` | `payroll.ver` | Detalle de nómina + detalles |
+| POST | `/api/nominas/generar` | `payroll.crear` | Generar nómina para un período y sucursal |
+| PATCH | `/api/nominas/{id}/pagar` | `payroll.pagar` | Marcar nómina como pagada |
+
+### Préstamos (`modulo:prestamos`)
+
+| Método | Ruta | Permiso | Descripción |
+|---|---|---|---|
+| GET | `/api/prestamos` | `prestamos.ver` | Lista paginada |
+| GET | `/api/prestamos/{prestamo}` | `prestamos.ver` | Detalle + pagos |
+| POST | `/api/prestamos` | `prestamos.crear` | Registrar préstamo recibido |
+| POST | `/api/prestamos/{id}/pagos` | `prestamos.pagar` | Registrar pago (actualiza saldo) |
+
+### Reportes (en módulos existentes)
+
+| Método | Ruta | Permiso | Descripción |
+|---|---|---|---|
+| GET | `/api/ventas/reporte` | `reportes.ver` | Reporte de ventas: totales, sucursales, métodos de pago, top productos |
+| GET | `/api/cuentas-cobrar/reporte` | `reportes_cuentas_cobrar.ver` | Aging report CxC: antigüedad, top clientes |
+| GET | `/api/cuentas-pagar/reporte` | `reportes_cuentas_pagar.ver` | Aging report CxP: antigüedad, top proveedores |
+| GET | `/api/crm/reporte` | `reportes_crm.ver` | Reporte CRM: segmentos, interacciones, loyalty, campañas |
 
 ## Usuarios de prueba para desarrollo
 
-`DesarrolloSeeder` (`app/Modules/Nucleo/Database/Seeders/DesarrolloSeeder.php`) crea un tenant
-de desarrollo, una sucursal, y dos usuarios (`admin`/`vendedor`) listos para iniciar sesión sin
-configurar nada más a mano. A diferencia de `NucleoRolesPermisosSeeder` y `MetodosPagoSeeder`,
-**no se llama desde `DatabaseSeeder`** — `migrate --seed` nunca lo ejecuta. Se corre siempre a
-mano:
+`DesarrolloSeeder` crea un tenant de desarrollo, una sucursal, y dos usuarios (`admin`/`vendedor`).
+No corre con `--seed` — se ejecuta a mano:
 
 ```bash
 php artisan db:seed --class="App\Modules\Nucleo\Database\Seeders\DesarrolloSeeder"
 ```
 
-Es idempotente en tenant/sucursal/usuarios (no los duplica si se corre varias veces) y llama
-internamente a `NucleoRolesPermisosSeeder`, así que funciona aunque solo se haya corrido
-`migrate` sin `--seed`.
-
-**Credenciales**: el correo y la contraseña son fijos y de bajo riesgo (`admin@nucleo.test` /
-`vendedor@nucleo.test`, contraseña `password-dev-123` para ambos) — se documentan aquí porque
-no cambian entre corridas. El admin requiere 2FA obligatorio (`Usuario::requiereDosFactor()`
-es `true` para el rol `admin`); el seeder lo pre-confirma para no tener que pasar por la
-pantalla de configuración de 2FA a mano, pero el **secreto TOTP se regenera en cada corrida y
-solo se imprime en la consola** al ejecutar el seeder (junto con la URI `otpauth://`
-equivalente) — nunca queda fijo en el código ni en este README. Para completar el login del
-admin hace falta cargar ese secreto en una app de autenticador (Google Authenticator, Authy,
-1Password, ...) y generar el código de 6 dígitos que pide `/login/2fa-verify`. El usuario
-`vendedor` no requiere 2FA — es el camino más corto para probar el login de punta a punta sin
-ningún paso extra.
+| Usuario | Correo | Contraseña | 2FA |
+|---|---|---|---|
+| Admin | `admin@nucleo.test` | `password-dev-123` | ✅ Preconfigurado (secreto TOTP se imprime en consola) |
+| Vendedor | `vendedor@nucleo.test` | `password-dev-123` | ❌ No requiere |
 
 > [!WARNING]
-> **`DesarrolloSeeder` nunca debe correr en un entorno de producción.** Crea usuarios con
-> contraseñas conocidas y públicas en este README. Está separado a propósito de
-> `DatabaseSeeder`/`--seed` para que no exista ninguna forma de que corra por accidente — pero
-> la responsabilidad de no invocarlo a mano en producción es de quien opera el despliegue.
+> **`DesarrolloSeeder` nunca debe correr en un entorno de producción.**
+
+## Pruebas
+
+```bash
+# Suite completa (289 tests)
+php artisan test
+
+# Por módulo
+php artisan test --filter="Cotizacion"
+php artisan test --filter="GiftCard"
+php artisan test --filter="CuentasCobrar"
+php artisan test --filter="Delivery"
+php artisan test --filter="CrmAvanzado"
+
+# Tests de integración (permisos)
+php artisan test --filter="PermisoGateTest"
+```
+
+## Arquitectura completa
+
+Ver **[docs/nucleo_arquitectura.md](../docs/nucleo_arquitectura.md)** para el mapa completo de
+módulos, las decisiones de diseño y el schema SQL base.
+
+Ver **[docs/MANUAL_TECNICO.md](../docs/MANUAL_TECNICO.md)** para el mapa de dependencias,
+el catálogo de patrones establecidos y el runbook para arrancar un producto nuevo.
+
+Ver **[docs/01_ARQUITECTURA_BASE.md](../docs/01_ARQUITECTURA_BASE.md)** para la especificación
+completa de tablas nuevas, migraciones y feature gating.
+
+Ver **[docs/02_CONTRATO_API.md](../docs/02_CONTRATO_API.md)** para el contrato de API detallado
+de todos los módulos nuevos.
+
+Ver **[docs/03_ESPECIFICACION_BACKEND.md](../docs/03_ESPECIFICACION_BACKEND.md)** para las reglas
+de dominio, validaciones y servicios.

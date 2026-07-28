@@ -1,16 +1,20 @@
 # Frontend de Núcleo
 
 Workspace Nx (Angular, standalone components, sin NgModules) para el frontend del núcleo. Los
-10 módulos de negocio (Inventario, Precios, CRM, TPV, Apartados, Devoluciones, Gastos,
-Configuración, Auditoría, Núcleo/Auth) están construidos sobre el mismo shell de navegación,
-sistema de tokens de diseño y librería de componentes compartidos que describe este README.
+10 módulos base (Inventario, Precios, CRM, TPV, Apartados, Devoluciones, Gastos, Configuración,
+Auditoría, Núcleo/Auth) **y** los módulos de negocio propios de Nianva POS construidos encima
+(Cotizaciones, CRM Avanzado, CxC, CxP, Pedidos, Gift Cards, Notas de Crédito, Payroll, Préstamos,
+Producción, Unidades de Medida, Ventas a Plazos, Reportes — ver la raíz del repo,
+[`../README.md`](../README.md#módulos-de-negocio-nianva-pos), para el detalle de cada uno)
+están construidos sobre el mismo shell de navegación, sistema de tokens de diseño y librería de
+componentes compartidos que describe este README.
 
 ## Estructura
 
 ```
 frontend/
 ├── apps/
-│   └── nucleo-shell/          App principal: sidebar, breadcrumbs, rutas de los 10 modulos
+│   └── nucleo-shell/          App principal: sidebar, breadcrumbs, rutas de todos los modulos
 ├── libs/
 │   ├── design-tokens/         Paleta, tipografia, espaciado, radios -- fuente unica de verdad
 │   └── ui-shared/              Componentes base reutilizables (tabla, badge, dialogo, form, etc.)
@@ -76,9 +80,9 @@ Cuándo usar cada componente:
 - `RecordTabsComponent` (`nucleo-record-tabs`) -- patrón de vista de registro con pestañas
   (General/Relacionado/Auditoría), un `<ng-template>` por pestaña vía content projection.
   **Estructura obligatoria de toda vista `*-detalle`** de una entidad raíz -- ver la convención
-  de vistas más abajo; hoy la usan las 12 pantallas `*-detalle` del frontend (Usuarios, Roles,
-  Métodos de pago, Categorías, Departamentos, Productos, Clientes, Reglas de precio, Cupones,
-  Ventas, Apartados, Devoluciones), sin ninguna excepción.
+  de vistas más abajo; hoy la usan las 22 pantallas `*-detalle` del frontend (`grep -rl ""
+  apps/nucleo-shell/src/app/modules --include="*-detalle.component.ts"` para la lista completa
+  y actualizada), sin ninguna excepción.
 - `EntidadSelectorComponent` (`nucleo-entidad-selector`) -- autocomplete server-side de una
   entidad (`[buscador]`) con, opcionalmente, un segundo select en cascada de sus "hijos"
   (`[buscadorHijos]`). No importa el servicio concreto de ningún módulo -- ver la sección
@@ -94,7 +98,8 @@ lista en `app.routes.ts` (las rutas se arman aparte, pero deben apuntar a los mi
 - `NUCLEO_ITEM_INICIO` -- un único ítem, fuera de cualquier grupo: "Inicio" es siempre el primer
   link del sidebar, sin encabezado de sección ni lógica de expandir/colapsar.
 - `NUCLEO_NAV_GROUPS: NucleoNavGroup[]` -- el resto de módulos, agrupados en secciones
-  colapsables (`Catálogo`, `Transacciones`, `Configuración`). Cada grupo arranca colapsado
+  colapsables (hoy: `Catálogo`, `Transacciones`, `Nómina`, `Producción`, `Reportes`,
+  `Configuración` -- ver `modules.config.ts` para la lista viva). Cada grupo arranca colapsado
   salvo el que contiene la ruta activa (`SidebarComponent.grupoInicialExpandido()`).
 - **Separador visual dentro de un grupo, sin ser un ítem de navegación**: un
   `NucleoModuleNavItem` puede llevar `separadorAntes: true` -- el sidebar renderiza una línea
@@ -152,8 +157,21 @@ lista en `app.routes.ts` (las rutas se arman aparte, pero deben apuntar a los mi
 `EntidadSelectorComponent` necesita buscar una entidad de otro módulo (ej. TPV busca clientes
 de CRM, Precios busca productos de Inventario) **sin importar el servicio concreto de ese
 módulo** -- eso violaría las direcciones de dependencia documentadas en `backend/README.md` y
-su equivalente en frontend (`modules/apartados` y `modules/devoluciones` son las únicas
-excepciones documentadas, ambas hacia `modules/tpv`).
+su equivalente en frontend. Las excepciones documentadas, todas hacia `modules/tpv` (mismo
+criterio en los 5 casos: reutilizar lo que TPV ya resuelve en vez de duplicarlo) crecieron con
+el sistema, no son solo las 2 originales:
+
+- `modules/apartados` y `modules/devoluciones` -- reutilizan los componentes de captura de
+  línea de TPV (`LineasProductoComponent`/`LineasPagoComponent`) para armar su propio carrito,
+  en vez de reconstruir esa UI.
+- `modules/cotizaciones` -- mismo motivo que los dos anteriores (`lineas-cotizacion` reutiliza
+  `LineasProductoComponent`/`VentaService` de TPV).
+- `modules/ventas-plazos` -- necesita elegir la venta sobre la que se arma un plan de pago
+  (`VentaBuscadorService` adapta `VentaService.listar()`/`obtener()` al contrato
+  `BuscadorEntidad`, mismo patrón de siempre, pero la entidad "buscable" en sí es de TPV).
+- `modules/reportes` -- el reporte de ventas por periodo (`ReporteVentasComponent`) llama
+  `VentaService.reporte()` directo: es el mismo dato de TPV, no una búsqueda de entidad, así que
+  no aplica el patrón `Buscador` aquí, solo reutiliza el servicio.
 
 El mecanismo, en tres piezas:
 
@@ -190,8 +208,10 @@ El mecanismo, en tres piezas:
    `<nucleo-entidad-selector [buscador]="buscadorCliente" />` -- nunca importa
    `ClienteBuscadorService` ni `ClienteService` directamente.
 
-Tokens hoy: `BUSCADOR_PRODUCTO`, `BUSCADOR_VARIANTE_DE_PRODUCTO` (cascada, `BuscadorDeHijos`),
-`BUSCADOR_CATEGORIA`, `BUSCADOR_CLIENTE`.
+Tokens hoy (`core/buscadores-entidad.tokens.ts`): `BUSCADOR_PRODUCTO`,
+`BUSCADOR_VARIANTE_DE_PRODUCTO` (cascada, `BuscadorDeHijos`), `BUSCADOR_CATEGORIA`,
+`BUSCADOR_CLIENTE`, `BUSCADOR_USUARIO`, `BUSCADOR_UNIDAD_MEDIDA`, `BUSCADOR_INSUMO`,
+`BUSCADOR_RECETA`, `BUSCADOR_VENTA`.
 
 ## Lazy loading + `@defer`
 
@@ -216,10 +236,12 @@ efectivamente hace scroll hasta esa pestaña. Ejemplo real, `cliente-detalle.com
 </ng-template>
 ```
 
-Mismo patrón en `apartado-detalle`, `devolucion-detalle` y `producto-detalle`.
-`apps/nucleo-shell/src/app/demo/registro-ejemplo.component.ts` sigue como el scaffold mínimo
-original de este patrón (útil para copiar/pegar en un módulo nuevo), pero ya no es el único
-ejemplo -- los cuatro anteriores son pantallas de negocio reales.
+Mismo patrón en las demás 21 vistas `*-detalle` que tienen pestaña de Auditoría (`grep -rl
+"@defer" apps/nucleo-shell/src/app/modules --include="*.html"` para la lista completa --
+prácticamente toda vista de registro auditada lo usa). `apps/nucleo-shell/src/app/demo/registro-ejemplo.component.ts`
+sigue como el scaffold mínimo original de este patrón (útil para copiar/pegar en un módulo
+nuevo), pero ya no es el único ejemplo -- es una entre 22 pantallas de negocio reales que lo
+usan hoy.
 
 ## Ver también
 
