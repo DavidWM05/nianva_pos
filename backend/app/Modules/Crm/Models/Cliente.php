@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-#[Fillable(['tenant_id', 'nombre', 'documento_fiscal', 'telefono', 'correo', 'direccion', 'activo', 'es_sistema'])]
+#[Fillable(['tenant_id', 'nombre', 'documento_fiscal', 'telefono', 'correo', 'direccion', 'activo', 'es_sistema', 'segmento'])]
 class Cliente extends Model
 {
     use BelongsToTenant;

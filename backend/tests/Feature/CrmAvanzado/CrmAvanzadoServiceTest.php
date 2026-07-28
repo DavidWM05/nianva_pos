@@ -180,6 +180,26 @@ class CrmAvanzadoServiceTest extends TestCase
         $this->assertSame(0, LoyaltyTransaccion::all()->count());
     }
 
+    public function test_recalcular_segmentos_persiste_en_bd(): void
+    {
+        $this->crearVentas(3);
+
+        $this->service->recalcularSegmentos();
+
+        $this->cliente->refresh();
+        $this->assertSame('frecuente', $this->cliente->segmento);
+    }
+
+    public function test_recalcular_segmentos_cliente_sin_ventas_es_nuevo(): void
+    {
+        $cliente = Cliente::create(['tenant_id' => $this->tenant->id, 'nombre' => 'Nuevo']);
+
+        $this->service->recalcularSegmentos();
+
+        $cliente->refresh();
+        $this->assertSame('nuevo', $cliente->segmento);
+    }
+
     private function crearVentas(int $cantidad): void
     {
         for ($i = 0; $i < $cantidad; $i++) {

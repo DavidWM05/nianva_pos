@@ -132,3 +132,7 @@ si el volumen de datos por tenant crece, no un bug.
 saldos CxP), `reportes_crm` (segmentos, interacciones, loyalty, campañas) y `reportes` general
 (ventas por periodo, con filtro de fecha/sucursal) — los 4 permisos sembrados en
 `NucleoRolesPermisosSeeder` ya tienen pantalla y endpoint construidos. Cerrado.
+
+## Mejora de experiencia en inicio 2fa
+
+El codigo para la aplicacion autentificadora deberia mostrarse en qr o evaluar opciones
