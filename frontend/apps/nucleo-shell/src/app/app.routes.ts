@@ -822,6 +822,24 @@ export const appRoutes: Route[] = [
                 (m) => m.ReporteCuentasPagarComponent,
               ),
           },
+          {
+            path: 'crm',
+            title: 'Núcleo · Reporte de CRM',
+            data: { breadcrumb: 'CRM' },
+            loadComponent: () =>
+              import('./modules/reportes/pages/reporte-crm/reporte-crm.component').then(
+                (m) => m.ReporteCrmComponent,
+              ),
+          },
+          {
+            path: 'ventas',
+            title: 'Núcleo · Reporte de Ventas',
+            data: { breadcrumb: 'Ventas' },
+            loadComponent: () =>
+              import('./modules/reportes/pages/reporte-ventas/reporte-ventas.component').then(
+                (m) => m.ReporteVentasComponent,
+              ),
+          },
         ],
       },
       {

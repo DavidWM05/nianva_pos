@@ -12,8 +12,11 @@ use App\Modules\Precios\Exceptions\CuponInvalidoException;
 use App\Modules\Precios\Models\Cupon;
 use App\Modules\Precios\Services\PrecioService;
 use App\Modules\Precios\Support\ResultadoCupon;
+use App\Modules\Nucleo\Models\Sucursal;
 use App\Modules\Tpv\Http\Resources\VentaResource;
 use App\Modules\Tpv\Models\Venta;
+use App\Modules\Tpv\Models\VentaDetalle;
+use App\Modules\Tpv\Models\VentaPago;
 use App\Modules\Tpv\Services\VentaService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -222,4 +225,79 @@ class VentaController extends Controller
         return response()->json(['data' => ['items' => $lineas, 'subtotal' => $subtotal]]);
     }
 
+    public function reporte(Request $request)
+    {
+        $tenantId = app(TenantContext::class)->id();
+
+        $fechaDesde = $request->query('fecha_desde', now()->startOfMonth()->toDateString());
+        $fechaHasta = $request->query('fecha_hasta', now()->toDateString());
+        $sucursalId = $request->query('sucursal_id');
+
+        $base = Venta::where('tenant_id', $tenantId)
+            ->where('estado', 'completada')
+            ->where('es_venta_sombra', false)
+            ->whereDate('fecha', '>=', $fechaDesde)
+            ->whereDate('fecha', '<=', $fechaHasta);
+
+        if ($sucursalId) {
+            $base->where('sucursal_id', $sucursalId);
+        }
+
+        $totalVentas = round((float) (clone $base)->sum('total'), 2);
+        $numeroVentas = (clone $base)->count();
+        $ticketPromedio = $numeroVentas > 0 ? round($totalVentas / $numeroVentas, 2) : 0.0;
+
+        // Por sucursal
+        $sucursales = Sucursal::sinTenant()->where('tenant_id', $tenantId)->pluck('nombre', 'id');
+
+        $porSucursal = (clone $base)
+            ->selectRaw('sucursal_id, sum(total) as total, count(*) as numero_ventas')
+            ->groupBy('sucursal_id')
+            ->get()
+            ->map(function ($r) use ($sucursales) { return [
+                'sucursal_id' => $r->sucursal_id,
+                'sucursal_nombre' => $sucursales[$r->sucursal_id] ?? null,
+                'total' => round((float) $r->total, 2),
+                'numero_ventas' => (int) $r->numero_ventas,
+            ]; });
+
+        // IDs de las ventas del período para cruzar contra pagos/detalles
+        $ventaIds = (clone $base)->pluck('id');
+
+        // Por método de pago
+        $porMetodoPago = VentaPago::whereIn('venta_id', $ventaIds)
+            ->selectRaw('metodo_pago_id, sum(monto) as total')
+            ->groupBy('metodo_pago_id')
+            ->get()
+            ->map(fn ($r) => [
+                'metodo_pago_id' => $r->metodo_pago_id,
+                'metodo_pago_nombre' => $r->metodoPago?->nombre,
+                'total' => round((float) $r->total, 2),
+            ]);
+
+        // Top 10 productos por cantidad vendida
+        $topProductos = VentaDetalle::whereIn('venta_id', $ventaIds)
+            ->selectRaw('variante_id, sum(cantidad) as cantidad_vendida, sum(subtotal) as total_vendido')
+            ->groupBy('variante_id')
+            ->orderByDesc('cantidad_vendida')
+            ->limit(10)
+            ->get()
+            ->map(fn ($r) => [
+                'variante_id' => $r->variante_id,
+                'producto_nombre' => $r->variante?->producto?->nombre,
+                'talla' => $r->variante?->talla,
+                'color' => $r->variante?->color,
+                'cantidad_vendida' => (int) $r->cantidad_vendida,
+                'total_vendido' => round((float) $r->total_vendido, 2),
+            ]);
+
+        return response()->json(['data' => [
+            'total_ventas' => $totalVentas,
+            'numero_ventas' => $numeroVentas,
+            'ticket_promedio' => $ticketPromedio,
+            'por_sucursal' => $porSucursal,
+            'por_metodo_pago' => $porMetodoPago,
+            'top_productos' => $topProductos,
+        ]]);
+    }
 }

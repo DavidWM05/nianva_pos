@@ -107,12 +107,28 @@ campañas ya enviadas (el catálogo real de permisos para `crm_campanas` es úni
 sin `ver`). Si el negocio pide ver un historial de campañas, hace falta que backend agregue
 `GET /crm/campanas` + el permiso `crm_campanas.ver`.
 
+### Patrón N+1 en dos de los endpoints de Reportes
+
+- `CrmAvanzadoController::reporte()` calcula `clientes_por_segmento` llamando
+  `calcularSegmento($cliente->id)` en un loop por cada cliente del tenant (2 queries por
+  cliente). Se dejó pasar a propósito (se le dio la opción explícita a backend de elegir entre
+  "al vuelo con query agregada" vs. simplicidad, y eligió la versión simple) — funciona bien para
+  el volumen de un tenant típico en desarrollo, pero escala mal si un tenant real acumula
+  cientos/miles de clientes.
+- `VentaController::reporte()` resuelve `metodo_pago_nombre` y `producto_nombre`/`talla`/`color`
+  accediendo a `$fila->metodoPago`/`$fila->variante->producto` sobre resultados de una query
+  `selectRaw()->groupBy()` (sin `->with()`) — cada fila dispara sus propias queries de relación
+  en vez de un join o eager load. Con "top 10 productos" el impacto es mínimo hoy, pero es el
+  mismo patrón.
+
+Ninguno de los dos rompe nada ni da resultados incorrectos — es una nota de performance a futuro
+si el volumen de datos por tenant crece, no un bug.
+
 ## Producto / Funcionalidad
 
-### Módulo de Reportes
+### Módulo de Reportes — completo
 
-`reportes`, `reportes_cuentas_cobrar`, `reportes_cuentas_pagar` y `reportes_crm` están sembrados
-en `NucleoRolesPermisosSeeder` pero no tienen ni pantalla ni endpoints construidos — nunca
-estuvieron en el alcance de los 12 módulos de esta ronda. El cliente mostró interés explícito en
-esta funcionalidad (ver análisis de flujo de implementación aparte). Es la pieza más grande de
-trabajo nuevo pendiente hoy, no un ajuste menor.
+`reportes_cuentas_cobrar` (antigüedad de saldos CxC), `reportes_cuentas_pagar` (antigüedad de
+saldos CxP), `reportes_crm` (segmentos, interacciones, loyalty, campañas) y `reportes` general
+(ventas por periodo, con filtro de fecha/sucursal) — los 4 permisos sembrados en
+`NucleoRolesPermisosSeeder` ya tienen pantalla y endpoint construidos. Cerrado.

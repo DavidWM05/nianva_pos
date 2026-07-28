@@ -5,6 +5,8 @@ namespace App\Modules\CrmAvanzado\Http\Controllers;
 use App\Http\Controllers\Controller;
 use App\Modules\CrmAvanzado\Http\Resources\CrmCampanaResource;
 use App\Modules\CrmAvanzado\Http\Resources\CrmInteraccionResource;
+use App\Modules\CrmAvanzado\Models\CrmCampana;
+use App\Modules\CrmAvanzado\Models\CrmInteraccion;
 use App\Modules\CrmAvanzado\Models\LoyaltyTransaccion;
 use App\Modules\CrmAvanzado\Services\CrmAvanzadoService;
 use App\Modules\Crm\Models\Cliente;
@@ -109,6 +111,53 @@ class CrmAvanzadoController extends Controller
         );
 
         return (new CrmCampanaResource($campana))->response()->setStatusCode(201);
+    }
+
+    public function reporte(Request $request)
+    {
+        $tenantId = $request->user()->tenant_id;
+
+        // 1. Segmentos — calcular al vuelo
+        $clientes = Cliente::where('tenant_id', $tenantId)->get(['id']);
+        $segmentos = ['nuevo' => 0, 'frecuente' => 0, 'vip' => 0, 'inactivo' => 0];
+
+        foreach ($clientes as $cliente) {
+            $segmentos[$this->crmAvanzadoService->calcularSegmento($cliente->id)]++;
+        }
+
+        // 2. Interacciones — agrupadas por tipo
+        $interacciones = CrmInteraccion::where('tenant_id', $tenantId)
+            ->selectRaw('tipo, count(*) as total')
+            ->groupBy('tipo')
+            ->pluck('total', 'tipo');
+
+        // 3. Loyalty
+        $puntosGanados = (int) LoyaltyTransaccion::where('tenant_id', $tenantId)
+            ->where('tipo', 'ganados')->sum('puntos');
+        $puntosCanjeados = abs((int) LoyaltyTransaccion::where('tenant_id', $tenantId)
+            ->where('tipo', 'canjeados')->sum('puntos'));
+        $puntosVencidos = abs((int) LoyaltyTransaccion::where('tenant_id', $tenantId)
+            ->where('tipo', 'vencidos')->sum('puntos'));
+        $saldoActual = (int) Cliente::where('tenant_id', $tenantId)->sum('puntos_loyalty');
+
+        // 4. Campañas recientes
+        $campanas = CrmCampana::where('tenant_id', $tenantId)
+            ->whereNotNull('enviado_en')
+            ->orderByDesc('enviado_en')
+            ->limit(10)
+            ->get(['id', 'asunto', 'segmento', 'destinatarios', 'enviado_en']);
+
+        return response()->json(['data' => [
+            'clientes_por_segmento' => $segmentos,
+            'interacciones_por_tipo' => $interacciones,
+            'loyalty' => [
+                'puntos_ganados_total' => $puntosGanados,
+                'puntos_canjeados_total' => $puntosCanjeados,
+                'puntos_vencidos_total' => $puntosVencidos,
+                'saldo_actual_total' => $saldoActual,
+            ],
+            'campanas_recientes' => $campanas,
+        ]]);
     }
 
     private function authorizeCliente(Cliente $cliente, Request $request): void

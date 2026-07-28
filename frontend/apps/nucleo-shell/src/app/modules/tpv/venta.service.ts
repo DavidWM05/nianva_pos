@@ -4,7 +4,7 @@ import { DataTableLazyEvent } from '@nucleo/ui-shared';
 import { Observable, map } from 'rxjs';
 
 import { API_BASE_URL } from '../../core/api-config';
-import { Venta, VentaCotizacion, VentaFormPayload, VentaItemPayload, VentasPagina } from './venta.types';
+import { ReporteVentas, ReporteVentasFiltros, Venta, VentaCotizacion, VentaFormPayload, VentaItemPayload, VentasPagina } from './venta.types';
 
 @Injectable({ providedIn: 'root' })
 export class VentaService {
@@ -53,6 +53,25 @@ export class VentaService {
   cotizar(items: VentaItemPayload[]): Observable<VentaCotizacion> {
     return this.http
       .post<{ data: VentaCotizacion }>(`${API_BASE_URL}/api/ventas/cotizar`, { items })
+      .pipe(map((r) => r.data));
+  }
+
+  /** Sin filtros: backend usa el mes actual (dia 1 a hoy) y todas las sucursales del tenant. */
+  reporte(filtros: ReporteVentasFiltros = {}): Observable<ReporteVentas> {
+    let params = new HttpParams();
+
+    if (filtros.fechaDesde) {
+      params = params.set('fecha_desde', filtros.fechaDesde);
+    }
+    if (filtros.fechaHasta) {
+      params = params.set('fecha_hasta', filtros.fechaHasta);
+    }
+    if (filtros.sucursalId) {
+      params = params.set('sucursal_id', filtros.sucursalId);
+    }
+
+    return this.http
+      .get<{ data: ReporteVentas }>(`${API_BASE_URL}/api/ventas/reporte`, { params })
       .pipe(map((r) => r.data));
   }
 }

@@ -63,10 +63,55 @@ cd backend && php artisan serve      # http://localhost:8000
 cd frontend && pnpm exec nx serve nucleo-shell   # http://localhost:4200
 ```
 
-Abre `http://localhost:4200` e inicia sesión con las credenciales que imprimió
-`DesarrolloSeeder` (ver `backend/README.md#usuarios-de-prueba-para-desarrollo`):
-`vendedor@nucleo.test` (sin 2FA, el más rápido para empezar) o `admin@nucleo.test`
-(requiere el código TOTP del secreto impreso en consola).
+### Iniciar sesión
+
+Abre **`http://localhost:4200`** e inicia sesión con una de las dos cuentas que crea
+`DesarrolloSeeder`:
+
+| Usuario | Correo | Contraseña | 2FA |
+|---|---|---|---|
+| **Admin** | `admin@nucleo.test` | `password-dev-123` | Sí (ver mecanismo abajo) |
+| Vendedor | `vendedor@nucleo.test` | `password-dev-123` | No |
+
+**Usa el admin si vas a probar cualquiera de los módulos "nuevos"** (Producción, Payroll,
+Préstamos, Ventas a Plazos, CRM Campañas, Reportes) — todos requieren permisos que **no** están
+en el rol `vendedor`; con `vendedor` esos módulos ni siquiera aparecen en el sidebar. `vendedor`
+sigue siendo el camino más corto para probar el flujo de punta a punta de TPV/Venta sin pasar
+por 2FA.
+
+**Mecanismo de 2FA del admin**: el rol `admin` tiene 2FA obligatorio
+(`Usuario::requiereDosFactor()`). `DesarrolloSeeder` lo deja pre-confirmado para no tener que
+pasar por la pantalla de configuración a mano, pero **el secreto TOTP se regenera en cada
+corrida del seeder y solo se imprime en la consola** al ejecutarlo — nunca queda fijo en el
+código ni en ningún README (es una cuenta de prueba, pero el secreto no se versiona igual).
+Para completar el login:
+
+1. Corre (o vuelve a correr) el seeder: `php artisan db:seed --class="App\Modules\Nucleo\Database\Seeders\DesarrolloSeeder"`.
+2. Copia el secreto (o el URI `otpauth://`) que imprime en consola.
+3. Cárgalo en una app de autenticación (Google Authenticator, Authy, 1Password...) — pegando el
+   secreto manualmente o importando el URI si tu app lo soporta.
+4. Genera el código de 6 dígitos y úsalo en la pantalla `/login/2fa-verify`.
+
+Si ya perdiste el secreto de una corrida anterior, simplemente vuelve a correr el seeder del
+paso 1 — es idempotente en tenant/sucursal/usuarios, solo regenera el secreto TOTP.
+
+### Solución de problemas
+
+**`[ERR_PNPM_IGNORED_BUILDS]` al correr `pnpm install` o `nx serve`** — pnpm (v9+) bloquea por
+seguridad los scripts de build de dependencias nativas (en este repo, `@swc/core`, que compila/
+descarga un binario nativo) a menos que se aprueben explícitamente. Ya está resuelto en el repo
+(`frontend/pnpm-workspace.yaml`, sección `allowBuilds`, `'@swc/core': true`) — si de todas
+formas te aparece (ej. pnpm-workspace.yaml quedó desactualizado localmente), dos formas de
+resolverlo:
+
+- **Puntual, en tu terminal** (pnpm te muestra un checklist interactivo):
+  ```bash
+  cd frontend && pnpm approve-builds
+  ```
+  Selecciona `@swc/core`, confirma, y vuelve a correr `nx serve nucleo-shell`.
+- **Permanente**: en `frontend/pnpm-workspace.yaml`, bajo `allowBuilds`, poner `'@swc/core': true`
+  (esta versión de pnpm ya no lee el campo `pnpm.onlyBuiltDependencies` de `package.json` —
+  ver el warning `The "pnpm" field in package.json is no longer read by pnpm` si lo intentas ahí).
 
 ## Prerrequisitos
 

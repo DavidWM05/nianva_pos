@@ -82,6 +82,44 @@ export interface VentaPagoPayload {
   monto: number;
 }
 
+export interface ReporteVentasPorSucursal {
+  sucursal_id: number;
+  sucursal_nombre: string | null;
+  total: number;
+  numero_ventas: number;
+}
+
+export interface ReporteVentasPorMetodoPago {
+  metodo_pago_id: number;
+  metodo_pago_nombre: string | null;
+  total: number;
+}
+
+export interface ReporteVentasProducto {
+  variante_id: number;
+  producto_nombre: string | null;
+  talla: string | null;
+  color: string | null;
+  cantidad_vendida: number;
+  total_vendido: number;
+}
+
+/** VentaController::reporte() -- solo ventas estado='completada' y es_venta_sombra=false. */
+export interface ReporteVentas {
+  total_ventas: number;
+  numero_ventas: number;
+  ticket_promedio: number;
+  por_sucursal: ReporteVentasPorSucursal[];
+  por_metodo_pago: ReporteVentasPorMetodoPago[];
+  top_productos: ReporteVentasProducto[];
+}
+
+export interface ReporteVentasFiltros {
+  fechaDesde?: string | null;
+  fechaHasta?: string | null;
+  sucursalId?: number | null;
+}
+
 export interface VentaFormPayload {
   cliente_id: number;
   items: VentaItemPayload[];

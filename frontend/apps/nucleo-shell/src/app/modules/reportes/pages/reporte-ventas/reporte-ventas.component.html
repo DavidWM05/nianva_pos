@@ -1,0 +1,126 @@
+<div class="reporte-ventas">
+  <h1>Reporte de Ventas</h1>
+
+  <div class="reporte-ventas__filtros">
+    <div class="reporte-ventas__campo">
+      <label for="reporte-fecha-desde">Desde</label>
+      <input pInputText type="date" id="reporte-fecha-desde" [ngModel]="fechaDesde()" (ngModelChange)="fechaDesde.set($event)" />
+    </div>
+    <div class="reporte-ventas__campo">
+      <label for="reporte-fecha-hasta">Hasta</label>
+      <input pInputText type="date" id="reporte-fecha-hasta" [ngModel]="fechaHasta()" (ngModelChange)="fechaHasta.set($event)" />
+    </div>
+    <div class="reporte-ventas__campo">
+      <label for="reporte-sucursal">Sucursal</label>
+      <p-select
+        inputId="reporte-sucursal"
+        [options]="sucursales()"
+        optionLabel="nombre"
+        optionValue="id"
+        placeholder="Todas"
+        [showClear]="true"
+        [ngModel]="sucursalId()"
+        (ngModelChange)="sucursalId.set($event)"
+      />
+    </div>
+    <p-button label="Filtrar" icon="pi pi-filter" (click)="filtrar()" />
+    <p-button label="Limpiar" [text]="true" (click)="limpiarFiltros()" />
+  </div>
+
+  @if (cargando()) {
+    <p>Cargando reporte...</p>
+  } @else if (reporte(); as r) {
+    <div class="reporte-ventas__tiles">
+      <div class="reporte-ventas__tile">
+        <h2>Total vendido</h2>
+        <p class="reporte-ventas__tile-valor">${{ r.total_ventas }}</p>
+      </div>
+      <div class="reporte-ventas__tile">
+        <h2>Número de ventas</h2>
+        <p class="reporte-ventas__tile-valor">{{ r.numero_ventas }}</p>
+      </div>
+      <div class="reporte-ventas__tile">
+        <h2>Ticket promedio</h2>
+        <p class="reporte-ventas__tile-valor">${{ r.ticket_promedio }}</p>
+      </div>
+    </div>
+
+    <section class="reporte-ventas__seccion">
+      <h2>Por sucursal</h2>
+      @if (r.por_sucursal.length > 0) {
+        <table class="reporte-ventas__tabla">
+          <thead>
+            <tr>
+              <th>Sucursal</th>
+              <th>Total</th>
+              <th>Ventas</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (fila of r.por_sucursal; track fila.sucursal_id) {
+              <tr>
+                <td>{{ fila.sucursal_nombre ?? ('Sucursal #' + fila.sucursal_id) }}</td>
+                <td>${{ fila.total }}</td>
+                <td>{{ fila.numero_ventas }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      } @else {
+        <p class="reporte-ventas__aviso">No hay ventas en el periodo seleccionado.</p>
+      }
+    </section>
+
+    <section class="reporte-ventas__seccion">
+      <h2>Por método de pago</h2>
+      @if (r.por_metodo_pago.length > 0) {
+        <table class="reporte-ventas__tabla">
+          <thead>
+            <tr>
+              <th>Método de pago</th>
+              <th>Total</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (fila of r.por_metodo_pago; track fila.metodo_pago_id) {
+              <tr>
+                <td>{{ fila.metodo_pago_nombre ?? ('Método #' + fila.metodo_pago_id) }}</td>
+                <td>${{ fila.total }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      } @else {
+        <p class="reporte-ventas__aviso">No hay pagos en el periodo seleccionado.</p>
+      }
+    </section>
+
+    <section class="reporte-ventas__seccion">
+      <h2>Productos más vendidos</h2>
+      @if (r.top_productos.length > 0) {
+        <table class="reporte-ventas__tabla">
+          <thead>
+            <tr>
+              <th>Producto</th>
+              <th>Variante</th>
+              <th>Cantidad</th>
+              <th>Total</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (fila of r.top_productos; track fila.variante_id) {
+              <tr>
+                <td>{{ fila.producto_nombre ?? ('Producto #' + fila.variante_id) }}</td>
+                <td>{{ fila.talla ?? '—' }} / {{ fila.color ?? '—' }}</td>
+                <td>{{ fila.cantidad_vendida }}</td>
+                <td>${{ fila.total_vendido }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      } @else {
+        <p class="reporte-ventas__aviso">No hay productos vendidos en el periodo seleccionado.</p>
+      }
+    </section>
+  }
+</div>

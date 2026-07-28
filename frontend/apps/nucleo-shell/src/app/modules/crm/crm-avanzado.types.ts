@@ -59,3 +59,31 @@ export interface AjustarPuntosPayload {
   puntos: number;
   motivo: string;
 }
+
+export type SegmentoCliente = 'nuevo' | 'frecuente' | 'vip' | 'inactivo';
+
+/** clave ausente = 0 -- CrmAvanzadoController::reporte() arma esto con pluck('total', 'tipo'), solo incluye tipos con al menos 1 interaccion. */
+export type ReporteInteraccionesPorTipo = Partial<Record<TipoInteraccion, number>>;
+
+export interface ReporteCrmLoyalty {
+  puntos_ganados_total: number;
+  puntos_canjeados_total: number;
+  puntos_vencidos_total: number;
+  saldo_actual_total: number;
+}
+
+export interface ReporteCrmCampana {
+  id: number;
+  asunto: string;
+  segmento: SegmentoCliente | 'todos' | null;
+  destinatarios: number;
+  enviado_en: string;
+}
+
+/** CrmAvanzadoController::reporte() -- segmento calculado al vuelo, sin depender de Cliente.segmento (nunca se recalcula hoy). */
+export interface ReporteCrm {
+  clientes_por_segmento: Record<SegmentoCliente, number>;
+  interacciones_por_tipo: ReporteInteraccionesPorTipo;
+  loyalty: ReporteCrmLoyalty;
+  campanas_recientes: ReporteCrmCampana[];
+}

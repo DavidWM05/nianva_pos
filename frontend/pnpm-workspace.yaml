@@ -2,7 +2,7 @@ packages:
   - 'packages/*'
 allowBuilds:
   '@parcel/watcher': true
-  '@swc/core': set this to true or false
+  '@swc/core': true
   esbuild: true
   less: true
   lmdb: true

@@ -111,6 +111,8 @@ export const NUCLEO_NAV_GROUPS: NucleoNavGroup[] = [
     items: [
       { key: 'reporte-cuentas-cobrar', label: 'Antigüedad de CxC', path: 'reportes/cuentas-cobrar', icon: 'pi pi-chart-line' },
       { key: 'reporte-cuentas-pagar', label: 'Antigüedad de CxP', path: 'reportes/cuentas-pagar', icon: 'pi pi-chart-line' },
+      { key: 'reporte-crm', label: 'CRM', path: 'reportes/crm', icon: 'pi pi-chart-line' },
+      { key: 'reporte-ventas', label: 'Ventas por periodo', path: 'reportes/ventas', icon: 'pi pi-chart-bar' },
     ],
   },
   {

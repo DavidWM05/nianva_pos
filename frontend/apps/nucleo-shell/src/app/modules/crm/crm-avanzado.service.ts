@@ -3,7 +3,7 @@ import { Injectable, inject } from '@angular/core';
 import { Observable, map } from 'rxjs';
 
 import { API_BASE_URL } from '../../core/api-config';
-import { AjustarPuntosPayload, CrmInteraccion, InteraccionFormPayload, LoyaltyResumen, LoyaltyTransaccion } from './crm-avanzado.types';
+import { AjustarPuntosPayload, CrmInteraccion, InteraccionFormPayload, LoyaltyResumen, LoyaltyTransaccion, ReporteCrm } from './crm-avanzado.types';
 
 @Injectable({ providedIn: 'root' })
 export class CrmAvanzadoService {
@@ -32,5 +32,9 @@ export class CrmAvanzadoService {
     return this.http
       .post<{ data: LoyaltyTransaccion }>(`${API_BASE_URL}/api/clientes/${clienteId}/loyalty/ajustar`, payload)
       .pipe(map((r) => r.data));
+  }
+
+  reporte(): Observable<ReporteCrm> {
+    return this.http.get<{ data: ReporteCrm }>(`${API_BASE_URL}/api/crm/reporte`).pipe(map((r) => r.data));
   }
 }

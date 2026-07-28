@@ -220,6 +220,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/ventas', [VentaController::class, 'index'])->middleware('permiso:ventas.ver');
         Route::post('/ventas', [VentaController::class, 'store'])->middleware('permiso:ventas.crear');
         Route::post('/ventas/cotizar', [VentaController::class, 'cotizar'])->middleware('permiso:ventas.crear');
+        Route::get('/ventas/reporte', [VentaController::class, 'reporte'])->middleware('permiso:reportes.ver');
         Route::get('/ventas/{venta}', [VentaController::class, 'show'])->middleware('permiso:ventas.ver');
         Route::patch('/ventas/{venta}/anular', [VentaController::class, 'anular'])->middleware('permiso:ventas.anular');
 
@@ -305,6 +306,7 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::get('/clientes/{cliente}/loyalty', [CrmAvanzadoController::class, 'loyalty'])->middleware('permiso:loyalty.ver');
             Route::post('/clientes/{cliente}/loyalty/ajustar', [CrmAvanzadoController::class, 'ajustarPuntos'])->middleware('permiso:loyalty.ajustar');
             Route::post('/crm/campanas/enviar', [CrmAvanzadoController::class, 'enviarCampana'])->middleware('permiso:crm_campanas.enviar');
+            Route::get('/crm/reporte', [CrmAvanzadoController::class, 'reporte'])->middleware('permiso:reportes_crm.ver');
         });
 
         // Delivery / Pedidos

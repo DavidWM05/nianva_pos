@@ -1,0 +1,103 @@
+<div class="reporte-crm">
+  <h1>Reporte de CRM</h1>
+
+  @if (cargando()) {
+    <p>Cargando reporte...</p>
+  } @else if (reporte(); as r) {
+    <section class="reporte-crm__seccion">
+      <h2>Clientes por segmento</h2>
+      <div class="reporte-crm__tiles">
+        <div class="reporte-crm__tile">
+          <h3>Nuevos</h3>
+          <p class="reporte-crm__tile-valor">{{ r.clientes_por_segmento.nuevo }}</p>
+        </div>
+        <div class="reporte-crm__tile">
+          <h3>Frecuentes</h3>
+          <p class="reporte-crm__tile-valor">{{ r.clientes_por_segmento.frecuente }}</p>
+        </div>
+        <div class="reporte-crm__tile">
+          <h3>VIP</h3>
+          <p class="reporte-crm__tile-valor reporte-crm__tile-valor--vip">{{ r.clientes_por_segmento.vip }}</p>
+        </div>
+        <div class="reporte-crm__tile">
+          <h3>Inactivos</h3>
+          <p class="reporte-crm__tile-valor reporte-crm__tile-valor--inactivo">{{ r.clientes_por_segmento.inactivo }}</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="reporte-crm__seccion">
+      <h2>Interacciones por tipo</h2>
+      @if ((r.interacciones_por_tipo | keyvalue).length > 0) {
+        <table class="reporte-crm__tabla">
+          <thead>
+            <tr>
+              <th>Tipo</th>
+              <th>Total</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (entrada of r.interacciones_por_tipo | keyvalue; track entrada.key) {
+              <tr>
+                <td>{{ etiquetaTipo(entrada.key) }}</td>
+                <td>{{ entrada.value }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      } @else {
+        <p class="reporte-crm__aviso">No hay interacciones registradas todavía.</p>
+      }
+    </section>
+
+    <section class="reporte-crm__seccion">
+      <h2>Loyalty</h2>
+      <div class="reporte-crm__tiles">
+        <div class="reporte-crm__tile">
+          <h3>Puntos ganados</h3>
+          <p class="reporte-crm__tile-valor">{{ r.loyalty.puntos_ganados_total }}</p>
+        </div>
+        <div class="reporte-crm__tile">
+          <h3>Puntos canjeados</h3>
+          <p class="reporte-crm__tile-valor">{{ r.loyalty.puntos_canjeados_total }}</p>
+        </div>
+        <div class="reporte-crm__tile">
+          <h3>Puntos vencidos</h3>
+          <p class="reporte-crm__tile-valor">{{ r.loyalty.puntos_vencidos_total }}</p>
+        </div>
+        <div class="reporte-crm__tile">
+          <h3>Saldo actual</h3>
+          <p class="reporte-crm__tile-valor reporte-crm__tile-valor--vip">{{ r.loyalty.saldo_actual_total }}</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="reporte-crm__seccion">
+      <h2>Campañas recientes</h2>
+      @if (r.campanas_recientes.length > 0) {
+        <table class="reporte-crm__tabla">
+          <thead>
+            <tr>
+              <th>Asunto</th>
+              <th>Segmento</th>
+              <th>Destinatarios</th>
+              <th>Enviada</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (campana of r.campanas_recientes; track campana.id) {
+              <tr>
+                <td>{{ campana.asunto }}</td>
+                <td>{{ campana.segmento ?? '—' }}</td>
+                <td>{{ campana.destinatarios }}</td>
+                <td>{{ campana.enviado_en | date: 'short' }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      } @else {
+        <p class="reporte-crm__aviso">No se ha enviado ninguna campaña todavía.</p>
+      }
+    </section>
+  }
+</div>
