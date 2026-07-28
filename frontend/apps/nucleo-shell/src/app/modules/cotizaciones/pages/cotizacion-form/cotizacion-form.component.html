@@ -1,0 +1,87 @@
+<div class="cotizacion-form">
+  <h1>{{ editando() ? 'Editar cotización' : 'Nueva cotización' }}</h1>
+
+  @if (cargando()) {
+    <p>Cargando cotización...</p>
+  } @else {
+    <section class="cotizacion-form__seccion">
+      <h3>Cliente</h3>
+      <nucleo-entidad-selector
+        [buscador]="buscadorCliente"
+        label="Cliente (opcional)"
+        placeholder="Buscar cliente por nombre..."
+        [valorInicial]="clienteId()"
+        (seleccionado)="clienteId.set($event)"
+      />
+    </section>
+
+    <section class="cotizacion-form__seccion">
+      <nucleo-lineas-cotizacion [valorInicial]="cotizacionActual()?.detalles ?? null" (cambio)="onLineasCambio($event)" />
+    </section>
+
+    <section class="cotizacion-form__seccion cotizacion-form__totales">
+      <p>Subtotal: ${{ subtotal() }}</p>
+      <div class="cotizacion-form__campo cotizacion-form__campo--inline">
+        <label for="cotizacion-descuento">Descuento global</label>
+        <input
+          pInputText
+          type="number"
+          id="cotizacion-descuento"
+          min="0"
+          step="0.01"
+          [ngModel]="descuentoGlobal()"
+          (ngModelChange)="descuentoGlobal.set($event)"
+        />
+      </div>
+      <p class="cotizacion-form__total">Total: ${{ total() }}</p>
+    </section>
+
+    <section class="cotizacion-form__seccion">
+      <h3>Configuración</h3>
+      <div class="cotizacion-form__campo">
+        <label for="cotizacion-validez">Días de validez</label>
+        <input
+          pInputText
+          type="number"
+          id="cotizacion-validez"
+          min="1"
+          max="365"
+          [ngModel]="validezDias()"
+          (ngModelChange)="validezDias.set($event)"
+        />
+      </div>
+      <div class="cotizacion-form__campo">
+        <label for="cotizacion-uso-cfdi">Uso CFDI (opcional)</label>
+        <input
+          pInputText
+          type="text"
+          id="cotizacion-uso-cfdi"
+          maxlength="10"
+          [ngModel]="usoCfdi()"
+          (ngModelChange)="usoCfdi.set($event)"
+        />
+      </div>
+      <div class="cotizacion-form__campo">
+        <label for="cotizacion-observaciones">Observaciones</label>
+        <textarea
+          pTextarea
+          id="cotizacion-observaciones"
+          rows="3"
+          [ngModel]="observaciones()"
+          (ngModelChange)="observaciones.set($event)"
+        ></textarea>
+      </div>
+    </section>
+
+    <div class="cotizacion-form__acciones">
+      <p-button
+        label="Guardar cotización"
+        icon="pi pi-check"
+        [loading]="guardando()"
+        [disabled]="items().length === 0"
+        (click)="guardar()"
+      />
+      <a routerLink="/cotizaciones"><p-button label="Cancelar" [text]="true" /></a>
+    </div>
+  }
+</div>

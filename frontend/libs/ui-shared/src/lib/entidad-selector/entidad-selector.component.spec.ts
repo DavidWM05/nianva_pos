@@ -66,6 +66,16 @@ describe('EntidadSelectorComponent', () => {
     expect(hijoEmitido).toBeNull();
   });
 
+  it('focus() mueve el foco al input de busqueda del autocomplete', () => {
+    component.ngOnChanges();
+    fixture.detectChanges();
+
+    component.focus();
+
+    const input = (fixture.nativeElement as HTMLElement).querySelector('input');
+    expect(document.activeElement).toBe(input);
+  });
+
   it('con valorInicial, resuelve la entidad y sus hijos via el buscador', () => {
     component.buscadorHijos = buscadorHijos;
     component.valorInicial = entidad.id;

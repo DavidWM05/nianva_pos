@@ -1,0 +1,94 @@
+<div class="insumos-list">
+  <div class="insumos-list__header">
+    <h1>Insumos</h1>
+    @if (permisos().crear) {
+      <p-button label="Nuevo insumo" icon="pi pi-plus" (click)="abrirFormulario()" />
+    }
+  </div>
+
+  <div class="insumos-list__filtros">
+    <input
+      pInputText
+      type="text"
+      placeholder="Buscar por nombre..."
+      class="insumos-list__buscar"
+      (input)="onNombreInput($any($event.target).value)"
+    />
+    <span class="insumos-list__stock-bajo">
+      <p-checkbox inputId="insumos-stock-bajo" [binary]="true" [ngModel]="stockBajoFiltro()" (ngModelChange)="onStockBajoCambio($event)" />
+      <label for="insumos-stock-bajo">Solo stock bajo</label>
+    </span>
+  </div>
+
+  <nucleo-data-table
+    [columns]="columns"
+    [value]="insumos()"
+    [totalRecords]="total()"
+    [loading]="loading()"
+    [virtualScroll]="false"
+    emptyMessage="No hay insumos registrados."
+    (lazyLoad)="onLazyLoad($event)"
+  >
+    <ng-template nucleoDataTableCell="sku" let-row>
+      {{ row.sku ?? '—' }}
+    </ng-template>
+
+    <ng-template nucleoDataTableCell="unidad_medida_id" let-row>
+      {{ nombresUnidadMedida().get(row.unidad_medida_id) ?? ('Unidad #' + row.unidad_medida_id) }}
+    </ng-template>
+
+    <ng-template nucleoDataTableCell="costo" let-row>
+      {{ row.costo ? '$' + row.costo : '—' }}
+    </ng-template>
+
+    <ng-template nucleoDataTableCell="stock_minimo" let-row>
+      {{ row.stock_minimo ?? '—' }}
+    </ng-template>
+
+    <ng-template nucleoDataTableCell="activo" let-row>
+      <nucleo-status-badge [value]="row.activo ? 'activo' : 'inactivo'" [colorMap]="{ activo: 'success', inactivo: 'neutral' }" />
+    </ng-template>
+  </nucleo-data-table>
+</div>
+
+<p-dialog
+  header="Nuevo insumo"
+  [visible]="mostrarFormulario()"
+  (visibleChange)="cerrarFormulario()"
+  [modal]="true"
+  [dismissableMask]="true"
+  [style]="{ width: '28rem' }"
+>
+  <div class="insumos-list__campo">
+    <label for="insumo-nombre">Nombre</label>
+    <input pInputText type="text" id="insumo-nombre" maxlength="200" [ngModel]="nombre()" (ngModelChange)="nombre.set($event)" />
+  </div>
+  <div class="insumos-list__campo">
+    <label for="insumo-sku">SKU (opcional)</label>
+    <input pInputText type="text" id="insumo-sku" maxlength="50" [ngModel]="sku()" (ngModelChange)="sku.set($event)" />
+  </div>
+  <div class="insumos-list__campo">
+    <nucleo-entidad-selector
+      [buscador]="buscadorUnidadMedida"
+      label="Unidad de medida"
+      placeholder="Buscar unidad por nombre..."
+      [valorInicial]="unidadMedidaId()"
+      (seleccionado)="unidadMedidaId.set($event)"
+    />
+  </div>
+  <div class="insumos-list__campo">
+    <label for="insumo-costo">Costo (opcional)</label>
+    <input pInputText type="number" min="0" step="0.0001" id="insumo-costo" [ngModel]="costo()" (ngModelChange)="costo.set($event)" />
+  </div>
+  <div class="insumos-list__campo">
+    <label for="insumo-stock-minimo">Stock mínimo (opcional)</label>
+    <input pInputText type="number" min="0" step="0.01" id="insumo-stock-minimo" [ngModel]="stockMinimo()" (ngModelChange)="stockMinimo.set($event)" />
+  </div>
+  <p-button
+    label="Registrar insumo"
+    icon="pi pi-check"
+    [loading]="guardando()"
+    [disabled]="!nombre().trim() || unidadMedidaId() === null"
+    (click)="guardar()"
+  />
+</p-dialog>

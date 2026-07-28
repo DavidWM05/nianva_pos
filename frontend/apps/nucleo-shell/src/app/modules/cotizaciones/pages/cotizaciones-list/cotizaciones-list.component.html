@@ -1,0 +1,63 @@
+<div class="cotizaciones-list">
+  <div class="cotizaciones-list__header">
+    <h1>Cotizaciones</h1>
+    @if (permisos().crear) {
+      <a routerLink="/cotizaciones/crear"><p-button label="Nueva cotización" icon="pi pi-plus" /></a>
+    }
+  </div>
+
+  <div class="cotizaciones-list__filtros">
+    <input
+      pInputText
+      type="text"
+      placeholder="Buscar por número..."
+      class="cotizaciones-list__buscar"
+      (input)="onBuscarInput($any($event.target).value)"
+    />
+    <p-select
+      [options]="estados"
+      optionLabel="label"
+      optionValue="value"
+      placeholder="Estado"
+      [ngModel]="estadoFiltro()"
+      (ngModelChange)="onEstadoCambio($event)"
+    />
+  </div>
+
+  <nucleo-data-table
+    [columns]="columns"
+    [value]="cotizaciones()"
+    [totalRecords]="total()"
+    [loading]="loading()"
+    [virtualScroll]="false"
+    emptyMessage="No hay cotizaciones que coincidan con la búsqueda."
+    (lazyLoad)="onLazyLoad($event)"
+  >
+    <ng-template nucleoDataTableCell="cliente" let-row>
+      {{ row.cliente?.nombre ?? 'Sin cliente' }}
+    </ng-template>
+
+    <ng-template nucleoDataTableCell="total" let-row>
+      ${{ row.total }}
+    </ng-template>
+
+    <ng-template nucleoDataTableCell="created_at" let-row>
+      {{ row.created_at | date: 'shortDate' }}
+    </ng-template>
+
+    <ng-template nucleoDataTableCell="fecha_vencimiento" let-row>
+      {{ row.fecha_vencimiento ? (row.fecha_vencimiento | date: 'shortDate') : '—' }}
+    </ng-template>
+
+    <ng-template nucleoDataTableCell="estado" let-row>
+      <nucleo-status-badge
+        [value]="row.estado"
+        [colorMap]="{ pendiente: 'info', convertida: 'success', vencida: 'danger', anulada: 'neutral' }"
+      />
+    </ng-template>
+
+    <ng-template nucleoDataTableCell="acciones" let-row>
+      <p-button icon="pi pi-eye" [text]="true" size="small" aria-label="Ver" (click)="irADetalle(row)" />
+    </ng-template>
+  </nucleo-data-table>
+</div>

@@ -23,7 +23,7 @@
         label="Cliente"
         placeholder="Buscar cliente por nombre..."
         [valorInicial]="clienteId()"
-        (seleccionado)="clienteId.set($event)"
+        (seleccionado)="onClienteSeleccionado($event)"
       />
     </section>
 
@@ -62,16 +62,71 @@
     </section>
 
     <section class="venta__seccion">
-      <h3>Pago</h3>
-      <nucleo-lineas-pago [montoObjetivo]="total()" (cambio)="onPagosCambio($event)" />
+      <h3>Gift Card (opcional)</h3>
+      <div class="venta__gift-card">
+        <input
+          pInputText
+          type="text"
+          placeholder="Código de la gift card"
+          maxlength="50"
+          [ngModel]="giftCardCodigo()"
+          (ngModelChange)="giftCardCodigo.set($event)"
+        />
+        @if (giftCardCodigo().trim()) {
+          <input
+            pInputText
+            type="number"
+            min="0.01"
+            step="0.01"
+            placeholder="Monto que esperas cubrir"
+            [ngModel]="giftCardMontoEstimado()"
+            (ngModelChange)="giftCardMontoEstimado.set($event)"
+          />
+        }
+      </div>
+      @if (giftCardCodigo().trim()) {
+        <p class="venta__ayuda">
+          El monto real depende del saldo de la gift card (no se puede consultar antes de cobrar) -- si no coincide con lo
+          estimado, ajusta el resto del pago abajo.
+        </p>
+      }
     </section>
+
+    @if (notasCreditoDisponibles().length > 0) {
+      <section class="venta__seccion">
+        <h3>Nota de Crédito (opcional)</h3>
+        <p-select
+          [options]="notasCreditoOpciones()"
+          optionLabel="label"
+          optionValue="id"
+          placeholder="Selecciona una nota de crédito"
+          [showClear]="true"
+          [ngModel]="notaCreditoSeleccionadaId()"
+          (ngModelChange)="notaCreditoSeleccionadaId.set($event)"
+        />
+        @if (notaCreditoSeleccionadaId() !== null) {
+          <p class="venta__ayuda">Se aplicarán ${{ montoNotaCredito() }} de esta nota de crédito.</p>
+        }
+      </section>
+    }
+
+    <section class="venta__seccion">
+      <h3>Pago</h3>
+      <nucleo-lineas-pago [montoObjetivo]="montoObjetivoPago()" (cambio)="onPagosCambio($event)" />
+    </section>
+
+    @if (mensajeBloqueo(); as motivo) {
+      <p class="venta__bloqueo-mensaje">{{ motivo }}</p>
+    }
 
     <p-button
       label="Registrar venta"
       icon="pi pi-check"
       [loading]="registrando()"
-      [disabled]="!pagoCuadra()"
+      [disabled]="!puedeRegistrar()"
       (click)="registrarVenta()"
     />
+
+    <p class="venta__atajos">F2 Buscar producto · F4 / F9 Cobrar · ESC Cancelar línea</p>
   }
 </div>

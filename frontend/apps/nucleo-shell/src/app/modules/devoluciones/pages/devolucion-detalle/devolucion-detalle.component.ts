@@ -1,6 +1,6 @@
 import { DatePipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import { AuditLogViewerComponent, RecordTabConfig, RecordTabsComponent } from '@nucleo/ui-shared';
 
 import { DevolucionService } from '../../devolucion.service';
@@ -17,7 +17,7 @@ import { Devolucion } from '../../devolucion.types';
 @Component({
   selector: 'nucleo-devolucion-detalle',
   standalone: true,
-  imports: [DatePipe, RecordTabsComponent, AuditLogViewerComponent],
+  imports: [DatePipe, RouterLink, RecordTabsComponent, AuditLogViewerComponent],
   templateUrl: './devolucion-detalle.component.html',
   styleUrl: './devolucion-detalle.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

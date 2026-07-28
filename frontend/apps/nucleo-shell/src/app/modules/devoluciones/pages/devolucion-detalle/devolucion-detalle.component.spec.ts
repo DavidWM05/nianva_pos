@@ -9,6 +9,7 @@ import { describe, expect, it, vi } from 'vitest';
 // jsdom (el entorno de estos tests) no implementa ResizeObserver -- lo usa
 // PrimeNG's TabList (detras de RecordTabsComponent) en ngAfterViewInit.
 // Mismo stub que cliente-detalle.component.spec.ts / apartado-detalle.component.spec.ts.
+/* eslint-disable @typescript-eslint/no-empty-function */
 if (typeof globalThis.ResizeObserver === 'undefined') {
   globalThis.ResizeObserver = class {
     observe(): void {}
@@ -16,6 +17,7 @@ if (typeof globalThis.ResizeObserver === 'undefined') {
     disconnect(): void {}
   } as unknown as typeof ResizeObserver;
 }
+/* eslint-enable @typescript-eslint/no-empty-function */
 
 import { DevolucionService } from '../../devolucion.service';
 import { Devolucion } from '../../devolucion.types';
@@ -34,6 +36,8 @@ describe('DevolucionDetalleComponent', () => {
     monto_cambio: '400.00',
     diferencia: '280.00',
     motivo: 'Cliente prefirió el saco',
+    tipo_reembolso: null,
+    nota_credito_id: null,
     items: [
       {
         id: 1,
@@ -93,5 +97,36 @@ describe('DevolucionDetalleComponent', () => {
 
     const texto = (fixture.nativeElement as HTMLElement).textContent ?? '';
     expect(texto).toContain('Merma');
+  });
+
+  it('con reembolso via nota de credito, muestra el metodo y un link a la nota', async () => {
+    await crearComponente({
+      ...devolucionCambio,
+      tipo: 'devolucion',
+      monto_cambio: '0.00',
+      diferencia: '-120.00',
+      tipo_reembolso: 'nota_credito',
+      nota_credito_id: 7,
+    });
+
+    const texto = (fixture.nativeElement as HTMLElement).textContent ?? '';
+    expect(texto).toContain('Nota de crédito');
+    const link = fixture.nativeElement.querySelector('a[href="/notas-credito/7"]');
+    expect(link).not.toBeNull();
+  });
+
+  it('con reembolso en efectivo, muestra el metodo sin link', async () => {
+    await crearComponente({
+      ...devolucionCambio,
+      tipo: 'devolucion',
+      monto_cambio: '0.00',
+      diferencia: '-120.00',
+      tipo_reembolso: 'efectivo',
+      nota_credito_id: null,
+    });
+
+    const texto = (fixture.nativeElement as HTMLElement).textContent ?? '';
+    expect(texto).toContain('Efectivo');
+    expect(fixture.nativeElement.querySelector('a[href^="/notas-credito"]')).toBeNull();
   });
 });

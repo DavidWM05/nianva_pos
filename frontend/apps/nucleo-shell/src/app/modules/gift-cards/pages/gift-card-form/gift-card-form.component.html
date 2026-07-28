@@ -1,0 +1,43 @@
+<div class="gift-card-form">
+  <div class="gift-card-form__header">
+    <h2>Emitir gift card</h2>
+    <a routerLink="/gift-cards">Volver a la lista</a>
+  </div>
+
+  <section class="gift-card-form__seccion">
+    <h3>Cliente (opcional)</h3>
+    <nucleo-entidad-selector
+      [buscador]="buscadorCliente"
+      label="Cliente"
+      placeholder="Buscar cliente por nombre... (dejar vacío para una gift card anónima)"
+      [valorInicial]="clienteId()"
+      (seleccionado)="clienteId.set($event)"
+    />
+  </section>
+
+  <section class="gift-card-form__seccion">
+    <div class="gift-card-form__campo">
+      <label for="gift-card-monto">Monto</label>
+      <input
+        pInputText
+        type="number"
+        min="0.01"
+        step="0.01"
+        id="gift-card-monto"
+        [ngModel]="monto()"
+        (ngModelChange)="monto.set($event)"
+      />
+    </div>
+    <div class="gift-card-form__campo">
+      <label for="gift-card-fecha-expiracion">Fecha de expiración (opcional)</label>
+      <p-datepicker
+        inputId="gift-card-fecha-expiracion"
+        dateFormat="yy-mm-dd"
+        [ngModel]="fechaExpiracion()"
+        (ngModelChange)="fechaExpiracion.set($event)"
+      />
+    </div>
+  </section>
+
+  <p-button label="Emitir gift card" icon="pi pi-check" [loading]="guardando()" [disabled]="!monto() || monto()! <= 0" (click)="emitir()" />
+</div>

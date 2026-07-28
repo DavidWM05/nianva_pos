@@ -1,0 +1,113 @@
+<div class="pedido-detalle">
+  @if (cargando()) {
+    <p>Cargando pedido...</p>
+  } @else if (pedido(); as p) {
+    <div class="pedido-detalle__header">
+      <h1>{{ p.numero_pedido }}</h1>
+      <nucleo-status-badge
+        [value]="p.estado"
+        [colorMap]="{
+          pendiente: 'neutral',
+          preparando: 'info',
+          en_camino: 'info',
+          entregado: 'success',
+          cancelado: 'danger',
+        }"
+      />
+    </div>
+
+    <nucleo-record-tabs [tabs]="tabs">
+      <ng-template>
+        <div class="pedido-detalle__tab">
+          <dl class="pedido-detalle__resumen">
+            <dt>Cliente</dt>
+            <dd>{{ p.cliente?.nombre ?? 'Sin cliente' }}</dd>
+            <dt>Repartidor</dt>
+            <dd>{{ p.repartidor?.nombre ?? 'Sin asignar' }}</dd>
+            <dt>Creado</dt>
+            <dd>{{ p.created_at | date: 'short' }}</dd>
+            @if (p.direccion_entrega) {
+              <dt>Dirección de entrega</dt>
+              <dd>{{ p.direccion_entrega }}</dd>
+            }
+            <dt>Costo de envío</dt>
+            <dd>${{ p.costo_delivery }}</dd>
+            @if (p.tiempo_estimado) {
+              <dt>Tiempo estimado</dt>
+              <dd>{{ p.tiempo_estimado }} min</dd>
+            }
+            @if (p.fecha_entrega) {
+              <dt>Entregado</dt>
+              <dd>{{ p.fecha_entrega | date: 'short' }}</dd>
+            }
+            @if (p.notas) {
+              <dt>Notas</dt>
+              <dd>{{ p.notas }}</dd>
+            }
+          </dl>
+
+          @if (p.items && p.items.length > 0) {
+            <h4>Items</h4>
+            <table class="pedido-detalle__tabla">
+              <thead>
+                <tr>
+                  <th>Variante</th>
+                  <th>Cantidad</th>
+                  <th>Precio</th>
+                  <th>Subtotal</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (item of p.items; track item.id) {
+                  <tr>
+                    <td>Variante #{{ item.variante_id }}</td>
+                    <td>{{ item.cantidad }}</td>
+                    <td>${{ item.precio_unitario }}</td>
+                    <td>${{ item.subtotal }}</td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          }
+
+          @if (transicionesDisponibles().length > 0) {
+            <h4>Cambiar estado</h4>
+            <div class="pedido-detalle__acciones">
+              @for (estado of transicionesDisponibles(); track estado) {
+                <p-button
+                  [label]="'Marcar ' + etiquetasEstado[estado]"
+                  [severity]="estado === 'cancelado' ? 'danger' : undefined"
+                  [text]="estado === 'cancelado'"
+                  [loading]="cambiandoEstado()"
+                  (click)="cambiarEstado(estado)"
+                />
+              }
+            </div>
+          }
+
+          @if (puedeAsignarRepartidor()) {
+            <h4>Repartidor</h4>
+            <nucleo-entidad-selector
+              [buscador]="buscadorRepartidor"
+              label="Asignar repartidor"
+              placeholder="Buscar por nombre..."
+              [valorInicial]="p.repartidor?.id ?? null"
+              [disabled]="asignandoRepartidor()"
+              (seleccionado)="asignarRepartidor($event)"
+            />
+          }
+        </div>
+      </ng-template>
+
+      <ng-template>
+        @defer (on viewport) {
+          <nucleo-audit-log-viewer [tabla]="'pedidos'" [registroId]="p.id" />
+        } @placeholder {
+          <p>Auditoría (se carga al hacer scroll hasta aquí)...</p>
+        } @loading (minimum 200ms) {
+          <p>Cargando auditoría...</p>
+        }
+      </ng-template>
+    </nucleo-record-tabs>
+  }
+</div>

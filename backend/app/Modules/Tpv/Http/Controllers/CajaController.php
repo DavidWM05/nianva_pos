@@ -3,6 +3,9 @@
 namespace App\Modules\Tpv\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Modules\CuentasCobrar\Models\AbonoCuenta;
+use App\Modules\CuentasPagar\Models\AbonoPagar;
+use App\Modules\GiftCards\Models\GiftCardRecarga;
 use App\Modules\Gastos\Services\GastoService;
 use App\Modules\Tpv\Http\Resources\CajaSesionResource;
 use App\Modules\Tpv\Models\CajaSesion;
@@ -22,6 +25,11 @@ use Illuminate\Http\Request;
  * Gastos (mantiene la direccion de dependencia "lo nuevo depende de lo
  * viejo"), pero la capa de Http si puede orquestar entre modulos: aqui
  * solo se USA GastoService::totalGastos(), nunca al reves.
+ *
+ * Instancia #8 de orquestacion documentada (ver docs/03_ESPECIFICACION_BACKEND.md §9):
+ * cerrar() ademas de totalGastos, orquesta la consulta de abonos_cuenta
+ * (CxC), recargas_gift_card y pagos_cxp para calcular el total teorico
+ * final. La regla se mantiene: Controllers orquestan, Services nunca.
  */
 class CajaController extends Controller
 {
@@ -33,8 +41,6 @@ class CajaController extends Controller
         return response()->json([
             'data' => $sesion ? new CajaSesionResource($sesion) : null,
             'meta' => [
-                // Solo tiene sentido con una sesion abierta -- total_ventas_sistema
-                // ya cumple este rol una vez cerrada (ver CajaSesionResource).
                 'resumen' => $sesion ? [
                     ...$cajaService->resumenSesion($sesion),
                     'total_gastos' => $gastoService->totalGastos($sesion->id),
@@ -62,18 +68,13 @@ class CajaController extends Controller
     }
 
     /**
-     * Primera de 3 excepciones documentadas a la regla de dependencia
-     * unidireccional entre modulos (Gastos depende de Tpv, nunca al reves --
-     * ver el docblock de CajaService): este metodo si importa GastoService,
-     * porque el monto de cierre de caja tiene que ser un calculo
-     * autoritativo del backend, no un dato que el cliente pueda mandar.
-     * El patron es "los Controllers pueden orquestar entre modulos para
-     * presentacion/calculo autoritativo; los Services nunca" -- de ahi que
-     * CajaService en si mismo siga sin conocer Gastos, y solo la capa Http
-     * (este metodo y actual()) cruce la frontera. Las otras 2:
-     * ProductoVarianteController (Inventario->Configuracion) e
-     * InicioController::resumen() (Nucleo->Tpv+Apartados) -- ver el mapa
-     * completo en docs/MANUAL_TECNICO.md.
+     * Instancia #8 de orquestacion (ver docs/03_ESPECIFICACION_BACKEND.md §9):
+     * calcula el total teorico incluyendo abonos_cuenta (CxC cobradas),
+     * recargas_gift_card y pagos_cxp_realizados, ademas de los gastos.
+     * No toca CajaService::cerrarCaja() -- la orquestacion vive en el Controller.
+     *
+     * Formula: total_teorico = apertura + ventas + abonos_cxc + recargas_gc
+     *                         - pagos_cxp - gastos
      */
     public function cerrar(Request $request, CajaSesion $cajaSesion, CajaService $cajaService, GastoService $gastoService)
     {
@@ -81,15 +82,41 @@ class CajaController extends Controller
             'monto_fisico' => ['required', 'numeric', 'min:0'],
         ]);
 
-        // total_gastos ya NO se acepta del cliente (antes de que existiera
-        // GastoController era el unico dato disponible) -- ahora que Gastos
-        // tiene su propia autoridad, se resuelve aqui siempre, para que
-        // nadie pueda cerrar la caja con una diferencia manipulada.
-        $totalGastos = $gastoService->totalGastos($cajaSesion->id);
+        $cajaSesionId = $cajaSesion->id;
+        $sucursalId = $cajaSesion->sucursal_id;
 
-        $sesion = $cajaService->cerrarCaja($cajaSesion, $validated['monto_fisico'], $totalGastos);
+        // Gastos de la sesion
+        $totalGastos = $gastoService->totalGastos($cajaSesionId);
 
-        return new CajaSesionResource($sesion);
+        // Abonos de CxC registrados en esta caja (ingresos)
+        $totalAbonosCxc = round((float) AbonoCuenta::where('caja_sesion_id', $cajaSesionId)->sum('monto'), 2);
+
+        // Recargas de Gift Card registradas en esta caja (ingresos)
+        $totalRecargasGc = round((float) GiftCardRecarga::sinTenant()
+            ->where('caja_sesion_id', $cajaSesionId)
+            ->sum('monto'), 2);
+
+        // Pagos de CxP registrados en esta caja (egresos)
+        $totalPagosCxp = round((float) AbonoPagar::where('caja_sesion_id', $cajaSesionId)->sum('monto'), 2);
+
+        // Ajustar totalGastos para incluir los nuevos conceptos siguiendo
+        // la formula: total_teorico = apertura + ventas + abonos_cxc + recargas_gc
+        //                               - pagos_cxp - gastos
+        // CajaService hace: apertura + ventas - totalGastos
+        // Por lo tanto: totalGastosAjustado = gastos + pagos_cxp - abonos_cxc - recargas_gc
+        $totalGastosAjustado = $totalGastos + $totalPagosCxp - $totalAbonosCxc - $totalRecargasGc;
+
+        $sesion = $cajaService->cerrarCaja($cajaSesion, $validated['monto_fisico'], $totalGastosAjustado);
+
+        return response()->json([
+            'data' => new CajaSesionResource($sesion),
+            'desglose' => [
+                'total_gastos' => $totalGastos,
+                'total_abonos_cxc' => $totalAbonosCxc,
+                'total_recargas_gc' => $totalRecargasGc,
+                'total_pagos_cxp' => $totalPagosCxp,
+            ],
+        ]);
     }
 
     private function sesionAbierta(Request $request): ?CajaSesion

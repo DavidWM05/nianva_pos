@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
-import { ActivatedRoute, convertToParamMap, provideRouter } from '@angular/router';
+import { ActivatedRoute, Router, convertToParamMap, provideRouter } from '@angular/router';
 import { ToastService } from '@nucleo/ui-shared';
 import { providePrimeNG } from 'primeng/config';
 import { of } from 'rxjs';
@@ -83,6 +83,7 @@ describe('DevolucionFormComponent', () => {
     }).compileComponents();
 
     fixture = TestBed.createComponent(DevolucionFormComponent);
+    vi.spyOn(TestBed.inject(Router), 'navigate').mockResolvedValue(true);
     fixture.detectChanges();
   }
 
@@ -135,5 +136,82 @@ describe('DevolucionFormComponent', () => {
 
     expect(fixture.componentInstance['rechazoPorVentaSombra']()).toBe(true);
     expect(fixture.componentInstance['puedeRegistrar']()).toBe(false);
+  });
+
+  it('requiereEleccionReembolso() solo es verdadero cuando la diferencia es un reembolso al cliente (negativa)', async () => {
+    await crearComponente();
+
+    // devolucion pura: diferencia = -120 (reembolso)
+    fixture.componentInstance.actualizarCantidadDevuelta(0, 1);
+    expect(fixture.componentInstance['requiereEleccionReembolso']()).toBe(true);
+
+    // cambio con cobro adicional: diferencia = 280 (cobro, no reembolso)
+    fixture.componentInstance.cambiarTipo('cambio');
+    fixture.componentInstance.onLineasNuevasCambio({ items: [{ variante_id: 7, cantidad: 1 }], subtotal: 400 });
+    expect(fixture.componentInstance['requiereEleccionReembolso']()).toBe(false);
+  });
+
+  it('registrarDevolucion() manda tipo_reembolso cuando hay reembolso al cliente', async () => {
+    await crearComponente();
+    devolucionService.registrar.mockReturnValue(of({ devolucion: { id: 99 }, notaCredito: null }));
+
+    fixture.componentInstance.actualizarCantidadDevuelta(0, 1);
+    fixture.componentInstance['tipoReembolso'].set('nota_credito');
+    // detectChanges ANTES de buscar nucleo-lineas-pago en el DOM: el @if
+    // que lo muestra depende de pagoNecesario(), que recien se volvio
+    // verdadero con actualizarCantidadDevuelta() -- sin este render
+    // intermedio el query no encuentra el elemento todavia.
+    fixture.detectChanges();
+
+    const { By } = await import('@angular/platform-browser');
+    const lineasPago = fixture.debugElement.query(By.css('nucleo-lineas-pago'))?.componentInstance;
+    lineasPago?.actualizarMetodoPago(0, 1);
+    lineasPago?.actualizarMontoPago(0, 120);
+    fixture.detectChanges();
+
+    fixture.componentInstance.registrarDevolucion();
+
+    expect(devolucionService.registrar).toHaveBeenCalledWith(expect.objectContaining({ tipo_reembolso: 'nota_credito' }));
+  });
+
+  it('registrarDevolucion() manda tipo_reembolso null cuando no hay reembolso al cliente (cobro adicional)', async () => {
+    await crearComponente();
+    devolucionService.registrar.mockReturnValue(of({ devolucion: { id: 99 }, notaCredito: null }));
+
+    fixture.componentInstance.cambiarTipo('cambio');
+    fixture.componentInstance.actualizarCantidadDevuelta(0, 1);
+    fixture.componentInstance.onLineasNuevasCambio({ items: [{ variante_id: 7, cantidad: 1 }], subtotal: 400 });
+    fixture.detectChanges();
+
+    const { By } = await import('@angular/platform-browser');
+    const lineasPago = fixture.debugElement.query(By.css('nucleo-lineas-pago'))?.componentInstance;
+    lineasPago?.actualizarMetodoPago(0, 1);
+    lineasPago?.actualizarMontoPago(0, 280);
+    fixture.detectChanges();
+
+    fixture.componentInstance.registrarDevolucion();
+
+    expect(devolucionService.registrar).toHaveBeenCalledWith(expect.objectContaining({ tipo_reembolso: null }));
+  });
+
+  it('si el backend generó una nota de credito, el toast de exito lo menciona', async () => {
+    await crearComponente();
+    devolucionService.registrar.mockReturnValue(
+      of({ devolucion: { id: 99 }, notaCredito: { id: 7, monto_original: '120.00' } }),
+    );
+
+    fixture.componentInstance.actualizarCantidadDevuelta(0, 1);
+    fixture.componentInstance['tipoReembolso'].set('nota_credito');
+    fixture.detectChanges();
+
+    const { By } = await import('@angular/platform-browser');
+    const lineasPago = fixture.debugElement.query(By.css('nucleo-lineas-pago'))?.componentInstance;
+    lineasPago?.actualizarMetodoPago(0, 1);
+    lineasPago?.actualizarMontoPago(0, 120);
+    fixture.detectChanges();
+
+    fixture.componentInstance.registrarDevolucion();
+
+    expect(toastService.success).toHaveBeenCalledWith('Devolución registrada. Nota de crédito #7 generada por $120.00.');
   });
 });

@@ -4,7 +4,7 @@ import { DataTableLazyEvent } from '@nucleo/ui-shared';
 import { Observable, map } from 'rxjs';
 
 import { API_BASE_URL } from '../../core/api-config';
-import { Devolucion, DevolucionFormPayload, DevolucionesPagina } from './devolucion.types';
+import { Devolucion, DevolucionFormPayload, DevolucionNotaCreditoInfo, DevolucionesPagina } from './devolucion.types';
 
 @Injectable({ providedIn: 'root' })
 export class DevolucionService {
@@ -33,7 +33,9 @@ export class DevolucionService {
     return this.http.get<{ data: Devolucion }>(`${API_BASE_URL}/api/devoluciones/${id}`).pipe(map((r) => r.data));
   }
 
-  registrar(payload: DevolucionFormPayload): Observable<Devolucion> {
-    return this.http.post<{ data: Devolucion }>(`${API_BASE_URL}/api/devoluciones`, payload).pipe(map((r) => r.data));
+  registrar(payload: DevolucionFormPayload): Observable<{ devolucion: Devolucion; notaCredito: DevolucionNotaCreditoInfo | null }> {
+    return this.http
+      .post<{ data: Devolucion; nota_credito: DevolucionNotaCreditoInfo | null }>(`${API_BASE_URL}/api/devoluciones`, payload)
+      .pipe(map((r) => ({ devolucion: r.data, notaCredito: r.nota_credito })));
   }
 }

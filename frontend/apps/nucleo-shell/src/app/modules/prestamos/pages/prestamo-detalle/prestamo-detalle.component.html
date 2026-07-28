@@ -1,0 +1,104 @@
+<div class="prestamo-detalle">
+  @if (cargando()) {
+    <p>Cargando préstamo...</p>
+  } @else if (prestamo(); as p) {
+    <div class="prestamo-detalle__header">
+      <h1>{{ p.referencia ?? ('Préstamo #' + p.id) }}</h1>
+      <nucleo-status-badge [value]="p.estado" [colorMap]="{ activo: 'info', pagado: 'success', cancelado: 'neutral' }" />
+    </div>
+
+    <nucleo-record-tabs [tabs]="tabs">
+      <ng-template>
+        <div class="prestamo-detalle__tab">
+          <dl class="prestamo-detalle__resumen">
+            <dt>Fecha del préstamo</dt>
+            <dd>{{ p.fecha_prestamo | date: 'shortDate' }}</dd>
+            <dt>Vence</dt>
+            <dd>{{ p.fecha_vencimiento ? (p.fecha_vencimiento | date: 'shortDate') : 'Sin definir' }}</dd>
+            <dt>Monto prestado</dt>
+            <dd>${{ p.monto }}</dd>
+            <dt>Interés</dt>
+            <dd>{{ p.interes }}%</dd>
+            <dt>Monto a pagar (con interés)</dt>
+            <dd>${{ p.monto_a_pagar }}</dd>
+            <dt>Saldo pendiente</dt>
+            <dd class="prestamo-detalle__saldo">${{ p.saldo_pendiente }}</dd>
+            @if (p.notas) {
+              <dt>Notas</dt>
+              <dd>{{ p.notas }}</dd>
+            }
+          </dl>
+
+          <h4>Pagos</h4>
+          @if (p.pagos && p.pagos.length > 0) {
+            <table class="prestamo-detalle__tabla">
+              <thead>
+                <tr>
+                  <th>Fecha</th>
+                  <th>Monto</th>
+                  <th>Notas</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (pago of p.pagos; track pago.id) {
+                  <tr>
+                    <td>{{ pago.fecha | date: 'short' }}</td>
+                    <td>${{ pago.monto }}</td>
+                    <td>{{ pago.notas ?? '—' }}</td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          } @else {
+            <p>Este préstamo no tiene pagos registrados todavía.</p>
+          }
+
+          @if (puedePagar()) {
+            <div class="prestamo-detalle__acciones">
+              <p-button label="Registrar pago" icon="pi pi-plus-circle" (click)="abrirRegistrarPago()" />
+            </div>
+          }
+        </div>
+      </ng-template>
+
+      <ng-template>
+        @defer (on viewport) {
+          <nucleo-audit-log-viewer [tabla]="'prestamos'" [registroId]="p.id" />
+        } @placeholder {
+          <p>Auditoría (se carga al hacer scroll hasta aquí)...</p>
+        } @loading (minimum 200ms) {
+          <p>Cargando auditoría...</p>
+        }
+      </ng-template>
+    </nucleo-record-tabs>
+  }
+</div>
+
+<p-dialog
+  header="Registrar pago"
+  [visible]="mostrarRegistrarPago()"
+  (visibleChange)="cerrarRegistrarPago()"
+  [modal]="true"
+  [dismissableMask]="true"
+  [style]="{ width: '24rem' }"
+>
+  <div class="prestamo-detalle__campo">
+    <label for="prestamo-detalle-pago-monto">Monto a pagar</label>
+    <input
+      pInputText
+      type="number"
+      min="0.01"
+      step="0.01"
+      id="prestamo-detalle-pago-monto"
+      [ngModel]="montoPago()"
+      (ngModelChange)="montoPago.set($event)"
+    />
+  </div>
+  <p-button
+    label="Confirmar pago"
+    icon="pi pi-check"
+    [loading]="pagando()"
+    [disabled]="!montoPago() || montoPago()! <= 0"
+    (click)="confirmarRegistrarPago()"
+  />
+</p-dialog>

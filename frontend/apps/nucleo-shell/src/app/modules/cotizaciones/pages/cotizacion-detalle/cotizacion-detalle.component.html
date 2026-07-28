@@ -1,0 +1,118 @@
+<div class="cotizacion-detalle">
+  @if (cargando()) {
+    <p>Cargando cotización...</p>
+  } @else if (cotizacion(); as cotizacionActual) {
+    <div class="cotizacion-detalle__header">
+      <h1>{{ cotizacionActual.numero_cotizacion }}</h1>
+      <nucleo-status-badge
+        [value]="cotizacionActual.estado"
+        [colorMap]="{ pendiente: 'info', convertida: 'success', vencida: 'danger', anulada: 'neutral' }"
+      />
+    </div>
+
+    <nucleo-record-tabs [tabs]="tabs">
+      <ng-template>
+        <div class="cotizacion-detalle__tab">
+          <dl class="cotizacion-detalle__resumen">
+            <dt>Cliente</dt>
+            <dd>{{ cotizacionActual.cliente?.nombre ?? 'Sin cliente' }}</dd>
+            <dt>Creada</dt>
+            <dd>{{ cotizacionActual.created_at | date: 'short' }}</dd>
+            <dt>Vence</dt>
+            <dd>{{ cotizacionActual.fecha_vencimiento ? (cotizacionActual.fecha_vencimiento | date: 'shortDate') : 'Sin definir' }}</dd>
+            <dt>Descuento</dt>
+            <dd>${{ cotizacionActual.descuento }}</dd>
+            <dt>Total</dt>
+            <dd class="cotizacion-detalle__total">${{ cotizacionActual.total }}</dd>
+            @if (cotizacionActual.observaciones) {
+              <dt>Observaciones</dt>
+              <dd>{{ cotizacionActual.observaciones }}</dd>
+            }
+            @if (cotizacionActual.venta_id) {
+              <dt>Venta vinculada</dt>
+              <dd><a [routerLink]="['/tpv/ventas', cotizacionActual.venta_id]">Venta #{{ cotizacionActual.venta_id }}</a></dd>
+            }
+          </dl>
+
+          <h4>Líneas</h4>
+          <table class="cotizacion-detalle__tabla">
+            <thead>
+              <tr>
+                <th>Producto</th>
+                <th>Cantidad</th>
+                <th>Precio</th>
+                <th>Descuento</th>
+                <th>Subtotal</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (detalle of cotizacionActual.detalles; track detalle.id) {
+                <tr>
+                  <td>{{ detalle.variante?.nombre ?? ('Variante #' + detalle.variante_id) }}</td>
+                  <td>{{ detalle.cantidad }}</td>
+                  <td>${{ detalle.precio_unitario }}</td>
+                  <td>${{ detalle.descuento }}</td>
+                  <td>${{ detalle.subtotal }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+
+          <div class="cotizacion-detalle__acciones">
+            @if (puedeEditar()) {
+              <a [routerLink]="['/cotizaciones', cotizacionActual.id, 'editar']"><p-button label="Editar" icon="pi pi-pencil" [text]="true" /></a>
+            }
+            @if (puedeConvertir()) {
+              <p-button label="Convertir a venta" icon="pi pi-shopping-cart" (click)="abrirConvertir()" />
+            }
+            @if (puedeAnular()) {
+              <p-button label="Anular cotización" icon="pi pi-ban" severity="danger" [text]="true" (click)="anular()" />
+            }
+          </div>
+        </div>
+      </ng-template>
+
+      <ng-template>
+        @defer (on viewport) {
+          <nucleo-audit-log-viewer [tabla]="'cotizaciones'" [registroId]="cotizacionActual.id" />
+        } @placeholder {
+          <p>Auditoría (se carga al hacer scroll hasta aquí)...</p>
+        } @loading (minimum 200ms) {
+          <p>Cargando auditoría...</p>
+        }
+      </ng-template>
+    </nucleo-record-tabs>
+  }
+</div>
+
+<p-dialog
+  header="Convertir a venta"
+  [visible]="mostrarConvertir()"
+  (visibleChange)="cerrarConvertir()"
+  [modal]="true"
+  [dismissableMask]="true"
+  [style]="{ width: '26rem' }"
+>
+  @if (cotizacion(); as c) {
+    <p>Se va a crear una venta por el total de la cotización: <strong>${{ c.total }}</strong>.</p>
+  }
+  <div class="cotizacion-detalle__campo">
+    <label for="convertir-metodo-pago">Método de pago</label>
+    <p-select
+      inputId="convertir-metodo-pago"
+      [options]="metodosPago()"
+      optionLabel="nombre"
+      optionValue="id"
+      placeholder="Selecciona un método de pago"
+      [ngModel]="metodoPagoElegido()"
+      (ngModelChange)="metodoPagoElegido.set($event)"
+    />
+  </div>
+  <p-button
+    label="Confirmar venta"
+    icon="pi pi-check"
+    [loading]="convirtiendo()"
+    [disabled]="metodoPagoElegido() === null"
+    (click)="confirmarConvertir()"
+  />
+</p-dialog>

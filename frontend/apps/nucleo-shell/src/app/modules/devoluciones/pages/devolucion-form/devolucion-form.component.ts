@@ -14,7 +14,7 @@ import { ErrorNegocioTpv } from '../../../tpv/tpv-error.types';
 import { Venta, VentaItemPayload, VentaPagoPayload } from '../../../tpv/venta.types';
 import { VentaService } from '../../../tpv/venta.service';
 import { DevolucionService } from '../../devolucion.service';
-import { DevolucionFormPayload, TipoDevolucion } from '../../devolucion.types';
+import { DevolucionFormPayload, TipoDevolucion, TipoReembolso } from '../../devolucion.types';
 
 interface LineaDevuelta {
   variante_id: number;
@@ -105,6 +105,13 @@ export class DevolucionFormComponent implements OnInit {
 
   protected readonly pagoNecesario = computed(() => centavos(this.diferenciaEstimada()) !== 0);
   protected readonly montoAPagar = computed(() => Math.abs(this.diferenciaEstimada()));
+
+  // Solo importa cuando la tienda le debe dinero al cliente (diferencia<0)
+  // -- DevolucionController::store() ignora tipo_reembolso en cualquier
+  // otro caso. Si se elige 'nota_credito', crea una Nota de Credito por
+  // monto_devolucion (ver el docblock de DevolucionNotaCreditoInfo).
+  protected readonly requiereEleccionReembolso = computed(() => this.diferenciaEstimada() < 0);
+  protected readonly tipoReembolso = signal<TipoReembolso>('efectivo');
 
   protected readonly ventaEsSombra = computed(() => this.ventaOrigen()?.es_venta_sombra === true);
   protected readonly rechazoPorVentaSombra = computed(() => this.ventaEsSombra() && this.tipo() === 'devolucion');
@@ -211,12 +218,17 @@ export class DevolucionFormComponent implements OnInit {
       items_nuevos: this.tipo() === 'cambio' ? this.itemsNuevosActuales() : undefined,
       pagos: this.pagoNecesario() ? this.pagosActuales() : [],
       motivo: this.motivo().trim() || null,
+      tipo_reembolso: this.requiereEleccionReembolso() ? this.tipoReembolso() : null,
     };
 
     this.devolucionService.registrar(payload).subscribe({
-      next: (devolucion) => {
+      next: ({ devolucion, notaCredito }) => {
         this.registrando.set(false);
-        this.toast.success('Devolución registrada.');
+        this.toast.success(
+          notaCredito
+            ? `Devolución registrada. Nota de crédito #${notaCredito.id} generada por $${notaCredito.monto_original}.`
+            : 'Devolución registrada.',
+        );
         this.router.navigate(['/devoluciones', devolucion.id]);
       },
       error: (error: HttpErrorResponse) => {
@@ -234,6 +246,7 @@ export class DevolucionFormComponent implements OnInit {
     this.montoCambio.set(0);
     this.pagosActuales.set([]);
     this.pagoCuadra.set(false);
+    this.tipoReembolso.set('efectivo');
     this.motivo.set('');
   }
 }

@@ -1,0 +1,97 @@
+<div class="lineas-cotizacion">
+  <section class="lineas-cotizacion__seccion">
+    <h3>Agregar producto</h3>
+    <nucleo-entidad-selector
+      [buscador]="buscadorProducto"
+      [buscadorHijos]="buscadorVarianteDeProducto"
+      label="Producto"
+      labelHijos="Variante"
+      placeholder="Buscar producto por nombre..."
+      [valorInicial]="productoSeleccionadoId()"
+      (seleccionado)="onProductoSeleccionado($event)"
+      (hijoSeleccionado)="onVarianteSeleccionada($event)"
+    />
+
+    <div class="lineas-cotizacion__alta-linea">
+      <label for="lineas-cotizacion-cantidad">Cantidad</label>
+      <input
+        pInputText
+        type="number"
+        id="lineas-cotizacion-cantidad"
+        min="1"
+        [ngModel]="cantidadNueva()"
+        (ngModelChange)="cantidadNueva.set($event)"
+      />
+      <p-button
+        label="Agregar línea"
+        icon="pi pi-plus"
+        [loading]="sugiriendoPrecio()"
+        [disabled]="varianteSeleccionadaId() === null"
+        (click)="agregarLinea()"
+      />
+    </div>
+  </section>
+
+  <section class="lineas-cotizacion__seccion">
+    <h3>Líneas</h3>
+    @if (lineas().length === 0) {
+      <p>Todavía no hay líneas.</p>
+    } @else {
+      <table class="lineas-cotizacion__tabla">
+        <thead>
+          <tr>
+            <th>Producto</th>
+            <th>Cantidad</th>
+            <th>Precio unitario</th>
+            <th>Descuento</th>
+            <th>Subtotal</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (linea of lineas(); track $index) {
+            <tr>
+              <td>{{ linea.etiqueta }}</td>
+              <td>
+                <input
+                  pInputText
+                  type="number"
+                  min="1"
+                  class="lineas-cotizacion__input-numero"
+                  [ngModel]="linea.cantidad"
+                  (ngModelChange)="actualizarCantidad($index, $event)"
+                />
+              </td>
+              <td>
+                <input
+                  pInputText
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  class="lineas-cotizacion__input-numero"
+                  [ngModel]="linea.precio_unitario"
+                  (ngModelChange)="actualizarPrecio($index, $event)"
+                />
+              </td>
+              <td>
+                <input
+                  pInputText
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  class="lineas-cotizacion__input-numero"
+                  [ngModel]="linea.descuento"
+                  (ngModelChange)="actualizarDescuento($index, $event)"
+                />
+              </td>
+              <td>${{ linea.cantidad * linea.precio_unitario - linea.descuento }}</td>
+              <td>
+                <p-button icon="pi pi-trash" [text]="true" severity="danger" size="small" aria-label="Quitar" (click)="quitarLinea($index)" />
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    }
+  </section>
+</div>

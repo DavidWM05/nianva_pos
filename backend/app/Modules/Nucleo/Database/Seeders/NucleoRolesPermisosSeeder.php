@@ -47,6 +47,23 @@ class NucleoRolesPermisosSeeder extends Seeder
         'configuracion' => ['ver', 'editar'],
         'reportes' => ['ver'],
         'auditoria' => ['ver'],
+        // Modulos nuevos
+        'cotizaciones' => ['ver', 'crear', 'editar', 'eliminar', 'convertir'],
+        'cuentas_cobrar' => ['ver', 'crear', 'registrar_abono', 'anular'],
+        'cuentas_pagar' => ['ver', 'registrar_pago'],
+        'pedidos' => ['ver', 'crear', 'cambiar_estado', 'asignar_repartidor'],
+        'gift_cards' => ['ver', 'emitir', 'recargar', 'cancelar'],
+        'notas_credito' => ['ver'],
+        'crm_interacciones' => ['ver', 'crear'],
+        'crm_campanas' => ['enviar'],
+        'loyalty' => ['ver', 'ajustar'],
+        'reportes_cuentas_cobrar' => ['ver'],
+        'reportes_cuentas_pagar' => ['ver'],
+        'reportes_crm' => ['ver'],
+        'produccion' => ['ver', 'crear', 'completar', 'transformar'],
+        'payroll' => ['ver', 'crear', 'pagar'],
+        'prestamos' => ['ver', 'crear', 'pagar'],
+        'ventas_plazos' => ['ver', 'crear'],
     ];
 
     /**
@@ -61,6 +78,14 @@ class NucleoRolesPermisosSeeder extends Seeder
         'gastos.crear',
         'inventario.ver',
         'metodos_pago.ver',
+        // Modulos nuevos
+        'cotizaciones.ver', 'cotizaciones.crear',
+        'cuentas_cobrar.ver', 'cuentas_cobrar.registrar_abono',
+        'pedidos.ver', 'pedidos.crear',
+        'gift_cards.ver',
+        'crm_interacciones.ver', 'crm_interacciones.crear',
+        'loyalty.ver',
+        'notas_credito.ver',
     ];
 
     public function run(): void

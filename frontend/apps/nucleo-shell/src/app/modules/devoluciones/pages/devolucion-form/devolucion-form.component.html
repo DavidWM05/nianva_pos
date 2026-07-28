@@ -115,6 +115,28 @@
           Sin diferencia que liquidar
         }
       </p>
+
+      @if (requiereEleccionReembolso()) {
+        <div class="devolucion-form__tipo">
+          <label>
+            <input type="radio" name="tipo-reembolso" [checked]="tipoReembolso() === 'efectivo'" (change)="tipoReembolso.set('efectivo')" />
+            Efectivo / método original
+          </label>
+          <label>
+            <input
+              type="radio"
+              name="tipo-reembolso"
+              [checked]="tipoReembolso() === 'nota_credito'"
+              (change)="tipoReembolso.set('nota_credito')"
+            />
+            Nota de crédito
+          </label>
+        </div>
+        <p class="devolucion-form__ayuda">
+          Elegir "Nota de crédito" además genera una nota por el monto devuelto -- de cualquier forma hay que capturar abajo
+          cómo se liquida la diferencia.
+        </p>
+      }
     </section>
 
     @if (pagoNecesario()) {

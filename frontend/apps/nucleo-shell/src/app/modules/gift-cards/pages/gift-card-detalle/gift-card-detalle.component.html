@@ -1,0 +1,104 @@
+<div class="gift-card-detalle">
+  @if (cargando()) {
+    <p>Cargando gift card...</p>
+  } @else if (giftCard(); as gc) {
+    <div class="gift-card-detalle__header">
+      <h1>{{ gc.codigo }}</h1>
+      <nucleo-status-badge
+        [value]="gc.estado"
+        [colorMap]="{ activa: 'success', usada: 'neutral', expirada: 'danger', cancelada: 'danger' }"
+      />
+    </div>
+
+    <nucleo-record-tabs [tabs]="tabs">
+      <ng-template>
+        <div class="gift-card-detalle__tab">
+          <dl class="gift-card-detalle__resumen">
+            <dt>Cliente</dt>
+            <dd>{{ gc.cliente?.nombre ?? 'Anónima' }}</dd>
+            <dt>Creada</dt>
+            <dd>{{ gc.created_at | date: 'short' }}</dd>
+            <dt>Vence</dt>
+            <dd>{{ gc.fecha_expiracion ? (gc.fecha_expiracion | date: 'shortDate') : 'Sin definir' }}</dd>
+            <dt>Saldo inicial</dt>
+            <dd>${{ gc.saldo_inicial }}</dd>
+            <dt>Saldo actual</dt>
+            <dd class="gift-card-detalle__saldo">${{ gc.saldo_actual }}</dd>
+          </dl>
+
+          <h4>Recargas</h4>
+          @if (gc.recargas && gc.recargas.length > 0) {
+            <table class="gift-card-detalle__tabla">
+              <thead>
+                <tr>
+                  <th>Fecha</th>
+                  <th>Monto</th>
+                  <th>Registrada por</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (recarga of gc.recargas; track recarga.id) {
+                  <tr>
+                    <td>{{ recarga.fecha | date: 'short' }}</td>
+                    <td>${{ recarga.monto }}</td>
+                    <td>{{ recarga.usuario?.nombre ?? '—' }}</td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          } @else {
+            <p>Esta gift card no se ha recargado todavía.</p>
+          }
+
+          <div class="gift-card-detalle__acciones">
+            @if (puedeRecargar()) {
+              <p-button label="Recargar saldo" icon="pi pi-plus-circle" (click)="abrirRecargar()" />
+            }
+            @if (puedeCancelar()) {
+              <p-button label="Cancelar gift card" icon="pi pi-ban" severity="danger" [text]="true" (click)="cancelar()" />
+            }
+          </div>
+        </div>
+      </ng-template>
+
+      <ng-template>
+        @defer (on viewport) {
+          <nucleo-audit-log-viewer [tabla]="'gift_cards'" [registroId]="gc.id" />
+        } @placeholder {
+          <p>Auditoría (se carga al hacer scroll hasta aquí)...</p>
+        } @loading (minimum 200ms) {
+          <p>Cargando auditoría...</p>
+        }
+      </ng-template>
+    </nucleo-record-tabs>
+  }
+</div>
+
+<p-dialog
+  header="Recargar saldo"
+  [visible]="mostrarRecargar()"
+  (visibleChange)="cerrarRecargar()"
+  [modal]="true"
+  [dismissableMask]="true"
+  [style]="{ width: '24rem' }"
+>
+  <div class="gift-card-detalle__campo">
+    <label for="recargar-monto">Monto a recargar</label>
+    <input
+      pInputText
+      type="number"
+      min="0.01"
+      step="0.01"
+      id="recargar-monto"
+      [ngModel]="montoRecarga()"
+      (ngModelChange)="montoRecarga.set($event)"
+    />
+  </div>
+  <p-button
+    label="Confirmar recarga"
+    icon="pi pi-check"
+    [loading]="recargando()"
+    [disabled]="!montoRecarga() || montoRecarga()! <= 0"
+    (click)="confirmarRecargar()"
+  />
+</p-dialog>

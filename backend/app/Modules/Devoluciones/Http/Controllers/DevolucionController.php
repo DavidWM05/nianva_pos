@@ -6,8 +6,10 @@ use App\Http\Controllers\Controller;
 use App\Modules\Devoluciones\Http\Resources\DevolucionResource;
 use App\Modules\Devoluciones\Models\Devolucion;
 use App\Modules\Devoluciones\Services\DevolucionService;
+use App\Modules\NotasCredito\Services\NotaCreditoService;
 use App\Modules\Tpv\Models\Venta;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 
 /**
@@ -16,6 +18,10 @@ use Illuminate\Validation\Rule;
  * DevolucionPagoNoCuadraException, y las que hereda de Tpv al crear la
  * venta sombra de un cambio, ej. CajaSesionNoAbiertaException) -- todo
  * eso vive en DevolucionService y se mapea a JSON 422 en bootstrap/app.php.
+ *
+ * Instancia #7 de orquestacion: store() orquesta la creacion de una
+ * Nota de Credito cuando tipo_reembolso = 'nota_credito' (ver
+ * docs/03_ESPECIFICACION_BACKEND.md §8).
  */
 class DevolucionController extends Controller
 {
@@ -60,7 +66,13 @@ class DevolucionController extends Controller
         );
     }
 
-    public function store(Request $request, DevolucionService $devolucionService)
+    /**
+     * Instancia #7 de orquestacion: cuando tipo_reembolso = 'nota_credito',
+     * crea una Nota de Credito vinculada a la devolucion (ver
+     * docs/03_ESPECIFICACION_BACKEND.md §8). La regla se mantiene:
+     * Controllers orquestan, Services nunca.
+     */
+    public function store(Request $request, DevolucionService $devolucionService, NotaCreditoService $notaCreditoService)
     {
         $validated = $request->validate([
             'venta_id' => ['required', 'integer', 'exists:ventas,id'],
@@ -76,24 +88,38 @@ class DevolucionController extends Controller
             'pagos.*.metodo_pago_id' => ['required_with:pagos', 'integer', 'exists:metodos_pago,id'],
             'pagos.*.monto' => ['required_with:pagos', 'numeric', 'min:0.01'],
             'motivo' => ['nullable', 'string', 'max:255'],
+            'tipo_reembolso' => ['nullable', Rule::in(['efectivo', 'nota_credito'])],
         ]);
 
         $usuario = $request->user();
         $ventaOrigen = Venta::findOrFail($validated['venta_id']);
+        $tipoReembolso = $validated['tipo_reembolso'] ?? 'efectivo';
 
-        $devolucion = $devolucionService->registrarDevolucion(
-            ventaOrigen: $ventaOrigen,
-            tipo: $validated['tipo'],
-            itemsDevueltos: $validated['items_devueltos'],
-            itemsNuevos: $validated['items_nuevos'] ?? [],
-            sucursalId: $usuario->sucursal_id,
-            usuarioId: $usuario->id,
-            pagos: $validated['pagos'] ?? [],
-            motivo: $validated['motivo'] ?? null,
-        );
+        return DB::transaction(function () use ($devolucionService, $notaCreditoService, $ventaOrigen, $validated, $usuario, $tipoReembolso) {
+            $devolucion = $devolucionService->registrarDevolucion(
+                ventaOrigen: $ventaOrigen,
+                tipo: $validated['tipo'],
+                itemsDevueltos: $validated['items_devueltos'],
+                itemsNuevos: $validated['items_nuevos'] ?? [],
+                sucursalId: $usuario->sucursal_id,
+                usuarioId: $usuario->id,
+                pagos: $validated['pagos'] ?? [],
+                motivo: $validated['motivo'] ?? null,
+                tipoReembolso: $tipoReembolso,
+            );
 
-        $devolucion->load(['venta.cliente', 'ventaSombra', 'items.variante.producto', 'pagos.metodoPago']);
+            $nota = null;
+            if ($tipoReembolso === 'nota_credito' && $devolucion->monto_devolucion > 0) {
+                $nota = $notaCreditoService->crearDesdeDevolucion($devolucion);
+                $devolucion->update(['nota_credito_id' => $nota->id]);
+            }
 
-        return (new DevolucionResource($devolucion))->response()->setStatusCode(201);
+            $devolucion->load(['venta.cliente', 'ventaSombra', 'items.variante.producto', 'pagos.metodoPago']);
+
+            return response()->json([
+                'data' => new DevolucionResource($devolucion),
+                'nota_credito' => $nota ? ['id' => $nota->id, 'monto_original' => $nota->monto_original] : null,
+            ], 201);
+        });
     }
 }

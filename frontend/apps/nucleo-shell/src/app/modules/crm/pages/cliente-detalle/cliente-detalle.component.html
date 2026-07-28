@@ -44,6 +44,88 @@
       </ng-template>
 
       <ng-template>
+        <div class="cliente-detalle__tab">
+          <div class="cliente-detalle__tab-header">
+            <h4>Interacciones</h4>
+            <p-button label="Nueva interacción" icon="pi pi-plus" size="small" (click)="abrirNuevaInteraccion()" />
+          </div>
+
+          @if (cargandoInteracciones()) {
+            <p>Cargando interacciones...</p>
+          } @else if (interacciones().length === 0) {
+            <p>Todavía no hay interacciones registradas para este cliente.</p>
+          } @else {
+            <ul class="cliente-detalle__timeline">
+              @for (interaccion of interacciones(); track interaccion.id) {
+                <li>
+                  <span class="cliente-detalle__timeline-icono">{{ iconoPorTipo[interaccion.tipo] }}</span>
+                  <div class="cliente-detalle__timeline-cuerpo">
+                    <p>{{ interaccion.observacion }}</p>
+                    <p class="cliente-detalle__timeline-meta">
+                      {{ interaccion.fecha | date: 'short' }}
+                      @if (interaccion.usuario) {
+                        · {{ interaccion.usuario.nombre }}
+                      }
+                    </p>
+                  </div>
+                </li>
+              }
+            </ul>
+          }
+        </div>
+      </ng-template>
+
+      <ng-template>
+        <div class="cliente-detalle__tab">
+          @if (cargandoLoyalty()) {
+            <p>Cargando puntos de fidelidad...</p>
+          } @else if (loyalty(); as puntos) {
+            <div class="cliente-detalle__loyalty-resumen">
+              <div>
+                <span class="cliente-detalle__loyalty-numero">{{ puntos.puntos_loyalty }}</span>
+                <span class="cliente-detalle__loyalty-etiqueta">Puntos actuales</span>
+              </div>
+              <div>
+                <span class="cliente-detalle__loyalty-numero cliente-detalle__loyalty-numero--secundario">{{
+                  puntos.puntos_acumulados
+                }}</span>
+                <span class="cliente-detalle__loyalty-etiqueta">Acumulados históricos</span>
+              </div>
+              <p-button label="Ajustar puntos" icon="pi pi-pencil" size="small" [text]="true" (click)="abrirAjustePuntos()" />
+            </div>
+
+            <h4>Historial de movimientos</h4>
+            @if (puntos.historial.length === 0) {
+              <p>Todavía no hay movimientos de puntos.</p>
+            } @else {
+              <table class="cliente-detalle__tabla">
+                <thead>
+                  <tr>
+                    <th>Fecha</th>
+                    <th>Tipo</th>
+                    <th>Puntos</th>
+                    <th>Referencia</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (movimiento of puntos.historial; track movimiento.id) {
+                    <tr>
+                      <td>{{ movimiento.created_at | date: 'short' }}</td>
+                      <td>{{ movimiento.tipo }}</td>
+                      <td [class.cliente-detalle__puntos--negativo]="movimiento.puntos < 0">
+                        {{ movimiento.puntos > 0 ? '+' : '' }}{{ movimiento.puntos }}
+                      </td>
+                      <td>{{ movimiento.referencia_tabla ?? '—' }}</td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            }
+          }
+        </div>
+      </ng-template>
+
+      <ng-template>
         @defer (on viewport) {
           <nucleo-audit-log-viewer [tabla]="'clientes'" [registroId]="clienteActual.id" />
         } @placeholder {
@@ -55,3 +137,81 @@
     </nucleo-record-tabs>
   }
 </div>
+
+<p-dialog
+  header="Nueva interacción"
+  [visible]="mostrarNuevaInteraccion()"
+  (visibleChange)="cerrarNuevaInteraccion()"
+  [modal]="true"
+  [dismissableMask]="true"
+  [style]="{ width: '28rem' }"
+>
+  <div class="cliente-detalle__campo">
+    <label for="interaccion-tipo">Tipo</label>
+    <p-select
+      inputId="interaccion-tipo"
+      [options]="tiposInteraccion"
+      optionLabel="label"
+      optionValue="value"
+      [ngModel]="tipoNuevaInteraccion()"
+      (ngModelChange)="tipoNuevaInteraccion.set($event)"
+    />
+  </div>
+  <div class="cliente-detalle__campo">
+    <label for="interaccion-observacion">Observación</label>
+    <textarea
+      pTextarea
+      id="interaccion-observacion"
+      rows="3"
+      maxlength="5000"
+      [ngModel]="observacionNuevaInteraccion()"
+      (ngModelChange)="observacionNuevaInteraccion.set($event)"
+    ></textarea>
+  </div>
+  <p-button
+    label="Guardar interacción"
+    icon="pi pi-check"
+    [loading]="guardandoInteraccion()"
+    [disabled]="!observacionNuevaInteraccion().trim()"
+    (click)="guardarInteraccion()"
+  />
+</p-dialog>
+
+<p-dialog
+  header="Ajustar puntos"
+  [visible]="mostrarAjustePuntos()"
+  (visibleChange)="cerrarAjustePuntos()"
+  [modal]="true"
+  [dismissableMask]="true"
+  [style]="{ width: '28rem' }"
+>
+  <div class="cliente-detalle__campo">
+    <label for="ajuste-puntos">Puntos (negativo para canjear)</label>
+    <input
+      pInputText
+      type="number"
+      id="ajuste-puntos"
+      step="1"
+      [ngModel]="puntosAjuste()"
+      (ngModelChange)="puntosAjuste.set($event)"
+    />
+  </div>
+  <div class="cliente-detalle__campo">
+    <label for="ajuste-motivo">Motivo</label>
+    <textarea
+      pTextarea
+      id="ajuste-motivo"
+      rows="3"
+      maxlength="500"
+      [ngModel]="motivoAjuste()"
+      (ngModelChange)="motivoAjuste.set($event)"
+    ></textarea>
+  </div>
+  <p-button
+    label="Confirmar ajuste"
+    icon="pi pi-check"
+    [loading]="ajustandoPuntos()"
+    [disabled]="puntosAjuste() === null || puntosAjuste() === 0 || !motivoAjuste().trim()"
+    (click)="confirmarAjustePuntos()"
+  />
+</p-dialog>

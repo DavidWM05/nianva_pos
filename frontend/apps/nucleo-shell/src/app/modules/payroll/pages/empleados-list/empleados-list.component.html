@@ -1,0 +1,100 @@
+<div class="empleados-list">
+  <div class="empleados-list__header">
+    <h1>Empleados</h1>
+    @if (permisos().crear) {
+      <p-button label="Nuevo empleado" icon="pi pi-plus" (click)="abrirFormulario()" />
+    }
+  </div>
+
+  <nucleo-data-table
+    [columns]="columns"
+    [value]="empleados()"
+    [totalRecords]="total()"
+    [loading]="loading()"
+    [virtualScroll]="false"
+    emptyMessage="No hay empleados registrados."
+    (lazyLoad)="onLazyLoad($event)"
+  >
+    <ng-template nucleoDataTableCell="usuario" let-row>
+      {{ row.usuario?.nombre ?? ('Usuario #' + row.usuario_id) }}
+    </ng-template>
+
+    <ng-template nucleoDataTableCell="salario_base" let-row>
+      ${{ row.salario_base }}
+    </ng-template>
+
+    <ng-template nucleoDataTableCell="tipo_salario" let-row>
+      {{ row.tipo_salario === 'por_hora' ? 'Por hora' : 'Fijo' }}
+    </ng-template>
+
+    <ng-template nucleoDataTableCell="fecha_ingreso" let-row>
+      {{ row.fecha_ingreso ? (row.fecha_ingreso | date: 'shortDate') : 'Sin definir' }}
+    </ng-template>
+
+    <ng-template nucleoDataTableCell="activo" let-row>
+      <nucleo-status-badge [value]="row.activo ? 'activo' : 'inactivo'" [colorMap]="{ activo: 'success', inactivo: 'neutral' }" />
+    </ng-template>
+
+    <ng-template nucleoDataTableCell="acciones" let-row>
+      <p-button icon="pi pi-eye" [text]="true" size="small" aria-label="Ver" (click)="irADetalle(row)" />
+    </ng-template>
+  </nucleo-data-table>
+</div>
+
+<p-dialog
+  header="Nuevo empleado"
+  [visible]="mostrarFormulario()"
+  (visibleChange)="cerrarFormulario()"
+  [modal]="true"
+  [dismissableMask]="true"
+  [style]="{ width: '28rem' }"
+>
+  <div class="empleados-list__campo">
+    <nucleo-entidad-selector
+      [buscador]="buscadorUsuario"
+      label="Usuario"
+      placeholder="Buscar usuario por nombre..."
+      [valorInicial]="usuarioId()"
+      (seleccionado)="usuarioId.set($event)"
+    />
+  </div>
+  <div class="empleados-list__campo">
+    <label for="empleado-salario">Salario base</label>
+    <input
+      pInputText
+      type="number"
+      min="0"
+      step="0.01"
+      id="empleado-salario"
+      [ngModel]="salarioBase()"
+      (ngModelChange)="salarioBase.set($event)"
+    />
+  </div>
+  <div class="empleados-list__campo">
+    <label for="empleado-tipo-salario">Tipo de salario</label>
+    <p-select
+      inputId="empleado-tipo-salario"
+      [options]="tiposSalario"
+      optionLabel="label"
+      optionValue="value"
+      [ngModel]="tipoSalario()"
+      (ngModelChange)="tipoSalario.set($event)"
+    />
+  </div>
+  <div class="empleados-list__campo">
+    <label for="empleado-fecha-ingreso">Fecha de ingreso (opcional)</label>
+    <p-datepicker inputId="empleado-fecha-ingreso" dateFormat="yy-mm-dd" [ngModel]="fechaIngreso()" (ngModelChange)="fechaIngreso.set($event)" />
+  </div>
+  <div class="empleados-list__campo">
+    <label for="empleado-numero-seguridad-social">Número de seguridad social (opcional)</label>
+    <input
+      pInputText
+      type="text"
+      id="empleado-numero-seguridad-social"
+      maxlength="30"
+      [ngModel]="numeroSeguridadSocial()"
+      (ngModelChange)="numeroSeguridadSocial.set($event)"
+    />
+  </div>
+  <p-button label="Registrar empleado" icon="pi pi-check" [loading]="guardando()" [disabled]="usuarioId() === null" (click)="guardar()" />
+</p-dialog>

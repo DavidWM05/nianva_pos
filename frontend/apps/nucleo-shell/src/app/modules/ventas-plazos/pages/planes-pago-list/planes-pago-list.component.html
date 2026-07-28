@@ -1,0 +1,34 @@
+<div class="planes-pago-list">
+  <div class="planes-pago-list__header">
+    <h1>Ventas a Plazos</h1>
+    @if (permisos().crear) {
+      <a routerLink="/ventas-plazos/nuevo"><p-button label="Nuevo plan de pago" icon="pi pi-plus" /></a>
+    }
+  </div>
+
+  <nucleo-data-table
+    [columns]="columns"
+    [value]="planes()"
+    [totalRecords]="total()"
+    [loading]="loading()"
+    [virtualScroll]="false"
+    emptyMessage="No hay planes de pago a plazos registrados."
+    (lazyLoad)="onLazyLoad($event)"
+  >
+    <ng-template nucleoDataTableCell="cliente" let-row>
+      {{ row.cliente?.nombre ?? 'Sin cliente' }}
+    </ng-template>
+
+    <ng-template nucleoDataTableCell="monto_total" let-row>
+      ${{ row.monto_total }}
+    </ng-template>
+
+    <ng-template nucleoDataTableCell="fecha_inicio" let-row>
+      {{ row.fecha_inicio | date: 'shortDate' }}
+    </ng-template>
+
+    <ng-template nucleoDataTableCell="acciones" let-row>
+      <p-button icon="pi pi-eye" [text]="true" size="small" aria-label="Ver" (click)="irADetalle(row)" />
+    </ng-template>
+  </nucleo-data-table>
+</div>

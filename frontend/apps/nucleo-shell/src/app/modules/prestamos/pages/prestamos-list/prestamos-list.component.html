@@ -1,0 +1,44 @@
+<div class="prestamos-list">
+  <div class="prestamos-list__header">
+    <h1>Préstamos</h1>
+    <a routerLink="/prestamos/nuevo"><p-button label="Nuevo préstamo" icon="pi pi-plus" /></a>
+  </div>
+
+  <nucleo-data-table
+    [columns]="columns"
+    [value]="prestamos()"
+    [totalRecords]="total()"
+    [loading]="loading()"
+    [virtualScroll]="false"
+    emptyMessage="No hay préstamos registrados."
+    (lazyLoad)="onLazyLoad($event)"
+  >
+    <ng-template nucleoDataTableCell="referencia" let-row>
+      {{ row.referencia ?? ('Préstamo #' + row.id) }}
+    </ng-template>
+
+    <ng-template nucleoDataTableCell="monto" let-row>
+      ${{ row.monto }}
+    </ng-template>
+
+    <ng-template nucleoDataTableCell="monto_a_pagar" let-row>
+      ${{ row.monto_a_pagar }} @if (row.interes > 0) { <span class="prestamos-list__interes">({{ row.interes }}%)</span> }
+    </ng-template>
+
+    <ng-template nucleoDataTableCell="saldo_pendiente" let-row>
+      ${{ row.saldo_pendiente }}
+    </ng-template>
+
+    <ng-template nucleoDataTableCell="estado" let-row>
+      <nucleo-status-badge [value]="row.estado" [colorMap]="{ activo: 'info', pagado: 'success', cancelado: 'neutral' }" />
+    </ng-template>
+
+    <ng-template nucleoDataTableCell="fecha_prestamo" let-row>
+      {{ row.fecha_prestamo | date: 'shortDate' }}
+    </ng-template>
+
+    <ng-template nucleoDataTableCell="acciones" let-row>
+      <p-button icon="pi pi-eye" [text]="true" size="small" aria-label="Ver" (click)="irADetalle(row)" />
+    </ng-template>
+  </nucleo-data-table>
+</div>

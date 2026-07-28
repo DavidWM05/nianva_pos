@@ -1,0 +1,39 @@
+.gift-card-form {
+  padding: var(--nucleo-spacing-6);
+  max-width: 48rem;
+  display: flex;
+  flex-direction: column;
+  gap: var(--nucleo-spacing-4);
+}
+
+.gift-card-form__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.gift-card-form__seccion {
+  display: flex;
+  flex-direction: column;
+  gap: var(--nucleo-spacing-2);
+  padding-bottom: var(--nucleo-spacing-4);
+  border-bottom: 1px solid var(--nucleo-color-surface-200);
+
+  h3 {
+    margin: 0;
+    font-size: var(--nucleo-font-size-sm);
+    text-transform: uppercase;
+    color: var(--nucleo-color-surface-600);
+  }
+}
+
+.gift-card-form__campo {
+  display: flex;
+  flex-direction: column;
+  gap: var(--nucleo-spacing-1);
+
+  label {
+    font-size: var(--nucleo-font-size-sm);
+    font-weight: 500;
+  }
+}

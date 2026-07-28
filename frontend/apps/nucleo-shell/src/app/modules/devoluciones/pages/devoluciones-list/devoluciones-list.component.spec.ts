@@ -24,6 +24,8 @@ describe('DevolucionesListComponent', () => {
       monto_cambio: '0.00',
       diferencia: '-120.00',
       motivo: 'Talla incorrecta',
+      tipo_reembolso: 'efectivo',
+      nota_credito_id: null,
     },
     {
       id: 2,
@@ -35,6 +37,8 @@ describe('DevolucionesListComponent', () => {
       monto_cambio: '400.00',
       diferencia: '280.00',
       motivo: null,
+      tipo_reembolso: null,
+      nota_credito_id: null,
     },
   ];
 

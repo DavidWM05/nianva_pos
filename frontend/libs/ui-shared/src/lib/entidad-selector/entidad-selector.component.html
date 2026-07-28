@@ -1,6 +1,7 @@
 <div class="entidad-selector">
   <label for="entidad-selector-principal">{{ label }}</label>
   <p-autocomplete
+    #autoCompleteHost
     inputId="entidad-selector-principal"
     [(ngModel)]="entidadElegida"
     [suggestions]="sugerencias()"

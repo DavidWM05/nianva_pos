@@ -1,0 +1,56 @@
+<div class="notas-credito-list">
+  <div class="notas-credito-list__header">
+    <h1>Notas de crédito</h1>
+  </div>
+
+  <div class="notas-credito-list__filtros">
+    <nucleo-entidad-selector
+      [buscador]="buscadorCliente"
+      label="Cliente"
+      placeholder="Buscar cliente por nombre..."
+      [valorInicial]="clienteFiltroId()"
+      (seleccionado)="onClienteSeleccionado($event)"
+    />
+  </div>
+
+  <nucleo-data-table
+    [columns]="columns"
+    [value]="notas()"
+    [totalRecords]="total()"
+    [loading]="loading()"
+    [virtualScroll]="false"
+    emptyMessage="No hay notas de crédito que coincidan con la búsqueda."
+    (lazyLoad)="onLazyLoad($event)"
+  >
+    <ng-template nucleoDataTableCell="cliente" let-row>
+      {{ row.cliente?.nombre ?? 'Sin cliente' }}
+    </ng-template>
+
+    <ng-template nucleoDataTableCell="monto_original" let-row>
+      ${{ row.monto_original }}
+    </ng-template>
+
+    <ng-template nucleoDataTableCell="saldo_disponible" let-row>
+      ${{ row.saldo_disponible }}
+    </ng-template>
+
+    <ng-template nucleoDataTableCell="estado" let-row>
+      <nucleo-status-badge
+        [value]="row.estado"
+        [colorMap]="{ activa: 'success', usada_parcial: 'info', usada_total: 'neutral', expirada: 'danger', cancelada: 'danger' }"
+      />
+    </ng-template>
+
+    <ng-template nucleoDataTableCell="fecha_expiracion" let-row>
+      {{ row.fecha_expiracion ? (row.fecha_expiracion | date: 'shortDate') : 'Sin definir' }}
+    </ng-template>
+
+    <ng-template nucleoDataTableCell="created_at" let-row>
+      {{ row.created_at | date: 'shortDate' }}
+    </ng-template>
+
+    <ng-template nucleoDataTableCell="acciones" let-row>
+      <p-button icon="pi pi-eye" [text]="true" size="small" aria-label="Ver" (click)="irADetalle(row)" />
+    </ng-template>
+  </nucleo-data-table>
+</div>

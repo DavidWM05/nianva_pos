@@ -88,4 +88,13 @@ export interface VentaFormPayload {
   pagos: VentaPagoPayload[];
   cupon_codigo?: string | null;
   descuento_manual?: number | null;
+  /**
+   * VentaController::store() no lee un monto para la gift card: aplica
+   * min(saldo_actual, totalEstimado) automaticamente y descuenta esa
+   * cantidad -- no hay forma de saber el saldo real desde el frontend (no
+   * existe un endpoint de "consultar por codigo"), asi que el cajero solo
+   * manda el codigo.
+   */
+  gift_card_codigo?: string | null;
+  nota_credito_id?: number | null;
 }

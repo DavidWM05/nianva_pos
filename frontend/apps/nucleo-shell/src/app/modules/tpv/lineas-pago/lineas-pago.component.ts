@@ -13,6 +13,17 @@ interface LineaPagoForm {
   monto: number | null;
 }
 
+/**
+ * Gift Card y Nota de Credito son metodos_pago reales (ver
+ * MetodosPagoSeeder), pero VentaController::store() los procesa de forma
+ * especial via `gift_card_codigo`/`nota_credito_id` (valida saldo/vigencia
+ * y descuenta) -- si aparecieran aqui como una linea de pago generica mas,
+ * el cajero podria "cobrar" con una gift card sin validar su codigo ni
+ * descontar saldo real. Se excluyen de este selector generico; la pantalla
+ * de venta los captura por separado (ver VentaComponent).
+ */
+const METODOS_EXCLUIDOS_DE_PAGO_GENERICO = ['Gift Card', 'Nota de Crédito'];
+
 export interface LineasPagoCambio {
   pagos: VentaPagoPayload[];
   cuadra: boolean;
@@ -64,7 +75,9 @@ export class LineasPagoComponent implements OnInit, OnChanges {
   protected readonly pagoCuadra = computed(() => centavos(this.sumaPagos()) === centavos(this.montoObjetivoSignal()));
 
   ngOnInit(): void {
-    this.metodoPagoService.listar().subscribe((metodos) => this.metodosPago.set(metodos));
+    this.metodoPagoService.listar().subscribe((metodos) =>
+      this.metodosPago.set(metodos.filter((m) => !METODOS_EXCLUIDOS_DE_PAGO_GENERICO.includes(m.nombre))),
+    );
   }
 
   ngOnChanges(): void {

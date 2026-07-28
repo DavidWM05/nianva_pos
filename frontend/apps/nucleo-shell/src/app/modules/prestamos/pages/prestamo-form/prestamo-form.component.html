@@ -1,0 +1,63 @@
+<div class="prestamo-form">
+  <div class="prestamo-form__header">
+    <h2>Nuevo préstamo</h2>
+    <a routerLink="/prestamos">Volver a la lista</a>
+  </div>
+
+  <section class="prestamo-form__seccion">
+    <div class="prestamo-form__campo">
+      <label for="prestamo-referencia">Referencia (nombre de la persona o entidad, opcional)</label>
+      <input pInputText type="text" id="prestamo-referencia" [ngModel]="referencia()" (ngModelChange)="referencia.set($event)" />
+    </div>
+    <div class="prestamo-form__campo">
+      <label for="prestamo-monto">Monto</label>
+      <input
+        pInputText
+        type="number"
+        min="0.01"
+        step="0.01"
+        id="prestamo-monto"
+        [ngModel]="monto()"
+        (ngModelChange)="monto.set($event)"
+      />
+    </div>
+    <div class="prestamo-form__campo">
+      <label for="prestamo-interes">Interés % (opcional)</label>
+      <input
+        pInputText
+        type="number"
+        min="0"
+        max="100"
+        step="0.01"
+        id="prestamo-interes"
+        [ngModel]="interes()"
+        (ngModelChange)="interes.set($event)"
+      />
+    </div>
+    <div class="prestamo-form__campo">
+      <label for="prestamo-fecha">Fecha del préstamo</label>
+      <p-datepicker inputId="prestamo-fecha" dateFormat="yy-mm-dd" [ngModel]="fechaPrestamo()" (ngModelChange)="fechaPrestamo.set($event)" />
+    </div>
+    <div class="prestamo-form__campo">
+      <label for="prestamo-fecha-vencimiento">Fecha de vencimiento (opcional)</label>
+      <p-datepicker
+        inputId="prestamo-fecha-vencimiento"
+        dateFormat="yy-mm-dd"
+        [ngModel]="fechaVencimiento()"
+        (ngModelChange)="fechaVencimiento.set($event)"
+      />
+    </div>
+    <div class="prestamo-form__campo">
+      <label for="prestamo-notas">Notas (opcional)</label>
+      <textarea pTextarea id="prestamo-notas" rows="2" [ngModel]="notas()" (ngModelChange)="notas.set($event)"></textarea>
+    </div>
+  </section>
+
+  <p-button
+    label="Registrar préstamo"
+    icon="pi pi-check"
+    [loading]="guardando()"
+    [disabled]="!monto() || monto()! <= 0 || !fechaPrestamo()"
+    (click)="crear()"
+  />
+</div>

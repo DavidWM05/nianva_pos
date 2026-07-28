@@ -11,7 +11,10 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * Sin tenant_id propio: el aislamiento se resuelve via BelongsToTenantViaRelacion
  * consultando planPagoCliente.tenant_id (ver tenantRelacion()).
  */
-#[Fillable(['plan_pago_cliente_id', 'numero_cuota', 'monto', 'fecha_vencimiento', 'fecha_pago', 'estado'])]
+#[Fillable([
+    'plan_pago_cliente_id', 'numero_cuota', 'monto', 'monto_capital',
+    'monto_interes', 'fecha_vencimiento', 'fecha_pago', 'fecha_pago_real', 'estado',
+])]
 class PlanPagoClienteCuota extends Model
 {
     use BelongsToTenantViaRelacion;
@@ -24,8 +27,11 @@ class PlanPagoClienteCuota extends Model
     {
         return [
             'monto' => 'decimal:2',
+            'monto_capital' => 'decimal:2',
+            'monto_interes' => 'decimal:2',
             'fecha_vencimiento' => 'date',
             'fecha_pago' => 'datetime',
+            'fecha_pago_real' => 'datetime',
         ];
     }
 

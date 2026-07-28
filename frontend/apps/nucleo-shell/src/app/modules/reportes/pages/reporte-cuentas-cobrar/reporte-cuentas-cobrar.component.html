@@ -1,0 +1,68 @@
+<div class="reporte-cxc">
+  <h1>Reporte de Cuentas por Cobrar</h1>
+
+  @if (cargando()) {
+    <p>Cargando reporte...</p>
+  } @else if (reporte(); as r) {
+    <div class="reporte-cxc__tiles">
+      <div class="reporte-cxc__tile">
+        <h2>Saldo pendiente</h2>
+        <p class="reporte-cxc__tile-valor">${{ r.total_pendiente }}</p>
+      </div>
+      <div class="reporte-cxc__tile">
+        <h2>Saldo vencido</h2>
+        <p class="reporte-cxc__tile-valor reporte-cxc__tile-valor--vencido">${{ r.total_vencido }}</p>
+      </div>
+    </div>
+
+    <section class="reporte-cxc__seccion">
+      <h2>Antigüedad de saldos</h2>
+      <table class="reporte-cxc__tabla">
+        <thead>
+          <tr>
+            <th>Al día</th>
+            <th>1-30 días</th>
+            <th>31-60 días</th>
+            <th>61-90 días</th>
+            <th>90+ días</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>${{ r.por_antiguedad.al_dia }}</td>
+            <td>${{ r.por_antiguedad.vencido_1_30 }}</td>
+            <td>${{ r.por_antiguedad.vencido_31_60 }}</td>
+            <td>${{ r.por_antiguedad.vencido_61_90 }}</td>
+            <td>${{ r.por_antiguedad.vencido_90_mas }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="reporte-cxc__seccion">
+      <h2>Clientes con mayor saldo pendiente</h2>
+      @if (r.por_cliente.length > 0) {
+        <table class="reporte-cxc__tabla">
+          <thead>
+            <tr>
+              <th>Cliente</th>
+              <th>Saldo pendiente</th>
+              <th>Cuentas</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (fila of r.por_cliente; track fila.cliente_id) {
+              <tr>
+                <td>{{ fila.cliente_nombre ?? ('Cliente #' + fila.cliente_id) }}</td>
+                <td>${{ fila.saldo_pendiente }}</td>
+                <td>{{ fila.cuentas_pendientes }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      } @else {
+        <p class="reporte-cxc__aviso">No hay cuentas por cobrar pendientes.</p>
+      }
+    </section>
+  }
+</div>

@@ -12,7 +12,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * Sin tenant_id propio: el aislamiento se resuelve via BelongsToTenantViaRelacion
  * consultando producto.tenant_id (ver tenantRelacion()).
  */
-#[Fillable(['producto_id', 'talla', 'color', 'codigo_barras', 'activo'])]
+#[Fillable(['producto_id', 'talla', 'color', 'codigo_barras', 'activo', 'unidad_medida_id'])]
 class ProductoVariante extends Model
 {
     use BelongsToTenantViaRelacion;

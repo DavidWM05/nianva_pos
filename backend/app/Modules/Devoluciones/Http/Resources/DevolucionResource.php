@@ -36,6 +36,8 @@ class DevolucionResource extends JsonResource
             'monto_cambio' => $this->monto_cambio,
             'diferencia' => $this->diferencia,
             'motivo' => $this->motivo,
+            'tipo_reembolso' => $this->tipo_reembolso,
+            'nota_credito_id' => $this->nota_credito_id,
             'items' => $this->whenLoaded('items', fn () => $this->items->map(fn ($item) => [
                 'id' => $item->id,
                 'tipo' => $item->tipo,

@@ -1,0 +1,26 @@
+<div class="recetas-list">
+  <div class="recetas-list__header">
+    <h1>Recetas</h1>
+    @if (permisos().crear) {
+      <a routerLink="/produccion/recetas/nueva"><p-button label="Nueva receta" icon="pi pi-plus" /></a>
+    }
+  </div>
+
+  <nucleo-data-table
+    [columns]="columns"
+    [value]="recetas()"
+    [totalRecords]="total()"
+    [loading]="loading()"
+    [virtualScroll]="false"
+    emptyMessage="No hay recetas registradas."
+    (lazyLoad)="onLazyLoad($event)"
+  >
+    <ng-template nucleoDataTableCell="variante_id" let-row>
+      Variante #{{ row.variante_id }}
+    </ng-template>
+
+    <ng-template nucleoDataTableCell="ingredientes" let-row>
+      {{ row.ingredientes?.length ?? 0 }}
+    </ng-template>
+  </nucleo-data-table>
+</div>

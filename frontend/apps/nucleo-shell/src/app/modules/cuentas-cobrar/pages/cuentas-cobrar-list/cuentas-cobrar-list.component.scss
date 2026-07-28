@@ -1,0 +1,40 @@
+.cuentas-cobrar-list {
+  padding: var(--nucleo-spacing-6);
+}
+
+.cuentas-cobrar-list__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--nucleo-spacing-4);
+
+  h1 {
+    margin: 0;
+    font-size: var(--nucleo-font-size-2xl);
+  }
+}
+
+.cuentas-cobrar-list__filtros {
+  display: flex;
+  align-items: center;
+  gap: var(--nucleo-spacing-3);
+  margin-bottom: var(--nucleo-spacing-4);
+}
+
+.cuentas-cobrar-list__buscar {
+  width: 100%;
+  max-width: 240px;
+}
+
+.cuentas-cobrar-list__vencidas {
+  display: flex;
+  align-items: center;
+  gap: var(--nucleo-spacing-2);
+  font-size: var(--nucleo-font-size-sm);
+}
+
+.cuentas-cobrar-list__vencida {
+  color: var(--nucleo-color-danger);
+  font-size: var(--nucleo-font-size-xs);
+  margin-left: var(--nucleo-spacing-1);
+}

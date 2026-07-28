@@ -14,6 +14,7 @@ import { ProductoDetalleComponent } from './producto-detalle.component';
 
 // jsdom no implementa ResizeObserver -- lo usa PrimeNG's TabList detras de
 // RecordTabsComponent (ver el mismo stub en cliente-detalle.component.spec.ts).
+/* eslint-disable @typescript-eslint/no-empty-function */
 if (typeof globalThis.ResizeObserver === 'undefined') {
   globalThis.ResizeObserver = class {
     observe(): void {}
@@ -21,6 +22,7 @@ if (typeof globalThis.ResizeObserver === 'undefined') {
     disconnect(): void {}
   } as unknown as typeof ResizeObserver;
 }
+/* eslint-enable @typescript-eslint/no-empty-function */
 
 describe('ProductoDetalleComponent', () => {
   let fixture: ComponentFixture<ProductoDetalleComponent>;

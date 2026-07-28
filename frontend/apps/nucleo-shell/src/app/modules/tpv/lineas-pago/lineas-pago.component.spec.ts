@@ -106,4 +106,33 @@ describe('LineasPagoComponent', () => {
 
     expect(fixture.componentInstance['pagos']()).toEqual([{ metodo_pago_id: null, monto: null }]);
   });
+
+  it('excluye Gift Card y Nota de Crédito del selector generico -- VentaController::store() los procesa aparte via gift_card_codigo/nota_credito_id, no como un metodo_pago_id mas', async () => {
+    await TestBed.configureTestingModule({
+      imports: [LineasPagoComponent],
+      providers: [
+        provideAnimationsAsync(),
+        providePrimeNG(),
+        {
+          provide: MetodoPagoService,
+          useValue: {
+            listar: vi.fn().mockReturnValue(
+              of([
+                { id: 1, nombre: 'Efectivo', tipo: 'efectivo' },
+                { id: 4, nombre: 'Gift Card', tipo: 'digital' },
+                { id: 5, nombre: 'Nota de Crédito', tipo: 'digital' },
+              ]),
+            ),
+          },
+        },
+      ],
+    }).compileComponents();
+
+    fixture = TestBed.createComponent(LineasPagoComponent);
+    fixture.componentInstance.montoObjetivo = 100;
+    fixture.componentInstance.ngOnChanges();
+    fixture.detectChanges();
+
+    expect(fixture.componentInstance['metodosPago']()).toEqual([{ id: 1, nombre: 'Efectivo', tipo: 'efectivo' }]);
+  });
 });

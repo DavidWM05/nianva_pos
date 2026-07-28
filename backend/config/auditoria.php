@@ -2,7 +2,21 @@
 
 use App\Modules\Apartados\Models\Apartado;
 use App\Modules\Crm\Models\Cliente;
+use App\Modules\Cotizaciones\Models\Cotizacion;
 use App\Modules\Crm\Models\PlanPagoCliente;
+use App\Modules\CrmAvanzado\Models\CrmInteraccion;
+use App\Modules\CuentasCobrar\Models\CuentaCobrar;
+use App\Modules\CuentasPagar\Models\CuentaPagar;
+use App\Modules\Delivery\Models\Pedido;
+use App\Modules\GiftCards\Models\GiftCard;
+use App\Modules\NotasCredito\Models\NotaCredito;
+use App\Modules\Payroll\Models\Empleado;
+use App\Modules\Payroll\Models\Nomina;
+use App\Modules\Prestamos\Models\Prestamo;
+use App\Modules\Produccion\Models\Insumo;
+use App\Modules\Produccion\Models\OrdenProduccion;
+use App\Modules\Produccion\Models\Receta;
+use App\Modules\Produccion\Models\TransformacionProducto;
 use App\Modules\Devoluciones\Models\Devolucion;
 use App\Modules\Gastos\Models\Gasto;
 use App\Modules\Inventario\Models\Compra;
@@ -13,6 +27,7 @@ use App\Modules\Precios\Models\Cupon;
 use App\Modules\Precios\Models\ReglaPrecio;
 use App\Modules\Tpv\Models\CajaSesion;
 use App\Modules\Tpv\Models\Venta;
+use App\Modules\UnidadesMedida\Models\UnidadMedida;
 
 return [
     /*
@@ -96,8 +111,23 @@ return [
         PlanPagoCliente::class,
         Venta::class,
         CajaSesion::class,
+        Cotizacion::class,
+        CrmInteraccion::class,
+        CuentaCobrar::class,
+        CuentaPagar::class,
+        Pedido::class,
+        GiftCard::class,
+        NotaCredito::class,
+        Empleado::class,
+        Nomina::class,
+        Prestamo::class,
+        Insumo::class,
+        Receta::class,
+        OrdenProduccion::class,
+        TransformacionProducto::class,
         Apartado::class,
         Devolucion::class,
         Gasto::class,
+        UnidadMedida::class,
     ],
 ];

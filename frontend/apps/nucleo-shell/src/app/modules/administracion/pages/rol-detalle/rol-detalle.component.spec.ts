@@ -9,6 +9,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 // jsdom no implementa ResizeObserver -- lo usa PrimeNG's TabList detras de
 // RecordTabsComponent (ver el mismo stub en cliente-detalle.component.spec.ts).
+/* eslint-disable @typescript-eslint/no-empty-function */
 if (typeof globalThis.ResizeObserver === 'undefined') {
   globalThis.ResizeObserver = class {
     observe(): void {}
@@ -16,6 +17,7 @@ if (typeof globalThis.ResizeObserver === 'undefined') {
     disconnect(): void {}
   } as unknown as typeof ResizeObserver;
 }
+/* eslint-enable @typescript-eslint/no-empty-function */
 
 import { PermisoService } from '../../permiso.service';
 import { RolService } from '../../rol.service';
@@ -59,7 +61,7 @@ describe('RolDetalleComponent', () => {
   });
 
   it('el tab de Auditoría no renderiza nucleo-audit-log-viewer hasta que el bloque @defer se activa', async () => {
-    let bloques = await fixture.getDeferBlocks();
+    const bloques = await fixture.getDeferBlocks();
     expect(bloques).toHaveLength(1);
 
     expect(fixture.nativeElement.querySelector('nucleo-audit-log-viewer')).toBeNull();

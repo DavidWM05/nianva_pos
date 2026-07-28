@@ -1,0 +1,46 @@
+.insumos-list {
+  padding: var(--nucleo-spacing-6);
+}
+
+.insumos-list__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--nucleo-spacing-4);
+
+  h1 {
+    margin: 0;
+    font-size: var(--nucleo-font-size-2xl);
+  }
+}
+
+.insumos-list__filtros {
+  display: flex;
+  align-items: center;
+  gap: var(--nucleo-spacing-3);
+  margin-bottom: var(--nucleo-spacing-4);
+}
+
+.insumos-list__buscar {
+  width: 100%;
+  max-width: 240px;
+}
+
+.insumos-list__stock-bajo {
+  display: flex;
+  align-items: center;
+  gap: var(--nucleo-spacing-2);
+  font-size: var(--nucleo-font-size-sm);
+}
+
+.insumos-list__campo {
+  display: flex;
+  flex-direction: column;
+  gap: var(--nucleo-spacing-1);
+  margin-bottom: var(--nucleo-spacing-3);
+
+  label {
+    font-size: var(--nucleo-font-size-sm);
+    font-weight: 500;
+  }
+}

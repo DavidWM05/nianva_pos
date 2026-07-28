@@ -1,0 +1,120 @@
+<div class="ordenes-list">
+  <div class="ordenes-list__header">
+    <h1>Órdenes de Producción</h1>
+    @if (permisos().crear) {
+      <p-button label="Nueva orden" icon="pi pi-plus" (click)="abrirFormulario()" />
+    }
+  </div>
+
+  <nucleo-data-table
+    [columns]="columns"
+    [value]="ordenes()"
+    [totalRecords]="total()"
+    [loading]="loading()"
+    [virtualScroll]="false"
+    emptyMessage="No hay órdenes de producción registradas."
+    (lazyLoad)="onLazyLoad($event)"
+  >
+    <ng-template nucleoDataTableCell="receta" let-row>
+      {{ row.receta?.nombre ?? 'Sin receta' }}
+    </ng-template>
+
+    <ng-template nucleoDataTableCell="cantidad_producida" let-row>
+      {{ row.cantidad_producida ?? '—' }}
+    </ng-template>
+
+    <ng-template nucleoDataTableCell="estado" let-row>
+      <nucleo-status-badge
+        [value]="row.estado"
+        [colorMap]="{
+          pendiente: 'neutral',
+          en_proceso: 'info',
+          completada: 'success',
+          cancelada: 'danger',
+        }"
+      />
+    </ng-template>
+
+    <ng-template nucleoDataTableCell="fecha_programada" let-row>
+      {{ row.fecha_programada ?? '—' }}
+    </ng-template>
+
+    <ng-template nucleoDataTableCell="acciones" let-row>
+      @if (row.estado === 'pendiente') {
+        <p-button icon="pi pi-play" [text]="true" size="small" aria-label="Iniciar" (click)="iniciar(row)" />
+      }
+      @if (row.estado === 'pendiente' || row.estado === 'en_proceso') {
+        <p-button icon="pi pi-check" [text]="true" size="small" aria-label="Completar" (click)="abrirCompletar(row)" />
+        <p-button icon="pi pi-times" [text]="true" size="small" severity="danger" aria-label="Cancelar" (click)="cancelar(row)" />
+      }
+    </ng-template>
+  </nucleo-data-table>
+</div>
+
+<p-dialog
+  header="Nueva orden de producción"
+  [visible]="mostrarFormulario()"
+  (visibleChange)="cerrarFormulario()"
+  [modal]="true"
+  [dismissableMask]="true"
+  [style]="{ width: '28rem' }"
+>
+  <div class="ordenes-list__campo">
+    <nucleo-entidad-selector
+      [buscador]="buscadorReceta"
+      label="Receta"
+      placeholder="Buscar receta por nombre..."
+      [valorInicial]="recetaId()"
+      (seleccionado)="recetaId.set($event)"
+    />
+  </div>
+  <div class="ordenes-list__campo">
+    <label for="orden-cantidad">Cantidad programada</label>
+    <input pInputText type="number" min="1" step="1" id="orden-cantidad" [ngModel]="cantidadProgramada()" (ngModelChange)="cantidadProgramada.set($event)" />
+  </div>
+  <div class="ordenes-list__campo">
+    <label for="orden-fecha">Fecha programada (opcional)</label>
+    <input pInputText type="date" id="orden-fecha" [ngModel]="fechaProgramada()" (ngModelChange)="fechaProgramada.set($event)" />
+  </div>
+  <div class="ordenes-list__campo">
+    <label for="orden-notas">Notas (opcional)</label>
+    <textarea pTextarea id="orden-notas" rows="2" [ngModel]="notas()" (ngModelChange)="notas.set($event)"></textarea>
+  </div>
+  <p-button
+    label="Crear orden"
+    icon="pi pi-check"
+    [loading]="guardando()"
+    [disabled]="recetaId() === null || !cantidadProgramada()"
+    (click)="guardar()"
+  />
+</p-dialog>
+
+<p-dialog
+  header="Completar orden"
+  [visible]="ordenACompletar() !== null"
+  (visibleChange)="cerrarCompletar()"
+  [modal]="true"
+  [dismissableMask]="true"
+  [style]="{ width: '24rem' }"
+>
+  <p>Se descontará el stock de insumos (FIFO por fecha de vencimiento) y se incrementará el stock del producto terminado.</p>
+  <div class="ordenes-list__campo">
+    <label for="orden-cantidad-producida">Cantidad producida</label>
+    <input
+      pInputText
+      type="number"
+      min="1"
+      step="1"
+      id="orden-cantidad-producida"
+      [ngModel]="cantidadProducida()"
+      (ngModelChange)="cantidadProducida.set($event)"
+    />
+  </div>
+  <p-button
+    label="Completar"
+    icon="pi pi-check"
+    [loading]="completando()"
+    [disabled]="!cantidadProducida()"
+    (click)="confirmarCompletar()"
+  />
+</p-dialog>

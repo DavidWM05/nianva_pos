@@ -1,0 +1,72 @@
+<div class="pedido-form">
+  <div class="pedido-form__header">
+    <h2>Nuevo pedido</h2>
+    <a routerLink="/pedidos">Volver a la lista</a>
+  </div>
+
+  <section class="pedido-form__seccion">
+    <h3>Cliente</h3>
+    <nucleo-entidad-selector
+      [buscador]="buscadorCliente"
+      label="Cliente"
+      placeholder="Buscar cliente por nombre..."
+      [valorInicial]="clienteId()"
+      (seleccionado)="clienteId.set($event)"
+    />
+  </section>
+
+  <section class="pedido-form__seccion">
+    <h3>Entrega</h3>
+    <div class="pedido-form__campo">
+      <label for="pedido-direccion">Dirección de entrega (opcional)</label>
+      <textarea
+        pTextarea
+        id="pedido-direccion"
+        rows="2"
+        [ngModel]="direccionEntrega()"
+        (ngModelChange)="direccionEntrega.set($event)"
+      ></textarea>
+    </div>
+    <div class="pedido-form__campo">
+      <label for="pedido-referencia">Referencia de la dirección (opcional)</label>
+      <input pInputText type="text" id="pedido-referencia" maxlength="255" [ngModel]="referencia()" (ngModelChange)="referencia.set($event)" />
+    </div>
+    <div class="pedido-form__campo">
+      <label for="pedido-costo-delivery">Costo de envío (opcional)</label>
+      <input
+        pInputText
+        type="number"
+        id="pedido-costo-delivery"
+        min="0"
+        step="0.01"
+        [ngModel]="costoDelivery()"
+        (ngModelChange)="costoDelivery.set($event)"
+      />
+    </div>
+    <div class="pedido-form__campo">
+      <label for="pedido-tiempo-estimado">Tiempo estimado en minutos (opcional)</label>
+      <input
+        pInputText
+        type="number"
+        id="pedido-tiempo-estimado"
+        min="1"
+        [ngModel]="tiempoEstimado()"
+        (ngModelChange)="tiempoEstimado.set($event)"
+      />
+    </div>
+    <div class="pedido-form__campo">
+      <label for="pedido-notas">Notas (opcional)</label>
+      <textarea pTextarea id="pedido-notas" rows="2" [ngModel]="notas()" (ngModelChange)="notas.set($event)"></textarea>
+    </div>
+  </section>
+
+  <section class="pedido-form__seccion">
+    <h3>Items (opcional)</h3>
+    <nucleo-lineas-cotizacion [valorInicial]="null" (cambio)="onLineasCambio($event)" />
+  </section>
+
+  <div class="pedido-form__acciones">
+    <p-button label="Crear pedido" icon="pi pi-check" [loading]="guardando()" [disabled]="clienteId() === null" (click)="crear()" />
+    <a routerLink="/pedidos"><p-button label="Cancelar" [text]="true" /></a>
+  </div>
+</div>

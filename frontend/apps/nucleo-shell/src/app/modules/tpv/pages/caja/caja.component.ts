@@ -8,7 +8,7 @@ import { Dialog } from 'primeng/dialog';
 import { InputText } from 'primeng/inputtext';
 
 import { CajaService } from '../../caja.service';
-import { CajaActual, CajaSesion } from '../../caja.types';
+import { CajaActual, CajaDesglose, CajaSesion } from '../../caja.types';
 import { Gasto } from '../../gasto.types';
 import { GastoService } from '../../gasto.service';
 import { ErrorNegocioTpv } from '../../tpv-error.types';
@@ -52,6 +52,7 @@ export class CajaComponent implements OnInit {
   protected readonly cerrando = signal(false);
 
   protected readonly cajaRecienCerrada = signal<CajaSesion | null>(null);
+  protected readonly desgloseCierre = signal<CajaDesglose | null>(null);
 
   protected readonly gastos = signal<Gasto[]>([]);
   protected readonly cargandoGastos = signal(false);
@@ -121,10 +122,11 @@ export class CajaComponent implements OnInit {
     this.cerrando.set(true);
 
     this.cajaService.cerrar(sesion.id, monto).subscribe({
-      next: (cerrada) => {
+      next: ({ sesion: cerrada, desglose }) => {
         this.cerrando.set(false);
         this.montoFisico.set(null);
         this.cajaRecienCerrada.set(cerrada);
+        this.desgloseCierre.set(desglose);
         this.cargarEstado();
       },
       error: (error: HttpErrorResponse) => {
@@ -136,6 +138,7 @@ export class CajaComponent implements OnInit {
 
   cerrarResumenDeCierre(): void {
     this.cajaRecienCerrada.set(null);
+    this.desgloseCierre.set(null);
   }
 
   abrirModalGasto(): void {

@@ -18,9 +18,13 @@ class MetodosPagoSeeder extends Seeder
      * @var list<array{nombre: string, tipo: string}>
      */
     private const METODOS = [
-        ['nombre' => 'Efectivo', 'tipo' => 'efectivo'],
-        ['nombre' => 'Tarjeta', 'tipo' => 'tarjeta'],
-        ['nombre' => 'Transferencia', 'tipo' => 'transferencia'],
+        ['nombre' => 'Efectivo', 'tipo' => 'efectivo', 'incluir_en_financiero' => true],
+        ['nombre' => 'Tarjeta', 'tipo' => 'tarjeta', 'incluir_en_financiero' => true],
+        ['nombre' => 'Transferencia', 'tipo' => 'transferencia', 'incluir_en_financiero' => true],
+        ['nombre' => 'Gift Card', 'tipo' => 'digital', 'incluir_en_financiero' => false],
+        ['nombre' => 'Nota de Crédito', 'tipo' => 'digital', 'incluir_en_financiero' => false],
+        ['nombre' => 'Yape / Plin', 'tipo' => 'digital', 'incluir_en_financiero' => false],
+        ['nombre' => 'Cheque', 'tipo' => 'otro', 'incluir_en_financiero' => true],
     ];
 
     public function run(): void
@@ -28,7 +32,7 @@ class MetodosPagoSeeder extends Seeder
         foreach (self::METODOS as $metodo) {
             MetodoPago::firstOrCreate(
                 ['tenant_id' => null, 'nombre' => $metodo['nombre']],
-                ['tipo' => $metodo['tipo'], 'incluir_en_financiero' => true, 'activo' => true],
+                ['tipo' => $metodo['tipo'], 'incluir_en_financiero' => $metodo['incluir_en_financiero'], 'activo' => true],
             );
         }
     }

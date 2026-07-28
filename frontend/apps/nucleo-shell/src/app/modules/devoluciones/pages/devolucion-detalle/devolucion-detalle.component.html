@@ -37,6 +37,19 @@
                 Sin diferencia
               }
             </dd>
+            @if (+devolucionActual.diferencia < 0 && devolucionActual.tipo_reembolso) {
+              <dt>Método de reembolso</dt>
+              <dd>
+                @if (devolucionActual.tipo_reembolso === 'nota_credito' && devolucionActual.nota_credito_id) {
+                  Nota de crédito
+                  <a [routerLink]="['/notas-credito', devolucionActual.nota_credito_id]">
+                    #{{ devolucionActual.nota_credito_id }}
+                  </a>
+                } @else {
+                  Efectivo / método original
+                }
+              </dd>
+            }
             @if (devolucionActual.motivo) {
               <dt>Motivo</dt>
               <dd>{{ devolucionActual.motivo }}</dd>

@@ -429,6 +429,411 @@ export const appRoutes: Route[] = [
         redirectTo: 'tpv/caja',
       },
       {
+        // Solo lectura -- NotaCreditoController no tiene store()/update()/
+        // destroy() (ver el docblock de NotaCreditoService): las notas se
+        // generan unicamente desde una Devolucion. Sin rutas 'crear'/'editar'.
+        path: 'notas-credito',
+        data: { breadcrumb: 'Notas de Crédito' },
+        children: [
+          {
+            path: '',
+            pathMatch: 'full',
+            title: 'Núcleo · Notas de Crédito',
+            loadComponent: () =>
+              import('./modules/notas-credito/pages/notas-credito-list/notas-credito-list.component').then(
+                (m) => m.NotasCreditoListComponent,
+              ),
+          },
+          {
+            path: ':id',
+            title: 'Núcleo · Detalle de nota de crédito',
+            data: { breadcrumb: 'Detalle' },
+            loadComponent: () =>
+              import('./modules/notas-credito/pages/nota-credito-detalle/nota-credito-detalle.component').then(
+                (m) => m.NotaCreditoDetalleComponent,
+              ),
+          },
+        ],
+      },
+      {
+        path: 'gift-cards',
+        data: { breadcrumb: 'Gift Cards' },
+        children: [
+          {
+            path: '',
+            pathMatch: 'full',
+            title: 'Núcleo · Gift Cards',
+            loadComponent: () =>
+              import('./modules/gift-cards/pages/gift-cards-list/gift-cards-list.component').then(
+                (m) => m.GiftCardsListComponent,
+              ),
+          },
+          {
+            // Ruta estatica ANTES de :id -- mismo motivo que productos/nuevo.
+            path: 'emitir',
+            title: 'Núcleo · Emitir gift card',
+            data: { breadcrumb: 'Emitir gift card' },
+            loadComponent: () =>
+              import('./modules/gift-cards/pages/gift-card-form/gift-card-form.component').then(
+                (m) => m.GiftCardFormComponent,
+              ),
+          },
+          {
+            path: ':id',
+            title: 'Núcleo · Detalle de gift card',
+            data: { breadcrumb: 'Detalle' },
+            loadComponent: () =>
+              import('./modules/gift-cards/pages/gift-card-detalle/gift-card-detalle.component').then(
+                (m) => m.GiftCardDetalleComponent,
+              ),
+          },
+        ],
+      },
+      {
+        // Solo lectura + acciones -- CuentaCobrarController no tiene
+        // store() (ver el docblock de CuentaCobrarService). Sin ruta 'crear'.
+        path: 'cuentas-cobrar',
+        data: { breadcrumb: 'Cuentas por Cobrar' },
+        children: [
+          {
+            path: '',
+            pathMatch: 'full',
+            title: 'Núcleo · Cuentas por Cobrar',
+            loadComponent: () =>
+              import('./modules/cuentas-cobrar/pages/cuentas-cobrar-list/cuentas-cobrar-list.component').then(
+                (m) => m.CuentasCobrarListComponent,
+              ),
+          },
+          {
+            path: ':id',
+            title: 'Núcleo · Detalle de cuenta por cobrar',
+            data: { breadcrumb: 'Detalle' },
+            loadComponent: () =>
+              import('./modules/cuentas-cobrar/pages/cuenta-cobrar-detalle/cuenta-cobrar-detalle.component').then(
+                (m) => m.CuentaCobrarDetalleComponent,
+              ),
+          },
+        ],
+      },
+      {
+        // Solo lectura + acciones -- CuentaPagarController no tiene
+        // store() (ver el docblock de CuentaPagarService). Sin ruta 'crear'.
+        path: 'cuentas-pagar',
+        data: { breadcrumb: 'Cuentas por Pagar' },
+        children: [
+          {
+            path: '',
+            pathMatch: 'full',
+            title: 'Núcleo · Cuentas por Pagar',
+            loadComponent: () =>
+              import('./modules/cuentas-pagar/pages/cuentas-pagar-list/cuentas-pagar-list.component').then(
+                (m) => m.CuentasPagarListComponent,
+              ),
+          },
+          {
+            path: ':id',
+            title: 'Núcleo · Detalle de cuenta por pagar',
+            data: { breadcrumb: 'Detalle' },
+            loadComponent: () =>
+              import('./modules/cuentas-pagar/pages/cuenta-pagar-detalle/cuenta-pagar-detalle.component').then(
+                (m) => m.CuentaPagarDetalleComponent,
+              ),
+          },
+        ],
+      },
+      {
+        path: 'prestamos',
+        data: { breadcrumb: 'Préstamos' },
+        children: [
+          {
+            path: '',
+            pathMatch: 'full',
+            title: 'Núcleo · Préstamos',
+            loadComponent: () =>
+              import('./modules/prestamos/pages/prestamos-list/prestamos-list.component').then(
+                (m) => m.PrestamosListComponent,
+              ),
+          },
+          {
+            path: 'nuevo',
+            title: 'Núcleo · Nuevo préstamo',
+            data: { breadcrumb: 'Nuevo préstamo' },
+            loadComponent: () =>
+              import('./modules/prestamos/pages/prestamo-form/prestamo-form.component').then(
+                (m) => m.PrestamoFormComponent,
+              ),
+          },
+          {
+            path: ':id',
+            title: 'Núcleo · Detalle de préstamo',
+            data: { breadcrumb: 'Detalle' },
+            loadComponent: () =>
+              import('./modules/prestamos/pages/prestamo-detalle/prestamo-detalle.component').then(
+                (m) => m.PrestamoDetalleComponent,
+              ),
+          },
+        ],
+      },
+      {
+        path: 'payroll',
+        data: { breadcrumb: 'Nómina' },
+        children: [
+          {
+            path: 'empleados',
+            pathMatch: 'full',
+            title: 'Núcleo · Empleados',
+            data: { breadcrumb: 'Empleados' },
+            loadComponent: () =>
+              import('./modules/payroll/pages/empleados-list/empleados-list.component').then(
+                (m) => m.EmpleadosListComponent,
+              ),
+          },
+          {
+            path: 'empleados/:id',
+            title: 'Núcleo · Detalle de empleado',
+            data: { breadcrumb: 'Detalle' },
+            loadComponent: () =>
+              import('./modules/payroll/pages/empleado-detalle/empleado-detalle.component').then(
+                (m) => m.EmpleadoDetalleComponent,
+              ),
+          },
+          {
+            path: 'nominas',
+            pathMatch: 'full',
+            title: 'Núcleo · Nóminas',
+            data: { breadcrumb: 'Nóminas' },
+            loadComponent: () =>
+              import('./modules/payroll/pages/nominas-list/nominas-list.component').then(
+                (m) => m.NominasListComponent,
+              ),
+          },
+          {
+            path: 'nominas/:id',
+            title: 'Núcleo · Detalle de nómina',
+            data: { breadcrumb: 'Detalle' },
+            loadComponent: () =>
+              import('./modules/payroll/pages/nomina-detalle/nomina-detalle.component').then(
+                (m) => m.NominaDetalleComponent,
+              ),
+          },
+        ],
+      },
+      {
+        path: 'pedidos',
+        data: { breadcrumb: 'Pedidos' },
+        children: [
+          {
+            path: '',
+            pathMatch: 'full',
+            title: 'Núcleo · Pedidos',
+            loadComponent: () =>
+              import('./modules/delivery/pages/pedidos-list/pedidos-list.component').then(
+                (m) => m.PedidosListComponent,
+              ),
+          },
+          {
+            path: 'nuevo',
+            title: 'Núcleo · Nuevo pedido',
+            data: { breadcrumb: 'Nuevo pedido' },
+            loadComponent: () =>
+              import('./modules/delivery/pages/pedido-form/pedido-form.component').then(
+                (m) => m.PedidoFormComponent,
+              ),
+          },
+          {
+            path: ':id',
+            title: 'Núcleo · Detalle de pedido',
+            data: { breadcrumb: 'Detalle' },
+            loadComponent: () =>
+              import('./modules/delivery/pages/pedido-detalle/pedido-detalle.component').then(
+                (m) => m.PedidoDetalleComponent,
+              ),
+          },
+        ],
+      },
+      {
+        path: 'produccion',
+        data: { breadcrumb: 'Producción' },
+        children: [
+          {
+            path: 'insumos',
+            pathMatch: 'full',
+            title: 'Núcleo · Insumos',
+            data: { breadcrumb: 'Insumos' },
+            loadComponent: () =>
+              import('./modules/produccion/pages/insumos-list/insumos-list.component').then(
+                (m) => m.InsumosListComponent,
+              ),
+          },
+          {
+            path: 'recetas',
+            pathMatch: 'full',
+            title: 'Núcleo · Recetas',
+            data: { breadcrumb: 'Recetas' },
+            loadComponent: () =>
+              import('./modules/produccion/pages/recetas-list/recetas-list.component').then(
+                (m) => m.RecetasListComponent,
+              ),
+          },
+          {
+            path: 'recetas/nueva',
+            title: 'Núcleo · Nueva receta',
+            data: { breadcrumb: 'Nueva receta' },
+            loadComponent: () =>
+              import('./modules/produccion/pages/receta-form/receta-form.component').then(
+                (m) => m.RecetaFormComponent,
+              ),
+          },
+          {
+            path: 'ordenes',
+            pathMatch: 'full',
+            title: 'Núcleo · Órdenes de Producción',
+            data: { breadcrumb: 'Órdenes de Producción' },
+            loadComponent: () =>
+              import('./modules/produccion/pages/ordenes-list/ordenes-list.component').then(
+                (m) => m.OrdenesListComponent,
+              ),
+          },
+          {
+            path: 'transformaciones',
+            pathMatch: 'full',
+            title: 'Núcleo · Transformaciones',
+            data: { breadcrumb: 'Transformaciones' },
+            loadComponent: () =>
+              import('./modules/produccion/pages/transformaciones-list/transformaciones-list.component').then(
+                (m) => m.TransformacionesListComponent,
+              ),
+          },
+          {
+            path: 'transformaciones/nueva',
+            title: 'Núcleo · Nueva transformación',
+            data: { breadcrumb: 'Nueva transformación' },
+            loadComponent: () =>
+              import('./modules/produccion/pages/transformacion-form/transformacion-form.component').then(
+                (m) => m.TransformacionFormComponent,
+              ),
+          },
+        ],
+      },
+      {
+        path: 'ventas-plazos',
+        data: { breadcrumb: 'Ventas a Plazos' },
+        children: [
+          {
+            path: '',
+            pathMatch: 'full',
+            title: 'Núcleo · Ventas a Plazos',
+            loadComponent: () =>
+              import('./modules/ventas-plazos/pages/planes-pago-list/planes-pago-list.component').then(
+                (m) => m.PlanesPagoListComponent,
+              ),
+          },
+          {
+            // Ruta estatica ANTES de :id -- mismo motivo que productos/nuevo.
+            path: 'nuevo',
+            title: 'Núcleo · Nuevo plan de pago',
+            data: { breadcrumb: 'Nuevo plan de pago' },
+            loadComponent: () =>
+              import('./modules/ventas-plazos/pages/plan-pago-form/plan-pago-form.component').then(
+                (m) => m.PlanPagoFormComponent,
+              ),
+          },
+          {
+            path: ':id',
+            title: 'Núcleo · Detalle de plan de pago',
+            data: { breadcrumb: 'Detalle' },
+            loadComponent: () =>
+              import('./modules/ventas-plazos/pages/plan-pago-detalle/plan-pago-detalle.component').then(
+                (m) => m.PlanPagoDetalleComponent,
+              ),
+          },
+        ],
+      },
+      {
+        // Sin lista (ver el docblock de CampanaService) -- solo alta.
+        path: 'crm/campanas/nueva',
+        title: 'Núcleo · Nueva campaña',
+        data: { breadcrumb: 'Nueva campaña' },
+        loadComponent: () =>
+          import('./modules/crm/pages/campana-form/campana-form.component').then((m) => m.CampanaFormComponent),
+      },
+      {
+        path: 'cotizaciones',
+        data: { breadcrumb: 'Cotizaciones' },
+        children: [
+          {
+            path: '',
+            pathMatch: 'full',
+            title: 'Núcleo · Cotizaciones',
+            loadComponent: () =>
+              import('./modules/cotizaciones/pages/cotizaciones-list/cotizaciones-list.component').then(
+                (m) => m.CotizacionesListComponent,
+              ),
+          },
+          {
+            // Ruta estatica ANTES de :id -- mismo motivo que productos/nuevo.
+            path: 'crear',
+            title: 'Núcleo · Nueva cotización',
+            data: { breadcrumb: 'Nueva cotización' },
+            loadComponent: () =>
+              import('./modules/cotizaciones/pages/cotizacion-form/cotizacion-form.component').then(
+                (m) => m.CotizacionFormComponent,
+              ),
+          },
+          {
+            path: ':id',
+            title: 'Núcleo · Detalle de cotización',
+            data: { breadcrumb: 'Detalle' },
+            loadComponent: () =>
+              import('./modules/cotizaciones/pages/cotizacion-detalle/cotizacion-detalle.component').then(
+                (m) => m.CotizacionDetalleComponent,
+              ),
+          },
+          {
+            path: ':id/editar',
+            title: 'Núcleo · Editar cotización',
+            data: { breadcrumb: 'Editar' },
+            loadComponent: () =>
+              import('./modules/cotizaciones/pages/cotizacion-form/cotizacion-form.component').then(
+                (m) => m.CotizacionFormComponent,
+              ),
+          },
+        ],
+      },
+      {
+        path: 'reportes',
+        data: { breadcrumb: 'Reportes' },
+        children: [
+          {
+            path: 'cuentas-cobrar',
+            title: 'Núcleo · Reporte de Cuentas por Cobrar',
+            data: { breadcrumb: 'Cuentas por Cobrar' },
+            loadComponent: () =>
+              import('./modules/reportes/pages/reporte-cuentas-cobrar/reporte-cuentas-cobrar.component').then(
+                (m) => m.ReporteCuentasCobrarComponent,
+              ),
+          },
+          {
+            path: 'cuentas-pagar',
+            title: 'Núcleo · Reporte de Cuentas por Pagar',
+            data: { breadcrumb: 'Cuentas por Pagar' },
+            loadComponent: () =>
+              import('./modules/reportes/pages/reporte-cuentas-pagar/reporte-cuentas-pagar.component').then(
+                (m) => m.ReporteCuentasPagarComponent,
+              ),
+          },
+        ],
+      },
+      {
+        path: 'unidades-medida',
+        title: 'Núcleo · Unidades de Medida',
+        data: { breadcrumb: 'Unidades de Medida' },
+        loadComponent: () =>
+          import('./modules/unidades-medida/pages/unidades-medida-list/unidades-medida-list.component').then(
+            (m) => m.UnidadesMedidaListComponent,
+          ),
+      },
+      {
         path: 'configuracion',
         title: 'Núcleo · Configuración',
         data: { breadcrumb: 'Configuración' },

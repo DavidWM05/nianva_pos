@@ -1,0 +1,108 @@
+<div class="unidades-medida">
+  <div class="unidades-medida__header">
+    <h1>Unidades de Medida</h1>
+    <p-button label="Nueva unidad" icon="pi pi-plus" (click)="abrirNueva()" />
+  </div>
+
+  @if (cargando()) {
+    <p>Cargando unidades de medida...</p>
+  } @else if (unidades().length === 0) {
+    <p>Todavía no hay unidades de medida registradas.</p>
+  } @else {
+    <table class="unidades-medida__tabla">
+      <thead>
+        <tr>
+          <th>Nombre</th>
+          <th>Abreviatura</th>
+          <th>Tipo</th>
+          <th>Estado</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (unidad of unidades(); track unidad.id) {
+          <tr>
+            <td>{{ unidad.nombre }}</td>
+            <td>{{ unidad.abreviatura }}</td>
+            <td>{{ unidad.tipo === 'entero' ? 'Entero' : 'Fraccionario' }}</td>
+            <td>
+              <nucleo-status-badge
+                [value]="unidad.activo ? 'activo' : 'inactivo'"
+                [colorMap]="{ activo: 'success', inactivo: 'neutral' }"
+              />
+            </td>
+            <td class="unidades-medida__acciones">
+              <p-button icon="pi pi-pencil" [text]="true" size="small" aria-label="Editar" (click)="abrirEditar(unidad)" />
+              <p-button
+                icon="pi pi-trash"
+                severity="danger"
+                [text]="true"
+                size="small"
+                aria-label="Eliminar"
+                (click)="eliminar(unidad)"
+              />
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  }
+</div>
+
+<p-dialog
+  [header]="unidadEnEdicion() ? 'Editar unidad de medida' : 'Nueva unidad de medida'"
+  [visible]="mostrarFormulario()"
+  (visibleChange)="cerrarFormulario()"
+  [modal]="true"
+  [dismissableMask]="true"
+  [style]="{ width: '26rem' }"
+>
+  <div class="unidades-medida__campo">
+    <label for="unidad-nombre">Nombre</label>
+    <input
+      pInputText
+      type="text"
+      id="unidad-nombre"
+      maxlength="50"
+      [ngModel]="nombre()"
+      (ngModelChange)="nombre.set($event)"
+    />
+  </div>
+  <div class="unidades-medida__campo">
+    <label for="unidad-abreviatura">Abreviatura</label>
+    <input
+      pInputText
+      type="text"
+      id="unidad-abreviatura"
+      maxlength="10"
+      [ngModel]="abreviatura()"
+      (ngModelChange)="abreviatura.set($event)"
+    />
+  </div>
+  <div class="unidades-medida__campo">
+    <label for="unidad-tipo">Tipo</label>
+    <p-select
+      inputId="unidad-tipo"
+      [options]="tipos"
+      optionLabel="label"
+      optionValue="value"
+      [ngModel]="tipo()"
+      (ngModelChange)="tipo.set($event)"
+    />
+  </div>
+  @if (unidadEnEdicion()) {
+    <div class="unidades-medida__campo unidades-medida__campo--checkbox">
+      <label>
+        <input type="checkbox" [ngModel]="activo()" (ngModelChange)="activo.set($event)" />
+        Activa
+      </label>
+    </div>
+  }
+  <p-button
+    label="Guardar"
+    icon="pi pi-check"
+    [loading]="guardando()"
+    [disabled]="!nombre().trim() || !abreviatura().trim()"
+    (click)="guardar()"
+  />
+</p-dialog>

@@ -49,6 +49,7 @@ class DevolucionService
         int $usuarioId,
         array $pagos,
         ?string $motivo = null,
+        string $tipoReembolso = 'efectivo',
     ): Devolucion {
         if (! in_array($tipo, ['devolucion', 'cambio'], true)) {
             throw new InvalidArgumentException("Tipo de devolucion invalido: {$tipo}");
@@ -79,7 +80,7 @@ class DevolucionService
 
         $this->verificarSucursal($tenantId, $sucursalId);
 
-        return DB::transaction(function () use ($ventaOrigen, $tipo, $itemsDevueltos, $itemsNuevos, $sucursalId, $usuarioId, $pagos, $motivo, $tenantId) {
+        return DB::transaction(function () use ($ventaOrigen, $tipo, $itemsDevueltos, $itemsNuevos, $sucursalId, $usuarioId, $pagos, $motivo, $tenantId, $tipoReembolso) {
             [$lineasDevueltas, $montoDevolucion] = $this->resolverItemsDevueltos($ventaOrigen, $itemsDevueltos);
 
             $ventaSombra = null;
@@ -126,6 +127,7 @@ class DevolucionService
                 'monto_cambio' => $montoCambio,
                 'diferencia' => $diferencia,
                 'motivo' => $motivo,
+                'tipo_reembolso' => $tipoReembolso,
             ]);
 
             foreach ($lineasDevueltas as $linea) {

@@ -1,0 +1,68 @@
+<div class="cuentas-cobrar-list">
+  <div class="cuentas-cobrar-list__header">
+    <h1>Cuentas por cobrar</h1>
+  </div>
+
+  <div class="cuentas-cobrar-list__filtros">
+    <input
+      pInputText
+      type="text"
+      placeholder="Buscar por cliente..."
+      class="cuentas-cobrar-list__buscar"
+      (input)="onClienteInput($any($event.target).value)"
+    />
+    <p-select
+      [options]="estados"
+      optionLabel="label"
+      optionValue="value"
+      placeholder="Estado"
+      [ngModel]="estadoFiltro()"
+      (ngModelChange)="onEstadoCambio($event)"
+    />
+    <span class="cuentas-cobrar-list__vencidas">
+      <p-checkbox inputId="cuentas-cobrar-vencidas" [binary]="true" [ngModel]="soloVencidas()" (ngModelChange)="onVencidasCambio($event)" />
+      <label for="cuentas-cobrar-vencidas">Solo vencidas</label>
+    </span>
+  </div>
+
+  <nucleo-data-table
+    [columns]="columns"
+    [value]="cuentas()"
+    [totalRecords]="total()"
+    [loading]="loading()"
+    [virtualScroll]="false"
+    emptyMessage="No hay cuentas por cobrar que coincidan con la búsqueda."
+    (lazyLoad)="onLazyLoad($event)"
+  >
+    <ng-template nucleoDataTableCell="cliente" let-row>
+      {{ row.cliente?.nombre ?? 'Sin cliente' }}
+    </ng-template>
+
+    <ng-template nucleoDataTableCell="monto_total" let-row>
+      ${{ row.monto_total }}
+    </ng-template>
+
+    <ng-template nucleoDataTableCell="saldo_pendiente" let-row>
+      ${{ row.saldo_pendiente }}
+    </ng-template>
+
+    <ng-template nucleoDataTableCell="estado" let-row>
+      <nucleo-status-badge [value]="row.estado" [colorMap]="{ pendiente: 'info', pagada: 'success', anulada: 'neutral' }" />
+    </ng-template>
+
+    <ng-template nucleoDataTableCell="fecha_vencimiento" let-row>
+      @if (row.fecha_vencimiento) {
+        {{ row.fecha_vencimiento | date: 'shortDate' }}
+        @if (row.estado === 'pendiente' && row.dias_vencida > 0) {
+          <span class="cuentas-cobrar-list__vencida">(vencida hace {{ row.dias_vencida }}d)</span>
+        }
+      } @else {
+        Sin definir
+      }
+    </ng-template>
+
+    <ng-template nucleoDataTableCell="acciones" let-row>
+      <p-button icon="pi pi-eye" [text]="true" size="small" aria-label="Ver" (click)="irADetalle(row)" />
+    </ng-template>
+  </nucleo-data-table>
+</div>

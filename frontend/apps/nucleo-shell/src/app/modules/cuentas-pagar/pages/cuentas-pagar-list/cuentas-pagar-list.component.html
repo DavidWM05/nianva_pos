@@ -1,0 +1,57 @@
+<div class="cuentas-pagar-list">
+  <div class="cuentas-pagar-list__header">
+    <h1>Cuentas por pagar</h1>
+  </div>
+
+  <div class="cuentas-pagar-list__filtros">
+    <input
+      pInputText
+      type="text"
+      placeholder="Buscar por proveedor..."
+      class="cuentas-pagar-list__buscar"
+      (input)="onProveedorInput($any($event.target).value)"
+    />
+    <p-select
+      [options]="estados"
+      optionLabel="label"
+      optionValue="value"
+      placeholder="Estado"
+      [ngModel]="estadoFiltro()"
+      (ngModelChange)="onEstadoCambio($event)"
+    />
+  </div>
+
+  <nucleo-data-table
+    [columns]="columns"
+    [value]="cuentas()"
+    [totalRecords]="total()"
+    [loading]="loading()"
+    [virtualScroll]="false"
+    emptyMessage="No hay cuentas por pagar que coincidan con la búsqueda."
+    (lazyLoad)="onLazyLoad($event)"
+  >
+    <ng-template nucleoDataTableCell="proveedor" let-row>
+      {{ row.proveedor?.razon_social ?? 'Sin proveedor' }}
+    </ng-template>
+
+    <ng-template nucleoDataTableCell="monto_total" let-row>
+      ${{ row.monto_total }}
+    </ng-template>
+
+    <ng-template nucleoDataTableCell="saldo_pendiente" let-row>
+      ${{ row.saldo_pendiente }}
+    </ng-template>
+
+    <ng-template nucleoDataTableCell="estado" let-row>
+      <nucleo-status-badge [value]="row.estado" [colorMap]="{ pendiente: 'info', pagada: 'success', anulada: 'neutral' }" />
+    </ng-template>
+
+    <ng-template nucleoDataTableCell="fecha_vencimiento" let-row>
+      {{ row.fecha_vencimiento ? (row.fecha_vencimiento | date: 'shortDate') : 'Sin definir' }}
+    </ng-template>
+
+    <ng-template nucleoDataTableCell="acciones" let-row>
+      <p-button icon="pi pi-eye" [text]="true" size="small" aria-label="Ver" (click)="irADetalle(row)" />
+    </ng-template>
+  </nucleo-data-table>
+</div>

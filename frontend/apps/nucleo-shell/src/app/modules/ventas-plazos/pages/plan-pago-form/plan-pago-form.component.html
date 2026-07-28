@@ -1,0 +1,71 @@
+<div class="plan-pago-form">
+  <div class="plan-pago-form__header">
+    <h2>Nuevo plan de pago a plazos</h2>
+    <a routerLink="/ventas-plazos">Volver a la lista</a>
+  </div>
+
+  <section class="plan-pago-form__seccion">
+    <nucleo-entidad-selector
+      [buscador]="buscadorVenta"
+      label="Venta"
+      placeholder="Buscar venta por cliente..."
+      [valorInicial]="ventaId()"
+      (seleccionado)="ventaId.set($event)"
+    />
+
+    <div class="plan-pago-form__campo">
+      <label for="plan-numero-cuotas">Número de cuotas (2 a 36)</label>
+      <input
+        pInputText
+        type="number"
+        min="2"
+        max="36"
+        step="1"
+        id="plan-numero-cuotas"
+        [ngModel]="numeroCuotas()"
+        (ngModelChange)="numeroCuotas.set($event)"
+      />
+    </div>
+
+    <div class="plan-pago-form__campo">
+      <label for="plan-tasa-interes">Tasa de interés % (opcional)</label>
+      <input
+        pInputText
+        type="number"
+        min="0"
+        max="100"
+        step="0.01"
+        id="plan-tasa-interes"
+        [ngModel]="tasaInteres()"
+        (ngModelChange)="tasaInteres.set($event)"
+      />
+    </div>
+
+    <div class="plan-pago-form__campo">
+      <label for="plan-periodicidad">Periodicidad</label>
+      <p-select
+        inputId="plan-periodicidad"
+        [options]="periodicidades"
+        optionLabel="label"
+        optionValue="value"
+        [ngModel]="periodicidad()"
+        (ngModelChange)="periodicidad.set($event)"
+      />
+    </div>
+
+    <div class="plan-pago-form__campo">
+      <label for="plan-fecha-inicio">Fecha de inicio (opcional, hoy por defecto)</label>
+      <input pInputText type="date" id="plan-fecha-inicio" [ngModel]="fechaInicio()" (ngModelChange)="fechaInicio.set($event)" />
+    </div>
+  </section>
+
+  <div class="plan-pago-form__acciones">
+    <p-button
+      label="Crear plan de pago"
+      icon="pi pi-check"
+      [loading]="guardando()"
+      [disabled]="ventaId() === null || !numeroCuotas()"
+      (click)="crear()"
+    />
+  </div>
+</div>

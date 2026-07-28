@@ -10,6 +10,7 @@ import { describe, expect, it, vi } from 'vitest';
 // jsdom (el entorno de estos tests) no implementa ResizeObserver -- lo usa
 // PrimeNG's TabList (detras de RecordTabsComponent) en ngAfterViewInit.
 // Mismo stub que cliente-detalle.component.spec.ts.
+/* eslint-disable @typescript-eslint/no-empty-function */
 if (typeof globalThis.ResizeObserver === 'undefined') {
   globalThis.ResizeObserver = class {
     observe(): void {}
@@ -17,6 +18,7 @@ if (typeof globalThis.ResizeObserver === 'undefined') {
     disconnect(): void {}
   } as unknown as typeof ResizeObserver;
 }
+/* eslint-enable @typescript-eslint/no-empty-function */
 
 import { LineasPagoComponent } from '../../../tpv/lineas-pago/lineas-pago.component';
 import { MetodoPagoService } from '../../../tpv/metodo-pago.service';

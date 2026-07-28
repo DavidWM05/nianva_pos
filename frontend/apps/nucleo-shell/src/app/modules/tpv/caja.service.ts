@@ -3,7 +3,7 @@ import { Injectable, inject } from '@angular/core';
 import { Observable, map } from 'rxjs';
 
 import { API_BASE_URL } from '../../core/api-config';
-import { CajaActual, CajaPermisos, CajaResumen, CajaSesion } from './caja.types';
+import { CajaActual, CajaDesglose, CajaPermisos, CajaResumen, CajaSesion } from './caja.types';
 
 @Injectable({ providedIn: 'root' })
 export class CajaService {
@@ -24,12 +24,17 @@ export class CajaService {
       .pipe(map((r) => r.data));
   }
 
-  cerrar(id: number, montoFisico: number, totalGastos?: number): Observable<CajaSesion> {
+  /**
+   * `total_gastos` ya no se manda: CajaController::cerrar() lo calcula
+   * siempre en el servidor (junto con abonos CxC, recargas de Gift Card y
+   * pagos CxP) para que nadie pueda cerrar la caja con una diferencia
+   * manipulada -- ver el docblock del Controller.
+   */
+  cerrar(id: number, montoFisico: number): Observable<{ sesion: CajaSesion; desglose: CajaDesglose }> {
     return this.http
-      .patch<{ data: CajaSesion }>(`${API_BASE_URL}/api/caja/${id}/cerrar`, {
+      .patch<{ data: CajaSesion; desglose: CajaDesglose }>(`${API_BASE_URL}/api/caja/${id}/cerrar`, {
         monto_fisico: montoFisico,
-        total_gastos: totalGastos ?? undefined,
       })
-      .pipe(map((r) => r.data));
+      .pipe(map((r) => ({ sesion: r.data, desglose: r.desglose })));
   }
 }

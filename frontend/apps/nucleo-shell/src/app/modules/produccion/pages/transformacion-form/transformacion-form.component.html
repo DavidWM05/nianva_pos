@@ -1,0 +1,75 @@
+<div class="transformacion-form">
+  <div class="transformacion-form__header">
+    <h2>Nueva transformación</h2>
+    <a routerLink="/produccion/transformaciones">Ver transformaciones</a>
+  </div>
+
+  @if (ultimaCreada(); as transformacion) {
+    <div class="transformacion-form__confirmacion">
+      Transformación #{{ transformacion.id }} registrada: {{ transformacion.cantidad_origen }} de la variante
+      #{{ transformacion.variante_origen_id }} → {{ transformacion.cantidad_destino }} de la variante
+      #{{ transformacion.variante_destino_id }}.
+    </div>
+  }
+
+  <section class="transformacion-form__seccion">
+    <h3>Origen</h3>
+    <nucleo-entidad-selector
+      [buscador]="buscadorProductoOrigen"
+      [buscadorHijos]="buscadorVarianteOrigen"
+      label="Producto"
+      labelHijos="Variante"
+      placeholder="Buscar producto por nombre..."
+      [valorInicial]="productoOrigenId()"
+      (seleccionado)="productoOrigenId.set($event)"
+      (hijoSeleccionado)="varianteOrigenId.set($event)"
+    />
+    <div class="transformacion-form__campo">
+      <label for="transformacion-cantidad-origen">Cantidad a consumir</label>
+      <input
+        pInputText
+        type="number"
+        min="0.01"
+        step="0.01"
+        id="transformacion-cantidad-origen"
+        [ngModel]="cantidadOrigen()"
+        (ngModelChange)="cantidadOrigen.set($event)"
+      />
+    </div>
+  </section>
+
+  <section class="transformacion-form__seccion">
+    <h3>Destino</h3>
+    <nucleo-entidad-selector
+      [buscador]="buscadorProductoDestino"
+      [buscadorHijos]="buscadorVarianteDestino"
+      label="Producto"
+      labelHijos="Variante"
+      placeholder="Buscar producto por nombre..."
+      [valorInicial]="productoDestinoId()"
+      (seleccionado)="productoDestinoId.set($event)"
+      (hijoSeleccionado)="varianteDestinoId.set($event)"
+    />
+    <div class="transformacion-form__campo">
+      <label for="transformacion-cantidad-destino">Cantidad a producir</label>
+      <input
+        pInputText
+        type="number"
+        min="0.01"
+        step="0.01"
+        id="transformacion-cantidad-destino"
+        [ngModel]="cantidadDestino()"
+        (ngModelChange)="cantidadDestino.set($event)"
+      />
+    </div>
+  </section>
+
+  <div class="transformacion-form__campo">
+    <label for="transformacion-notas">Notas (opcional)</label>
+    <textarea pTextarea id="transformacion-notas" rows="2" [ngModel]="notas()" (ngModelChange)="notas.set($event)"></textarea>
+  </div>
+
+  <div class="transformacion-form__acciones">
+    <p-button label="Registrar transformación" icon="pi pi-check" [loading]="guardando()" (click)="crear()" />
+  </div>
+</div>

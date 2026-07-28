@@ -15,6 +15,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 #[Fillable([
     'tenant_id', 'sucursal_id', 'venta_id', 'venta_sombra_id', 'usuario_id',
     'tipo', 'monto_devolucion', 'monto_cambio', 'diferencia', 'motivo',
+    'tipo_reembolso', 'nota_credito_id',
 ])]
 class Devolucion extends Model
 {

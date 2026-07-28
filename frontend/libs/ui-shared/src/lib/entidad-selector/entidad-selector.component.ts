@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnChanges, Output, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, ElementRef, EventEmitter, Input, OnChanges, Output, ViewChild, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { AutoComplete, AutoCompleteCompleteEvent } from 'primeng/autocomplete';
 import { Select } from 'primeng/select';
@@ -40,6 +40,13 @@ export class EntidadSelectorComponent implements OnChanges {
   @Output() seleccionado = new EventEmitter<number | null>();
   @Output() hijoSeleccionado = new EventEmitter<number | null>();
 
+  // Lee el <input> real dentro de p-autoComplete via el host, en vez de
+  // depender de un metodo publico de foco del componente de PrimeNG (no
+  // garantizado entre versiones) -- asi el atajo de teclado F2 del POS
+  // (ver VentaComponent/LineasProductoComponent) puede saltar aqui sin
+  // acoplarse a la API interna de la libreria.
+  @ViewChild('autoCompleteHost', { read: ElementRef }) private autoCompleteHost?: ElementRef<HTMLElement>;
+
   protected readonly sugerencias = signal<EntidadBuscable[]>([]);
   protected entidadElegida: EntidadBuscable | null = null;
   protected readonly hijos = signal<EntidadBuscable[]>([]);
@@ -70,6 +77,11 @@ export class EntidadSelectorComponent implements OnChanges {
   onSeleccionarHijo(hijoId: number): void {
     this.hijoElegidoId = hijoId;
     this.hijoSeleccionado.emit(hijoId);
+  }
+
+  /** Foco programatico en el input de busqueda principal -- usado por atajos de teclado (ver F2 en VentaComponent). */
+  focus(): void {
+    this.autoCompleteHost?.nativeElement.querySelector<HTMLInputElement>('input')?.focus();
   }
 
   private cargarHijos(padreId: number, hijoInicialId: number | null): void {

@@ -12,7 +12,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 #[Fillable([
     'tenant_id', 'moneda', 'mensaje_ticket', 'logo_url', 'mostrar_rfc',
     'mostrar_telefono', 'mostrar_correo', 'backup_auto', 'backup_frecuencia', 'backup_ultimo',
-    'codigo_barras_automatico',
+    'codigo_barras_automatico', 'modulos_activos',
 ])]
 class ConfiguracionTenant extends Model
 {
@@ -31,6 +31,7 @@ class ConfiguracionTenant extends Model
             'backup_auto' => 'boolean',
             'backup_ultimo' => 'datetime',
             'codigo_barras_automatico' => 'boolean',
+            'modulos_activos' => 'array',
         ];
     }
 

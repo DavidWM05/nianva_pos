@@ -1,5 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
+import { EntidadSelectorComponent } from '@nucleo/ui-shared';
 import { providePrimeNG } from 'primeng/config';
 import { of } from 'rxjs';
 import { describe, expect, it, vi } from 'vitest';
@@ -110,6 +111,35 @@ describe('LineasProductoComponent', () => {
     expect(fixture.componentInstance['stockVarianteSeleccionada']()).toBe(0);
     const texto = (fixture.nativeElement as HTMLElement).textContent ?? '';
     expect(texto).toContain('Sin stock disponible');
+  });
+
+  it('cancelarLineaEnCurso() descarta la seleccion en curso sin tocar lineas ya agregadas al carrito', async () => {
+    await crearComponente();
+    agregarLineaDeEjemplo();
+
+    fixture.componentInstance.onProductoSeleccionado(1);
+    fixture.componentInstance.onVarianteSeleccionada(5);
+    fixture.componentInstance['cantidadNueva'].set(3);
+
+    fixture.componentInstance.cancelarLineaEnCurso();
+
+    expect(fixture.componentInstance['productoSeleccionadoId']()).toBeNull();
+    expect(fixture.componentInstance['varianteSeleccionadaId']()).toBeNull();
+    expect(fixture.componentInstance['cantidadNueva']()).toBe(1);
+    expect(fixture.componentInstance['lineas']()).toHaveLength(1);
+  });
+
+  it('focusBuscador() delega el foco en el EntidadSelectorComponent del producto', async () => {
+    await crearComponente();
+
+    const { By } = await import('@angular/platform-browser');
+    const selector = fixture.debugElement.query(By.directive(EntidadSelectorComponent))
+      .componentInstance as EntidadSelectorComponent;
+    const focusSpy = vi.spyOn(selector, 'focus');
+
+    fixture.componentInstance.focusBuscador();
+
+    expect(focusSpy).toHaveBeenCalled();
   });
 
   it('cambiarCantidad clamea contra el stock congelado al agregar la linea, no contra uno nuevo', async () => {

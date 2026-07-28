@@ -1,0 +1,15 @@
+.planes-pago-list {
+  padding: var(--nucleo-spacing-6);
+}
+
+.planes-pago-list__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--nucleo-spacing-4);
+
+  h1 {
+    margin: 0;
+    font-size: var(--nucleo-font-size-2xl);
+  }
+}

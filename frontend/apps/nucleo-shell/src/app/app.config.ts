@@ -15,13 +15,23 @@ import { AuditoriaService } from './core/auditoria.service';
 import {
   BUSCADOR_CATEGORIA,
   BUSCADOR_CLIENTE,
+  BUSCADOR_INSUMO,
   BUSCADOR_PRODUCTO,
+  BUSCADOR_RECETA,
+  BUSCADOR_UNIDAD_MEDIDA,
+  BUSCADOR_USUARIO,
   BUSCADOR_VARIANTE_DE_PRODUCTO,
+  BUSCADOR_VENTA,
 } from './core/buscadores-entidad.tokens';
+import { UsuarioBuscadorService } from './modules/administracion/usuario-buscador.service';
 import { ClienteBuscadorService } from './modules/crm/cliente-buscador.service';
 import { CategoriaBuscadorService } from './modules/inventario/categoria-buscador.service';
 import { ProductoBuscadorService } from './modules/inventario/producto-buscador.service';
 import { VariantesDeProductoBuscadorService } from './modules/inventario/variantes-de-producto-buscador.service';
+import { InsumoBuscadorService } from './modules/produccion/insumo-buscador.service';
+import { RecetaBuscadorService } from './modules/produccion/receta-buscador.service';
+import { UnidadMedidaBuscadorService } from './modules/unidades-medida/unidad-medida-buscador.service';
+import { VentaBuscadorService } from './modules/ventas-plazos/venta-buscador.service';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -44,6 +54,11 @@ export const appConfig: ApplicationConfig = {
     { provide: BUSCADOR_VARIANTE_DE_PRODUCTO, useExisting: VariantesDeProductoBuscadorService },
     { provide: BUSCADOR_CATEGORIA, useExisting: CategoriaBuscadorService },
     { provide: BUSCADOR_CLIENTE, useExisting: ClienteBuscadorService },
+    { provide: BUSCADOR_USUARIO, useExisting: UsuarioBuscadorService },
+    { provide: BUSCADOR_UNIDAD_MEDIDA, useExisting: UnidadMedidaBuscadorService },
+    { provide: BUSCADOR_INSUMO, useExisting: InsumoBuscadorService },
+    { provide: BUSCADOR_RECETA, useExisting: RecetaBuscadorService },
+    { provide: BUSCADOR_VENTA, useExisting: VentaBuscadorService },
     provideHttpClient(
       withFetch(),
       // El header X-XSRF-TOKEN se pone a mano en xsrfInterceptor -- el

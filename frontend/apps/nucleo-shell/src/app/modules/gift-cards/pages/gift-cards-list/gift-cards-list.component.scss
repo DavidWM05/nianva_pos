@@ -1,0 +1,27 @@
+.gift-cards-list {
+  padding: var(--nucleo-spacing-6);
+}
+
+.gift-cards-list__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--nucleo-spacing-4);
+
+  h1 {
+    margin: 0;
+    font-size: var(--nucleo-font-size-2xl);
+  }
+}
+
+.gift-cards-list__filtros {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--nucleo-spacing-3);
+  margin-bottom: var(--nucleo-spacing-4);
+}
+
+.gift-cards-list__buscar {
+  width: 100%;
+  max-width: 240px;
+}

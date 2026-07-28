@@ -1,0 +1,79 @@
+<div class="pedidos-list">
+  <div class="pedidos-list__header">
+    <h1>Pedidos</h1>
+    @if (permisos().crear) {
+      <a routerLink="/pedidos/nuevo"><p-button label="Nuevo pedido" icon="pi pi-plus" /></a>
+    }
+  </div>
+
+  <div class="pedidos-list__filtros">
+    <input
+      pInputText
+      type="text"
+      placeholder="Buscar por número..."
+      class="pedidos-list__buscar"
+      (input)="onNumeroInput($any($event.target).value)"
+    />
+    <p-select
+      [options]="estados"
+      optionLabel="label"
+      optionValue="value"
+      placeholder="Estado"
+      [ngModel]="estadoFiltro()"
+      (ngModelChange)="onEstadoCambio($event)"
+    />
+    <nucleo-entidad-selector
+      [buscador]="buscadorCliente"
+      label="Cliente"
+      placeholder="Buscar cliente por nombre..."
+      [valorInicial]="clienteFiltroId()"
+      (seleccionado)="onClienteSeleccionado($event)"
+    />
+    <nucleo-entidad-selector
+      [buscador]="buscadorRepartidor"
+      label="Repartidor"
+      placeholder="Buscar repartidor por nombre..."
+      [valorInicial]="repartidorFiltroId()"
+      (seleccionado)="onRepartidorSeleccionado($event)"
+    />
+  </div>
+
+  <nucleo-data-table
+    [columns]="columns"
+    [value]="pedidos()"
+    [totalRecords]="total()"
+    [loading]="loading()"
+    [virtualScroll]="false"
+    emptyMessage="No hay pedidos que coincidan con la búsqueda."
+    (lazyLoad)="onLazyLoad($event)"
+  >
+    <ng-template nucleoDataTableCell="cliente" let-row>
+      {{ row.cliente?.nombre ?? 'Sin cliente' }}
+    </ng-template>
+
+    <ng-template nucleoDataTableCell="repartidor" let-row>
+      {{ row.repartidor?.nombre ?? 'Sin asignar' }}
+    </ng-template>
+
+    <ng-template nucleoDataTableCell="estado" let-row>
+      <nucleo-status-badge
+        [value]="row.estado"
+        [colorMap]="{
+          pendiente: 'neutral',
+          preparando: 'info',
+          en_camino: 'info',
+          entregado: 'success',
+          cancelado: 'danger',
+        }"
+      />
+    </ng-template>
+
+    <ng-template nucleoDataTableCell="created_at" let-row>
+      {{ row.created_at | date: 'short' }}
+    </ng-template>
+
+    <ng-template nucleoDataTableCell="acciones" let-row>
+      <p-button icon="pi pi-eye" [text]="true" size="small" aria-label="Ver" (click)="irADetalle(row)" />
+    </ng-template>
+  </nucleo-data-table>
+</div>

@@ -1,0 +1,73 @@
+<div class="nomina-detalle">
+  @if (cargando()) {
+    <p>Cargando nómina...</p>
+  } @else if (nomina(); as n) {
+    <div class="nomina-detalle__header">
+      <h1>{{ n.periodo_inicio | date: 'shortDate' }} — {{ n.periodo_fin | date: 'shortDate' }}</h1>
+      <nucleo-status-badge [value]="n.estado" [colorMap]="{ calculada: 'info', pagada: 'success', cancelada: 'neutral' }" />
+    </div>
+
+    <nucleo-record-tabs [tabs]="tabs">
+      <ng-template>
+        <div class="nomina-detalle__tab">
+          <dl class="nomina-detalle__resumen">
+            <dt>Percepciones</dt>
+            <dd>${{ n.total_percepciones }}</dd>
+            <dt>Deducciones</dt>
+            <dd>${{ n.total_deducciones }}</dd>
+            <dt>Neto</dt>
+            <dd class="nomina-detalle__neto">${{ n.total_neto }}</dd>
+            @if (n.fecha_pago) {
+              <dt>Fecha de pago</dt>
+              <dd>{{ n.fecha_pago | date: 'shortDate' }}</dd>
+            }
+          </dl>
+
+          <h4>Detalles por empleado</h4>
+          @if (n.detalles && n.detalles.length > 0) {
+            <table class="nomina-detalle__tabla">
+              <thead>
+                <tr>
+                  <th>Empleado</th>
+                  <th>Días</th>
+                  <th>Percepciones</th>
+                  <th>Deducciones</th>
+                  <th>Neto</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (detalle of n.detalles; track detalle.id) {
+                  <tr>
+                    <td>{{ detalle.empleado?.usuario?.nombre ?? ('Empleado #' + detalle.empleado?.id) }}</td>
+                    <td>{{ detalle.dias_trabajados }}</td>
+                    <td>${{ detalle.percepciones }}</td>
+                    <td>${{ detalle.deducciones }}</td>
+                    <td>${{ detalle.neto }}</td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          } @else {
+            <p>Esta nómina no tiene detalles.</p>
+          }
+
+          @if (puedePagar()) {
+            <div class="nomina-detalle__acciones">
+              <p-button label="Marcar como pagada" icon="pi pi-check" [loading]="pagando()" (click)="pagar()" />
+            </div>
+          }
+        </div>
+      </ng-template>
+
+      <ng-template>
+        @defer (on viewport) {
+          <nucleo-audit-log-viewer [tabla]="'nominas'" [registroId]="n.id" />
+        } @placeholder {
+          <p>Auditoría (se carga al hacer scroll hasta aquí)...</p>
+        } @loading (minimum 200ms) {
+          <p>Cargando auditoría...</p>
+        }
+      </ng-template>
+    </nucleo-record-tabs>
+  }
+</div>

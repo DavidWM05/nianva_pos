@@ -1,0 +1,77 @@
+.prestamo-detalle {
+  padding: var(--nucleo-spacing-6);
+  max-width: 48rem;
+}
+
+.prestamo-detalle__header {
+  display: flex;
+  align-items: center;
+  gap: var(--nucleo-spacing-3);
+  margin-bottom: var(--nucleo-spacing-4);
+
+  h1 {
+    margin: 0;
+    font-size: var(--nucleo-font-size-2xl);
+  }
+}
+
+.prestamo-detalle__tab {
+  display: flex;
+  flex-direction: column;
+  gap: var(--nucleo-spacing-3);
+  padding: var(--nucleo-spacing-4) 0;
+
+  h4 {
+    margin: var(--nucleo-spacing-2) 0 0;
+  }
+}
+
+.prestamo-detalle__resumen {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: var(--nucleo-spacing-2) var(--nucleo-spacing-4);
+  margin: 0;
+
+  dt {
+    color: var(--nucleo-color-surface-600);
+  }
+
+  dd {
+    margin: 0;
+    font-weight: 600;
+  }
+}
+
+.prestamo-detalle__saldo {
+  font-size: var(--nucleo-font-size-lg);
+}
+
+.prestamo-detalle__tabla {
+  width: 100%;
+  border-collapse: collapse;
+
+  th,
+  td {
+    text-align: left;
+    padding: var(--nucleo-spacing-2);
+    border-bottom: 1px solid var(--nucleo-color-surface-100);
+  }
+}
+
+.prestamo-detalle__acciones {
+  display: flex;
+  align-items: center;
+  gap: var(--nucleo-spacing-3);
+}
+
+.prestamo-detalle__campo {
+  display: flex;
+  flex-direction: column;
+  gap: var(--nucleo-spacing-1);
+  margin-bottom: var(--nucleo-spacing-3);
+
+  label {
+    font-size: var(--nucleo-font-size-sm);
+    font-weight: 500;
+  }
+}

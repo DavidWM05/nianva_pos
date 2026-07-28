@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, EventEmitter, Output, computed, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, Output, ViewChild, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { EntidadBuscable, EntidadSelectorComponent } from '@nucleo/ui-shared';
 import { Button } from 'primeng/button';
@@ -61,6 +61,8 @@ export class LineasProductoComponent {
   protected readonly buscadorProducto = inject(BUSCADOR_PRODUCTO);
   protected readonly buscadorVarianteDeProducto = inject(BUSCADOR_VARIANTE_DE_PRODUCTO);
 
+  @ViewChild(EntidadSelectorComponent) private selectorProductoRef!: EntidadSelectorComponent;
+
   @Output() cambio = new EventEmitter<LineasProductoCambio>();
 
   protected readonly productoSeleccionadoId = signal<number | null>(null);
@@ -121,6 +123,24 @@ export class LineasProductoComponent {
     this.onProductoSeleccionado(null);
     this.cantidadNueva.set(1);
     this.recotizar();
+  }
+
+  /** Foco en el buscador de producto -- delega el atajo F2 del POS (ver VentaComponent). */
+  focusBuscador(): void {
+    this.selectorProductoRef.focus();
+  }
+
+  /**
+   * Descarta la seleccion producto/variante/cantidad en curso (todavia no
+   * agregada al carrito con "Agregar línea") -- delega el atajo ESC del
+   * POS. No toca lineas ya agregadas: cancelar la captura en curso es el
+   * gesto esperado ("me equivoqué al escanear, vuelvo a intentar"), borrar
+   * una linea ya confirmada es una accion mas destructiva que merece su
+   * propio boton explicito (quitarLinea), no una tecla global.
+   */
+  cancelarLineaEnCurso(): void {
+    this.onProductoSeleccionado(null);
+    this.cantidadNueva.set(1);
   }
 
   quitarLinea(indice: number): void {

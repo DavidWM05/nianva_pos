@@ -1,0 +1,30 @@
+<div class="transformaciones-list">
+  <div class="transformaciones-list__header">
+    <h1>Transformaciones</h1>
+    @if (permisos().crear) {
+      <a routerLink="/produccion/transformaciones/nueva"><p-button label="Nueva transformación" icon="pi pi-plus" /></a>
+    }
+  </div>
+
+  <nucleo-data-table
+    [columns]="columns"
+    [value]="transformaciones()"
+    [totalRecords]="total()"
+    [loading]="loading()"
+    [virtualScroll]="false"
+    emptyMessage="No hay transformaciones registradas."
+    (lazyLoad)="onLazyLoad($event)"
+  >
+    <ng-template nucleoDataTableCell="variante_origen_id" let-row>
+      Variante #{{ row.variante_origen_id }}
+    </ng-template>
+
+    <ng-template nucleoDataTableCell="variante_destino_id" let-row>
+      Variante #{{ row.variante_destino_id }}
+    </ng-template>
+
+    <ng-template nucleoDataTableCell="notas" let-row>
+      {{ row.notas ?? '—' }}
+    </ng-template>
+  </nucleo-data-table>
+</div>

@@ -53,8 +53,16 @@ export const NUCLEO_NAV_GROUPS: NucleoNavGroup[] = [
       { key: 'inventario', label: 'Productos', path: 'inventario', icon: 'pi pi-box' },
       { key: 'categorias', label: 'Categorías', path: 'inventario/categorias', icon: 'pi pi-sitemap' },
       { key: 'departamentos', label: 'Departamentos', path: 'inventario/departamentos', icon: 'pi pi-building' },
+      { key: 'unidades-medida', label: 'Unidades de Medida', path: 'unidades-medida', icon: 'pi pi-arrows-h' },
       { key: 'precios', label: 'Precios y Promociones', path: 'precios', icon: 'pi pi-tags' },
       { key: 'crm', label: 'Clientes', path: 'crm', icon: 'pi pi-users' },
+      {
+        // Sin lista propia (ver el docblock de CampanaService) -- el link va directo al alta.
+        key: 'crm-campanas',
+        label: 'Campañas',
+        path: 'crm/campanas/nueva',
+        icon: 'pi pi-megaphone',
+      },
     ],
   },
   {
@@ -64,9 +72,45 @@ export const NUCLEO_NAV_GROUPS: NucleoNavGroup[] = [
       { key: 'tpv-venta', label: 'Venta', path: 'tpv/venta', icon: 'pi pi-shopping-cart' },
       { key: 'tpv-caja', label: 'Caja', path: 'tpv/caja', icon: 'pi pi-wallet' },
       { key: 'tpv-ventas', label: 'Ventas', path: 'tpv/ventas', icon: 'pi pi-receipt' },
+      { key: 'cotizaciones', label: 'Cotizaciones', path: 'cotizaciones', icon: 'pi pi-file-edit' },
+      { key: 'cuentas-cobrar', label: 'Cuentas por Cobrar', path: 'cuentas-cobrar', icon: 'pi pi-wallet' },
+      { key: 'cuentas-pagar', label: 'Cuentas por Pagar', path: 'cuentas-pagar', icon: 'pi pi-arrow-up-right' },
+      { key: 'prestamos', label: 'Préstamos', path: 'prestamos', icon: 'pi pi-percentage' },
+      { key: 'ventas-plazos', label: 'Ventas a Plazos', path: 'ventas-plazos', icon: 'pi pi-calendar' },
+      { key: 'pedidos', label: 'Pedidos', path: 'pedidos', icon: 'pi pi-truck' },
       { key: 'apartados', label: 'Apartados', path: 'apartados', icon: 'pi pi-calendar-clock' },
       { key: 'devoluciones', label: 'Devoluciones', path: 'devoluciones', icon: 'pi pi-replay' },
+      { key: 'notas-credito', label: 'Notas de Crédito', path: 'notas-credito', icon: 'pi pi-ticket' },
+      { key: 'gift-cards', label: 'Gift Cards', path: 'gift-cards', icon: 'pi pi-credit-card' },
       { key: 'gastos', label: 'Gastos', path: 'gastos', icon: 'pi pi-money-bill' },
+    ],
+  },
+  {
+    key: 'nomina',
+    label: 'Nómina',
+    items: [
+      { key: 'empleados', label: 'Empleados', path: 'payroll/empleados', icon: 'pi pi-id-card' },
+      { key: 'nominas', label: 'Nóminas', path: 'payroll/nominas', icon: 'pi pi-wallet' },
+    ],
+  },
+  {
+    key: 'produccion',
+    label: 'Producción',
+    items: [
+      { key: 'insumos', label: 'Insumos', path: 'produccion/insumos', icon: 'pi pi-box' },
+      { key: 'recetas', label: 'Recetas', path: 'produccion/recetas', icon: 'pi pi-book' },
+      { key: 'ordenes-produccion', label: 'Órdenes de Producción', path: 'produccion/ordenes', icon: 'pi pi-cog' },
+      { key: 'transformaciones', label: 'Transformaciones', path: 'produccion/transformaciones', icon: 'pi pi-sync' },
+    ],
+  },
+  {
+    // Primeros dos reportes (reportes_cuentas_cobrar/reportes_cuentas_pagar) --
+    // el general (reportes.ver) y el de CRM (reportes_crm) van despues.
+    key: 'reportes',
+    label: 'Reportes',
+    items: [
+      { key: 'reporte-cuentas-cobrar', label: 'Antigüedad de CxC', path: 'reportes/cuentas-cobrar', icon: 'pi pi-chart-line' },
+      { key: 'reporte-cuentas-pagar', label: 'Antigüedad de CxP', path: 'reportes/cuentas-pagar', icon: 'pi pi-chart-line' },
     ],
   },
   {

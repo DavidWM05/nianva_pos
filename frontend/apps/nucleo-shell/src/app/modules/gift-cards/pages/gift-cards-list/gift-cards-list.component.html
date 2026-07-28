@@ -1,0 +1,64 @@
+<div class="gift-cards-list">
+  <div class="gift-cards-list__header">
+    <h1>Gift Cards</h1>
+    <a routerLink="/gift-cards/emitir"><p-button label="Emitir gift card" icon="pi pi-plus" /></a>
+  </div>
+
+  <div class="gift-cards-list__filtros">
+    <input
+      pInputText
+      type="text"
+      placeholder="Buscar por código..."
+      class="gift-cards-list__buscar"
+      (input)="onCodigoInput($any($event.target).value)"
+    />
+    <p-select
+      [options]="estados"
+      optionLabel="label"
+      optionValue="value"
+      placeholder="Estado"
+      [ngModel]="estadoFiltro()"
+      (ngModelChange)="onEstadoCambio($event)"
+    />
+    <nucleo-entidad-selector
+      [buscador]="buscadorCliente"
+      label="Cliente"
+      placeholder="Buscar cliente por nombre..."
+      [valorInicial]="clienteFiltroId()"
+      (seleccionado)="onClienteSeleccionado($event)"
+    />
+  </div>
+
+  <nucleo-data-table
+    [columns]="columns"
+    [value]="giftCards()"
+    [totalRecords]="total()"
+    [loading]="loading()"
+    [virtualScroll]="false"
+    emptyMessage="No hay gift cards que coincidan con la búsqueda."
+    (lazyLoad)="onLazyLoad($event)"
+  >
+    <ng-template nucleoDataTableCell="cliente" let-row>
+      {{ row.cliente?.nombre ?? 'Anónima' }}
+    </ng-template>
+
+    <ng-template nucleoDataTableCell="saldo_actual" let-row>
+      ${{ row.saldo_actual }}
+    </ng-template>
+
+    <ng-template nucleoDataTableCell="estado" let-row>
+      <nucleo-status-badge
+        [value]="row.estado"
+        [colorMap]="{ activa: 'success', usada: 'neutral', expirada: 'danger', cancelada: 'danger' }"
+      />
+    </ng-template>
+
+    <ng-template nucleoDataTableCell="fecha_expiracion" let-row>
+      {{ row.fecha_expiracion ? (row.fecha_expiracion | date: 'shortDate') : 'Sin definir' }}
+    </ng-template>
+
+    <ng-template nucleoDataTableCell="acciones" let-row>
+      <p-button icon="pi pi-eye" [text]="true" size="small" aria-label="Ver" (click)="irADetalle(row)" />
+    </ng-template>
+  </nucleo-data-table>
+</div>

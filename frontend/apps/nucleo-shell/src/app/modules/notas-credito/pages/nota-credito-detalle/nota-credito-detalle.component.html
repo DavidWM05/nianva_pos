@@ -1,0 +1,68 @@
+<div class="nota-credito-detalle">
+  @if (cargando()) {
+    <p>Cargando nota de crédito...</p>
+  } @else if (notaCredito(); as nota) {
+    <div class="nota-credito-detalle__header">
+      <h1>Nota de crédito #{{ nota.id }}</h1>
+      <nucleo-status-badge
+        [value]="nota.estado"
+        [colorMap]="{ activa: 'success', usada_parcial: 'info', usada_total: 'neutral', expirada: 'danger', cancelada: 'danger' }"
+      />
+    </div>
+
+    <nucleo-record-tabs [tabs]="tabs">
+      <ng-template>
+        <div class="nota-credito-detalle__tab">
+          <dl class="nota-credito-detalle__resumen">
+            <dt>Cliente</dt>
+            <dd>{{ nota.cliente?.nombre ?? 'Sin cliente' }}</dd>
+            <dt>Creada</dt>
+            <dd>{{ nota.created_at | date: 'short' }}</dd>
+            <dt>Vence</dt>
+            <dd>{{ nota.fecha_expiracion ? (nota.fecha_expiracion | date: 'shortDate') : 'Sin definir' }}</dd>
+            <dt>Monto original</dt>
+            <dd>${{ nota.monto_original }}</dd>
+            <dt>Saldo disponible</dt>
+            <dd class="nota-credito-detalle__saldo">${{ nota.saldo_disponible }}</dd>
+            <dt>Devolución origen</dt>
+            <dd><a [routerLink]="['/devoluciones', nota.devolucion_id]">Devolución #{{ nota.devolucion_id }}</a></dd>
+          </dl>
+
+          <h4>Usos</h4>
+          @if (nota.usos && nota.usos.length > 0) {
+            <table class="nota-credito-detalle__tabla">
+              <thead>
+                <tr>
+                  <th>Venta</th>
+                  <th>Fecha</th>
+                  <th>Monto usado</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (uso of nota.usos; track uso.id) {
+                  <tr>
+                    <td><a [routerLink]="['/tpv/ventas', uso.venta_id]">Venta #{{ uso.venta_id }}</a></td>
+                    <td>{{ uso.created_at | date: 'short' }}</td>
+                    <td>${{ uso.monto_usado }}</td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          } @else {
+            <p>Esta nota de crédito no se ha usado todavía.</p>
+          }
+        </div>
+      </ng-template>
+
+      <ng-template>
+        @defer (on viewport) {
+          <nucleo-audit-log-viewer [tabla]="'notas_credito'" [registroId]="nota.id" />
+        } @placeholder {
+          <p>Auditoría (se carga al hacer scroll hasta aquí)...</p>
+        } @loading (minimum 200ms) {
+          <p>Cargando auditoría...</p>
+        }
+      </ng-template>
+    </nucleo-record-tabs>
+  }
+</div>

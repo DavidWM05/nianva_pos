@@ -33,6 +33,8 @@ export interface DevolucionPagoResumen {
   monto: string;
 }
 
+export type TipoReembolso = 'efectivo' | 'nota_credito';
+
 export interface Devolucion {
   id: number;
   fecha: string;
@@ -44,6 +46,9 @@ export interface Devolucion {
   /** Negativo = reembolso al cliente; positivo = cobro adicional. Ya viene calculado por el backend. */
   diferencia: string;
   motivo: string | null;
+  /** Solo tiene sentido si diferencia < 0 (reembolso al cliente). */
+  tipo_reembolso: TipoReembolso | null;
+  nota_credito_id: number | null;
   /** Solo viaja en show()/store() -- index() no la carga (ver DevolucionResource). */
   items?: DevolucionItem[];
   pagos?: DevolucionPagoResumen[];
@@ -72,4 +77,18 @@ export interface DevolucionFormPayload {
   items_nuevos?: VentaItemPayload[];
   pagos?: VentaPagoPayload[];
   motivo?: string | null;
+  /** Solo tiene efecto si diferencia < 0 (reembolso al cliente) -- DevolucionController lo ignora si no. */
+  tipo_reembolso?: TipoReembolso | null;
+}
+
+/**
+ * DevolucionController::store() la manda como llave hermana de `data` (no
+ * dentro del modelo) cuando tipo_reembolso='nota_credito' generó una nota
+ * nueva -- trae monto_original, que no viaja en `Devolucion.nota_credito_id`
+ * (solo el id). Para ver saldo_disponible/estado despues hay que ir a
+ * NotaCreditoService.obtener(nota_credito_id).
+ */
+export interface DevolucionNotaCreditoInfo {
+  id: number;
+  monto_original: string;
 }

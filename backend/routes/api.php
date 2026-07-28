@@ -3,7 +3,18 @@
 use App\Modules\Apartados\Http\Controllers\ApartadoController;
 use App\Modules\Auditoria\Http\Controllers\AuditoriaController;
 use App\Modules\Configuracion\Http\Controllers\ConfiguracionController;
+use App\Modules\Cotizaciones\Http\Controllers\CotizacionController;
 use App\Modules\Crm\Http\Controllers\ClienteController;
+use App\Modules\Crm\Http\Controllers\PlanPagoController;
+use App\Modules\CrmAvanzado\Http\Controllers\CrmAvanzadoController;
+use App\Modules\CuentasCobrar\Http\Controllers\CuentaCobrarController;
+use App\Modules\CuentasPagar\Http\Controllers\CuentaPagarController;
+use App\Modules\Delivery\Http\Controllers\PedidoController;
+use App\Modules\GiftCards\Http\Controllers\GiftCardController;
+use App\Modules\NotasCredito\Http\Controllers\NotaCreditoController;
+use App\Modules\Payroll\Http\Controllers\PayrollController;
+use App\Modules\Prestamos\Http\Controllers\PrestamoController;
+use App\Modules\Produccion\Http\Controllers\ProduccionController;
 use App\Modules\Devoluciones\Http\Controllers\DevolucionController;
 use App\Modules\Gastos\Http\Controllers\GastoController;
 use App\Modules\Inventario\Http\Controllers\CategoriaController;
@@ -29,6 +40,7 @@ use App\Modules\Precios\Http\Controllers\CuponController;
 use App\Modules\Precios\Http\Controllers\ReglaPrecioController;
 use App\Modules\Tpv\Http\Controllers\CajaController;
 use App\Modules\Tpv\Http\Controllers\VentaController;
+use App\Modules\UnidadesMedida\Http\Controllers\UnidadMedidaController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -251,5 +263,115 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put('/configuracion', [ConfiguracionController::class, 'update'])->middleware('permiso:configuracion.editar');
         // Sin permiso dedicado a proposito -- ver el docblock de publica().
         Route::get('/configuracion/publica', [ConfiguracionController::class, 'publica']);
+
+        // Unidades de Medida: catalogo transversal, sin permiso dedicado.
+        Route::get('/unidades-medida', [UnidadMedidaController::class, 'index']);
+        Route::post('/unidades-medida', [UnidadMedidaController::class, 'store']);
+        Route::put('/unidades-medida/{id}', [UnidadMedidaController::class, 'update']);
+        Route::delete('/unidades-medida/{id}', [UnidadMedidaController::class, 'destroy']);
+
+        // Cotizaciones / Presupuestos
+        Route::middleware('modulo:cotizaciones')->group(function () {
+            Route::get('/cotizaciones', [CotizacionController::class, 'index'])->middleware('permiso:cotizaciones.ver');
+            Route::post('/cotizaciones', [CotizacionController::class, 'store'])->middleware('permiso:cotizaciones.crear');
+            Route::get('/cotizaciones/{cotizacion}', [CotizacionController::class, 'show'])->middleware('permiso:cotizaciones.ver');
+            Route::put('/cotizaciones/{id}', [CotizacionController::class, 'update'])->middleware('permiso:cotizaciones.editar');
+            Route::delete('/cotizaciones/{id}', [CotizacionController::class, 'destroy'])->middleware('permiso:cotizaciones.eliminar');
+            Route::post('/cotizaciones/{id}/convertir', [CotizacionController::class, 'convertir'])->middleware('permiso:cotizaciones.convertir');
+        });
+
+        // Cuentas por Cobrar (CxC)
+        Route::middleware('modulo:cxc')->group(function () {
+            Route::get('/cuentas-cobrar', [CuentaCobrarController::class, 'index'])->middleware('permiso:cuentas_cobrar.ver');
+            Route::get('/cuentas-cobrar/reporte', [CuentaCobrarController::class, 'reporte'])->middleware('permiso:reportes_cuentas_cobrar.ver');
+            Route::get('/cuentas-cobrar/{cuentaCobrar}', [CuentaCobrarController::class, 'show'])->middleware('permiso:cuentas_cobrar.ver');
+            Route::post('/cuentas-cobrar/{id}/abonos', [CuentaCobrarController::class, 'registrarAbono'])->middleware('permiso:cuentas_cobrar.registrar_abono');
+            Route::post('/cuentas-cobrar/{id}/anular', [CuentaCobrarController::class, 'anular'])->middleware('permiso:cuentas_cobrar.anular');
+        });
+
+        // Cuentas por Pagar (CxP)
+        Route::middleware('modulo:cxp')->group(function () {
+            Route::get('/cuentas-pagar', [CuentaPagarController::class, 'index'])->middleware('permiso:cuentas_pagar.ver');
+            Route::get('/cuentas-pagar/reporte', [CuentaPagarController::class, 'reporte'])->middleware('permiso:reportes_cuentas_pagar.ver');
+            Route::get('/cuentas-pagar/{cuentaPagar}', [CuentaPagarController::class, 'show'])->middleware('permiso:cuentas_pagar.ver');
+            Route::post('/cuentas-pagar/{id}/pagos', [CuentaPagarController::class, 'registrarPago'])->middleware('permiso:cuentas_pagar.registrar_pago');
+            Route::post('/cuentas-pagar/{id}/anular', [CuentaPagarController::class, 'anular'])->middleware('permiso:cuentas_pagar.ver');
+        });
+
+        // CRM Avanzado (extension del modulo CRM existente)
+        Route::middleware('modulo:crm_avanzado')->group(function () {
+            Route::get('/clientes/{cliente}/interacciones', [CrmAvanzadoController::class, 'interacciones'])->middleware('permiso:crm_interacciones.ver');
+            Route::post('/clientes/{cliente}/interacciones', [CrmAvanzadoController::class, 'crearInteraccion'])->middleware('permiso:crm_interacciones.crear');
+            Route::get('/clientes/{cliente}/loyalty', [CrmAvanzadoController::class, 'loyalty'])->middleware('permiso:loyalty.ver');
+            Route::post('/clientes/{cliente}/loyalty/ajustar', [CrmAvanzadoController::class, 'ajustarPuntos'])->middleware('permiso:loyalty.ajustar');
+            Route::post('/crm/campanas/enviar', [CrmAvanzadoController::class, 'enviarCampana'])->middleware('permiso:crm_campanas.enviar');
+        });
+
+        // Delivery / Pedidos
+        Route::middleware('modulo:delivery')->group(function () {
+            Route::get('/pedidos', [PedidoController::class, 'index'])->middleware('permiso:pedidos.ver');
+            Route::post('/pedidos', [PedidoController::class, 'store'])->middleware('permiso:pedidos.crear');
+            Route::get('/pedidos/{pedido}', [PedidoController::class, 'show'])->middleware('permiso:pedidos.ver');
+            Route::patch('/pedidos/{id}/estado', [PedidoController::class, 'cambiarEstado'])->middleware('permiso:pedidos.cambiar_estado');
+            Route::patch('/pedidos/{id}/repartidor', [PedidoController::class, 'asignarRepartidor'])->middleware('permiso:pedidos.asignar_repartidor');
+        });
+
+        // Gift Cards
+        Route::middleware('modulo:gift_cards')->group(function () {
+            Route::get('/gift-cards', [GiftCardController::class, 'index'])->middleware('permiso:gift_cards.ver');
+            Route::post('/gift-cards', [GiftCardController::class, 'store'])->middleware('permiso:gift_cards.emitir');
+            Route::get('/gift-cards/{giftCard}', [GiftCardController::class, 'show'])->middleware('permiso:gift_cards.ver');
+            Route::post('/gift-cards/{id}/recargar', [GiftCardController::class, 'recargar'])->middleware('permiso:gift_cards.recargar');
+            Route::post('/gift-cards/{id}/cancelar', [GiftCardController::class, 'cancelar'])->middleware('permiso:gift_cards.cancelar');
+        });
+
+        // Notas de Credito
+        Route::middleware('modulo:notas_credito')->group(function () {
+            Route::get('/notas-credito', [NotaCreditoController::class, 'index'])->middleware('permiso:notas_credito.ver');
+            Route::get('/notas-credito/{notaCredito}', [NotaCreditoController::class, 'show'])->middleware('permiso:notas_credito.ver');
+            Route::get('/clientes/{cliente}/notas-credito', [NotaCreditoController::class, 'activasPorCliente'])->middleware('permiso:notas_credito.ver');
+        });
+
+        // Produccion / Recetas
+        Route::middleware('modulo:produccion')->group(function () {
+            Route::get('/insumos', [ProduccionController::class, 'insumosIndex'])->middleware('permiso:produccion.ver');
+            Route::post('/insumos', [ProduccionController::class, 'insumosStore'])->middleware('permiso:produccion.crear');
+            Route::get('/insumos/{insumo}/stocks', [ProduccionController::class, 'insumoStocks'])->middleware('permiso:produccion.ver');
+            Route::post('/insumos/{insumo}/stocks', [ProduccionController::class, 'insumoStocksStore'])->middleware('permiso:produccion.crear');
+            Route::get('/recetas', [ProduccionController::class, 'recetasIndex'])->middleware('permiso:produccion.ver');
+            Route::post('/recetas', [ProduccionController::class, 'recetasStore'])->middleware('permiso:produccion.crear');
+            Route::get('/ordenes-produccion', [ProduccionController::class, 'ordenesIndex'])->middleware('permiso:produccion.ver');
+            Route::post('/ordenes-produccion', [ProduccionController::class, 'ordenesStore'])->middleware('permiso:produccion.crear');
+            Route::patch('/ordenes-produccion/{id}/estado', [ProduccionController::class, 'ordenesCambiarEstado'])->middleware('permiso:produccion.crear');
+            Route::get('/transformaciones', [ProduccionController::class, 'transformacionesIndex'])->middleware('permiso:produccion.ver');
+            Route::post('/transformaciones', [ProduccionController::class, 'transformacionStore'])->middleware('permiso:produccion.transformar');
+        });
+
+        // Ventas a Plazos (extiende CRM)
+        Route::middleware('modulo:ventas_plazos')->group(function () {
+            Route::get('/planes-pago-cliente', [PlanPagoController::class, 'index'])->middleware('permiso:ventas_plazos.ver');
+            Route::get('/planes-pago-cliente/{plan}', [PlanPagoController::class, 'show'])->middleware('permiso:ventas_plazos.ver');
+            Route::post('/ventas/{venta}/plan-pago', [PlanPagoController::class, 'crearPlan'])->middleware('permiso:ventas_plazos.crear');
+            Route::post('/planes-pago-cliente/{plan}/pagar-cuota', [PlanPagoController::class, 'pagarCuota'])->middleware('permiso:ventas_plazos.crear');
+        });
+
+        // Payroll / Nomina
+        Route::middleware('modulo:payroll')->group(function () {
+            Route::get('/empleados', [PayrollController::class, 'empleadosIndex'])->middleware('permiso:payroll.ver');
+            Route::get('/empleados/{empleado}', [PayrollController::class, 'empleadosShow'])->middleware('permiso:payroll.ver');
+            Route::post('/empleados', [PayrollController::class, 'empleadosStore'])->middleware('permiso:payroll.crear');
+            Route::get('/nominas', [PayrollController::class, 'nominasIndex'])->middleware('permiso:payroll.ver');
+            Route::get('/nominas/{nomina}', [PayrollController::class, 'nominasShow'])->middleware('permiso:payroll.ver');
+            Route::post('/nominas/generar', [PayrollController::class, 'nominasGenerar'])->middleware('permiso:payroll.crear');
+            Route::patch('/nominas/{id}/pagar', [PayrollController::class, 'nominasPagar'])->middleware('permiso:payroll.pagar');
+        });
+
+        // Prestamos
+        Route::middleware('modulo:prestamos')->group(function () {
+            Route::get('/prestamos', [PrestamoController::class, 'index'])->middleware('permiso:prestamos.ver');
+            Route::get('/prestamos/{prestamo}', [PrestamoController::class, 'show'])->middleware('permiso:prestamos.ver');
+            Route::post('/prestamos', [PrestamoController::class, 'store'])->middleware('permiso:prestamos.crear');
+            Route::post('/prestamos/{id}/pagos', [PrestamoController::class, 'registrarPago'])->middleware('permiso:prestamos.pagar');
+        });
     });
 });

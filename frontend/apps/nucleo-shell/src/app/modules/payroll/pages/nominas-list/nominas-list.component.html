@@ -1,0 +1,67 @@
+<div class="nominas-list">
+  <div class="nominas-list__header">
+    <h1>Nóminas</h1>
+    @if (permisos().crear) {
+      <p-button label="Generar nómina" icon="pi pi-plus" (click)="abrirGenerar()" />
+    }
+  </div>
+
+  <nucleo-data-table
+    [columns]="columns"
+    [value]="nominas()"
+    [totalRecords]="total()"
+    [loading]="loading()"
+    [virtualScroll]="false"
+    emptyMessage="No hay nóminas generadas."
+    (lazyLoad)="onLazyLoad($event)"
+  >
+    <ng-template nucleoDataTableCell="periodo" let-row>
+      {{ row.periodo_inicio | date: 'shortDate' }} — {{ row.periodo_fin | date: 'shortDate' }}
+    </ng-template>
+
+    <ng-template nucleoDataTableCell="total_percepciones" let-row>
+      ${{ row.total_percepciones }}
+    </ng-template>
+
+    <ng-template nucleoDataTableCell="total_deducciones" let-row>
+      ${{ row.total_deducciones }}
+    </ng-template>
+
+    <ng-template nucleoDataTableCell="total_neto" let-row>
+      ${{ row.total_neto }}
+    </ng-template>
+
+    <ng-template nucleoDataTableCell="estado" let-row>
+      <nucleo-status-badge [value]="row.estado" [colorMap]="{ calculada: 'info', pagada: 'success', cancelada: 'neutral' }" />
+    </ng-template>
+
+    <ng-template nucleoDataTableCell="acciones" let-row>
+      <p-button icon="pi pi-eye" [text]="true" size="small" aria-label="Ver" (click)="irADetalle(row)" />
+    </ng-template>
+  </nucleo-data-table>
+</div>
+
+<p-dialog
+  header="Generar nómina"
+  [visible]="mostrarGenerar()"
+  (visibleChange)="cerrarGenerar()"
+  [modal]="true"
+  [dismissableMask]="true"
+  [style]="{ width: '24rem' }"
+>
+  <div class="nominas-list__campo">
+    <label for="nomina-periodo-inicio">Periodo — inicio</label>
+    <p-datepicker inputId="nomina-periodo-inicio" dateFormat="yy-mm-dd" [ngModel]="periodoInicio()" (ngModelChange)="periodoInicio.set($event)" />
+  </div>
+  <div class="nominas-list__campo">
+    <label for="nomina-periodo-fin">Periodo — fin</label>
+    <p-datepicker inputId="nomina-periodo-fin" dateFormat="yy-mm-dd" [ngModel]="periodoFin()" (ngModelChange)="periodoFin.set($event)" />
+  </div>
+  <p-button
+    label="Generar"
+    icon="pi pi-check"
+    [loading]="generando()"
+    [disabled]="!periodoInicio() || !periodoFin()"
+    (click)="confirmarGenerar()"
+  />
+</p-dialog>

@@ -22,6 +22,21 @@
             ${{ cerrada.diferencia }}
           </dd>
         </dl>
+
+        @if (desgloseCierre(); as desglose) {
+          <h4>Desglose del total teórico</h4>
+          <dl class="caja__detalle">
+            <dt>Gastos</dt>
+            <dd>-${{ desglose.total_gastos }}</dd>
+            <dt>Abonos de cuentas por cobrar</dt>
+            <dd>+${{ desglose.total_abonos_cxc }}</dd>
+            <dt>Recargas de gift card</dt>
+            <dd>+${{ desglose.total_recargas_gc }}</dd>
+            <dt>Pagos de cuentas por pagar</dt>
+            <dd>-${{ desglose.total_pagos_cxp }}</dd>
+          </dl>
+        }
+
         <p-button label="Continuar" (click)="cerrarResumenDeCierre()" />
       </div>
     } @else if (estadoActual.sesion; as sesion) {

@@ -1,0 +1,118 @@
+<div class="receta-form">
+  <div class="receta-form__header">
+    <h2>Nueva receta</h2>
+    <a routerLink="/produccion/recetas">Volver a la lista</a>
+  </div>
+
+  <section class="receta-form__seccion">
+    <h3>Producto</h3>
+    <nucleo-entidad-selector
+      [buscador]="buscadorProducto"
+      [buscadorHijos]="buscadorVarianteDeProducto"
+      label="Producto"
+      labelHijos="Variante"
+      placeholder="Buscar producto por nombre..."
+      [valorInicial]="productoId()"
+      (seleccionado)="productoId.set($event)"
+      (hijoSeleccionado)="onVarianteSeleccionada($event)"
+    />
+  </section>
+
+  <section class="receta-form__seccion">
+    <h3>Datos de la receta</h3>
+    <div class="receta-form__campo">
+      <label for="receta-nombre">Nombre</label>
+      <input pInputText type="text" id="receta-nombre" maxlength="200" [ngModel]="nombre()" (ngModelChange)="nombre.set($event)" />
+    </div>
+    <div class="receta-form__campo">
+      <label for="receta-rendimiento">Rendimiento (unidades por tanda)</label>
+      <input
+        pInputText
+        type="number"
+        min="0.01"
+        step="0.01"
+        id="receta-rendimiento"
+        [ngModel]="rendimiento()"
+        (ngModelChange)="rendimiento.set($event)"
+      />
+    </div>
+    <div class="receta-form__campo">
+      <label for="receta-descripcion">Descripción (opcional)</label>
+      <textarea pTextarea id="receta-descripcion" rows="2" [ngModel]="descripcion()" (ngModelChange)="descripcion.set($event)"></textarea>
+    </div>
+    <div class="receta-form__campo">
+      <label for="receta-instrucciones">Instrucciones (opcional)</label>
+      <textarea pTextarea id="receta-instrucciones" rows="3" [ngModel]="instrucciones()" (ngModelChange)="instrucciones.set($event)"></textarea>
+    </div>
+  </section>
+
+  <section class="receta-form__seccion">
+    <h3>Ingredientes</h3>
+
+    @if (ingredientes().length > 0) {
+      <table class="receta-form__tabla">
+        <thead>
+          <tr>
+            <th>Insumo</th>
+            <th>Cantidad</th>
+            <th>Unidad</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (ingrediente of ingredientes(); track $index) {
+            <tr>
+              <td>{{ ingrediente.etiquetaInsumo }}</td>
+              <td>{{ ingrediente.cantidad }}</td>
+              <td>{{ ingrediente.etiquetaUnidad }}</td>
+              <td>
+                <p-button icon="pi pi-trash" [text]="true" severity="danger" size="small" aria-label="Quitar" (click)="quitarIngrediente($index)" />
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    }
+
+    <div class="receta-form__ingrediente-nuevo">
+      <nucleo-entidad-selector
+        [buscador]="buscadorInsumo"
+        label="Insumo"
+        placeholder="Buscar insumo por nombre..."
+        [valorInicial]="insumoStagingId()"
+        (seleccionado)="insumoStagingId.set($event)"
+      />
+      <div class="receta-form__campo">
+        <label for="ingrediente-cantidad">Cantidad</label>
+        <input
+          pInputText
+          type="number"
+          min="0.01"
+          step="0.01"
+          id="ingrediente-cantidad"
+          [ngModel]="cantidadStaging()"
+          (ngModelChange)="cantidadStaging.set($event)"
+        />
+      </div>
+      <nucleo-entidad-selector
+        [buscador]="buscadorUnidadMedida"
+        label="Unidad"
+        placeholder="Buscar unidad por nombre..."
+        [valorInicial]="unidadMedidaStagingId()"
+        (seleccionado)="unidadMedidaStagingId.set($event)"
+      />
+      <p-button
+        label="Agregar ingrediente"
+        icon="pi pi-plus"
+        [text]="true"
+        [disabled]="insumoStagingId() === null || unidadMedidaStagingId() === null || !cantidadStaging()"
+        (click)="agregarIngrediente()"
+      />
+    </div>
+  </section>
+
+  <div class="receta-form__acciones">
+    <p-button label="Crear receta" icon="pi pi-check" [loading]="guardando()" (click)="crear()" />
+    <a routerLink="/produccion/recetas"><p-button label="Cancelar" [text]="true" /></a>
+  </div>
+</div>

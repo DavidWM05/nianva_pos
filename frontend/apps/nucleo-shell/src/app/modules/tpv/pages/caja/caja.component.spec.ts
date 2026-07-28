@@ -165,7 +165,9 @@ describe('CajaComponent', () => {
       total_ventas_sistema: '100.00',
       diferencia: '-20.00',
     };
-    cajaService.cerrar.mockReturnValue(of(cerrada));
+    cajaService.cerrar.mockReturnValue(
+      of({ sesion: cerrada, desglose: { total_gastos: 15, total_abonos_cxc: 50, total_recargas_gc: 30, total_pagos_cxp: 10 } }),
+    );
     cajaService.actual.mockReturnValue(
       of({ sesion: null, resumen: null, permisos: { abrir: true, cerrar: true, gastos_ver: true, gastos_crear: true } }),
     );
@@ -177,6 +179,55 @@ describe('CajaComponent', () => {
     const texto = (fixture.nativeElement as HTMLElement).textContent ?? '';
     expect(texto).toContain('Caja cerrada');
     expect(texto).toContain('-20.00');
+  });
+
+  it('al cerrar la caja, muestra el desglose del total teorico (gastos, abonos CxC, recargas GC, pagos CxP)', async () => {
+    await crearComponente({
+      sesion: sesionAbierta,
+      resumen: { ventas_count: 1, total_ventas: 100, total_gastos: 0 },
+      permisos: { abrir: true, cerrar: true, gastos_ver: true, gastos_crear: true },
+    });
+
+    const cerrada: CajaSesion = { ...sesionAbierta, estado: 'cerrada', monto_cierre: '580.00', total_ventas_sistema: '100.00', diferencia: '0.00' };
+    cajaService.cerrar.mockReturnValue(
+      of({ sesion: cerrada, desglose: { total_gastos: 15, total_abonos_cxc: 50, total_recargas_gc: 30, total_pagos_cxp: 10 } }),
+    );
+    cajaService.actual.mockReturnValue(
+      of({ sesion: null, resumen: null, permisos: { abrir: true, cerrar: true, gastos_ver: true, gastos_crear: true } }),
+    );
+
+    fixture.componentInstance['montoFisico'].set(580);
+    fixture.componentInstance.cerrarCaja();
+    fixture.detectChanges();
+
+    const texto = (fixture.nativeElement as HTMLElement).textContent ?? '';
+    expect(texto).toContain('Desglose del total teórico');
+    expect(texto).toContain('50');
+    expect(texto).toContain('30');
+    expect(texto).toContain('10');
+  });
+
+  it('cerrarResumenDeCierre() limpia tanto la sesion cerrada como su desglose', async () => {
+    await crearComponente({
+      sesion: sesionAbierta,
+      resumen: { ventas_count: 1, total_ventas: 100, total_gastos: 0 },
+      permisos: { abrir: true, cerrar: true, gastos_ver: true, gastos_crear: true },
+    });
+
+    const cerrada: CajaSesion = { ...sesionAbierta, estado: 'cerrada', monto_cierre: '580.00', total_ventas_sistema: '100.00', diferencia: '0.00' };
+    cajaService.cerrar.mockReturnValue(
+      of({ sesion: cerrada, desglose: { total_gastos: 15, total_abonos_cxc: 50, total_recargas_gc: 30, total_pagos_cxp: 10 } }),
+    );
+    cajaService.actual.mockReturnValue(
+      of({ sesion: null, resumen: null, permisos: { abrir: true, cerrar: true, gastos_ver: true, gastos_crear: true } }),
+    );
+    fixture.componentInstance['montoFisico'].set(580);
+    fixture.componentInstance.cerrarCaja();
+
+    fixture.componentInstance.cerrarResumenDeCierre();
+
+    expect(fixture.componentInstance['cajaRecienCerrada']()).toBeNull();
+    expect(fixture.componentInstance['desgloseCierre']()).toBeNull();
   });
 
   it('un error al abrir la caja se reporta por toast, no por texto inline', async () => {

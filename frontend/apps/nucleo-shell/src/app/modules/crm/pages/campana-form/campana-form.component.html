@@ -1,0 +1,37 @@
+<div class="campana-form">
+  <div class="campana-form__header">
+    <h2>Nueva campaña</h2>
+  </div>
+
+  @if (ultimaEnviada(); as campana) {
+    <div class="campana-form__confirmacion">
+      Campaña "{{ campana.asunto }}" enviada a {{ campana.destinatarios }} cliente(s).
+    </div>
+  }
+
+  <div class="campana-form__campo">
+    <label for="campana-segmento">Segmento de clientes</label>
+    <p-select
+      inputId="campana-segmento"
+      [options]="segmentos"
+      optionLabel="label"
+      optionValue="value"
+      [ngModel]="segmento()"
+      (ngModelChange)="segmento.set($event)"
+    />
+  </div>
+
+  <div class="campana-form__campo">
+    <label for="campana-asunto">Asunto</label>
+    <input pInputText type="text" id="campana-asunto" maxlength="200" [ngModel]="asunto()" (ngModelChange)="asunto.set($event)" />
+  </div>
+
+  <div class="campana-form__campo">
+    <label for="campana-mensaje">Mensaje</label>
+    <textarea pTextarea id="campana-mensaje" rows="5" maxlength="5000" [ngModel]="mensaje()" (ngModelChange)="mensaje.set($event)"></textarea>
+  </div>
+
+  <div class="campana-form__acciones">
+    <p-button label="Enviar campaña" icon="pi pi-send" [loading]="enviando()" (click)="enviar()" />
+  </div>
+</div>
