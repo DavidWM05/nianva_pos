@@ -86,7 +86,7 @@ Tomadas por el responsable el 2026-10-30.
 | C1 | Las excepciones de negocio se mapean a `error_code` en un bloque central (95 menciones) | `backend/bootstrap/app.php`; `.claude/CLAUDE.md` §3 | API-04 | **Resuelto el 2026-10-30.** Cada excepción extiende `ExcepcionNegocio` y declara su `error_code`; `bootstrap/app.php` solo registra el manejador genérico. Catálogo en [catalogo_error_code.md](catalogo_error_code.md) |
 | C2 | Las Policies existen, pero ningún controlador llama `authorize()` | `.claude/CLAUDE.md` §3; búsqueda de `authorize(` sin resultados en `backend/app` | SEG-03 | Conectar las Policies en los FormRequest o controladores, con un test por recurso |
 | C3 | Algunos endpoints aceptan `sucursal_id` del request (`ProductoVarianteController::store`, `VentaController::store`) | `docs/consideraciones_futuras.md` (sección "`sucursal_id` aceptado como campo de request…") | SEG-02 | Resolver la sucursal del usuario o de la terminal; solo el admin elige, y se valida |
-| C4 | `codigo_barras` es `UNIQUE` global | `Inventario/Database/Migrations/2026_07_21_000005_create_producto_variantes_table.php:16`; `ProductoVarianteController:67,84` | DAT-09 | `UNIQUE (tenant_id, codigo_barras)` y una validación con scope |
+| C4 | `codigo_barras` es `UNIQUE` global | `Inventario/Database/Migrations/2026_07_21_000005_create_producto_variantes_table.php:16`; `ProductoVarianteController:67,84` | DAT-09 | **Resuelto el 2026-10-30.** `producto_variantes` con `tenant_id` propio, `UNIQUE (tenant_id, codigo_barras)` y validación con scope; test de esquema `UnicidadConTenantTest` |
 | C5 | Rutas sin versión (`/api/...`) | `backend/routes/api.php`, `bootstrap/app.php` | API-01 | Prefijo `/api/v1` y el frontend con la base URL desde la configuración |
 | C6 | Cantidades `int` y variantes fijas `talla`/`color` | `ProductoVariante.php:15` (Fillable) y migraciones de Inventario | DAT-01, ARQ-07 | Se reescriben en la Fase 3 (esquema nuevo, no `add_*`) |
 | C7 | `#[Fillable]` desincronizado descarta campos sin avisar | `docs/consideraciones_futuras.md` ("Auditar… `#[Fillable]` desincronizado") | DAT-14 | `Model::preventSilentlyDiscardingAttributes()` fuera de producción |
@@ -144,3 +144,4 @@ Cada lección es un hecho ocurrido. Las de Lite tienen el commit o el archivo; l
 | 2026-10-30 | D1-D5 | Decisiones tomadas por el responsable; nueva DAT-15 (costo promedio ponderado) |
 | 2026-10-30 | — | Estándares aprobados |
 | 2026-10-30 | C1 | Resuelto: `ExcepcionNegocio`, manejador genérico y catálogo generado. Los códigos de CxP pasan a `cuenta_pagar_*` para no repetir los de CxC |
+| 2026-10-30 | C4 | Resuelto: unicidad con tenant en código de barras, `insumos.sku` y `gift_cards.codigo` |

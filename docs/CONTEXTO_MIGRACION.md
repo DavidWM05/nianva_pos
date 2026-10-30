@@ -130,11 +130,17 @@ repo.
   de otro negocio. También se corrigieron los módulos congelados. `usuarios` filtra por el
   tenant exacto, porque `tenant_id` NULL es superadmin. El test
   `Arquitectura/ExistenciasConTenantTest` impide volver a escribir un `exists` sin el
-  filtro. Backend: 365 tests.
+  filtro.
+- **Unicidad con tenant, DAT-09 y C4** (quinto encargo, hecho por DS): `producto_variantes`
+  tiene `tenant_id` propio, que el modelo copia del producto al crearse, e índice
+  `UNIQUE(tenant_id, codigo_barras)`. `insumos.sku` y `gift_cards.codigo` también son
+  únicos por tenant. La validación y el generador automático de códigos de barras
+  comprueban duplicados solo dentro del tenant. El test
+  `Arquitectura/UnicidadConTenantTest` revisa todos los índices únicos; las excepciones
+  son `usuarios.correo` (el login busca por correo antes de conocer el tenant) y
+  `empleados.usuario_id` (uno a uno). Las migraciones se reescribieron (DAT-11): las bases
+  de desarrollo locales necesitan `php artisan migrate:fresh --seed`. Backend: 372 tests.
 - **Pendientes detectados:**
-  - índices únicos sin `tenant_id` (DAT-09): `producto_variantes.codigo_barras` (C4),
-    `insumos.sku` y `gift_cards.codigo`. `usuarios.correo` se queda global a propósito: el
-    login busca por correo antes de conocer el tenant;
   - el frontend no conoce los 9 códigos nuevos (`tpv-error.types.ts` y similares);
   - `VentaController` y `CompraController` toman el tenant de `$request->user()` y el resto
     de `TenantContext` (equivalentes); se unifica al migrar a FormRequest (C8).
@@ -145,10 +151,9 @@ repo.
 
 1. **Saneamiento de la Fase 1**, en encargos de un tema cada uno. Hecho: CI con ambas
    suites, C1 (D4), las validaciones de negocio (500 → 422) y las reglas `exists` con
-   tenant (API-05). Orden sugerido para lo que sigue: unicidad con tenant (DAT-09, C4), con
-   `tenant_id` propio en `producto_variantes` (decisión del responsable); C11 (D5); luego
-   Pint y ESLint bloqueantes en CI (con la línea base de arriba) y PHPStan; después el
-   resto:
+   tenant (API-05) y la unicidad con tenant (DAT-09, C4). Orden sugerido para lo que
+   sigue: C11 (D5); luego Pint y ESLint bloqueantes en CI (con la línea base de arriba) y
+   PHPStan; después el resto:
    - nombres internos: composer `nianva/pos` y alcance Nx `@nianva/*` (hoy `laravel/laravel`
      y `@org`); el nombre de la app Nx `nucleo-shell` queda por decidir;
    - `README.md` nuevo: producto único por planes y giros, derivado de `nucleo-erp-base`;
@@ -157,7 +162,6 @@ repo.
    - prefijo `/api/v1` y configuración del frontend en tiempo de ejecución (sin
      `localhost:8000` fijo);
    - FormRequests, factories, `preventSilentlyDiscardingAttributes`;
-   - código de barras único por tenant;
    - actualizar `.claude/CLAUDE.md` para que resuma los estándares;
    - opcional: rama `master` → `main`.
 2. **Fase 2**: sistema de diseño.
