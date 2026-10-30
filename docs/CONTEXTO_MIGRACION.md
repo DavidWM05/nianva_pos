@@ -107,21 +107,38 @@ repo.
   `ExcepcionNegocio` y `bootstrap/app.php` tiene un solo manejador genérico. Catálogo en
   `docs/estandares/catalogo_error_code.md` (`php artisan errores:catalogo`). Los tres códigos
   de CxP que repetían los de CxC pasan a `cuenta_pagar_ya_pagada`, `cuenta_pagar_anulada` y
-  `cuenta_pagar_con_abonos`. Backend: 303 tests.
-- **Pendiente detectado:** 46 `throw new InvalidArgumentException` en los Services (Tpv,
-  Apartados, Devoluciones, Inventario, Cotizaciones, Crm, Gastos, UnidadesMedida, Delivery)
-  no tienen `error_code`. Las que llegan a HTTP responden 500 con traza en vez de 422; por
-  ejemplo, cerrar dos veces la misma caja.
+  `cuenta_pagar_con_abonos`.
+- **Validaciones de negocio, de 500 a 422** (tercer encargo, hecho por DS): se revisaron los
+  46 `throw new InvalidArgumentException` de los Services. Las 20 que llegaban a HTTP
+  respondían 500; ahora responden 422:
+  - 10 casos con 9 excepciones nuevas (`caja_ya_cerrada`, `venta_total_negativo`,
+    `venta_ya_anulada`, `devolucion_variante_no_vendida`,
+    `devolucion_excede_cantidad_vendida`, `cotizacion_total_negativo`,
+    `plan_pago_ya_activo`, `cuota_ya_pagada`, `pago_cuota_insuficiente`);
+  - 10 con validación de entrada: variante y cliente con scope de tenant
+    (`Inventario/Support/ReglasVariante`) y las reglas condicionales de `items_nuevos` en
+    Devoluciones.
+
+  También se corrigió que una compra aceptaba el proveedor de otro tenant. Las que no
+  llegan a HTTP siguen como guarda interna. Delivery (congelado) sigue respondiendo 500 con
+  una variante de otro tenant. Backend: 324 tests.
+- **Pendientes detectados:**
+  - quedan 29 reglas `exists:` sin scope de tenant en 15 controladores (API-05); al menos
+    `items_nuevos.*.variante_id` en `DevolucionController` repite el 500 con una variante de
+    otro tenant;
+  - el frontend no conoce los 9 códigos nuevos (`tpv-error.types.ts` y similares);
+  - `VentaController` y `CompraController` toman el tenant de `$request->user()` y el resto
+    de `TenantContext` (equivalentes); se unifica al migrar a FormRequest (C8).
 - **Git:** `master` está protegido (ruleset `proteger-master`): todo entra por PR con los tres
-  checks en verde. La CI y los estándares ya están en `master`; C1 va en la rama
-  `refactor/c1-error-code`.
+  checks en verde.
 
 ## 6. Siguiente paso, en orden
 
-1. **Saneamiento de la Fase 1**, en encargos de un tema cada uno. Hecho: CI con ambas suites
-   y C1 (D4). Orden sugerido para lo que sigue: las `InvalidArgumentException` de negocio
-   convertidas en `ExcepcionNegocio` (500 → 422) y C11 (D5); luego Pint y ESLint bloqueantes
-   en CI (con la línea base de arriba) y PHPStan; después el resto:
+1. **Saneamiento de la Fase 1**, en encargos de un tema cada uno. Hecho: CI con ambas
+   suites, C1 (D4) y las validaciones de negocio (500 → 422). Orden sugerido para lo que
+   sigue: auditoría de las 29 reglas `exists:` sin scope de tenant, con el test de
+   arquitectura de API-05; C11 (D5); luego Pint y ESLint bloqueantes en CI (con la línea
+   base de arriba) y PHPStan; después el resto:
    - nombres internos: composer `nianva/pos` y alcance Nx `@nianva/*` (hoy `laravel/laravel`
      y `@org`); el nombre de la app Nx `nucleo-shell` queda por decidir;
    - `README.md` nuevo: producto único por planes y giros, derivado de `nucleo-erp-base`;
