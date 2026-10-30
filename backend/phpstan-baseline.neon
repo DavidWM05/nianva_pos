@@ -3927,7 +3927,7 @@ parameters:
 		-
 			message: '#^Access to an undefined property App\\Modules\\Inventario\\Http\\Resources\\ProductoResource\:\:\$stock_total\.$#'
 			identifier: property.notFound
-			count: 2
+			count: 1
 			path: app/Modules/Inventario/Http/Resources/ProductoResource.php
 
 		-

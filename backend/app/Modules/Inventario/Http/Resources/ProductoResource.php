@@ -33,10 +33,13 @@ class ProductoResource extends JsonResource
             'activo' => $this->activo,
             // Solo presente en index() (via selectSub) -- show() no lo
             // necesita, ahi se ven las variantes con su stock por sucursal
-            // directamente. COALESCE en la subquery garantiza que nunca sea
-            // null cuando SI esta presente, asi que !== null basta para
-            // distinguir "viene de index()" de "viene de show()".
-            'stock_total' => $this->when($this->stock_total !== null, fn () => (int) $this->stock_total),
+            // directamente. Se consulta getAttributes() (no el atributo)
+            // para no disparar MissingAttributeException cuando la consulta
+            // no selecciono stock_total.
+            'stock_total' => $this->when(
+                array_key_exists('stock_total', $this->resource->getAttributes()),
+                fn () => (int) $this->stock_total,
+            ),
             'variantes' => ProductoVarianteResource::collection($this->whenLoaded('variantes')),
         ];
     }
