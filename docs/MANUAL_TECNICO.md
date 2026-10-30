@@ -119,7 +119,7 @@ con un método estático `registrar()`) para errores técnicos, separada de `aud
 negocio) por tener consumidores distintos. La tabla y el modelo existen, pero **`LogSistema::registrar()`
 no se llama desde ningún lugar de la app hoy** (verificado por grep) — no hay un exception handler
 ni middleware que lo alimente automáticamente. Si tu producto necesita ese log de errores, hay que
-conectarlo (p. ej. desde `bootstrap/app.php`, junto a los `$exceptions->render()` de §2.5) — no
+conectarlo (p. ej. desde `bootstrap/app.php`, junto al manejador genérico de §2.5) — no
 asumas que ya está funcionando.
 
 **También no resuelto**: `LicenciaLocal` (ver §2.6) no está en el array `auditables` de
@@ -186,18 +186,17 @@ Agregarlo es la misma línea de siempre si se decide que vale la pena.
 
 ### 2.5 `error_code` estable para excepciones de negocio
 
-Ver el detalle completo, con ejemplo de código, en
-[`backend/README.md#esquema-de-error_code-para-excepciones-de-negocio`](../backend/README.md).
-Resumen: excepciones de negocio (`RuntimeException` planas) se mapean una por una en
-`bootstrap/app.php` dentro de `withExceptions()`, cada una respondiendo `422` con `message` + un
-`error_code` estable + los campos propios de esa excepción. El frontend distingue el error por
-`error_code`, nunca parseando `message`. Las 10 excepciones mapeadas hoy (verificado contra
-`bootstrap/app.php`): `caja_no_abierta`, `caja_ya_abierta`, `pago_no_cuadra`,
-`stock_insuficiente`, `cupon_invalido`, `abono_pago_no_cuadra`, `apartado_estado_invalido`,
-`apartado_saldo_insuficiente`, `devolucion_pago_no_cuadra`, `devolucion_sobre_venta_sombra`.
+Regla vigente: API-03 y API-04 en [`docs/estandares/04_api.md`](estandares/04_api.md).
+Resumen: toda excepción de negocio extiende `ExcepcionNegocio` (Núcleo) y declara
+`errorCode()`, `status()` (422 por defecto) y `contexto()`; un solo manejador genérico en
+`bootstrap/app.php` responde `{ message, error_code, ...contexto }`. El frontend distingue el
+error por `error_code`, nunca parseando `message`. La lista completa está en
+[`docs/estandares/catalogo_error_code.md`](estandares/catalogo_error_code.md), generada con
+`php artisan errores:catalogo`; `tests/Feature/Arquitectura/` falla si una excepción no declara
+su código, si dos lo repiten o si `bootstrap/app.php` vuelve a mapear una excepción concreta.
 
 `LicenciaActivacionFallidaException` (ver §2.6) usa el mismo espíritu (excepción propia,
-mensaje claro) pero **no está en esta lista** — no se lanza desde ningún Controller, solo desde
+mensaje claro) pero **no está en el catálogo** — no se lanza desde ningún Controller, solo desde
 `licencia:activar` (CLI), así que no necesita un `error_code` HTTP.
 
 ### 2.6 Cliente de servicio externo con período de gracia (licenciamiento)

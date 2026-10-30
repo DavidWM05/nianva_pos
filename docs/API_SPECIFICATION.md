@@ -302,8 +302,8 @@ Misma validación tenant-scoped que abonos de CxC.
 | Código | error_code |
 |---|---|
 | 422 | `pago_excede_saldo` |
-| 422 | `cuenta_ya_pagada` |
-| 422 | `cuenta_anulada` |
+| 422 | `cuenta_pagar_ya_pagada` |
+| 422 | `cuenta_pagar_anulada` |
 
 ---
 
@@ -1181,14 +1181,19 @@ agregar `'modulos_activos' => $this->modulos_activos ?? []`.
 ## 16. Catálogo consolidado de `error_code` nuevos
 
 Extiende la tabla de `02_CONTRATO_API.md` §15 — los marcados `[NUEVO]` no estaban en el original.
+La fuente vigente es `docs/estandares/catalogo_error_code.md`, generado con
+`php artisan errores:catalogo` (API-03, API-04); donde difiera de esta tabla, gana el catálogo.
 
 | error_code | HTTP | Módulo |
 |---|---|---|
 | `modulo_no_activo` | 403 | Global |
 | `abono_excede_saldo` | 422 | CxC |
-| `cuenta_ya_pagada` | 422 | CxC/CxP |
-| `cuenta_anulada` | 422 | CxC/CxP |
+| `cuenta_ya_pagada` | 422 | CxC |
+| `cuenta_anulada` | 422 | CxC |
 | `cuenta_con_abonos` | 422 | CxC |
+| `cuenta_pagar_ya_pagada` | 422 | CxP |
+| `cuenta_pagar_anulada` | 422 | CxP |
+| `cuenta_pagar_con_abonos` | 422 | CxP |
 | `pago_excede_saldo` | 422 | CxP, Préstamos |
 | `cotizacion_no_editable` | 422 | Cotizaciones |
 | `cotizacion_no_anulable` | 422 | Cotizaciones |

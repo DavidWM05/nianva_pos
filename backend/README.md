@@ -149,8 +149,12 @@ cálculo autoritativo; los `Services` nunca.
 
 ## Catálogo de `error_code`
 
-Todas las excepciones de negocio son `RuntimeException` planas mapeadas en `bootstrap/app.php`
-con `$exceptions->render()`. El frontend distingue el error por `error_code`, nunca por `message`.
+Toda excepción de negocio extiende `App\Modules\Nucleo\Exceptions\ExcepcionNegocio` y declara
+`errorCode()`, `status()` (422 por defecto) y `contexto()`. Un solo manejador genérico en
+`bootstrap/app.php` arma la respuesta `{ message, error_code, ...contexto }` (API-03, API-04).
+El frontend distingue el error por `error_code`, nunca por `message`. La fuente vigente es
+`docs/estandares/catalogo_error_code.md` (`php artisan errores:catalogo`); estas tablas son un
+resumen por módulo.
 
 ### Feature Gating
 | error_code | HTTP | Descripción |
@@ -195,9 +199,9 @@ con `$exceptions->render()`. El frontend distingue el error por `error_code`, nu
 | error_code | HTTP | Descripción |
 |---|---|---|
 | `pago_excede_saldo` | 422 | Monto del pago > saldo pendiente |
-| `cuenta_ya_pagada` | 422 | La cuenta ya está pagada |
-| `cuenta_anulada` | 422 | La cuenta está anulada |
-| `cuenta_con_abonos` | 422 | Tiene pagos registrados, no se puede anular |
+| `cuenta_pagar_ya_pagada` | 422 | La cuenta ya está pagada |
+| `cuenta_pagar_anulada` | 422 | La cuenta está anulada |
+| `cuenta_pagar_con_abonos` | 422 | Tiene pagos registrados, no se puede anular |
 
 ### Cotizaciones
 | error_code | HTTP | Descripción |

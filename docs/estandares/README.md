@@ -83,7 +83,7 @@ Tomadas por el responsable el 2026-10-30.
 
 | # | Hoy en Pro | Dónde | Estándar | Acción en Fase 1 |
 |---|---|---|---|---|
-| C1 | Las excepciones de negocio se mapean a `error_code` en un bloque central (95 menciones) | `backend/bootstrap/app.php`; `.claude/CLAUDE.md` §3 | API-04 | Cada excepción declara su `error_code` y su `render()`; `bootstrap/app.php` solo registra el manejador genérico |
+| C1 | Las excepciones de negocio se mapean a `error_code` en un bloque central (95 menciones) | `backend/bootstrap/app.php`; `.claude/CLAUDE.md` §3 | API-04 | **Resuelto el 2026-10-30.** Cada excepción extiende `ExcepcionNegocio` y declara su `error_code`; `bootstrap/app.php` solo registra el manejador genérico. Catálogo en [catalogo_error_code.md](catalogo_error_code.md) |
 | C2 | Las Policies existen, pero ningún controlador llama `authorize()` | `.claude/CLAUDE.md` §3; búsqueda de `authorize(` sin resultados en `backend/app` | SEG-03 | Conectar las Policies en los FormRequest o controladores, con un test por recurso |
 | C3 | Algunos endpoints aceptan `sucursal_id` del request (`ProductoVarianteController::store`, `VentaController::store`) | `docs/consideraciones_futuras.md` (sección "`sucursal_id` aceptado como campo de request…") | SEG-02 | Resolver la sucursal del usuario o de la terminal; solo el admin elige, y se valida |
 | C4 | `codigo_barras` es `UNIQUE` global | `Inventario/Database/Migrations/2026_07_21_000005_create_producto_variantes_table.php:16`; `ProductoVarianteController:67,84` | DAT-09 | `UNIQUE (tenant_id, codigo_barras)` y una validación con scope |
@@ -143,3 +143,4 @@ Cada lección es un hecho ocurrido. Las de Lite tienen el commit o el archivo; l
 | 2026-10-30 | DAT-01, DAT-03 | DAT-01 señala la precisión como decisión abierta D3, y DAT-03 remite el costo unitario a D2 |
 | 2026-10-30 | D1-D5 | Decisiones tomadas por el responsable; nueva DAT-15 (costo promedio ponderado) |
 | 2026-10-30 | — | Estándares aprobados |
+| 2026-10-30 | C1 | Resuelto: `ExcepcionNegocio`, manejador genérico y catálogo generado. Los códigos de CxP pasan a `cuenta_pagar_*` para no repetir los de CxC |

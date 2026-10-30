@@ -103,14 +103,25 @@ repo.
   - `nx run-many -t lint`: 9 errores en `ui-shared` (selectores sin prefijo `lib`) y 7
     warnings (`no-non-null-assertion`);
   - `nx build nucleo-shell`: en verde, con los avisos del presupuesto del bundle y de `qrcode`.
-- **Git:** los estándares, este archivo y la CI van en la rama `chore/fase1-ci`, con un PR hacia
-  `master`.
+- **C1 resuelto** (segundo encargo, hecho por DS): las 45 excepciones de negocio extienden
+  `ExcepcionNegocio` y `bootstrap/app.php` tiene un solo manejador genérico. Catálogo en
+  `docs/estandares/catalogo_error_code.md` (`php artisan errores:catalogo`). Los tres códigos
+  de CxP que repetían los de CxC pasan a `cuenta_pagar_ya_pagada`, `cuenta_pagar_anulada` y
+  `cuenta_pagar_con_abonos`. Backend: 303 tests.
+- **Pendiente detectado:** 46 `throw new InvalidArgumentException` en los Services (Tpv,
+  Apartados, Devoluciones, Inventario, Cotizaciones, Crm, Gastos, UnidadesMedida, Delivery)
+  no tienen `error_code`. Las que llegan a HTTP responden 500 con traza en vez de 422; por
+  ejemplo, cerrar dos veces la misma caja.
+- **Git:** `master` está protegido (ruleset `proteger-master`): todo entra por PR con los tres
+  checks en verde. La CI y los estándares ya están en `master`; C1 va en la rama
+  `refactor/c1-error-code`.
 
 ## 6. Siguiente paso, en orden
 
-1. **Saneamiento de la Fase 1**, en encargos de un tema cada uno. Hecho: CI con ambas suites.
-   Orden sugerido para lo que sigue: C1 (D4) y C11 (D5); luego Pint y ESLint bloqueantes en
-   CI (con la línea base de arriba) y PHPStan; después el resto:
+1. **Saneamiento de la Fase 1**, en encargos de un tema cada uno. Hecho: CI con ambas suites
+   y C1 (D4). Orden sugerido para lo que sigue: las `InvalidArgumentException` de negocio
+   convertidas en `ExcepcionNegocio` (500 → 422) y C11 (D5); luego Pint y ESLint bloqueantes
+   en CI (con la línea base de arriba) y PHPStan; después el resto:
    - nombres internos: composer `nianva/pos` y alcance Nx `@nianva/*` (hoy `laravel/laravel`
      y `@org`); el nombre de la app Nx `nucleo-shell` queda por decidir;
    - `README.md` nuevo: producto único por planes y giros, derivado de `nucleo-erp-base`;

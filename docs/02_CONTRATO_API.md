@@ -173,7 +173,7 @@ Registrar pago a proveedor. **Permiso:** `cuentas_pagar.registrar_pago`
 }
 ```
 
-Mismos `error_code` que abonos de CxC: `pago_excede_saldo`, `cuenta_ya_pagada`, `cuenta_anulada`, `caja_no_abierta`.
+`error_code`: `pago_excede_saldo`, `cuenta_pagar_ya_pagada`, `cuenta_pagar_anulada`, `caja_no_abierta`.
 
 ---
 
@@ -782,9 +782,12 @@ Registrar pago de préstamo.
 |-----------|------|--------|-------------|
 | `modulo_no_activo` | 403 | Global | El módulo no está habilitado para este tenant |
 | `abono_excede_saldo` | 422 | CxC | monto del abono > saldo_pendiente |
-| `cuenta_ya_pagada` | 422 | CxC/CxP | La cuenta ya está en estado pagada |
-| `cuenta_anulada` | 422 | CxC/CxP | La cuenta está anulada |
-| `cuenta_con_abonos` | 422 | CxC/CxP | Tiene abonos registrados, no se puede anular |
+| `cuenta_ya_pagada` | 422 | CxC | La cuenta ya está en estado pagada |
+| `cuenta_anulada` | 422 | CxC | La cuenta está anulada |
+| `cuenta_con_abonos` | 422 | CxC | Tiene abonos registrados, no se puede anular |
+| `cuenta_pagar_ya_pagada` | 422 | CxP | La cuenta por pagar ya está en estado pagada |
+| `cuenta_pagar_anulada` | 422 | CxP | La cuenta por pagar está anulada |
+| `cuenta_pagar_con_abonos` | 422 | CxP | Tiene pagos registrados, no se puede anular |
 | `pago_excede_saldo` | 422 | CxP | pago > saldo_pendiente |
 | `cotizacion_no_editable` | 422 | Cotizaciones | Estado no permite edición |
 | `cotizacion_no_anulable` | 422 | Cotizaciones | Estado no permite anulación |
