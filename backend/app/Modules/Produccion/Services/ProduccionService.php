@@ -2,18 +2,17 @@
 
 namespace App\Modules\Produccion\Services;
 
+use App\Modules\Inventario\Exceptions\StockInsuficienteException;
 use App\Modules\Inventario\Models\InventarioStock;
 use App\Modules\Inventario\Services\InventarioService;
 use App\Modules\Produccion\Exceptions\OrdenProduccionNoCompletableException;
 use App\Modules\Produccion\Exceptions\StockInsumosInsuficienteException;
-use App\Modules\Produccion\Models\Insumo;
 use App\Modules\Produccion\Models\InsumoStock;
 use App\Modules\Produccion\Models\OrdenProduccion;
 use App\Modules\Produccion\Models\Receta;
 use App\Modules\Produccion\Models\RecetaIngrediente;
 use App\Modules\Produccion\Models\TransformacionProducto;
 use Illuminate\Support\Facades\DB;
-use InvalidArgumentException;
 
 class ProduccionService
 {
@@ -152,7 +151,7 @@ class ProduccionService
                 ->first();
 
             if (! $stockOrigen || (float) $stockOrigen->stock_actual < (float) $data['cantidad_origen']) {
-                throw new \App\Modules\Inventario\Exceptions\StockInsuficienteException(
+                throw new StockInsuficienteException(
                     $data['variante_origen_id'], $data['sucursal_id'],
                     (int) $data['cantidad_origen'],
                     $stockOrigen?->stock_actual ?? 0,

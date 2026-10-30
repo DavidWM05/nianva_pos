@@ -23,8 +23,18 @@ class NotaCreditoUso extends Model
         'monto_usado' => 'decimal:2',
     ];
 
-    public static function tenantRelacion(): string { return 'notaCredito'; }
+    public static function tenantRelacion(): string
+    {
+        return 'notaCredito';
+    }
 
-    public function notaCredito(): BelongsTo { return $this->belongsTo(NotaCredito::class); }
-    public function venta(): BelongsTo { return $this->belongsTo(Venta::class); }
+    public function notaCredito(): BelongsTo
+    {
+        return $this->belongsTo(NotaCredito::class);
+    }
+
+    public function venta(): BelongsTo
+    {
+        return $this->belongsTo(Venta::class);
+    }
 }

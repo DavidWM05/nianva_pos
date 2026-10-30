@@ -17,6 +17,5 @@ final class ResultadoCancelacion
         public readonly Apartado $apartado,
         public readonly bool $tieneAbonosPendientes,
         public readonly float $montoAbonadoPendiente,
-    ) {
-    }
+    ) {}
 }

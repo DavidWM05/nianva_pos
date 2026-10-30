@@ -15,9 +15,7 @@ use Symfony\Component\HttpFoundation\Response;
  */
 class ResolveTenant
 {
-    public function __construct(private TenantContext $tenantContext)
-    {
-    }
+    public function __construct(private TenantContext $tenantContext) {}
 
     public function handle(Request $request, Closure $next): Response
     {

@@ -3,14 +3,12 @@
 namespace Tests\Feature\NotasCredito;
 
 use App\Modules\Crm\Models\Cliente;
-use App\Modules\Devoluciones\Models\Devolucion;
 use App\Modules\Devoluciones\Services\DevolucionService;
 use App\Modules\Inventario\Models\Categoria;
 use App\Modules\Inventario\Models\Producto;
 use App\Modules\Inventario\Models\ProductoVariante;
 use App\Modules\Inventario\Models\Proveedor;
 use App\Modules\Inventario\Services\InventarioService;
-use App\Modules\NotasCredito\Exceptions\NotaCreditoExpiradaException;
 use App\Modules\NotasCredito\Exceptions\NotaCreditoSaldoInsuficienteException;
 use App\Modules\NotasCredito\Exceptions\NotaCreditoSinSaldoException;
 use App\Modules\NotasCredito\Models\NotaCredito;
@@ -20,7 +18,6 @@ use App\Modules\Nucleo\Models\Sucursal;
 use App\Modules\Nucleo\Models\Tenant;
 use App\Modules\Nucleo\Models\Usuario;
 use App\Modules\Nucleo\Services\TenantContext;
-use App\Modules\Tpv\Models\Venta;
 use App\Modules\Tpv\Services\CajaService;
 use App\Modules\Tpv\Services\VentaService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -31,14 +28,23 @@ class NotaCreditoServiceTest extends TestCase
     use RefreshDatabase;
 
     private NotaCreditoService $service;
+
     private DevolucionService $devolucionService;
+
     private VentaService $ventaService;
+
     private InventarioService $inventarioService;
+
     private CajaService $cajaService;
+
     private Tenant $tenant;
+
     private Sucursal $sucursal;
+
     private Usuario $usuario;
+
     private Cliente $cliente;
+
     private MetodoPago $efectivo;
 
     protected function setUp(): void

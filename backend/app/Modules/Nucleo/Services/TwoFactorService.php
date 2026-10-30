@@ -19,7 +19,7 @@ class TwoFactorService
 
     public function __construct()
     {
-        $this->engine = new Google2FA();
+        $this->engine = new Google2FA;
     }
 
     public function generateSecretKey(): string

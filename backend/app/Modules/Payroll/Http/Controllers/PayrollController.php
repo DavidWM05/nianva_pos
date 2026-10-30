@@ -62,6 +62,7 @@ class PayrollController extends Controller
             'numero_seguridad_social' => 'nullable|string|max:30',
         ]);
         $v['tenant_id'] = app(TenantContext::class)->id();
+
         return (new EmpleadoResource($this->nominaService->registrarEmpleado($v)))->response()->setStatusCode(201);
     }
 
@@ -105,6 +106,7 @@ class PayrollController extends Controller
             'periodo_inicio' => 'required|date',
             'periodo_fin' => 'required|date|after_or_equal:periodo_inicio',
         ]);
+
         return (new NominaResource($this->nominaService->generarNomina($v['sucursal_id'], $v['periodo_inicio'], $v['periodo_fin'])))->response()->setStatusCode(201);
     }
 
@@ -120,6 +122,7 @@ class PayrollController extends Controller
         foreach ($acciones as $accion) {
             $resultado[$accion] = $usuario->tienePermiso("{$modulo}.{$accion}");
         }
+
         return $resultado;
     }
 }

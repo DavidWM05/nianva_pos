@@ -18,9 +18,7 @@ use Illuminate\Notifications\Notification;
  */
 class ResetPasswordNotification extends Notification
 {
-    public function __construct(public readonly string $token)
-    {
-    }
+    public function __construct(public readonly string $token) {}
 
     /**
      * @return array<int, string>

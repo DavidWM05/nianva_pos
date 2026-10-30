@@ -2,14 +2,14 @@
 
 namespace Tests\Feature\CuentasCobrar;
 
+use App\Modules\Crm\Models\Cliente;
 use App\Modules\CuentasCobrar\Exceptions\AbonoExcedeSaldoException;
 use App\Modules\CuentasCobrar\Exceptions\CuentaAnuladaException;
 use App\Modules\CuentasCobrar\Exceptions\CuentaConAbonosException;
 use App\Modules\CuentasCobrar\Exceptions\CuentaYaPagadaException;
-use App\Modules\CuentasCobrar\Models\CuentaCobrar;
 use App\Modules\CuentasCobrar\Models\AbonoCuenta;
+use App\Modules\CuentasCobrar\Models\CuentaCobrar;
 use App\Modules\CuentasCobrar\Services\CuentasCobrarService;
-use App\Modules\Crm\Models\Cliente;
 use App\Modules\Inventario\Models\Categoria;
 use App\Modules\Inventario\Models\Producto;
 use App\Modules\Inventario\Models\ProductoVariante;
@@ -31,13 +31,21 @@ class CuentasCobrarServiceTest extends TestCase
     use RefreshDatabase;
 
     private CuentasCobrarService $service;
+
     private VentaService $ventaService;
+
     private InventarioService $inventarioService;
+
     private CajaService $cajaService;
+
     private Tenant $tenant;
+
     private Sucursal $sucursal;
+
     private Usuario $usuario;
+
     private Cliente $cliente;
+
     private MetodoPago $efectivo;
 
     protected function setUp(): void

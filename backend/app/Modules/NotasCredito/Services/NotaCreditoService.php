@@ -10,7 +10,6 @@ use App\Modules\NotasCredito\Models\NotaCredito;
 use App\Modules\NotasCredito\Models\NotaCreditoUso;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
-use InvalidArgumentException;
 
 class NotaCreditoService
 {

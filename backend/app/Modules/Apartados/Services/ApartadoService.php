@@ -57,8 +57,7 @@ class ApartadoService
         private readonly PrecioService $precioService,
         private readonly InventarioService $inventarioService,
         private readonly VentaService $ventaService,
-    ) {
-    }
+    ) {}
 
     /**
      * @param  array{tenant_id:int, sucursal_id:int, cliente_id:int, usuario_id:int, fecha_vencimiento?:?string, notas?:?string}  $datosApartado
@@ -118,7 +117,7 @@ class ApartadoService
     /**
      * @param  list<array{metodo_pago_id:int, monto:float}>  $pagos
      *
-     * @throws AbonoPagoNoCuadraException  si la suma de pagos no coincide con el monto del abono.
+     * @throws AbonoPagoNoCuadraException si la suma de pagos no coincide con el monto del abono.
      */
     public function registrarAbono(Apartado $apartado, float $monto, int $usuarioId, array $pagos, ?string $notas = null): ApartadoAbono
     {
@@ -181,7 +180,7 @@ class ApartadoService
      * cobro antes (via abonos), asi que exige pagos nuevos solo por el
      * residual (normalmente 0 si el apartado ya esta completamente pagado).
      *
-     * @throws ApartadoSaldoInsuficienteException  si total_abonado < total.
+     * @throws ApartadoSaldoInsuficienteException si total_abonado < total.
      */
     public function liquidar(Apartado $apartado, int $usuarioId): Apartado
     {

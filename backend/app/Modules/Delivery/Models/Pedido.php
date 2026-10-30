@@ -35,11 +35,38 @@ class Pedido extends Model
         ];
     }
 
-    public function tenant(): BelongsTo { return $this->belongsTo(Tenant::class); }
-    public function sucursal(): BelongsTo { return $this->belongsTo(Sucursal::class); }
-    public function venta(): BelongsTo { return $this->belongsTo(Venta::class); }
-    public function cliente(): BelongsTo { return $this->belongsTo(Cliente::class); }
-    public function usuario(): BelongsTo { return $this->belongsTo(Usuario::class); }
-    public function repartidor(): BelongsTo { return $this->belongsTo(Usuario::class, 'repartidor_id'); }
-    public function items(): HasMany { return $this->hasMany(PedidoItem::class); }
+    public function tenant(): BelongsTo
+    {
+        return $this->belongsTo(Tenant::class);
+    }
+
+    public function sucursal(): BelongsTo
+    {
+        return $this->belongsTo(Sucursal::class);
+    }
+
+    public function venta(): BelongsTo
+    {
+        return $this->belongsTo(Venta::class);
+    }
+
+    public function cliente(): BelongsTo
+    {
+        return $this->belongsTo(Cliente::class);
+    }
+
+    public function usuario(): BelongsTo
+    {
+        return $this->belongsTo(Usuario::class);
+    }
+
+    public function repartidor(): BelongsTo
+    {
+        return $this->belongsTo(Usuario::class, 'repartidor_id');
+    }
+
+    public function items(): HasMany
+    {
+        return $this->hasMany(PedidoItem::class);
+    }
 }

@@ -3,6 +3,7 @@
 namespace App\Modules\Tpv\Services;
 
 use App\Modules\Crm\Models\Cliente;
+use App\Modules\Inventario\Exceptions\StockInsuficienteException;
 use App\Modules\Inventario\Models\ProductoVariante;
 use App\Modules\Inventario\Services\InventarioService;
 use App\Modules\Nucleo\Models\Sucursal;
@@ -35,17 +36,16 @@ class VentaService
     public function __construct(
         private readonly PrecioService $precioService,
         private readonly InventarioService $inventarioService,
-    ) {
-    }
+    ) {}
 
     /**
      * @param  array{tenant_id:int, sucursal_id:int, usuario_id:int, cliente_id:int, cupon_id?:?int, descuento_manual?:float, abono_previo?:float, es_venta_sombra?:bool}  $datosVenta
      * @param  list<array{variante_id:int, cantidad:int}>  $items
      * @param  list<array{metodo_pago_id:int, monto:float}>  $pagos
      *
-     * @throws CajaSesionNoAbiertaException  si la sucursal no tiene una caja abierta.
-     * @throws \App\Modules\Inventario\Exceptions\StockInsuficienteException  si alguna linea no tiene stock suficiente.
-     * @throws PagoNoCuadraException  si la suma de pagos no coincide con el monto a cobrar.
+     * @throws CajaSesionNoAbiertaException si la sucursal no tiene una caja abierta.
+     * @throws StockInsuficienteException si alguna linea no tiene stock suficiente.
+     * @throws PagoNoCuadraException si la suma de pagos no coincide con el monto a cobrar.
      */
     public function registrarVenta(array $datosVenta, array $items, array $pagos): Venta
     {

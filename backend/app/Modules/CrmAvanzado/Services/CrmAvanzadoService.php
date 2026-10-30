@@ -91,7 +91,7 @@ class CrmAvanzadoService
         }
 
         return DB::transaction(function () use ($venta, $puntos) {
-            /** @var \App\Modules\Crm\Models\Cliente $cliente */
+            /** @var Cliente $cliente */
             $cliente = $venta->cliente;
 
             $transaccion = LoyaltyTransaccion::create([
@@ -120,7 +120,7 @@ class CrmAvanzadoService
             throw new AjustePuntosInvalidoException;
         }
 
-        return DB::transaction(function () use ($clienteId, $puntos, $motivo) {
+        return DB::transaction(function () use ($clienteId, $puntos) {
             $cliente = Cliente::findOrFail($clienteId);
 
             if ($puntos < 0 && ($cliente->puntos_loyalty + $puntos) < 0) {

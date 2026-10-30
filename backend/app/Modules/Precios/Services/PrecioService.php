@@ -46,7 +46,7 @@ class PrecioService
      * completo de calcularDescuento() -- no recibe variante ni cantidad,
      * solo el total ya calculado.
      *
-     * @throws CuponInvalidoException  si el codigo no existe, esta inactivo o fuera de vigencia.
+     * @throws CuponInvalidoException si el codigo no existe, esta inactivo o fuera de vigencia.
      */
     public function aplicarCupon(string $codigo, float $totalCarrito): ResultadoCupon
     {

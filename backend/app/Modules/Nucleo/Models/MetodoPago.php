@@ -16,6 +16,7 @@ class MetodoPago extends Model
     use BelongsToTenant;
 
     const CREATED_AT = null;
+
     const UPDATED_AT = null;
 
     protected $table = 'metodos_pago';

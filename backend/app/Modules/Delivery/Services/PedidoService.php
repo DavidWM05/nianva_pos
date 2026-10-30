@@ -2,14 +2,12 @@
 
 namespace App\Modules\Delivery\Services;
 
-use App\Modules\Crm\Models\Cliente;
 use App\Modules\Delivery\Exceptions\PedidoNoAsignableException;
 use App\Modules\Delivery\Exceptions\TransicionEstadoInvalidaException;
 use App\Modules\Delivery\Models\Pedido;
 use App\Modules\Delivery\Models\PedidoItem;
 use App\Modules\Inventario\Models\ProductoVariante;
 use App\Modules\Nucleo\Models\Usuario;
-use App\Modules\Tpv\Models\Venta;
 use App\Modules\Tpv\Services\VentaService;
 use Illuminate\Support\Facades\DB;
 use InvalidArgumentException;
@@ -126,6 +124,6 @@ class PedidoService
             $correlativo = ((int) end($partes)) + 1;
         }
 
-        return 'PED-' . str_pad((string) $correlativo, 6, '0', STR_PAD_LEFT);
+        return 'PED-'.str_pad((string) $correlativo, 6, '0', STR_PAD_LEFT);
     }
 }

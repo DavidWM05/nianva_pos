@@ -16,8 +16,7 @@ final class ResultadoDescuento
         public readonly float $precioUnitario,
         public readonly int $cantidad,
         public readonly float $descuentoTotal,
-    ) {
-    }
+    ) {}
 
     public function subtotalSinDescuento(): float
     {

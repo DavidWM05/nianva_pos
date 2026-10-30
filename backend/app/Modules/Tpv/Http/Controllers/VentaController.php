@@ -172,12 +172,14 @@ class VentaController extends Controller
             ->selectRaw('sucursal_id, sum(total) as total, count(*) as numero_ventas')
             ->groupBy('sucursal_id')
             ->get()
-            ->map(function ($r) use ($sucursales) { return [
-                'sucursal_id' => $r->sucursal_id,
-                'sucursal_nombre' => $sucursales[$r->sucursal_id] ?? null,
-                'total' => round((float) $r->total, 2),
-                'numero_ventas' => (int) $r->numero_ventas,
-            ]; });
+            ->map(function ($r) use ($sucursales) {
+                return [
+                    'sucursal_id' => $r->sucursal_id,
+                    'sucursal_nombre' => $sucursales[$r->sucursal_id] ?? null,
+                    'total' => round((float) $r->total, 2),
+                    'numero_ventas' => (int) $r->numero_ventas,
+                ];
+            });
 
         // IDs de las ventas del período para cruzar contra pagos/detalles
         $ventaIds = (clone $base)->pluck('id');

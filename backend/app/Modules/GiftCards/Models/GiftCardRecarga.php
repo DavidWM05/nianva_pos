@@ -22,8 +22,18 @@ class GiftCardRecarga extends Model
         'fecha' => 'datetime',
     ];
 
-    public static function tenantRelacion(): string { return 'giftCard'; }
+    public static function tenantRelacion(): string
+    {
+        return 'giftCard';
+    }
 
-    public function giftCard(): BelongsTo { return $this->belongsTo(GiftCard::class); }
-    public function usuario(): BelongsTo { return $this->belongsTo(Usuario::class); }
+    public function giftCard(): BelongsTo
+    {
+        return $this->belongsTo(GiftCard::class);
+    }
+
+    public function usuario(): BelongsTo
+    {
+        return $this->belongsTo(Usuario::class);
+    }
 }

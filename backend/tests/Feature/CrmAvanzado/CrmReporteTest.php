@@ -33,12 +33,19 @@ class CrmReporteTest extends TestCase
     use RefreshDatabase;
 
     private Tenant $tenant;
+
     private Sucursal $sucursal;
+
     private Usuario $usuario;
+
     private Cliente $clientePublicoGeneral;
+
     private Cliente $clienteVip;
+
     private MetodoPago $efectivo;
+
     private ProductoVariante $variante;
+
     private VentaService $ventaService;
 
     protected function setUp(): void

@@ -33,7 +33,7 @@ class InventarioService
      * @param  'entrada'|'salida'  $tipo
      * @param  'venta'|'compra'|'devolucion'|'merma'|'ajuste'|'apartado'  $motivo
      *
-     * @throws StockInsuficienteException  si es una salida y no hay stock suficiente.
+     * @throws StockInsuficienteException si es una salida y no hay stock suficiente.
      */
     public function registrarMovimiento(
         int $varianteId,
