@@ -29,12 +29,14 @@ class ProductoVarianteController extends Controller
 
     public function store(Request $request, Producto $producto)
     {
-        $validated = $this->validarDatos($request);
+        $tenantId = $producto->tenant_id;
+
+        $validated = $this->validarDatos($request, $tenantId);
         $validated['producto_id'] = $producto->id;
         $validated['activo'] = true;
 
         if (empty($validated['codigo_barras']) && ConfiguracionTenant::actual()?->codigo_barras_automatico) {
-            $validated['codigo_barras'] = $this->generarCodigoBarrasUnico();
+            $validated['codigo_barras'] = $this->generarCodigoBarrasUnico($tenantId);
         }
 
         $variante = ProductoVariante::create($validated);
@@ -44,7 +46,7 @@ class ProductoVarianteController extends Controller
 
     public function update(Request $request, ProductoVariante $variante)
     {
-        $validated = $this->validarDatos($request, $variante->id);
+        $validated = $this->validarDatos($request, $variante->tenant_id, $variante->id);
         $variante->update($validated);
 
         return new ProductoVarianteResource($variante);
@@ -57,14 +59,16 @@ class ProductoVarianteController extends Controller
         return new ProductoVarianteResource($variante);
     }
 
-    private function validarDatos(Request $request, ?int $varianteIdActual = null): array
+    private function validarDatos(Request $request, int $tenantId, ?int $varianteIdActual = null): array
     {
         return $request->validate([
             'talla' => ['nullable', 'string', 'max:30'],
             'color' => ['nullable', 'string', 'max:30'],
             'codigo_barras' => [
                 'nullable', 'string', 'max:50',
-                Rule::unique('producto_variantes', 'codigo_barras')->ignore($varianteIdActual),
+                Rule::unique('producto_variantes', 'codigo_barras')
+                    ->where('tenant_id', $tenantId)
+                    ->ignore($varianteIdActual),
             ],
         ]);
     }
@@ -77,11 +81,11 @@ class ProductoVarianteController extends Controller
      * un contador propio y el espacio (10^12) hace una colision casi
      * imposible en la practica.
      */
-    private function generarCodigoBarrasUnico(): string
+    private function generarCodigoBarrasUnico(int $tenantId): string
     {
         do {
             $codigo = (string) random_int(10 ** (self::LONGITUD_CODIGO_AUTOGENERADO - 1), (10 ** self::LONGITUD_CODIGO_AUTOGENERADO) - 1);
-        } while (ProductoVariante::where('codigo_barras', $codigo)->exists());
+        } while (ProductoVariante::where('tenant_id', $tenantId)->where('codigo_barras', $codigo)->exists());
 
         return $codigo;
     }

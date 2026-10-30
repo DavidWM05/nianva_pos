@@ -13,7 +13,7 @@ return new class extends Migration
             $table->foreignId('tenant_id')->constrained('tenants')->cascadeOnDelete();
             $table->foreignId('cliente_id')->nullable()->constrained('clientes')->nullOnDelete()
                 ->comment('Propietario (NULL = anonima)');
-            $table->string('codigo', 50)->unique();
+            $table->string('codigo', 50);
             $table->decimal('saldo_inicial', 10, 2);
             $table->decimal('saldo_actual', 10, 2);
             $table->date('fecha_expiracion')->nullable();
@@ -23,6 +23,7 @@ return new class extends Migration
 
             $table->index('tenant_id');
             $table->index('cliente_id');
+            $table->unique(['tenant_id', 'codigo']);
         });
     }
 

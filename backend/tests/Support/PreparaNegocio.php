@@ -44,6 +44,8 @@ trait PreparaNegocio
 
     private Cliente $cliente;
 
+    private Producto $producto;
+
     private ProductoVariante $variante;
 
     private ProductoVariante $varianteExtra;
@@ -120,15 +122,15 @@ trait PreparaNegocio
 
         $this->proveedor = Proveedor::create(['tenant_id' => $this->tenant->id, 'razon_social' => 'Proveedor A']);
         $categoria = Categoria::create(['tenant_id' => $this->tenant->id, 'nombre' => 'Ropa']);
-        $producto = Producto::create([
+        $this->producto = Producto::create([
             'tenant_id' => $this->tenant->id,
             'categoria_id' => $categoria->id,
             'nombre' => 'Playera',
             'precio_compra' => 50,
             'precio_venta' => 100,
         ]);
-        $this->variante = ProductoVariante::create(['producto_id' => $producto->id, 'talla' => 'M']);
-        $this->varianteExtra = ProductoVariante::create(['producto_id' => $producto->id, 'talla' => 'L']);
+        $this->variante = ProductoVariante::create(['producto_id' => $this->producto->id, 'talla' => 'M']);
+        $this->varianteExtra = ProductoVariante::create(['producto_id' => $this->producto->id, 'talla' => 'L']);
 
         $this->metodoPago = MetodoPago::create([
             'tenant_id' => $this->tenant->id,
@@ -338,6 +340,22 @@ trait PreparaNegocio
         );
 
         return $cotizacion->id;
+    }
+
+    /**
+     * @param  list<string>  $nombres
+     */
+    private function darPermisosA(Usuario $usuario, array $nombres): void
+    {
+        $rol = Rol::create(['tenant_id' => null, 'nombre' => 'rol-validaciones-'.uniqid(), 'es_sistema' => false]);
+
+        foreach ($nombres as $nombre) {
+            [$modulo, $accion] = explode('.', $nombre);
+            $permiso = Permiso::firstOrCreate(['nombre' => $nombre], ['modulo' => $modulo, 'accion' => $accion]);
+            $rol->permisos()->attach($permiso->id);
+        }
+
+        $usuario->roles()->attach($rol->id);
     }
 
     private function payloadVenta(array $overrides = []): array

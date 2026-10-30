@@ -12,7 +12,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('tenant_id')->constrained('tenants')->cascadeOnDelete();
             $table->string('nombre', 200);
-            $table->string('sku', 50)->nullable()->unique();
+            $table->string('sku', 50)->nullable();
             $table->foreignId('unidad_medida_id')->constrained('unidades_medida')->restrictOnDelete();
             $table->decimal('costo', 10, 4)->default(0);
             $table->decimal('stock_minimo', 10, 2)->default(0);
@@ -21,6 +21,7 @@ return new class extends Migration
             $table->dateTime('updated_at')->useCurrent()->useCurrentOnUpdate();
             $table->index('tenant_id');
             $table->index('unidad_medida_id');
+            $table->unique(['tenant_id', 'sku']);
         });
     }
 
