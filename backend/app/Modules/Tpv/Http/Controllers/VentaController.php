@@ -2,18 +2,12 @@
 
 namespace App\Modules\Tpv\Http\Controllers;
 
+use App\Aplicacion\Ventas\RegistrarVenta;
 use App\Http\Controllers\Controller;
 use App\Modules\Crm\Models\Cliente;
-use App\Modules\GiftCards\Services\GiftCardService;
 use App\Modules\Inventario\Support\ReglasVariante;
-use App\Modules\NotasCredito\Services\NotaCreditoService;
-use App\Modules\Nucleo\Models\MetodoPago;
-use App\Modules\Nucleo\Services\TenantContext;
-use App\Modules\Precios\Exceptions\CuponInvalidoException;
-use App\Modules\Precios\Models\Cupon;
-use App\Modules\Precios\Services\PrecioService;
-use App\Modules\Precios\Support\ResultadoCupon;
 use App\Modules\Nucleo\Models\Sucursal;
+use App\Modules\Nucleo\Services\TenantContext;
 use App\Modules\Nucleo\Support\ReglasTenant;
 use App\Modules\Tpv\Http\Resources\VentaResource;
 use App\Modules\Tpv\Models\Venta;
@@ -21,7 +15,6 @@ use App\Modules\Tpv\Models\VentaDetalle;
 use App\Modules\Tpv\Models\VentaPago;
 use App\Modules\Tpv\Services\VentaService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 
 /**
  * Vive en Tpv (no en Crm) a proposito: Tpv ya depende de Crm (Venta
@@ -30,17 +23,10 @@ use Illuminate\Support\Facades\DB;
  * /api/clientes/{cliente}/ventas (ver routes/api.php) -- el URL no tiene
  * que reflejar en que modulo vive el controlador.
  *
- * store()/anular()/cotizar() nunca calculan un precio ni atrapan las
- * excepciones de negocio (CajaSesionNoAbiertaException,
- * StockInsuficienteException, PagoNoCuadraException, CuponInvalidoException)
- * -- todo eso vive en VentaService/PrecioService y se mapea a JSON 422 en
- * bootstrap/app.php, para que cualquier futuro punto de entrada (ej. una
- * API publica) obtenga el mismo contrato de error sin duplicar el catch.
- *
- * Instancia #6 de orquestacion documentada: store() orquesta el pago con
- * Gift Card y Nota de Credito ademas de los metodos de pago tradicionales
- * (ver docs/03_ESPECIFICACION_BACKEND.md §7 y §8). La regla se mantiene:
- * Controllers orquestan, Services nunca.
+ * store() delega la orquestacion entre modulos en
+ * App\Aplicacion\Ventas\RegistrarVenta. anular()/cotizar() siguen llamando
+ * a VentaService; los errores de negocio se mapean a JSON 422 en
+ * bootstrap/app.php.
  */
 class VentaController extends Controller
 {
@@ -94,15 +80,9 @@ class VentaController extends Controller
     }
 
     /**
-     * Instancia #6 de orquestacion: ademas de los pagos tradicionales
-     * (efectivo/tarjeta/transferencia), este metodo orquesta el pago con
-     * Gift Card (GiftCardService::validarParaPago + descontarSaldo) y
-     * Nota de Credito (NotaCreditoService::validarParaPago + usarEnVenta).
-     * Los metodos de pago 'digital' como Gift Card y Nota de Credito se
-     * registran en venta_pagos igual que cualquier otro -- el frontend
-     * distingue por metodo_pago_id.
+     * Orquestacion: App\Aplicacion\Ventas\RegistrarVenta.
      */
-    public function store(Request $request, VentaService $ventaService, GiftCardService $giftCardService, NotaCreditoService $notaCreditoService, PrecioService $precioService)
+    public function store(Request $request, RegistrarVenta $registrarVenta)
     {
         $tenantId = $request->user()->tenant_id;
 
@@ -120,86 +100,20 @@ class VentaController extends Controller
             'nota_credito_id' => ['nullable', 'integer', ReglasTenant::existe('notas_credito', $tenantId)],
         ]);
 
-        $usuario = $request->user();
+        $venta = $registrarVenta->ejecutar(
+            clienteId: $validated['cliente_id'],
+            items: $validated['items'],
+            pagos: $validated['pagos'],
+            cuponCodigo: $validated['cupon_codigo'] ?? null,
+            descuentoManual: round((float) ($validated['descuento_manual'] ?? 0), 2),
+            giftCardCodigo: $validated['gift_card_codigo'] ?? null,
+            notaCreditoId: $validated['nota_credito_id'] ?? null,
+            usuario: $request->user(),
+        );
 
-        // Resolver cupon (mismo PrecioService que usa VentaService) para
-        // calcular $totalEstimado con el descuento real -- evita inflar
-        // el monto de Gift Card/Nota de Credito cuando hay cupon.
-        $cuponId = null;
-        $descuentoCupon = 0.0;
+        $venta->load(['cliente', 'pagos.metodoPago', 'detalles.variante.producto']);
 
-        if (! empty($validated['cupon_codigo'])) {
-            $cupon = Cupon::where('codigo', $validated['cupon_codigo'])->first();
-
-            if (! $cupon) {
-                throw new CuponInvalidoException($validated['cupon_codigo']);
-            }
-
-            $cuponId = $cupon->id;
-        }
-
-        // Obtener metodo_pago_id para Gift Card y Nota de Credito (globales,
-        // tenant_id = null) para usarlos en los pagos.
-        $metodoPagoGiftCard = MetodoPago::sinTenant()->where('nombre', 'Gift Card')->first();
-        $metodoPagoNotaCredito = MetodoPago::sinTenant()->where('nombre', 'Nota de Crédito')->first();
-
-        // Calcular subtotal real via cotizarItems para limitar montos GC/NC
-        [$lineas, $subtotal] = $ventaService->cotizarItems($tenantId, $validated['items']);
-
-        // Resolver descuento real del cupon para el total estimado
-        if ($cuponId && ! empty($validated['cupon_codigo'])) {
-            $resultadoCupon = $precioService->aplicarCupon($validated['cupon_codigo'], $subtotal);
-            $descuentoCupon = $resultadoCupon->descuento;
-        }
-
-        return DB::transaction(function () use ($validated, $ventaService, $giftCardService, $notaCreditoService, $precioService, $usuario, $tenantId, $cuponId, $metodoPagoGiftCard, $metodoPagoNotaCredito, $subtotal, $descuentoCupon) {
-            $descuentoManual = round((float) ($validated['descuento_manual'] ?? 0), 2);
-            $totalEstimado = round($subtotal - $descuentoManual - $descuentoCupon, 2);
-
-            // Procesar Gift Card antes de crear la venta
-            $pagosExtra = [];
-
-            if (! empty($validated['gift_card_codigo']) && $metodoPagoGiftCard) {
-                $giftCard = $giftCardService->validarParaPago($validated['gift_card_codigo']);
-                $montoGiftCard = min((float) $giftCard->saldo_actual, $totalEstimado);
-                $giftCardService->descontarSaldo($giftCard->id, $montoGiftCard);
-                $pagosExtra[] = ['metodo_pago_id' => $metodoPagoGiftCard->id, 'monto' => $montoGiftCard];
-            }
-
-            if (! empty($validated['nota_credito_id']) && $metodoPagoNotaCredito) {
-                $notaCredito = $notaCreditoService->validarParaPago($validated['nota_credito_id']);
-                $montoNC = min((float) $notaCredito->saldo_disponible, $totalEstimado);
-                $pagosExtra[] = ['metodo_pago_id' => $metodoPagoNotaCredito->id, 'monto' => $montoNC];
-            }
-
-            // Pagos combinados: tradicionales + digitales (GC/NC)
-            $todosLosPagos = array_merge($validated['pagos'], $pagosExtra);
-
-            $venta = $ventaService->registrarVenta(
-                [
-                    'tenant_id' => $tenantId,
-                    'sucursal_id' => $usuario->sucursal_id,
-                    'usuario_id' => $usuario->id,
-                    'cliente_id' => $validated['cliente_id'],
-                    'cupon_id' => $cuponId,
-                    'descuento_manual' => $descuentoManual,
-                ],
-                $validated['items'],
-                $todosLosPagos,
-            );
-
-            // Vincular Nota de Credito a la venta (despues de creada para tener el ID)
-            if (! empty($validated['nota_credito_id'])) {
-                $montoNC = collect($pagosExtra)->where('metodo_pago_id', $metodoPagoNotaCredito?->id)->first()['monto'] ?? 0;
-                if ($montoNC > 0) {
-                    $notaCreditoService->usarEnVenta($validated['nota_credito_id'], $venta->id, $montoNC);
-                }
-            }
-
-            $venta->load(['cliente', 'pagos.metodoPago', 'detalles.variante.producto']);
-
-            return (new VentaResource($venta))->response()->setStatusCode(201);
-        });
+        return (new VentaResource($venta))->response()->setStatusCode(201);
     }
 
     public function anular(Request $request, Venta $venta, VentaService $ventaService)
