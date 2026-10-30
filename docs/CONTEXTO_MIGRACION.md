@@ -139,8 +139,19 @@ repo.
   `Arquitectura/UnicidadConTenantTest` revisa todos los índices únicos; las excepciones
   son `usuarios.correo` (el login busca por correo antes de conocer el tenant) y
   `empleados.usuario_id` (uno a uno). Las migraciones se reescribieron (DAT-11): las bases
-  de desarrollo locales necesitan `php artisan migrate:fresh --seed`. Backend: 372 tests.
+  de desarrollo locales necesitan `php artisan migrate:fresh --seed`.
+- **C11 resuelto, ARQ-03** (sexto encargo, hecho por DS): cuatro Actions en
+  `backend/app/Aplicacion/` (`RegistrarVenta`, `RegistrarDevolucion`, `CerrarCaja`,
+  `ObtenerResumenInicio`), con la transacción dentro y tests de atomicidad. Los
+  controladores quedaron delgados y el contrato HTTP no cambió. Se retiró la lista de
+  "instancias de orquestación en Controller". Decisión del responsable: los módulos de
+  extensión pueden depender de los módulos base, nunca entre sí. El test
+  `Arquitectura/DependenciasEntreModulosTest` verifica el grafo. Backend: 377 tests.
 - **Pendientes detectados:**
+  - dependencias fuera del grafo: `Crm` lee `Venta` de Tpv (`PlanPagoController`,
+    `PlanPagoCliente`, `VentasPlazosService`; es un ciclo, porque Tpv → Crm);
+    `CajaController::actual()` usa `GastoService`; `Produccion` usa `UnidadMedida`
+    (extensión → extensión). Las unidades se rediseñan en la Fase 3 (DAT-01);
   - el frontend no conoce los 9 códigos nuevos (`tpv-error.types.ts` y similares);
   - `VentaController` y `CompraController` toman el tenant de `$request->user()` y el resto
     de `TenantContext` (equivalentes); se unifica al migrar a FormRequest (C8).
@@ -151,9 +162,9 @@ repo.
 
 1. **Saneamiento de la Fase 1**, en encargos de un tema cada uno. Hecho: CI con ambas
    suites, C1 (D4), las validaciones de negocio (500 → 422) y las reglas `exists` con
-   tenant (API-05) y la unicidad con tenant (DAT-09, C4). Orden sugerido para lo que
-   sigue: C11 (D5); luego Pint y ESLint bloqueantes en CI (con la línea base de arriba) y
-   PHPStan; después el resto:
+   tenant (API-05), la unicidad con tenant (DAT-09, C4) y C11 (D5). Orden sugerido para lo
+   que sigue: Pint y ESLint bloqueantes en CI (con la línea base de arriba) y PHPStan;
+   después el resto:
    - nombres internos: composer `nianva/pos` y alcance Nx `@nianva/*` (hoy `laravel/laravel`
      y `@org`); el nombre de la app Nx `nucleo-shell` queda por decidir;
    - `README.md` nuevo: producto único por planes y giros, derivado de `nucleo-erp-base`;

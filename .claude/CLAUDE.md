@@ -6,10 +6,9 @@ completa — el razonamiento detrás de cada regla vive en
 repitas aquí.
 
 > **Estándares aprobados (2026-10-30):** [docs/estandares/](../docs/estandares/README.md) manda
-> sobre este archivo. La lista de orquestación en Controller (§2) está en retirada (C11): no
-> se agregan instancias nuevas; lo nuevo sigue ARQ-03 (orquestación en Actions de
-> aplicación). El mapa central de `error_code` ya se retiró (C1, ver §3). Este archivo se
-> reescribe en el saneamiento de la Fase 1.
+> sobre este archivo. La orquestación en Controller y el mapa central de `error_code` ya se
+> retiraron (C11 y C1; ver §2 y §3). Este archivo se reescribe en el saneamiento de la
+> Fase 1.
 
 ## 1. Módulos y dirección de dependencia (nivel `Services`)
 
@@ -25,24 +24,26 @@ Dependencias permitidas entre `Services`, y solo estas:
 - `Gastos` → `Tpv`, pero **solo `Model`/`Exception`, nunca `Service`**
 - `Núcleo`, `Auditoría`, `Configuración`: sin dependencias de negocio salientes. Cualquier
   módulo puede usar sus utilidades transversales (`TenantContext`, middleware `permiso:*`,
-  `AuditObserver` vía config) sin que eso cuente como dependencia de negocio.
+  `AuditObserver` vía config, `ConfiguracionTenant`) y las reglas de validación publicadas
+  en `<Modulo>\Support\Reglas*` sin que eso cuente como dependencia de negocio.
+- **Módulos de extensión** (Cotizaciones, Delivery, CuentasCobrar, CuentasPagar,
+  CrmAvanzado, GiftCards, NotasCredito, Produccion, Payroll, Prestamos, UnidadesMedida):
+  pueden depender de los módulos base de arriba, nunca entre sí, y ningún módulo base
+  depende de ellos.
 
-**Regla explícita**: un módulo nunca importa el `Service` de otro módulo fuera de esta lista.
-Si crees que necesitas hacerlo, pregunta antes de escribir código.
+**Regla explícita**: un módulo nunca importa el `Service` de otro módulo fuera de este grafo.
+`tests/Feature/Arquitectura/DependenciasEntreModulosTest.php` lo verifica; su lista
+`PENDIENTES` es deuda conocida y no recibe entradas nuevas. Si crees que necesitas otra
+dependencia, pregunta antes de escribir código.
 
-## 2. Excepción a nivel `Controller`: orquestación permitida, en `Service` nunca
+## 2. Casos de uso que cruzan módulos: Actions de aplicación (ARQ-03)
 
-Los `Controllers` (capa Http) SÍ pueden importar un `Service`/`Model` de un módulo fuera de la
-lista de arriba cuando necesitan un dato de presentación o un cálculo autoritativo que el
-backend no puede confiar al cliente. El `Service` propio del módulo nunca debe conocer esa
-dependencia. 3 instancias existentes, únicas permitidas hoy:
-
-1. `CajaController::cerrar()` (Tpv) → `GastoService` (Gastos).
-2. `ProductoVarianteController::store()` (Inventario) → `ConfiguracionTenant` (Configuración).
-3. `InicioController::resumen()` (Núcleo) → `Venta` (Tpv) + `Apartado` (Apartados).
-
-Una 4ª instancia es válida solo si: la orquestación queda en el `Controller` (nunca en el
-`Service`), y el docblock del método la documenta citando las 3 anteriores.
+Cuando un caso de uso cruza módulos fuera del grafo, la orquestación vive en una Action de
+`backend/app/Aplicacion/<Area>/` (un caso de uso por clase, método `ejecutar(...)`, dueña de
+la transacción), nunca en el `Controller` ni en un `Service`. El controlador valida, llama la
+Action y devuelve el Resource. Solo los controladores importan `App\Aplicacion`. Ejemplos:
+`Ventas/RegistrarVenta`, `Devoluciones/RegistrarDevolucion`, `Caja/CerrarCaja`,
+`Inicio/ObtenerResumenInicio`. Ya no hay excepciones numeradas en controladores.
 
 ## 3. Patrones obligatorios — no reinventar
 
