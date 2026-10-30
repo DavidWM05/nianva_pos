@@ -1,6 +1,114 @@
 parameters:
 	ignoreErrors:
 		-
+			message: '#^Access to an undefined property App\\Modules\\Devoluciones\\Models\\Devolucion\:\:\$monto_devolucion\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Aplicacion/Devoluciones/RegistrarDevolucion.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\Nucleo\\Models\\Usuario\:\:\$sucursal_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Aplicacion/Devoluciones/RegistrarDevolucion.php
+
+		-
+			message: '#^Parameter \$pagos of method App\\Modules\\Devoluciones\\Services\\DevolucionService\:\:registrarDevolucion\(\) expects list\<array\{metodo_pago_id\: int, monto\: float\}\>, list\<array\{metodo_pago_id\: int, monto\: float\|string\}\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Aplicacion/Devoluciones/RegistrarDevolucion.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\Apartados\\Models\\Apartado\:\:\$fecha_vencimiento\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Aplicacion/Inicio/ObtenerResumenInicio.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\Apartados\\Models\\Apartado\:\:\$total\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Aplicacion/Inicio/ObtenerResumenInicio.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\Apartados\\Models\\Apartado\:\:\$total_abonado\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Aplicacion/Inicio/ObtenerResumenInicio.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$nombre\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Aplicacion/Inicio/ObtenerResumenInicio.php
+
+		-
+			message: '#^Parameter \#1 \$callback of method Illuminate\\Database\\Eloquent\\Collection\<int,App\\Modules\\Apartados\\Models\\Apartado\>\:\:map\(\) contains unresolvable type\.$#'
+			identifier: argument.unresolvableType
+			count: 1
+			path: app/Aplicacion/Inicio/ObtenerResumenInicio.php
+
+		-
+			message: '#^Return type of call to method Illuminate\\Database\\Eloquent\\Collection\<int,App\\Modules\\Apartados\\Models\\Apartado\>\:\:map\(\) contains unresolvable type\.$#'
+			identifier: method.unresolvableReturnType
+			count: 1
+			path: app/Aplicacion/Inicio/ObtenerResumenInicio.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\GiftCards\\Models\\GiftCard\:\:\$saldo_actual\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Aplicacion/Ventas/RegistrarVenta.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\NotasCredito\\Models\\NotaCredito\:\:\$saldo_disponible\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Aplicacion/Ventas/RegistrarVenta.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\Nucleo\\Models\\Usuario\:\:\$sucursal_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Aplicacion/Ventas/RegistrarVenta.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\Nucleo\\Models\\Usuario\:\:\$tenant_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Aplicacion/Ventas/RegistrarVenta.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 3
+			path: app/Aplicacion/Ventas/RegistrarVenta.php
+
+		-
+			message: '#^Parameter \#1 \$value of function collect contains unresolvable type\.$#'
+			identifier: argument.unresolvableType
+			count: 1
+			path: app/Aplicacion/Ventas/RegistrarVenta.php
+
+		-
+			message: '#^Parameter \#3 \$pagos of method App\\Modules\\Tpv\\Services\\VentaService\:\:registrarVenta\(\) expects list\<array\{metodo_pago_id\: int, monto\: float\}\>, list\<array\{metodo_pago_id\: mixed, monto\: float\|string\}\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Aplicacion/Ventas/RegistrarVenta.php
+
+		-
+			message: '#^Return type of call to function collect contains unresolvable type\.$#'
+			identifier: function.unresolvableReturnType
+			count: 1
+			path: app/Aplicacion/Ventas/RegistrarVenta.php
+
+		-
+			message: '#^Variable \$cuponCodigo in empty\(\) always exists and is not falsy\.$#'
+			identifier: empty.variable
+			count: 1
+			path: app/Aplicacion/Ventas/RegistrarVenta.php
+
+		-
 			message: '#^Call to an undefined method Illuminate\\Database\\Schema\\ForeignKeyDefinition\:\:comment\(\)\.$#'
 			identifier: method.notFound
 			count: 1
@@ -2785,26 +2893,8 @@ parameters:
 			path: app/Modules/Devoluciones/Exceptions/DevolucionVarianteNoVendidaException.php
 
 		-
-			message: '#^Access to an undefined property App\\Modules\\Devoluciones\\Models\\Devolucion\:\:\$monto_devolucion\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Modules/Devoluciones/Http/Controllers/DevolucionController.php
-
-		-
 			message: '#^Access to an undefined property App\\Modules\\NotasCredito\\Models\\NotaCredito\:\:\$monto_original\.$#'
 			identifier: property.notFound
-			count: 1
-			path: app/Modules/Devoluciones/Http/Controllers/DevolucionController.php
-
-		-
-			message: '#^Cannot access property \$id on App\\Modules\\Nucleo\\Models\\Usuario\|null\.$#'
-			identifier: property.nonObject
-			count: 1
-			path: app/Modules/Devoluciones/Http/Controllers/DevolucionController.php
-
-		-
-			message: '#^Cannot access property \$sucursal_id on App\\Modules\\Nucleo\\Models\\Usuario\|null\.$#'
-			identifier: property.nonObject
 			count: 1
 			path: app/Modules/Devoluciones/Http/Controllers/DevolucionController.php
 
@@ -2839,7 +2929,7 @@ parameters:
 			path: app/Modules/Devoluciones/Http/Controllers/DevolucionController.php
 
 		-
-			message: '#^Parameter \$ventaOrigen of method App\\Modules\\Devoluciones\\Services\\DevolucionService\:\:registrarDevolucion\(\) expects App\\Modules\\Tpv\\Models\\Venta, App\\Modules\\Tpv\\Models\\Venta\|Illuminate\\Database\\Eloquent\\Collection\<int, App\\Modules\\Tpv\\Models\\Venta\> given\.$#'
+			message: '#^Parameter \$usuario of method App\\Aplicacion\\Devoluciones\\RegistrarDevolucion\:\:ejecutar\(\) expects App\\Modules\\Nucleo\\Models\\Usuario, App\\Modules\\Nucleo\\Models\\Usuario\|null given\.$#'
 			identifier: argument.type
 			count: 1
 			path: app/Modules/Devoluciones/Http/Controllers/DevolucionController.php
@@ -4603,30 +4693,6 @@ parameters:
 			path: app/Modules/Nucleo/Http/Controllers/DispositivosConfiablesController.php
 
 		-
-			message: '#^Access to an undefined property App\\Modules\\Apartados\\Models\\Apartado\:\:\$fecha_vencimiento\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Modules/Nucleo/Http/Controllers/InicioController.php
-
-		-
-			message: '#^Access to an undefined property App\\Modules\\Apartados\\Models\\Apartado\:\:\$total\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Modules/Nucleo/Http/Controllers/InicioController.php
-
-		-
-			message: '#^Access to an undefined property App\\Modules\\Apartados\\Models\\Apartado\:\:\$total_abonado\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Modules/Nucleo/Http/Controllers/InicioController.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$nombre\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Modules/Nucleo/Http/Controllers/InicioController.php
-
-		-
 			message: '#^Cannot access property \$sucursal_id on App\\Modules\\Nucleo\\Models\\Usuario\|null\.$#'
 			identifier: property.nonObject
 			count: 1
@@ -4635,18 +4701,6 @@ parameters:
 		-
 			message: '#^Method App\\Modules\\Nucleo\\Http\\Controllers\\InicioController\:\:resumen\(\) has no return type specified\.$#'
 			identifier: missingType.return
-			count: 1
-			path: app/Modules/Nucleo/Http/Controllers/InicioController.php
-
-		-
-			message: '#^Parameter \#1 \$callback of method Illuminate\\Database\\Eloquent\\Collection\<int,App\\Modules\\Apartados\\Models\\Apartado\>\:\:map\(\) contains unresolvable type\.$#'
-			identifier: argument.unresolvableType
-			count: 1
-			path: app/Modules/Nucleo/Http/Controllers/InicioController.php
-
-		-
-			message: '#^Return type of call to method Illuminate\\Database\\Eloquent\\Collection\<int,App\\Modules\\Apartados\\Models\\Apartado\>\:\:map\(\) contains unresolvable type\.$#'
-			identifier: method.unresolvableReturnType
 			count: 1
 			path: app/Modules/Nucleo/Http/Controllers/InicioController.php
 
@@ -7069,12 +7123,6 @@ parameters:
 			path: app/Modules/Tpv/Exceptions/VentaYaAnuladaException.php
 
 		-
-			message: '#^Access to an undefined property App\\Modules\\Tpv\\Models\\CajaSesion\:\:\$sucursal_id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Modules/Tpv/Http/Controllers/CajaController.php
-
-		-
 			message: '#^Cannot access property \$id on App\\Modules\\Nucleo\\Models\\Usuario\|null\.$#'
 			identifier: property.nonObject
 			count: 1
@@ -7109,18 +7157,6 @@ parameters:
 			identifier: missingType.return
 			count: 1
 			path: app/Modules/Tpv/Http/Controllers/CajaController.php
-
-		-
-			message: '#^Access to an undefined property App\\Modules\\GiftCards\\Models\\GiftCard\:\:\$saldo_actual\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Modules/Tpv/Http/Controllers/VentaController.php
-
-		-
-			message: '#^Access to an undefined property App\\Modules\\NotasCredito\\Models\\NotaCredito\:\:\$saldo_disponible\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Modules/Tpv/Http/Controllers/VentaController.php
 
 		-
 			message: '#^Access to an undefined property App\\Modules\\Tpv\\Models\\Venta\:\:\$numero_ventas\.$#'
@@ -7177,12 +7213,6 @@ parameters:
 			path: app/Modules/Tpv/Http/Controllers/VentaController.php
 
 		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 3
-			path: app/Modules/Tpv/Http/Controllers/VentaController.php
-
-		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$nombre\.$#'
 			identifier: property.notFound
 			count: 1
@@ -7197,18 +7227,6 @@ parameters:
 		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$talla\.$#'
 			identifier: property.notFound
-			count: 1
-			path: app/Modules/Tpv/Http/Controllers/VentaController.php
-
-		-
-			message: '#^Cannot access property \$id on App\\Modules\\Nucleo\\Models\\Usuario\|null\.$#'
-			identifier: property.nonObject
-			count: 1
-			path: app/Modules/Tpv/Http/Controllers/VentaController.php
-
-		-
-			message: '#^Cannot access property \$sucursal_id on App\\Modules\\Nucleo\\Models\\Usuario\|null\.$#'
-			identifier: property.nonObject
 			count: 1
 			path: app/Modules/Tpv/Http/Controllers/VentaController.php
 
@@ -7285,26 +7303,14 @@ parameters:
 			path: app/Modules/Tpv/Http/Controllers/VentaController.php
 
 		-
-			message: '#^Parameter \#1 \$value of function collect contains unresolvable type\.$#'
-			identifier: argument.unresolvableType
-			count: 1
-			path: app/Modules/Tpv/Http/Controllers/VentaController.php
-
-		-
-			message: '#^Parameter \#3 \$pagos of method App\\Modules\\Tpv\\Services\\VentaService\:\:registrarVenta\(\) expects list\<array\{metodo_pago_id\: int, monto\: float\}\>, array given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Modules/Tpv/Http/Controllers/VentaController.php
-
-		-
 			message: '#^Parameter \#3 \$usuario of method App\\Modules\\Tpv\\Services\\VentaService\:\:anularVenta\(\) expects App\\Modules\\Nucleo\\Models\\Usuario, App\\Modules\\Nucleo\\Models\\Usuario\|null given\.$#'
 			identifier: argument.type
 			count: 1
 			path: app/Modules/Tpv/Http/Controllers/VentaController.php
 
 		-
-			message: '#^Return type of call to function collect contains unresolvable type\.$#'
-			identifier: function.unresolvableReturnType
+			message: '#^Parameter \$usuario of method App\\Aplicacion\\Ventas\\RegistrarVenta\:\:ejecutar\(\) expects App\\Modules\\Nucleo\\Models\\Usuario, App\\Modules\\Nucleo\\Models\\Usuario\|null given\.$#'
+			identifier: argument.type
 			count: 1
 			path: app/Modules/Tpv/Http/Controllers/VentaController.php
 
