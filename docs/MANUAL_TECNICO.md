@@ -57,25 +57,23 @@ Service→Service entre módulos de este monolito, así que no aparece en el dia
 única integración saliente por red que existe hoy en todo el backend. Ver el patrón completo en
 §2.6.
 
-### Regla de orquestación: Controllers sí, Services nunca
+### Orquestación entre módulos: Actions de aplicación
 
-La dirección de arriba es la regla para `Services`. A nivel de `Http\Controllers` existe una
-**excepción formal, ya usada 3 veces en el código**: un Controller puede importar directamente un
-`Service` o `Model` de un módulo "posterior" en el grafo cuando necesita un dato de presentación o
-un cálculo autoritativo que el backend no puede confiar al cliente — pero el `Service` propio del
-módulo nunca debe enterarse de esa dependencia. Las 3 instancias documentadas hoy:
+Regla vigente: ARQ-03 en [`docs/estandares/01_arquitectura.md`](estandares/01_arquitectura.md).
+Cuando un caso de uso cruza módulos fuera del grafo, la orquestación vive en una Action de
+`backend/app/Aplicacion/<Area>/`, dueña de la transacción; ni el Controller ni los `Services`
+orquestan. Las cuatro que existen hoy están en la tabla de
+[`backend/README.md`](../backend/README.md) (venta con gift card o nota de crédito,
+devolución con nota de crédito, cierre de caja e Inicio). Hasta C11 (2026-10-30) esto se
+resolvía con una lista numerada de "excepciones de orquestación en Controller"; esa lista se
+retiró.
 
-| # | Controller (módulo) | Importa de | Para qué |
-|---|---|---|---|
-| 1 | `CajaController::actual()` / `::cerrar()` (Tpv) | `GastoService` (Gastos) | `total_gastos` autoritativo al cerrar caja — el monto no puede venir del cliente. |
-| 2 | `ProductoVarianteController::store()` (Inventario) | `ConfiguracionTenant` (Configuración) | Leer el flag `codigo_barras_automatico` del tenant para decidir si autogenerar el código de barras de una variante nueva. |
-| 3 | `InicioController::resumen()` (Núcleo) | `Venta` (Tpv), `Apartado` (Apartados) | Resumen de la pantalla de Inicio: ventas del día + apartados por vencer. |
-
-Las tres siguen el mismo criterio, citado literalmente en el docblock de `InicioController`
-(que a su vez cita a las otras dos): **"los Controllers pueden orquestar entre módulos para
-presentación/cálculo, los Services nunca"**. En los tres casos, el `Service` propio del módulo
-(`CajaService`, `InventarioService`, y en el caso de Inicio no existe un `Service` dedicado)
-sigue sin importar nada del módulo "posterior" — la orquestación vive únicamente en la capa Http.
+Los módulos de extensión (Cotizaciones, Delivery, CxC, CxP, CrmAvanzado, GiftCards,
+NotasCredito, Produccion, Payroll, Prestamos, UnidadesMedida) pueden depender de los módulos
+base, nunca entre sí. `ConfiguracionTenant` y las reglas `Support\Reglas*` son transversales.
+`tests/Feature/Arquitectura/DependenciasEntreModulosTest.php` verifica el grafo; su lista
+`PENDIENTES` registra la deuda conocida (Crm lee `Venta` de Tpv en `PlanPagoController`, y
+`CajaController::actual()` usa `GastoService`).
 
 Si necesitas una cuarta instancia de este patrón, es válida siempre que: (a) la orquestación
 quede en el Controller, nunca en el Service; (b) el docblock del método la documente

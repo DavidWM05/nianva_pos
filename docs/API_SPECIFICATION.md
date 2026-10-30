@@ -1074,6 +1074,10 @@ método de pago en el frontend para este endpoint específicamente.
 
 ## 14. Extensiones a endpoints existentes (orquestación en Controller, nunca en Service)
 
+> **Histórico.** La numeración de "instancias" de esta sección se retiró en C11 (2026-10-30):
+> la orquestación entre módulos vive ahora en Actions de `backend/app/Aplicacion/` (ARQ-03).
+> Ver la tabla de Actions en `backend/README.md`. Los contratos HTTP de abajo no cambiaron.
+
 Cada una cita las 3 instancias ya documentadas en CLAUDE.md §2 y se agrega como instancia nueva,
 tal como exige la regla ("el docblock del método la documenta citando las 3 anteriores"). Ver
 hallazgo §0.6 sobre por qué no se apilan todas dentro de `VentaController::store()` salvo estas.

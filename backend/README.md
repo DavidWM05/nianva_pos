@@ -133,19 +133,23 @@ Inventario         Crm
    UnidadesMedida, VentasPlazos: sin dependencias de negocio hacia otros modulos nuevos.
 ```
 
-**Regla explícita:** los `Controllers` pueden orquestar entre módulos para presentación o
-cálculo autoritativo; los `Services` nunca.
+Los módulos de extensión (Cotizaciones, Delivery, CxC, CxP, CrmAvanzado, GiftCards,
+NotasCredito, Produccion, Payroll, Prestamos, UnidadesMedida) pueden depender de los módulos
+base, nunca entre sí; ningún módulo base depende de ellos. Lo verifica
+`tests/Feature/Arquitectura/DependenciasEntreModulosTest.php`.
 
-## Orquestación entre módulos — 6 instancias documentadas
+## Casos de uso que cruzan módulos: Actions de aplicación
 
-| # | Controller | Importa de | Para qué |
-|---|---|---|---|
-| 1 | `CajaController::cerrar()` (Tpv) | `GastoService` | total_gastos autoritativo al cerrar caja |
-| 2 | `ProductoVarianteController::store()` (Inventario) | `ConfiguracionTenant` | flag `codigo_barras_automatico` |
-| 3 | `InicioController::resumen()` (Núcleo) | `Venta`, `Apartado` | resumen de inicio |
-| 4 | `VentaController::store()` (Tpv) | `GiftCardService`, `NotaCreditoService` | pago con Gift Card / Nota de Crédito |
-| 5 | `DevolucionController::store()` (Devoluciones) | `NotaCreditoService` | crear Nota de Crédito desde devolución |
-| 6 | `CajaController::cerrar()` (Tpv) | `AbonoCuenta`, `GiftCardRecarga`, `AbonoPagar` | desglose CxC/GC/CxP en cierre de caja |
+Cuando un caso de uso cruza módulos fuera del grafo, la orquestación vive en una Action de
+`app/Aplicacion/<Area>/` (ARQ-03), dueña de la transacción; el controlador solo valida, la
+llama y devuelve el Resource. Ni los controladores ni los `Services` orquestan entre módulos.
+
+| Action | Llamada desde | Cruza |
+|---|---|---|
+| `Ventas/RegistrarVenta` | `VentaController::store()` | Tpv, Precios, GiftCards, NotasCredito |
+| `Devoluciones/RegistrarDevolucion` | `DevolucionController::store()` | Devoluciones, NotasCredito |
+| `Caja/CerrarCaja` | `CajaController::cerrar()` | Tpv, Gastos, CxC, GiftCards, CxP |
+| `Inicio/ObtenerResumenInicio` | `InicioController::resumen()` | Núcleo, Tpv, Apartados |
 
 ## Catálogo de `error_code`
 
