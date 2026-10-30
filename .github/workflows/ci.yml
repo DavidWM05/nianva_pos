@@ -53,6 +53,43 @@ jobs:
           cp .env.example .env
           php artisan key:generate
 
+      - name: Verificar formato con Pint
+        run: vendor/bin/pint --test
+
+      - name: Analizar con PHPStan
+        run: vendor/bin/phpstan analyse --no-progress --memory-limit=1G
+
+      - name: Obtener la rama base para la linea base
+        if: github.event_name == 'pull_request'
+        working-directory: .
+        run: git fetch --no-tags --depth=1 origin "${{ github.base_ref }}:refs/remotes/origin/${{ github.base_ref }}"
+
+      - name: Verificar que la linea base de PHPStan no crezca
+        if: github.event_name == 'pull_request'
+        working-directory: .
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          base_ref="${{ github.base_ref }}"
+
+          if git show "origin/${base_ref}:backend/phpstan-baseline.neon" > /tmp/phpstan-baseline-base.neon 2>/dev/null; then
+            base=$(grep -oE 'count: [0-9]+' /tmp/phpstan-baseline-base.neon | awk '{sum += $2} END {print sum + 0}')
+            actual=$(grep -oE 'count: [0-9]+' backend/phpstan-baseline.neon | awk '{sum += $2} END {print sum + 0}')
+
+            echo "Errores congelados en base: ${base}"
+            echo "Errores congelados en esta rama: ${actual}"
+
+            if [ "${actual}" -gt "${base}" ]; then
+              echo "La linea base de PHPStan subio de ${base} a ${actual}."
+              exit 1
+            fi
+
+            echo "OK: la linea base no subio."
+          else
+            echo "La rama base no tiene backend/phpstan-baseline.neon; se omite la comparacion."
+          fi
+
       - name: Ejecutar pruebas del backend
         run: php artisan test
 
@@ -80,6 +117,12 @@ jobs:
 
       - name: Instalar dependencias con el lockfile
         run: pnpm install --frozen-lockfile
+
+      - name: Revisar lint
+        run: pnpm nx run-many -t lint
+
+      - name: Compilar con tipos estrictos
+        run: pnpm nx run-many -t build
 
       - name: Ejecutar pruebas del frontend
         run: pnpm nx run-many -t test
