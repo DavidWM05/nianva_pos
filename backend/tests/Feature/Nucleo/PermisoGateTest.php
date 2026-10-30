@@ -20,7 +20,9 @@ class PermisoGateTest extends TestCase
     use RefreshDatabase;
 
     private Tenant $tenant;
+
     private Sucursal $sucursal;
+
     private Usuario $usuario;
 
     protected function setUp(): void

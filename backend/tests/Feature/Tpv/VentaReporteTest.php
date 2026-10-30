@@ -25,11 +25,17 @@ class VentaReporteTest extends TestCase
     use RefreshDatabase;
 
     private Tenant $tenant;
+
     private Sucursal $sucursal;
+
     private Usuario $usuario;
+
     private Cliente $cliente;
+
     private MetodoPago $efectivo;
+
     private ProductoVariante $variante;
+
     private VentaService $ventaService;
 
     protected function setUp(): void

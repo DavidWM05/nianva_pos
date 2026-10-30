@@ -32,8 +32,23 @@ class NotaCredito extends Model
         ];
     }
 
-    public function tenant(): BelongsTo { return $this->belongsTo(Tenant::class); }
-    public function cliente(): BelongsTo { return $this->belongsTo(Cliente::class); }
-    public function devolucion(): BelongsTo { return $this->belongsTo(Devolucion::class); }
-    public function usos(): HasMany { return $this->hasMany(NotaCreditoUso::class); }
+    public function tenant(): BelongsTo
+    {
+        return $this->belongsTo(Tenant::class);
+    }
+
+    public function cliente(): BelongsTo
+    {
+        return $this->belongsTo(Cliente::class);
+    }
+
+    public function devolucion(): BelongsTo
+    {
+        return $this->belongsTo(Devolucion::class);
+    }
+
+    public function usos(): HasMany
+    {
+        return $this->hasMany(NotaCreditoUso::class);
+    }
 }

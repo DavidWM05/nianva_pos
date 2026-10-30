@@ -68,9 +68,9 @@ class VentasPlazosService
             // Generar cuotas
             for ($i = 1; $i <= $numeroCuotas; $i++) {
                 $fechaVencimiento = match ($data['periodicidad']) {
-                    'semanal' => date('Y-m-d', strtotime($fechaInicio . " +{$i} week")),
-                    'quincenal' => date('Y-m-d', strtotime($fechaInicio . " +" . ($i * 15) . " days")),
-                    'mensual' => date('Y-m-d', strtotime($fechaInicio . " +{$i} month")),
+                    'semanal' => date('Y-m-d', strtotime($fechaInicio." +{$i} week")),
+                    'quincenal' => date('Y-m-d', strtotime($fechaInicio.' +'.($i * 15).' days')),
+                    'mensual' => date('Y-m-d', strtotime($fechaInicio." +{$i} month")),
                 };
 
                 PlanPagoClienteCuota::create([

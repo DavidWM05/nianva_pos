@@ -10,6 +10,7 @@ use App\Modules\Nucleo\Services\TwoFactorService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Facades\Route;
+use PragmaRX\Google2FA\Google2FA;
 use Tests\TestCase;
 
 class AuthTest extends TestCase
@@ -211,6 +212,6 @@ class AuthTest extends TestCase
 
     private function generarCodigoValido(string $secret): string
     {
-        return (new \PragmaRX\Google2FA\Google2FA())->getCurrentOtp($secret);
+        return (new Google2FA)->getCurrentOtp($secret);
     }
 }

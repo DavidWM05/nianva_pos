@@ -31,7 +31,18 @@ class GiftCard extends Model
         ];
     }
 
-    public function tenant(): BelongsTo { return $this->belongsTo(Tenant::class); }
-    public function cliente(): BelongsTo { return $this->belongsTo(Cliente::class); }
-    public function recargas(): HasMany { return $this->hasMany(GiftCardRecarga::class); }
+    public function tenant(): BelongsTo
+    {
+        return $this->belongsTo(Tenant::class);
+    }
+
+    public function cliente(): BelongsTo
+    {
+        return $this->belongsTo(Cliente::class);
+    }
+
+    public function recargas(): HasMany
+    {
+        return $this->hasMany(GiftCardRecarga::class);
+    }
 }

@@ -20,7 +20,9 @@ class GiftCardServiceTest extends TestCase
     use RefreshDatabase;
 
     private GiftCardService $service;
+
     private Tenant $tenant;
+
     private Usuario $usuario;
 
     protected function setUp(): void

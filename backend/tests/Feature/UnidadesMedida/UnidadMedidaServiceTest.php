@@ -2,13 +2,14 @@
 
 namespace Tests\Feature\UnidadesMedida;
 
-use App\Modules\Nucleo\Models\Sucursal;
+use App\Modules\Inventario\Models\Categoria;
+use App\Modules\Inventario\Models\Producto;
+use App\Modules\Inventario\Models\ProductoVariante;
 use App\Modules\Nucleo\Models\Tenant;
-use App\Modules\Nucleo\Models\Usuario;
 use App\Modules\Nucleo\Services\TenantContext;
 use App\Modules\UnidadesMedida\Exceptions\UnidadEnUsoException;
-use App\Modules\UnidadesMedida\Models\UnidadMedida;
 use App\Modules\UnidadesMedida\Services\UnidadMedidaService;
+use Illuminate\Database\QueryException;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -54,7 +55,7 @@ class UnidadMedidaServiceTest extends TestCase
             'tipo' => 'fraccionario',
         ]);
 
-        $this->expectException(\Illuminate\Database\QueryException::class);
+        $this->expectException(QueryException::class);
         $this->service->crear([
             'tenant_id' => $tenant->id,
             'nombre' => 'Kilogramo Dos',
@@ -94,12 +95,12 @@ class UnidadMedidaServiceTest extends TestCase
         ]);
 
         // Simular que una variante usa esta unidad
-        $categoria = \App\Modules\Inventario\Models\Categoria::create(['tenant_id' => $tenant->id, 'nombre' => 'Test']);
-        $producto = \App\Modules\Inventario\Models\Producto::create([
+        $categoria = Categoria::create(['tenant_id' => $tenant->id, 'nombre' => 'Test']);
+        $producto = Producto::create([
             'tenant_id' => $tenant->id, 'categoria_id' => $categoria->id,
             'nombre' => 'Producto Test', 'precio_compra' => 10, 'precio_venta' => 20,
         ]);
-        \App\Modules\Inventario\Models\ProductoVariante::create([
+        ProductoVariante::create([
             'producto_id' => $producto->id,
             'unidad_medida_id' => $unidad->id,
         ]);

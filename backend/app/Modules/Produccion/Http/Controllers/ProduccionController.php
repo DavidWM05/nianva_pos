@@ -10,8 +10,8 @@ use App\Modules\Produccion\Http\Resources\InsumoResource;
 use App\Modules\Produccion\Http\Resources\OrdenProduccionResource;
 use App\Modules\Produccion\Http\Resources\RecetaResource;
 use App\Modules\Produccion\Http\Resources\TransformacionResource;
-use App\Modules\Produccion\Models\InsumoStock;
 use App\Modules\Produccion\Models\Insumo;
+use App\Modules\Produccion\Models\InsumoStock;
 use App\Modules\Produccion\Models\OrdenProduccion;
 use App\Modules\Produccion\Models\Receta;
 use App\Modules\Produccion\Models\TransformacionProducto;
@@ -73,12 +73,14 @@ class ProduccionController extends Controller
             'stock_minimo' => 'nullable|numeric|min:0',
         ]);
         $v['tenant_id'] = $tenantId;
+
         return (new InsumoResource(Insumo::create($v)))->response()->setStatusCode(201);
     }
 
     public function insumoStocks(Insumo $insumo)
     {
         $stocks = InsumoStock::where('insumo_id', $insumo->id)->where('sucursal_id', request()->user()->sucursal_id)->get();
+
         return response()->json(['data' => $stocks]);
     }
 
@@ -153,6 +155,7 @@ class ProduccionController extends Controller
             'ingredientes.*.unidad_medida_id' => ['required', 'integer', ReglasTenant::existeGlobalODelTenant('unidades_medida', $tenantId)],
         ]);
         $v['tenant_id'] = app(TenantContext::class)->id();
+
         return (new RecetaResource($this->produccionService->crearReceta($v)))->response()->setStatusCode(201);
     }
 
@@ -193,6 +196,7 @@ class ProduccionController extends Controller
         $v['tenant_id'] = app(TenantContext::class)->id();
         $v['sucursal_id'] = $request->user()->sucursal_id;
         $v['usuario_id'] = $request->user()->id;
+
         return (new OrdenProduccionResource($this->produccionService->crearOrdenProduccion($v)))->response()->setStatusCode(201);
     }
 
@@ -203,6 +207,7 @@ class ProduccionController extends Controller
             return new OrdenProduccionResource($this->produccionService->completarOrden($id, $v['cantidad_producida']));
         }
         OrdenProduccion::where('id', $id)->update(['estado' => $v['estado']]);
+
         return response()->json(['message' => 'Estado actualizado.']);
     }
 
@@ -244,6 +249,7 @@ class ProduccionController extends Controller
         $v['tenant_id'] = app(TenantContext::class)->id();
         $v['sucursal_id'] = $request->user()->sucursal_id;
         $v['usuario_id'] = $request->user()->id;
+
         return (new TransformacionResource($this->produccionService->registrarTransformacion($v)))->response()->setStatusCode(201);
     }
 
@@ -254,6 +260,7 @@ class ProduccionController extends Controller
         foreach ($acciones as $accion) {
             $resultado[$accion] = $usuario->tienePermiso("{$modulo}.{$accion}");
         }
+
         return $resultado;
     }
 }

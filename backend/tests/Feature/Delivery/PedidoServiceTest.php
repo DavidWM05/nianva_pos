@@ -22,11 +22,17 @@ class PedidoServiceTest extends TestCase
     use RefreshDatabase;
 
     private PedidoService $service;
+
     private Tenant $tenant;
+
     private Sucursal $sucursal;
+
     private Usuario $usuario;
+
     private Usuario $repartidor;
+
     private Cliente $cliente;
+
     private ProductoVariante $variante;
 
     protected function setUp(): void

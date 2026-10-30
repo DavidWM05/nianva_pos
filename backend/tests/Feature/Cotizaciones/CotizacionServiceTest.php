@@ -5,7 +5,6 @@ namespace Tests\Feature\Cotizaciones;
 use App\Modules\Cotizaciones\Exceptions\CotizacionVencidaException;
 use App\Modules\Cotizaciones\Exceptions\SinClienteException;
 use App\Modules\Cotizaciones\Models\Cotizacion;
-use App\Modules\Cotizaciones\Models\CotizacionDetalle;
 use App\Modules\Cotizaciones\Services\CotizacionService;
 use App\Modules\Crm\Models\Cliente;
 use App\Modules\Inventario\Models\Categoria;
@@ -19,8 +18,6 @@ use App\Modules\Nucleo\Models\Sucursal;
 use App\Modules\Nucleo\Models\Tenant;
 use App\Modules\Nucleo\Models\Usuario;
 use App\Modules\Nucleo\Services\TenantContext;
-use App\Modules\Tpv\Models\CajaSesion;
-use App\Modules\Tpv\Models\Venta;
 use App\Modules\Tpv\Services\CajaService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -30,7 +27,9 @@ class CotizacionServiceTest extends TestCase
     use RefreshDatabase;
 
     private CotizacionService $cotizacionService;
+
     private InventarioService $inventarioService;
+
     private CajaService $cajaService;
 
     protected function setUp(): void

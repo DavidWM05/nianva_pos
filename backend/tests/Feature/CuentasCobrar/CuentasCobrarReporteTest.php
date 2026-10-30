@@ -5,7 +5,6 @@ namespace Tests\Feature\CuentasCobrar;
 use App\Modules\Crm\Models\Cliente;
 use App\Modules\CuentasCobrar\Models\CuentaCobrar;
 use App\Modules\Inventario\Models\Categoria;
-use App\Modules\Inventario\Models\InventarioStock;
 use App\Modules\Inventario\Models\Producto;
 use App\Modules\Inventario\Models\ProductoVariante;
 use App\Modules\Inventario\Models\Proveedor;
@@ -17,7 +16,6 @@ use App\Modules\Nucleo\Models\Sucursal;
 use App\Modules\Nucleo\Models\Tenant;
 use App\Modules\Nucleo\Models\Usuario;
 use App\Modules\Nucleo\Services\TenantContext;
-use App\Modules\Tpv\Models\CajaSesion;
 use App\Modules\Tpv\Models\Venta;
 use App\Modules\Tpv\Services\CajaService;
 use App\Modules\Tpv\Services\VentaService;
@@ -29,9 +27,13 @@ class CuentasCobrarReporteTest extends TestCase
     use RefreshDatabase;
 
     private Tenant $tenant;
+
     private Sucursal $sucursal;
+
     private Usuario $usuario;
+
     private Cliente $cliente;
+
     private Venta $venta;
 
     protected function setUp(): void

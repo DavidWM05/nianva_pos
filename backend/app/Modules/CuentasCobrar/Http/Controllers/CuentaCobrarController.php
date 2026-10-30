@@ -131,11 +131,17 @@ class CuentaCobrarController extends Controller
             $dias = $cuenta->fecha_vencimiento ? max(0, $cuenta->fecha_vencimiento->diffInDays(now(), false)) : -1;
             $saldo = (float) $cuenta->saldo_pendiente;
 
-            if ($dias <= 0) $porAntiguedad['al_dia'] = (string) round((float) $porAntiguedad['al_dia'] + $saldo, 2);
-            elseif ($dias <= 30) $porAntiguedad['vencido_1_30'] = (string) round((float) $porAntiguedad['vencido_1_30'] + $saldo, 2);
-            elseif ($dias <= 60) $porAntiguedad['vencido_31_60'] = (string) round((float) $porAntiguedad['vencido_31_60'] + $saldo, 2);
-            elseif ($dias <= 90) $porAntiguedad['vencido_61_90'] = (string) round((float) $porAntiguedad['vencido_61_90'] + $saldo, 2);
-            else $porAntiguedad['vencido_90_mas'] = (string) round((float) $porAntiguedad['vencido_90_mas'] + $saldo, 2);
+            if ($dias <= 0) {
+                $porAntiguedad['al_dia'] = (string) round((float) $porAntiguedad['al_dia'] + $saldo, 2);
+            } elseif ($dias <= 30) {
+                $porAntiguedad['vencido_1_30'] = (string) round((float) $porAntiguedad['vencido_1_30'] + $saldo, 2);
+            } elseif ($dias <= 60) {
+                $porAntiguedad['vencido_31_60'] = (string) round((float) $porAntiguedad['vencido_31_60'] + $saldo, 2);
+            } elseif ($dias <= 90) {
+                $porAntiguedad['vencido_61_90'] = (string) round((float) $porAntiguedad['vencido_61_90'] + $saldo, 2);
+            } else {
+                $porAntiguedad['vencido_90_mas'] = (string) round((float) $porAntiguedad['vencido_90_mas'] + $saldo, 2);
+            }
         }
 
         $porCliente = (clone $base)
@@ -167,6 +173,7 @@ class CuentaCobrarController extends Controller
         foreach ($acciones as $accion) {
             $resultado[$accion] = $usuario->tienePermiso("{$modulo}.{$accion}");
         }
+
         return $resultado;
     }
 }

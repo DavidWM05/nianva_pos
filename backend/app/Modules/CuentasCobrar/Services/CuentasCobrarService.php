@@ -10,6 +10,7 @@ use App\Modules\CuentasCobrar\Models\AbonoCuenta;
 use App\Modules\CuentasCobrar\Models\CuentaCobrar;
 use App\Modules\Tpv\Exceptions\CajaSesionNoAbiertaException;
 use App\Modules\Tpv\Models\CajaSesion;
+use App\Modules\Tpv\Models\Venta;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
 
@@ -21,7 +22,7 @@ class CuentasCobrarService
     /**
      * Crea una CxC automaticamente al marcar venta como credito.
      */
-    public function crearDesdeVenta(\App\Modules\Tpv\Models\Venta $venta, int $diasCredito = 30): CuentaCobrar
+    public function crearDesdeVenta(Venta $venta, int $diasCredito = 30): CuentaCobrar
     {
         return DB::transaction(function () use ($venta, $diasCredito) {
             $fechaVencimiento = now()->addDays($diasCredito)->toDateString();

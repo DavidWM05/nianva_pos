@@ -3,8 +3,8 @@
 namespace Tests\Feature\CrmAvanzado;
 
 use App\Modules\Crm\Models\Cliente;
-use App\Modules\CrmAvanzado\Models\CrmInteraccion;
 use App\Modules\CrmAvanzado\Exceptions\PuntosInsuficientesException;
+use App\Modules\CrmAvanzado\Models\CrmInteraccion;
 use App\Modules\CrmAvanzado\Models\LoyaltyTransaccion;
 use App\Modules\CrmAvanzado\Services\CrmAvanzadoService;
 use App\Modules\Inventario\Models\Categoria;
@@ -27,14 +27,23 @@ class CrmAvanzadoServiceTest extends TestCase
     use RefreshDatabase;
 
     private CrmAvanzadoService $service;
+
     private VentaService $ventaService;
+
     private InventarioService $inventarioService;
+
     private CajaService $cajaService;
+
     private Tenant $tenant;
+
     private Sucursal $sucursal;
+
     private Usuario $usuario;
+
     private Cliente $cliente;
+
     private MetodoPago $efectivo;
+
     private ProductoVariante $variante;
 
     protected function setUp(): void

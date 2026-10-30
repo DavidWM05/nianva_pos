@@ -11,7 +11,6 @@ use App\Modules\GiftCards\Exceptions\MontoInvalidoException;
 use App\Modules\GiftCards\Models\GiftCard;
 use App\Modules\GiftCards\Models\GiftCardRecarga;
 use Illuminate\Support\Facades\DB;
-use InvalidArgumentException;
 
 class GiftCardService
 {

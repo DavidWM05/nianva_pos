@@ -11,6 +11,7 @@ use App\Modules\Devoluciones\Models\DevolucionItem;
 use App\Modules\Devoluciones\Models\DevolucionPago;
 use App\Modules\Inventario\Services\InventarioService;
 use App\Modules\Nucleo\Models\Sucursal;
+use App\Modules\Tpv\Exceptions\CajaSesionNoAbiertaException;
 use App\Modules\Tpv\Models\Venta;
 use App\Modules\Tpv\Services\VentaService;
 use Illuminate\Support\Facades\DB;
@@ -30,17 +31,16 @@ class DevolucionService
     public function __construct(
         private readonly InventarioService $inventarioService,
         private readonly VentaService $ventaService,
-    ) {
-    }
+    ) {}
 
     /**
      * @param  list<array{variante_id:int, cantidad:int, va_a_merma?:bool}>  $itemsDevueltos
      * @param  list<array{variante_id:int, cantidad:int}>  $itemsNuevos  Solo se usa si $tipo === 'cambio'.
      * @param  list<array{metodo_pago_id:int, monto:float}>  $pagos  Liquida la diferencia (abs(diferencia)), no el total de la devolucion.
      *
-     * @throws DevolucionSobreVentaSombraException  si $ventaOrigen->es_venta_sombra y $tipo === 'devolucion'.
-     * @throws DevolucionPagoNoCuadraException  si la suma de pagos no coincide con abs(diferencia).
-     * @throws \App\Modules\Tpv\Exceptions\CajaSesionNoAbiertaException  si $tipo === 'cambio' y la sucursal no tiene caja abierta (la venta sombra la exige, como cualquier venta).
+     * @throws DevolucionSobreVentaSombraException si $ventaOrigen->es_venta_sombra y $tipo === 'devolucion'.
+     * @throws DevolucionPagoNoCuadraException si la suma de pagos no coincide con abs(diferencia).
+     * @throws CajaSesionNoAbiertaException si $tipo === 'cambio' y la sucursal no tiene caja abierta (la venta sombra la exige, como cualquier venta).
      */
     public function registrarDevolucion(
         Venta $ventaOrigen,

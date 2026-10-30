@@ -170,6 +170,7 @@ class CotizacionController extends Controller
         foreach ($acciones as $accion) {
             $resultado[$accion] = $usuario->tienePermiso("{$modulo}.{$accion}");
         }
+
         return $resultado;
     }
 }

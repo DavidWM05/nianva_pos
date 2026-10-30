@@ -18,9 +18,7 @@ use Illuminate\Database\Eloquent\Scope;
  */
 class TenantScopeViaRelacion implements Scope
 {
-    public function __construct(private readonly string $relacion)
-    {
-    }
+    public function __construct(private readonly string $relacion) {}
 
     public function apply(Builder $builder, Model $model): void
     {

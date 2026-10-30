@@ -26,8 +26,18 @@ class PedidoItem extends Model
         ];
     }
 
-    public static function tenantRelacion(): string { return 'pedido'; }
+    public static function tenantRelacion(): string
+    {
+        return 'pedido';
+    }
 
-    public function pedido(): BelongsTo { return $this->belongsTo(Pedido::class); }
-    public function variante(): BelongsTo { return $this->belongsTo(ProductoVariante::class); }
+    public function pedido(): BelongsTo
+    {
+        return $this->belongsTo(Pedido::class);
+    }
+
+    public function variante(): BelongsTo
+    {
+        return $this->belongsTo(ProductoVariante::class);
+    }
 }

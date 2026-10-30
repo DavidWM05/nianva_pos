@@ -19,9 +19,13 @@ class CuentasPagarReporteTest extends TestCase
     use RefreshDatabase;
 
     private Tenant $tenant;
+
     private Sucursal $sucursal;
+
     private Usuario $usuario;
+
     private Proveedor $proveedor;
+
     private Compra $compra;
 
     protected function setUp(): void

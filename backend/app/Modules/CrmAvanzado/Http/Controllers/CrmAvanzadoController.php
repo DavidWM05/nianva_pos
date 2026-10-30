@@ -3,6 +3,7 @@
 namespace App\Modules\CrmAvanzado\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Modules\Crm\Models\Cliente;
 use App\Modules\CrmAvanzado\Http\Resources\CrmCampanaResource;
 use App\Modules\CrmAvanzado\Http\Resources\CrmInteraccionResource;
 use App\Modules\CrmAvanzado\Models\CrmCampana;
@@ -10,7 +11,6 @@ use App\Modules\CrmAvanzado\Models\CrmInteraccion;
 use App\Modules\CrmAvanzado\Models\LoyaltyTransaccion;
 use App\Modules\CrmAvanzado\Services\CrmAvanzadoService;
 use App\Modules\Nucleo\Support\ReglasTenant;
-use App\Modules\Crm\Models\Cliente;
 use Illuminate\Http\Request;
 
 class CrmAvanzadoController extends Controller
@@ -177,6 +177,7 @@ class CrmAvanzadoController extends Controller
         foreach ($acciones as $accion) {
             $resultado[$accion] = $usuario->tienePermiso("{$modulo}.{$accion}");
         }
+
         return $resultado;
     }
 }

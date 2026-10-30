@@ -9,9 +9,10 @@ use App\Modules\Cotizaciones\Exceptions\CotizacionYaConvertidaException;
 use App\Modules\Cotizaciones\Exceptions\SinClienteException;
 use App\Modules\Cotizaciones\Models\Cotizacion;
 use App\Modules\Cotizaciones\Models\CotizacionDetalle;
+use App\Modules\Inventario\Exceptions\StockInsuficienteException;
 use App\Modules\Inventario\Models\ProductoVariante;
-use App\Modules\Inventario\Services\InventarioService;
 use App\Modules\Precios\Services\PrecioService;
+use App\Modules\Tpv\Models\Venta;
 use App\Modules\Tpv\Services\VentaService;
 use Illuminate\Support\Facades\DB;
 use InvalidArgumentException;
@@ -26,16 +27,15 @@ use InvalidArgumentException;
  * - PrecioService (modulo Precios, anterior a TPV)
  * - VentaService (modulo TPV, posterior a Precios)
  *
- * @see \App\Modules\Tpv\Services\VentaService
- * @see \App\Modules\Precios\Services\PrecioService
+ * @see VentaService
+ * @see PrecioService
  */
 class CotizacionService
 {
     public function __construct(
         private readonly PrecioService $precioService,
         private readonly VentaService $ventaService,
-    ) {
-    }
+    ) {}
 
     /**
      * Crea cotizacion con sus items. No modifica stock.
@@ -233,9 +233,9 @@ class CotizacionService
      * @throws CotizacionVencidaException
      * @throws CotizacionYaConvertidaException
      * @throws SinClienteException
-     * @throws \App\Modules\Inventario\Exceptions\StockInsuficienteException
+     * @throws StockInsuficienteException
      */
-    public function convertirAVenta(int $id, array $dataVenta): \App\Modules\Tpv\Models\Venta
+    public function convertirAVenta(int $id, array $dataVenta): Venta
     {
         $cotizacion = Cotizacion::with('detalles')->findOrFail($id);
 
@@ -304,6 +304,6 @@ class CotizacionService
             $correlativo = ((int) end($partes)) + 1;
         }
 
-        return 'COT-' . str_pad((string) $correlativo, 6, '0', STR_PAD_LEFT);
+        return 'COT-'.str_pad((string) $correlativo, 6, '0', STR_PAD_LEFT);
     }
 }

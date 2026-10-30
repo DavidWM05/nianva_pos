@@ -19,5 +19,8 @@ return new class extends Migration
         });
     }
 
-    public function down(): void { Schema::dropIfExists('receta_ingredientes'); }
+    public function down(): void
+    {
+        Schema::dropIfExists('receta_ingredientes');
+    }
 };

@@ -9,7 +9,6 @@ use App\Modules\Payroll\Models\Empleado;
 use App\Modules\Payroll\Models\Nomina;
 use App\Modules\Payroll\Models\NominaDetalle;
 use Illuminate\Support\Facades\DB;
-use InvalidArgumentException;
 
 class NominaService
 {

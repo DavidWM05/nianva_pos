@@ -17,8 +17,7 @@ final class ResultadoCupon
         public readonly Cupon $cupon,
         public readonly float $totalCarrito,
         public readonly float $descuento,
-    ) {
-    }
+    ) {}
 
     public function totalConDescuento(): float
     {

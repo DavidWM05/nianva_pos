@@ -8,6 +8,7 @@ use App\Modules\CuentasPagar\Exceptions\CuentaPagarYaPagadaException;
 use App\Modules\CuentasPagar\Exceptions\PagoExcedeSaldoException;
 use App\Modules\CuentasPagar\Models\AbonoPagar;
 use App\Modules\CuentasPagar\Models\CuentaPagar;
+use App\Modules\Inventario\Models\Compra;
 use App\Modules\Tpv\Exceptions\CajaSesionNoAbiertaException;
 use App\Modules\Tpv\Models\CajaSesion;
 use Illuminate\Support\Facades\DB;
@@ -17,7 +18,7 @@ use Illuminate\Support\Facades\DB;
  */
 class CuentasPagarService
 {
-    public function crearDesdeCompra(\App\Modules\Inventario\Models\Compra $compra, int $diasCredito = 30): CuentaPagar
+    public function crearDesdeCompra(Compra $compra, int $diasCredito = 30): CuentaPagar
     {
         return DB::transaction(function () use ($compra, $diasCredito) {
             $fechaVencimiento = now()->addDays($diasCredito)->toDateString();

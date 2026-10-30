@@ -5,10 +5,10 @@ namespace App\Modules\Prestamos\Http\Controllers;
 use App\Http\Controllers\Controller;
 use App\Modules\Nucleo\Services\TenantContext;
 use App\Modules\Nucleo\Support\ReglasTenant;
-use App\Modules\Tpv\Support\ReglasCaja;
 use App\Modules\Prestamos\Http\Resources\PrestamoResource;
 use App\Modules\Prestamos\Models\Prestamo;
 use App\Modules\Prestamos\Services\PrestamoService;
+use App\Modules\Tpv\Support\ReglasCaja;
 use Illuminate\Http\Request;
 
 class PrestamoController extends Controller
@@ -62,6 +62,7 @@ class PrestamoController extends Controller
             'notas' => 'nullable|string|max:1000',
         ]);
         $v['tenant_id'] = app(TenantContext::class)->id();
+
         return (new PrestamoResource($this->prestamoService->registrar($v)))->response()->setStatusCode(201);
     }
 
@@ -74,6 +75,7 @@ class PrestamoController extends Controller
             'caja_sesion_id' => ['nullable', 'integer', ReglasCaja::delTenant($tenantId)],
             'notas' => 'nullable|string|max:500',
         ]);
+
         return response()->json(['data' => $this->prestamoService->registrarPago($id, $v)]);
     }
 
@@ -84,6 +86,7 @@ class PrestamoController extends Controller
         foreach ($acciones as $accion) {
             $resultado[$accion] = $usuario->tienePermiso("{$modulo}.{$accion}");
         }
+
         return $resultado;
     }
 }

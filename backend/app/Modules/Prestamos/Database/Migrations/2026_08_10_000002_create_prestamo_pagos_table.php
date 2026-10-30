@@ -20,5 +20,8 @@ return new class extends Migration
         });
     }
 
-    public function down(): void { Schema::dropIfExists('prestamo_pagos'); }
+    public function down(): void
+    {
+        Schema::dropIfExists('prestamo_pagos');
+    }
 };

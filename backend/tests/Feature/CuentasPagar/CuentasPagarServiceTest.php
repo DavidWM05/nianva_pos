@@ -6,8 +6,8 @@ use App\Modules\CuentasPagar\Exceptions\CuentaPagarAnuladaException;
 use App\Modules\CuentasPagar\Exceptions\CuentaPagarConAbonosException;
 use App\Modules\CuentasPagar\Exceptions\CuentaPagarYaPagadaException;
 use App\Modules\CuentasPagar\Exceptions\PagoExcedeSaldoException;
-use App\Modules\CuentasPagar\Models\CuentaPagar;
 use App\Modules\CuentasPagar\Models\AbonoPagar;
+use App\Modules\CuentasPagar\Models\CuentaPagar;
 use App\Modules\CuentasPagar\Services\CuentasPagarService;
 use App\Modules\Inventario\Models\Categoria;
 use App\Modules\Inventario\Models\Producto;
@@ -28,12 +28,19 @@ class CuentasPagarServiceTest extends TestCase
     use RefreshDatabase;
 
     private CuentasPagarService $service;
+
     private InventarioService $inventarioService;
+
     private CajaService $cajaService;
+
     private Tenant $tenant;
+
     private Sucursal $sucursal;
+
     private Usuario $usuario;
+
     private Proveedor $proveedor;
+
     private MetodoPago $transferencia;
 
     protected function setUp(): void

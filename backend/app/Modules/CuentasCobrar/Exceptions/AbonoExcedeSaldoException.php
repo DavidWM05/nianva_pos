@@ -7,6 +7,7 @@ use App\Modules\Nucleo\Exceptions\ExcepcionNegocio;
 class AbonoExcedeSaldoException extends ExcepcionNegocio
 {
     public float $saldoPendiente;
+
     public float $montoAbono;
 
     public function __construct(float $saldoPendiente, float $montoAbono)
