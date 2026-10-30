@@ -4,7 +4,9 @@ namespace App\Modules\Inventario\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Modules\Inventario\Services\InventarioService;
+use App\Modules\Inventario\Support\ReglasVariante;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 /**
  * Unica puerta HTTP hacia InventarioService::registrarCompra(). Antes de
@@ -20,11 +22,13 @@ class CompraController extends Controller
 {
     public function store(Request $request, InventarioService $inventarioService)
     {
+        $tenantId = $request->user()->tenant_id;
+
         $validated = $request->validate([
-            'proveedor_id' => ['required', 'integer', 'exists:proveedores,id'],
+            'proveedor_id' => ['required', 'integer', Rule::exists('proveedores', 'id')->where('tenant_id', $tenantId)],
             'numero_comprobante' => ['nullable', 'string', 'max:60'],
             'items' => ['required', 'array', 'min:1'],
-            'items.*.variante_id' => ['required', 'integer', 'exists:producto_variantes,id'],
+            'items.*.variante_id' => ['required', 'integer', ReglasVariante::delTenant($tenantId)],
             'items.*.cantidad' => ['required', 'integer', 'min:1'],
             'items.*.precio_compra' => ['required', 'numeric', 'min:0'],
         ]);
@@ -33,7 +37,7 @@ class CompraController extends Controller
 
         $compra = $inventarioService->registrarCompra(
             [
-                'tenant_id' => $usuario->tenant_id,
+                'tenant_id' => $tenantId,
                 'proveedor_id' => $validated['proveedor_id'],
                 'sucursal_id' => $usuario->sucursal_id,
                 'usuario_id' => $usuario->id,

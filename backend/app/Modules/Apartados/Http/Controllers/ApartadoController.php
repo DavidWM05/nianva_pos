@@ -6,8 +6,9 @@ use App\Http\Controllers\Controller;
 use App\Modules\Apartados\Http\Resources\ApartadoResource;
 use App\Modules\Apartados\Models\Apartado;
 use App\Modules\Apartados\Services\ApartadoService;
-use App\Modules\Nucleo\Services\TenantContext;
+use App\Modules\Inventario\Support\ReglasVariante;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 /**
  * Como VentaController, nunca calcula un precio ni atrapa las excepciones
@@ -69,10 +70,12 @@ class ApartadoController extends Controller
 
     public function store(Request $request, ApartadoService $apartadoService)
     {
+        $tenantId = $request->user()->tenant_id;
+
         $validated = $request->validate([
-            'cliente_id' => ['required', 'integer', 'exists:clientes,id'],
+            'cliente_id' => ['required', 'integer', Rule::exists('clientes', 'id')->where('tenant_id', $tenantId)],
             'items' => ['required', 'array', 'min:1'],
-            'items.*.variante_id' => ['required', 'integer', 'exists:producto_variantes,id'],
+            'items.*.variante_id' => ['required', 'integer', ReglasVariante::delTenant($tenantId)],
             'items.*.cantidad' => ['required', 'integer', 'min:1'],
             'fecha_vencimiento' => ['nullable', 'date'],
             'notas' => ['nullable', 'string'],
@@ -82,7 +85,7 @@ class ApartadoController extends Controller
 
         $apartado = $apartadoService->crearApartado(
             [
-                'tenant_id' => app(TenantContext::class)->id(),
+                'tenant_id' => $tenantId,
                 'sucursal_id' => $usuario->sucursal_id,
                 'cliente_id' => $validated['cliente_id'],
                 'usuario_id' => $usuario->id,

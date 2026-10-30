@@ -2,8 +2,10 @@
 
 namespace App\Modules\Devoluciones\Services;
 
+use App\Modules\Devoluciones\Exceptions\DevolucionExcedeCantidadVendidaException;
 use App\Modules\Devoluciones\Exceptions\DevolucionPagoNoCuadraException;
 use App\Modules\Devoluciones\Exceptions\DevolucionSobreVentaSombraException;
+use App\Modules\Devoluciones\Exceptions\DevolucionVarianteNoVendidaException;
 use App\Modules\Devoluciones\Models\Devolucion;
 use App\Modules\Devoluciones\Models\DevolucionItem;
 use App\Modules\Devoluciones\Models\DevolucionPago;
@@ -217,13 +219,15 @@ class DevolucionService
             $detalleOriginal = $detallesOriginales->firstWhere('variante_id', $item['variante_id']);
 
             if ($detalleOriginal === null) {
-                throw new InvalidArgumentException("La variante {$item['variante_id']} no forma parte de la venta {$ventaOrigen->id}.");
+                throw new DevolucionVarianteNoVendidaException($ventaOrigen->id, $item['variante_id']);
             }
 
             if ($item['cantidad'] > $detalleOriginal->cantidad) {
-                throw new InvalidArgumentException(
-                    "No se pueden devolver {$item['cantidad']} unidades de la variante {$item['variante_id']}: ".
-                    "la venta {$ventaOrigen->id} solo vendio {$detalleOriginal->cantidad}."
+                throw new DevolucionExcedeCantidadVendidaException(
+                    $ventaOrigen->id,
+                    $item['variante_id'],
+                    $item['cantidad'],
+                    $detalleOriginal->cantidad,
                 );
             }
 

@@ -2,6 +2,9 @@
 
 namespace App\Modules\Crm\Services;
 
+use App\Modules\Crm\Exceptions\CuotaYaPagadaException;
+use App\Modules\Crm\Exceptions\PagoCuotaInsuficienteException;
+use App\Modules\Crm\Exceptions\PlanPagoYaActivoException;
 use App\Modules\Crm\Models\PlanPagoCliente;
 use App\Modules\Crm\Models\PlanPagoClienteCuota;
 use App\Modules\Tpv\Models\Venta;
@@ -37,7 +40,7 @@ class VentasPlazosService
             $planExistente = PlanPagoCliente::where('venta_id', $venta->id)->first();
 
             if ($planExistente) {
-                throw new InvalidArgumentException("La venta {$venta->id} ya tiene un plan de pago activo.");
+                throw new PlanPagoYaActivoException($venta->id, $planExistente->id);
             }
 
             $totalVenta = (float) $venta->total;
@@ -94,13 +97,13 @@ class VentasPlazosService
                 ->firstOrFail();
 
             if ($cuota->estado === 'pagada') {
-                throw new InvalidArgumentException("La cuota {$cuotaId} ya está pagada.");
+                throw new CuotaYaPagadaException($planId, $cuotaId);
             }
 
             $monto = round((float) ($dataPago['monto'] ?? $cuota->monto), 2);
 
             if ($monto < (float) $cuota->monto) {
-                throw new InvalidArgumentException('El monto del pago no cubre el valor total de la cuota.');
+                throw new PagoCuotaInsuficienteException($cuotaId, (float) $cuota->monto, $monto);
             }
 
             $cuota->update([

@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Modules\Cotizaciones\Http\Resources\CotizacionResource;
 use App\Modules\Cotizaciones\Models\Cotizacion;
 use App\Modules\Cotizaciones\Services\CotizacionService;
-use App\Modules\Nucleo\Services\TenantContext;
+use App\Modules\Inventario\Support\ReglasVariante;
 use Illuminate\Http\Request;
 
 /**
@@ -70,6 +70,8 @@ class CotizacionController extends Controller
 
     public function store(Request $request, CotizacionService $cotizacionService)
     {
+        $tenantId = $request->user()->tenant_id;
+
         $validated = $request->validate([
             'cliente_id' => ['nullable', 'integer', 'exists:clientes,id'],
             'sucursal_id' => ['required', 'integer', 'exists:sucursales,id'],
@@ -78,14 +80,13 @@ class CotizacionController extends Controller
             'uso_cfdi' => ['nullable', 'string', 'max:10'],
             'observaciones' => ['nullable', 'string', 'max:1000'],
             'items' => ['required', 'array', 'min:1'],
-            'items.*.variante_id' => ['required', 'integer', 'exists:producto_variantes,id'],
+            'items.*.variante_id' => ['required', 'integer', ReglasVariante::delTenant($tenantId)],
             'items.*.cantidad' => ['required', 'integer', 'min:1'],
             'items.*.precio_unitario' => ['required', 'numeric', 'min:0'],
             'items.*.descuento' => ['nullable', 'numeric', 'min:0'],
         ]);
 
         $usuario = $request->user();
-        $tenantId = app(TenantContext::class)->id();
 
         $cotizacion = $cotizacionService->crear(
             [
@@ -113,6 +114,8 @@ class CotizacionController extends Controller
 
     public function update(Request $request, int $id, CotizacionService $cotizacionService)
     {
+        $tenantId = $request->user()->tenant_id;
+
         $validated = $request->validate([
             'cliente_id' => ['nullable', 'integer', 'exists:clientes,id'],
             'validez_dias' => ['nullable', 'integer', 'min:1', 'max:365'],
@@ -120,7 +123,7 @@ class CotizacionController extends Controller
             'uso_cfdi' => ['nullable', 'string', 'max:10'],
             'observaciones' => ['nullable', 'string', 'max:1000'],
             'items' => ['required', 'array', 'min:1'],
-            'items.*.variante_id' => ['required', 'integer', 'exists:producto_variantes,id'],
+            'items.*.variante_id' => ['required', 'integer', ReglasVariante::delTenant($tenantId)],
             'items.*.cantidad' => ['required', 'integer', 'min:1'],
             'items.*.precio_unitario' => ['required', 'numeric', 'min:0'],
             'items.*.descuento' => ['nullable', 'numeric', 'min:0'],

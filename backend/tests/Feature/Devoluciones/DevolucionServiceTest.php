@@ -3,6 +3,7 @@
 namespace Tests\Feature\Devoluciones;
 
 use App\Modules\Crm\Models\Cliente;
+use App\Modules\Devoluciones\Exceptions\DevolucionExcedeCantidadVendidaException;
 use App\Modules\Devoluciones\Exceptions\DevolucionPagoNoCuadraException;
 use App\Modules\Devoluciones\Exceptions\DevolucionSobreVentaSombraException;
 use App\Modules\Devoluciones\Models\Devolucion;
@@ -25,7 +26,6 @@ use App\Modules\Tpv\Models\Venta;
 use App\Modules\Tpv\Services\CajaService;
 use App\Modules\Tpv\Services\VentaService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use InvalidArgumentException;
 use Tests\TestCase;
 
 /**
@@ -212,7 +212,7 @@ class DevolucionServiceTest extends TestCase
                 pagos: [],
             );
             $this->fail('Se esperaba InvalidArgumentException.');
-        } catch (InvalidArgumentException $e) {
+        } catch (DevolucionExcedeCantidadVendidaException $e) {
             $this->assertStringContainsString('solo vendio', $e->getMessage());
         }
 

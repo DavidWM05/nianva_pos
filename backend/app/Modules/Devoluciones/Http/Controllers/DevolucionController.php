@@ -81,7 +81,7 @@ class DevolucionController extends Controller
             'items_devueltos.*.variante_id' => ['required', 'integer', 'exists:producto_variantes,id'],
             'items_devueltos.*.cantidad' => ['required', 'integer', 'min:1'],
             'items_devueltos.*.va_a_merma' => ['nullable', 'boolean'],
-            'items_nuevos' => ['nullable', 'array'],
+            'items_nuevos' => ['nullable', 'array', 'required_if:tipo,cambio', 'prohibited_if:tipo,devolucion', 'min:1'],
             'items_nuevos.*.variante_id' => ['required_with:items_nuevos', 'integer', 'exists:producto_variantes,id'],
             'items_nuevos.*.cantidad' => ['required_with:items_nuevos', 'integer', 'min:1'],
             'pagos' => ['nullable', 'array'],

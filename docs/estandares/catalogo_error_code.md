@@ -11,7 +11,9 @@ Generado con `php artisan errores:catalogo` desde las excepciones de negocio.
 | `apartado_saldo_insuficiente` | 422 | `App\Modules\Apartados\Exceptions\ApartadoSaldoInsuficienteException` | Apartados | apartado_id, total, total_abonado |
 | `caja_no_abierta` | 422 | `App\Modules\Tpv\Exceptions\CajaSesionNoAbiertaException` | Tpv | sucursal_id |
 | `caja_ya_abierta` | 422 | `App\Modules\Tpv\Exceptions\CajaYaAbiertaException` | Tpv | sucursal_id |
+| `caja_ya_cerrada` | 422 | `App\Modules\Tpv\Exceptions\CajaYaCerradaException` | Tpv | caja_sesion_id |
 | `cotizacion_no_editable` | 422 | `App\Modules\Cotizaciones\Exceptions\CotizacionNoEditableException` | Cotizaciones | — |
+| `cotizacion_total_negativo` | 422 | `App\Modules\Cotizaciones\Exceptions\CotizacionTotalNegativoException` | Cotizaciones | subtotal, descuento |
 | `cotizacion_vencida` | 422 | `App\Modules\Cotizaciones\Exceptions\CotizacionVencidaException` | Cotizaciones | — |
 | `cotizacion_ya_convertida` | 422 | `App\Modules\Cotizaciones\Exceptions\CotizacionYaConvertidaException` | Cotizaciones | — |
 | `cuenta_anulada` | 422 | `App\Modules\CuentasCobrar\Exceptions\CuentaAnuladaException` | CuentasCobrar | — |
@@ -20,9 +22,12 @@ Generado con `php artisan errores:catalogo` desde las excepciones de negocio.
 | `cuenta_pagar_con_abonos` | 422 | `App\Modules\CuentasPagar\Exceptions\CuentaPagarConAbonosException` | CuentasPagar | — |
 | `cuenta_pagar_ya_pagada` | 422 | `App\Modules\CuentasPagar\Exceptions\CuentaPagarYaPagadaException` | CuentasPagar | — |
 | `cuenta_ya_pagada` | 422 | `App\Modules\CuentasCobrar\Exceptions\CuentaYaPagadaException` | CuentasCobrar | — |
+| `cuota_ya_pagada` | 422 | `App\Modules\Crm\Exceptions\CuotaYaPagadaException` | Crm | plan_pago_id, cuota_id |
 | `cupon_invalido` | 422 | `App\Modules\Precios\Exceptions\CuponInvalidoException` | Precios | codigo |
+| `devolucion_excede_cantidad_vendida` | 422 | `App\Modules\Devoluciones\Exceptions\DevolucionExcedeCantidadVendidaException` | Devoluciones | venta_id, variante_id, solicitado, vendido |
 | `devolucion_pago_no_cuadra` | 422 | `App\Modules\Devoluciones\Exceptions\DevolucionPagoNoCuadraException` | Devoluciones | diferencia, suma_pagos |
 | `devolucion_sobre_venta_sombra` | 422 | `App\Modules\Devoluciones\Exceptions\DevolucionSobreVentaSombraException` | Devoluciones | venta_id |
+| `devolucion_variante_no_vendida` | 422 | `App\Modules\Devoluciones\Exceptions\DevolucionVarianteNoVendidaException` | Devoluciones | venta_id, variante_id |
 | `empleado_ya_existe` | 422 | `App\Modules\Payroll\Exceptions\EmpleadoYaExisteException` | Payroll | — |
 | `gift_card_cancelada` | 422 | `App\Modules\GiftCards\Exceptions\GiftCardCanceladaException` | GiftCards | — |
 | `gift_card_expirada` | 422 | `App\Modules\GiftCards\Exceptions\GiftCardExpiradaException` | GiftCards | — |
@@ -36,10 +41,12 @@ Generado con `php artisan errores:catalogo` desde las excepciones de negocio.
 | `nota_credito_saldo_insuficiente` | 422 | `App\Modules\NotasCredito\Exceptions\NotaCreditoSaldoInsuficienteException` | NotasCredito | — |
 | `nota_credito_sin_saldo` | 422 | `App\Modules\NotasCredito\Exceptions\NotaCreditoSinSaldoException` | NotasCredito | — |
 | `orden_produccion_no_completable` | 422 | `App\Modules\Produccion\Exceptions\OrdenProduccionNoCompletableException` | Produccion | — |
+| `pago_cuota_insuficiente` | 422 | `App\Modules\Crm\Exceptions\PagoCuotaInsuficienteException` | Crm | cuota_id, monto_requerido, monto_recibido |
 | `pago_excede_saldo` | 422 | `App\Modules\CuentasPagar\Exceptions\PagoExcedeSaldoException` | CuentasPagar | saldo_pendiente, monto_pago |
 | `pago_excede_saldo_prestamo` | 422 | `App\Modules\Prestamos\Exceptions\PagoExcedeSaldoPrestamoException` | Prestamos | saldo_pendiente, monto_pago |
 | `pago_no_cuadra` | 422 | `App\Modules\Tpv\Exceptions\PagoNoCuadraException` | Tpv | total, suma_pagos |
 | `pedido_no_asignable` | 422 | `App\Modules\Delivery\Exceptions\PedidoNoAsignableException` | Delivery | — |
+| `plan_pago_ya_activo` | 422 | `App\Modules\Crm\Exceptions\PlanPagoYaActivoException` | Crm | venta_id, plan_pago_id |
 | `prestamo_ya_pagado` | 422 | `App\Modules\Prestamos\Exceptions\PrestamoPagadoException` | Prestamos | — |
 | `puntos_insuficientes` | 422 | `App\Modules\CrmAvanzado\Exceptions\PuntosInsuficientesException` | CrmAvanzado | — |
 | `puntos_no_generados` | 422 | `App\Modules\CrmAvanzado\Exceptions\PuntosNoGeneradosException` | CrmAvanzado | — |
@@ -49,3 +56,5 @@ Generado con `php artisan errores:catalogo` desde las excepciones de negocio.
 | `stock_insumos_insuficiente` | 422 | `App\Modules\Produccion\Exceptions\StockInsumosInsuficienteException` | Produccion | — |
 | `transicion_estado_invalida` | 422 | `App\Modules\Delivery\Exceptions\TransicionEstadoInvalidaException` | Delivery | — |
 | `unidad_en_uso` | 422 | `App\Modules\UnidadesMedida\Exceptions\UnidadEnUsoException` | UnidadesMedida | — |
+| `venta_total_negativo` | 422 | `App\Modules\Tpv\Exceptions\VentaTotalNegativoException` | Tpv | subtotal, descuento_manual, descuento_cupon |
+| `venta_ya_anulada` | 422 | `App\Modules\Tpv\Exceptions\VentaYaAnuladaException` | Tpv | venta_id |
