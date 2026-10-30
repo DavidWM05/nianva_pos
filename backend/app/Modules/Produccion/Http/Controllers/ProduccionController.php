@@ -17,6 +17,7 @@ use App\Modules\Produccion\Models\Receta;
 use App\Modules\Produccion\Models\TransformacionProducto;
 use App\Modules\Produccion\Services\ProduccionService;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class ProduccionController extends Controller
 {
@@ -66,12 +67,12 @@ class ProduccionController extends Controller
 
         $v = $request->validate([
             'nombre' => 'required|string|max:200',
-            'sku' => 'nullable|string|max:50|unique:insumos,sku',
+            'sku' => ['nullable', 'string', 'max:50', Rule::unique('insumos', 'sku')->where('tenant_id', $tenantId)],
             'unidad_medida_id' => ['required', 'integer', ReglasTenant::existeGlobalODelTenant('unidades_medida', $tenantId)],
             'costo' => 'nullable|numeric|min:0',
             'stock_minimo' => 'nullable|numeric|min:0',
         ]);
-        $v['tenant_id'] = app(TenantContext::class)->id();
+        $v['tenant_id'] = $tenantId;
         return (new InsumoResource(Insumo::create($v)))->response()->setStatusCode(201);
     }
 
