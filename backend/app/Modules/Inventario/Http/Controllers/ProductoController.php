@@ -7,6 +7,7 @@ use App\Modules\Inventario\Http\Resources\ProductoResource;
 use App\Modules\Inventario\Models\InventarioStock;
 use App\Modules\Inventario\Models\Producto;
 use App\Modules\Nucleo\Services\TenantContext;
+use App\Modules\Nucleo\Support\ReglasTenant;
 use Illuminate\Http\Request;
 
 /**
@@ -125,11 +126,13 @@ class ProductoController extends Controller
 
     private function validarDatos(Request $request): array
     {
+        $tenantId = app(TenantContext::class)->id();
+
         return $request->validate([
             'nombre' => ['required', 'string', 'max:200'],
             'descripcion' => ['nullable', 'string'],
-            'categoria_id' => ['nullable', 'integer', 'exists:categorias,id'],
-            'departamento_id' => ['nullable', 'integer', 'exists:departamentos,id'],
+            'categoria_id' => ['nullable', 'integer', ReglasTenant::existe('categorias', $tenantId)],
+            'departamento_id' => ['nullable', 'integer', ReglasTenant::existe('departamentos', $tenantId)],
             'precio_compra' => ['nullable', 'numeric', 'min:0'],
             'precio_venta' => ['nullable', 'numeric', 'min:0'],
             'imagen_url' => ['nullable', 'string', 'max:500'],

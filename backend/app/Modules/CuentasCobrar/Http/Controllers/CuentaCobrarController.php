@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Modules\CuentasCobrar\Http\Resources\CuentaCobrarResource;
 use App\Modules\CuentasCobrar\Models\CuentaCobrar;
 use App\Modules\CuentasCobrar\Services\CuentasCobrarService;
+use App\Modules\Nucleo\Support\ReglasTenant;
 use Illuminate\Http\Request;
 
 /**
@@ -69,9 +70,11 @@ class CuentaCobrarController extends Controller
 
     public function registrarAbono(Request $request, int $id, CuentasCobrarService $service)
     {
+        $tenantId = $request->user()->tenant_id;
+
         $validated = $request->validate([
             'monto' => ['required', 'numeric', 'min:0.01'],
-            'metodo_pago_id' => ['required', 'integer', 'exists:metodos_pago,id'],
+            'metodo_pago_id' => ['required', 'integer', ReglasTenant::existeGlobalODelTenant('metodos_pago', $tenantId)],
             'referencia' => ['nullable', 'string', 'max:100'],
         ]);
 

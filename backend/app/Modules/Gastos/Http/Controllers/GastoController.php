@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Modules\Gastos\Http\Resources\GastoResource;
 use App\Modules\Gastos\Models\Gasto;
 use App\Modules\Gastos\Services\GastoService;
+use App\Modules\Tpv\Support\ReglasCaja;
 use Illuminate\Http\Request;
 
 /**
@@ -19,8 +20,10 @@ class GastoController extends Controller
 {
     public function index(Request $request)
     {
+        $tenantId = $request->user()->tenant_id;
+
         $validated = $request->validate([
-            'caja_sesion_id' => ['required', 'integer', 'exists:caja_sesiones,id'],
+            'caja_sesion_id' => ['required', 'integer', ReglasCaja::delTenant($tenantId)],
         ]);
 
         $gastos = Gasto::where('caja_sesion_id', $validated['caja_sesion_id'])

@@ -6,7 +6,9 @@ use App\Http\Controllers\Controller;
 use App\Modules\Delivery\Http\Resources\PedidoResource;
 use App\Modules\Delivery\Models\Pedido;
 use App\Modules\Delivery\Services\PedidoService;
+use App\Modules\Inventario\Support\ReglasVariante;
 use App\Modules\Nucleo\Services\TenantContext;
+use App\Modules\Nucleo\Support\ReglasTenant;
 use Illuminate\Http\Request;
 
 class PedidoController extends Controller
@@ -55,22 +57,23 @@ class PedidoController extends Controller
 
     public function store(Request $request, PedidoService $service)
     {
+        $tenantId = app(TenantContext::class)->id();
+
         $validated = $request->validate([
-            'cliente_id' => ['required', 'integer', 'exists:clientes,id'],
-            'sucursal_id' => ['required', 'integer', 'exists:sucursales,id'],
+            'cliente_id' => ['required', 'integer', ReglasTenant::existe('clientes', $tenantId)],
+            'sucursal_id' => ['required', 'integer', ReglasTenant::existe('sucursales', $tenantId)],
             'direccion_entrega' => ['nullable', 'string', 'max:500'],
             'referencia' => ['nullable', 'string', 'max:255'],
             'costo_delivery' => ['nullable', 'numeric', 'min:0'],
             'tiempo_estimado' => ['nullable', 'integer', 'min:1'],
             'notas' => ['nullable', 'string', 'max:1000'],
             'items' => ['nullable', 'array'],
-            'items.*.variante_id' => ['required_with:items', 'integer', 'exists:producto_variantes,id'],
+            'items.*.variante_id' => ['required_with:items', 'integer', ReglasVariante::delTenant($tenantId)],
             'items.*.cantidad' => ['required_with:items', 'integer', 'min:1'],
             'items.*.precio_unitario' => ['required_with:items', 'numeric', 'min:0'],
         ]);
 
         $usuario = $request->user();
-        $tenantId = app(TenantContext::class)->id();
 
         $pedido = $service->crear(
             [
@@ -110,8 +113,10 @@ class PedidoController extends Controller
 
     public function asignarRepartidor(Request $request, int $id, PedidoService $service)
     {
+        $tenantId = app(TenantContext::class)->id();
+
         $validated = $request->validate([
-            'repartidor_id' => ['required', 'integer', 'exists:usuarios,id'],
+            'repartidor_id' => ['required', 'integer', ReglasTenant::existe('usuarios', $tenantId)],
         ]);
 
         $pedido = $service->asignarRepartidor($id, $validated['repartidor_id']);

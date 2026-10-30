@@ -4,6 +4,7 @@ namespace App\Modules\Payroll\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Modules\Nucleo\Services\TenantContext;
+use App\Modules\Nucleo\Support\ReglasTenant;
 use App\Modules\Payroll\Http\Resources\EmpleadoResource;
 use App\Modules\Payroll\Http\Resources\NominaResource;
 use App\Modules\Payroll\Models\Empleado;
@@ -50,9 +51,11 @@ class PayrollController extends Controller
 
     public function empleadosStore(Request $request)
     {
+        $tenantId = app(TenantContext::class)->id();
+
         $v = $request->validate([
-            'usuario_id' => 'required|integer|exists:usuarios,id',
-            'sucursal_id' => 'required|integer|exists:sucursales,id',
+            'usuario_id' => ['required', 'integer', ReglasTenant::existe('usuarios', $tenantId)],
+            'sucursal_id' => ['required', 'integer', ReglasTenant::existe('sucursales', $tenantId)],
             'salario_base' => 'nullable|numeric|min:0',
             'tipo_salario' => 'nullable|string|in:fijo,por_hora',
             'fecha_ingreso' => 'nullable|date',
@@ -95,7 +98,13 @@ class PayrollController extends Controller
 
     public function nominasGenerar(Request $request)
     {
-        $v = $request->validate(['sucursal_id' => 'required|integer|exists:sucursales,id', 'periodo_inicio' => 'required|date', 'periodo_fin' => 'required|date|after_or_equal:periodo_inicio']);
+        $tenantId = app(TenantContext::class)->id();
+
+        $v = $request->validate([
+            'sucursal_id' => ['required', 'integer', ReglasTenant::existe('sucursales', $tenantId)],
+            'periodo_inicio' => 'required|date',
+            'periodo_fin' => 'required|date|after_or_equal:periodo_inicio',
+        ]);
         return (new NominaResource($this->nominaService->generarNomina($v['sucursal_id'], $v['periodo_inicio'], $v['periodo_fin'])))->response()->setStatusCode(201);
     }
 

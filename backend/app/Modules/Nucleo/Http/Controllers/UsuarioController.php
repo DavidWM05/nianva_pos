@@ -7,6 +7,7 @@ use App\Modules\Nucleo\Http\Resources\UsuarioAdminResource;
 use App\Modules\Nucleo\Models\Rol;
 use App\Modules\Nucleo\Models\Usuario;
 use App\Modules\Nucleo\Services\TenantContext;
+use App\Modules\Nucleo\Support\ReglasTenant;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Password as PasswordRule;
@@ -144,12 +145,10 @@ class UsuarioController extends Controller
     }
 
     /**
-     * `roles.*` valida con `exists:roles,id`, una consulta cruda que
-     * ignora el TenantScope de Rol -- por si sola no evita que un admin
-     * de un tenant asigne el rol de OTRO tenant. Este segundo filtro,
-     * pasando los ids por una consulta Eloquent normal (con el scope
-     * activo), descarta cualquier id que no pertenezca al tenant actual
-     * o al catalogo global (es_sistema).
+     * `roles.*` usa ReglasTenant::existeGlobalODelTenant(), que ya rechaza
+     * roles de otro tenant. Este segundo filtro, pasando los ids por una
+     * consulta Eloquent normal (con el scope activo), descarta cualquier id
+     * que no pertenezca al tenant actual o al catalogo global (es_sistema).
      *
      * @param  list<int>  $rolesIds
      * @return list<int>
@@ -165,6 +164,8 @@ class UsuarioController extends Controller
 
     private function validarDatos(Request $request, ?int $usuarioIdActual = null): array
     {
+        $tenantId = app(TenantContext::class)->id();
+
         $validated = $request->validate([
             'nombre' => ['required', 'string', 'max:150'],
             'apellido' => ['nullable', 'string', 'max:150'],
@@ -175,9 +176,9 @@ class UsuarioController extends Controller
             ],
             'password' => [$usuarioIdActual === null ? 'required' : 'nullable', PasswordRule::min(8)],
             'telefono' => ['nullable', 'string', 'max:20'],
-            'sucursal_id' => ['nullable', 'integer', 'exists:sucursales,id'],
+            'sucursal_id' => ['nullable', 'integer', ReglasTenant::existe('sucursales', $tenantId)],
             'roles' => ['nullable', 'array'],
-            'roles.*' => ['integer', 'exists:roles,id'],
+            'roles.*' => ['integer', ReglasTenant::existeGlobalODelTenant('roles', $tenantId)],
         ]);
 
         return $validated;

@@ -7,6 +7,7 @@ use App\Modules\GiftCards\Http\Resources\GiftCardResource;
 use App\Modules\GiftCards\Models\GiftCard;
 use App\Modules\GiftCards\Services\GiftCardService;
 use App\Modules\Nucleo\Services\TenantContext;
+use App\Modules\Nucleo\Support\ReglasTenant;
 use App\Modules\Tpv\Models\CajaSesion;
 use Illuminate\Http\Request;
 
@@ -52,13 +53,13 @@ class GiftCardController extends Controller
 
     public function store(Request $request, GiftCardService $service)
     {
+        $tenantId = app(TenantContext::class)->id();
+
         $validated = $request->validate([
-            'cliente_id' => ['nullable', 'integer', 'exists:clientes,id'],
+            'cliente_id' => ['nullable', 'integer', ReglasTenant::existe('clientes', $tenantId)],
             'monto' => ['required', 'numeric', 'min:0.01'],
             'fecha_expiracion' => ['nullable', 'date', 'after:today'],
         ]);
-
-        $tenantId = app(TenantContext::class)->id();
 
         $giftCard = $service->emitir([
             'tenant_id' => $tenantId,

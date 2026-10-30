@@ -7,6 +7,7 @@ use App\Modules\Cotizaciones\Http\Resources\CotizacionResource;
 use App\Modules\Cotizaciones\Models\Cotizacion;
 use App\Modules\Cotizaciones\Services\CotizacionService;
 use App\Modules\Inventario\Support\ReglasVariante;
+use App\Modules\Nucleo\Support\ReglasTenant;
 use Illuminate\Http\Request;
 
 /**
@@ -73,8 +74,8 @@ class CotizacionController extends Controller
         $tenantId = $request->user()->tenant_id;
 
         $validated = $request->validate([
-            'cliente_id' => ['nullable', 'integer', 'exists:clientes,id'],
-            'sucursal_id' => ['required', 'integer', 'exists:sucursales,id'],
+            'cliente_id' => ['nullable', 'integer', ReglasTenant::existe('clientes', $tenantId)],
+            'sucursal_id' => ['required', 'integer', ReglasTenant::existe('sucursales', $tenantId)],
             'validez_dias' => ['nullable', 'integer', 'min:1', 'max:365'],
             'descuento' => ['nullable', 'numeric', 'min:0'],
             'uso_cfdi' => ['nullable', 'string', 'max:10'],
@@ -117,7 +118,7 @@ class CotizacionController extends Controller
         $tenantId = $request->user()->tenant_id;
 
         $validated = $request->validate([
-            'cliente_id' => ['nullable', 'integer', 'exists:clientes,id'],
+            'cliente_id' => ['nullable', 'integer', ReglasTenant::existe('clientes', $tenantId)],
             'validez_dias' => ['nullable', 'integer', 'min:1', 'max:365'],
             'descuento' => ['nullable', 'numeric', 'min:0'],
             'uso_cfdi' => ['nullable', 'string', 'max:10'],
@@ -143,8 +144,10 @@ class CotizacionController extends Controller
 
     public function convertir(Request $request, int $id, CotizacionService $cotizacionService)
     {
+        $tenantId = $request->user()->tenant_id;
+
         $validated = $request->validate([
-            'metodo_pago_id' => ['required', 'integer', 'exists:metodos_pago,id'],
+            'metodo_pago_id' => ['required', 'integer', ReglasTenant::existeGlobalODelTenant('metodos_pago', $tenantId)],
         ]);
 
         $usuario = $request->user();

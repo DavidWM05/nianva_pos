@@ -4,6 +4,8 @@ namespace App\Modules\Prestamos\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Modules\Nucleo\Services\TenantContext;
+use App\Modules\Nucleo\Support\ReglasTenant;
+use App\Modules\Tpv\Support\ReglasCaja;
 use App\Modules\Prestamos\Http\Resources\PrestamoResource;
 use App\Modules\Prestamos\Models\Prestamo;
 use App\Modules\Prestamos\Services\PrestamoService;
@@ -48,8 +50,10 @@ class PrestamoController extends Controller
 
     public function store(Request $request)
     {
+        $tenantId = app(TenantContext::class)->id();
+
         $v = $request->validate([
-            'proveedor_id' => 'nullable|integer|exists:proveedores,id',
+            'proveedor_id' => ['nullable', 'integer', ReglasTenant::existe('proveedores', $tenantId)],
             'referencia' => 'nullable|string|max:100',
             'monto' => 'required|numeric|min:0.01',
             'interes' => 'nullable|numeric|min:0|max:100',
@@ -63,7 +67,13 @@ class PrestamoController extends Controller
 
     public function registrarPago(Request $request, int $id)
     {
-        $v = $request->validate(['monto' => 'required|numeric|min:0.01', 'caja_sesion_id' => 'nullable|integer|exists:caja_sesiones,id', 'notas' => 'nullable|string|max:500']);
+        $tenantId = app(TenantContext::class)->id();
+
+        $v = $request->validate([
+            'monto' => 'required|numeric|min:0.01',
+            'caja_sesion_id' => ['nullable', 'integer', ReglasCaja::delTenant($tenantId)],
+            'notas' => 'nullable|string|max:500',
+        ]);
         return response()->json(['data' => $this->prestamoService->registrarPago($id, $v)]);
     }
 

@@ -6,7 +6,9 @@ use App\Http\Controllers\Controller;
 use App\Modules\Devoluciones\Http\Resources\DevolucionResource;
 use App\Modules\Devoluciones\Models\Devolucion;
 use App\Modules\Devoluciones\Services\DevolucionService;
+use App\Modules\Inventario\Support\ReglasVariante;
 use App\Modules\NotasCredito\Services\NotaCreditoService;
+use App\Modules\Nucleo\Support\ReglasTenant;
 use App\Modules\Tpv\Models\Venta;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -74,18 +76,20 @@ class DevolucionController extends Controller
      */
     public function store(Request $request, DevolucionService $devolucionService, NotaCreditoService $notaCreditoService)
     {
+        $tenantId = $request->user()->tenant_id;
+
         $validated = $request->validate([
-            'venta_id' => ['required', 'integer', 'exists:ventas,id'],
+            'venta_id' => ['required', 'integer', ReglasTenant::existe('ventas', $tenantId)],
             'tipo' => ['required', Rule::in(['devolucion', 'cambio'])],
             'items_devueltos' => ['required', 'array', 'min:1'],
-            'items_devueltos.*.variante_id' => ['required', 'integer', 'exists:producto_variantes,id'],
+            'items_devueltos.*.variante_id' => ['required', 'integer', ReglasVariante::delTenant($tenantId)],
             'items_devueltos.*.cantidad' => ['required', 'integer', 'min:1'],
             'items_devueltos.*.va_a_merma' => ['nullable', 'boolean'],
             'items_nuevos' => ['nullable', 'array', 'required_if:tipo,cambio', 'prohibited_if:tipo,devolucion', 'min:1'],
-            'items_nuevos.*.variante_id' => ['required_with:items_nuevos', 'integer', 'exists:producto_variantes,id'],
+            'items_nuevos.*.variante_id' => ['required_with:items_nuevos', 'integer', ReglasVariante::delTenant($tenantId)],
             'items_nuevos.*.cantidad' => ['required_with:items_nuevos', 'integer', 'min:1'],
             'pagos' => ['nullable', 'array'],
-            'pagos.*.metodo_pago_id' => ['required_with:pagos', 'integer', 'exists:metodos_pago,id'],
+            'pagos.*.metodo_pago_id' => ['required_with:pagos', 'integer', ReglasTenant::existeGlobalODelTenant('metodos_pago', $tenantId)],
             'pagos.*.monto' => ['required_with:pagos', 'numeric', 'min:0.01'],
             'motivo' => ['nullable', 'string', 'max:255'],
             'tipo_reembolso' => ['nullable', Rule::in(['efectivo', 'nota_credito'])],
