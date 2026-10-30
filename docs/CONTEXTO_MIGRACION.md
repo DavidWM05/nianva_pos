@@ -122,10 +122,19 @@ repo.
   También se corrigió que una compra aceptaba el proveedor de otro tenant. Las que no
   llegan a HTTP siguen como guarda interna. Delivery (congelado) sigue respondiendo 500 con
   una variante de otro tenant. Backend: 324 tests.
+- **Reglas `exists` con scope de tenant, API-05** (cuarto encargo, hecho por DS): se
+  revisaron 46 reglas `exists`. Las que apuntan a tablas con tenant filtran por él con
+  `Nucleo/Support/ReglasTenant` (`existe` y `existeGlobalODelTenant` para `metodos_pago`,
+  `unidades_medida` y `roles`) o con reglas por relación (`ReglasVariante`, `ReglasCuota`,
+  `ReglasCaja`). Antes se podían crear cotizaciones, ventas, productos o usuarios con datos
+  de otro negocio. También se corrigieron los módulos congelados. `usuarios` filtra por el
+  tenant exacto, porque `tenant_id` NULL es superadmin. El test
+  `Arquitectura/ExistenciasConTenantTest` impide volver a escribir un `exists` sin el
+  filtro. Backend: 365 tests.
 - **Pendientes detectados:**
-  - quedan 29 reglas `exists:` sin scope de tenant en 15 controladores (API-05); al menos
-    `items_nuevos.*.variante_id` en `DevolucionController` repite el 500 con una variante de
-    otro tenant;
+  - índices únicos sin `tenant_id` (DAT-09): `producto_variantes.codigo_barras` (C4),
+    `insumos.sku` y `gift_cards.codigo`. `usuarios.correo` se queda global a propósito: el
+    login busca por correo antes de conocer el tenant;
   - el frontend no conoce los 9 códigos nuevos (`tpv-error.types.ts` y similares);
   - `VentaController` y `CompraController` toman el tenant de `$request->user()` y el resto
     de `TenantContext` (equivalentes); se unifica al migrar a FormRequest (C8).
@@ -135,10 +144,11 @@ repo.
 ## 6. Siguiente paso, en orden
 
 1. **Saneamiento de la Fase 1**, en encargos de un tema cada uno. Hecho: CI con ambas
-   suites, C1 (D4) y las validaciones de negocio (500 → 422). Orden sugerido para lo que
-   sigue: auditoría de las 29 reglas `exists:` sin scope de tenant, con el test de
-   arquitectura de API-05; C11 (D5); luego Pint y ESLint bloqueantes en CI (con la línea
-   base de arriba) y PHPStan; después el resto:
+   suites, C1 (D4), las validaciones de negocio (500 → 422) y las reglas `exists` con
+   tenant (API-05). Orden sugerido para lo que sigue: unicidad con tenant (DAT-09, C4), con
+   `tenant_id` propio en `producto_variantes` (decisión del responsable); C11 (D5); luego
+   Pint y ESLint bloqueantes en CI (con la línea base de arriba) y PHPStan; después el
+   resto:
    - nombres internos: composer `nianva/pos` y alcance Nx `@nianva/*` (hoy `laravel/laravel`
      y `@org`); el nombre de la app Nx `nucleo-shell` queda por decidir;
    - `README.md` nuevo: producto único por planes y giros, derivado de `nucleo-erp-base`;
