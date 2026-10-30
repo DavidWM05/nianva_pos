@@ -11,6 +11,8 @@ use App\Modules\Precios\Models\Cupon;
 use App\Modules\Precios\Services\PrecioService;
 use App\Modules\Tpv\Exceptions\CajaSesionNoAbiertaException;
 use App\Modules\Tpv\Exceptions\PagoNoCuadraException;
+use App\Modules\Tpv\Exceptions\VentaTotalNegativoException;
+use App\Modules\Tpv\Exceptions\VentaYaAnuladaException;
 use App\Modules\Tpv\Models\CajaSesion;
 use App\Modules\Tpv\Models\Venta;
 use App\Modules\Tpv\Models\VentaDetalle;
@@ -90,7 +92,7 @@ class VentaService
             $total = round($subtotalItems - $descuentoCupon - $descuentoManual, 2);
 
             if ($total < 0) {
-                throw new InvalidArgumentException('El total de la venta no puede quedar negativo.');
+                throw new VentaTotalNegativoException($subtotalItems, $descuentoManual, $descuentoCupon);
             }
 
             // abono_previo (ej. abonos de un apartado ya liquidados) reduce
@@ -163,7 +165,7 @@ class VentaService
     public function anularVenta(Venta $venta, string $motivo, Usuario $usuario): Venta
     {
         if ($venta->estado === 'anulada') {
-            throw new InvalidArgumentException("La venta {$venta->id} ya esta anulada.");
+            throw new VentaYaAnuladaException($venta->id);
         }
 
         return DB::transaction(function () use ($venta, $motivo, $usuario) {

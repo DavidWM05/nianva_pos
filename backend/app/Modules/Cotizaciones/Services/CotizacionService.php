@@ -3,6 +3,7 @@
 namespace App\Modules\Cotizaciones\Services;
 
 use App\Modules\Cotizaciones\Exceptions\CotizacionNoEditableException;
+use App\Modules\Cotizaciones\Exceptions\CotizacionTotalNegativoException;
 use App\Modules\Cotizaciones\Exceptions\CotizacionVencidaException;
 use App\Modules\Cotizaciones\Exceptions\CotizacionYaConvertidaException;
 use App\Modules\Cotizaciones\Exceptions\SinClienteException;
@@ -88,10 +89,11 @@ class CotizacionService
                 $total += $subtotal;
             }
 
-            $total = round($total - $descuentoGlobal, 2);
+            $subtotalCotizacion = round($total, 2);
+            $total = round($subtotalCotizacion - $descuentoGlobal, 2);
 
             if ($total < 0) {
-                throw new InvalidArgumentException('El total de la cotizacion no puede quedar negativo.');
+                throw new CotizacionTotalNegativoException($subtotalCotizacion, $descuentoGlobal);
             }
 
             $cotizacion = Cotizacion::create([
@@ -171,10 +173,11 @@ class CotizacionService
                 $total += $subtotal;
             }
 
-            $total = round($total - $descuentoGlobal, 2);
+            $subtotalCotizacion = round($total, 2);
+            $total = round($subtotalCotizacion - $descuentoGlobal, 2);
 
             if ($total < 0) {
-                throw new InvalidArgumentException('El total de la cotizacion no puede quedar negativo.');
+                throw new CotizacionTotalNegativoException($subtotalCotizacion, $descuentoGlobal);
             }
 
             $cotizacion->update([

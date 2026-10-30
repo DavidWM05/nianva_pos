@@ -5,6 +5,7 @@ namespace App\Modules\Tpv\Http\Controllers;
 use App\Http\Controllers\Controller;
 use App\Modules\Crm\Models\Cliente;
 use App\Modules\GiftCards\Services\GiftCardService;
+use App\Modules\Inventario\Support\ReglasVariante;
 use App\Modules\NotasCredito\Services\NotaCreditoService;
 use App\Modules\Nucleo\Models\MetodoPago;
 use App\Modules\Nucleo\Services\TenantContext;
@@ -20,6 +21,7 @@ use App\Modules\Tpv\Models\VentaPago;
 use App\Modules\Tpv\Services\VentaService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\Rule;
 
 /**
  * Vive en Tpv (no en Crm) a proposito: Tpv ya depende de Crm (Venta
@@ -102,10 +104,12 @@ class VentaController extends Controller
      */
     public function store(Request $request, VentaService $ventaService, GiftCardService $giftCardService, NotaCreditoService $notaCreditoService, PrecioService $precioService)
     {
+        $tenantId = $request->user()->tenant_id;
+
         $validated = $request->validate([
-            'cliente_id' => ['required', 'integer', 'exists:clientes,id'],
+            'cliente_id' => ['required', 'integer', Rule::exists('clientes', 'id')->where('tenant_id', $tenantId)],
             'items' => ['required', 'array', 'min:1'],
-            'items.*.variante_id' => ['required', 'integer', 'exists:producto_variantes,id'],
+            'items.*.variante_id' => ['required', 'integer', ReglasVariante::delTenant($tenantId)],
             'items.*.cantidad' => ['required', 'integer', 'min:1'],
             'pagos' => ['required', 'array', 'min:1'],
             'pagos.*.metodo_pago_id' => ['required', 'integer', 'exists:metodos_pago,id'],
@@ -117,7 +121,6 @@ class VentaController extends Controller
         ]);
 
         $usuario = $request->user();
-        $tenantId = app(TenantContext::class)->id();
 
         // Resolver cupon (mismo PrecioService que usa VentaService) para
         // calcular $totalEstimado con el descuento real -- evita inflar
@@ -213,13 +216,14 @@ class VentaController extends Controller
 
     public function cotizar(Request $request, VentaService $ventaService)
     {
+        $tenantId = $request->user()->tenant_id;
+
         $validated = $request->validate([
             'items' => ['required', 'array', 'min:1'],
-            'items.*.variante_id' => ['required', 'integer', 'exists:producto_variantes,id'],
+            'items.*.variante_id' => ['required', 'integer', ReglasVariante::delTenant($tenantId)],
             'items.*.cantidad' => ['required', 'integer', 'min:1'],
         ]);
 
-        $tenantId = app(TenantContext::class)->id();
         [$lineas, $subtotal] = $ventaService->cotizarItems($tenantId, $validated['items']);
 
         return response()->json(['data' => ['items' => $lineas, 'subtotal' => $subtotal]]);

@@ -3,11 +3,11 @@
 namespace App\Modules\Tpv\Services;
 
 use App\Modules\Tpv\Exceptions\CajaYaAbiertaException;
+use App\Modules\Tpv\Exceptions\CajaYaCerradaException;
 use App\Modules\Tpv\Models\CajaSesion;
 use App\Modules\Tpv\Models\Venta;
 use App\Modules\Tpv\Models\VentaPago;
 use Illuminate\Support\Facades\DB;
-use InvalidArgumentException;
 
 class CajaService
 {
@@ -60,7 +60,7 @@ class CajaService
     public function cerrarCaja(CajaSesion $cajaSesion, float $montoFisico, float $totalGastos = 0.0): CajaSesion
     {
         if ($cajaSesion->estado === 'cerrada') {
-            throw new InvalidArgumentException("La caja {$cajaSesion->id} ya esta cerrada.");
+            throw new CajaYaCerradaException($cajaSesion->id);
         }
 
         return DB::transaction(function () use ($cajaSesion, $montoFisico, $totalGastos) {
