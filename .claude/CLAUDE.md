@@ -5,6 +5,13 @@ completa — el razonamiento detrás de cada regla vive en
 [docs/MANUAL_TECNICO.md](../docs/MANUAL_TECNICO.md); léelo si necesitas el porqué, no lo
 repitas aquí.
 
+> **Estándares aprobados (2026-10-30):** [docs/estandares/](../docs/estandares/README.md) manda
+> sobre este archivo. La lista de orquestación en Controller (§2) y el mapa central de
+> `error_code` en `bootstrap/app.php` (§3) están en retirada (C1, C11): no se agregan
+> instancias nuevas; lo nuevo sigue API-04 (cada excepción declara su `error_code`) y ARQ-03
+> (orquestación en Actions de aplicación). Este archivo se reescribe en el saneamiento de la
+> Fase 1.
+
 ## 1. Módulos y dirección de dependencia (nivel `Services`)
 
 Los 10 módulos: Núcleo, Auditoría, Inventario, Precios, CRM, Tpv, Apartados, Devoluciones,
