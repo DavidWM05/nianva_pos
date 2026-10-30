@@ -98,7 +98,7 @@ repo.
   specs que llaman `vi.useFakeTimers()` sin restaurar (`usuarios-list`, `metodos-pago-list`,
   `roles-list`, `clientes-list`, `categorias-list`, `departamentos-list`); no se comprobó que
   afecten a otros archivos.
-- **Línea base para los siguientes encargos** (medida por DS):
+- **Línea base inicial** (medida por DS; el séptimo encargo la dejó en cero, ver abajo):
   - `vendor/bin/pint --test`: 84 archivos con fallas;
   - `nx run-many -t lint`: 9 errores en `ui-shared` (selectores sin prefijo `lib`) y 7
     warnings (`no-non-null-assertion`);
@@ -147,6 +147,14 @@ repo.
   "instancias de orquestación en Controller". Decisión del responsable: los módulos de
   extensión pueden depender de los módulos base, nunca entre sí. El test
   `Arquitectura/DependenciasEntreModulosTest` verifica el grafo. Backend: 377 tests.
+- **Análisis estático bloqueante, PRO-05 y PRO-03** (séptimo encargo, hecho por DS): el job
+  Backend corre `pint --test` y PHPStan nivel 8 con Larastan (`backend/phpstan.neon`). La
+  deuda de PHPStan queda congelada en `backend/phpstan-baseline.neon`: 1496 errores, sin
+  corregir ninguno. En cada PR, CI falla si ese total sube respecto a la rama base. Pint
+  reformateó 82 archivos del backend (solo formato). ESLint de `ui-shared` usa el prefijo
+  `nucleo` y queda en 0 errores; los 7 warnings `no-non-null-assertion` de las specs se
+  conservan. Al instalar Larastan, Composer reportó 23 advisories de seguridad en 6
+  paquetes (pendiente).
 - **Pendientes detectados:**
   - dependencias fuera del grafo: `Crm` lee `Venta` de Tpv (`PlanPagoController`,
     `PlanPagoCliente`, `VentasPlazosService`; es un ciclo, porque Tpv → Crm);
@@ -162,14 +170,14 @@ repo.
 
 1. **Saneamiento de la Fase 1**, en encargos de un tema cada uno. Hecho: CI con ambas
    suites, C1 (D4), las validaciones de negocio (500 → 422) y las reglas `exists` con
-   tenant (API-05), la unicidad con tenant (DAT-09, C4) y C11 (D5). Orden sugerido para lo
-   que sigue: Pint y ESLint bloqueantes en CI (con la línea base de arriba) y PHPStan;
-   después el resto:
+   tenant (API-05), la unicidad con tenant (DAT-09, C4), C11 (D5) y el análisis estático
+   bloqueante (Pint, ESLint, PHPStan). Lo que sigue:
+   - `composer audit`: revisar los 23 advisories;
    - nombres internos: composer `nianva/pos` y alcance Nx `@nianva/*` (hoy `laravel/laravel`
      y `@org`); el nombre de la app Nx `nucleo-shell` queda por decidir;
    - `README.md` nuevo: producto único por planes y giros, derivado de `nucleo-erp-base`;
    - resolver los conflictos C1-C11 del README de estándares;
-   - análisis estático en CI (Pint, ESLint, PHPStan, `tsc`; PRO-05);
+   - resto de PRO-05: stylelint, diff de OpenAPI y CODEOWNERS;
    - prefijo `/api/v1` y configuración del frontend en tiempo de ejecución (sin
      `localhost:8000` fijo);
    - FormRequests, factories, `preventSilentlyDiscardingAttributes`;
