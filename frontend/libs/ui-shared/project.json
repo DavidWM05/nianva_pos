@@ -2,7 +2,7 @@
   "name": "ui-shared",
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "libs/ui-shared/src",
-  "prefix": "lib",
+  "prefix": "nucleo",
   "projectType": "library",
   "tags": [],
   "targets": {
