@@ -1,0 +1,125 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  backend:
+    name: Backend
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - name: Obtener el codigo
+        uses: actions/checkout@v4
+
+      - name: Configurar PHP 8.3
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: pdo_sqlite, sqlite3, mbstring, bcmath, intl
+          coverage: none
+
+      - name: Obtener el directorio de cache de Composer
+        id: composer-cache
+        run: echo "dir=$(composer config cache-files-dir)" >> "$GITHUB_OUTPUT"
+
+      - name: Cachear dependencias de Composer
+        uses: actions/cache@v4
+        with:
+          path: |
+            ${{ steps.composer-cache.outputs.dir }}
+            backend/vendor
+          key: composer-${{ runner.os }}-php-8.3-${{ hashFiles('backend/composer.lock') }}
+          restore-keys: |
+            composer-${{ runner.os }}-php-8.3-
+
+      - name: Instalar dependencias de Composer
+        run: composer install --no-interaction --prefer-dist --no-progress
+
+      - name: Preparar entorno de pruebas
+        run: |
+          cp .env.example .env
+          php artisan key:generate
+
+      - name: Ejecutar pruebas del backend
+        run: php artisan test
+
+  frontend:
+    name: Frontend
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - name: Obtener el codigo
+        uses: actions/checkout@v4
+
+      - name: Configurar pnpm 11.5.3
+        uses: pnpm/action-setup@v4
+        with:
+          version: 11.5.3
+
+      - name: Configurar Node.js 22 y cache de pnpm
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22.20.0'
+          cache: pnpm
+          cache-dependency-path: frontend/pnpm-lock.yaml
+
+      - name: Instalar dependencias con el lockfile
+        run: pnpm install --frozen-lockfile
+
+      - name: Ejecutar pruebas del frontend
+        run: pnpm nx run-many -t test
+
+  escaneo-skip:
+    name: Escaneo de skip sin referencia
+    runs-on: ubuntu-latest
+    steps:
+      - name: Obtener el codigo
+        uses: actions/checkout@v4
+
+      - name: Buscar skip u only sin issue enlazada
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          patron='markTestSkipped|\bit\.skip|\bdescribe\.skip|\btest\.skip|\bit\.only|\bdescribe\.only|\btest\.only|\bxit\('
+
+          coincidencias=$(
+            {
+              grep -rnE "$patron" backend/tests --include='*.php' || true
+              grep -rnE "$patron" frontend --include='*.spec.ts' \
+                --exclude-dir=node_modules \
+                --exclude-dir=.nx \
+                --exclude-dir=dist \
+                --exclude-dir=.angular || true
+            }
+          )
+
+          if [ -z "$coincidencias" ]; then
+            echo "Sin skips ni only en las suites."
+            exit 0
+          fi
+
+          infracciones=$(printf '%s\n' "$coincidencias" | grep -vE 'issue:[[:space:]]*[A-Za-z0-9._#/-]+' || true)
+
+          if [ -n "$infracciones" ]; then
+            echo "Se encontraron skip u only sin referencia 'issue:' en la misma linea:"
+            printf '%s\n' "$infracciones"
+            exit 1
+          fi
+
+          echo "Todos los skips u only tienen una referencia 'issue:' en la misma linea."
