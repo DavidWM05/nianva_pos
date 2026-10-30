@@ -89,7 +89,7 @@ Tomadas por el responsable el 2026-10-30.
 | C4 | `codigo_barras` es `UNIQUE` global | `Inventario/Database/Migrations/2026_07_21_000005_create_producto_variantes_table.php:16`; `ProductoVarianteController:67,84` | DAT-09 | **Resuelto el 2026-10-30.** `producto_variantes` con `tenant_id` propio, `UNIQUE (tenant_id, codigo_barras)` y validación con scope; test de esquema `UnicidadConTenantTest` |
 | C5 | Rutas sin versión (`/api/...`) | `backend/routes/api.php`, `bootstrap/app.php` | API-01 | Prefijo `/api/v1` y el frontend con la base URL desde la configuración |
 | C6 | Cantidades `int` y variantes fijas `talla`/`color` | `ProductoVariante.php:15` (Fillable) y migraciones de Inventario | DAT-01, ARQ-07 | Se reescriben en la Fase 3 (esquema nuevo, no `add_*`) |
-| C7 | `#[Fillable]` desincronizado descarta campos sin avisar | `docs/consideraciones_futuras.md` ("Auditar… `#[Fillable]` desincronizado") | DAT-14 | `Model::preventSilentlyDiscardingAttributes()` fuera de producción |
+| C7 | `#[Fillable]` desincronizado descarta campos sin avisar | `docs/consideraciones_futuras.md` ("Auditar… `#[Fillable]` desincronizado") | DAT-14 | **Resuelto el 2026-10-30.** `preventSilentlyDiscardingAttributes`, `preventLazyLoading` y `preventAccessingMissingAttributes` fuera de producción; test `ModelosEstrictosTest` |
 | C8 | Validación en el controlador (`$request->validate`) | p. ej. `ConfiguracionController.php:49` | ARQ-02 | Un FormRequest por endpoint de escritura |
 | C9 | Medición del 2026-10-30: backend 296/296 en verde; frontend 419/420, con 1 fallo por *timeout* de 5 s en `ventas-list.component.spec.ts` ("anular pide un motivo…"), probablemente intermitente bajo carga. No hay CI que lo exija | Suites backend y frontend | PRO-02 | Estabilizar ese spec y montar CI bloqueante con ambas suites |
 | C10 | Estilos por vista (111 SCSS), sin modo oscuro y montos sin formato | `frontend/apps/**` | UI-01 a UI-06 | Se regeneran las pantallas sobre `libs/ui/*` (Fase 2) |
@@ -146,3 +146,4 @@ Cada lección es un hecho ocurrido. Las de Lite tienen el commit o el archivo; l
 | 2026-10-30 | C1 | Resuelto: `ExcepcionNegocio`, manejador genérico y catálogo generado. Los códigos de CxP pasan a `cuenta_pagar_*` para no repetir los de CxC |
 | 2026-10-30 | C4 | Resuelto: unicidad con tenant en código de barras, `insumos.sku` y `gift_cards.codigo` |
 | 2026-10-30 | C11 | Resuelto: Actions de aplicación. Decisión del responsable: los módulos de extensión pueden depender de los módulos base, nunca entre sí |
+| 2026-10-30 | C7 | Resuelto: modelos estrictos fuera de producción (DAT-14) |

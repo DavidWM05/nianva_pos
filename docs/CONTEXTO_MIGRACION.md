@@ -155,6 +155,15 @@ repo.
   `nucleo` y queda en 0 errores; los 7 warnings `no-non-null-assertion` de las specs se
   conservan. Al instalar Larastan, Composer reportó 23 advisories de seguridad en 6
   paquetes (pendiente).
+- **C7 resuelto, DAT-14** (octavo encargo, hecho por DS): fuera de producción, Eloquent
+  lanza excepción si descarta un campo, si carga una relación perezosa en una colección
+  (N+1) o si se lee un atributo no seleccionado. Se corrigieron `AuditObserver` (lee
+  `tenant_id` solo si el modelo tiene la columna), `ProductoResource` (`stock_total` solo
+  en el listado) y `RevalidarLicenciasCommand` (`with('tenant')`). Excepción a PRO-01
+  autorizada: `$usuario->refresh()` en los helpers de `AuthTest` y `UsuarioControllerTest`,
+  porque `actingAs()` quita la marca de recién creado y el usuario en memoria no tenía las
+  columnas de 2FA. No se encontraron N+1 en los listados. Backend: 381 tests; línea base
+  de PHPStan: 1495. En desarrollo local, una ruta sin test con N+1 ahora responde 500.
 - **Pendientes detectados:**
   - dependencias fuera del grafo: `Crm` lee `Venta` de Tpv (`PlanPagoController`,
     `PlanPagoCliente`, `VentasPlazosService`; es un ciclo, porque Tpv → Crm);
@@ -171,7 +180,7 @@ repo.
 1. **Saneamiento de la Fase 1**, en encargos de un tema cada uno. Hecho: CI con ambas
    suites, C1 (D4), las validaciones de negocio (500 → 422) y las reglas `exists` con
    tenant (API-05), la unicidad con tenant (DAT-09, C4), C11 (D5) y el análisis estático
-   bloqueante (Pint, ESLint, PHPStan). Lo que sigue:
+   bloqueante (Pint, ESLint, PHPStan) y C7 (DAT-14). Lo que sigue:
    - `composer audit`: revisar los 23 advisories;
    - nombres internos: composer `nianva/pos` y alcance Nx `@nianva/*` (hoy `laravel/laravel`
      y `@org`); el nombre de la app Nx `nucleo-shell` queda por decidir;
@@ -180,7 +189,7 @@ repo.
    - resto de PRO-05: stylelint, diff de OpenAPI y CODEOWNERS;
    - prefijo `/api/v1` y configuración del frontend en tiempo de ejecución (sin
      `localhost:8000` fijo);
-   - FormRequests, factories, `preventSilentlyDiscardingAttributes`;
+   - FormRequests y factories;
    - actualizar `.claude/CLAUDE.md` para que resuma los estándares;
    - opcional: rama `master` → `main`.
 2. **Fase 2**: sistema de diseño.
