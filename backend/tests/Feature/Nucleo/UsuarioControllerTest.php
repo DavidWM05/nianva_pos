@@ -42,6 +42,8 @@ class UsuarioControllerTest extends TestCase
             $usuario->roles()->attach($rol->id);
         }
 
+        $usuario->refresh();
+
         return compact('tenant', 'sucursal', 'usuario');
     }
 

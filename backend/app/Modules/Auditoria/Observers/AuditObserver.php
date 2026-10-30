@@ -102,7 +102,7 @@ class AuditObserver
      */
     private function registrar(Model $model, string $accion, array $cambios): void
     {
-        $tenantId = $model->getAttribute('tenant_id') ?? app(TenantContext::class)->id();
+        $tenantId = $model->getAttributes()['tenant_id'] ?? app(TenantContext::class)->id();
 
         if ($tenantId === null) {
             return;

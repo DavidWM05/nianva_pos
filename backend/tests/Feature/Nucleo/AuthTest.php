@@ -40,6 +40,8 @@ class AuthTest extends TestCase
             $usuario->roles()->attach($rolAdmin->id);
         }
 
+        $usuario->refresh();
+
         return compact('tenant', 'sucursal', 'usuario');
     }
 

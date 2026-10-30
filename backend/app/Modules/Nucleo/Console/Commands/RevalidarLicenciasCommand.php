@@ -28,7 +28,7 @@ class RevalidarLicenciasCommand extends Command
 
     public function handle(LicenciaClienteService $licenciaClienteService): int
     {
-        $licencias = LicenciaLocal::query()->get();
+        $licencias = LicenciaLocal::query()->with('tenant')->get();
         $fallidos = 0;
 
         foreach ($licencias as $licenciaLocal) {
