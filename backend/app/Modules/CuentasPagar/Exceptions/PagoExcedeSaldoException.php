@@ -2,9 +2,9 @@
 
 namespace App\Modules\CuentasPagar\Exceptions;
 
-use RuntimeException;
+use App\Modules\Nucleo\Exceptions\ExcepcionNegocio;
 
-class PagoExcedeSaldoException extends RuntimeException
+class PagoExcedeSaldoException extends ExcepcionNegocio
 {
     public float $saldoPendiente;
     public float $montoPago;
@@ -14,5 +14,18 @@ class PagoExcedeSaldoException extends RuntimeException
         parent::__construct("El monto del pago ({$montoPago}) excede el saldo pendiente ({$saldoPendiente}).");
         $this->saldoPendiente = $saldoPendiente;
         $this->montoPago = $montoPago;
+    }
+
+    public function errorCode(): string
+    {
+        return 'pago_excede_saldo';
+    }
+
+    public function contexto(): array
+    {
+        return [
+            'saldo_pendiente' => $this->saldoPendiente,
+            'monto_pago' => $this->montoPago,
+        ];
     }
 }

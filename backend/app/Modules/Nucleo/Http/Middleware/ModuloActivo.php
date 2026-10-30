@@ -15,7 +15,8 @@ use Symfony\Component\HttpFoundation\Response;
  * Uso: Route::middleware('modulo:cxc')->group(...)
  *
  * Si el tenant no tiene configurada la lista o el módulo no está incluido,
- * lanza ModuloNoActivoException (→ 403 con error_code 'modulo_no_activo').
+ * lanza ModuloNoActivoException, que responde 403 con error_code
+ * 'modulo_no_activo'.
  * Superadmin bypass: si no hay tenant activo (TenantContext sin resolver),
  * el middleware permite el paso sin verificar.
  *

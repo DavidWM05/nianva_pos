@@ -2,9 +2,9 @@
 
 namespace App\Modules\CuentasCobrar\Exceptions;
 
-use RuntimeException;
+use App\Modules\Nucleo\Exceptions\ExcepcionNegocio;
 
-class AbonoExcedeSaldoException extends RuntimeException
+class AbonoExcedeSaldoException extends ExcepcionNegocio
 {
     public float $saldoPendiente;
     public float $montoAbono;
@@ -14,5 +14,18 @@ class AbonoExcedeSaldoException extends RuntimeException
         parent::__construct("El monto del abono ({$montoAbono}) excede el saldo pendiente ({$saldoPendiente}).");
         $this->saldoPendiente = $saldoPendiente;
         $this->montoAbono = $montoAbono;
+    }
+
+    public function errorCode(): string
+    {
+        return 'abono_excede_saldo';
+    }
+
+    public function contexto(): array
+    {
+        return [
+            'saldo_pendiente' => $this->saldoPendiente,
+            'monto_abono' => $this->montoAbono,
+        ];
     }
 }

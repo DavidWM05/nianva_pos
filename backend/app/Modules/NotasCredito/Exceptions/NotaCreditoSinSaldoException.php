@@ -2,12 +2,17 @@
 
 namespace App\Modules\NotasCredito\Exceptions;
 
-use RuntimeException;
+use App\Modules\Nucleo\Exceptions\ExcepcionNegocio;
 
-class NotaCreditoSinSaldoException extends RuntimeException
+class NotaCreditoSinSaldoException extends ExcepcionNegocio
 {
     public function __construct(int $notaCreditoId)
     {
         parent::__construct("La nota de crédito {$notaCreditoId} no tiene saldo disponible.");
+    }
+
+    public function errorCode(): string
+    {
+        return 'nota_credito_sin_saldo';
     }
 }

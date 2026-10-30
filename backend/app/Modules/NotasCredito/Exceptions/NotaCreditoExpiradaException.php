@@ -2,12 +2,17 @@
 
 namespace App\Modules\NotasCredito\Exceptions;
 
-use RuntimeException;
+use App\Modules\Nucleo\Exceptions\ExcepcionNegocio;
 
-class NotaCreditoExpiradaException extends RuntimeException
+class NotaCreditoExpiradaException extends ExcepcionNegocio
 {
     public function __construct(int $notaCreditoId)
     {
         parent::__construct("La nota de crédito {$notaCreditoId} está expirada.");
+    }
+
+    public function errorCode(): string
+    {
+        return 'nota_credito_expirada';
     }
 }
