@@ -2,16 +2,13 @@
 
 namespace App\Modules\Devoluciones\Http\Controllers;
 
+use App\Aplicacion\Devoluciones\RegistrarDevolucion;
 use App\Http\Controllers\Controller;
 use App\Modules\Devoluciones\Http\Resources\DevolucionResource;
 use App\Modules\Devoluciones\Models\Devolucion;
-use App\Modules\Devoluciones\Services\DevolucionService;
 use App\Modules\Inventario\Support\ReglasVariante;
-use App\Modules\NotasCredito\Services\NotaCreditoService;
 use App\Modules\Nucleo\Support\ReglasTenant;
-use App\Modules\Tpv\Models\Venta;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 
 /**
@@ -21,9 +18,8 @@ use Illuminate\Validation\Rule;
  * venta sombra de un cambio, ej. CajaSesionNoAbiertaException) -- todo
  * eso vive en DevolucionService y se mapea a JSON 422 en bootstrap/app.php.
  *
- * Instancia #7 de orquestacion: store() orquesta la creacion de una
- * Nota de Credito cuando tipo_reembolso = 'nota_credito' (ver
- * docs/03_ESPECIFICACION_BACKEND.md §8).
+ * Orquestacion: App\Aplicacion\Devoluciones\RegistrarDevolucion
+ * (incluye la creacion de la Nota de Credito cuando aplica).
  */
 class DevolucionController extends Controller
 {
@@ -69,12 +65,9 @@ class DevolucionController extends Controller
     }
 
     /**
-     * Instancia #7 de orquestacion: cuando tipo_reembolso = 'nota_credito',
-     * crea una Nota de Credito vinculada a la devolucion (ver
-     * docs/03_ESPECIFICACION_BACKEND.md §8). La regla se mantiene:
-     * Controllers orquestan, Services nunca.
+     * Orquestacion: App\Aplicacion\Devoluciones\RegistrarDevolucion.
      */
-    public function store(Request $request, DevolucionService $devolucionService, NotaCreditoService $notaCreditoService)
+    public function store(Request $request, RegistrarDevolucion $registrarDevolucion)
     {
         $tenantId = $request->user()->tenant_id;
 
@@ -95,35 +88,25 @@ class DevolucionController extends Controller
             'tipo_reembolso' => ['nullable', Rule::in(['efectivo', 'nota_credito'])],
         ]);
 
-        $usuario = $request->user();
-        $ventaOrigen = Venta::findOrFail($validated['venta_id']);
-        $tipoReembolso = $validated['tipo_reembolso'] ?? 'efectivo';
+        $resultado = $registrarDevolucion->ejecutar(
+            ventaId: $validated['venta_id'],
+            tipo: $validated['tipo'],
+            itemsDevueltos: $validated['items_devueltos'],
+            itemsNuevos: $validated['items_nuevos'] ?? [],
+            pagos: $validated['pagos'] ?? [],
+            motivo: $validated['motivo'] ?? null,
+            tipoReembolso: $validated['tipo_reembolso'] ?? 'efectivo',
+            usuario: $request->user(),
+        );
 
-        return DB::transaction(function () use ($devolucionService, $notaCreditoService, $ventaOrigen, $validated, $usuario, $tipoReembolso) {
-            $devolucion = $devolucionService->registrarDevolucion(
-                ventaOrigen: $ventaOrigen,
-                tipo: $validated['tipo'],
-                itemsDevueltos: $validated['items_devueltos'],
-                itemsNuevos: $validated['items_nuevos'] ?? [],
-                sucursalId: $usuario->sucursal_id,
-                usuarioId: $usuario->id,
-                pagos: $validated['pagos'] ?? [],
-                motivo: $validated['motivo'] ?? null,
-                tipoReembolso: $tipoReembolso,
-            );
+        $devolucion = $resultado['devolucion'];
+        $nota = $resultado['nota_credito'];
 
-            $nota = null;
-            if ($tipoReembolso === 'nota_credito' && $devolucion->monto_devolucion > 0) {
-                $nota = $notaCreditoService->crearDesdeDevolucion($devolucion);
-                $devolucion->update(['nota_credito_id' => $nota->id]);
-            }
+        $devolucion->load(['venta.cliente', 'ventaSombra', 'items.variante.producto', 'pagos.metodoPago']);
 
-            $devolucion->load(['venta.cliente', 'ventaSombra', 'items.variante.producto', 'pagos.metodoPago']);
-
-            return response()->json([
-                'data' => new DevolucionResource($devolucion),
-                'nota_credito' => $nota ? ['id' => $nota->id, 'monto_original' => $nota->monto_original] : null,
-            ], 201);
-        });
+        return response()->json([
+            'data' => new DevolucionResource($devolucion),
+            'nota_credito' => $nota ? ['id' => $nota->id, 'monto_original' => $nota->monto_original] : null,
+        ], 201);
     }
 }

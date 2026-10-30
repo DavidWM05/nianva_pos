@@ -12,9 +12,8 @@ use Illuminate\Http\Request;
 /**
  * CRUD de cuentas por cobrar.
  *
- * store() NO existe aqui -- las CxC se crean orquestadas desde
- * VentaController::store() cuando tipo_pago = 'credito' (ver
- * VentaController, instancia #4 de orquestacion documentada).
+ * store() NO existe aqui -- las CxC se crean orquestadas desde el flujo
+ * de venta cuando tipo_pago = 'credito'.
  */
 class CuentaCobrarController extends Controller
 {
