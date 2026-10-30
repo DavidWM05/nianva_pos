@@ -6,11 +6,10 @@ completa — el razonamiento detrás de cada regla vive en
 repitas aquí.
 
 > **Estándares aprobados (2026-10-30):** [docs/estandares/](../docs/estandares/README.md) manda
-> sobre este archivo. La lista de orquestación en Controller (§2) y el mapa central de
-> `error_code` en `bootstrap/app.php` (§3) están en retirada (C1, C11): no se agregan
-> instancias nuevas; lo nuevo sigue API-04 (cada excepción declara su `error_code`) y ARQ-03
-> (orquestación en Actions de aplicación). Este archivo se reescribe en el saneamiento de la
-> Fase 1.
+> sobre este archivo. La lista de orquestación en Controller (§2) está en retirada (C11): no
+> se agregan instancias nuevas; lo nuevo sigue ARQ-03 (orquestación en Actions de
+> aplicación). El mapa central de `error_code` ya se retiró (C1, ver §3). Este archivo se
+> reescribe en el saneamiento de la Fase 1.
 
 ## 1. Módulos y dirección de dependencia (nivel `Services`)
 
@@ -56,8 +55,11 @@ Una 4ª instancia es válida solo si: la orquestación queda en el `Controller` 
 - **Pago mixto**: toda entidad que cobra/paga usa una tabla `*_pagos` dedicada
   (`venta_pagos`, `apartado_abono_pagos`, `devolucion_pagos`). Nunca un campo de método de
   pago + valor mágico (`forma_pago = 'mixto'`) en la entidad padre.
-- **`error_code`**: toda excepción de negocio nueva se mapea en `bootstrap/app.php` con un
-  `error_code` estable en la respuesta 422. Nunca esperes que el frontend parsee `message`.
+- **`error_code`**: toda excepción de negocio extiende `ExcepcionNegocio` (Núcleo) y declara
+  `errorCode()`, `status()` y `contexto()`; el manejador genérico de `bootstrap/app.php` arma
+  la respuesta (API-04). Nunca agregues un mapeo por excepción en `bootstrap/app.php`. Tras
+  crear o cambiar una, regenera `docs/estandares/catalogo_error_code.md` con
+  `php artisan errores:catalogo`. Nunca esperes que el frontend parsee `message`.
 
 ## 4. Convención de frontend
 
