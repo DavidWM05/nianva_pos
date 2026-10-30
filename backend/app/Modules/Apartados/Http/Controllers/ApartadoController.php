@@ -7,8 +7,8 @@ use App\Modules\Apartados\Http\Resources\ApartadoResource;
 use App\Modules\Apartados\Models\Apartado;
 use App\Modules\Apartados\Services\ApartadoService;
 use App\Modules\Inventario\Support\ReglasVariante;
+use App\Modules\Nucleo\Support\ReglasTenant;
 use Illuminate\Http\Request;
-use Illuminate\Validation\Rule;
 
 /**
  * Como VentaController, nunca calcula un precio ni atrapa las excepciones
@@ -73,7 +73,7 @@ class ApartadoController extends Controller
         $tenantId = $request->user()->tenant_id;
 
         $validated = $request->validate([
-            'cliente_id' => ['required', 'integer', Rule::exists('clientes', 'id')->where('tenant_id', $tenantId)],
+            'cliente_id' => ['required', 'integer', ReglasTenant::existe('clientes', $tenantId)],
             'items' => ['required', 'array', 'min:1'],
             'items.*.variante_id' => ['required', 'integer', ReglasVariante::delTenant($tenantId)],
             'items.*.cantidad' => ['required', 'integer', 'min:1'],
@@ -102,10 +102,12 @@ class ApartadoController extends Controller
 
     public function registrarAbono(Request $request, Apartado $apartado, ApartadoService $apartadoService)
     {
+        $tenantId = $request->user()->tenant_id;
+
         $validated = $request->validate([
             'monto' => ['required', 'numeric', 'min:0.01'],
             'pagos' => ['required', 'array', 'min:1'],
-            'pagos.*.metodo_pago_id' => ['required', 'integer', 'exists:metodos_pago,id'],
+            'pagos.*.metodo_pago_id' => ['required', 'integer', ReglasTenant::existeGlobalODelTenant('metodos_pago', $tenantId)],
             'pagos.*.monto' => ['required', 'numeric', 'min:0.01'],
             'notas' => ['nullable', 'string'],
         ]);

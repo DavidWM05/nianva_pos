@@ -3,7 +3,9 @@
 namespace App\Modules\Produccion\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Modules\Inventario\Support\ReglasVariante;
 use App\Modules\Nucleo\Services\TenantContext;
+use App\Modules\Nucleo\Support\ReglasTenant;
 use App\Modules\Produccion\Http\Resources\InsumoResource;
 use App\Modules\Produccion\Http\Resources\OrdenProduccionResource;
 use App\Modules\Produccion\Http\Resources\RecetaResource;
@@ -60,7 +62,15 @@ class ProduccionController extends Controller
 
     public function insumosStore(Request $request)
     {
-        $v = $request->validate(['nombre' => 'required|string|max:200', 'sku' => 'nullable|string|max:50|unique:insumos,sku', 'unidad_medida_id' => 'required|integer|exists:unidades_medida,id', 'costo' => 'nullable|numeric|min:0', 'stock_minimo' => 'nullable|numeric|min:0']);
+        $tenantId = app(TenantContext::class)->id();
+
+        $v = $request->validate([
+            'nombre' => 'required|string|max:200',
+            'sku' => 'nullable|string|max:50|unique:insumos,sku',
+            'unidad_medida_id' => ['required', 'integer', ReglasTenant::existeGlobalODelTenant('unidades_medida', $tenantId)],
+            'costo' => 'nullable|numeric|min:0',
+            'stock_minimo' => 'nullable|numeric|min:0',
+        ]);
         $v['tenant_id'] = app(TenantContext::class)->id();
         return (new InsumoResource(Insumo::create($v)))->response()->setStatusCode(201);
     }
@@ -73,8 +83,10 @@ class ProduccionController extends Controller
 
     public function insumoStocksStore(Request $request, Insumo $insumo)
     {
+        $tenantId = app(TenantContext::class)->id();
+
         $validated = $request->validate([
-            'sucursal_id' => ['required', 'integer', 'exists:sucursales,id'],
+            'sucursal_id' => ['required', 'integer', ReglasTenant::existe('sucursales', $tenantId)],
             'cantidad' => ['required', 'numeric', 'min:0.01'],
             'lote' => ['nullable', 'string', 'max:50'],
             'fecha_vencimiento' => ['nullable', 'date'],
@@ -128,14 +140,16 @@ class ProduccionController extends Controller
 
     public function recetasStore(Request $request)
     {
+        $tenantId = app(TenantContext::class)->id();
+
         $v = $request->validate([
-            'variante_id' => 'required|integer|exists:producto_variantes,id',
+            'variante_id' => ['required', 'integer', ReglasVariante::delTenant($tenantId)],
             'nombre' => 'required|string|max:200', 'rendimiento' => 'nullable|numeric|min:0.01',
             'instrucciones' => 'nullable|string', 'descripcion' => 'nullable|string',
             'ingredientes' => 'required|array|min:1',
-            'ingredientes.*.insumo_id' => 'required|integer|exists:insumos,id',
+            'ingredientes.*.insumo_id' => ['required', 'integer', ReglasTenant::existe('insumos', $tenantId)],
             'ingredientes.*.cantidad' => 'required|numeric|min:0.01',
-            'ingredientes.*.unidad_medida_id' => 'required|integer|exists:unidades_medida,id',
+            'ingredientes.*.unidad_medida_id' => ['required', 'integer', ReglasTenant::existeGlobalODelTenant('unidades_medida', $tenantId)],
         ]);
         $v['tenant_id'] = app(TenantContext::class)->id();
         return (new RecetaResource($this->produccionService->crearReceta($v)))->response()->setStatusCode(201);
@@ -167,7 +181,14 @@ class ProduccionController extends Controller
 
     public function ordenesStore(Request $request)
     {
-        $v = $request->validate(['receta_id' => 'required|integer|exists:recetas,id', 'cantidad_programada' => 'required|integer|min:1', 'fecha_programada' => 'nullable|date', 'notas' => 'nullable|string|max:1000']);
+        $tenantId = app(TenantContext::class)->id();
+
+        $v = $request->validate([
+            'receta_id' => ['required', 'integer', ReglasTenant::existe('recetas', $tenantId)],
+            'cantidad_programada' => 'required|integer|min:1',
+            'fecha_programada' => 'nullable|date',
+            'notas' => 'nullable|string|max:1000',
+        ]);
         $v['tenant_id'] = app(TenantContext::class)->id();
         $v['sucursal_id'] = $request->user()->sucursal_id;
         $v['usuario_id'] = $request->user()->id;
@@ -210,9 +231,11 @@ class ProduccionController extends Controller
 
     public function transformacionStore(Request $request)
     {
+        $tenantId = app(TenantContext::class)->id();
+
         $v = $request->validate([
-            'variante_origen_id' => 'required|integer|exists:producto_variantes,id',
-            'variante_destino_id' => 'required|integer|exists:producto_variantes,id',
+            'variante_origen_id' => ['required', 'integer', ReglasVariante::delTenant($tenantId)],
+            'variante_destino_id' => ['required', 'integer', ReglasVariante::delTenant($tenantId)],
             'cantidad_origen' => 'required|numeric|min:0.01',
             'cantidad_destino' => 'required|numeric|min:0.01',
             'notas' => 'nullable|string|max:1000',

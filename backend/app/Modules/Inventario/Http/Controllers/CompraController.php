@@ -5,8 +5,8 @@ namespace App\Modules\Inventario\Http\Controllers;
 use App\Http\Controllers\Controller;
 use App\Modules\Inventario\Services\InventarioService;
 use App\Modules\Inventario\Support\ReglasVariante;
+use App\Modules\Nucleo\Support\ReglasTenant;
 use Illuminate\Http\Request;
-use Illuminate\Validation\Rule;
 
 /**
  * Unica puerta HTTP hacia InventarioService::registrarCompra(). Antes de
@@ -25,7 +25,7 @@ class CompraController extends Controller
         $tenantId = $request->user()->tenant_id;
 
         $validated = $request->validate([
-            'proveedor_id' => ['required', 'integer', Rule::exists('proveedores', 'id')->where('tenant_id', $tenantId)],
+            'proveedor_id' => ['required', 'integer', ReglasTenant::existe('proveedores', $tenantId)],
             'numero_comprobante' => ['nullable', 'string', 'max:60'],
             'items' => ['required', 'array', 'min:1'],
             'items.*.variante_id' => ['required', 'integer', ReglasVariante::delTenant($tenantId)],

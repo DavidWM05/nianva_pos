@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Modules\Crm\Http\Resources\PlanPagoResource;
 use App\Modules\Crm\Models\PlanPagoCliente;
 use App\Modules\Crm\Services\VentasPlazosService;
+use App\Modules\Crm\Support\ReglasCuota;
 use App\Modules\Tpv\Models\Venta;
 use Illuminate\Http\Request;
 
@@ -64,8 +65,10 @@ class PlanPagoController extends Controller
 
     public function pagarCuota(Request $request, PlanPagoCliente $plan)
     {
+        $tenantId = $request->user()->tenant_id;
+
         $v = $request->validate([
-            'cuota_id' => 'required|integer|exists:planes_pago_cliente_cuotas,id',
+            'cuota_id' => ['required', 'integer', ReglasCuota::delTenant($tenantId)],
             'monto' => 'nullable|numeric|min:0.01',
         ]);
 

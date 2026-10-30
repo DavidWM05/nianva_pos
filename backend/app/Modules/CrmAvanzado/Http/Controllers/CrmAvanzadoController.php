@@ -9,6 +9,7 @@ use App\Modules\CrmAvanzado\Models\CrmCampana;
 use App\Modules\CrmAvanzado\Models\CrmInteraccion;
 use App\Modules\CrmAvanzado\Models\LoyaltyTransaccion;
 use App\Modules\CrmAvanzado\Services\CrmAvanzadoService;
+use App\Modules\Nucleo\Support\ReglasTenant;
 use App\Modules\Crm\Models\Cliente;
 use Illuminate\Http\Request;
 
@@ -96,10 +97,12 @@ class CrmAvanzadoController extends Controller
 
     public function enviarCampana(Request $request)
     {
+        $tenantId = $request->user()->tenant_id;
+
         $validated = $request->validate([
             'segmento' => ['nullable', 'string', 'in:todos,nuevo,frecuente,vip,inactivo'],
             'cliente_ids' => ['nullable', 'array'],
-            'cliente_ids.*' => ['integer', 'exists:clientes,id'],
+            'cliente_ids.*' => ['integer', ReglasTenant::existe('clientes', $tenantId)],
             'asunto' => ['required', 'string', 'max:200'],
             'mensaje' => ['required', 'string', 'max:5000'],
         ]);

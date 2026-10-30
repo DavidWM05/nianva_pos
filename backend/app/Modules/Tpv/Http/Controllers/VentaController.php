@@ -14,6 +14,7 @@ use App\Modules\Precios\Models\Cupon;
 use App\Modules\Precios\Services\PrecioService;
 use App\Modules\Precios\Support\ResultadoCupon;
 use App\Modules\Nucleo\Models\Sucursal;
+use App\Modules\Nucleo\Support\ReglasTenant;
 use App\Modules\Tpv\Http\Resources\VentaResource;
 use App\Modules\Tpv\Models\Venta;
 use App\Modules\Tpv\Models\VentaDetalle;
@@ -21,7 +22,6 @@ use App\Modules\Tpv\Models\VentaPago;
 use App\Modules\Tpv\Services\VentaService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Validation\Rule;
 
 /**
  * Vive en Tpv (no en Crm) a proposito: Tpv ya depende de Crm (Venta
@@ -107,17 +107,17 @@ class VentaController extends Controller
         $tenantId = $request->user()->tenant_id;
 
         $validated = $request->validate([
-            'cliente_id' => ['required', 'integer', Rule::exists('clientes', 'id')->where('tenant_id', $tenantId)],
+            'cliente_id' => ['required', 'integer', ReglasTenant::existe('clientes', $tenantId)],
             'items' => ['required', 'array', 'min:1'],
             'items.*.variante_id' => ['required', 'integer', ReglasVariante::delTenant($tenantId)],
             'items.*.cantidad' => ['required', 'integer', 'min:1'],
             'pagos' => ['required', 'array', 'min:1'],
-            'pagos.*.metodo_pago_id' => ['required', 'integer', 'exists:metodos_pago,id'],
+            'pagos.*.metodo_pago_id' => ['required', 'integer', ReglasTenant::existeGlobalODelTenant('metodos_pago', $tenantId)],
             'pagos.*.monto' => ['required', 'numeric', 'min:0.01'],
             'cupon_codigo' => ['nullable', 'string'],
             'descuento_manual' => ['nullable', 'numeric', 'min:0'],
             'gift_card_codigo' => ['nullable', 'string', 'max:50'],
-            'nota_credito_id' => ['nullable', 'integer', 'exists:notas_credito,id'],
+            'nota_credito_id' => ['nullable', 'integer', ReglasTenant::existe('notas_credito', $tenantId)],
         ]);
 
         $usuario = $request->user();

@@ -3,7 +3,9 @@
 namespace App\Modules\Precios\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Modules\Inventario\Support\ReglasVariante;
 use App\Modules\Nucleo\Services\TenantContext;
+use App\Modules\Nucleo\Support\ReglasTenant;
 use App\Modules\Precios\Http\Resources\ReglaPrecioResource;
 use App\Modules\Precios\Models\ReglaPrecio;
 use Illuminate\Http\Request;
@@ -100,6 +102,8 @@ class ReglaPrecioController extends Controller
      */
     private function validarDatos(Request $request): array
     {
+        $tenantId = app(TenantContext::class)->id();
+
         $validated = $request->validate([
             'nombre' => ['required', 'string', 'max:120'],
             'tipo' => ['required', Rule::in(['porcentaje', 'monto_fijo', 'nxm', 'bundle'])],
@@ -108,9 +112,9 @@ class ReglaPrecioController extends Controller
             'cantidad_paga' => ['nullable', 'integer', 'min:1'],
             'precio_bundle' => ['nullable', 'numeric', 'min:0'],
             'aplica_a' => ['required', Rule::in(['todo', 'categoria', 'producto', 'variante'])],
-            'categoria_id' => ['nullable', 'integer', 'exists:categorias,id'],
-            'producto_id' => ['nullable', 'integer', 'exists:productos,id'],
-            'variante_id' => ['nullable', 'integer', 'exists:producto_variantes,id'],
+            'categoria_id' => ['nullable', 'integer', ReglasTenant::existe('categorias', $tenantId)],
+            'producto_id' => ['nullable', 'integer', ReglasTenant::existe('productos', $tenantId)],
+            'variante_id' => ['nullable', 'integer', ReglasVariante::delTenant($tenantId)],
             'fecha_inicio' => ['nullable', 'date'],
             'fecha_fin' => ['nullable', 'date', 'after_or_equal:fecha_inicio'],
         ]);

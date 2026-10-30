@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Modules\CuentasPagar\Http\Resources\CuentaPagarResource;
 use App\Modules\CuentasPagar\Models\CuentaPagar;
 use App\Modules\CuentasPagar\Services\CuentasPagarService;
+use App\Modules\Nucleo\Support\ReglasTenant;
 use Illuminate\Http\Request;
 
 class CuentaPagarController extends Controller
@@ -57,9 +58,11 @@ class CuentaPagarController extends Controller
 
     public function registrarPago(Request $request, int $id, CuentasPagarService $service)
     {
+        $tenantId = $request->user()->tenant_id;
+
         $validated = $request->validate([
             'monto' => ['required', 'numeric', 'min:0.01'],
-            'metodo_pago_id' => ['required', 'integer', 'exists:metodos_pago,id'],
+            'metodo_pago_id' => ['required', 'integer', ReglasTenant::existeGlobalODelTenant('metodos_pago', $tenantId)],
             'referencia' => ['nullable', 'string', 'max:100'],
         ]);
 
