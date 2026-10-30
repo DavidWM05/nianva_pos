@@ -2,12 +2,17 @@
 
 namespace App\Modules\CuentasCobrar\Exceptions;
 
-use RuntimeException;
+use App\Modules\Nucleo\Exceptions\ExcepcionNegocio;
 
-class CuentaAnuladaException extends RuntimeException
+class CuentaAnuladaException extends ExcepcionNegocio
 {
     public function __construct(int $cuentaId)
     {
         parent::__construct("La cuenta por cobrar {$cuentaId} está anulada.");
+    }
+
+    public function errorCode(): string
+    {
+        return 'cuenta_anulada';
     }
 }

@@ -2,12 +2,17 @@
 
 namespace App\Modules\GiftCards\Exceptions;
 
-use RuntimeException;
+use App\Modules\Nucleo\Exceptions\ExcepcionNegocio;
 
-class MontoInvalidoException extends RuntimeException
+class MontoInvalidoException extends ExcepcionNegocio
 {
     public function __construct()
     {
         parent::__construct('El monto debe ser mayor a cero.');
+    }
+
+    public function errorCode(): string
+    {
+        return 'monto_invalido';
     }
 }

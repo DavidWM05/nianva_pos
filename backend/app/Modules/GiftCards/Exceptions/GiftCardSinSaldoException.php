@@ -2,12 +2,17 @@
 
 namespace App\Modules\GiftCards\Exceptions;
 
-use RuntimeException;
+use App\Modules\Nucleo\Exceptions\ExcepcionNegocio;
 
-class GiftCardSinSaldoException extends RuntimeException
+class GiftCardSinSaldoException extends ExcepcionNegocio
 {
     public function __construct(string $codigo = '')
     {
         parent::__construct("La Gift Card {$codigo} no tiene saldo disponible.");
+    }
+
+    public function errorCode(): string
+    {
+        return 'gift_card_sin_saldo';
     }
 }

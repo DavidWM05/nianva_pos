@@ -10,7 +10,8 @@ use RuntimeException;
  * previo del cual caer hacia atras -- si el servidor de licencias no
  * responde o rechaza la activacion, no hay nada que "seguir funcionando
  * con el ultimo estado conocido", asi que esto se propaga como error duro.
- * Solo la usa licencia:activar (CLI) hoy -- no esta mapeada a un error_code
- * HTTP en bootstrap/app.php porque no se lanza desde ningun Controller.
+ * Solo la usa licencia:activar (CLI) hoy -- no se lanza desde ningun
+ * Controller, por eso no extiende ExcepcionNegocio ni declara un error_code
+ * HTTP.
  */
 class LicenciaActivacionFallidaException extends RuntimeException {}
