@@ -14,7 +14,7 @@ componentes compartidos que describe este README.
 ```
 frontend/
 ├── apps/
-│   └── nucleo-shell/          App principal: sidebar, breadcrumbs, rutas de todos los modulos
+│   └── pos/          App principal: sidebar, breadcrumbs, rutas de todos los modulos
 ├── libs/
 │   ├── design-tokens/         Paleta, tipografia, espaciado, radios -- fuente unica de verdad
 │   └── ui-shared/              Componentes base reutilizables (tabla, badge, dialogo, form, etc.)
@@ -24,9 +24,9 @@ frontend/
 
 ```bash
 pnpm install
-pnpm exec nx serve nucleo-shell       # dev server
-pnpm exec nx build nucleo-shell       # build de produccion
-pnpm exec nx test nucleo-shell        # tests de la app
+pnpm exec nx serve pos       # dev server
+pnpm exec nx build pos       # build de produccion
+pnpm exec nx test pos        # tests de la app
 pnpm exec nx test ui-shared           # tests de la libreria de componentes
 pnpm exec nx sync                     # sincroniza project references de TS (correr tras agregar libs/apps)
 ```
@@ -81,7 +81,7 @@ Cuándo usar cada componente:
   (General/Relacionado/Auditoría), un `<ng-template>` por pestaña vía content projection.
   **Estructura obligatoria de toda vista `*-detalle`** de una entidad raíz -- ver la convención
   de vistas más abajo; hoy la usan las 22 pantallas `*-detalle` del frontend (`grep -rl ""
-  apps/nucleo-shell/src/app/modules --include="*-detalle.component.ts"` para la lista completa
+  apps/pos/src/app/modules --include="*-detalle.component.ts"` para la lista completa
   y actualizada), sin ninguna excepción.
 - `EntidadSelectorComponent` (`nucleo-entidad-selector`) -- autocomplete server-side de una
   entidad (`[buscador]`) con, opcionalmente, un segundo select en cascada de sus "hijos"
@@ -91,7 +91,7 @@ Cuándo usar cada componente:
 
 ## Convención de navegación
 
-`apps/nucleo-shell/src/app/modules/modules.config.ts` es la **fuente única de verdad** del
+`apps/pos/src/app/modules/modules.config.ts` es la **fuente única de verdad** del
 sidebar -- agregar un módulo nuevo es una línea ahí, no tocar `SidebarComponent` ni duplicar la
 lista en `app.routes.ts` (las rutas se arman aparte, pero deben apuntar a los mismos `path`).
 
@@ -178,7 +178,7 @@ El mecanismo, en tres piezas:
 1. **Contrato genérico** (`libs/ui-shared/src/lib/entidad-selector/entidad-selector.types.ts`):
    `abstract class BuscadorEntidad<T> { buscar(texto): Observable<T[]>; obtener(id): Observable<T>; }`.
    `ui-shared` no sabe qué hay detrás.
-2. **Token de inyección por tipo de entidad**, en `apps/nucleo-shell/src/app/core/buscadores-entidad.tokens.ts`
+2. **Token de inyección por tipo de entidad**, en `apps/pos/src/app/core/buscadores-entidad.tokens.ts`
    (vive en `app/core`, no en `ui-shared` ni en ningún módulo, porque tanto quien consume la
    entidad como quien la expone necesitan referenciarlo sin importarse entre sí):
 
@@ -215,9 +215,9 @@ Tokens hoy (`core/buscadores-entidad.tokens.ts`): `BUSCADOR_PRODUCTO`,
 
 ## Lazy loading + `@defer`
 
-Cada módulo es una ruta con `loadComponent` propia en `apps/nucleo-shell/src/app/app.routes.ts`
+Cada módulo es una ruta con `loadComponent` propia en `apps/pos/src/app/app.routes.ts`
 -- su bundle no se descarga hasta que se navega a él (ver el desglose de chunks en la salida de
-`pnpm exec nx build nucleo-shell`).
+`pnpm exec nx build pos`).
 
 Dentro de una pantalla ya cargada, la pestaña de Auditoría de cualquier vista de registro se
 difiere un nivel más con `@defer (on viewport)`, para no pagar el costo de
@@ -237,8 +237,8 @@ efectivamente hace scroll hasta esa pestaña. Ejemplo real, `cliente-detalle.com
 ```
 
 Mismo patrón en las demás 21 vistas `*-detalle` que tienen pestaña de Auditoría (`grep -rl
-"@defer" apps/nucleo-shell/src/app/modules --include="*.html"` para la lista completa --
-prácticamente toda vista de registro auditada lo usa). `apps/nucleo-shell/src/app/demo/registro-ejemplo.component.ts`
+"@defer" apps/pos/src/app/modules --include="*.html"` para la lista completa --
+prácticamente toda vista de registro auditada lo usa). `apps/pos/src/app/demo/registro-ejemplo.component.ts`
 sigue como el scaffold mínimo original de este patrón (útil para copiar/pegar en un módulo
 nuevo), pero ya no es el único ejemplo -- es una entre 22 pantallas de negocio reales que lo
 usan hoy.

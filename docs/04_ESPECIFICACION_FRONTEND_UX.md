@@ -22,7 +22,7 @@
 
 ## 1. Sidebar — Nueva agrupación
 
-En `frontend/apps/nucleo-shell/src/app/modules/modules.config.ts`:
+En `frontend/apps/pos/src/app/modules/modules.config.ts`:
 
 ```typescript
 // Agregar al grupo existente o crear nuevo grupo "Financiero"

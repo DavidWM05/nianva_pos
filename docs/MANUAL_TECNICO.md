@@ -249,9 +249,8 @@ scaffold, nadie los ha parametrizado todavía. Renómbralos a mano:
 - `backend/.env` (no `.env.example`, ese se queda como plantilla) → `APP_NAME=Núcleo` — cámbialo
   al nombre real del producto. Se propaga solo a `MAIL_FROM_NAME` y `VITE_APP_NAME`
   (`.env.example` líneas 62 y 70) porque ambos leen `${APP_NAME}`.
-- `frontend/package.json` → campo `"name"` sigue en `"@org/source"` — cámbialo al scope/nombre
-  real de tu paquete si vas a publicar algo, o dejarlo si el frontend nunca se publica a un
-  registro.
+- `frontend/package.json` → campo `"name"`: en Nianva POS es `"@nianva/source"`, y la librería
+  se importa como `@nianva/ui-shared`; un producto nuevo usa su propio alcance.
 
 No hay ningún otro identificador de "Núcleo" hardcodeado que bloquee un rename — el resto del
 código no depende del nombre del proyecto.
@@ -309,7 +308,7 @@ un error aquí es un error de aislamiento de datos entre clientes, no un bug cos
 - Los tokens de diseño (§3.c).
 - El catálogo de permisos (`NucleoRolesPermisosSeeder::PERMISOS`) y los roles de sistema que
   siembras — agregar/quitar módulos de negocio implica agregar/quitar sus permisos aquí.
-- `NUCLEO_NAV_GROUPS`/`NUCLEO_ITEM_INICIO` (`frontend/apps/nucleo-shell/src/app/modules/modules.config.ts`)
+- `NUCLEO_NAV_GROUPS`/`NUCLEO_ITEM_INICIO` (`frontend/apps/pos/src/app/modules/modules.config.ts`)
   — la agrupación del sidebar es específica de cada producto.
 - Cualquier módulo nuevo, exclusivo de tu vertical (expediente clínico, citas, boletas
   escolares, ...) — vive fuera de los 10 módulos del núcleo, siguiendo la misma estructura de
@@ -327,8 +326,8 @@ un error aquí es un error de aislamiento de datos entre clientes, no un bug cos
       2FA obligatorio (`vendedor@nucleo.test` o equivalente) y uno que sí lo requiere
       (`admin@nucleo.test`, completando el TOTP con el secreto impreso en consola por el seeder).
 - [ ] `php artisan test` (backend) en verde.
-- [ ] `pnpm exec nx run-many -t test -p nucleo-shell ui-shared` (frontend) en verde.
-- [ ] `pnpm exec nx build nucleo-shell` (producción) termina sin errores.
+- [ ] `pnpm exec nx run-many -t test -p pos ui-shared` (frontend) en verde.
+- [ ] `pnpm exec nx build pos` (producción) termina sin errores.
 - [ ] `php artisan licencia:activar {tenant_id}` corrido contra el servidor de licencias REAL
       (no un fake) al menos una vez, con `LICENCIAS_PRODUCTO_SLUG`/`LICENCIAS_SERVIDOR_URL` ya
       configurados (ver §3.a) — confirma que el producto está bien registrado ahí antes de

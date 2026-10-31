@@ -61,7 +61,7 @@ campaña, hace falta ese componente nuevo (o una lista con checkboxes ad-hoc).
 
 ### Presupuesto de bundle excedido
 
-Cada build de producción (`nx build nucleo-shell --configuration=production`) reporta el
+Cada build de producción (`nx build pos --configuration=production`) reporta el
 initial chunk por encima del budget configurado (~777 KB vs 500 KB). No se investigó a fondo —
 candidatos obvios: revisar qué se está cargando eager en vez de lazy, o simplemente subir el
 budget en `project.json` si 777 KB ya es un tamaño aceptado. Warning recurrente, no bloqueante.

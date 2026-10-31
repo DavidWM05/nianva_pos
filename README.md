@@ -36,7 +36,7 @@ está en [docs/CONTEXTO_MIGRACION.md](docs/CONTEXTO_MIGRACION.md).
 ```
 nianva_pos/
 ├── backend/    API Laravel 13 (PHP 8.3): app/Modules/<Modulo>, Actions en app/Aplicacion
-├── frontend/   Workspace Nx 23 + Angular 22: app nucleo-shell y librería ui-shared
+├── frontend/   Workspace Nx 23 + Angular 22: app pos y librería ui-shared (@nianva/ui-shared)
 └── docs/       Estándares, contexto de la migración y referencia
 ```
 
@@ -77,13 +77,13 @@ Las migraciones de dominio se reescriben mientras no haya datos en producción (
 
 ```bash
 cd backend && php artisan serve                  # http://localhost:8000
-cd frontend && pnpm exec nx serve nucleo-shell   # http://localhost:4200
+cd frontend && pnpm exec nx serve pos   # http://localhost:4200
 ```
 
 **Cómo se hablan:**
 - La API vive en `/api/v1`. Las rutas de sesión de Sanctum (`/login`, `/logout`,
   `/login/2fa-verify`, `/password/*`, `/sanctum/csrf-cookie`) están en la raíz, sin versión.
-- El frontend lee la dirección del backend de `frontend/apps/nucleo-shell/public/config.json`
+- El frontend lee la dirección del backend de `frontend/apps/pos/public/config.json`
   al arrancar (`{ "apiBaseUrl": "http://localhost:8000" }`). Sin ese archivo usa el mismo
   origen.
 - CORS y Sanctum ya apuntan a `localhost:4200` (`backend/config/cors.php` y
