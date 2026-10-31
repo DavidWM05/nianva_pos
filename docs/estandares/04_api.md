@@ -7,14 +7,20 @@
 
 ### API-01 · Versión en la ruta
 - **Regla:**
-  - todas las rutas viven bajo `/api/v1`;
+  - todas las rutas de la API viven bajo `/api/v1` (`apiPrefix` en `bootstrap/app.php`);
+  - las rutas de sesión de Sanctum (`/login`, `/logout`, `/login/2fa-verify`, `/password/*`,
+    `/sanctum/csrf-cookie`) viven en `routes/web.php`, en la raíz y sin versión: son el flujo
+    de cookie y CSRF, no recursos;
+  - el frontend no fija la dirección del backend: la lee de `config.json` al arrancar
+    (`urlApi()` / `urlSesion()`); sin ese archivo usa el mismo origen;
   - un cambio incompatible (quitar un campo, cambiar un tipo o un significado) crea `/api/v2`
     para ese recurso, y `v1` se mantiene hasta que todas las instalaciones locales se
     actualicen;
   - agregar un campo opcional no es un cambio incompatible.
 - **Por qué:** con instalaciones de escritorio y LAN, el frontend y el backend de un cliente
   pueden quedar en versiones distintas durante una actualización (C5).
-- **Verifica:** un test que recorre las rutas `api/*` y exige el prefijo `api/v{n}`.
+- **Verifica:** `Arquitectura/RutasVersionadasTest` (toda ruta `api/*` empieza con `api/v{n}/`
+  y ninguna de `routes/web.php` empieza con `api/`).
 - **Desde:** Fase 1.
 
 ### API-02 · Sobre de respuesta

@@ -235,6 +235,17 @@ repo.
   `SucursalDelContextoTest` y `PENDIENTES` vacía en `EntradasTipadasTest` (DS comprobó que
   sigue fallando si un controller vuelve a validar en línea). Ningún controller valida en
   línea. Backend: 448 tests; línea base de PHPStan: 1392 (1495 al crearla).
+- **C5 resuelto, API-01** (decimosexto encargo, hecho por DS): la API vive en `/api/v1`
+  (`apiPrefix` en `bootstrap/app.php`). Decisión del responsable: las rutas de sesión de
+  Sanctum (`/login`, `/logout`, `/login/2fa-verify`, `/password/*`, `/sanctum/csrf-cookie`)
+  quedan en la raíz, sin versión. El frontend lee `apiBaseUrl` de `public/config.json` antes
+  del bootstrap (`core/runtime-config.ts`); si falta, usa el mismo origen. Los servicios usan
+  `urlApi()` y `urlSesion()` (`core/api-config.ts`). Excepción a PRO-01 autorizada: en 76
+  tests del backend solo cambiaron URLs (362 inserciones de `v1/`, verificado con
+  `--word-diff`). Corrección propia en la revisión: con base vacía, el interceptor XSRF
+  aceptaba `//otro-dominio/...` como propia; ya no, con su test. Los documentos de contrato
+  (`02_CONTRATO_API.md`, `API_SPECIFICATION.md`, `MANUAL_TECNICO.md`) pasan a `/api/v1`.
+  Backend: 450 tests; `nucleo-shell`: 429. En la Fase 8, el instalador escribe `config.json`.
 - **Pendientes detectados:**
   - dependencias fuera del grafo: `Crm` lee `Venta` de Tpv (`PlanPagoController`,
     `PlanPagoCliente`, `VentasPlazosService`; es un ciclo, porque Tpv → Crm);
@@ -259,15 +270,13 @@ repo.
 1. **Saneamiento de la Fase 1**, en encargos de un tema cada uno. Hecho: CI con ambas
    suites, C1 (D4), las validaciones de negocio (500 → 422) y las reglas `exists` con
    tenant (API-05), la unicidad con tenant (DAT-09, C4), C11 (D5) y el análisis estático
-   bloqueante (Pint, ESLint, PHPStan), C7 (DAT-14), C2 (SEG-03), C3 (SEG-02) y C8 (ARQ-02). Lo que sigue:
+   bloqueante (Pint, ESLint, PHPStan), C7 (DAT-14), C2 (SEG-03), C3 (SEG-02), C8 (ARQ-02) y C5 (API-01). Lo que sigue:
    - `composer audit`: revisar los 23 advisories;
    - nombres internos: composer `nianva/pos` y alcance Nx `@nianva/*` (hoy `laravel/laravel`
      y `@org`); el nombre de la app Nx `nucleo-shell` queda por decidir;
    - `README.md` nuevo: producto único por planes y giros, derivado de `nucleo-erp-base`;
    - resolver los conflictos C1-C11 del README de estándares;
    - resto de PRO-05: stylelint, diff de OpenAPI y CODEOWNERS;
-   - prefijo `/api/v1` y configuración del frontend en tiempo de ejecución (sin
-     `localhost:8000` fijo);
    - después de C8: que los Services reciban DTOs en vez de arreglos (se hace al reescribirlos
      en las Fases 3 a 5); `RequiereDosFactorReciente` sigue validando dentro del middleware;
    - un chequeo en CI de codificación rota en `app/` y `tests/` (`??` seguido de letra,

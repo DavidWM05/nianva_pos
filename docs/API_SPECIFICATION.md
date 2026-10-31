@@ -49,7 +49,7 @@ Antes de detallar los endpoints, esto es lo que se corrigió respecto a lo que p
    = un solo método de pago, sin split). Queda marcado aquí como una divergencia real de la
    regla arquitectónica para que `BackendEngineer`/Orquestador decidan si vale la pena
    extenderla a una sub-tabla antes de migrar.
-5. **`POST /api/cuentas-cobrar` y `POST /api/cuentas-pagar` no existen como endpoints propios.**
+5. **`POST /api/v1/cuentas-cobrar` y `POST /api/v1/cuentas-pagar` no existen como endpoints propios.**
    `03_ESPECIFICACION_BACKEND.md` §2.1/§3.1 es explícito: la CxC/CxP se crea por **orquestación**
    dentro de `VentaController::store()` / `CompraController::store()` cuando la venta/compra es a
    crédito — nunca por un POST directo al recurso. Documentado en §14 (Extensiones a endpoints
@@ -62,7 +62,7 @@ Antes de detallar los endpoints, esto es lo que se corrigió respecto a lo que p
    Card, Ventas a Plazos) todas dentro de `VentaController`/`CompraController`/
    `DevolucionController` es una expansión de arquitectura que el Orquestador debe decidir
    explícitamente, no algo que yo deba asumir en silencio. Este documento **usa el endpoint
-   dedicado `POST /api/ventas/{ventaId}/plan-pago`** que sí aparece en `02_CONTRATO_API.md` §12
+   dedicado `POST /api/v1/ventas/{ventaId}/plan-pago`** que sí aparece en `02_CONTRATO_API.md` §12
    — evita agregar una instancia de orquestación nueva en `VentaController::store()` porque el
    plan se adjunta después, sobre una venta ya creada. Igual aplica la construcción de CxC/CxP
    (§5 arriba): si el Orquestador prefiere consolidar todo en `store()`, este contrato debe
@@ -177,10 +177,10 @@ padre primero y comparando su `tenant_id` en el Service — no hay una forma dir
 
 **Permiso base:** `cuentas_cobrar.ver` · **Feature gate:** `modulo:cxc`
 
-> No existe `POST /api/cuentas-cobrar` — se crea por orquestación desde `VentaController::store()`
+> No existe `POST /api/v1/cuentas-cobrar` — se crea por orquestación desde `VentaController::store()`
 > (ver §14.1).
 
-#### `GET /api/cuentas-cobrar`
+#### `GET /api/v1/cuentas-cobrar`
 **Permiso:** `cuentas_cobrar.ver`
 
 | Query | Tipo | Notas |
@@ -204,7 +204,7 @@ padre primero y comparando su `tenant_id` en el Service — no hay una forma dir
 ```
 `dias_vencida` es calculada (`max(0, today - fecha_vencimiento)`), no una columna.
 
-#### `GET /api/cuentas-cobrar/{cuentaCobrar}`
+#### `GET /api/v1/cuentas-cobrar/{cuentaCobrar}`
 **Permiso:** `cuentas_cobrar.ver`
 ```json
 {
@@ -221,7 +221,7 @@ padre primero y comparando su `tenant_id` en el Service — no hay una forma dir
 }
 ```
 
-#### `POST /api/cuentas-cobrar/{cuentaCobrar}/abonos`
+#### `POST /api/v1/cuentas-cobrar/{cuentaCobrar}/abonos`
 **Permiso:** `cuentas_cobrar.registrar_abono`
 ```json
 { "monto": 500.00, "metodo_pago_id": 1, "caja_sesion_id": 5, "referencia": null }
@@ -249,7 +249,7 @@ padre primero y comparando su `tenant_id` en el Service — no hay una forma dir
 }
 ```
 
-#### `POST /api/cuentas-cobrar/{cuentaCobrar}/anular`
+#### `POST /api/v1/cuentas-cobrar/{cuentaCobrar}/anular`
 **Permiso:** `cuentas_cobrar.anular`
 
 | Código | error_code |
@@ -264,12 +264,12 @@ Response: `CuentaCobrarResource` actualizada (estado `anulada`).
 
 **Permiso base:** `cuentas_pagar.ver` · **Feature gate:** `modulo:cxp`
 
-> No existe `POST /api/cuentas-pagar` — orquestada desde `CompraController::store()` (§14.2). No
+> No existe `POST /api/v1/cuentas-pagar` — orquestada desde `CompraController::store()` (§14.2). No
 > hay endpoint de anulación: el catálogo de permisos sembrado (`01_ARQUITECTURA_BASE.md` §15)
 > nunca definió `cuentas_pagar.anular`, y `02_CONTRATO_API.md` tampoco lo lista — se asume
 > intencional (una CxP se cancela cancelando la compra origen, fuera de este módulo).
 
-#### `GET /api/cuentas-pagar`
+#### `GET /api/v1/cuentas-pagar`
 **Permiso:** `cuentas_pagar.ver`
 
 | Query | Notas |
@@ -289,10 +289,10 @@ Response: `CuentaCobrarResource` actualizada (estado `anulada`).
 }
 ```
 
-#### `GET /api/cuentas-pagar/{cuentaPagar}`
+#### `GET /api/v1/cuentas-pagar/{cuentaPagar}`
 **Permiso:** `cuentas_pagar.ver` — detalle + `pagos` (mismo shape que `abonos` de CxC).
 
-#### `POST /api/cuentas-pagar/{cuentaPagar}/pagos`
+#### `POST /api/v1/cuentas-pagar/{cuentaPagar}/pagos`
 **Permiso:** `cuentas_pagar.registrar_pago`
 ```json
 { "monto": 5000.00, "metodo_pago_id": 3, "caja_sesion_id": 5, "referencia": "TRF-2026-001" }
@@ -311,7 +311,7 @@ Misma validación tenant-scoped que abonos de CxC.
 
 **Permiso base:** `cotizaciones.ver` · **Feature gate:** `modulo:cotizaciones`
 
-#### `GET /api/cotizaciones`
+#### `GET /api/v1/cotizaciones`
 **Permiso:** `cotizaciones.ver`
 
 | Query | Notas |
@@ -333,7 +333,7 @@ Misma validación tenant-scoped que abonos de CxC.
 }
 ```
 
-#### `POST /api/cotizaciones`
+#### `POST /api/v1/cotizaciones`
 **Permiso:** `cotizaciones.crear`
 ```json
 {
@@ -369,11 +369,11 @@ descuenta stock** (regla de dominio explícita en `03_ESPECIFICACION_BACKEND.md`
 
 **Response 201:** `CotizacionResource` con `items` cargados.
 
-#### `GET /api/cotizaciones/{cotizacion}`
+#### `GET /api/v1/cotizaciones/{cotizacion}`
 **Permiso:** `cotizaciones.ver` — detalle + `items` (variante, cantidad, precio_unitario,
 descuento, subtotal).
 
-#### `PUT /api/cotizaciones/{cotizacion}`
+#### `PUT /api/v1/cotizaciones/{cotizacion}`
 **Permiso:** `cotizaciones.editar` — mismas validaciones que `POST`. Reemplaza items (borra +
 reinserta, mismo patrón que `ReglaPrecioController`/recetas).
 
@@ -381,14 +381,14 @@ reinserta, mismo patrón que `ReglaPrecioController`/recetas).
 |---|---|
 | 422 | `cotizacion_no_editable` |
 
-#### `DELETE /api/cotizaciones/{cotizacion}`
+#### `DELETE /api/v1/cotizaciones/{cotizacion}`
 **Permiso:** `cotizaciones.eliminar` — soft, marca `anulada`.
 
 | Código | error_code |
 |---|---|
 | 422 | `cotizacion_no_anulable` |
 
-#### `POST /api/cotizaciones/{cotizacion}/convertir`
+#### `POST /api/v1/cotizaciones/{cotizacion}/convertir`
 **Permiso:** `cotizaciones.convertir`
 ```json
 { "pagos": [{ "metodo_pago_id": 1, "monto": 1750.00 }], "caja_sesion_id": 5 }
@@ -417,7 +417,7 @@ un segundo contrato de pago.
 como extensión del `ClienteController` existente (sub-recursos anidados bajo `/clientes/{id}`),
 consistente con `VentaController::porCliente()` que ya vive anidado bajo `/clientes/{cliente}`.
 
-#### `GET /api/clientes/{cliente}/interacciones`
+#### `GET /api/v1/clientes/{cliente}/interacciones`
 **Permiso:** `crm.interacciones.ver`
 
 | Query | Notas |
@@ -432,7 +432,7 @@ consistente con `VentaController::porCliente()` que ya vive anidado bajo `/clien
 }
 ```
 
-#### `POST /api/clientes/{cliente}/interacciones`
+#### `POST /api/v1/clientes/{cliente}/interacciones`
 **Permiso:** `crm.interacciones.crear`
 ```json
 { "tipo": "llamada", "observacion": "Cliente llamó para preguntar por estado de su pedido" }
@@ -444,7 +444,7 @@ consistente con `VentaController::porCliente()` que ya vive anidado bajo `/clien
 
 `usuario_id` = usuario autenticado. Response 201: `CrmInteraccionResource`.
 
-#### `GET /api/clientes/{cliente}/loyalty`
+#### `GET /api/v1/clientes/{cliente}/loyalty`
 **Permiso:** `loyalty.ver`
 ```json
 {
@@ -461,7 +461,7 @@ sub-array simple aquí porque `02_CONTRATO_API.md` no lo pedía paginado y el vo
 cliente es bajo; si un tenant acumula miles de movimientos, mover a `GET
 /clientes/{id}/loyalty/historial` paginado aparte.
 
-#### `POST /api/clientes/{cliente}/loyalty/ajustar`
+#### `POST /api/v1/clientes/{cliente}/loyalty/ajustar`
 **Permiso:** `loyalty.ajustar`
 ```json
 { "puntos": -50, "motivo": "Ajuste por devolución" }
@@ -479,7 +479,7 @@ hace falta que el cliente lo mande.
 |---|---|
 | 422 | `puntos_insuficientes` **[NUEVO]** — `puntos_loyalty + puntos < 0`. `03_ESPECIFICACION_BACKEND.md` regla #5 ("`puntos_loyalty` nunca puede ser negativo") no tenía `error_code` asignado; se agrega aquí siguiendo el mismo esquema que el resto. |
 
-#### `POST /api/crm/campanas/enviar`
+#### `POST /api/v1/crm/campanas/enviar`
 **Permiso:** `crm.campanas.enviar`
 ```json
 {
@@ -506,7 +506,7 @@ Fire-and-forget (encola `Mail`), no bloquea la respuesta HTTP en el envío real.
 
 **Permiso base:** `pedidos.ver` · **Feature gate:** `modulo:delivery`
 
-#### `GET /api/pedidos`
+#### `GET /api/v1/pedidos`
 **Permiso:** `pedidos.ver`
 
 | Query | Notas |
@@ -529,7 +529,7 @@ Fire-and-forget (encola `Mail`), no bloquea la respuesta HTTP en el envío real.
 }
 ```
 
-#### `POST /api/pedidos`
+#### `POST /api/v1/pedidos`
 **Permiso:** `pedidos.crear`
 ```json
 {
@@ -552,10 +552,10 @@ Fire-and-forget (encola `Mail`), no bloquea la respuesta HTTP en el envío real.
 
 `numero_pedido` autogenerado, `usuario_id` = autenticado, `estado = 'pendiente'` por defecto.
 
-#### `GET /api/pedidos/{pedido}`
+#### `GET /api/v1/pedidos/{pedido}`
 **Permiso:** `pedidos.ver`
 
-#### `PATCH /api/pedidos/{pedido}/estado`
+#### `PATCH /api/v1/pedidos/{pedido}/estado`
 **Permiso:** `pedidos.cambiar_estado`
 ```json
 { "estado": "preparando" }
@@ -575,7 +575,7 @@ entregado, cancelado → (terminal)
 
 Al pasar a `entregado` sin `venta_id`: genera venta automáticamente (misma orquestación que §14.3).
 
-#### `PATCH /api/pedidos/{pedido}/repartidor`
+#### `PATCH /api/v1/pedidos/{pedido}/repartidor`
 **Permiso:** `pedidos.asignar_repartidor`
 ```json
 { "repartidor_id": 8 }
@@ -597,7 +597,7 @@ por nombre, para no hardcodear roles igual que el resto del proyecto).
 
 **Permiso base:** `gift_cards.ver` · **Feature gate:** `modulo:gift_cards`
 
-#### `GET /api/gift-cards`
+#### `GET /api/v1/gift-cards`
 **Permiso:** `gift_cards.ver`
 
 | Query | Notas |
@@ -618,7 +618,7 @@ por nombre, para no hardcodear roles igual que el resto del proyecto).
 }
 ```
 
-#### `POST /api/gift-cards`
+#### `POST /api/v1/gift-cards`
 **Permiso:** `gift_cards.emitir`
 ```json
 { "cliente_id": 5, "monto": 500.00, "fecha_expiracion": "2027-01-01" }
@@ -636,10 +636,10 @@ colisiona). `saldo_inicial = saldo_actual = monto`, `estado = 'activa'`.
 |---|---|
 | 422 | `monto_invalido` |
 
-#### `GET /api/gift-cards/{giftCard}`
+#### `GET /api/v1/gift-cards/{giftCard}`
 **Permiso:** `gift_cards.ver` — detalle + `recargas`.
 
-#### `POST /api/gift-cards/{giftCard}/recargar`
+#### `POST /api/v1/gift-cards/{giftCard}/recargar`
 **Permiso:** `gift_cards.recargar`
 ```json
 { "monto": 200.00 }
@@ -649,7 +649,7 @@ colisiona). `saldo_inicial = saldo_actual = monto`, `estado = 'activa'`.
 | 422 | `gift_card_expirada` |
 | 422 | `gift_card_cancelada` |
 
-#### `POST /api/gift-cards/{giftCard}/cancelar`
+#### `POST /api/v1/gift-cards/{giftCard}/cancelar`
 **Permiso:** `gift_cards.cancelar` — sin body. Marca `estado = 'cancelada'`.
 
 ---
@@ -658,9 +658,9 @@ colisiona). `saldo_inicial = saldo_actual = monto`, `estado = 'activa'`.
 
 **Permiso base:** `notas_credito.ver` · Solo lectura por HTTP — la creación es 100% orquestada
 desde `DevolucionController::store()` cuando `tipo_reembolso = 'nota_credito'` (§14.4). No hay
-`POST /api/notas-credito` directo.
+`POST /api/v1/notas-credito` directo.
 
-#### `GET /api/notas-credito`
+#### `GET /api/v1/notas-credito`
 **Permiso:** `notas_credito.ver`
 
 | Query | Notas |
@@ -679,10 +679,10 @@ desde `DevolucionController::store()` cuando `tipo_reembolso = 'nota_credito'` (
 }
 ```
 
-#### `GET /api/notas-credito/{notaCredito}`
+#### `GET /api/v1/notas-credito/{notaCredito}`
 **Permiso:** `notas_credito.ver` — detalle + `usos` (`venta_id`, `monto_usado`, `created_at`).
 
-#### `GET /api/clientes/{cliente}/notas-credito`
+#### `GET /api/v1/clientes/{cliente}/notas-credito`
 **Permiso:** `notas_credito.ver` — solo `estado = 'activa'` o `usada_parcial` con
 `saldo_disponible > 0` (lo que el frontend necesita para ofrecerla como método de pago en TPV,
 vía `EntidadSelectorComponent`/`BuscadorEntidad` del cliente ya cargado en la venta — no un
@@ -697,7 +697,7 @@ buscador nuevo).
 hallazgo §0.8. **Sin feature gate** (`modulo:*`) — no está en el array default de
 `modulos_activos`.
 
-#### `GET /api/unidades-medida`
+#### `GET /api/v1/unidades-medida`
 Sin filtros documentados en `02_CONTRATO_API.md` más allá del listado; se agrega `filtro_activo`
 (bool, default solo activas) siguiendo el patrón de `Producto.activo` en `ProductoController`.
 ```json
@@ -707,7 +707,7 @@ Sin filtros documentados en `02_CONTRATO_API.md` más allá del listado; se agre
 }
 ```
 
-#### `POST /api/unidades-medida`
+#### `POST /api/v1/unidades-medida`
 **Permiso:** `inventario.crear`
 ```json
 { "nombre": "Kilogramo", "abreviatura": "kg", "tipo": "fraccionario" }
@@ -718,10 +718,10 @@ Sin filtros documentados en `02_CONTRATO_API.md` más allá del listado; se agre
 | `abreviatura` | `required, string, max:10,` `Rule::unique('unidades_medida','abreviatura')->where('tenant_id', $tenantId)` |
 | `tipo` | `required,` `Rule::in(['entero','fraccionario'])` |
 
-#### `PUT /api/unidades-medida/{unidadMedida}`
+#### `PUT /api/v1/unidades-medida/{unidadMedida}`
 **Permiso:** `inventario.editar` — misma validación (unique ignorando el propio id).
 
-#### `DELETE /api/unidades-medida/{unidadMedida}`
+#### `DELETE /api/v1/unidades-medida/{unidadMedida}`
 **Permiso:** `inventario.eliminar`
 
 | Código | error_code |
@@ -735,7 +735,7 @@ Sin filtros documentados en `02_CONTRATO_API.md` más allá del listado; se agre
 **Namespace de permisos:** `produccion.ver`, `produccion.crear`, `produccion.editar` **[NUEVO
 — ver §0.3]**, `produccion.completar`, `produccion.transformar`. **Sin feature gate.**
 
-#### `GET /api/insumos`
+#### `GET /api/v1/insumos`
 **Permiso:** `produccion.ver`
 
 | Query | Notas |
@@ -754,7 +754,7 @@ Sin filtros documentados en `02_CONTRATO_API.md` más allá del listado; se agre
 }
 ```
 
-#### `POST /api/insumos`
+#### `POST /api/v1/insumos`
 **Permiso:** `produccion.crear`
 ```json
 { "nombre": "Harina de trigo", "sku": "HRN-001", "unidad_medida_id": 2, "costo": 18.50, "stock_minimo": 10 }
@@ -767,18 +767,18 @@ Sin filtros documentados en `02_CONTRATO_API.md` más allá del listado; se agre
 | `costo` | `required, numeric, min:0` |
 | `stock_minimo` | `nullable, numeric, min:0` |
 
-#### `PUT /api/insumos/{insumo}`
+#### `PUT /api/v1/insumos/{insumo}`
 **Permiso:** `produccion.editar` **[NUEVO]** — `03_ESPECIFICACION_BACKEND.md` §16 no sembró
 esta acción pero el endpoint sí existe en `02_CONTRATO_API.md` §11; se agrega el permiso para no
 gatear una edición completa de insumo bajo `produccion.crear`.
 
-#### `GET /api/insumos/{insumo}/stocks`
+#### `GET /api/v1/insumos/{insumo}/stocks`
 **Permiso:** `produccion.ver` — filas de `insumo_stocks` por sucursal + lote.
 ```json
 { "data": [{ "sucursal_id": 1, "cantidad": 20.0, "lote": "L2026-07", "fecha_vencimiento": "2026-12-31" }] }
 ```
 
-#### `POST /api/insumos/{insumo}/ajustar-stock`
+#### `POST /api/v1/insumos/{insumo}/ajustar-stock`
 **Permiso:** `produccion.editar`
 ```json
 { "sucursal_id": 1, "cantidad": 50, "lote": "L2026-07", "fecha_vencimiento": "2026-12-31", "motivo": "Compra a proveedor" }
@@ -791,10 +791,10 @@ gatear una edición completa de insumo bajo `produccion.crear`.
 | `fecha_vencimiento` | `nullable, date` |
 | `motivo` | `required, string, max:255` |
 
-#### `GET /api/recetas`
+#### `GET /api/v1/recetas`
 **Permiso:** `produccion.ver` · Query: `filtro_variante_id`.
 
-#### `POST /api/recetas`
+#### `POST /api/v1/recetas`
 **Permiso:** `produccion.crear`
 ```json
 {
@@ -819,13 +819,13 @@ gatear una edición completa de insumo bajo `produccion.crear`.
 **Response 201** incluye `costo_total` y `costo_unitario` calculados (`03_ESPECIFICACION_BACKEND.md`
 §11: `sum(ingrediente.cantidad * insumo.costo) / rendimiento`).
 
-#### `PUT /api/recetas/{receta}`
+#### `PUT /api/v1/recetas/{receta}`
 **Permiso:** `produccion.editar` **[NUEVO]** — reemplaza ingredientes (borra + reinserta).
 
-#### `GET /api/ordenes-produccion`
+#### `GET /api/v1/ordenes-produccion`
 **Permiso:** `produccion.ver` · Query: `filtro_estado`, `filtro_sucursal_id`, `filtro_receta_id`.
 
-#### `POST /api/ordenes-produccion`
+#### `POST /api/v1/ordenes-produccion`
 **Permiso:** `produccion.crear`
 ```json
 { "sucursal_id": 1, "receta_id": 5, "cantidad_programada": 10, "fecha_programada": "2026-07-30", "notas": "..." }
@@ -843,7 +843,7 @@ gatear una edición completa de insumo bajo `produccion.crear`.
 |---|---|
 | 422 | `stock_insumos_insuficiente` |
 
-#### `PATCH /api/ordenes-produccion/{ordenProduccion}/estado`
+#### `PATCH /api/v1/ordenes-produccion/{ordenProduccion}/estado`
 **Permiso:** `produccion.completar`
 ```json
 { "estado": "completada", "cantidad_producida": 10 }
@@ -864,7 +864,7 @@ Producción — permitido, ver `01_ARQUITECTURA_BASE.md` — Producción no est�
 módulos con dirección de dependencia restringida de CLAUDE.md §1 porque es un módulo nuevo; el
 Orquestador debe agregarlo al mapa de dependencias formal antes de cerrar el diseño).
 
-#### `POST /api/transformaciones`
+#### `POST /api/v1/transformaciones`
 **Permiso:** `produccion.transformar`
 ```json
 {
@@ -892,7 +892,7 @@ Orquestador debe agregarlo al mapa de dependencias formal antes de cerrar el dis
 **[NUEVO — ver §0.3]**. Vive dentro de `Crm` (`VentasPlazosService`, extiende
 `planes_pago_cliente`). **Sin feature gate.**
 
-#### `POST /api/ventas/{venta}/plan-pago`
+#### `POST /api/v1/ventas/{venta}/plan-pago`
 **Permiso:** `ventas_plazos.crear`
 ```json
 { "numero_cuotas": 6, "tasa_interes": 5.0, "periodicidad": "mensual", "fecha_inicio": "2026-08-01" }
@@ -916,7 +916,7 @@ en partes iguales; `venta_id` se guarda en `planes_pago_cliente`.
 **Response 201:** `PlanPagoClienteResource` con `cuotas` (id, numero, monto_capital,
 monto_interes, monto_total_cuota, fecha_vencimiento, fecha_pago_real).
 
-#### `GET /api/planes-pago-cliente/{planPagoCliente}`
+#### `GET /api/v1/planes-pago-cliente/{planPagoCliente}`
 **Permiso:** `ventas_plazos.ver` — detalle + cuotas.
 ```json
 {
@@ -933,7 +933,7 @@ monto_interes, monto_total_cuota, fecha_vencimiento, fecha_pago_real).
 }
 ```
 
-#### `POST /api/planes-pago-cliente/{planPagoCliente}/pagar-cuota`
+#### `POST /api/v1/planes-pago-cliente/{planPagoCliente}/pagar-cuota`
 **Permiso:** `ventas_plazos.pagar`
 ```json
 { "cuota_id": 3, "caja_sesion_id": 5, "metodo_pago_id": 1, "monto": 306.25 }
@@ -957,7 +957,7 @@ monto_interes, monto_total_cuota, fecha_vencimiento, fecha_pago_real).
 **Namespace de permisos:** `payroll.ver`, `payroll.crear`, `payroll.pagar`. **Sin feature gate**
 (módulo admin, gateado solo por permiso).
 
-#### `GET /api/empleados`
+#### `GET /api/v1/empleados`
 **Permiso:** `payroll.ver` · Query: `filtro_sucursal_id`, `filtro_activo`.
 ```json
 {
@@ -969,7 +969,7 @@ monto_interes, monto_total_cuota, fecha_vencimiento, fecha_pago_real).
 }
 ```
 
-#### `POST /api/empleados`
+#### `POST /api/v1/empleados`
 **Permiso:** `payroll.crear`
 ```json
 { "usuario_id": 15, "sucursal_id": 1, "salario_base": 8000.00, "tipo_salario": "fijo", "fecha_ingreso": "2025-01-15" }
@@ -986,10 +986,10 @@ monto_interes, monto_total_cuota, fecha_vencimiento, fecha_pago_real).
 |---|---|
 | 422 | `empleado_ya_existe` |
 
-#### `GET /api/nominas`
+#### `GET /api/v1/nominas`
 **Permiso:** `payroll.ver` · Query: `filtro_sucursal_id`, `filtro_estado`.
 
-#### `POST /api/nominas/generar`
+#### `POST /api/v1/nominas/generar`
 **Permiso:** `payroll.crear`
 ```json
 { "sucursal_id": 1, "periodo_inicio": "2026-07-01", "periodo_fin": "2026-07-15" }
@@ -1003,7 +1003,7 @@ monto_interes, monto_total_cuota, fecha_vencimiento, fecha_pago_real).
 Calcula percepciones/deducciones para todos los empleados activos de la sucursal
 (`03_ESPECIFICACION_BACKEND.md` §13). **Response 201:** `NominaResource` con `detalles`.
 
-#### `PATCH /api/nominas/{nomina}/pagar`
+#### `PATCH /api/v1/nominas/{nomina}/pagar`
 **Permiso:** `payroll.pagar`
 ```json
 { "caja_sesion_id": 5 }
@@ -1019,7 +1019,7 @@ Calcula percepciones/deducciones para todos los empleados activos de la sucursal
 **Namespace de permisos:** `prestamos.ver`, `prestamos.crear`, `prestamos.pagar`. **Sin
 feature gate.**
 
-#### `GET /api/prestamos`
+#### `GET /api/v1/prestamos`
 **Permiso:** `prestamos.ver` · Query: `filtro_estado` (`activo`\|`pagado`\|`cancelado`),
 `filtro_proveedor_id`.
 ```json
@@ -1033,7 +1033,7 @@ feature gate.**
 }
 ```
 
-#### `POST /api/prestamos`
+#### `POST /api/v1/prestamos`
 **Permiso:** `prestamos.crear`
 ```json
 {
@@ -1053,10 +1053,10 @@ feature gate.**
 `monto_a_pagar = monto * (1 + interes/100)`, `saldo_pendiente = monto_a_pagar`,
 `estado = 'activo'`.
 
-#### `GET /api/prestamos/{prestamo}`
+#### `GET /api/v1/prestamos/{prestamo}`
 **Permiso:** `prestamos.ver` — detalle + `pagos`.
 
-#### `POST /api/prestamos/{prestamo}/pagos`
+#### `POST /api/v1/prestamos/{prestamo}/pagos`
 **Permiso:** `prestamos.pagar`
 ```json
 { "caja_sesion_id": 5, "monto": 10000.00, "notas": "Primer pago" }
@@ -1082,7 +1082,7 @@ Cada una cita las 3 instancias ya documentadas en CLAUDE.md §2 y se agrega como
 tal como exige la regla ("el docblock del método la documenta citando las 3 anteriores"). Ver
 hallazgo §0.6 sobre por qué no se apilan todas dentro de `VentaController::store()` salvo estas.
 
-### 14.1 `POST /api/ventas` — extensión para crédito (instancia #4)
+### 14.1 `POST /api/v1/ventas` — extensión para crédito (instancia #4)
 **Permiso adicional:** `cuentas_cobrar.crear` (se exige junto con `ventas.crear` si `tipo_pago = credito`).
 
 Campos nuevos en el body existente:
@@ -1099,7 +1099,7 @@ crea la `Venta` (`VentaService::registrarVenta()`, sin tocar el Service) y luego
 `DB::transaction`, llama a `CuentasCobrarService::crearDesdeVenta($venta, $diasCredito)`.
 `VentaResource` en la respuesta agrega `cuenta_cobrar: { id, saldo_pendiente }` cuando aplica.
 
-### 14.2 `POST /api/compras` — extensión para crédito (instancia #5)
+### 14.2 `POST /api/v1/compras` — extensión para crédito (instancia #5)
 **Permiso adicional:** `cuentas_pagar.registrar_pago` no aplica aquí — se exige `compras.crear`
 igual que hoy; la creación de CxP no necesita permiso extra porque ya está detrás de
 `compras.crear`.
@@ -1107,17 +1107,17 @@ igual que hoy; la creación de CxP no necesita permiso extra porque ya está det
 Campos nuevos: `tipo_pago` (`contado`\|`credito`), `dias_credito` — mismo shape que 14.1.
 `CompraController::store()` orquesta `CuentasPagarService::crearDesdeCompra()`.
 
-### 14.3 `PATCH /api/pedidos/{pedido}/estado` — generación de venta al entregar (instancia #6)
+### 14.3 `PATCH /api/v1/pedidos/{pedido}/estado` — generación de venta al entregar (instancia #6)
 Ya cubierto en §6 — al pasar a `entregado` sin `venta_id`, el `PedidoController` (no el Service)
 llama a `VentaService::registrarVenta()` con los `pedido_items` como líneas.
 
-### 14.4 `POST /api/devoluciones` — nota de crédito (instancia #7)
+### 14.4 `POST /api/v1/devoluciones` — nota de crédito (instancia #7)
 Campo nuevo: `tipo_reembolso` (`efectivo`\|`nota_credito`, default `efectivo`). Cuando es
 `nota_credito`, `DevolucionController::store()` orquesta `NotaCreditoService::crearDesdeDevolucion()`
 dentro de la misma transacción. `DevolucionResource` agrega `nota_credito: { id, monto_original }`
 cuando aplica.
 
-### 14.5 `POST /api/ventas` y `POST /api/apartados/{id}/abonos` — pago con Gift Card / Nota de Crédito
+### 14.5 `POST /api/v1/ventas` y `POST /api/v1/apartados/{id}/abonos` — pago con Gift Card / Nota de Crédito
 No son campos nuevos en el body — Gift Card y Nota de Crédito se registran como un
 `metodo_pago_id` más (`tipo = 'digital'`, seed en `01_ARQUITECTURA_BASE.md` §14) dentro del
 array `pagos` ya existente, salvo que el monto a descontar necesita resolver **qué** gift
@@ -1134,7 +1134,7 @@ o `nota_credito_id` en vez de `gift_card_codigo` cuando el método es Nota de Cr
 | 422 | `nota_credito_expirada` (ya en el catálogo) |
 | 422 | `gift_card_expirada` / `gift_card_cancelada` (reusa los de §7) |
 
-### 14.6 `PUT /api/configuracion` — `modulos_activos`
+### 14.6 `PUT /api/v1/configuracion` — `modulos_activos`
 Campo nuevo en el body existente de `ConfiguracionController::update()`:
 ```json
 { "...campos_actuales...", "modulos_activos": ["cxc", "cxp", "cotizaciones"] }
@@ -1154,7 +1154,7 @@ agregar `'modulos_activos' => $this->modulos_activos ?? []`.
 `reportes.crm`). Sin paginación (son agregados, no listados de filas) — mismo criterio que
 `InicioController::resumen()`.
 
-#### `GET /api/reportes/cuentas-cobrar`
+#### `GET /api/v1/reportes/cuentas-cobrar`
 **Permiso:** `reportes.cuentas_cobrar`
 ```json
 {
@@ -1166,10 +1166,10 @@ agregar `'modulos_activos' => $this->modulos_activos ?? []`.
 }
 ```
 
-#### `GET /api/reportes/cuentas-pagar`
+#### `GET /api/v1/reportes/cuentas-pagar`
 **Permiso:** `reportes.cuentas_pagar` — mismo shape, `por_proveedor` en vez de `por_cliente`.
 
-#### `GET /api/reportes/crm`
+#### `GET /api/v1/reportes/crm`
 **Permiso:** `reportes.crm`
 ```json
 {

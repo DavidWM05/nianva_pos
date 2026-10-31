@@ -52,7 +52,7 @@ transversal (ver §2.2).
 
 **Dependencia externa (no es un módulo del grafo de arriba)**: `Núcleo` también le habla a un
 sistema fuera de este repo, el servidor central de licencias (repo `Servidor_Licencias`), vía
-`LicenciaClienteService` (HTTP, `POST /api/validar-licencia`). No es una dependencia
+`LicenciaClienteService` (HTTP, `POST /api/v1/validar-licencia`). No es una dependencia
 Service→Service entre módulos de este monolito, así que no aparece en el diagrama — pero es la
 única integración saliente por red que existe hoy en todo el backend. Ver el patrón completo en
 §2.6.
@@ -175,7 +175,7 @@ Agregarlo es la misma línea de siempre si se decide que vale la pena.
   Cambiar la contraseña, revocar un dispositivo puntual, o desactivar el 2FA revocan la confianza
   ya otorgada — el siguiente login (desde cualquier dispositivo) vuelve a exigir el segundo
   factor.
-- **Desactivar 2FA ya no es autoservicio**: el endpoint viejo (`POST /api/two-factor/disable`,
+- **Desactivar 2FA ya no es autoservicio**: el endpoint viejo (`POST /api/v1/two-factor/disable`,
   iniciado por el propio usuario) se eliminó. Hoy solo un admin/superadmin con el permiso
   `usuarios.editar` puede desactivar el 2FA de **otro** usuario
   (`UsuarioController::desactivarDosFactor()`), confirmando su propio TOTP vía
@@ -226,7 +226,7 @@ patrón, reutilizable para cualquier integración externa futura:
 
 **No resuelto en el código**: no existe ningún middleware ni gate que bloquee o degrade la app
 si `licencia_local.estado` es `vencida`/`revocada` — hoy el estado solo se **muestra**
-(`GET /api/licencia-local`, tab Licencia del frontend), no se **hace cumplir**. Si tu producto
+(`GET /api/v1/licencia-local`, tab Licencia del frontend), no se **hace cumplir**. Si tu producto
 necesita bloquear funcionalidad cuando la licencia no es válida, eso es lógica nueva que no
 existe todavía.
 
