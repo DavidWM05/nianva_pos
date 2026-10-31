@@ -17,8 +17,8 @@
 
 - La carpeta se llamaba `C:\Desarrollos\Nianva POS`. Algunos documentos anteriores todavía
   pueden decir "Pro" o mencionar la ruta vieja.
-- El `README.md` actual describe el repo como "núcleo que cada vertical clona". Eso **ya no
-  aplica**, y se reescribe en la Fase 1.
+- El `README.md` describía el repo como "núcleo que cada vertical clona". Eso **ya no
+  aplica**; se reescribió en la Fase 1 como producto único por planes y giros.
 
 ## 2. Objetivo
 
@@ -246,6 +246,13 @@ repo.
   aceptaba `//otro-dominio/...` como propia; ya no, con su test. Los documentos de contrato
   (`02_CONTRATO_API.md`, `API_SPECIFICATION.md`, `MANUAL_TECNICO.md`) pasan a `/api/v1`.
   Backend: 450 tests; `nucleo-shell`: 429. En la Fase 8, el instalador escribe `config.json`.
+- **Documentación del repo** (hecho por Claude): `README.md` nuevo (producto único por planes
+  y giros, qué leer primero, cómo levantarlo con `/api/v1` y `config.json`, comandos de
+  calidad) y `.claude/CLAUDE.md` reescrito como resumen accionable de los estándares (capas
+  con FormRequest y DTO, tenant y sucursal, permisos, API, frontend, pruebas y proceso). En
+  `backend/README.md` y `frontend/README.md`, las rutas pasan a `/api/v1` y se corrigen dos
+  permisos que habían cambiado (anular CxP y unidades de medida). Los nombres del paquete y
+  de la app siguen siendo los actuales hasta el renombre.
 - **Pendientes detectados:**
   - dependencias fuera del grafo: `Crm` lee `Venta` de Tpv (`PlanPagoController`,
     `PlanPagoCliente`, `VentasPlazosService`; es un ciclo, porque Tpv → Crm);
@@ -270,11 +277,11 @@ repo.
 1. **Saneamiento de la Fase 1**, en encargos de un tema cada uno. Hecho: CI con ambas
    suites, C1 (D4), las validaciones de negocio (500 → 422) y las reglas `exists` con
    tenant (API-05), la unicidad con tenant (DAT-09, C4), C11 (D5) y el análisis estático
-   bloqueante (Pint, ESLint, PHPStan), C7 (DAT-14), C2 (SEG-03), C3 (SEG-02), C8 (ARQ-02) y C5 (API-01). Lo que sigue:
+   bloqueante (Pint, ESLint, PHPStan), C7 (DAT-14), C2 (SEG-03), C3 (SEG-02), C8 (ARQ-02), C5 (API-01) y la documentación del repo (`README.md` y
+   `.claude/CLAUDE.md`). Lo que sigue:
    - `composer audit`: revisar los 23 advisories;
    - nombres internos: composer `nianva/pos` y alcance Nx `@nianva/*` (hoy `laravel/laravel`
      y `@org`); el nombre de la app Nx `nucleo-shell` queda por decidir;
-   - `README.md` nuevo: producto único por planes y giros, derivado de `nucleo-erp-base`;
    - resolver los conflictos C1-C11 del README de estándares;
    - resto de PRO-05: stylelint, diff de OpenAPI y CODEOWNERS;
    - después de C8: que los Services reciban DTOs en vez de arreglos (se hace al reescribirlos
@@ -282,7 +289,6 @@ repo.
    - un chequeo en CI de codificación rota en `app/` y `tests/` (`??` seguido de letra,
      además de U+FFFD; DAT-12);
    - factories;
-   - actualizar `.claude/CLAUDE.md` para que resuma los estándares;
    - opcional: rama `master` → `main`.
 2. **Fase 2**: sistema de diseño.
 
@@ -326,8 +332,8 @@ repo.
 - `docs/REPORTE_PIN_LITE.md`: cómo funciona el PIN en Lite (login, bypass de admin, bloqueo de
   pantalla, alta y cambio), sus 9 debilidades y la propuesta para adaptarlo (bloqueo del lado del
   servidor, autorización de supervisor SEG-05, un solo componente de PIN);
-- `.claude/CLAUDE.md`: reglas de módulos vigentes salvo donde choquen con los estándares (C1,
-  C11); se reescribe en el saneamiento;
+- `.claude/CLAUDE.md`: resumen accionable de los estándares para quien escribe código;
+  si contradice un estándar, gana el estándar;
 - `docs/MANUAL_TECNICO.md`, `docs/nucleo_arquitectura.md`, `docs/API_SPECIFICATION.md`,
   `docs/consideraciones_futuras.md`, `docs/01_ARQUITECTURA_BASE.md`,
   `docs/02_CONTRATO_API.md`, `docs/03_ESPECIFICACION_BACKEND.md`,

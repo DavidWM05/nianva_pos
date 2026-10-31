@@ -325,135 +325,135 @@ resumen por módulo.
 
 | Método | Ruta | Permiso | Descripción |
 |---|---|---|---|
-| GET | `/api/cotizaciones` | `cotizaciones.ver` | Lista paginada con filtros por estado, cliente, fechas y búsqueda por número |
-| POST | `/api/cotizaciones` | `cotizaciones.crear` | Crear cotización con items |
-| GET | `/api/cotizaciones/{cotizacion}` | `cotizaciones.ver` | Detalle completo + items |
-| PUT | `/api/cotizaciones/{id}` | `cotizaciones.editar` | Editar cotización (solo pendiente) |
-| DELETE | `/api/cotizaciones/{id}` | `cotizaciones.eliminar` | Anular cotización (marca estado, no borra) |
-| POST | `/api/cotizaciones/{id}/convertir` | `cotizaciones.convertir` | Convertir en venta (descuenta stock) |
+| GET | `/api/v1/cotizaciones` | `cotizaciones.ver` | Lista paginada con filtros por estado, cliente, fechas y búsqueda por número |
+| POST | `/api/v1/cotizaciones` | `cotizaciones.crear` | Crear cotización con items |
+| GET | `/api/v1/cotizaciones/{cotizacion}` | `cotizaciones.ver` | Detalle completo + items |
+| PUT | `/api/v1/cotizaciones/{id}` | `cotizaciones.editar` | Editar cotización (solo pendiente) |
+| DELETE | `/api/v1/cotizaciones/{id}` | `cotizaciones.eliminar` | Anular cotización (marca estado, no borra) |
+| POST | `/api/v1/cotizaciones/{id}/convertir` | `cotizaciones.convertir` | Convertir en venta (descuenta stock) |
 
 ### CxC — Cuentas por Cobrar (`modulo:cxc`)
 
 | Método | Ruta | Permiso | Descripción |
 |---|---|---|---|
-| GET | `/api/cuentas-cobrar` | `cuentas_cobrar.ver` | Lista paginada con filtros |
-| GET | `/api/cuentas-cobrar/reporte` | `reportes_cuentas_cobrar.ver` | Aging report: totales, antigüedad, top clientes |
-| GET | `/api/cuentas-cobrar/{cuentaCobrar}` | `cuentas_cobrar.ver` | Detalle + abonos |
-| POST | `/api/cuentas-cobrar/{id}/abonos` | `cuentas_cobrar.registrar_abono` | Registrar abono (actualiza saldo) |
-| POST | `/api/cuentas-cobrar/{id}/anular` | `cuentas_cobrar.anular` | Anular (solo sin abonos) |
+| GET | `/api/v1/cuentas-cobrar` | `cuentas_cobrar.ver` | Lista paginada con filtros |
+| GET | `/api/v1/cuentas-cobrar/reporte` | `reportes_cuentas_cobrar.ver` | Aging report: totales, antigüedad, top clientes |
+| GET | `/api/v1/cuentas-cobrar/{cuentaCobrar}` | `cuentas_cobrar.ver` | Detalle + abonos |
+| POST | `/api/v1/cuentas-cobrar/{id}/abonos` | `cuentas_cobrar.registrar_abono` | Registrar abono (actualiza saldo) |
+| POST | `/api/v1/cuentas-cobrar/{id}/anular` | `cuentas_cobrar.anular` | Anular (solo sin abonos) |
 
 ### CxP — Cuentas por Pagar (`modulo:cxp`)
 
 | Método | Ruta | Permiso | Descripción |
 |---|---|---|---|
-| GET | `/api/cuentas-pagar` | `cuentas_pagar.ver` | Lista paginada con filtros |
-| GET | `/api/cuentas-pagar/reporte` | `reportes_cuentas_pagar.ver` | Aging report: totales, antigüedad, top proveedores |
-| GET | `/api/cuentas-pagar/{cuentaPagar}` | `cuentas_pagar.ver` | Detalle + pagos |
-| POST | `/api/cuentas-pagar/{id}/pagos` | `cuentas_pagar.registrar_pago` | Registrar pago (actualiza saldo) |
-| POST | `/api/cuentas-pagar/{id}/anular` | `cuentas_pagar.ver` | Anular (solo sin pagos) |
+| GET | `/api/v1/cuentas-pagar` | `cuentas_pagar.ver` | Lista paginada con filtros |
+| GET | `/api/v1/cuentas-pagar/reporte` | `reportes_cuentas_pagar.ver` | Aging report: totales, antigüedad, top proveedores |
+| GET | `/api/v1/cuentas-pagar/{cuentaPagar}` | `cuentas_pagar.ver` | Detalle + pagos |
+| POST | `/api/v1/cuentas-pagar/{id}/pagos` | `cuentas_pagar.registrar_pago` | Registrar pago (actualiza saldo) |
+| POST | `/api/v1/cuentas-pagar/{id}/anular` | `cuentas_pagar.anular` | Anular (solo sin pagos) |
 
 ### CRM Avanzado (`modulo:crm_avanzado`)
 
 | Método | Ruta | Permiso | Descripción |
 |---|---|---|---|
-| GET | `/api/clientes/{cliente}/interacciones` | `crm_interacciones.ver` | Historial de interacciones del cliente |
-| POST | `/api/clientes/{cliente}/interacciones` | `crm_interacciones.crear` | Crear interacción (llamada, email, whatsapp, etc.) |
-| GET | `/api/clientes/{cliente}/loyalty` | `loyalty.ver` | Puntos y transacciones de fidelidad |
-| POST | `/api/clientes/{cliente}/loyalty/ajustar` | `loyalty.ajustar` | Ajuste manual de puntos |
-| POST | `/api/crm/campanas/enviar` | `crm_campanas.enviar` | Enviar campaña por email a un segmento |
-| GET | `/api/crm/reporte` | `reportes_crm.ver` | Reporte CRM: segmentos, interacciones, loyalty, campañas |
+| GET | `/api/v1/clientes/{cliente}/interacciones` | `crm_interacciones.ver` | Historial de interacciones del cliente |
+| POST | `/api/v1/clientes/{cliente}/interacciones` | `crm_interacciones.crear` | Crear interacción (llamada, email, whatsapp, etc.) |
+| GET | `/api/v1/clientes/{cliente}/loyalty` | `loyalty.ver` | Puntos y transacciones de fidelidad |
+| POST | `/api/v1/clientes/{cliente}/loyalty/ajustar` | `loyalty.ajustar` | Ajuste manual de puntos |
+| POST | `/api/v1/crm/campanas/enviar` | `crm_campanas.enviar` | Enviar campaña por email a un segmento |
+| GET | `/api/v1/crm/reporte` | `reportes_crm.ver` | Reporte CRM: segmentos, interacciones, loyalty, campañas |
 
 ### Delivery / Pedidos (`modulo:delivery`)
 
 | Método | Ruta | Permiso | Descripción |
 |---|---|---|---|
-| GET | `/api/pedidos` | `pedidos.ver` | Lista paginada con filtros |
-| POST | `/api/pedidos` | `pedidos.crear` | Crear pedido con items |
-| GET | `/api/pedidos/{pedido}` | `pedidos.ver` | Detalle completo |
-| PATCH | `/api/pedidos/{id}/estado` | `pedidos.cambiar_estado` | Máquina de estados (pendiente→preparando→en_camino→entregado) |
-| PATCH | `/api/pedidos/{id}/repartidor` | `pedidos.asignar_repartidor` | Asignar/remplazar repartidor |
+| GET | `/api/v1/pedidos` | `pedidos.ver` | Lista paginada con filtros |
+| POST | `/api/v1/pedidos` | `pedidos.crear` | Crear pedido con items |
+| GET | `/api/v1/pedidos/{pedido}` | `pedidos.ver` | Detalle completo |
+| PATCH | `/api/v1/pedidos/{id}/estado` | `pedidos.cambiar_estado` | Máquina de estados (pendiente→preparando→en_camino→entregado) |
+| PATCH | `/api/v1/pedidos/{id}/repartidor` | `pedidos.asignar_repartidor` | Asignar/remplazar repartidor |
 
 ### Gift Cards (`modulo:gift_cards`)
 
 | Método | Ruta | Permiso | Descripción |
 |---|---|---|---|
-| GET | `/api/gift-cards` | `gift_cards.ver` | Lista paginada |
-| POST | `/api/gift-cards` | `gift_cards.emitir` | Emitir nueva gift card con código único |
-| GET | `/api/gift-cards/{giftCard}` | `gift_cards.ver` | Detalle + recargas |
-| POST | `/api/gift-cards/{id}/recargar` | `gift_cards.recargar` | Recargar saldo |
-| POST | `/api/gift-cards/{id}/cancelar` | `gift_cards.cancelar` | Cancelar gift card |
+| GET | `/api/v1/gift-cards` | `gift_cards.ver` | Lista paginada |
+| POST | `/api/v1/gift-cards` | `gift_cards.emitir` | Emitir nueva gift card con código único |
+| GET | `/api/v1/gift-cards/{giftCard}` | `gift_cards.ver` | Detalle + recargas |
+| POST | `/api/v1/gift-cards/{id}/recargar` | `gift_cards.recargar` | Recargar saldo |
+| POST | `/api/v1/gift-cards/{id}/cancelar` | `gift_cards.cancelar` | Cancelar gift card |
 
 ### Notas de Crédito (`modulo:notas_credito`)
 
 | Método | Ruta | Permiso | Descripción |
 |---|---|---|---|
-| GET | `/api/notas-credito` | `notas_credito.ver` | Lista paginada |
-| GET | `/api/notas-credito/{notaCredito}` | `notas_credito.ver` | Detalle + usos |
-| GET | `/api/clientes/{cliente}/notas-credito` | `notas_credito.ver` | Notas activas de un cliente |
+| GET | `/api/v1/notas-credito` | `notas_credito.ver` | Lista paginada |
+| GET | `/api/v1/notas-credito/{notaCredito}` | `notas_credito.ver` | Detalle + usos |
+| GET | `/api/v1/clientes/{cliente}/notas-credito` | `notas_credito.ver` | Notas activas de un cliente |
 
 ### Ventas a Plazos (`modulo:ventas_plazos`)
 
 | Método | Ruta | Permiso | Descripción |
 |---|---|---|---|
-| GET | `/api/planes-pago-cliente` | `ventas_plazos.ver` | Lista paginada de planes |
-| GET | `/api/planes-pago-cliente/{plan}` | `ventas_plazos.ver` | Detalle del plan + cuotas |
-| POST | `/api/ventas/{venta}/plan-pago` | `ventas_plazos.crear` | Crear plan con N cuotas e interés |
-| POST | `/api/planes-pago-cliente/{plan}/pagar-cuota` | `ventas_plazos.crear` | Pagar una cuota específica |
+| GET | `/api/v1/planes-pago-cliente` | `ventas_plazos.ver` | Lista paginada de planes |
+| GET | `/api/v1/planes-pago-cliente/{plan}` | `ventas_plazos.ver` | Detalle del plan + cuotas |
+| POST | `/api/v1/ventas/{venta}/plan-pago` | `ventas_plazos.crear` | Crear plan con N cuotas e interés |
+| POST | `/api/v1/planes-pago-cliente/{plan}/pagar-cuota` | `ventas_plazos.crear` | Pagar una cuota específica |
 
 ### Unidades de Medida (sin feature gate)
 
 | Método | Ruta | Permiso | Descripción |
 |---|---|---|---|
-| GET | `/api/unidades-medida` | — | Lista de unidades activas |
-| POST | `/api/unidades-medida` | — | Crear unidad |
-| PUT | `/api/unidades-medida/{id}` | — | Editar unidad |
-| DELETE | `/api/unidades-medida/{id}` | — | Eliminar (solo si no está en uso) |
+| GET | `/api/v1/unidades-medida` | `inventario.ver` | Lista de unidades activas |
+| POST | `/api/v1/unidades-medida` | `inventario.crear` | Crear unidad |
+| PUT | `/api/v1/unidades-medida/{id}` | `inventario.editar` | Editar unidad |
+| DELETE | `/api/v1/unidades-medida/{id}` | `inventario.eliminar` | Eliminar (solo si no está en uso) |
 
 ### Producción (`modulo:produccion`)
 
 | Método | Ruta | Permiso | Descripción |
 |---|---|---|---|
-| GET | `/api/insumos` | `produccion.ver` | Lista paginada de insumos |
-| POST | `/api/insumos` | `produccion.crear` | Crear insumo |
-| GET | `/api/insumos/{insumo}/stocks` | `produccion.ver` | Stock del insumo por sucursal + lote |
-| POST | `/api/insumos/{insumo}/stocks` | `produccion.crear` | Agregar/recibir stock (upsert por lote) |
-| GET | `/api/recetas` | `produccion.ver` | Lista paginada de recetas |
-| POST | `/api/recetas` | `produccion.crear` | Crear receta con ingredientes |
-| GET | `/api/ordenes-produccion` | `produccion.ver` | Lista paginada de órdenes |
-| POST | `/api/ordenes-produccion` | `produccion.crear` | Crear orden de producción |
-| PATCH | `/api/ordenes-produccion/{id}/estado` | `produccion.crear` | Cambiar estado/completar (descuenta insumos, incrementa producto) |
-| GET | `/api/transformaciones` | `produccion.ver` | Lista paginada de transformaciones |
-| POST | `/api/transformaciones` | `produccion.transformar` | Registrar transformación entre variantes |
+| GET | `/api/v1/insumos` | `produccion.ver` | Lista paginada de insumos |
+| POST | `/api/v1/insumos` | `produccion.crear` | Crear insumo |
+| GET | `/api/v1/insumos/{insumo}/stocks` | `produccion.ver` | Stock del insumo por sucursal + lote |
+| POST | `/api/v1/insumos/{insumo}/stocks` | `produccion.crear` | Agregar/recibir stock (upsert por lote) |
+| GET | `/api/v1/recetas` | `produccion.ver` | Lista paginada de recetas |
+| POST | `/api/v1/recetas` | `produccion.crear` | Crear receta con ingredientes |
+| GET | `/api/v1/ordenes-produccion` | `produccion.ver` | Lista paginada de órdenes |
+| POST | `/api/v1/ordenes-produccion` | `produccion.crear` | Crear orden de producción |
+| PATCH | `/api/v1/ordenes-produccion/{id}/estado` | `produccion.crear` | Cambiar estado/completar (descuenta insumos, incrementa producto) |
+| GET | `/api/v1/transformaciones` | `produccion.ver` | Lista paginada de transformaciones |
+| POST | `/api/v1/transformaciones` | `produccion.transformar` | Registrar transformación entre variantes |
 
 ### Payroll / Nómina (`modulo:payroll`)
 
 | Método | Ruta | Permiso | Descripción |
 |---|---|---|---|
-| GET | `/api/empleados` | `payroll.ver` | Lista paginada de empleados |
-| GET | `/api/empleados/{empleado}` | `payroll.ver` | Detalle del empleado |
-| POST | `/api/empleados` | `payroll.crear` | Registrar empleado vinculado a un usuario |
-| GET | `/api/nominas` | `payroll.ver` | Lista paginada de nóminas |
-| GET | `/api/nominas/{nomina}` | `payroll.ver` | Detalle de nómina + detalles |
-| POST | `/api/nominas/generar` | `payroll.crear` | Generar nómina para un período y sucursal |
-| PATCH | `/api/nominas/{id}/pagar` | `payroll.pagar` | Marcar nómina como pagada |
+| GET | `/api/v1/empleados` | `payroll.ver` | Lista paginada de empleados |
+| GET | `/api/v1/empleados/{empleado}` | `payroll.ver` | Detalle del empleado |
+| POST | `/api/v1/empleados` | `payroll.crear` | Registrar empleado vinculado a un usuario |
+| GET | `/api/v1/nominas` | `payroll.ver` | Lista paginada de nóminas |
+| GET | `/api/v1/nominas/{nomina}` | `payroll.ver` | Detalle de nómina + detalles |
+| POST | `/api/v1/nominas/generar` | `payroll.crear` | Generar nómina para un período y sucursal |
+| PATCH | `/api/v1/nominas/{id}/pagar` | `payroll.pagar` | Marcar nómina como pagada |
 
 ### Préstamos (`modulo:prestamos`)
 
 | Método | Ruta | Permiso | Descripción |
 |---|---|---|---|
-| GET | `/api/prestamos` | `prestamos.ver` | Lista paginada |
-| GET | `/api/prestamos/{prestamo}` | `prestamos.ver` | Detalle + pagos |
-| POST | `/api/prestamos` | `prestamos.crear` | Registrar préstamo recibido |
-| POST | `/api/prestamos/{id}/pagos` | `prestamos.pagar` | Registrar pago (actualiza saldo) |
+| GET | `/api/v1/prestamos` | `prestamos.ver` | Lista paginada |
+| GET | `/api/v1/prestamos/{prestamo}` | `prestamos.ver` | Detalle + pagos |
+| POST | `/api/v1/prestamos` | `prestamos.crear` | Registrar préstamo recibido |
+| POST | `/api/v1/prestamos/{id}/pagos` | `prestamos.pagar` | Registrar pago (actualiza saldo) |
 
 ### Reportes (en módulos existentes)
 
 | Método | Ruta | Permiso | Descripción |
 |---|---|---|---|
-| GET | `/api/ventas/reporte` | `reportes.ver` | Reporte de ventas: totales, sucursales, métodos de pago, top productos |
-| GET | `/api/cuentas-cobrar/reporte` | `reportes_cuentas_cobrar.ver` | Aging report CxC: antigüedad, top clientes |
-| GET | `/api/cuentas-pagar/reporte` | `reportes_cuentas_pagar.ver` | Aging report CxP: antigüedad, top proveedores |
-| GET | `/api/crm/reporte` | `reportes_crm.ver` | Reporte CRM: segmentos, interacciones, loyalty, campañas |
+| GET | `/api/v1/ventas/reporte` | `reportes.ver` | Reporte de ventas: totales, sucursales, métodos de pago, top productos |
+| GET | `/api/v1/cuentas-cobrar/reporte` | `reportes_cuentas_cobrar.ver` | Aging report CxC: antigüedad, top clientes |
+| GET | `/api/v1/cuentas-pagar/reporte` | `reportes_cuentas_pagar.ver` | Aging report CxP: antigüedad, top proveedores |
+| GET | `/api/v1/crm/reporte` | `reportes_crm.ver` | Reporte CRM: segmentos, interacciones, loyalty, campañas |
 
 ## Usuarios de prueba para desarrollo
 

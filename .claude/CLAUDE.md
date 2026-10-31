@@ -1,96 +1,152 @@
-# Núcleo — reglas de arquitectura
+# Nianva POS — reglas para trabajar en este repo
 
-Instrucciones accionables para trabajar en este repo. Es un resumen, no la referencia
-completa — el razonamiento detrás de cada regla vive en
-[docs/MANUAL_TECNICO.md](../docs/MANUAL_TECNICO.md); léelo si necesitas el porqué, no lo
-repitas aquí.
+Resumen accionable de los [estándares aprobados](../docs/estandares/README.md). **Los
+estándares mandan:** si algo de aquí los contradice, gana el estándar y este archivo se
+corrige. El porqué de cada regla está en el estándar citado por su ID; no lo repitas aquí. El
+estado del proyecto y las decisiones tomadas están en
+[docs/CONTEXTO_MIGRACION.md](../docs/CONTEXTO_MIGRACION.md).
 
-> **Estándares aprobados (2026-10-30):** [docs/estandares/](../docs/estandares/README.md) manda
-> sobre este archivo. La orquestación en Controller y el mapa central de `error_code` ya se
-> retiraron (C11 y C1; ver §2 y §3). Este archivo se reescribe en el saneamiento de la
-> Fase 1.
+## 1. Módulos y dependencias (ARQ-03)
 
-## 1. Módulos y dirección de dependencia (nivel `Services`)
+Cada módulo vive en `backend/app/Modules/<Modulo>`.
 
-Los 10 módulos: Núcleo, Auditoría, Inventario, Precios, CRM, Tpv, Apartados, Devoluciones,
-Gastos, Configuración — cada uno en `backend/app/Modules/<Modulo>`.
+- **Base:** Nucleo, Auditoria, Configuracion, Inventario, Precios, Crm, Tpv, Apartados,
+  Devoluciones, Gastos.
+- **Extensiones:** Cotizaciones, CuentasCobrar, CuentasPagar, GiftCards, NotasCredito,
+  Produccion, UnidadesMedida, y los congelados CrmAvanzado, Delivery, Payroll y Prestamos
+  (cambio mínimo; sin mejoras fuera del encargo).
 
-Dependencias permitidas entre `Services`, y solo estas:
+Dependencias permitidas entre módulos base, y solo estas:
 
 - `Precios` → `Inventario`
 - `Tpv` → `Crm` + `Inventario` + `Precios`
 - `Apartados` → `Crm` + `Inventario` + `Precios` + `Tpv`
 - `Devoluciones` → `Inventario` + `Tpv`
-- `Gastos` → `Tpv`, pero **solo `Model`/`Exception`, nunca `Service`**
-- `Núcleo`, `Auditoría`, `Configuración`: sin dependencias de negocio salientes. Cualquier
-  módulo puede usar sus utilidades transversales (`TenantContext`, middleware `permiso:*`,
-  `AuditObserver` vía config, `ConfiguracionTenant`) y las reglas de validación publicadas
-  en `<Modulo>\Support\Reglas*` sin que eso cuente como dependencia de negocio.
-- **Módulos de extensión** (Cotizaciones, Delivery, CuentasCobrar, CuentasPagar,
-  CrmAvanzado, GiftCards, NotasCredito, Produccion, Payroll, Prestamos, UnidadesMedida):
-  pueden depender de los módulos base de arriba, nunca entre sí, y ningún módulo base
-  depende de ellos.
+- `Gastos` → `Tpv`, solo `Model`/`Exception`, nunca `Service`
+- `Nucleo`, `Auditoria`, `Configuracion`: sin dependencias de negocio salientes. Sus utilidades
+  transversales (`TenantContext`, `ConfiguracionTenant`, `SucursalOperacion`, `permiso:*`,
+  `AuditObserver`) y las reglas publicadas en `<Modulo>\Support\Reglas*` se usan desde
+  cualquier módulo.
 
-**Regla explícita**: un módulo nunca importa el `Service` de otro módulo fuera de este grafo.
-`tests/Feature/Arquitectura/DependenciasEntreModulosTest.php` lo verifica; su lista
-`PENDIENTES` es deuda conocida y no recibe entradas nuevas. Si crees que necesitas otra
-dependencia, pregunta antes de escribir código.
+Las extensiones pueden depender de los módulos base, nunca entre sí, y ningún módulo base
+depende de ellas. `Arquitectura/DependenciasEntreModulosTest` lo verifica; su lista
+`PENDIENTES` es deuda conocida y no recibe entradas nuevas. **Si crees que necesitas otra
+dependencia, pregunta antes de escribir código.**
 
-## 2. Casos de uso que cruzan módulos: Actions de aplicación (ARQ-03)
+## 2. Capas (ARQ-01 a ARQ-03)
 
-Cuando un caso de uso cruza módulos fuera del grafo, la orquestación vive en una Action de
-`backend/app/Aplicacion/<Area>/` (un caso de uso por clase, método `ejecutar(...)`, dueña de
-la transacción), nunca en el `Controller` ni en un `Service`. El controlador valida, llama la
-Action y devuelve el Resource. Solo los controladores importan `App\Aplicacion`. Ejemplos:
-`Ventas/RegistrarVenta`, `Devoluciones/RegistrarDevolucion`, `Caja/CerrarCaja`,
-`Inicio/ObtenerResumenInicio`. Ya no hay excepciones numeradas en controladores.
+```
+Route → middleware permiso:* → FormRequest → Controller → Action / Service → Model
+```
 
-## 3. Patrones obligatorios — no reinventar
+- **FormRequest** (`Modules/<Modulo>/Http/Requests/`): extiende
+  `Nucleo/Http/Requests/SolicitudNegocio`, declara `rules()` y `toDto()`.
+  - Nunca `$request->validate()` ni `Validator::make` en un controller
+    (`Arquitectura/EntradasTipadasTest`).
+  - `authorize()` solo se sobrescribe para una **guarda del recurso** que debe responder antes
+    de validar (rol de sistema, registro global, tenant sin configuración): `abort()` con su
+    código y mensaje, nunca `return false`, nunca permisos.
+  - Crear y editar comparten un `Guardar<Recurso>Request`; en edición, el registro sale de
+    `$this->route('<parametro>')`.
+- **DTO** (`Modules/<Modulo>/Dtos/`): `final readonly class` con propiedades tipadas.
+  - En ediciones parciales, `camposPresentes()` / `datosPresentes()` distinguen "no llegó" de
+    "llegó como null": un DTO con todo en null nunca termina en `->update()`.
+  - Contraseñas, códigos TOTP y tokens van con `#[\SensitiveParameter]`.
+- **Controller:** delgado; recibe el FormRequest, llama a la Action o al Service y devuelve un
+  Resource.
+- **Action** (`backend/app/Aplicacion/<Area>/`): un caso de uso por clase, método
+  `ejecutar(...)`, dueña de su transacción. Toda orquestación que cruza módulos vive aquí,
+  nunca en un controller ni en un Service. Recibe DTOs, nunca `Request` ni arreglos sueltos.
+- **Service:** lógica de dominio reutilizable. Hoy aún recibe arreglos; no cambies su firma
+  sin un encargo para eso.
 
-- **Aislamiento de tenant**: todo modelo de negocio usa `BelongsToTenant` (columna `tenant_id`
-  propia) o `BelongsToTenantViaRelacion` (`tenantRelacion()` vía `whereHas`).
-- **Permisos (SEG-03)**: toda ruta bajo `auth:sanctum` lleva el middleware
-  `permiso:<modulo.accion>`; es la única autoridad (no hay Policies). Una ruta sin permiso va
-  en `EXENTAS` de `Arquitectura/RutasConPermisoTest` con su razón. Un permiso nuevo se
-  agrega a `NucleoRolesPermisosSeeder`.
-- **Auditoría**: agregar el FQCN del modelo a `config/auditoria.php` (array `auditables`).
-  Nunca un trait en el modelo, nunca lógica de auditoría dentro del propio módulo.
-- **Pago mixto**: toda entidad que cobra/paga usa una tabla `*_pagos` dedicada
-  (`venta_pagos`, `apartado_abono_pagos`, `devolucion_pagos`). Nunca un campo de método de
-  pago + valor mágico (`forma_pago = 'mixto'`) en la entidad padre.
-- **`error_code`**: toda excepción de negocio extiende `ExcepcionNegocio` (Núcleo) y declara
+## 3. Seguridad
+
+- **Tenant (SEG-01):** todo modelo de negocio usa `BelongsToTenant` (columna `tenant_id`
+  propia) o `BelongsToTenantViaRelacion`.
+  - Una regla `exists` sobre una tabla con tenant usa `Nucleo/Support/ReglasTenant::existe()`
+    (o `existeGlobalODelTenant()` para catálogos con filas globales), o una regla por
+    relación (`ReglasVariante`, `ReglasCuota`, `ReglasCaja`). `usuarios` siempre con
+    `existe()`: `tenant_id` NULL es superadmin. (`Arquitectura/ExistenciasConTenantTest`)
+  - Todo índice único de negocio incluye `tenant_id` (DAT-09,
+    `Arquitectura/UnicidadConTenantTest`).
+- **Sucursal (SEG-02):** la de una operación es la del usuario. Si el payload trae
+  `sucursal_id`, resuélvelo con `SucursalOperacion::paraEscritura()` o `::paraFiltro()` dentro
+  del `toDto()`; solo se acepta otra con `sucursales.todas` y del mismo tenant. Asignar la
+  sucursal a un usuario o empleado es un atributo y va en `ATRIBUTOS` de
+  `Arquitectura/SucursalDelContextoTest`.
+- **Permisos (SEG-03):** toda ruta bajo `auth:sanctum` lleva `permiso:<modulo.accion>`; es la
+  única autoridad (no hay Policies). Una ruta sin permiso va en `EXENTAS` de
+  `Arquitectura/RutasConPermisoTest` con su razón. Un permiso nuevo se agrega a
+  `NucleoRolesPermisosSeeder`; en una instalación existente aparece al correr ese seeder.
+- **PIN de caja (SEG-12, Fase 4):** desbloquea una sesión abierta y autoriza como supervisor;
+  nunca reemplaza al login ni cambia de usuario en la terminal.
+
+## 4. Datos y modelos
+
+- **Modelos estrictos (DAT-14):** fuera de producción están activos
+  `preventSilentlyDiscardingAttributes`, `preventLazyLoading` y
+  `preventAccessingMissingAttributes`. Un listado carga sus relaciones con `with()`.
+- **Auditoría (SEG-10):** agrega el FQCN del modelo a `config/auditoria.php` (`auditables`).
+  Nunca un trait en el modelo ni lógica de auditoría dentro del módulo.
+- **Pago mixto:** toda entidad que cobra o paga usa una tabla `*_pagos` dedicada
+  (`venta_pagos`, `apartado_abono_pagos`, `devolucion_pagos`). Nunca un campo de método de pago
+  con un valor mágico (`forma_pago = 'mixto'`).
+- **Migraciones de dominio (DAT-11):** se reescriben mientras no haya datos en producción.
+- **Codificación (DAT-12):** UTF-8 sin BOM. Antes de cerrar, busca U+FFFD y `??` seguido de una
+  letra en los archivos tocados y compara los bytes; la consola de PowerShell puede mostrar mal
+  un archivo correcto.
+
+## 5. API
+
+- **Versión (API-01):** la API vive en `/api/v1` (`apiPrefix` en `bootstrap/app.php`). Las
+  rutas de sesión de Sanctum (`/login`, `/logout`, `/login/2fa-verify`, `/password/*`,
+  `/sanctum/csrf-cookie`) están en `routes/web.php`, en la raíz y sin versión
+  (`Arquitectura/RutasVersionadasTest`).
+- **Errores (API-03, API-04):** toda excepción de negocio extiende `ExcepcionNegocio` y declara
   `errorCode()`, `status()` y `contexto()`; el manejador genérico de `bootstrap/app.php` arma
-  la respuesta (API-04). Nunca agregues un mapeo por excepción en `bootstrap/app.php`. Tras
-  crear o cambiar una, regenera `docs/estandares/catalogo_error_code.md` con
-  `php artisan errores:catalogo`. Nunca esperes que el frontend parsee `message`.
+  la respuesta. Nunca agregues un mapeo por excepción en `bootstrap/app.php`. Tras crear o
+  cambiar una, regenera `docs/estandares/catalogo_error_code.md` con
+  `php artisan errores:catalogo`. El frontend decide por `error_code`, nunca parseando
+  `message`.
 
-## 4. Convención de frontend
+## 6. Frontend
 
-- Toda entidad raíz (tabla de negocio con `tenant_id` propio) tiene vista dedicada de
-  crear/editar/visualizar: rutas `/modulo`, `/modulo/nuevo`, `/modulo/:id`. El modal
-  (`p-dialog`) es solo para sub-recursos genuinamente anidados sin lista/detalle propia
-  (variantes de un producto, gastos de una sesión de caja, confirmaciones de un flujo).
-- `RecordTabsComponent` (`nucleo-record-tabs`) es obligatorio en toda vista de registro
-  (`*-detalle`), sin excepción.
-- Para buscar/seleccionar una entidad de otro módulo, usa `EntidadSelectorComponent` vía el
-  contrato `BuscadorEntidad`/`BuscadorDeHijos` + token de inyección. Nunca importes el
-  servicio concreto de otro módulo (`ClienteService`, `ProductoService`, etc.) directamente
-  desde un módulo que no lo posee.
+- La dirección del backend sale de `public/config.json` al arrancar. Arma las URLs con
+  `urlApi('/recurso')` y `urlSesion('/login')` (`core/api-config.ts`); nunca una URL fija.
+- Toda entidad raíz tiene vistas dedicadas: `/modulo`, `/modulo/nuevo`, `/modulo/:id`. El modal
+  (`p-dialog`) es solo para sub-recursos anidados sin lista ni detalle propios.
+- `RecordTabsComponent` (`nucleo-record-tabs`) es obligatorio en toda vista de registro.
+- Para buscar o elegir una entidad de otro módulo, usa `EntidadSelectorComponent` con el
+  contrato `BuscadorEntidad`/`BuscadorDeHijos` y su token. Nunca importes el servicio concreto
+  de otro módulo.
 
-## 5. Disciplina de pruebas
+## 7. Pruebas y calidad (PRO-01 a PRO-07)
 
-- Toda funcionalidad nueva (endpoint, componente, regla de negocio) necesita tests
-  permanentes: PHPUnit (`backend/tests/Feature/...`) o Vitest (`*.component.spec.ts`,
-  `nx test`). Un script de validación suelto (`tinker`, un `console.log` manual, un curl de
-  prueba) no reemplaza el test — bórralo o conviértelo en test antes de cerrar el cambio.
-- Si modificas un `Service` compartido por otros módulos (`VentaService`, `InventarioService`,
-  `PrecioService`, `TenantContext`, etc.), vuelve a correr explícitamente la suite completa de
-  cada módulo consumidor antes de dar el cambio por cerrado — no asumas que tu test local
-  basta. Ejemplo: tocar `VentaService` obliga a re-correr Tpv, Apartados y Devoluciones (los
-  tres lo consumen, ver §1).
+- **No reescribas tests existentes (PRO-01):** un archivo de test solo recibe métodos nuevos.
+  Cambiar o borrar uno requiere la aprobación del responsable y decirlo en el reporte. Un test
+  que falla se arregla en el código.
+- **Un bug, su test primero (PRO-04):** escribe el test, míralo fallar, corrige y míralo pasar.
+- **Funcionalidad nueva = tests permanentes:** PHPUnit en `backend/tests/Feature/...` o Vitest
+  (`*.spec.ts`). Un script suelto (`tinker`, un `curl`, un `console.log`) no reemplaza un test.
+- **Servicio compartido (PRO-07):** si tocas `VentaService`, `InventarioService`,
+  `PrecioService`, `TenantContext` u otro con varios consumidores, corre la suite completa.
+- **Antes de cerrar**, todo en verde (es lo que corre CI):
+  - `backend`: `vendor/bin/pint --test`, `vendor/bin/phpstan analyse --memory-limit=1G`,
+    `php artisan test`;
+  - `frontend`: `pnpm nx run-many -t lint build test`.
+- **Líneas base (PRO-03):** el total de `backend/phpstan-baseline.neon` solo baja. Regenérala
+  únicamente cuando corriges deuda, nunca para tapar un error nuevo. Las listas `PENDIENTES` de
+  los tests de arquitectura funcionan igual.
 
-## 6. Referencia completa
+## 8. Proceso (PRO-06, PRO-09, PRO-10)
 
-[docs/MANUAL_TECNICO.md](../docs/MANUAL_TECNICO.md) — mapa de dependencias con diagrama de
-texto, catálogo completo de patrones (con el razonamiento detrás de cada uno), y el runbook
-para clonar este repo en un producto nuevo.
+- Un tema por encargo y por PR.
+- Revisa `git status` antes de editar; no sobrescribas ni reviertas cambios que no hiciste.
+- Nada de commit ni push sin la indicación explícita del responsable. Un commit por tema, en
+  español, con prefijo (`feat`, `fix`, `refactor`, `chore`, `docs`, `test`).
+- `master` está protegido: todo entra por PR con los checks en verde y se fusiona con
+  **Rebase and merge**.
+- Los documentos de estrategia (mercado, tabuladores, borradores de plan) no se suben al repo.
+- Los encargos a DS siguen PRO-09: prompt con contexto y reglas, reporte con conteos y
+  checklist de cierre, revisión del diff contra el prompt.
