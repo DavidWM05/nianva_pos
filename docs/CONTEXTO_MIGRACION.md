@@ -304,6 +304,12 @@ repo.
   `DependenciasEntreModulosTest` queda sin `PENDIENTES`. Excepción a PRO-01 autorizada: en los
   tests solo cambiaron los namespaces de las clases movidas. Backend: 603 tests; línea base de
   PHPStan: 1386.
+- **Seguridad de dependencias del backend** (vigesimosegundo encargo, hecho por DS):
+  `composer audit` reportaba 23 avisos en 6 paquetes. El más grave era crítico: bypass de
+  autenticación en el TokenGuard de Laravel. Se actualizaron esos 6 paquetes y lo que
+  arrastraban (50 en total), sin cambiar `composer.json` ni ninguna versión mayor; Laravel
+  pasa de 13.20 a 13.39. `composer audit` queda sin avisos, y el job Backend de CI tiene un
+  paso nuevo que falla si aparece uno. Ningún test modificado. Línea base de PHPStan: 1385.
 - **Pendientes detectados:**
   - `Produccion` usa `UnidadMedida` (extensión → extensión); las unidades se rediseñan en la
     Fase 3 (DAT-01);
@@ -328,7 +334,8 @@ repo.
    tenant (API-05), la unicidad con tenant (DAT-09, C4), C11 (D5) y el análisis estático
    bloqueante (Pint, ESLint, PHPStan), C7 (DAT-14), C2 (SEG-03), C3 (SEG-02), C8 (ARQ-02), C5 (API-01) y la documentación del repo (`README.md` y
    `.claude/CLAUDE.md`). Lo que sigue:
-   - `composer audit`: revisar los 23 advisories;
+   - `pnpm audit --prod` en el frontend: 7 avisos en 5 paquetes (4 altos), en
+     `@angular/common`, `@angular/compiler`, `@angular/core`, `@angular/router` y `zod`;
    - resolver los conflictos C1-C11 del README de estándares;
    - resto de PRO-05: stylelint, diff de OpenAPI y CODEOWNERS;
    - después de C8: que los Services reciban DTOs en vez de arreglos (se hace al reescribirlos
