@@ -3,10 +3,11 @@
 namespace App\Modules\Crm\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Modules\Crm\Http\Requests\CrearPlanPagoRequest;
+use App\Modules\Crm\Http\Requests\PagarCuotaRequest;
 use App\Modules\Crm\Http\Resources\PlanPagoResource;
 use App\Modules\Crm\Models\PlanPagoCliente;
 use App\Modules\Crm\Services\VentasPlazosService;
-use App\Modules\Crm\Support\ReglasCuota;
 use App\Modules\Tpv\Models\Venta;
 use Illuminate\Http\Request;
 
@@ -49,30 +50,18 @@ class PlanPagoController extends Controller
         return new PlanPagoResource($plan);
     }
 
-    public function crearPlan(Request $request, Venta $venta)
+    public function crearPlan(CrearPlanPagoRequest $request, Venta $venta)
     {
-        $v = $request->validate([
-            'numero_cuotas' => 'required|integer|min:2|max:36',
-            'tasa_interes' => 'nullable|numeric|min:0|max:100',
-            'periodicidad' => 'nullable|string|in:semanal,quincenal,mensual',
-            'fecha_inicio' => 'nullable|date',
-        ]);
-
-        $plan = $this->ventasPlazosService->crearPlan($venta, $v);
+        $plan = $this->ventasPlazosService->crearPlan($venta, $request->toDto()->datosParaServicio());
 
         return response()->json(['data' => $plan], 201);
     }
 
-    public function pagarCuota(Request $request, PlanPagoCliente $plan)
+    public function pagarCuota(PagarCuotaRequest $request, PlanPagoCliente $plan)
     {
-        $tenantId = $request->user()->tenant_id;
+        $dto = $request->toDto();
 
-        $v = $request->validate([
-            'cuota_id' => ['required', 'integer', ReglasCuota::delTenant($tenantId)],
-            'monto' => 'nullable|numeric|min:0.01',
-        ]);
-
-        $cuota = $this->ventasPlazosService->pagarCuota($plan->id, $v['cuota_id'], $v);
+        $cuota = $this->ventasPlazosService->pagarCuota($plan->id, $dto->cuotaId, $dto->datosParaServicio());
 
         return response()->json(['data' => $cuota]);
     }

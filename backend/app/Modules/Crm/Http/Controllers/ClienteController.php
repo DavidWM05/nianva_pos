@@ -3,6 +3,7 @@
 namespace App\Modules\Crm\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Modules\Crm\Http\Requests\GuardarClienteRequest;
 use App\Modules\Crm\Http\Resources\ClienteResource;
 use App\Modules\Crm\Models\Cliente;
 use App\Modules\Nucleo\Services\TenantContext;
@@ -83,18 +84,18 @@ class ClienteController extends Controller
         ]);
     }
 
-    public function store(Request $request)
+    public function store(GuardarClienteRequest $request)
     {
-        $validated = $this->validarDatos($request);
-        $validated['tenant_id'] = app(TenantContext::class)->id();
+        $datos = $request->toDto()->datosPresentes();
+        $datos['tenant_id'] = app(TenantContext::class)->id();
         // Explicito en vez de confiar en el default de la columna -- el
         // modelo en memoria no se recarga solo tras create(), asi que el
         // recurso devuelto en la misma respuesta reflejaria null si no se
         // pasa aqui.
-        $validated['activo'] = true;
-        $validated['es_sistema'] = false;
+        $datos['activo'] = true;
+        $datos['es_sistema'] = false;
 
-        $cliente = Cliente::create($validated);
+        $cliente = Cliente::create($datos);
 
         // response()->json($resource) NO aplica el wrap "data" que si aplica
         // devolver el resource directamente -- ->response() si lo respeta,
@@ -102,12 +103,11 @@ class ClienteController extends Controller
         return (new ClienteResource($cliente))->response()->setStatusCode(201);
     }
 
-    public function update(Request $request, Cliente $cliente)
+    public function update(GuardarClienteRequest $request, Cliente $cliente)
     {
         $this->rechazarSiEsSistema($cliente);
 
-        $validated = $this->validarDatos($request);
-        $cliente->update($validated);
+        $cliente->update($request->toDto()->datosPresentes());
 
         return new ClienteResource($cliente);
     }
@@ -133,16 +133,5 @@ class ClienteController extends Controller
         if ($cliente->es_sistema) {
             abort(403, 'Este es un cliente de sistema y no se puede modificar.');
         }
-    }
-
-    private function validarDatos(Request $request): array
-    {
-        return $request->validate([
-            'nombre' => ['required', 'string', 'max:200'],
-            'documento_fiscal' => ['nullable', 'string', 'max:30'],
-            'telefono' => ['nullable', 'string', 'max:20'],
-            'correo' => ['nullable', 'email', 'max:150'],
-            'direccion' => ['nullable', 'string'],
-        ]);
     }
 }

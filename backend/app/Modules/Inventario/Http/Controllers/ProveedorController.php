@@ -3,9 +3,9 @@
 namespace App\Modules\Inventario\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Modules\Inventario\Http\Requests\CrearProveedorRequest;
 use App\Modules\Inventario\Models\Proveedor;
 use App\Modules\Nucleo\Services\TenantContext;
-use Illuminate\Http\Request;
 
 /**
  * Catalogo de apoyo simple a proposito, mismo criterio que
@@ -24,19 +24,13 @@ class ProveedorController extends Controller
         ]);
     }
 
-    public function store(Request $request)
+    public function store(CrearProveedorRequest $request)
     {
-        $validated = $request->validate([
-            'razon_social' => ['required', 'string', 'max:200'],
-            'rfc' => ['nullable', 'string', 'max:20'],
-            'telefono' => ['nullable', 'string', 'max:20'],
-            'correo' => ['nullable', 'email', 'max:150'],
-            'direccion' => ['nullable', 'string'],
-        ]);
-        $validated['tenant_id'] = app(TenantContext::class)->id();
-        $validated['activo'] = true;
+        $datos = $request->toDto()->datos();
+        $datos['tenant_id'] = app(TenantContext::class)->id();
+        $datos['activo'] = true;
 
-        $proveedor = Proveedor::create($validated);
+        $proveedor = Proveedor::create($datos);
 
         return response()->json(['data' => $proveedor->only(['id', 'razon_social'])], 201);
     }
