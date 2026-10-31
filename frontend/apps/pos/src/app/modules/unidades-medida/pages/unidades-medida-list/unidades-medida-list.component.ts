@@ -1,7 +1,7 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { ConfirmDialogService, StatusBadgeComponent, ToastService } from '@nianva/ui-shared';
+import { ConfirmDialogService, StatusBadgeComponent, ToastService, mensajeError } from '@nianva/ui-shared';
 import { Button } from 'primeng/button';
 import { Dialog } from 'primeng/dialog';
 import { InputText } from 'primeng/inputtext';
@@ -15,10 +15,6 @@ const TIPOS: { label: string; value: TipoUnidadMedida }[] = [
   { label: 'Fraccionario (acepta decimales)', value: 'fraccionario' },
 ];
 
-interface EstadoErrorNegocio {
-  message?: string;
-  error_code?: string;
-}
 
 /**
  * Catalogo transversal (ver 04_ESPECIFICACION_FRONTEND_UX.md §9, tipo
@@ -108,7 +104,7 @@ export class UnidadesMedidaListComponent implements OnInit {
       },
       error: (error: HttpErrorResponse) => {
         this.guardando.set(false);
-        this.toast.error(this.mensajeError(error, 'No se pudo guardar la unidad de medida.'));
+        this.toast.error(mensajeError(error, 'No se pudo guardar la unidad de medida.'));
       },
     });
   }
@@ -128,7 +124,7 @@ export class UnidadesMedidaListComponent implements OnInit {
         this.cargar();
       },
       error: (error: HttpErrorResponse) => {
-        this.toast.error(this.mensajeError(error, 'No se pudo eliminar la unidad de medida.'));
+        this.toast.error(mensajeError(error, 'No se pudo eliminar la unidad de medida.'));
       },
     });
   }
@@ -144,15 +140,4 @@ export class UnidadesMedidaListComponent implements OnInit {
     });
   }
 
-  /**
-   * `unidad_en_uso` es el unico error_code de negocio de este modulo (ver
-   * bootstrap/app.php) -- se distingue por codigo, no por texto, igual que
-   * el resto de Nucleo; el resto de errores (validacion 422 nativa, etc.)
-   * cae al fallback.
-   */
-  private mensajeError(error: HttpErrorResponse, fallback: string): string {
-    const cuerpo = error.error as EstadoErrorNegocio | undefined;
-
-    return cuerpo?.message ?? fallback;
-  }
 }

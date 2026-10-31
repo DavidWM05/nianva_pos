@@ -2,7 +2,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
-import { EntidadSelectorComponent, ToastService } from '@nianva/ui-shared';
+import { EntidadSelectorComponent, ToastService, esErrorNegocio, leerErrorNegocio, mensajeError } from '@nianva/ui-shared';
 import { Button } from 'primeng/button';
 import { InputText } from 'primeng/inputtext';
 import { Select } from 'primeng/select';
@@ -67,8 +67,15 @@ export class PlanPagoFormComponent {
         },
         error: (error: HttpErrorResponse) => {
           this.guardando.set(false);
-          const cuerpo = error.error as { message?: string } | undefined;
-          this.toast.error(cuerpo?.message ?? 'No se pudo crear el plan de pago.');
+          this.toast.error(mensajeError(error, 'No se pudo crear el plan de pago.'));
+
+          if (esErrorNegocio(error, 'plan_pago_ya_activo')) {
+            const planPagoId = leerErrorNegocio(error)?.contexto['plan_pago_id'];
+
+            if (typeof planPagoId === 'number') {
+              this.router.navigate(['/ventas-plazos', planPagoId]);
+            }
+          }
         },
       });
   }

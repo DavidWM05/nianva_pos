@@ -10,6 +10,7 @@ import {
   EntidadSelectorComponent,
   StatusBadgeComponent,
   ToastService,
+  mensajeError,
 } from '@nianva/ui-shared';
 import { Button } from 'primeng/button';
 import { Dialog } from 'primeng/dialog';
@@ -120,7 +121,7 @@ export class OrdenesListComponent {
         },
         error: (error: HttpErrorResponse) => {
           this.guardando.set(false);
-          this.toast.error(this.mensajeError(error, 'No se pudo crear la orden de producción.'));
+          this.toast.error(mensajeError(error, 'No se pudo crear la orden de producción.'));
         },
       });
   }
@@ -172,7 +173,7 @@ export class OrdenesListComponent {
       },
       error: (error: HttpErrorResponse) => {
         this.completando.set(false);
-        this.toast.error(this.mensajeError(error, 'No se pudo completar la orden.'));
+        this.toast.error(mensajeError(error, 'No se pudo completar la orden.'));
       },
     });
   }
@@ -184,7 +185,7 @@ export class OrdenesListComponent {
         this.cargar(this.ultimoEvento);
       },
       error: (error: HttpErrorResponse) => {
-        this.toast.error(this.mensajeError(error, 'No se pudo actualizar el estado.'));
+        this.toast.error(mensajeError(error, 'No se pudo actualizar el estado.'));
       },
     });
   }
@@ -204,9 +205,4 @@ export class OrdenesListComponent {
     });
   }
 
-  private mensajeError(error: HttpErrorResponse, fallback: string): string {
-    const cuerpo = error.error as { message?: string } | undefined;
-
-    return cuerpo?.message ?? fallback;
-  }
 }

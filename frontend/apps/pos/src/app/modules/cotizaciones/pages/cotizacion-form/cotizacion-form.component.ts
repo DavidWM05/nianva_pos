@@ -2,7 +2,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { EntidadSelectorComponent, ToastService } from '@nianva/ui-shared';
+import { EntidadSelectorComponent, MENSAJE_SUCURSAL_REQUERIDA, ToastService, esErrorNegocio, mensajeError } from '@nianva/ui-shared';
 import { Button } from 'primeng/button';
 import { InputText } from 'primeng/inputtext';
 import { Textarea } from 'primeng/textarea';
@@ -136,14 +136,13 @@ export class CotizacionFormComponent implements OnInit {
       },
       error: (error: HttpErrorResponse) => {
         this.guardando.set(false);
-        this.toast.error(this.mensajeError(error, 'No se pudo guardar la cotización.'));
+        this.toast.error(
+          esErrorNegocio(error, 'sucursal_requerida')
+            ? MENSAJE_SUCURSAL_REQUERIDA
+            : mensajeError(error, 'No se pudo guardar la cotización.'),
+        );
       },
     });
   }
 
-  private mensajeError(error: HttpErrorResponse, fallback: string): string {
-    const cuerpo = error.error as { message?: string } | undefined;
-
-    return cuerpo?.message ?? fallback;
-  }
 }

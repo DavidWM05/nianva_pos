@@ -3,7 +3,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
-import { AuditLogViewerComponent, RecordTabConfig, RecordTabsComponent, StatusBadgeComponent, ToastService } from '@nianva/ui-shared';
+import { AuditLogViewerComponent, RecordTabConfig, RecordTabsComponent, StatusBadgeComponent, ToastService, esErrorNegocio, mensajeError } from '@nianva/ui-shared';
 import { Button } from 'primeng/button';
 import { Dialog } from 'primeng/dialog';
 import { InputText } from 'primeng/inputtext';
@@ -73,8 +73,11 @@ export class PlanPagoDetalleComponent implements OnInit {
       },
       error: (error: HttpErrorResponse) => {
         this.pagando.set(false);
-        const cuerpo = error.error as { message?: string } | undefined;
-        this.toast.error(cuerpo?.message ?? 'No se pudo registrar el pago de la cuota.');
+        this.toast.error(mensajeError(error, 'No se pudo registrar el pago de la cuota.'));
+
+        if (esErrorNegocio(error, 'cuota_ya_pagada')) {
+          this.cargar(plan.id);
+        }
       },
     });
   }

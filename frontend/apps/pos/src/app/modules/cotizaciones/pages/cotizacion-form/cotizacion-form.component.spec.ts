@@ -1,10 +1,11 @@
+import { HttpErrorResponse } from '@angular/common/http';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { Router, convertToParamMap, provideRouter } from '@angular/router';
 import { ActivatedRoute } from '@angular/router';
 import { ToastService } from '@nianva/ui-shared';
 import { providePrimeNG } from 'primeng/config';
-import { of } from 'rxjs';
+import { of, throwError } from 'rxjs';
 import { describe, expect, it, vi } from 'vitest';
 
 import { AuthStateService } from '../../../../auth/auth-state.service';
@@ -133,4 +134,25 @@ describe('CotizacionFormComponent', () => {
 
     expect(cotizacionService.crear).not.toHaveBeenCalled();
   });
-});
+  it('si el backend reporta sucursal_requerida, muestra el mensaje fijo', async () => {
+    await crearComponente(null);
+    const toast = TestBed.inject(ToastService);
+    const errorSpy = vi.spyOn(toast, 'error');
+    cotizacionService.crear.mockReturnValue(
+      throwError(
+        () =>
+          new HttpErrorResponse({
+            status: 422,
+            error: { message: 'La operacion requiere una sucursal.', error_code: 'sucursal_requerida' },
+          }),
+      ),
+    );
+
+    fixture.componentInstance.onLineasCambio({
+      items: [{ variante_id: 5, cantidad: 1, precio_unitario: 100, descuento: 0 }],
+      subtotal: 100,
+    });
+    fixture.componentInstance.guardar();
+
+    expect(errorSpy).toHaveBeenCalledWith('Tu usuario no tiene sucursal asignada; pide a un administrador que te asigne una.');
+  });});

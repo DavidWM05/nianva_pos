@@ -8,8 +8,11 @@ import {
   DataTableColumn,
   DataTableComponent,
   DataTableLazyEvent,
+  MENSAJE_SUCURSAL_REQUERIDA,
   StatusBadgeComponent,
   ToastService,
+  esErrorNegocio,
+  mensajeError,
 } from '@nianva/ui-shared';
 import { Button } from 'primeng/button';
 import { DatePicker } from 'primeng/datepicker';
@@ -109,8 +112,11 @@ export class NominasListComponent {
         },
         error: (error: HttpErrorResponse) => {
           this.generando.set(false);
-          const cuerpo = error.error as { message?: string } | undefined;
-          this.toast.error(cuerpo?.message ?? 'No se pudo generar la nómina.');
+          this.toast.error(
+            esErrorNegocio(error, 'sucursal_requerida')
+              ? MENSAJE_SUCURSAL_REQUERIDA
+              : mensajeError(error, 'No se pudo generar la nómina.'),
+          );
         },
       });
   }

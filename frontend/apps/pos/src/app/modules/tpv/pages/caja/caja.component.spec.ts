@@ -1,3 +1,4 @@
+import { HttpErrorResponse } from '@angular/common/http';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { provideRouter } from '@angular/router';
@@ -257,5 +258,28 @@ describe('CajaComponent', () => {
     fixture.componentInstance.registrarGasto();
 
     expect(toastService.success).toHaveBeenCalled();
+  });
+
+  it('si la caja ya estaba cerrada, recarga el estado actual', async () => {
+    await crearComponente({
+      sesion: sesionAbierta,
+      resumen: { ventas_count: 1, total_ventas: 100, total_gastos: 0 },
+      permisos: { abrir: true, cerrar: true, gastos_ver: true, gastos_crear: true },
+    });
+    cajaService.cerrar.mockReturnValue(
+      throwError(
+        () =>
+          new HttpErrorResponse({
+            status: 422,
+            error: { message: 'La caja ya esta cerrada.', error_code: 'caja_ya_cerrada' },
+          }),
+      ),
+    );
+
+    fixture.componentInstance['montoFisico'].set(580);
+    fixture.componentInstance.cerrarCaja();
+
+    expect(toastService.error).toHaveBeenCalledWith('La caja ya esta cerrada.');
+    expect(cajaService.actual).toHaveBeenCalledTimes(2);
   });
 });
