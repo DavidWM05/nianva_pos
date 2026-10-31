@@ -2,9 +2,11 @@
 
 namespace App\Modules\Devoluciones\Models;
 
+use App\Modules\Devoluciones\Database\Factories\DevolucionPagoFactory;
 use App\Modules\Nucleo\Models\Concerns\BelongsToTenantViaRelacion;
 use App\Modules\Nucleo\Models\MetodoPago;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
@@ -16,6 +18,9 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class DevolucionPago extends Model
 {
     use BelongsToTenantViaRelacion;
+
+    /** @use HasFactory<DevolucionPagoFactory> */
+    use HasFactory;
 
     public $timestamps = false;
 

@@ -2,8 +2,10 @@
 
 namespace App\Modules\Nucleo\Models;
 
+use App\Modules\Nucleo\Database\Factories\SucursalFactory;
 use App\Modules\Nucleo\Models\Concerns\BelongsToTenant;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -12,6 +14,9 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class Sucursal extends Model
 {
     use BelongsToTenant;
+
+    /** @use HasFactory<SucursalFactory> */
+    use HasFactory;
 
     protected $table = 'sucursales';
 

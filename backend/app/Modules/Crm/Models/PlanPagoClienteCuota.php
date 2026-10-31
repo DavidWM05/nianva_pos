@@ -2,8 +2,10 @@
 
 namespace App\Modules\Crm\Models;
 
+use App\Modules\Crm\Database\Factories\PlanPagoClienteCuotaFactory;
 use App\Modules\Nucleo\Models\Concerns\BelongsToTenantViaRelacion;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
@@ -18,6 +20,9 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class PlanPagoClienteCuota extends Model
 {
     use BelongsToTenantViaRelacion;
+
+    /** @use HasFactory<PlanPagoClienteCuotaFactory> */
+    use HasFactory;
 
     public $timestamps = false;
 

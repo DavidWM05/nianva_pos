@@ -2,7 +2,9 @@
 
 namespace App\Modules\Nucleo\Models;
 
+use App\Modules\Nucleo\Database\Factories\DispositivoConfiableFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
@@ -16,6 +18,9 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 #[Fillable(['usuario_id', 'identificador_dispositivo', 'user_agent', 'ip_registro', 'fecha_creacion', 'fecha_expiracion'])]
 class DispositivoConfiable extends Model
 {
+    /** @use HasFactory<DispositivoConfiableFactory> */
+    use HasFactory;
+
     public $timestamps = false;
 
     protected $table = 'dispositivos_confiables';

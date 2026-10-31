@@ -2,9 +2,11 @@
 
 namespace App\Modules\Apartados\Models;
 
+use App\Modules\Apartados\Database\Factories\ApartadoDetalleFactory;
 use App\Modules\Inventario\Models\ProductoVariante;
 use App\Modules\Nucleo\Models\Concerns\BelongsToTenantViaRelacion;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
@@ -16,6 +18,9 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class ApartadoDetalle extends Model
 {
     use BelongsToTenantViaRelacion;
+
+    /** @use HasFactory<ApartadoDetalleFactory> */
+    use HasFactory;
 
     public $timestamps = false;
 

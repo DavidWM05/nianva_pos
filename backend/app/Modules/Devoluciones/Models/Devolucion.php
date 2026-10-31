@@ -2,12 +2,14 @@
 
 namespace App\Modules\Devoluciones\Models;
 
+use App\Modules\Devoluciones\Database\Factories\DevolucionFactory;
 use App\Modules\Nucleo\Models\Concerns\BelongsToTenant;
 use App\Modules\Nucleo\Models\Sucursal;
 use App\Modules\Nucleo\Models\Tenant;
 use App\Modules\Nucleo\Models\Usuario;
 use App\Modules\Tpv\Models\Venta;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -20,6 +22,9 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class Devolucion extends Model
 {
     use BelongsToTenant;
+
+    /** @use HasFactory<DevolucionFactory> */
+    use HasFactory;
 
     const CREATED_AT = 'fecha';
 

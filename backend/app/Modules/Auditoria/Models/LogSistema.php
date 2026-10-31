@@ -2,10 +2,12 @@
 
 namespace App\Modules\Auditoria\Models;
 
+use App\Modules\Auditoria\Database\Factories\LogSistemaFactory;
 use App\Modules\Nucleo\Models\Tenant;
 use App\Modules\Nucleo\Models\Usuario;
 use App\Modules\Nucleo\Services\TenantContext;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\Auth;
@@ -35,6 +37,9 @@ use Illuminate\Support\Facades\Auth;
 ])]
 class LogSistema extends Model
 {
+    /** @use HasFactory<LogSistemaFactory> */
+    use HasFactory;
+
     const UPDATED_AT = null;
 
     protected $table = 'logs_sistema';

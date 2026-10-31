@@ -2,9 +2,11 @@
 
 namespace App\Modules\Apartados\Models;
 
+use App\Modules\Apartados\Database\Factories\ApartadoAbonoPagoFactory;
 use App\Modules\Nucleo\Models\Concerns\BelongsToTenantViaRelacion;
 use App\Modules\Nucleo\Models\MetodoPago;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
@@ -19,6 +21,9 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class ApartadoAbonoPago extends Model
 {
     use BelongsToTenantViaRelacion;
+
+    /** @use HasFactory<ApartadoAbonoPagoFactory> */
+    use HasFactory;
 
     public $timestamps = false;
 

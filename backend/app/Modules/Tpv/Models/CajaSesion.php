@@ -5,7 +5,9 @@ namespace App\Modules\Tpv\Models;
 use App\Modules\Nucleo\Models\Concerns\BelongsToTenantViaRelacion;
 use App\Modules\Nucleo\Models\Sucursal;
 use App\Modules\Nucleo\Models\Usuario;
+use App\Modules\Tpv\Database\Factories\CajaSesionFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -21,6 +23,9 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class CajaSesion extends Model
 {
     use BelongsToTenantViaRelacion;
+
+    /** @use HasFactory<CajaSesionFactory> */
+    use HasFactory;
 
     public $timestamps = false;
 
