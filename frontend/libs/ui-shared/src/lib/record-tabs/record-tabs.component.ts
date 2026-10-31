@@ -23,7 +23,7 @@ export interface RecordTabConfig {
  *     </ng-template>
  *   </nucleo-record-tabs>
  *
- * El @defer va en el USO del componente (ver apps/nucleo-shell demo), no
+ * El @defer va en el USO del componente (ver apps/pos demo), no
  * aqui -- este componente solo decide CUANDO renderiza cada
  * ng-template (al cambiar de pestana), el @defer decideademas cuando se
  * descarga el codigo de lo que hay dentro.

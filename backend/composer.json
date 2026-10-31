@@ -1,8 +1,8 @@
 {
     "$schema": "https://getcomposer.org/schema.json",
-    "name": "laravel/laravel",
+    "name": "nianva/pos",
     "type": "project",
-    "description": "The skeleton application for the Laravel framework.",
+    "description": "Nianva POS: punto de venta, inventario y administración multi-tenant.",
     "keywords": ["laravel", "framework"],
     "license": "MIT",
     "require": {
