@@ -177,7 +177,10 @@ mueven a la lib nueva que corresponda.
   - los errores del servidor (`errors.campo`) se pintan solos en el campo por `ui/forms`;
   - dinero y cantidad usan sus inputs (con `inputmode` correcto y sin aceptar más decimales que
     la columna);
-  - contraseña con botón de ojo; PIN de 4 dígitos;
+  - contraseña con botón de ojo; PIN de 4 a 6 dígitos (según el tenant) con `ui-input-pin`,
+    un solo teclado para el desbloqueo y la autorización de supervisor, con teclado físico y
+    modo táctil, sin `<input type="password">` para que el navegador no lo autocomplete
+    (SEG-12);
   - un select de filtro con "Todas" empieza con un placeholder vacío;
   - Guardar y Cancelar van en `ui-form-actions`.
 - **Por qué:** son las reglas de `estandar_ui.md` §7 de Lite, aplicadas por componente.
