@@ -1579,12 +1579,6 @@ parameters:
 			path: app/Modules/CrmAvanzado/Http/Controllers/CrmAvanzadoController.php
 
 		-
-			message: '#^Access to an undefined property App\\Modules\\Crm\\Models\\Cliente\:\:\$tenant_id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Modules/CrmAvanzado/Http/Controllers/CrmAvanzadoController.php
-
-		-
 			message: '#^Cannot access property \$id on App\\Modules\\Nucleo\\Models\\Usuario\|null\.$#'
 			identifier: property.nonObject
 			count: 2
@@ -1593,7 +1587,7 @@ parameters:
 		-
 			message: '#^Cannot access property \$tenant_id on App\\Modules\\Nucleo\\Models\\Usuario\|null\.$#'
 			identifier: property.nonObject
-			count: 4
+			count: 2
 			path: app/Modules/CrmAvanzado/Http/Controllers/CrmAvanzadoController.php
 
 		-
@@ -2518,18 +2512,6 @@ parameters:
 			message: '#^Method App\\Modules\\Delivery\\Http\\Controllers\\PedidoController\:\:store\(\) has no return type specified\.$#'
 			identifier: missingType.return
 			count: 1
-			path: app/Modules/Delivery/Http/Controllers/PedidoController.php
-
-		-
-			message: '#^Parameter \#1 \$tenantId of static method App\\Modules\\Inventario\\Support\\ReglasVariante\:\:delTenant\(\) expects int, int\|null given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Modules/Delivery/Http/Controllers/PedidoController.php
-
-		-
-			message: '#^Parameter \#2 \$tenantId of static method App\\Modules\\Nucleo\\Support\\ReglasTenant\:\:existe\(\) expects int, int\|null given\.$#'
-			identifier: argument.type
-			count: 3
 			path: app/Modules/Delivery/Http/Controllers/PedidoController.php
 
 		-
@@ -5347,12 +5329,6 @@ parameters:
 			path: app/Modules/Payroll/Http/Controllers/PayrollController.php
 
 		-
-			message: '#^Parameter \#2 \$tenantId of static method App\\Modules\\Nucleo\\Support\\ReglasTenant\:\:existe\(\) expects int, int\|null given\.$#'
-			identifier: argument.type
-			count: 3
-			path: app/Modules/Payroll/Http/Controllers/PayrollController.php
-
-		-
 			message: '#^Access to an undefined property App\\Modules\\Payroll\\Http\\Resources\\EmpleadoResource\:\:\$activo\.$#'
 			identifier: property.notFound
 			count: 1
@@ -6015,18 +5991,6 @@ parameters:
 		-
 			message: '#^Method App\\Modules\\Prestamos\\Http\\Controllers\\PrestamoController\:\:store\(\) has no return type specified\.$#'
 			identifier: missingType.return
-			count: 1
-			path: app/Modules/Prestamos/Http/Controllers/PrestamoController.php
-
-		-
-			message: '#^Parameter \#1 \$tenantId of static method App\\Modules\\Tpv\\Support\\ReglasCaja\:\:delTenant\(\) expects int, int\|null given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Modules/Prestamos/Http/Controllers/PrestamoController.php
-
-		-
-			message: '#^Parameter \#2 \$tenantId of static method App\\Modules\\Nucleo\\Support\\ReglasTenant\:\:existe\(\) expects int, int\|null given\.$#'
-			identifier: argument.type
 			count: 1
 			path: app/Modules/Prestamos/Http/Controllers/PrestamoController.php
 

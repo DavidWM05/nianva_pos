@@ -3,13 +3,12 @@
 namespace App\Modules\Delivery\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Modules\Delivery\Http\Requests\AsignarRepartidorRequest;
+use App\Modules\Delivery\Http\Requests\CambiarEstadoPedidoRequest;
+use App\Modules\Delivery\Http\Requests\CrearPedidoRequest;
 use App\Modules\Delivery\Http\Resources\PedidoResource;
 use App\Modules\Delivery\Models\Pedido;
 use App\Modules\Delivery\Services\PedidoService;
-use App\Modules\Inventario\Support\ReglasVariante;
-use App\Modules\Nucleo\Services\TenantContext;
-use App\Modules\Nucleo\Support\ReglasTenant;
-use App\Modules\Nucleo\Support\SucursalOperacion;
 use Illuminate\Http\Request;
 
 class PedidoController extends Controller
@@ -56,45 +55,29 @@ class PedidoController extends Controller
         ]);
     }
 
-    public function store(Request $request, PedidoService $service)
+    public function store(CrearPedidoRequest $request, PedidoService $service)
     {
-        $tenantId = app(TenantContext::class)->id();
-
-        $validated = $request->validate([
-            'cliente_id' => ['required', 'integer', ReglasTenant::existe('clientes', $tenantId)],
-            'sucursal_id' => ['nullable', 'integer', ReglasTenant::existe('sucursales', $tenantId)],
-            'direccion_entrega' => ['nullable', 'string', 'max:500'],
-            'referencia' => ['nullable', 'string', 'max:255'],
-            'costo_delivery' => ['nullable', 'numeric', 'min:0'],
-            'tiempo_estimado' => ['nullable', 'integer', 'min:1'],
-            'notas' => ['nullable', 'string', 'max:1000'],
-            'items' => ['nullable', 'array'],
-            'items.*.variante_id' => ['required_with:items', 'integer', ReglasVariante::delTenant($tenantId)],
-            'items.*.cantidad' => ['required_with:items', 'integer', 'min:1'],
-            'items.*.precio_unitario' => ['required_with:items', 'numeric', 'min:0'],
-        ]);
-
         $usuario = $request->user();
 
         if ($usuario === null) {
             abort(401);
         }
 
-        $sucursalId = SucursalOperacion::paraEscritura($usuario, $validated['sucursal_id'] ?? null);
+        $dto = $request->toDto();
 
         $pedido = $service->crear(
             [
-                'tenant_id' => $tenantId,
-                'sucursal_id' => $sucursalId,
+                'tenant_id' => (int) $usuario->getAttribute('tenant_id'),
+                'sucursal_id' => $dto->sucursalId,
                 'usuario_id' => $usuario->id,
-                'cliente_id' => $validated['cliente_id'],
-                'direccion_entrega' => $validated['direccion_entrega'] ?? null,
-                'referencia' => $validated['referencia'] ?? null,
-                'costo_delivery' => $validated['costo_delivery'] ?? 0,
-                'tiempo_estimado' => $validated['tiempo_estimado'] ?? null,
-                'notas' => $validated['notas'] ?? null,
+                'cliente_id' => $dto->clienteId,
+                'direccion_entrega' => $dto->direccionEntrega,
+                'referencia' => $dto->referencia,
+                'costo_delivery' => $dto->costoDelivery ?? 0,
+                'tiempo_estimado' => $dto->tiempoEstimado,
+                'notas' => $dto->notas,
             ],
-            $validated['items'] ?? [],
+            $dto->itemsParaServicio(),
         );
 
         return (new PedidoResource($pedido))->response()->setStatusCode(201);
@@ -107,26 +90,16 @@ class PedidoController extends Controller
         return new PedidoResource($pedido);
     }
 
-    public function cambiarEstado(Request $request, int $id, PedidoService $service)
+    public function cambiarEstado(CambiarEstadoPedidoRequest $request, int $id, PedidoService $service)
     {
-        $validated = $request->validate([
-            'estado' => ['required', 'string', 'in:pendiente,preparando,en_camino,entregado,cancelado'],
-        ]);
-
-        $pedido = $service->cambiarEstado($id, $validated['estado']);
+        $pedido = $service->cambiarEstado($id, $request->toDto()->estado);
 
         return new PedidoResource($pedido);
     }
 
-    public function asignarRepartidor(Request $request, int $id, PedidoService $service)
+    public function asignarRepartidor(AsignarRepartidorRequest $request, int $id, PedidoService $service)
     {
-        $tenantId = app(TenantContext::class)->id();
-
-        $validated = $request->validate([
-            'repartidor_id' => ['required', 'integer', ReglasTenant::existe('usuarios', $tenantId)],
-        ]);
-
-        $pedido = $service->asignarRepartidor($id, $validated['repartidor_id']);
+        $pedido = $service->asignarRepartidor($id, $request->toDto()->repartidorId);
 
         return new PedidoResource($pedido);
     }

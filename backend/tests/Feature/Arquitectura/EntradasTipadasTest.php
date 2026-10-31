@@ -9,20 +9,12 @@ use Tests\TestCase;
 class EntradasTipadasTest extends TestCase
 {
     /**
-     * Controllers de otros lotes que todavia validan en linea. Esta lista
-     * solo baja: cuando un controller migra a FormRequest se elimina de aqui.
-     *
-     * Nota: el conteo del encargo incluia el middleware
-     * RequiereDosFactorReciente, que tambien valida pero no es un controller.
+     * Ya no quedan controllers pendientes. Cualquier controller que vuelva a
+     * validar en linea hace fallar el test.
      *
      * @var array<string, string>
      */
-    private const PENDIENTES = [
-        'app/Modules/CrmAvanzado/Http/Controllers/CrmAvanzadoController.php' => 'Pendiente de lote posterior.',
-        'app/Modules/Delivery/Http/Controllers/PedidoController.php' => 'Pendiente de lote posterior.',
-        'app/Modules/Payroll/Http/Controllers/PayrollController.php' => 'Pendiente de lote posterior.',
-        'app/Modules/Prestamos/Http/Controllers/PrestamoController.php' => 'Pendiente de lote posterior.',
-    ];
+    private const PENDIENTES = [];
 
     public function test_los_controladores_no_validan_en_linea(): void
     {
