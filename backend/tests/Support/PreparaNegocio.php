@@ -6,9 +6,6 @@ use App\Modules\Apartados\Models\Apartado;
 use App\Modules\Apartados\Services\ApartadoService;
 use App\Modules\Cotizaciones\Services\CotizacionService;
 use App\Modules\Crm\Models\Cliente;
-use App\Modules\Crm\Models\PlanPagoCliente;
-use App\Modules\Crm\Models\PlanPagoClienteCuota;
-use App\Modules\Crm\Services\VentasPlazosService;
 use App\Modules\CuentasCobrar\Models\CuentaCobrar;
 use App\Modules\Devoluciones\Models\Devolucion;
 use App\Modules\Inventario\Models\Categoria;
@@ -33,6 +30,9 @@ use App\Modules\Tpv\Models\Venta;
 use App\Modules\Tpv\Services\CajaService;
 use App\Modules\Tpv\Services\VentaService;
 use App\Modules\UnidadesMedida\Models\UnidadMedida;
+use App\Modules\VentasPlazos\Models\PlanPagoCliente;
+use App\Modules\VentasPlazos\Models\PlanPagoClienteCuota;
+use App\Modules\VentasPlazos\Services\VentasPlazosService;
 
 trait PreparaNegocio
 {

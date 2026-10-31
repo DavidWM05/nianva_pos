@@ -10,7 +10,6 @@ use App\Modules\Auditoria\Models\Auditoria;
 use App\Modules\Cotizaciones\Models\Cotizacion;
 use App\Modules\Cotizaciones\Models\CotizacionDetalle;
 use App\Modules\Crm\Models\Cliente;
-use App\Modules\Crm\Models\PlanPagoCliente;
 use App\Modules\CrmAvanzado\Models\CrmCampana;
 use App\Modules\CrmAvanzado\Models\CrmInteraccion;
 use App\Modules\CrmAvanzado\Models\LoyaltyTransaccion;
@@ -57,6 +56,7 @@ use App\Modules\Tpv\Models\Venta;
 use App\Modules\Tpv\Models\VentaDetalle;
 use App\Modules\Tpv\Models\VentaPago;
 use App\Modules\UnidadesMedida\Models\UnidadMedida;
+use App\Modules\VentasPlazos\Models\PlanPagoCliente;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 

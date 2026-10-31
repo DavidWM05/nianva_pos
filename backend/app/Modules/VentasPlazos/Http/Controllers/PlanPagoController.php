@@ -1,14 +1,14 @@
 <?php
 
-namespace App\Modules\Crm\Http\Controllers;
+namespace App\Modules\VentasPlazos\Http\Controllers;
 
 use App\Http\Controllers\Controller;
-use App\Modules\Crm\Http\Requests\CrearPlanPagoRequest;
-use App\Modules\Crm\Http\Requests\PagarCuotaRequest;
-use App\Modules\Crm\Http\Resources\PlanPagoResource;
-use App\Modules\Crm\Models\PlanPagoCliente;
-use App\Modules\Crm\Services\VentasPlazosService;
 use App\Modules\Tpv\Models\Venta;
+use App\Modules\VentasPlazos\Http\Requests\CrearPlanPagoRequest;
+use App\Modules\VentasPlazos\Http\Requests\PagarCuotaRequest;
+use App\Modules\VentasPlazos\Http\Resources\PlanPagoResource;
+use App\Modules\VentasPlazos\Models\PlanPagoCliente;
+use App\Modules\VentasPlazos\Services\VentasPlazosService;
 use Illuminate\Http\Request;
 
 class PlanPagoController extends Controller

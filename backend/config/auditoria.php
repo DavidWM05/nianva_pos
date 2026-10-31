@@ -3,7 +3,6 @@
 use App\Modules\Apartados\Models\Apartado;
 use App\Modules\Cotizaciones\Models\Cotizacion;
 use App\Modules\Crm\Models\Cliente;
-use App\Modules\Crm\Models\PlanPagoCliente;
 use App\Modules\CrmAvanzado\Models\CrmInteraccion;
 use App\Modules\CuentasCobrar\Models\CuentaCobrar;
 use App\Modules\CuentasPagar\Models\CuentaPagar;
@@ -28,6 +27,7 @@ use App\Modules\Produccion\Models\TransformacionProducto;
 use App\Modules\Tpv\Models\CajaSesion;
 use App\Modules\Tpv\Models\Venta;
 use App\Modules\UnidadesMedida\Models\UnidadMedida;
+use App\Modules\VentasPlazos\Models\PlanPagoCliente;
 
 return [
     /*

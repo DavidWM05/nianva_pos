@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Modules\Crm\Dtos;
+namespace App\Modules\VentasPlazos\Dtos;
 
 final readonly class PagarCuotaDto
 {

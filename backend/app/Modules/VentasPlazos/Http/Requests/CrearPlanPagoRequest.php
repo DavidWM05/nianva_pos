@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Modules\Crm\Http\Requests;
+namespace App\Modules\VentasPlazos\Http\Requests;
 
-use App\Modules\Crm\Dtos\CrearPlanPagoDto;
 use App\Modules\Nucleo\Http\Requests\SolicitudNegocio;
+use App\Modules\VentasPlazos\Dtos\CrearPlanPagoDto;
 
 class CrearPlanPagoRequest extends SolicitudNegocio
 {

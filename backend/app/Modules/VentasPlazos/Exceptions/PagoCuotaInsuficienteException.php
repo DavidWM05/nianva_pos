@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Modules\Crm\Exceptions;
+namespace App\Modules\VentasPlazos\Exceptions;
 
 use App\Modules\Nucleo\Exceptions\ExcepcionNegocio;
 

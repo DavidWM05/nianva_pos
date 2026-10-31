@@ -35,21 +35,19 @@ class DependenciasEntreModulosTest extends TestCase
     private const EXTENSIONES = [
         'Cotizaciones', 'Delivery', 'CuentasCobrar', 'CuentasPagar', 'CrmAvanzado',
         'GiftCards', 'NotasCredito', 'Produccion', 'Payroll', 'Prestamos', 'UnidadesMedida',
+        'VentasPlazos',
     ];
 
     /** @var list<string> */
     private const TRANSVERSALES = ['Nucleo', 'Configuracion', 'Auditoria'];
 
     /**
-     * Violaciones reales que este test revisa y que se dejan como deuda, cada una con
-     * su motivo. No se agregan entradas nuevas: se corrigen.
+     * Deuda conocida del grafo. Se mantiene vacia: cualquier dependencia fuera
+     * del grafo debe corregirse, no agregarse aqui.
      *
      * @var array<string, string>
      */
-    private const PENDIENTES = [
-        'app/Modules/Crm/Http/Controllers/PlanPagoController.php|Tpv|Models\Venta' => 'Crm lee Venta de Tpv, en sentido contrario al grafo (Tpv -> Crm): ciclo.',
-        'app/Modules/Tpv/Http/Controllers/CajaController.php|Gastos|Services\GastoService' => 'CajaController::actual usa GastoService (Tpv -> Gastos); solo cerrar() paso a Action en C11.',
-    ];
+    private const PENDIENTES = [];
 
     public function test_las_dependencias_entre_modulos_respetan_el_grafo(): void
     {

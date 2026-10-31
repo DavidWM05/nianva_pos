@@ -1,13 +1,13 @@
 <?php
 
-namespace App\Modules\Crm\Services;
+namespace App\Modules\VentasPlazos\Services;
 
-use App\Modules\Crm\Exceptions\CuotaYaPagadaException;
-use App\Modules\Crm\Exceptions\PagoCuotaInsuficienteException;
-use App\Modules\Crm\Exceptions\PlanPagoYaActivoException;
-use App\Modules\Crm\Models\PlanPagoCliente;
-use App\Modules\Crm\Models\PlanPagoClienteCuota;
 use App\Modules\Tpv\Models\Venta;
+use App\Modules\VentasPlazos\Exceptions\CuotaYaPagadaException;
+use App\Modules\VentasPlazos\Exceptions\PagoCuotaInsuficienteException;
+use App\Modules\VentasPlazos\Exceptions\PlanPagoYaActivoException;
+use App\Modules\VentasPlazos\Models\PlanPagoCliente;
+use App\Modules\VentasPlazos\Models\PlanPagoClienteCuota;
 use Illuminate\Support\Facades\DB;
 use InvalidArgumentException;
 

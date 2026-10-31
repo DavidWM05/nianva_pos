@@ -3,8 +3,9 @@
 namespace App\Modules\Tpv\Http\Controllers;
 
 use App\Aplicacion\Caja\CerrarCaja;
+use App\Aplicacion\Caja\ObtenerCajaActual;
 use App\Http\Controllers\Controller;
-use App\Modules\Gastos\Services\GastoService;
+use App\Modules\Nucleo\Models\Usuario;
 use App\Modules\Tpv\Http\Requests\AbrirCajaRequest;
 use App\Modules\Tpv\Http\Requests\CerrarCajaRequest;
 use App\Modules\Tpv\Http\Resources\CajaSesionResource;
@@ -20,30 +21,26 @@ use Illuminate\Http\Request;
  * vendedor no puede abrir/cerrar la caja de otra sucursal apuntando el
  * body a otro id.
  *
- * cerrar() delega la orquestacion entre modulos en
- * App\Aplicacion\Caja\CerrarCaja. actual() conserva su lectura de
- * GastoService::totalGastos() (pendiente de otro encargo).
+ * actual() y cerrar() delegan la orquestacion entre modulos en
+ * App\Aplicacion\Caja.
  */
 class CajaController extends Controller
 {
-    public function actual(Request $request, CajaService $cajaService, GastoService $gastoService)
+    public function actual(Request $request, ObtenerCajaActual $obtenerCajaActual)
     {
-        $sesion = $this->sesionAbierta($request);
         $usuario = $request->user();
 
+        if (! $usuario instanceof Usuario) {
+            abort(401);
+        }
+
+        $resultado = $obtenerCajaActual->ejecutar($usuario);
+
         return response()->json([
-            'data' => $sesion ? new CajaSesionResource($sesion) : null,
+            'data' => $resultado['sesion'] ? new CajaSesionResource($resultado['sesion']) : null,
             'meta' => [
-                'resumen' => $sesion ? [
-                    ...$cajaService->resumenSesion($sesion),
-                    'total_gastos' => $gastoService->totalGastos($sesion->id),
-                ] : null,
-                'permisos' => [
-                    'abrir' => $usuario->tienePermiso('caja.abrir'),
-                    'cerrar' => $usuario->tienePermiso('caja.cerrar'),
-                    'gastos_ver' => $usuario->tienePermiso('gastos.ver'),
-                    'gastos_crear' => $usuario->tienePermiso('gastos.crear'),
-                ],
+                'resumen' => $resultado['resumen'],
+                'permisos' => $resultado['permisos'],
             ],
         ]);
     }
@@ -76,13 +73,5 @@ class CajaController extends Controller
             'data' => new CajaSesionResource($resultado['sesion']),
             'desglose' => $resultado['desglose'],
         ]);
-    }
-
-    private function sesionAbierta(Request $request): ?CajaSesion
-    {
-        return CajaSesion::where('sucursal_id', $request->user()->sucursal_id)
-            ->where('estado', 'abierta')
-            ->latest('id')
-            ->first();
     }
 }
