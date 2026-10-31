@@ -282,6 +282,18 @@ repo.
   o `nucleo-shell`. Los locks no cambiaron de versiones. Los documentos y los README usan los
   nombres nuevos; las entradas anteriores de este archivo conservan los nombres de su
   momento.
+- **Frontend por `error_code`, API-04** (vigésimo encargo, hecho por DS):
+  - `php artisan errores:catalogo` genera también
+    `libs/ui-shared/src/lib/errores/codigos-error.ts` (56 códigos, tipo `CodigoError`), y
+    `--check` falla si el `.md` o el TS no están al día (`CatalogoErrorCodeTypescriptTest`);
+  - `@nianva/ui-shared` exporta `leerErrorNegocio`, `mensajeError` y `esErrorNegocio`; los 12
+    helpers privados de los componentes se eliminaron, y el texto que ve el usuario no cambió;
+  - reacciones a un código concreto: `caja_ya_cerrada` recarga la caja; `venta_ya_anulada`
+    recarga la lista de ventas, porque ahí vive la anulación; `cuota_ya_pagada` y
+    `plan_pago_ya_activo` recargan el plan o la venta; `sucursal_requerida` muestra un mensaje
+    fijo en cotización, pedido y nómina.
+
+  Backend: 599 tests; `ui-shared`: 22; `pos`: 436.
 - **Pendientes detectados:**
   - dependencias fuera del grafo: `Crm` lee `Venta` de Tpv (`PlanPagoController`,
     `PlanPagoCliente`, `VentasPlazosService`; es un ciclo, porque Tpv → Crm);
@@ -294,8 +306,8 @@ repo.
   - un `PUT` a un rol o a un usuario que omite `permisos` o `roles` los quita todos
     (`sync([])`): no distingue "no llegó" de "llegó vacía". Se conservó en el lote 4 de C8;
     se corrige aparte con su test, y revisando que el frontend siempre mande la lista;
-  - el frontend no conoce los 9 códigos nuevos (`tpv-error.types.ts` y similares), ni
-    `sucursal_no_permitida` y `sucursal_requerida`;
+  - la suite de `pos` tuvo timeouts de 5 s bajo carga en una corrida local (Nx la marcó
+    inestable); vigilar en CI y, si se repite, revisar los specs más lentos;
   - `VentaController` y `CompraController` toman el tenant de `$request->user()` y el resto
     de `TenantContext` (equivalentes); se unifica al migrar a FormRequest (C8).
 - **Git:** `master` está protegido (ruleset `proteger-master`): todo entra por PR con los tres

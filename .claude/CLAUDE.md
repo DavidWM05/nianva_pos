@@ -106,14 +106,18 @@ Route → middleware permiso:* → FormRequest → Controller → Action / Servi
 - **Errores (API-03, API-04):** toda excepción de negocio extiende `ExcepcionNegocio` y declara
   `errorCode()`, `status()` y `contexto()`; el manejador genérico de `bootstrap/app.php` arma
   la respuesta. Nunca agregues un mapeo por excepción en `bootstrap/app.php`. Tras crear o
-  cambiar una, regenera `docs/estandares/catalogo_error_code.md` con
-  `php artisan errores:catalogo`. El frontend decide por `error_code`, nunca parseando
-  `message`.
+  cambiar una, corre `php artisan errores:catalogo`: regenera
+  `docs/estandares/catalogo_error_code.md` y `libs/ui-shared/src/lib/errores/codigos-error.ts`
+  (CI falla si no están al día; `--check` lo comprueba). El frontend decide por `error_code`,
+  nunca parseando `message`.
 
 ## 6. Frontend
 
 - La dirección del backend sale de `public/config.json` al arrancar. Arma las URLs con
   `urlApi('/recurso')` y `urlSesion('/login')` (`core/api-config.ts`); nunca una URL fija.
+- Errores del backend: `mensajeError(error, fallback)` para el toast, y `esErrorNegocio(error,
+  'codigo')` o `leerErrorNegocio(error)` para reaccionar a un código (`@nianva/ui-shared`).
+  Nunca un helper privado por componente ni una lista de códigos a mano.
 - Toda entidad raíz tiene vistas dedicadas: `/modulo`, `/modulo/nuevo`, `/modulo/:id`. El modal
   (`p-dialog`) es solo para sub-recursos anidados sin lista ni detalle propios.
 - `RecordTabsComponent` (`nucleo-record-tabs`) es obligatorio en toda vista de registro.
