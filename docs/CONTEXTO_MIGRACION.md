@@ -227,6 +227,14 @@ repo.
   entrada de usuario en `ATRIBUTOS` de `SucursalDelContextoTest` apunta al FormRequest.
   Quedan en `PENDIENTES` solo los 4 módulos congelados. Backend: 444 tests; línea base de
   PHPStan: 1404.
+- **C8 resuelto, lote 5** (decimoquinto encargo, hecho por DS): módulos congelados
+  (CrmAvanzado, Delivery, Payroll, Préstamos), con cambio mínimo. Pedidos y nóminas
+  resuelven la sucursal en el FormRequest; la sucursal del empleado es un atributo. La guarda
+  de tenant del cliente en CRM avanzado pasó a `authorize()` (`CrmAvanzado/Support/GuardasCliente`).
+  Excepciones a PRO-01 autorizadas: la entrada de empleado en `ATRIBUTOS` de
+  `SucursalDelContextoTest` y `PENDIENTES` vacía en `EntradasTipadasTest` (DS comprobó que
+  sigue fallando si un controller vuelve a validar en línea). Ningún controller valida en
+  línea. Backend: 448 tests; línea base de PHPStan: 1392 (1495 al crearla).
 - **Pendientes detectados:**
   - dependencias fuera del grafo: `Crm` lee `Venta` de Tpv (`PlanPagoController`,
     `PlanPagoCliente`, `VentasPlazosService`; es un ciclo, porque Tpv → Crm);
@@ -251,7 +259,7 @@ repo.
 1. **Saneamiento de la Fase 1**, en encargos de un tema cada uno. Hecho: CI con ambas
    suites, C1 (D4), las validaciones de negocio (500 → 422) y las reglas `exists` con
    tenant (API-05), la unicidad con tenant (DAT-09, C4), C11 (D5) y el análisis estático
-   bloqueante (Pint, ESLint, PHPStan), C7 (DAT-14), C2 (SEG-03) y C3 (SEG-02). Lo que sigue:
+   bloqueante (Pint, ESLint, PHPStan), C7 (DAT-14), C2 (SEG-03), C3 (SEG-02) y C8 (ARQ-02). Lo que sigue:
    - `composer audit`: revisar los 23 advisories;
    - nombres internos: composer `nianva/pos` y alcance Nx `@nianva/*` (hoy `laravel/laravel`
      y `@org`); el nombre de la app Nx `nucleo-shell` queda por decidir;
@@ -260,7 +268,8 @@ repo.
    - resto de PRO-05: stylelint, diff de OpenAPI y CODEOWNERS;
    - prefijo `/api/v1` y configuración del frontend en tiempo de ejecución (sin
      `localhost:8000` fijo);
-   - FormRequests (C8): lotes siguientes hasta vaciar `PENDIENTES` (4 controllers, los módulos congelados);
+   - después de C8: que los Services reciban DTOs en vez de arreglos (se hace al reescribirlos
+     en las Fases 3 a 5); `RequiereDosFactorReciente` sigue validando dentro del middleware;
    - un chequeo en CI de codificación rota en `app/` y `tests/` (`??` seguido de letra,
      además de U+FFFD; DAT-12);
    - factories;
