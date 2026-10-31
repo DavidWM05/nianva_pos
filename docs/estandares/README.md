@@ -152,3 +152,4 @@ Cada lección es un hecho ocurrido. Las de Lite tienen el commit o el archivo; l
 | 2026-10-30 | C8, ARQ-02 | Lote 1: base `SolicitudNegocio`, DTOs en `Modules/<Modulo>/Dtos/` y `EntradasTipadasTest`. ARQ-02 nombra la clase base y el test |
 | 2026-10-30 | C8 | Lote 2: Inventario, Precios y Crm. Las ediciones parciales conservan la diferencia entre campo ausente y null (`camposPresentes()`) |
 | 2026-10-30 | C8, SEG-02 | Lote 3: extensiones activas. La sucursal se resuelve con `SucursalOperacion` en el `toDto()` del FormRequest; `SucursalDelContextoTest` también revisa `Http/Requests` |
+| 2026-10-30 | SEG-12 | Nueva, aprobada por el responsable: PIN de caja para desbloqueo de pantalla (del lado del servidor) y autorización de supervisor; sin login rápido ni cambio de usuario con PIN. Base: `docs/REPORTE_PIN_LITE.md` |

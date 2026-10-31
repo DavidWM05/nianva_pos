@@ -57,14 +57,16 @@ Un solo POS funcional y adaptable:
 |---|---|---|
 | 0 | Endurecer Lite en producción (XSS, aislamiento por sucursal, transacción en abonos, límite de intentos de la clave de admin, costo en cambios, compras) | En Lite, otra sesión; implementado y en pruebas manuales |
 | 1 | Estándares (`docs/estandares/`) y saneamiento de este repo | **En curso.** Estándares aprobados el 2026-10-30; sigue el saneamiento |
-| 2 | Sistema de diseño `libs/ui/*` (tokens, formato, layout, acciones, datos, feedback, overlays, forms, print) y catálogo visual | — |
+| 2 | Sistema de diseño `libs/ui/*` (tokens, formato, layout, acciones, datos, feedback, overlays, forms, print) y catálogo visual; incluye el teclado de PIN (SEG-12) | — |
 | 3 | Catálogo (variante = SKU con precio y costo heredables, atributos genéricos, unidades y presentaciones, impuestos), inventario por libro y `PricingService` | — |
-| 4 | TPV, terminales, sesiones de caja, folios por serie e impresos | — |
+| 4 | TPV, terminales, sesiones de caja, folios por serie e impresos; bloqueo de pantalla con PIN (SEG-12) y autorización de supervisor (SEG-05) | — |
 | 5 | Apartados, devoluciones y cambios, crédito (libro), cotizaciones, compras (sugieren el precio), cuentas por pagar y gastos | — |
 | 6 | Capa de métricas y reportes | — |
 | 7 | Perfiles de giro, planes del tabulador, licencia firmada | — |
 | 8 | Entornos: escritorio, LAN, servidor, SaaS; instalador y actualizador | — |
-| 9 | ETL del cliente de ropa (Lite → nueva base), ensayo y corte | — |
+
+
+| 9 | ETL del cliente de ropa (Lite → nueva base), ensayo y corte; `usuarios.pin_hash` se copia tal cual (bcrypt, compatible con `Hash::check`) para que los cajeros conserven su PIN | — |
 | 10 | Módulo Agenda | — |
 | 11 | CFDI 4.0 (Full) | — |
 
@@ -289,6 +291,9 @@ repo.
 
 **En este repo:**
 - `docs/estandares/*`: norma superior (aprobada el 2026-10-30);
+- `docs/REPORTE_PIN_LITE.md`: cómo funciona el PIN en Lite (login, bypass de admin, bloqueo de
+  pantalla, alta y cambio), sus 9 debilidades y la propuesta para adaptarlo (bloqueo del lado del
+  servidor, autorización de supervisor SEG-05, un solo componente de PIN);
 - `.claude/CLAUDE.md`: reglas de módulos vigentes salvo donde choquen con los estándares (C1,
   C11); se reescribe en el saneamiento;
 - `docs/MANUAL_TECNICO.md`, `docs/nucleo_arquitectura.md`, `docs/API_SPECIFICATION.md`,

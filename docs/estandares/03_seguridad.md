@@ -161,6 +161,43 @@
   el sobre estándar y sin traza).
 - **Desde:** Fase 1.
 
+### SEG-12 · PIN de caja
+- **Regla:**
+  - el PIN es una credencial **de la caja**, no de la cuenta: sirve para desbloquear una
+    sesión ya abierta y para autorizar como supervisor (SEG-05); **nunca** reemplaza al login
+    (contraseña más 2FA) ni permite cambiar de usuario en la terminal;
+  - es opcional por usuario, de 4 a 6 dígitos según la configuración del tenant, se guarda
+    con hash (`Hash::make`) y rechaza los PIN triviales (`0000`, `1234`, secuencias y
+    repeticiones);
+  - **bloqueo de pantalla del lado del servidor:**
+    - por inactividad o a mano, la sesión queda en estado `bloqueada`;
+    - toda la API responde 423 `sesion_bloqueada`, salvo `POST /v1/sesion/desbloquear`;
+    - recargar la página no lo quita;
+    - los tiempos de inactividad de la pantalla y de vida de la sesión se configuran por
+      tenant;
+  - límite de intentos por usuario y terminal (como SEG-05); al llegar al límite se cierra la
+    sesión, y cada fallo queda en la auditoría (SEG-10);
+  - cambiar el PIN propio pide la contraseña; cambiar o quitar el de otro usuario pide
+    reautenticación con `dos-factor.reciente`; el admin puede quitar un PIN;
+  - sin bypass por contraseña: el admin ya tiene 2FA;
+  - la interfaz usa un solo componente de teclado de PIN (`libs/ui/forms`, UI-11) para el
+    desbloqueo y la autorización.
+- **Por qué:** en Lite (`docs/REPORTE_PIN_LITE.md`):
+  - el bloqueo de pantalla era solo visual y se quitaba con F5 (P1);
+  - el bypass de admin no tenía límite de intentos (P3);
+  - los fallos de desbloqueo no dejaban rastro (P5);
+  - los tiempos estaban fijos en el código (P6);
+  - se aceptaban PIN como `0000` (P7);
+  - el admin cambiaba el PIN de otro sin reautenticarse (P8);
+  - el teclado estaba duplicado en dos vistas (P9).
+- **Verifica:**
+  - la API con la sesión bloqueada → 423, y sigue bloqueada después de recargar;
+  - N fallos → sesión cerrada y registro en la auditoría;
+  - un PIN trivial → 422;
+  - cambiar el PIN de otro sin reautenticarse → 403;
+  - un usuario sin PIN no ve el bloqueo.
+- **Desde:** Fase 4. El componente, en la Fase 2.
+
 ## Excepciones
 
 Ninguna acordada.
