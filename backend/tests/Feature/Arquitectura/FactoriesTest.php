@@ -27,35 +27,7 @@ class FactoriesTest extends TestCase
      *
      * @var array<class-string, string>
      */
-    private const PENDIENTES = [
-        'App\Modules\Cotizaciones\Models\Cotizacion' => 'Extension, lote 2.',
-        'App\Modules\Cotizaciones\Models\CotizacionDetalle' => 'Extension, lote 2.',
-        'App\Modules\CrmAvanzado\Models\CrmCampana' => 'Extension, lote 2.',
-        'App\Modules\CrmAvanzado\Models\CrmInteraccion' => 'Extension, lote 2.',
-        'App\Modules\CrmAvanzado\Models\LoyaltyTransaccion' => 'Extension, lote 2.',
-        'App\Modules\CuentasCobrar\Models\AbonoCuenta' => 'Extension, lote 2.',
-        'App\Modules\CuentasCobrar\Models\CuentaCobrar' => 'Extension, lote 2.',
-        'App\Modules\CuentasPagar\Models\AbonoPagar' => 'Extension, lote 2.',
-        'App\Modules\CuentasPagar\Models\CuentaPagar' => 'Extension, lote 2.',
-        'App\Modules\Delivery\Models\Pedido' => 'Extension, lote 2.',
-        'App\Modules\Delivery\Models\PedidoItem' => 'Extension, lote 2.',
-        'App\Modules\GiftCards\Models\GiftCard' => 'Extension, lote 2.',
-        'App\Modules\GiftCards\Models\GiftCardRecarga' => 'Extension, lote 2.',
-        'App\Modules\NotasCredito\Models\NotaCredito' => 'Extension, lote 2.',
-        'App\Modules\NotasCredito\Models\NotaCreditoUso' => 'Extension, lote 2.',
-        'App\Modules\Payroll\Models\Empleado' => 'Extension, lote 2.',
-        'App\Modules\Payroll\Models\Nomina' => 'Extension, lote 2.',
-        'App\Modules\Payroll\Models\NominaDetalle' => 'Extension, lote 2.',
-        'App\Modules\Prestamos\Models\Prestamo' => 'Extension, lote 2.',
-        'App\Modules\Prestamos\Models\PrestamoPago' => 'Extension, lote 2.',
-        'App\Modules\Produccion\Models\Insumo' => 'Extension, lote 2.',
-        'App\Modules\Produccion\Models\InsumoStock' => 'Extension, lote 2.',
-        'App\Modules\Produccion\Models\OrdenProduccion' => 'Extension, lote 2.',
-        'App\Modules\Produccion\Models\Receta' => 'Extension, lote 2.',
-        'App\Modules\Produccion\Models\RecetaIngrediente' => 'Extension, lote 2.',
-        'App\Modules\Produccion\Models\TransformacionProducto' => 'Extension, lote 2.',
-        'App\Modules\UnidadesMedida\Models\UnidadMedida' => 'Extension, lote 2.',
-    ];
+    private const PENDIENTES = [];
 
     public function test_los_modelos_base_tienen_factory_y_has_factory(): void
     {

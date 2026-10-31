@@ -2,9 +2,11 @@
 
 namespace App\Modules\NotasCredito\Models;
 
+use App\Modules\NotasCredito\Database\Factories\NotaCreditoUsoFactory;
 use App\Modules\Nucleo\Models\Concerns\BelongsToTenantViaRelacion;
 use App\Modules\Tpv\Models\Venta;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
@@ -12,6 +14,9 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class NotaCreditoUso extends Model
 {
     use BelongsToTenantViaRelacion;
+
+    /** @use HasFactory<NotaCreditoUsoFactory> */
+    use HasFactory;
 
     const UPDATED_AT = null;
 

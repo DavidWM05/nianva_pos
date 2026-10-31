@@ -2,9 +2,11 @@
 
 namespace App\Modules\Cotizaciones\Models;
 
+use App\Modules\Cotizaciones\Database\Factories\CotizacionDetalleFactory;
 use App\Modules\Inventario\Models\ProductoVariante;
 use App\Modules\Nucleo\Models\Concerns\BelongsToTenantViaRelacion;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
@@ -12,6 +14,9 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class CotizacionDetalle extends Model
 {
     use BelongsToTenantViaRelacion;
+
+    /** @use HasFactory<CotizacionDetalleFactory> */
+    use HasFactory;
 
     public $timestamps = false;
 

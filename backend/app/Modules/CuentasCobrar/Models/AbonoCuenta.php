@@ -2,11 +2,13 @@
 
 namespace App\Modules\CuentasCobrar\Models;
 
+use App\Modules\CuentasCobrar\Database\Factories\AbonoCuentaFactory;
 use App\Modules\Nucleo\Models\Concerns\BelongsToTenantViaRelacion;
 use App\Modules\Nucleo\Models\MetodoPago;
 use App\Modules\Nucleo\Models\Usuario;
 use App\Modules\Tpv\Models\CajaSesion;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
@@ -17,6 +19,9 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class AbonoCuenta extends Model
 {
     use BelongsToTenantViaRelacion;
+
+    /** @use HasFactory<AbonoCuentaFactory> */
+    use HasFactory;
 
     public $timestamps = false;
 
