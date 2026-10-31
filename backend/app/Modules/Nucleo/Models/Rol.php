@@ -3,15 +3,12 @@
 namespace App\Modules\Nucleo\Models;
 
 use App\Modules\Nucleo\Models\Concerns\BelongsToTenant;
-use App\Modules\Nucleo\Policies\RolPolicy;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
-use Illuminate\Database\Eloquent\Attributes\UsePolicy;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 #[Fillable(['tenant_id', 'nombre', 'descripcion', 'es_sistema'])]
-#[UsePolicy(RolPolicy::class)]
 class Rol extends Model
 {
     use BelongsToTenant;

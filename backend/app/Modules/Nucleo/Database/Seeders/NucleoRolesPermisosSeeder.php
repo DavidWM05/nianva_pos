@@ -50,7 +50,7 @@ class NucleoRolesPermisosSeeder extends Seeder
         // Modulos nuevos
         'cotizaciones' => ['ver', 'crear', 'editar', 'eliminar', 'convertir'],
         'cuentas_cobrar' => ['ver', 'crear', 'registrar_abono', 'anular'],
-        'cuentas_pagar' => ['ver', 'registrar_pago'],
+        'cuentas_pagar' => ['ver', 'registrar_pago', 'anular'],
         'pedidos' => ['ver', 'crear', 'cambiar_estado', 'asignar_repartidor'],
         'gift_cards' => ['ver', 'emitir', 'recargar', 'cancelar'],
         'notas_credito' => ['ver'],

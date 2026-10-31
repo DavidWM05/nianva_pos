@@ -5467,60 +5467,6 @@ parameters:
 			path: app/Modules/Nucleo/Models/Usuario.php
 
 		-
-			message: '#^Access to an undefined property App\\Modules\\Nucleo\\Models\\Usuario\:\:\$tenant_id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Modules/Nucleo/Policies/MetodoPagoPolicy.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$tenant_id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Modules/Nucleo/Policies/MetodoPagoPolicy.php
-
-		-
-			message: '#^Access to an undefined property App\\Modules\\Nucleo\\Models\\Rol\:\:\$tenant_id\.$#'
-			identifier: property.notFound
-			count: 3
-			path: app/Modules/Nucleo/Policies/RolPolicy.php
-
-		-
-			message: '#^Access to an undefined property App\\Modules\\Nucleo\\Models\\Usuario\:\:\$tenant_id\.$#'
-			identifier: property.notFound
-			count: 3
-			path: app/Modules/Nucleo/Policies/RolPolicy.php
-
-		-
-			message: '#^Access to an undefined property App\\Modules\\Nucleo\\Models\\Usuario\:\:\$tenant_id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Modules/Nucleo/Policies/SucursalPolicy.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$tenant_id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Modules/Nucleo/Policies/SucursalPolicy.php
-
-		-
-			message: '#^Access to an undefined property App\\Modules\\Nucleo\\Models\\Usuario\:\:\$tenant_id\.$#'
-			identifier: property.notFound
-			count: 3
-			path: app/Modules/Nucleo/Policies/TenantPolicy.php
-
-		-
-			message: '#^Access to an undefined property App\\Modules\\Nucleo\\Models\\Usuario\:\:\$tenant_id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Modules/Nucleo/Policies/UsuarioPolicy.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$tenant_id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Modules/Nucleo/Policies/UsuarioPolicy.php
-
-		-
 			message: '#^Class App\\Modules\\Nucleo\\Scopes\\TenantScope implements generic interface Illuminate\\Database\\Eloquent\\Scope but does not specify its types\: TModel$#'
 			identifier: missingType.generics
 			count: 1
@@ -7733,12 +7679,6 @@ parameters:
 			identifier: method.notFound
 			count: 1
 			path: app/Modules/UnidadesMedida/Database/Migrations/2026_08_10_000001_create_unidades_medida_table.php
-
-		-
-			message: '#^Call to static method where\(\) on an unknown class App\\Modules\\UnidadesMedida\\Http\\Controllers\\UnidadMedida\.$#'
-			identifier: class.notFound
-			count: 1
-			path: app/Modules/UnidadesMedida/Http/Controllers/UnidadMedidaController.php
 
 		-
 			message: '#^Cannot access property \$tenant_id on App\\Modules\\Nucleo\\Models\\Usuario\|null\.$#'

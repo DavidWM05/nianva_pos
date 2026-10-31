@@ -4,6 +4,7 @@ namespace App\Modules\UnidadesMedida\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Modules\UnidadesMedida\Http\Resources\UnidadMedidaResource;
+use App\Modules\UnidadesMedida\Models\UnidadMedida;
 use App\Modules\UnidadesMedida\Services\UnidadMedidaService;
 use Illuminate\Http\Request;
 

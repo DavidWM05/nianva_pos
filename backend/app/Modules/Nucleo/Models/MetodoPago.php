@@ -3,14 +3,11 @@
 namespace App\Modules\Nucleo\Models;
 
 use App\Modules\Nucleo\Models\Concerns\BelongsToTenant;
-use App\Modules\Nucleo\Policies\MetodoPagoPolicy;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
-use Illuminate\Database\Eloquent\Attributes\UsePolicy;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 #[Fillable(['tenant_id', 'nombre', 'tipo', 'incluir_en_financiero', 'activo'])]
-#[UsePolicy(MetodoPagoPolicy::class)]
 class MetodoPago extends Model
 {
     use BelongsToTenant;
