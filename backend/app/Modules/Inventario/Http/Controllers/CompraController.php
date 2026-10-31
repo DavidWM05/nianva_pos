@@ -3,10 +3,9 @@
 namespace App\Modules\Inventario\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Modules\Inventario\Dtos\LineaCompraDto;
+use App\Modules\Inventario\Http\Requests\RegistrarCompraRequest;
 use App\Modules\Inventario\Services\InventarioService;
-use App\Modules\Inventario\Support\ReglasVariante;
-use App\Modules\Nucleo\Support\ReglasTenant;
-use Illuminate\Http\Request;
 
 /**
  * Unica puerta HTTP hacia InventarioService::registrarCompra(). Antes de
@@ -20,30 +19,33 @@ use Illuminate\Http\Request;
  */
 class CompraController extends Controller
 {
-    public function store(Request $request, InventarioService $inventarioService)
+    public function store(RegistrarCompraRequest $request, InventarioService $inventarioService)
     {
-        $tenantId = $request->user()->tenant_id;
-
-        $validated = $request->validate([
-            'proveedor_id' => ['required', 'integer', ReglasTenant::existe('proveedores', $tenantId)],
-            'numero_comprobante' => ['nullable', 'string', 'max:60'],
-            'items' => ['required', 'array', 'min:1'],
-            'items.*.variante_id' => ['required', 'integer', ReglasVariante::delTenant($tenantId)],
-            'items.*.cantidad' => ['required', 'integer', 'min:1'],
-            'items.*.precio_compra' => ['required', 'numeric', 'min:0'],
-        ]);
-
         $usuario = $request->user();
+
+        if ($usuario === null) {
+            abort(401);
+        }
+
+        $dto = $request->toDto();
+        $items = array_map(
+            fn (LineaCompraDto $item) => [
+                'variante_id' => $item->varianteId,
+                'cantidad' => $item->cantidad,
+                'precio_compra' => $item->precioCompra,
+            ],
+            $dto->items,
+        );
 
         $compra = $inventarioService->registrarCompra(
             [
-                'tenant_id' => $tenantId,
-                'proveedor_id' => $validated['proveedor_id'],
-                'sucursal_id' => $usuario->sucursal_id,
+                'tenant_id' => (int) $usuario->getAttribute('tenant_id'),
+                'proveedor_id' => $dto->proveedorId,
+                'sucursal_id' => (int) $usuario->getAttribute('sucursal_id'),
                 'usuario_id' => $usuario->id,
-                'numero_comprobante' => $validated['numero_comprobante'] ?? null,
+                'numero_comprobante' => $dto->numeroComprobante,
             ],
-            $validated['items'],
+            $items,
         );
 
         return response()->json(['data' => ['id' => $compra->id, 'total' => $compra->total]], 201);

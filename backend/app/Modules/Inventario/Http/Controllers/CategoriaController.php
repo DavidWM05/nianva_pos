@@ -3,6 +3,7 @@
 namespace App\Modules\Inventario\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Modules\Inventario\Http\Requests\GuardarCategoriaRequest;
 use App\Modules\Inventario\Http\Resources\CategoriaResource;
 use App\Modules\Inventario\Models\Categoria;
 use App\Modules\Nucleo\Services\TenantContext;
@@ -66,21 +67,20 @@ class CategoriaController extends Controller
         ]);
     }
 
-    public function store(Request $request)
+    public function store(GuardarCategoriaRequest $request)
     {
-        $validated = $this->validarDatos($request);
-        $validated['tenant_id'] = app(TenantContext::class)->id();
-        $validated['activo'] = true;
+        $datos = $request->toDto()->datosPresentes();
+        $datos['tenant_id'] = app(TenantContext::class)->id();
+        $datos['activo'] = true;
 
-        $categoria = Categoria::create($validated);
+        $categoria = Categoria::create($datos);
 
         return (new CategoriaResource($categoria))->response()->setStatusCode(201);
     }
 
-    public function update(Request $request, Categoria $categoria)
+    public function update(GuardarCategoriaRequest $request, Categoria $categoria)
     {
-        $validated = $this->validarDatos($request);
-        $categoria->update($validated);
+        $categoria->update($request->toDto()->datosPresentes());
 
         return new CategoriaResource($categoria);
     }
@@ -90,14 +90,6 @@ class CategoriaController extends Controller
         $categoria->update(['activo' => false]);
 
         return new CategoriaResource($categoria);
-    }
-
-    private function validarDatos(Request $request): array
-    {
-        return $request->validate([
-            'nombre' => ['required', 'string', 'max:120'],
-            'descripcion' => ['nullable', 'string'],
-        ]);
     }
 
     /**

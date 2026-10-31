@@ -4,11 +4,10 @@ namespace App\Modules\Inventario\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Modules\Configuracion\Models\ConfiguracionTenant;
+use App\Modules\Inventario\Http\Requests\GuardarProductoVarianteRequest;
 use App\Modules\Inventario\Http\Resources\ProductoVarianteResource;
 use App\Modules\Inventario\Models\Producto;
 use App\Modules\Inventario\Models\ProductoVariante;
-use Illuminate\Http\Request;
-use Illuminate\Validation\Rule;
 
 /**
  * Anidado bajo un Producto (POST) -- producto_id nunca viene del payload,
@@ -27,27 +26,25 @@ class ProductoVarianteController extends Controller
 {
     private const LONGITUD_CODIGO_AUTOGENERADO = 12;
 
-    public function store(Request $request, Producto $producto)
+    public function store(GuardarProductoVarianteRequest $request, Producto $producto)
     {
         $tenantId = $producto->tenant_id;
+        $datos = $request->toDto()->datosPresentes();
+        $datos['producto_id'] = $producto->id;
+        $datos['activo'] = true;
 
-        $validated = $this->validarDatos($request, $tenantId);
-        $validated['producto_id'] = $producto->id;
-        $validated['activo'] = true;
-
-        if (empty($validated['codigo_barras']) && ConfiguracionTenant::actual()?->codigo_barras_automatico) {
-            $validated['codigo_barras'] = $this->generarCodigoBarrasUnico($tenantId);
+        if (empty($datos['codigo_barras']) && ConfiguracionTenant::actual()?->codigo_barras_automatico) {
+            $datos['codigo_barras'] = $this->generarCodigoBarrasUnico($tenantId);
         }
 
-        $variante = ProductoVariante::create($validated);
+        $variante = ProductoVariante::create($datos);
 
         return (new ProductoVarianteResource($variante))->response()->setStatusCode(201);
     }
 
-    public function update(Request $request, ProductoVariante $variante)
+    public function update(GuardarProductoVarianteRequest $request, ProductoVariante $variante)
     {
-        $validated = $this->validarDatos($request, $variante->tenant_id, $variante->id);
-        $variante->update($validated);
+        $variante->update($request->toDto()->datosPresentes());
 
         return new ProductoVarianteResource($variante);
     }
@@ -57,20 +54,6 @@ class ProductoVarianteController extends Controller
         $variante->update(['activo' => false]);
 
         return new ProductoVarianteResource($variante);
-    }
-
-    private function validarDatos(Request $request, int $tenantId, ?int $varianteIdActual = null): array
-    {
-        return $request->validate([
-            'talla' => ['nullable', 'string', 'max:30'],
-            'color' => ['nullable', 'string', 'max:30'],
-            'codigo_barras' => [
-                'nullable', 'string', 'max:50',
-                Rule::unique('producto_variantes', 'codigo_barras')
-                    ->where('tenant_id', $tenantId)
-                    ->ignore($varianteIdActual),
-            ],
-        ]);
     }
 
     /**

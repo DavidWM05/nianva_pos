@@ -4,11 +4,12 @@ namespace App\Modules\Precios\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Modules\Nucleo\Services\TenantContext;
+use App\Modules\Precios\Http\Requests\GuardarCuponRequest;
+use App\Modules\Precios\Http\Requests\ValidarCuponRequest;
 use App\Modules\Precios\Http\Resources\CuponResource;
 use App\Modules\Precios\Models\Cupon;
 use App\Modules\Precios\Services\PrecioService;
 use Illuminate\Http\Request;
-use Illuminate\Validation\Rule;
 
 /**
  * Sin campos condicionales (ver ReglaPrecioController) -- formulario
@@ -69,21 +70,20 @@ class CuponController extends Controller
         ]);
     }
 
-    public function store(Request $request)
+    public function store(GuardarCuponRequest $request)
     {
-        $validated = $this->validarDatos($request);
-        $validated['tenant_id'] = app(TenantContext::class)->id();
-        $validated['activo'] = true;
+        $datos = $request->toDto()->datosPresentes();
+        $datos['tenant_id'] = app(TenantContext::class)->id();
+        $datos['activo'] = true;
 
-        $cupon = Cupon::create($validated);
+        $cupon = Cupon::create($datos);
 
         return (new CuponResource($cupon))->response()->setStatusCode(201);
     }
 
-    public function update(Request $request, Cupon $cupon)
+    public function update(GuardarCuponRequest $request, Cupon $cupon)
     {
-        $validated = $this->validarDatos($request, $cupon->id);
-        $cupon->update($validated);
+        $cupon->update($request->toDto()->datosPresentes());
 
         return new CuponResource($cupon);
     }
@@ -105,14 +105,10 @@ class CuponController extends Controller
      * 422 en bootstrap/app.php) si el codigo no existe/esta inactivo/fuera
      * de rango.
      */
-    public function validar(Request $request, PrecioService $precioService)
+    public function validar(ValidarCuponRequest $request, PrecioService $precioService)
     {
-        $validated = $request->validate([
-            'codigo' => ['required', 'string'],
-            'total' => ['required', 'numeric', 'min:0'],
-        ]);
-
-        $resultado = $precioService->aplicarCupon($validated['codigo'], $validated['total']);
+        $dto = $request->toDto();
+        $resultado = $precioService->aplicarCupon($dto->codigo, $dto->total);
 
         return response()->json([
             'data' => [
@@ -126,25 +122,6 @@ class CuponController extends Controller
                 'descuento' => $resultado->descuento,
                 'total_con_descuento' => $resultado->totalConDescuento(),
             ],
-        ]);
-    }
-
-    private function validarDatos(Request $request, ?int $cuponIdActual = null): array
-    {
-        $tenantId = app(TenantContext::class)->id();
-
-        return $request->validate([
-            'codigo' => [
-                'required', 'string', 'max:50',
-                Rule::unique('cupones', 'codigo')->where('tenant_id', $tenantId)->ignore($cuponIdActual),
-            ],
-            'nombre' => ['required', 'string', 'max:120'],
-            'tipo' => ['required', Rule::in(['porcentaje', 'monto_fijo'])],
-            'valor' => ['required', 'numeric', 'min:0'],
-            'uso_maximo' => ['nullable', 'integer', 'min:1'],
-            'uso_maximo_por_cliente' => ['nullable', 'integer', 'min:1'],
-            'fecha_inicio' => ['nullable', 'date'],
-            'fecha_fin' => ['nullable', 'date', 'after_or_equal:fecha_inicio'],
         ]);
     }
 }

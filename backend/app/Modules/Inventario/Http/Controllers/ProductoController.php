@@ -3,11 +3,11 @@
 namespace App\Modules\Inventario\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Modules\Inventario\Http\Requests\GuardarProductoRequest;
 use App\Modules\Inventario\Http\Resources\ProductoResource;
 use App\Modules\Inventario\Models\InventarioStock;
 use App\Modules\Inventario\Models\Producto;
 use App\Modules\Nucleo\Services\TenantContext;
-use App\Modules\Nucleo\Support\ReglasTenant;
 use Illuminate\Http\Request;
 
 /**
@@ -97,21 +97,20 @@ class ProductoController extends Controller
         ]);
     }
 
-    public function store(Request $request)
+    public function store(GuardarProductoRequest $request)
     {
-        $validated = $this->validarDatos($request);
-        $validated['tenant_id'] = app(TenantContext::class)->id();
-        $validated['activo'] = true;
+        $datos = $request->toDto()->datosPresentes();
+        $datos['tenant_id'] = app(TenantContext::class)->id();
+        $datos['activo'] = true;
 
-        $producto = Producto::create($validated);
+        $producto = Producto::create($datos);
 
         return (new ProductoResource($producto))->response()->setStatusCode(201);
     }
 
-    public function update(Request $request, Producto $producto)
+    public function update(GuardarProductoRequest $request, Producto $producto)
     {
-        $validated = $this->validarDatos($request);
-        $producto->update($validated);
+        $producto->update($request->toDto()->datosPresentes());
 
         return new ProductoResource($producto);
     }
@@ -122,22 +121,5 @@ class ProductoController extends Controller
         $producto->update(['activo' => false]);
 
         return new ProductoResource($producto);
-    }
-
-    private function validarDatos(Request $request): array
-    {
-        $tenantId = app(TenantContext::class)->id();
-
-        return $request->validate([
-            'nombre' => ['required', 'string', 'max:200'],
-            'descripcion' => ['nullable', 'string'],
-            'categoria_id' => ['nullable', 'integer', ReglasTenant::existe('categorias', $tenantId)],
-            'departamento_id' => ['nullable', 'integer', ReglasTenant::existe('departamentos', $tenantId)],
-            'precio_compra' => ['nullable', 'numeric', 'min:0'],
-            'precio_venta' => ['nullable', 'numeric', 'min:0'],
-            'imagen_url' => ['nullable', 'string', 'max:500'],
-            'no_resurtible' => ['nullable', 'boolean'],
-            'sin_descuento' => ['nullable', 'boolean'],
-        ]);
     }
 }

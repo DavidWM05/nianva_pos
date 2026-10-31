@@ -3,6 +3,7 @@
 namespace App\Modules\Inventario\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Modules\Inventario\Http\Requests\GuardarDepartamentoRequest;
 use App\Modules\Inventario\Http\Resources\DepartamentoResource;
 use App\Modules\Inventario\Models\Departamento;
 use App\Modules\Nucleo\Services\TenantContext;
@@ -59,21 +60,20 @@ class DepartamentoController extends Controller
         ]);
     }
 
-    public function store(Request $request)
+    public function store(GuardarDepartamentoRequest $request)
     {
-        $validated = $this->validarDatos($request);
-        $validated['tenant_id'] = app(TenantContext::class)->id();
-        $validated['activo'] = true;
+        $datos = $request->toDto()->datosPresentes();
+        $datos['tenant_id'] = app(TenantContext::class)->id();
+        $datos['activo'] = true;
 
-        $departamento = Departamento::create($validated);
+        $departamento = Departamento::create($datos);
 
         return (new DepartamentoResource($departamento))->response()->setStatusCode(201);
     }
 
-    public function update(Request $request, Departamento $departamento)
+    public function update(GuardarDepartamentoRequest $request, Departamento $departamento)
     {
-        $validated = $this->validarDatos($request);
-        $departamento->update($validated);
+        $departamento->update($request->toDto()->datosPresentes());
 
         return new DepartamentoResource($departamento);
     }
@@ -83,14 +83,6 @@ class DepartamentoController extends Controller
         $departamento->update(['activo' => false]);
 
         return new DepartamentoResource($departamento);
-    }
-
-    private function validarDatos(Request $request): array
-    {
-        return $request->validate([
-            'nombre' => ['required', 'string', 'max:120'],
-            'descripcion' => ['nullable', 'string'],
-        ]);
     }
 
     /**
