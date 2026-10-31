@@ -24,7 +24,7 @@ class UnicidadProductoVarianteTest extends TestCase
     {
         $this->actingAs($this->usuario);
 
-        $this->postJson("/api/productos/{$this->producto->id}/variantes", [
+        $this->postJson("/api/v1/productos/{$this->producto->id}/variantes", [
             'codigo_barras' => 'DUP-001',
             'talla' => 'S',
         ])->assertCreated();
@@ -32,7 +32,7 @@ class UnicidadProductoVarianteTest extends TestCase
         app(TenantContext::class)->set($this->tenantB);
         $this->actingAs($this->usuarioB);
 
-        $this->postJson("/api/productos/{$this->productoB->id}/variantes", [
+        $this->postJson("/api/v1/productos/{$this->productoB->id}/variantes", [
             'codigo_barras' => 'DUP-001',
             'talla' => 'S',
         ])->assertCreated();
@@ -40,7 +40,7 @@ class UnicidadProductoVarianteTest extends TestCase
         app(TenantContext::class)->set($this->tenant);
         $this->actingAs($this->usuario);
 
-        $this->postJson("/api/productos/{$this->producto->id}/variantes", [
+        $this->postJson("/api/v1/productos/{$this->producto->id}/variantes", [
             'codigo_barras' => 'DUP-001',
             'talla' => 'M',
         ])->assertStatus(422)->assertJsonValidationErrors(['codigo_barras']);

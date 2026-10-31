@@ -3,7 +3,7 @@ import { Injectable, inject } from '@angular/core';
 import { DataTableLazyEvent } from '@nucleo/ui-shared';
 import { Observable, map } from 'rxjs';
 
-import { API_BASE_URL } from '../../core/api-config';
+import { urlApi } from '../../core/api-config';
 import { Empleado, EmpleadoCrearPayload } from './empleado.types';
 
 export interface EmpleadosPermisos {
@@ -32,15 +32,15 @@ export class EmpleadoService {
     }
 
     return this.http
-      .get<{ data: Empleado[]; meta: { total: number; permisos: EmpleadosPermisos } }>(`${API_BASE_URL}/api/empleados`, { params })
+      .get<{ data: Empleado[]; meta: { total: number; permisos: EmpleadosPermisos } }>(urlApi(`/empleados`), { params })
       .pipe(map((r) => ({ data: r.data, total: r.meta.total, permisos: r.meta.permisos })));
   }
 
   obtener(id: number): Observable<Empleado> {
-    return this.http.get<{ data: Empleado }>(`${API_BASE_URL}/api/empleados/${id}`).pipe(map((r) => r.data));
+    return this.http.get<{ data: Empleado }>(urlApi(`/empleados/${id}`)).pipe(map((r) => r.data));
   }
 
   crear(payload: EmpleadoCrearPayload): Observable<Empleado> {
-    return this.http.post<{ data: Empleado }>(`${API_BASE_URL}/api/empleados`, payload).pipe(map((r) => r.data));
+    return this.http.post<{ data: Empleado }>(urlApi(`/empleados`), payload).pipe(map((r) => r.data));
   }
 }

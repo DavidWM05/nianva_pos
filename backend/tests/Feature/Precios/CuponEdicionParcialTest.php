@@ -30,7 +30,7 @@ class CuponEdicionParcialTest extends TestCase
         ]);
         $this->actingAs($this->usuario);
 
-        $this->putJson("/api/cupones/{$cupon->id}", [
+        $this->putJson("/api/v1/cupones/{$cupon->id}", [
             'codigo' => 'PARCIAL10',
             'nombre' => 'Cupon actualizado',
             'tipo' => 'porcentaje',

@@ -64,7 +64,7 @@ class ReglaPrecioTest extends TestCase
         ['usuario' => $usuario] = $this->crearUsuarioConPermisos([]);
         $this->actingAs($usuario);
 
-        $this->getJson('/api/reglas-precio')->assertForbidden();
+        $this->getJson('/api/v1/reglas-precio')->assertForbidden();
     }
 
     public function test_lista_incluye_el_nombre_de_la_entidad_especifica_no_solo_el_nivel(): void
@@ -78,7 +78,7 @@ class ReglaPrecioTest extends TestCase
 
         $this->actingAs($usuario);
 
-        $respuesta = $this->getJson('/api/reglas-precio');
+        $respuesta = $this->getJson('/api/v1/reglas-precio');
 
         $respuesta->assertOk();
         $respuesta->assertJsonPath('data.0.aplica_a', 'categoria');
@@ -95,7 +95,7 @@ class ReglaPrecioTest extends TestCase
 
         $this->actingAs($usuario);
 
-        $this->getJson("/api/reglas-precio/{$regla->id}")
+        $this->getJson("/api/v1/reglas-precio/{$regla->id}")
             ->assertOk()
             ->assertJsonPath('data.nombre', 'Regla puntual')
             ->assertJsonPath('meta.permisos.editar', false);
@@ -111,7 +111,7 @@ class ReglaPrecioTest extends TestCase
 
         $this->actingAs($usuario);
 
-        $this->getJson("/api/reglas-precio/{$regla->id}")->assertForbidden();
+        $this->getJson("/api/v1/reglas-precio/{$regla->id}")->assertForbidden();
     }
 
     public function test_crear_regla_porcentaje_exige_valor(): void
@@ -119,7 +119,7 @@ class ReglaPrecioTest extends TestCase
         ['usuario' => $usuario] = $this->crearUsuarioConPermisos(['reglas_precio.crear']);
         $this->actingAs($usuario);
 
-        $this->postJson('/api/reglas-precio', $this->datosBase(['tipo' => 'porcentaje', 'valor' => null]))
+        $this->postJson('/api/v1/reglas-precio', $this->datosBase(['tipo' => 'porcentaje', 'valor' => null]))
             ->assertUnprocessable()
             ->assertJsonValidationErrors('valor');
     }
@@ -129,11 +129,11 @@ class ReglaPrecioTest extends TestCase
         ['usuario' => $usuario] = $this->crearUsuarioConPermisos(['reglas_precio.crear']);
         $this->actingAs($usuario);
 
-        $this->postJson('/api/reglas-precio', $this->datosBase(['tipo' => 'nxm', 'valor' => null]))
+        $this->postJson('/api/v1/reglas-precio', $this->datosBase(['tipo' => 'nxm', 'valor' => null]))
             ->assertUnprocessable()
             ->assertJsonValidationErrors(['cantidad_compra', 'cantidad_paga']);
 
-        $this->postJson('/api/reglas-precio', $this->datosBase([
+        $this->postJson('/api/v1/reglas-precio', $this->datosBase([
             'tipo' => 'nxm', 'valor' => null, 'cantidad_compra' => 3, 'cantidad_paga' => 2,
         ]))->assertCreated()->assertJsonPath('data.cantidad_compra', 3);
     }
@@ -143,7 +143,7 @@ class ReglaPrecioTest extends TestCase
         ['usuario' => $usuario] = $this->crearUsuarioConPermisos(['reglas_precio.crear']);
         $this->actingAs($usuario);
 
-        $this->postJson('/api/reglas-precio', $this->datosBase(['tipo' => 'bundle', 'valor' => null]))
+        $this->postJson('/api/v1/reglas-precio', $this->datosBase(['tipo' => 'bundle', 'valor' => null]))
             ->assertUnprocessable()
             ->assertJsonValidationErrors(['cantidad_compra', 'precio_bundle']);
     }
@@ -153,7 +153,7 @@ class ReglaPrecioTest extends TestCase
         ['usuario' => $usuario] = $this->crearUsuarioConPermisos(['reglas_precio.crear']);
         $this->actingAs($usuario);
 
-        $this->postJson('/api/reglas-precio', $this->datosBase(['aplica_a' => 'producto']))
+        $this->postJson('/api/v1/reglas-precio', $this->datosBase(['aplica_a' => 'producto']))
             ->assertUnprocessable()
             ->assertJsonValidationErrors('producto_id');
     }
@@ -168,7 +168,7 @@ class ReglaPrecioTest extends TestCase
             'cantidad_compra' => 3, 'cantidad_paga' => 2, 'aplica_a' => 'todo', 'activo' => true,
         ]);
 
-        $this->putJson("/api/reglas-precio/{$regla->id}", $this->datosBase(['tipo' => 'porcentaje', 'valor' => 20]))
+        $this->putJson("/api/v1/reglas-precio/{$regla->id}", $this->datosBase(['tipo' => 'porcentaje', 'valor' => 20]))
             ->assertOk()
             ->assertJsonPath('data.valor', '20.00')
             ->assertJsonPath('data.cantidad_compra', null)
@@ -185,7 +185,7 @@ class ReglaPrecioTest extends TestCase
 
         $this->actingAs($usuario);
 
-        $this->patchJson("/api/reglas-precio/{$regla->id}/desactivar")
+        $this->patchJson("/api/v1/reglas-precio/{$regla->id}/desactivar")
             ->assertOk()
             ->assertJsonPath('data.activo', false);
 
@@ -204,7 +204,7 @@ class ReglaPrecioTest extends TestCase
 
         $this->actingAs($usuario);
 
-        $respuesta = $this->getJson('/api/reglas-precio');
+        $respuesta = $this->getJson('/api/v1/reglas-precio');
 
         $respuesta->assertOk()->assertJsonPath('data.0.variante.producto_nombre', 'Gorra');
     }

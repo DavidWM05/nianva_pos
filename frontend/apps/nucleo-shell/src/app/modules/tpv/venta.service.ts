@@ -3,7 +3,7 @@ import { Injectable, inject } from '@angular/core';
 import { DataTableLazyEvent } from '@nucleo/ui-shared';
 import { Observable, map } from 'rxjs';
 
-import { API_BASE_URL } from '../../core/api-config';
+import { urlApi } from '../../core/api-config';
 import { ReporteVentas, ReporteVentasFiltros, Venta, VentaCotizacion, VentaFormPayload, VentaItemPayload, VentasPagina } from './venta.types';
 
 @Injectable({ providedIn: 'root' })
@@ -25,23 +25,23 @@ export class VentaService {
     }
 
     return this.http
-      .get<{ data: Venta[]; meta: { total: number; permisos: VentasPagina['permisos'] } }>(`${API_BASE_URL}/api/ventas`, {
+      .get<{ data: Venta[]; meta: { total: number; permisos: VentasPagina['permisos'] } }>(urlApi(`/ventas`), {
         params,
       })
       .pipe(map((r) => ({ data: r.data, total: r.meta.total, permisos: r.meta.permisos })));
   }
 
   obtener(id: number): Observable<Venta> {
-    return this.http.get<{ data: Venta }>(`${API_BASE_URL}/api/ventas/${id}`).pipe(map((r) => r.data));
+    return this.http.get<{ data: Venta }>(urlApi(`/ventas/${id}`)).pipe(map((r) => r.data));
   }
 
   registrar(payload: VentaFormPayload): Observable<Venta> {
-    return this.http.post<{ data: Venta }>(`${API_BASE_URL}/api/ventas`, payload).pipe(map((r) => r.data));
+    return this.http.post<{ data: Venta }>(urlApi(`/ventas`), payload).pipe(map((r) => r.data));
   }
 
   anular(id: number, motivo: string): Observable<Venta> {
     return this.http
-      .patch<{ data: Venta }>(`${API_BASE_URL}/api/ventas/${id}/anular`, { motivo })
+      .patch<{ data: Venta }>(urlApi(`/ventas/${id}/anular`), { motivo })
       .pipe(map((r) => r.data));
   }
 
@@ -52,7 +52,7 @@ export class VentaService {
    */
   cotizar(items: VentaItemPayload[]): Observable<VentaCotizacion> {
     return this.http
-      .post<{ data: VentaCotizacion }>(`${API_BASE_URL}/api/ventas/cotizar`, { items })
+      .post<{ data: VentaCotizacion }>(urlApi(`/ventas/cotizar`), { items })
       .pipe(map((r) => r.data));
   }
 
@@ -71,7 +71,7 @@ export class VentaService {
     }
 
     return this.http
-      .get<{ data: ReporteVentas }>(`${API_BASE_URL}/api/ventas/reporte`, { params })
+      .get<{ data: ReporteVentas }>(urlApi(`/ventas/reporte`), { params })
       .pipe(map((r) => r.data));
   }
 }

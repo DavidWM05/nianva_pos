@@ -3,7 +3,7 @@ import { Injectable, inject } from '@angular/core';
 import { DataTableLazyEvent } from '@nucleo/ui-shared';
 import { Observable, map } from 'rxjs';
 
-import { API_BASE_URL } from '../../core/api-config';
+import { urlApi } from '../../core/api-config';
 import { Cliente, ClientesPagina, ClientesPermisos, VentaResumen } from './cliente.types';
 
 export interface ClienteFormPayload {
@@ -40,7 +40,7 @@ export class ClienteService {
 
     return this.http
       .get<{ data: Cliente[]; meta: { total: number; permisos: ClientesPagina['permisos'] } }>(
-        `${API_BASE_URL}/api/clientes`,
+        urlApi(`/clientes`),
         { params },
       )
       .pipe(map((respuesta) => ({ data: respuesta.data, total: respuesta.meta.total, permisos: respuesta.meta.permisos })));
@@ -48,25 +48,25 @@ export class ClienteService {
 
   obtener(id: number): Observable<{ cliente: Cliente; permisos: Omit<ClientesPermisos, 'crear'> }> {
     return this.http
-      .get<{ data: Cliente; meta: { permisos: Omit<ClientesPermisos, 'crear'> } }>(`${API_BASE_URL}/api/clientes/${id}`)
+      .get<{ data: Cliente; meta: { permisos: Omit<ClientesPermisos, 'crear'> } }>(urlApi(`/clientes/${id}`))
       .pipe(map((r) => ({ cliente: r.data, permisos: r.meta.permisos })));
   }
 
   crear(payload: ClienteFormPayload): Observable<Cliente> {
-    return this.http.post<{ data: Cliente }>(`${API_BASE_URL}/api/clientes`, payload).pipe(map((r) => r.data));
+    return this.http.post<{ data: Cliente }>(urlApi(`/clientes`), payload).pipe(map((r) => r.data));
   }
 
   actualizar(id: number, payload: ClienteFormPayload): Observable<Cliente> {
-    return this.http.put<{ data: Cliente }>(`${API_BASE_URL}/api/clientes/${id}`, payload).pipe(map((r) => r.data));
+    return this.http.put<{ data: Cliente }>(urlApi(`/clientes/${id}`), payload).pipe(map((r) => r.data));
   }
 
   desactivar(id: number): Observable<Cliente> {
     return this.http
-      .patch<{ data: Cliente }>(`${API_BASE_URL}/api/clientes/${id}/desactivar`, {})
+      .patch<{ data: Cliente }>(urlApi(`/clientes/${id}/desactivar`), {})
       .pipe(map((r) => r.data));
   }
 
   ventas(id: number): Observable<VentaResumen[]> {
-    return this.http.get<{ data: VentaResumen[] }>(`${API_BASE_URL}/api/clientes/${id}/ventas`).pipe(map((r) => r.data));
+    return this.http.get<{ data: VentaResumen[] }>(urlApi(`/clientes/${id}/ventas`)).pipe(map((r) => r.data));
   }
 }

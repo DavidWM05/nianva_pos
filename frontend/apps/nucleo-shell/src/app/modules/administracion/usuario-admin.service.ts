@@ -3,7 +3,7 @@ import { Injectable, inject } from '@angular/core';
 import { DataTableLazyEvent } from '@nucleo/ui-shared';
 import { Observable, map } from 'rxjs';
 
-import { API_BASE_URL } from '../../core/api-config';
+import { urlApi } from '../../core/api-config';
 import { UsuarioAdmin, UsuariosPagina, UsuariosPermisos } from './usuario.types';
 
 export interface UsuarioFormPayload {
@@ -39,7 +39,7 @@ export class UsuarioAdminService {
     }
 
     return this.http
-      .get<{ data: UsuarioAdmin[]; meta: { total: number; permisos: UsuariosPermisos } }>(`${API_BASE_URL}/api/usuarios`, {
+      .get<{ data: UsuarioAdmin[]; meta: { total: number; permisos: UsuariosPermisos } }>(urlApi(`/usuarios`), {
         params,
       })
       .pipe(map((r) => ({ data: r.data, total: r.meta.total, permisos: r.meta.permisos })));
@@ -54,23 +54,23 @@ export class UsuarioAdminService {
 
   obtener(id: number): Observable<{ usuario: UsuarioAdmin; permisos: UsuariosPermisos }> {
     return this.http
-      .get<{ data: UsuarioAdmin; meta: { permisos: UsuariosPermisos } }>(`${API_BASE_URL}/api/usuarios/${id}`)
+      .get<{ data: UsuarioAdmin; meta: { permisos: UsuariosPermisos } }>(urlApi(`/usuarios/${id}`))
       .pipe(map((r) => ({ usuario: r.data, permisos: r.meta.permisos })));
   }
 
   crear(payload: UsuarioFormPayload): Observable<UsuarioAdmin> {
-    return this.http.post<{ data: UsuarioAdmin }>(`${API_BASE_URL}/api/usuarios`, payload).pipe(map((r) => r.data));
+    return this.http.post<{ data: UsuarioAdmin }>(urlApi(`/usuarios`), payload).pipe(map((r) => r.data));
   }
 
   actualizar(id: number, payload: UsuarioFormPayload): Observable<UsuarioAdmin> {
     return this.http
-      .put<{ data: UsuarioAdmin }>(`${API_BASE_URL}/api/usuarios/${id}`, payload)
+      .put<{ data: UsuarioAdmin }>(urlApi(`/usuarios/${id}`), payload)
       .pipe(map((r) => r.data));
   }
 
   desactivar(id: number): Observable<UsuarioAdmin> {
     return this.http
-      .patch<{ data: UsuarioAdmin }>(`${API_BASE_URL}/api/usuarios/${id}/desactivar`, {})
+      .patch<{ data: UsuarioAdmin }>(urlApi(`/usuarios/${id}/desactivar`), {})
       .pipe(map((r) => r.data));
   }
 
@@ -83,7 +83,7 @@ export class UsuarioAdminService {
    */
   desactivarDosFactor(id: number, code?: string): Observable<UsuarioAdmin> {
     return this.http
-      .post<{ data: UsuarioAdmin }>(`${API_BASE_URL}/api/usuarios/${id}/desactivar-2fa`, code ? { code } : {})
+      .post<{ data: UsuarioAdmin }>(urlApi(`/usuarios/${id}/desactivar-2fa`), code ? { code } : {})
       .pipe(map((r) => r.data));
   }
 }

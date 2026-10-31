@@ -30,7 +30,7 @@ class UsuarioExistsTenantTest extends TestCase
     {
         $this->actingAs($this->usuario);
 
-        $this->postJson('/api/usuarios', $this->payload([
+        $this->postJson('/api/v1/usuarios', $this->payload([
             'sucursal_id' => $this->sucursalB->id,
         ]))->assertStatus(422)->assertJsonValidationErrors(['sucursal_id']);
     }
@@ -39,7 +39,7 @@ class UsuarioExistsTenantTest extends TestCase
     {
         $this->actingAs($this->usuario);
 
-        $this->postJson('/api/usuarios', $this->payload([
+        $this->postJson('/api/v1/usuarios', $this->payload([
             'roles' => [$this->rolB->id],
         ]))->assertStatus(422)->assertJsonValidationErrors(['roles.0']);
     }
@@ -48,7 +48,7 @@ class UsuarioExistsTenantTest extends TestCase
     {
         $this->actingAs($this->usuario);
 
-        $this->postJson('/api/usuarios', $this->payload([
+        $this->postJson('/api/v1/usuarios', $this->payload([
             'roles' => [$this->rolGlobal->id],
         ]))->assertCreated();
     }

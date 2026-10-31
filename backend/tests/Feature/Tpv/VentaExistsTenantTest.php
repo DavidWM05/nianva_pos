@@ -21,7 +21,7 @@ class VentaExistsTenantTest extends TestCase
     {
         $this->actingAs($this->usuario);
 
-        $this->postJson('/api/ventas', $this->payloadVenta([
+        $this->postJson('/api/v1/ventas', $this->payloadVenta([
             'pagos' => [['metodo_pago_id' => $this->metodoPagoB->id, 'monto' => 100]],
         ]))->assertStatus(422)->assertJsonValidationErrors(['pagos.0.metodo_pago_id']);
     }
@@ -30,7 +30,7 @@ class VentaExistsTenantTest extends TestCase
     {
         $this->actingAs($this->usuario);
 
-        $this->postJson('/api/ventas', $this->payloadVenta([
+        $this->postJson('/api/v1/ventas', $this->payloadVenta([
             'pagos' => [['metodo_pago_id' => $this->metodoPagoGlobal->id, 'monto' => 100]],
         ]))->assertCreated();
     }
@@ -39,7 +39,7 @@ class VentaExistsTenantTest extends TestCase
     {
         $this->actingAs($this->usuario);
 
-        $this->postJson('/api/ventas', $this->payloadVenta([
+        $this->postJson('/api/v1/ventas', $this->payloadVenta([
             'nota_credito_id' => $this->notaCreditoB->id,
         ]))->assertStatus(422)->assertJsonValidationErrors(['nota_credito_id']);
     }

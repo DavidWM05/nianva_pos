@@ -3,7 +3,7 @@ import { Injectable, inject } from '@angular/core';
 import { DataTableLazyEvent } from '@nucleo/ui-shared';
 import { Observable, map } from 'rxjs';
 
-import { API_BASE_URL } from '../../core/api-config';
+import { urlApi } from '../../core/api-config';
 import { NotaCredito } from './nota-credito.types';
 
 export interface NotasCreditoPagina {
@@ -37,17 +37,17 @@ export class NotaCreditoService {
     }
 
     return this.http
-      .get<{ data: NotaCredito[]; meta: { total: number } }>(`${API_BASE_URL}/api/notas-credito`, { params })
+      .get<{ data: NotaCredito[]; meta: { total: number } }>(urlApi(`/notas-credito`), { params })
       .pipe(map((r) => ({ data: r.data, total: r.meta.total })));
   }
 
   obtener(id: number): Observable<NotaCredito> {
-    return this.http.get<{ data: NotaCredito }>(`${API_BASE_URL}/api/notas-credito/${id}`).pipe(map((r) => r.data));
+    return this.http.get<{ data: NotaCredito }>(urlApi(`/notas-credito/${id}`)).pipe(map((r) => r.data));
   }
 
   activasPorCliente(clienteId: number): Observable<NotaCredito[]> {
     return this.http
-      .get<{ data: NotaCredito[] }>(`${API_BASE_URL}/api/clientes/${clienteId}/notas-credito`)
+      .get<{ data: NotaCredito[] }>(urlApi(`/clientes/${clienteId}/notas-credito`))
       .pipe(map((r) => r.data));
   }
 }

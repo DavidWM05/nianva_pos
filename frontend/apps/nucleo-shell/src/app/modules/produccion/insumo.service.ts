@@ -3,7 +3,7 @@ import { Injectable, inject } from '@angular/core';
 import { DataTableLazyEvent } from '@nucleo/ui-shared';
 import { Observable, map } from 'rxjs';
 
-import { API_BASE_URL } from '../../core/api-config';
+import { urlApi } from '../../core/api-config';
 import { Insumo, InsumoCrearPayload } from './insumo.types';
 
 export interface InsumosPermisos {
@@ -46,11 +46,11 @@ export class InsumoService {
     }
 
     return this.http
-      .get<{ data: Insumo[]; meta: { total: number; permisos: InsumosPermisos } }>(`${API_BASE_URL}/api/insumos`, { params })
+      .get<{ data: Insumo[]; meta: { total: number; permisos: InsumosPermisos } }>(urlApi(`/insumos`), { params })
       .pipe(map((r) => ({ data: r.data, total: r.meta.total, permisos: r.meta.permisos })));
   }
 
   crear(payload: InsumoCrearPayload): Observable<Insumo> {
-    return this.http.post<{ data: Insumo }>(`${API_BASE_URL}/api/insumos`, payload).pipe(map((r) => r.data));
+    return this.http.post<{ data: Insumo }>(urlApi(`/insumos`), payload).pipe(map((r) => r.data));
   }
 }

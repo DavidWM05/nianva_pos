@@ -3,7 +3,7 @@ import { Injectable, inject } from '@angular/core';
 import { DataTableLazyEvent } from '@nucleo/ui-shared';
 import { Observable, map } from 'rxjs';
 
-import { API_BASE_URL } from '../../core/api-config';
+import { urlApi } from '../../core/api-config';
 import {
   CatalogoSimple,
   MovimientoKardex,
@@ -49,7 +49,7 @@ export class ProductoService {
     }
 
     return this.http
-      .get<{ data: Producto[]; meta: { total: number; permisos: ProductosPermisos } }>(`${API_BASE_URL}/api/productos`, {
+      .get<{ data: Producto[]; meta: { total: number; permisos: ProductosPermisos } }>(urlApi(`/productos`), {
         params,
       })
       .pipe(map((r) => ({ data: r.data, total: r.meta.total, permisos: r.meta.permisos })));
@@ -57,21 +57,21 @@ export class ProductoService {
 
   obtener(id: number): Observable<{ producto: Producto; permisos: ProductosPermisos }> {
     return this.http
-      .get<{ data: Producto; meta: { permisos: ProductosPermisos } }>(`${API_BASE_URL}/api/productos/${id}`)
+      .get<{ data: Producto; meta: { permisos: ProductosPermisos } }>(urlApi(`/productos/${id}`))
       .pipe(map((r) => ({ producto: r.data, permisos: r.meta.permisos })));
   }
 
   crear(payload: ProductoFormPayload): Observable<Producto> {
-    return this.http.post<{ data: Producto }>(`${API_BASE_URL}/api/productos`, payload).pipe(map((r) => r.data));
+    return this.http.post<{ data: Producto }>(urlApi(`/productos`), payload).pipe(map((r) => r.data));
   }
 
   actualizar(id: number, payload: ProductoFormPayload): Observable<Producto> {
-    return this.http.put<{ data: Producto }>(`${API_BASE_URL}/api/productos/${id}`, payload).pipe(map((r) => r.data));
+    return this.http.put<{ data: Producto }>(urlApi(`/productos/${id}`), payload).pipe(map((r) => r.data));
   }
 
   desactivar(id: number): Observable<Producto> {
     return this.http
-      .patch<{ data: Producto }>(`${API_BASE_URL}/api/productos/${id}/desactivar`, {})
+      .patch<{ data: Producto }>(urlApi(`/productos/${id}/desactivar`), {})
       .pipe(map((r) => r.data));
   }
 
@@ -83,37 +83,37 @@ export class ProductoService {
    */
   categorias(): Observable<CatalogoSimple[]> {
     return this.http
-      .get<{ data: CatalogoSimple[] }>(`${API_BASE_URL}/api/categorias`, { params: { solo_activos: 1 } })
+      .get<{ data: CatalogoSimple[] }>(urlApi(`/categorias`), { params: { solo_activos: 1 } })
       .pipe(map((r) => r.data));
   }
 
   departamentos(): Observable<CatalogoSimple[]> {
     return this.http
-      .get<{ data: CatalogoSimple[] }>(`${API_BASE_URL}/api/departamentos`, { params: { solo_activos: 1 } })
+      .get<{ data: CatalogoSimple[] }>(urlApi(`/departamentos`), { params: { solo_activos: 1 } })
       .pipe(map((r) => r.data));
   }
 
   crearVariante(productoId: number, payload: VarianteFormPayload): Observable<ProductoVariante> {
     return this.http
-      .post<{ data: ProductoVariante }>(`${API_BASE_URL}/api/productos/${productoId}/variantes`, payload)
+      .post<{ data: ProductoVariante }>(urlApi(`/productos/${productoId}/variantes`), payload)
       .pipe(map((r) => r.data));
   }
 
   actualizarVariante(varianteId: number, payload: VarianteFormPayload): Observable<ProductoVariante> {
     return this.http
-      .put<{ data: ProductoVariante }>(`${API_BASE_URL}/api/producto-variantes/${varianteId}`, payload)
+      .put<{ data: ProductoVariante }>(urlApi(`/producto-variantes/${varianteId}`), payload)
       .pipe(map((r) => r.data));
   }
 
   desactivarVariante(varianteId: number): Observable<ProductoVariante> {
     return this.http
-      .patch<{ data: ProductoVariante }>(`${API_BASE_URL}/api/producto-variantes/${varianteId}/desactivar`, {})
+      .patch<{ data: ProductoVariante }>(urlApi(`/producto-variantes/${varianteId}/desactivar`), {})
       .pipe(map((r) => r.data));
   }
 
   kardex(varianteId: number): Observable<MovimientoKardex[]> {
     return this.http
-      .get<{ data: MovimientoKardex[] }>(`${API_BASE_URL}/api/producto-variantes/${varianteId}/kardex`)
+      .get<{ data: MovimientoKardex[] }>(urlApi(`/producto-variantes/${varianteId}/kardex`))
       .pipe(map((r) => r.data));
   }
 }

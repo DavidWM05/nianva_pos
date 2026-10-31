@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable, map } from 'rxjs';
 
-import { API_BASE_URL } from '../../core/api-config';
+import { urlApi } from '../../core/api-config';
 import {
   ConfiguracionSeguridad,
   ConfiguracionTenant,
@@ -16,13 +16,13 @@ export class ConfiguracionService {
 
   obtener(): Observable<ConfiguracionTenant> {
     return this.http
-      .get<{ data: ConfiguracionTenant }>(`${API_BASE_URL}/api/configuracion`)
+      .get<{ data: ConfiguracionTenant }>(urlApi(`/configuracion`))
       .pipe(map((r) => r.data));
   }
 
   actualizar(payload: ConfiguracionTenantFormPayload): Observable<ConfiguracionTenant> {
     return this.http
-      .put<{ data: ConfiguracionTenant }>(`${API_BASE_URL}/api/configuracion`, payload)
+      .put<{ data: ConfiguracionTenant }>(urlApi(`/configuracion`), payload)
       .pipe(map((r) => r.data));
   }
 
@@ -32,7 +32,7 @@ export class ConfiguracionService {
    * solo trae codigo_barras_automatico (ver ProductoDetalleComponent).
    */
   publica(): Observable<{ codigo_barras_automatico: boolean }> {
-    return this.http.get<{ codigo_barras_automatico: boolean }>(`${API_BASE_URL}/api/configuracion/publica`);
+    return this.http.get<{ codigo_barras_automatico: boolean }>(urlApi(`/configuracion/publica`));
   }
 
   /**
@@ -43,11 +43,11 @@ export class ConfiguracionService {
    * son politica de toda la empresa, no algo personal.
    */
   obtenerSeguridad(): Observable<ConfiguracionSeguridad> {
-    return this.http.get<ConfiguracionSeguridad>(`${API_BASE_URL}/api/configuracion-seguridad`);
+    return this.http.get<ConfiguracionSeguridad>(urlApi(`/configuracion-seguridad`));
   }
 
   actualizarSeguridad(payload: ConfiguracionSeguridad): Observable<ConfiguracionSeguridad> {
-    return this.http.put<ConfiguracionSeguridad>(`${API_BASE_URL}/api/configuracion-seguridad`, payload);
+    return this.http.put<ConfiguracionSeguridad>(urlApi(`/configuracion-seguridad`), payload);
   }
 
   /**
@@ -57,7 +57,7 @@ export class ConfiguracionService {
    */
   obtenerLicencia(): Observable<LicenciaLocal> {
     return this.http
-      .get<{ data: LicenciaLocal }>(`${API_BASE_URL}/api/licencia-local`)
+      .get<{ data: LicenciaLocal }>(urlApi(`/licencia-local`))
       .pipe(map((r) => r.data));
   }
 }

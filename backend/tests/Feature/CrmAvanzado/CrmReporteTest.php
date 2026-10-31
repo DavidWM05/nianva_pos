@@ -106,7 +106,7 @@ class CrmReporteTest extends TestCase
     {
         $this->actingAs($this->usuario);
 
-        $data = $this->getJson('/api/crm/reporte')->assertOk()->json('data');
+        $data = $this->getJson('/api/v1/crm/reporte')->assertOk()->json('data');
 
         $this->assertSame(1, $data['clientes_por_segmento']['nuevo']);
         $this->assertSame(0, $data['clientes_por_segmento']['frecuente']);
@@ -131,7 +131,7 @@ class CrmReporteTest extends TestCase
 
         $this->actingAs($this->usuario);
 
-        $data = $this->getJson('/api/crm/reporte')->assertOk()->json('data');
+        $data = $this->getJson('/api/v1/crm/reporte')->assertOk()->json('data');
 
         $this->assertSame(1, $data['interacciones_por_tipo']['llamada']);
         $this->assertSame(2, $data['interacciones_por_tipo']['email']);
@@ -157,7 +157,7 @@ class CrmReporteTest extends TestCase
 
         $this->actingAs($this->usuario);
 
-        $data = $this->getJson('/api/crm/reporte')->assertOk()->json('data');
+        $data = $this->getJson('/api/v1/crm/reporte')->assertOk()->json('data');
 
         $this->assertSame(100, $data['loyalty']['puntos_ganados_total']);
         $this->assertSame(30, $data['loyalty']['puntos_canjeados_total']);
@@ -179,7 +179,7 @@ class CrmReporteTest extends TestCase
 
         $this->actingAs($this->usuario);
 
-        $data = $this->getJson('/api/crm/reporte')->assertOk()->json('data');
+        $data = $this->getJson('/api/v1/crm/reporte')->assertOk()->json('data');
 
         $this->assertCount(1, $data['campanas_recientes']);
         $this->assertSame('Promo de prueba', $data['campanas_recientes'][0]['asunto']);
@@ -199,6 +199,6 @@ class CrmReporteTest extends TestCase
 
         $this->actingAs($usuarioSinPermiso);
 
-        $this->getJson('/api/crm/reporte')->assertForbidden();
+        $this->getJson('/api/v1/crm/reporte')->assertForbidden();
     }
 }

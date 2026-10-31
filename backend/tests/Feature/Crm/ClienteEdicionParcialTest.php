@@ -30,7 +30,7 @@ class ClienteEdicionParcialTest extends TestCase
         ]);
         $this->actingAs($this->usuario);
 
-        $this->putJson("/api/clientes/{$cliente->id}", ['nombre' => 'Cliente actualizado'])
+        $this->putJson("/api/v1/clientes/{$cliente->id}", ['nombre' => 'Cliente actualizado'])
             ->assertOk();
 
         $cliente->refresh();

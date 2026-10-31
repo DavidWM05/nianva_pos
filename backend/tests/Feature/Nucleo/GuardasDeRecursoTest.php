@@ -25,7 +25,7 @@ class GuardasDeRecursoTest extends TestCase
         $rol = Rol::create(['tenant_id' => null, 'nombre' => 'admin', 'es_sistema' => true]);
         $this->actingAs($this->usuario);
 
-        $this->putJson("/api/roles/{$rol->id}", ['nombre' => ''])
+        $this->putJson("/api/v1/roles/{$rol->id}", ['nombre' => ''])
             ->assertForbidden()
             ->assertJsonPath('message', 'Este es un rol de sistema y solo un superadmin puede modificarlo.')
             ->assertJsonMissingPath('errors');
@@ -36,7 +36,7 @@ class GuardasDeRecursoTest extends TestCase
         $metodo = MetodoPago::create(['tenant_id' => null, 'nombre' => 'Efectivo', 'tipo' => 'efectivo']);
         $this->actingAs($this->usuario);
 
-        $this->putJson("/api/metodos-pago/{$metodo->id}", [
+        $this->putJson("/api/v1/metodos-pago/{$metodo->id}", [
             'nombre' => '',
             'tipo' => 'invalido',
             'incluir_en_financiero' => 'no-es-booleano',
@@ -51,7 +51,7 @@ class GuardasDeRecursoTest extends TestCase
         ConfiguracionTenant::where('tenant_id', $this->tenant->id)->delete();
         $this->actingAs($this->usuario);
 
-        $this->putJson('/api/configuracion', [
+        $this->putJson('/api/v1/configuracion', [
             'moneda' => '',
             'backup_frecuencia' => 'nunca',
         ])

@@ -63,7 +63,7 @@ class CompraControllerTest extends TestCase
 
         $this->actingAs($usuario);
 
-        $respuesta = $this->postJson('/api/compras', [
+        $respuesta = $this->postJson('/api/v1/compras', [
             'proveedor_id' => $proveedor->id,
             'numero_comprobante' => 'F-001',
             'items' => [
@@ -94,7 +94,7 @@ class CompraControllerTest extends TestCase
         ]);
 
         // Una segunda compra de la misma variante debe SUMAR, no reemplazar.
-        $this->postJson('/api/compras', [
+        $this->postJson('/api/v1/compras', [
             'proveedor_id' => $proveedor->id,
             'items' => [
                 ['variante_id' => $variante->id, 'cantidad' => 5, 'precio_compra' => 55],
@@ -118,7 +118,7 @@ class CompraControllerTest extends TestCase
 
         $this->actingAs($usuario);
 
-        $this->postJson('/api/compras', [
+        $this->postJson('/api/v1/compras', [
             'proveedor_id' => $proveedor->id,
             'items' => [['variante_id' => $variante->id, 'cantidad' => 1, 'precio_compra' => 10]],
         ])->assertForbidden();
@@ -129,7 +129,7 @@ class CompraControllerTest extends TestCase
         ['usuario' => $usuario] = $this->crearUsuarioConPermisos(['compras.crear']);
         $this->actingAs($usuario);
 
-        $this->postJson('/api/compras', [])
+        $this->postJson('/api/v1/compras', [])
             ->assertUnprocessable()
             ->assertJsonValidationErrors(['proveedor_id', 'items']);
     }
@@ -148,36 +148,36 @@ class CompraControllerTest extends TestCase
         ]);
         $this->actingAs($usuario);
 
-        $producto = $this->postJson('/api/productos', ['nombre' => 'Playera Básica', 'precio_venta' => 199])
+        $producto = $this->postJson('/api/v1/productos', ['nombre' => 'Playera Básica', 'precio_venta' => 199])
             ->assertCreated()
             ->json('data');
 
-        $variante = $this->postJson("/api/productos/{$producto['id']}/variantes", ['talla' => 'M', 'color' => 'Azul'])
+        $variante = $this->postJson("/api/v1/productos/{$producto['id']}/variantes", ['talla' => 'M', 'color' => 'Azul'])
             ->assertCreated()
             ->json('data');
 
-        $proveedor = $this->postJson('/api/proveedores', ['razon_social' => 'Textiles del Norte'])
+        $proveedor = $this->postJson('/api/v1/proveedores', ['razon_social' => 'Textiles del Norte'])
             ->assertCreated()
             ->json('data');
 
         // Antes de la variante, el producto no tiene stock.
-        $this->getJson("/api/productos/{$producto['id']}")
+        $this->getJson("/api/v1/productos/{$producto['id']}")
             ->assertOk()
             ->assertJsonPath('data.variantes.0.stock', []);
 
-        $this->postJson('/api/compras', [
+        $this->postJson('/api/v1/compras', [
             'proveedor_id' => $proveedor['id'],
             'items' => [['variante_id' => $variante['id'], 'cantidad' => 30, 'precio_compra' => 45]],
         ])->assertCreated();
 
         // Stock por sucursal, vía el mismo endpoint que consume la pantalla de detalle.
-        $this->getJson("/api/productos/{$producto['id']}")
+        $this->getJson("/api/v1/productos/{$producto['id']}")
             ->assertOk()
             ->assertJsonPath('data.variantes.0.stock.0.sucursal_nombre', $sucursal->nombre)
             ->assertJsonPath('data.variantes.0.stock.0.stock_actual', 30);
 
         // Kardex, vía el mismo endpoint que consume la pestaña Kardex.
-        $this->getJson("/api/producto-variantes/{$variante['id']}/kardex")
+        $this->getJson("/api/v1/producto-variantes/{$variante['id']}/kardex")
             ->assertOk()
             ->assertJsonCount(1, 'data')
             ->assertJsonPath('data.0.tipo', 'entrada')

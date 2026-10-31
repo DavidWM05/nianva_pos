@@ -21,7 +21,7 @@ class CotizacionValidacionesTest extends TestCase
     {
         $this->actingAs($this->usuario);
 
-        $this->postJson('/api/cotizaciones', [
+        $this->postJson('/api/v1/cotizaciones', [
             'sucursal_id' => $this->sucursal->id,
             'items' => [['variante_id' => $this->varianteB->id, 'cantidad' => 1, 'precio_unitario' => 100]],
         ])
@@ -33,7 +33,7 @@ class CotizacionValidacionesTest extends TestCase
     {
         $this->actingAs($this->usuario);
 
-        $this->postJson('/api/cotizaciones', [
+        $this->postJson('/api/v1/cotizaciones', [
             'sucursal_id' => $this->sucursal->id,
             'descuento' => 200,
             'items' => [['variante_id' => $this->variante->id, 'cantidad' => 1, 'precio_unitario' => 100]],
@@ -48,7 +48,7 @@ class CotizacionValidacionesTest extends TestCase
         $id = $this->crearCotizacion();
         $this->actingAs($this->usuario);
 
-        $this->putJson("/api/cotizaciones/{$id}", [
+        $this->putJson("/api/v1/cotizaciones/{$id}", [
             'items' => [['variante_id' => $this->varianteB->id, 'cantidad' => 1, 'precio_unitario' => 100]],
         ])
             ->assertStatus(422)
@@ -60,7 +60,7 @@ class CotizacionValidacionesTest extends TestCase
         $id = $this->crearCotizacion();
         $this->actingAs($this->usuario);
 
-        $this->putJson("/api/cotizaciones/{$id}", [
+        $this->putJson("/api/v1/cotizaciones/{$id}", [
             'descuento' => 200,
             'items' => [['variante_id' => $this->variante->id, 'cantidad' => 1, 'precio_unitario' => 100]],
         ])

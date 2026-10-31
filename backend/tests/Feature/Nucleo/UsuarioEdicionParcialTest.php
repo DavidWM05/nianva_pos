@@ -32,7 +32,7 @@ class UsuarioEdicionParcialTest extends TestCase
 
         $this->actingAs($this->usuario);
 
-        $this->putJson("/api/usuarios/{$objetivo->id}", [
+        $this->putJson("/api/v1/usuarios/{$objetivo->id}", [
             'nombre' => 'Carlos Actualizado',
             'correo' => 'carlos.edicion@test.com',
         ])->assertOk();

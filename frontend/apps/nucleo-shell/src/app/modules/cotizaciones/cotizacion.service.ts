@@ -3,7 +3,7 @@ import { Injectable, inject } from '@angular/core';
 import { DataTableLazyEvent } from '@nucleo/ui-shared';
 import { Observable, map } from 'rxjs';
 
-import { API_BASE_URL } from '../../core/api-config';
+import { urlApi } from '../../core/api-config';
 import { Cotizacion, CotizacionCrearPayload, CotizacionFormPayload } from './cotizacion.types';
 
 export interface CotizacionesPermisos {
@@ -42,30 +42,30 @@ export class CotizacionService {
     }
 
     return this.http
-      .get<{ data: Cotizacion[]; meta: { total: number; permisos: CotizacionesPermisos } }>(`${API_BASE_URL}/api/cotizaciones`, {
+      .get<{ data: Cotizacion[]; meta: { total: number; permisos: CotizacionesPermisos } }>(urlApi(`/cotizaciones`), {
         params,
       })
       .pipe(map((r) => ({ data: r.data, total: r.meta.total, permisos: r.meta.permisos })));
   }
 
   obtener(id: number): Observable<Cotizacion> {
-    return this.http.get<{ data: Cotizacion }>(`${API_BASE_URL}/api/cotizaciones/${id}`).pipe(map((r) => r.data));
+    return this.http.get<{ data: Cotizacion }>(urlApi(`/cotizaciones/${id}`)).pipe(map((r) => r.data));
   }
 
   crear(payload: CotizacionCrearPayload): Observable<Cotizacion> {
     return this.http
-      .post<{ data: Cotizacion }>(`${API_BASE_URL}/api/cotizaciones`, payload)
+      .post<{ data: Cotizacion }>(urlApi(`/cotizaciones`), payload)
       .pipe(map((r) => r.data));
   }
 
   actualizar(id: number, payload: CotizacionFormPayload): Observable<Cotizacion> {
     return this.http
-      .put<{ data: Cotizacion }>(`${API_BASE_URL}/api/cotizaciones/${id}`, payload)
+      .put<{ data: Cotizacion }>(urlApi(`/cotizaciones/${id}`), payload)
       .pipe(map((r) => r.data));
   }
 
   anular(id: number): Observable<void> {
-    return this.http.delete<void>(`${API_BASE_URL}/api/cotizaciones/${id}`);
+    return this.http.delete<void>(urlApi(`/cotizaciones/${id}`));
   }
 
   /**
@@ -76,7 +76,7 @@ export class CotizacionService {
    */
   convertir(id: number, metodoPagoId: number): Observable<{ ventaId: number }> {
     return this.http
-      .post<{ venta_id: number }>(`${API_BASE_URL}/api/cotizaciones/${id}/convertir`, { metodo_pago_id: metodoPagoId })
+      .post<{ venta_id: number }>(urlApi(`/cotizaciones/${id}/convertir`), { metodo_pago_id: metodoPagoId })
       .pipe(map((r) => ({ ventaId: r.venta_id })));
   }
 }

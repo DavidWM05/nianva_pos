@@ -76,7 +76,7 @@ class CuentaPagarErrorCodeTest extends TestCase
 
         $this->actingAs($this->usuario);
 
-        $this->postJson("/api/cuentas-pagar/{$cuenta->id}/pagos", [
+        $this->postJson("/api/v1/cuentas-pagar/{$cuenta->id}/pagos", [
             'monto' => 10,
             'metodo_pago_id' => $this->metodoPago->id,
         ])
@@ -93,7 +93,7 @@ class CuentaPagarErrorCodeTest extends TestCase
 
         $this->actingAs($this->usuario);
 
-        $this->postJson("/api/cuentas-pagar/{$cuenta->id}/pagos", [
+        $this->postJson("/api/v1/cuentas-pagar/{$cuenta->id}/pagos", [
             'monto' => 10,
             'metodo_pago_id' => $this->metodoPago->id,
         ])
@@ -117,7 +117,7 @@ class CuentaPagarErrorCodeTest extends TestCase
 
         $this->actingAs($this->usuario);
 
-        $this->postJson("/api/cuentas-pagar/{$cuenta->id}/anular")
+        $this->postJson("/api/v1/cuentas-pagar/{$cuenta->id}/anular")
             ->assertStatus(422)
             ->assertExactJson([
                 'message' => "La cuenta por pagar {$cuenta->id} tiene pagos registrados y no se puede anular.",

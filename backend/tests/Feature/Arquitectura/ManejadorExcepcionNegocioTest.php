@@ -44,7 +44,7 @@ class ManejadorExcepcionNegocioTest extends TestCase
         $this->darPermiso('gastos.crear');
         $this->actingAs($this->usuario);
 
-        $this->postJson('/api/gastos', ['descripcion' => 'Luz', 'monto' => 80])
+        $this->postJson('/api/v1/gastos', ['descripcion' => 'Luz', 'monto' => 80])
             ->assertStatus(422)
             ->assertExactJson([
                 'message' => "No hay una caja abierta para la sucursal {$this->sucursal->id}.",
@@ -62,7 +62,7 @@ class ManejadorExcepcionNegocioTest extends TestCase
         $this->darPermiso('cuentas_pagar.ver');
         $this->actingAs($this->usuario);
 
-        $this->getJson('/api/cuentas-pagar')
+        $this->getJson('/api/v1/cuentas-pagar')
             ->assertStatus(403)
             ->assertExactJson([
                 'message' => "El módulo 'cxp' no está activo para este tenant.",

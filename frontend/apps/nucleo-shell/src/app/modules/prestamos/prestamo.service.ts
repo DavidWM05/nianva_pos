@@ -3,7 +3,7 @@ import { Injectable, inject } from '@angular/core';
 import { DataTableLazyEvent } from '@nucleo/ui-shared';
 import { Observable, map } from 'rxjs';
 
-import { API_BASE_URL } from '../../core/api-config';
+import { urlApi } from '../../core/api-config';
 import { Prestamo, PrestamoCrearPayload, RegistrarPagoPrestamoPayload } from './prestamo.types';
 
 export interface PrestamosPagina {
@@ -26,16 +26,16 @@ export class PrestamoService {
     }
 
     return this.http
-      .get<{ data: Prestamo[]; meta: { total: number } }>(`${API_BASE_URL}/api/prestamos`, { params })
+      .get<{ data: Prestamo[]; meta: { total: number } }>(urlApi(`/prestamos`), { params })
       .pipe(map((r) => ({ data: r.data, total: r.meta.total })));
   }
 
   obtener(id: number): Observable<Prestamo> {
-    return this.http.get<{ data: Prestamo }>(`${API_BASE_URL}/api/prestamos/${id}`).pipe(map((r) => r.data));
+    return this.http.get<{ data: Prestamo }>(urlApi(`/prestamos/${id}`)).pipe(map((r) => r.data));
   }
 
   crear(payload: PrestamoCrearPayload): Observable<Prestamo> {
-    return this.http.post<{ data: Prestamo }>(`${API_BASE_URL}/api/prestamos`, payload).pipe(map((r) => r.data));
+    return this.http.post<{ data: Prestamo }>(urlApi(`/prestamos`), payload).pipe(map((r) => r.data));
   }
 
   /**
@@ -45,6 +45,6 @@ export class PrestamoService {
    * el observable es `void`: quien llama debe volver a pedir listar().
    */
   registrarPago(id: number, payload: RegistrarPagoPrestamoPayload): Observable<void> {
-    return this.http.post<void>(`${API_BASE_URL}/api/prestamos/${id}/pagos`, payload).pipe(map(() => undefined));
+    return this.http.post<void>(urlApi(`/prestamos/${id}/pagos`), payload).pipe(map(() => undefined));
   }
 }

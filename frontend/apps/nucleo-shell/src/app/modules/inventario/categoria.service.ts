@@ -3,7 +3,7 @@ import { Injectable, inject } from '@angular/core';
 import { DataTableLazyEvent } from '@nucleo/ui-shared';
 import { Observable, map } from 'rxjs';
 
-import { API_BASE_URL } from '../../core/api-config';
+import { urlApi } from '../../core/api-config';
 import { Categoria, CategoriasPagina, CategoriasPermisos } from './categoria.types';
 
 export interface CategoriaFormPayload {
@@ -29,7 +29,7 @@ export class CategoriaService {
     }
 
     return this.http
-      .get<{ data: Categoria[]; meta: { total: number; permisos: CategoriasPermisos } }>(`${API_BASE_URL}/api/categorias`, {
+      .get<{ data: Categoria[]; meta: { total: number; permisos: CategoriasPermisos } }>(urlApi(`/categorias`), {
         params,
       })
       .pipe(map((r) => ({ data: r.data, total: r.meta.total, permisos: r.meta.permisos })));
@@ -37,21 +37,21 @@ export class CategoriaService {
 
   obtener(id: number): Observable<{ categoria: Categoria; permisos: CategoriasPermisos }> {
     return this.http
-      .get<{ data: Categoria; meta: { permisos: CategoriasPermisos } }>(`${API_BASE_URL}/api/categorias/${id}`)
+      .get<{ data: Categoria; meta: { permisos: CategoriasPermisos } }>(urlApi(`/categorias/${id}`))
       .pipe(map((r) => ({ categoria: r.data, permisos: r.meta.permisos })));
   }
 
   crear(payload: CategoriaFormPayload): Observable<Categoria> {
-    return this.http.post<{ data: Categoria }>(`${API_BASE_URL}/api/categorias`, payload).pipe(map((r) => r.data));
+    return this.http.post<{ data: Categoria }>(urlApi(`/categorias`), payload).pipe(map((r) => r.data));
   }
 
   actualizar(id: number, payload: CategoriaFormPayload): Observable<Categoria> {
-    return this.http.put<{ data: Categoria }>(`${API_BASE_URL}/api/categorias/${id}`, payload).pipe(map((r) => r.data));
+    return this.http.put<{ data: Categoria }>(urlApi(`/categorias/${id}`), payload).pipe(map((r) => r.data));
   }
 
   desactivar(id: number): Observable<Categoria> {
     return this.http
-      .patch<{ data: Categoria }>(`${API_BASE_URL}/api/categorias/${id}/desactivar`, {})
+      .patch<{ data: Categoria }>(urlApi(`/categorias/${id}/desactivar`), {})
       .pipe(map((r) => r.data));
   }
 }

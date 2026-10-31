@@ -3,7 +3,7 @@ import { Injectable, inject } from '@angular/core';
 import { DataTableLazyEvent } from '@nucleo/ui-shared';
 import { Observable, map } from 'rxjs';
 
-import { API_BASE_URL } from '../../core/api-config';
+import { urlApi } from '../../core/api-config';
 import { CuentaCobrar, EstadoCuentaCobrar, RegistrarAbonoPayload, ReporteCuentasCobrar } from './cuenta-cobrar.types';
 
 export interface CuentasCobrarPagina {
@@ -49,25 +49,25 @@ export class CuentaCobrarService {
     }
 
     return this.http
-      .get<{ data: CuentaCobrar[]; meta: { total: number } }>(`${API_BASE_URL}/api/cuentas-cobrar`, { params })
+      .get<{ data: CuentaCobrar[]; meta: { total: number } }>(urlApi(`/cuentas-cobrar`), { params })
       .pipe(map((r) => ({ data: r.data, total: r.meta.total })));
   }
 
   obtener(id: number): Observable<CuentaCobrar> {
-    return this.http.get<{ data: CuentaCobrar }>(`${API_BASE_URL}/api/cuentas-cobrar/${id}`).pipe(map((r) => r.data));
+    return this.http.get<{ data: CuentaCobrar }>(urlApi(`/cuentas-cobrar/${id}`)).pipe(map((r) => r.data));
   }
 
   registrarAbono(id: number, payload: RegistrarAbonoPayload): Observable<RegistrarAbonoRespuesta> {
     return this.http
       .post<{ data: { cuenta: { saldo_pendiente: string; estado: EstadoCuentaCobrar } } }>(
-        `${API_BASE_URL}/api/cuentas-cobrar/${id}/abonos`,
+        urlApi(`/cuentas-cobrar/${id}/abonos`),
         payload,
       )
       .pipe(map((r) => ({ saldoPendiente: r.data.cuenta.saldo_pendiente, estado: r.data.cuenta.estado })));
   }
 
   anular(id: number): Observable<void> {
-    return this.http.post<void>(`${API_BASE_URL}/api/cuentas-cobrar/${id}/anular`, {});
+    return this.http.post<void>(urlApi(`/cuentas-cobrar/${id}/anular`), {});
   }
 
   /** limite: top-N clientes por saldo pendiente en `por_cliente` (backend acepta 1-50, default 10). */
@@ -75,7 +75,7 @@ export class CuentaCobrarService {
     const params = new HttpParams().set('limite', limite);
 
     return this.http
-      .get<{ data: ReporteCuentasCobrar }>(`${API_BASE_URL}/api/cuentas-cobrar/reporte`, { params })
+      .get<{ data: ReporteCuentasCobrar }>(urlApi(`/cuentas-cobrar/reporte`), { params })
       .pipe(map((r) => r.data));
   }
 }

@@ -3,7 +3,7 @@ import { Injectable, inject } from '@angular/core';
 import { DataTableLazyEvent } from '@nucleo/ui-shared';
 import { Observable, map } from 'rxjs';
 
-import { API_BASE_URL } from '../../core/api-config';
+import { urlApi } from '../../core/api-config';
 import { Cupon, CuponesPagina, CuponesPermisos } from './cupon.types';
 
 export interface CuponFormPayload {
@@ -34,26 +34,26 @@ export class CuponService {
     }
 
     return this.http
-      .get<{ data: Cupon[]; meta: { total: number; permisos: CuponesPermisos } }>(`${API_BASE_URL}/api/cupones`, { params })
+      .get<{ data: Cupon[]; meta: { total: number; permisos: CuponesPermisos } }>(urlApi(`/cupones`), { params })
       .pipe(map((r) => ({ data: r.data, total: r.meta.total, permisos: r.meta.permisos })));
   }
 
   /** Mismo contrato que ClienteService.obtener() -- permisos sin 'crear' (show() no lo necesita). */
   obtener(id: number): Observable<{ cupon: Cupon; permisos: Omit<CuponesPermisos, 'crear'> }> {
     return this.http
-      .get<{ data: Cupon; meta: { permisos: Omit<CuponesPermisos, 'crear'> } }>(`${API_BASE_URL}/api/cupones/${id}`)
+      .get<{ data: Cupon; meta: { permisos: Omit<CuponesPermisos, 'crear'> } }>(urlApi(`/cupones/${id}`))
       .pipe(map((r) => ({ cupon: r.data, permisos: r.meta.permisos })));
   }
 
   crear(payload: CuponFormPayload): Observable<Cupon> {
-    return this.http.post<{ data: Cupon }>(`${API_BASE_URL}/api/cupones`, payload).pipe(map((r) => r.data));
+    return this.http.post<{ data: Cupon }>(urlApi(`/cupones`), payload).pipe(map((r) => r.data));
   }
 
   actualizar(id: number, payload: CuponFormPayload): Observable<Cupon> {
-    return this.http.put<{ data: Cupon }>(`${API_BASE_URL}/api/cupones/${id}`, payload).pipe(map((r) => r.data));
+    return this.http.put<{ data: Cupon }>(urlApi(`/cupones/${id}`), payload).pipe(map((r) => r.data));
   }
 
   desactivar(id: number): Observable<Cupon> {
-    return this.http.patch<{ data: Cupon }>(`${API_BASE_URL}/api/cupones/${id}/desactivar`, {}).pipe(map((r) => r.data));
+    return this.http.patch<{ data: Cupon }>(urlApi(`/cupones/${id}/desactivar`), {}).pipe(map((r) => r.data));
   }
 }

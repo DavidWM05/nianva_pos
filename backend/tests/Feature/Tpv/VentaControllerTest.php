@@ -92,7 +92,7 @@ class VentaControllerTest extends TestCase
 
         $this->actingAs($ctx['usuario']);
 
-        $respuesta = $this->postJson('/api/ventas', [
+        $respuesta = $this->postJson('/api/v1/ventas', [
             'cliente_id' => $ctx['cliente']->id,
             'items' => [
                 ['variante_id' => $ctx['varianteA']->id, 'cantidad' => 2],
@@ -116,7 +116,7 @@ class VentaControllerTest extends TestCase
         $ctx = $this->prepararTenantConCatalogo();
         $this->actingAs($ctx['usuario']);
 
-        $respuesta = $this->postJson('/api/ventas', [
+        $respuesta = $this->postJson('/api/v1/ventas', [
             'cliente_id' => $ctx['cliente']->id,
             'items' => [['variante_id' => $ctx['varianteA']->id, 'cantidad' => 1]],
             'pagos' => [['metodo_pago_id' => $ctx['efectivo']->id, 'monto' => 100]],
@@ -132,7 +132,7 @@ class VentaControllerTest extends TestCase
         app(CajaService::class)->abrirCaja($ctx['sucursal']->id, $ctx['usuario']->id, 500);
         $this->actingAs($ctx['usuario']);
 
-        $respuesta = $this->postJson('/api/ventas', [
+        $respuesta = $this->postJson('/api/v1/ventas', [
             'cliente_id' => $ctx['cliente']->id,
             'items' => [['variante_id' => $ctx['varianteA']->id, 'cantidad' => 1]],
             'pagos' => [['metodo_pago_id' => $ctx['efectivo']->id, 'monto' => 50]],
@@ -148,7 +148,7 @@ class VentaControllerTest extends TestCase
         app(CajaService::class)->abrirCaja($ctx['sucursal']->id, $ctx['usuario']->id, 500);
         $this->actingAs($ctx['usuario']);
 
-        $respuesta = $this->postJson('/api/ventas', [
+        $respuesta = $this->postJson('/api/v1/ventas', [
             'cliente_id' => $ctx['cliente']->id,
             'items' => [['variante_id' => $ctx['varianteA']->id, 'cantidad' => 999]],
             'pagos' => [['metodo_pago_id' => $ctx['efectivo']->id, 'monto' => 99900]],
@@ -163,7 +163,7 @@ class VentaControllerTest extends TestCase
         app(CajaService::class)->abrirCaja($ctx['sucursal']->id, $ctx['usuario']->id, 500);
         $this->actingAs($ctx['usuario']);
 
-        $respuesta = $this->postJson('/api/ventas', [
+        $respuesta = $this->postJson('/api/v1/ventas', [
             'cliente_id' => $ctx['cliente']->id,
             'items' => [['variante_id' => $ctx['varianteA']->id, 'cantidad' => 1]],
             'pagos' => [['metodo_pago_id' => $ctx['efectivo']->id, 'monto' => 100]],
@@ -180,7 +180,7 @@ class VentaControllerTest extends TestCase
         app(CajaService::class)->abrirCaja($ctx['sucursal']->id, $ctx['usuario']->id, 500);
         $this->actingAs($ctx['usuario']);
 
-        $respuesta = $this->postJson('/api/ventas', [
+        $respuesta = $this->postJson('/api/v1/ventas', [
             'cliente_id' => $ctx['cliente']->id,
             'items' => [['variante_id' => $ctx['varianteA']->id, 'cantidad' => 1]],
             'pagos' => [['metodo_pago_id' => $ctx['efectivo']->id, 'monto' => 100]],
@@ -195,7 +195,7 @@ class VentaControllerTest extends TestCase
         app(CajaService::class)->abrirCaja($ctx['sucursal']->id, $ctx['usuario']->id, 500);
         $this->actingAs($ctx['usuario']);
 
-        $this->postJson('/api/ventas', [
+        $this->postJson('/api/v1/ventas', [
             'cliente_id' => $ctx['cliente']->id,
             'items' => [['variante_id' => $ctx['varianteA']->id, 'cantidad' => 1]],
             'pagos' => [
@@ -204,7 +204,7 @@ class VentaControllerTest extends TestCase
             ],
         ])->assertCreated();
 
-        $respuesta = $this->getJson('/api/ventas');
+        $respuesta = $this->getJson('/api/v1/ventas');
 
         $respuesta->assertOk()
             ->assertJsonCount(1, 'data')
@@ -219,13 +219,13 @@ class VentaControllerTest extends TestCase
         app(CajaService::class)->abrirCaja($ctx['sucursal']->id, $ctx['usuario']->id, 500);
         $this->actingAs($ctx['usuario']);
 
-        $creada = $this->postJson('/api/ventas', [
+        $creada = $this->postJson('/api/v1/ventas', [
             'cliente_id' => $ctx['cliente']->id,
             'items' => [['variante_id' => $ctx['varianteA']->id, 'cantidad' => 1]],
             'pagos' => [['metodo_pago_id' => $ctx['efectivo']->id, 'monto' => 100]],
         ])->json('data');
 
-        $respuesta = $this->getJson("/api/ventas/{$creada['id']}");
+        $respuesta = $this->getJson("/api/v1/ventas/{$creada['id']}");
 
         $respuesta->assertOk()
             ->assertJsonCount(1, 'data.detalles')
@@ -238,16 +238,16 @@ class VentaControllerTest extends TestCase
         app(CajaService::class)->abrirCaja($ctx['sucursal']->id, $ctx['usuario']->id, 500);
         $this->actingAs($ctx['usuario']);
 
-        $creada = $this->postJson('/api/ventas', [
+        $creada = $this->postJson('/api/v1/ventas', [
             'cliente_id' => $ctx['cliente']->id,
             'items' => [['variante_id' => $ctx['varianteA']->id, 'cantidad' => 1]],
             'pagos' => [['metodo_pago_id' => $ctx['efectivo']->id, 'monto' => 100]],
         ])->json('data');
 
-        $this->patchJson("/api/ventas/{$creada['id']}/anular", [])
+        $this->patchJson("/api/v1/ventas/{$creada['id']}/anular", [])
             ->assertStatus(422);
 
-        $respuesta = $this->patchJson("/api/ventas/{$creada['id']}/anular", ['motivo' => 'Cliente se arrepintio']);
+        $respuesta = $this->patchJson("/api/v1/ventas/{$creada['id']}/anular", ['motivo' => 'Cliente se arrepintio']);
 
         $respuesta->assertOk()
             ->assertJsonPath('data.estado', 'anulada')
@@ -260,13 +260,13 @@ class VentaControllerTest extends TestCase
         app(CajaService::class)->abrirCaja($ctx['sucursal']->id, $ctx['usuario']->id, 500);
         $this->actingAs($ctx['usuario']);
 
-        $creada = $this->postJson('/api/ventas', [
+        $creada = $this->postJson('/api/v1/ventas', [
             'cliente_id' => $ctx['cliente']->id,
             'items' => [['variante_id' => $ctx['varianteA']->id, 'cantidad' => 1]],
             'pagos' => [['metodo_pago_id' => $ctx['efectivo']->id, 'monto' => 100]],
         ])->json('data');
 
-        $this->patchJson("/api/ventas/{$creada['id']}/anular", ['motivo' => 'x'])->assertForbidden();
+        $this->patchJson("/api/v1/ventas/{$creada['id']}/anular", ['motivo' => 'x'])->assertForbidden();
     }
 
     public function test_cotizar_resuelve_precio_con_regla_sin_registrar_nada(): void
@@ -278,7 +278,7 @@ class VentaControllerTest extends TestCase
         ]);
         $this->actingAs($ctx['usuario']);
 
-        $respuesta = $this->postJson('/api/ventas/cotizar', [
+        $respuesta = $this->postJson('/api/v1/ventas/cotizar', [
             'items' => [['variante_id' => $ctx['varianteA']->id, 'cantidad' => 2]],
         ]);
 

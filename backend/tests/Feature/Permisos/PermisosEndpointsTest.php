@@ -38,10 +38,10 @@ class PermisosEndpointsTest extends TestCase
     public function test_unidades_index_exige_inventario_ver(): void
     {
         $this->actingAs($this->usuario);
-        $this->getJson('/api/unidades-medida')->assertForbidden();
+        $this->getJson('/api/v1/unidades-medida')->assertForbidden();
 
         $this->conPermiso('inventario.ver');
-        $this->getJson('/api/unidades-medida')->assertOk();
+        $this->getJson('/api/v1/unidades-medida')->assertOk();
     }
 
     public function test_unidades_store_exige_inventario_crear(): void
@@ -53,10 +53,10 @@ class PermisosEndpointsTest extends TestCase
         ];
 
         $this->actingAs($this->usuario);
-        $this->postJson('/api/unidades-medida', $payload)->assertForbidden();
+        $this->postJson('/api/v1/unidades-medida', $payload)->assertForbidden();
 
         $this->conPermiso('inventario.crear');
-        $this->postJson('/api/unidades-medida', $payload)->assertCreated();
+        $this->postJson('/api/v1/unidades-medida', $payload)->assertCreated();
     }
 
     public function test_unidades_update_exige_inventario_editar(): void
@@ -64,10 +64,10 @@ class PermisosEndpointsTest extends TestCase
         $unidad = $this->unidad('ed');
 
         $this->actingAs($this->usuario);
-        $this->putJson("/api/unidades-medida/{$unidad->id}", ['nombre' => 'Editada'])->assertForbidden();
+        $this->putJson("/api/v1/unidades-medida/{$unidad->id}", ['nombre' => 'Editada'])->assertForbidden();
 
         $this->conPermiso('inventario.editar');
-        $this->putJson("/api/unidades-medida/{$unidad->id}", ['nombre' => 'Editada'])->assertOk();
+        $this->putJson("/api/v1/unidades-medida/{$unidad->id}", ['nombre' => 'Editada'])->assertOk();
     }
 
     public function test_unidades_destroy_exige_inventario_eliminar(): void
@@ -75,19 +75,19 @@ class PermisosEndpointsTest extends TestCase
         $unidad = $this->unidad('el');
 
         $this->actingAs($this->usuario);
-        $this->deleteJson("/api/unidades-medida/{$unidad->id}")->assertForbidden();
+        $this->deleteJson("/api/v1/unidades-medida/{$unidad->id}")->assertForbidden();
 
         $this->conPermiso('inventario.eliminar');
-        $this->deleteJson("/api/unidades-medida/{$unidad->id}")->assertOk();
+        $this->deleteJson("/api/v1/unidades-medida/{$unidad->id}")->assertOk();
     }
 
     public function test_auditoria_index_exige_auditoria_ver(): void
     {
         $this->actingAs($this->usuario);
-        $this->getJson('/api/auditoria?tabla=clientes&registro_id=1')->assertForbidden();
+        $this->getJson('/api/v1/auditoria?tabla=clientes&registro_id=1')->assertForbidden();
 
         $this->conPermiso('auditoria.ver');
-        $this->getJson('/api/auditoria?tabla=clientes&registro_id=1')->assertOk();
+        $this->getJson('/api/v1/auditoria?tabla=clientes&registro_id=1')->assertOk();
     }
 
     public function test_cuentas_pagar_anular_exige_cuentas_pagar_anular(): void
@@ -103,9 +103,9 @@ class PermisosEndpointsTest extends TestCase
         ]);
 
         $this->actingAs($this->usuario);
-        $this->postJson("/api/cuentas-pagar/{$cuenta->id}/anular")->assertForbidden();
+        $this->postJson("/api/v1/cuentas-pagar/{$cuenta->id}/anular")->assertForbidden();
 
         $this->conPermiso('cuentas_pagar.anular');
-        $this->postJson("/api/cuentas-pagar/{$cuenta->id}/anular")->assertOk();
+        $this->postJson("/api/v1/cuentas-pagar/{$cuenta->id}/anular")->assertOk();
     }
 }

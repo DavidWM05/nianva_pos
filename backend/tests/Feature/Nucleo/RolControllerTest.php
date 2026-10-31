@@ -50,7 +50,7 @@ class RolControllerTest extends TestCase
         ['usuario' => $usuario] = $this->crearUsuarioConPermisos([]);
         $this->actingAs($usuario);
 
-        $this->getJson('/api/roles')->assertForbidden();
+        $this->getJson('/api/v1/roles')->assertForbidden();
     }
 
     public function test_crear_rol_con_permisos(): void
@@ -60,7 +60,7 @@ class RolControllerTest extends TestCase
 
         $this->actingAs($usuario);
 
-        $respuesta = $this->postJson('/api/roles', [
+        $respuesta = $this->postJson('/api/v1/roles', [
             'nombre' => 'Cajero', 'descripcion' => 'Solo caja y ventas', 'permisos' => [$permiso->id],
         ]);
 
@@ -75,7 +75,7 @@ class RolControllerTest extends TestCase
         ['usuario' => $usuario] = $this->crearUsuarioConPermisos(['roles.crear']);
         $this->actingAs($usuario);
 
-        $this->postJson('/api/roles', ['nombre' => 'Cajero', 'permisos' => [999999]])
+        $this->postJson('/api/v1/roles', ['nombre' => 'Cajero', 'permisos' => [999999]])
             ->assertUnprocessable()
             ->assertJsonValidationErrors('permisos.0');
     }
@@ -87,7 +87,7 @@ class RolControllerTest extends TestCase
 
         $this->actingAs($usuario);
 
-        $this->putJson("/api/roles/{$rolSistema->id}", ['nombre' => 'admin modificado'])->assertForbidden();
+        $this->putJson("/api/v1/roles/{$rolSistema->id}", ['nombre' => 'admin modificado'])->assertForbidden();
     }
 
     public function test_editar_un_rol_de_sistema_funciona_para_un_superadmin(): void
@@ -102,7 +102,7 @@ class RolControllerTest extends TestCase
 
         $this->actingAs($superadmin);
 
-        $this->putJson("/api/roles/{$rolSistema->id}", ['nombre' => 'admin'])->assertOk();
+        $this->putJson("/api/v1/roles/{$rolSistema->id}", ['nombre' => 'admin'])->assertOk();
     }
 
     public function test_eliminar_un_rol_con_usuarios_asignados_esta_prohibido(): void
@@ -113,7 +113,7 @@ class RolControllerTest extends TestCase
 
         $this->actingAs($usuario);
 
-        $this->deleteJson("/api/roles/{$rol->id}")->assertStatus(422);
+        $this->deleteJson("/api/v1/roles/{$rol->id}")->assertStatus(422);
         $this->assertDatabaseHas('roles', ['id' => $rol->id]);
     }
 
@@ -124,7 +124,7 @@ class RolControllerTest extends TestCase
 
         $this->actingAs($usuario);
 
-        $this->deleteJson("/api/roles/{$rol->id}")->assertOk();
+        $this->deleteJson("/api/v1/roles/{$rol->id}")->assertOk();
         $this->assertDatabaseMissing('roles', ['id' => $rol->id]);
     }
 
@@ -135,7 +135,7 @@ class RolControllerTest extends TestCase
 
         $this->actingAs($usuario);
 
-        $this->deleteJson("/api/roles/{$rolSistema->id}")->assertForbidden();
+        $this->deleteJson("/api/v1/roles/{$rolSistema->id}")->assertForbidden();
         $this->assertDatabaseHas('roles', ['id' => $rolSistema->id]);
     }
 }

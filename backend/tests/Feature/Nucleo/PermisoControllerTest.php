@@ -45,7 +45,7 @@ class PermisoControllerTest extends TestCase
         $usuario = $this->crearUsuarioConPermisos([]);
         $this->actingAs($usuario);
 
-        $this->getJson('/api/permisos')->assertForbidden();
+        $this->getJson('/api/v1/permisos')->assertForbidden();
     }
 
     public function test_index_devuelve_el_catalogo_ordenado_por_modulo_y_accion(): void
@@ -56,7 +56,7 @@ class PermisoControllerTest extends TestCase
 
         $this->actingAs($usuario);
 
-        $respuesta = $this->getJson('/api/permisos');
+        $respuesta = $this->getJson('/api/v1/permisos');
 
         $respuesta->assertOk();
         // roles.ver (creado arriba) + los dos de clientes -- ordenados por

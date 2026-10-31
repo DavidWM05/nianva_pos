@@ -55,7 +55,7 @@ class ProveedorControllerTest extends TestCase
 
         $this->actingAs($usuario);
 
-        $respuesta = $this->getJson('/api/proveedores');
+        $respuesta = $this->getJson('/api/v1/proveedores');
 
         $respuesta->assertOk()->assertJsonCount(2, 'data');
         $respuesta->assertJsonPath('data.0.razon_social', 'Algodones MX');
@@ -66,14 +66,14 @@ class ProveedorControllerTest extends TestCase
     {
         ['usuario' => $sinPermiso] = $this->crearUsuarioConPermisos(['inventario.ver']);
         $this->actingAs($sinPermiso);
-        $this->postJson('/api/proveedores', ['razon_social' => 'Nuevo'])->assertForbidden();
+        $this->postJson('/api/v1/proveedores', ['razon_social' => 'Nuevo'])->assertForbidden();
 
         ['usuario' => $conPermiso] = $this->crearUsuarioConPermisos(['inventario.crear']);
         $this->actingAs($conPermiso);
 
-        $this->postJson('/api/proveedores', [])->assertUnprocessable()->assertJsonValidationErrors('razon_social');
+        $this->postJson('/api/v1/proveedores', [])->assertUnprocessable()->assertJsonValidationErrors('razon_social');
 
-        $this->postJson('/api/proveedores', ['razon_social' => 'Textiles del Norte'])
+        $this->postJson('/api/v1/proveedores', ['razon_social' => 'Textiles del Norte'])
             ->assertCreated()
             ->assertJsonPath('data.razon_social', 'Textiles del Norte');
     }

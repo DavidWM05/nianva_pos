@@ -105,7 +105,7 @@ class EntradasTipadasDtoTest extends TestCase
      */
     private function validar(string $clase, array $payload): SolicitudNegocio
     {
-        $request = $clase::create('/api/test', 'POST', $payload);
+        $request = $clase::create('/api/v1/test', 'POST', $payload);
         $request->setContainer(app());
         $request->setRedirector(app('redirect'));
         $request->setUserResolver(fn () => $this->usuario);

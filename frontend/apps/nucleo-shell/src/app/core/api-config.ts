@@ -1,8 +1,35 @@
+let baseApiUrl = '';
+
 /**
- * URL base del backend Laravel. Hardcodeada a la instancia de desarrollo
- * local por ahora -- este proyecto todavia no tiene un sistema de
- * environments (Angular ya no lo genera por defecto en apps nuevas).
- * Antes de un deploy real, esto debe moverse a un archivo de environment
- * por configuracion (development/production) con fileReplacements.
+ * Fija la base del backend una sola vez al arrancar. `config.json` puede
+ * traer una URL absoluta en desarrollo o una cadena vacia para usar el
+ * mismo origen (escritorio/LAN, donde Laravel sirve la SPA).
  */
-export const API_BASE_URL = 'http://localhost:8000';
+export function configurarBaseApi(base: string): void {
+  baseApiUrl = base.trim().replace(/\/+$/, '');
+}
+
+export function urlApi(ruta: string): string {
+  return `${baseApiUrl}/api/v1${ruta}`;
+}
+
+export function urlSesion(ruta: string): string {
+  return `${baseApiUrl}${ruta}`;
+}
+
+/**
+ * True solo para URLs de nuestro backend. Con base vacia, nuestro backend
+ * es el mismo origen, asi que solo se aceptan URLs relativas a la raiz
+ * (`//host/...` es relativa al protocolo y apunta a otro origen).
+ */
+export function esUrlBackend(url: string): boolean {
+  if (baseApiUrl === '') {
+    return url.startsWith('/') && !url.startsWith('//');
+  }
+
+  return url === baseApiUrl || url.startsWith(`${baseApiUrl}/`);
+}
+
+export function baseApiActual(): string {
+  return baseApiUrl;
+}

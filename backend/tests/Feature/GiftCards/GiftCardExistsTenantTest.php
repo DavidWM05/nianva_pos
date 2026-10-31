@@ -21,7 +21,7 @@ class GiftCardExistsTenantTest extends TestCase
     {
         $this->actingAs($this->usuario);
 
-        $this->postJson('/api/gift-cards', [
+        $this->postJson('/api/v1/gift-cards', [
             'cliente_id' => $this->clienteB->id,
             'monto' => 100,
         ])->assertStatus(422)->assertJsonValidationErrors(['cliente_id']);

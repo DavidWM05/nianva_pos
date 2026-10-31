@@ -3,7 +3,7 @@ import { Injectable, inject } from '@angular/core';
 import { DataTableLazyEvent } from '@nucleo/ui-shared';
 import { Observable, map } from 'rxjs';
 
-import { API_BASE_URL } from '../../core/api-config';
+import { urlApi } from '../../core/api-config';
 import { Departamento, DepartamentosPagina, DepartamentosPermisos } from './departamento.types';
 
 export interface DepartamentoFormPayload {
@@ -30,7 +30,7 @@ export class DepartamentoService {
 
     return this.http
       .get<{ data: Departamento[]; meta: { total: number; permisos: DepartamentosPermisos } }>(
-        `${API_BASE_URL}/api/departamentos`,
+        urlApi(`/departamentos`),
         { params },
       )
       .pipe(map((r) => ({ data: r.data, total: r.meta.total, permisos: r.meta.permisos })));
@@ -38,23 +38,23 @@ export class DepartamentoService {
 
   obtener(id: number): Observable<{ departamento: Departamento; permisos: DepartamentosPermisos }> {
     return this.http
-      .get<{ data: Departamento; meta: { permisos: DepartamentosPermisos } }>(`${API_BASE_URL}/api/departamentos/${id}`)
+      .get<{ data: Departamento; meta: { permisos: DepartamentosPermisos } }>(urlApi(`/departamentos/${id}`))
       .pipe(map((r) => ({ departamento: r.data, permisos: r.meta.permisos })));
   }
 
   crear(payload: DepartamentoFormPayload): Observable<Departamento> {
-    return this.http.post<{ data: Departamento }>(`${API_BASE_URL}/api/departamentos`, payload).pipe(map((r) => r.data));
+    return this.http.post<{ data: Departamento }>(urlApi(`/departamentos`), payload).pipe(map((r) => r.data));
   }
 
   actualizar(id: number, payload: DepartamentoFormPayload): Observable<Departamento> {
     return this.http
-      .put<{ data: Departamento }>(`${API_BASE_URL}/api/departamentos/${id}`, payload)
+      .put<{ data: Departamento }>(urlApi(`/departamentos/${id}`), payload)
       .pipe(map((r) => r.data));
   }
 
   desactivar(id: number): Observable<Departamento> {
     return this.http
-      .patch<{ data: Departamento }>(`${API_BASE_URL}/api/departamentos/${id}/desactivar`, {})
+      .patch<{ data: Departamento }>(urlApi(`/departamentos/${id}/desactivar`), {})
       .pipe(map((r) => r.data));
   }
 }

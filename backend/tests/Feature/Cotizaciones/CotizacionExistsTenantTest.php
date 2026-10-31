@@ -21,7 +21,7 @@ class CotizacionExistsTenantTest extends TestCase
     {
         $this->actingAs($this->usuario);
 
-        $this->postJson('/api/cotizaciones', [
+        $this->postJson('/api/v1/cotizaciones', [
             'sucursal_id' => $this->sucursal->id,
             'cliente_id' => $this->clienteB->id,
             'items' => [['variante_id' => $this->variante->id, 'cantidad' => 1, 'precio_unitario' => 100]],
@@ -32,7 +32,7 @@ class CotizacionExistsTenantTest extends TestCase
     {
         $this->actingAs($this->usuario);
 
-        $this->postJson('/api/cotizaciones', [
+        $this->postJson('/api/v1/cotizaciones', [
             'sucursal_id' => $this->sucursalB->id,
             'cliente_id' => $this->cliente->id,
             'items' => [['variante_id' => $this->variante->id, 'cantidad' => 1, 'precio_unitario' => 100]],
@@ -44,7 +44,7 @@ class CotizacionExistsTenantTest extends TestCase
         $id = $this->crearCotizacion();
         $this->actingAs($this->usuario);
 
-        $this->putJson("/api/cotizaciones/{$id}", [
+        $this->putJson("/api/v1/cotizaciones/{$id}", [
             'cliente_id' => $this->clienteB->id,
             'items' => [['variante_id' => $this->variante->id, 'cantidad' => 1, 'precio_unitario' => 100]],
         ])->assertStatus(422)->assertJsonValidationErrors(['cliente_id']);
@@ -55,7 +55,7 @@ class CotizacionExistsTenantTest extends TestCase
         $id = $this->crearCotizacion();
         $this->actingAs($this->usuario);
 
-        $this->postJson("/api/cotizaciones/{$id}/convertir", [
+        $this->postJson("/api/v1/cotizaciones/{$id}/convertir", [
             'metodo_pago_id' => $this->metodoPagoB->id,
         ])->assertStatus(422)->assertJsonValidationErrors(['metodo_pago_id']);
     }
@@ -65,7 +65,7 @@ class CotizacionExistsTenantTest extends TestCase
         $id = $this->crearCotizacion();
         $this->actingAs($this->usuario);
 
-        $this->postJson("/api/cotizaciones/{$id}/convertir", [
+        $this->postJson("/api/v1/cotizaciones/{$id}/convertir", [
             'metodo_pago_id' => $this->metodoPagoGlobal->id,
         ])->assertOk();
     }

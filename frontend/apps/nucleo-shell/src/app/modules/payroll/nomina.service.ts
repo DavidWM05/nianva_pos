@@ -3,7 +3,7 @@ import { Injectable, inject } from '@angular/core';
 import { DataTableLazyEvent } from '@nucleo/ui-shared';
 import { Observable, map } from 'rxjs';
 
-import { API_BASE_URL } from '../../core/api-config';
+import { urlApi } from '../../core/api-config';
 import { GenerarNominaPayload, Nomina } from './nomina.types';
 
 export interface NominasPermisos {
@@ -31,19 +31,19 @@ export class NominaService {
     }
 
     return this.http
-      .get<{ data: Nomina[]; meta: { total: number; permisos: NominasPermisos } }>(`${API_BASE_URL}/api/nominas`, { params })
+      .get<{ data: Nomina[]; meta: { total: number; permisos: NominasPermisos } }>(urlApi(`/nominas`), { params })
       .pipe(map((r) => ({ data: r.data, total: r.meta.total, permisos: r.meta.permisos })));
   }
 
   obtener(id: number): Observable<Nomina> {
-    return this.http.get<{ data: Nomina }>(`${API_BASE_URL}/api/nominas/${id}`).pipe(map((r) => r.data));
+    return this.http.get<{ data: Nomina }>(urlApi(`/nominas/${id}`)).pipe(map((r) => r.data));
   }
 
   generar(payload: GenerarNominaPayload): Observable<Nomina> {
-    return this.http.post<{ data: Nomina }>(`${API_BASE_URL}/api/nominas/generar`, payload).pipe(map((r) => r.data));
+    return this.http.post<{ data: Nomina }>(urlApi(`/nominas/generar`), payload).pipe(map((r) => r.data));
   }
 
   pagar(id: number): Observable<Nomina> {
-    return this.http.patch<{ data: Nomina }>(`${API_BASE_URL}/api/nominas/${id}/pagar`, {}).pipe(map((r) => r.data));
+    return this.http.patch<{ data: Nomina }>(urlApi(`/nominas/${id}/pagar`), {}).pipe(map((r) => r.data));
   }
 }

@@ -29,7 +29,7 @@ class UnidadMedidaEdicionParcialTest extends TestCase
         ]);
         $this->actingAs($this->usuario);
 
-        $this->putJson("/api/unidades-medida/{$unidad->id}", ['nombre' => 'Gramo'])
+        $this->putJson("/api/v1/unidades-medida/{$unidad->id}", ['nombre' => 'Gramo'])
             ->assertOk();
 
         $unidad->refresh();

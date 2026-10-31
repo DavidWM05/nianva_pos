@@ -54,7 +54,7 @@ class CategoriaControllerTest extends TestCase
 
         $this->actingAs($usuario);
 
-        $respuesta = $this->getJson('/api/categorias?solo_activos=1');
+        $respuesta = $this->getJson('/api/v1/categorias?solo_activos=1');
 
         $respuesta->assertOk()->assertJsonCount(1, 'data')->assertJsonPath('data.0.nombre', 'Playeras');
         $respuesta->assertJsonMissingPath('meta');
@@ -68,7 +68,7 @@ class CategoriaControllerTest extends TestCase
 
         $this->actingAs($usuario);
 
-        $respuesta = $this->getJson('/api/categorias?filtro_nombre=play');
+        $respuesta = $this->getJson('/api/v1/categorias?filtro_nombre=play');
 
         $respuesta->assertOk()
             ->assertJsonCount(1, 'data')
@@ -82,7 +82,7 @@ class CategoriaControllerTest extends TestCase
         ['usuario' => $usuario] = $this->crearUsuarioConPermisos([]);
         $this->actingAs($usuario);
 
-        $this->getJson('/api/categorias')->assertForbidden();
+        $this->getJson('/api/v1/categorias')->assertForbidden();
     }
 
     public function test_crear_categoria(): void
@@ -90,7 +90,7 @@ class CategoriaControllerTest extends TestCase
         ['usuario' => $usuario] = $this->crearUsuarioConPermisos(['inventario.crear']);
         $this->actingAs($usuario);
 
-        $this->postJson('/api/categorias', ['nombre' => 'Accesorios', 'descripcion' => 'Cinturones, gorras, etc.'])
+        $this->postJson('/api/v1/categorias', ['nombre' => 'Accesorios', 'descripcion' => 'Cinturones, gorras, etc.'])
             ->assertCreated()
             ->assertJsonPath('data.nombre', 'Accesorios')
             ->assertJsonPath('data.activo', true);
@@ -101,7 +101,7 @@ class CategoriaControllerTest extends TestCase
         ['usuario' => $usuario] = $this->crearUsuarioConPermisos(['inventario.crear']);
         $this->actingAs($usuario);
 
-        $this->postJson('/api/categorias', ['nombre' => ''])
+        $this->postJson('/api/v1/categorias', ['nombre' => ''])
             ->assertUnprocessable()
             ->assertJsonValidationErrors('nombre');
     }
@@ -113,7 +113,7 @@ class CategoriaControllerTest extends TestCase
 
         $this->actingAs($usuario);
 
-        $this->putJson("/api/categorias/{$categoria->id}", ['nombre' => 'Playeras y Blusas'])
+        $this->putJson("/api/v1/categorias/{$categoria->id}", ['nombre' => 'Playeras y Blusas'])
             ->assertOk()
             ->assertJsonPath('data.nombre', 'Playeras y Blusas');
     }
@@ -125,7 +125,7 @@ class CategoriaControllerTest extends TestCase
 
         $this->actingAs($usuario);
 
-        $this->patchJson("/api/categorias/{$categoria->id}/desactivar")
+        $this->patchJson("/api/v1/categorias/{$categoria->id}/desactivar")
             ->assertOk()
             ->assertJsonPath('data.activo', false);
 

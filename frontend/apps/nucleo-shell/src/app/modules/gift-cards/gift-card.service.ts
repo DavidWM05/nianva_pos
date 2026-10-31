@@ -3,7 +3,7 @@ import { Injectable, inject } from '@angular/core';
 import { DataTableLazyEvent } from '@nucleo/ui-shared';
 import { Observable, map } from 'rxjs';
 
-import { API_BASE_URL } from '../../core/api-config';
+import { urlApi } from '../../core/api-config';
 import { EstadoGiftCard, GiftCard, GiftCardEmitirPayload } from './gift-card.types';
 
 export interface GiftCardsPagina {
@@ -48,25 +48,25 @@ export class GiftCardService {
     }
 
     return this.http
-      .get<{ data: GiftCard[]; meta: { total: number } }>(`${API_BASE_URL}/api/gift-cards`, { params })
+      .get<{ data: GiftCard[]; meta: { total: number } }>(urlApi(`/gift-cards`), { params })
       .pipe(map((r) => ({ data: r.data, total: r.meta.total })));
   }
 
   obtener(id: number): Observable<GiftCard> {
-    return this.http.get<{ data: GiftCard }>(`${API_BASE_URL}/api/gift-cards/${id}`).pipe(map((r) => r.data));
+    return this.http.get<{ data: GiftCard }>(urlApi(`/gift-cards/${id}`)).pipe(map((r) => r.data));
   }
 
   emitir(payload: GiftCardEmitirPayload): Observable<GiftCard> {
-    return this.http.post<{ data: GiftCard }>(`${API_BASE_URL}/api/gift-cards`, payload).pipe(map((r) => r.data));
+    return this.http.post<{ data: GiftCard }>(urlApi(`/gift-cards`), payload).pipe(map((r) => r.data));
   }
 
   recargar(id: number, monto: number): Observable<GiftCard> {
     return this.http
-      .post<{ data: GiftCard }>(`${API_BASE_URL}/api/gift-cards/${id}/recargar`, { monto })
+      .post<{ data: GiftCard }>(urlApi(`/gift-cards/${id}/recargar`), { monto })
       .pipe(map((r) => r.data));
   }
 
   cancelar(id: number): Observable<void> {
-    return this.http.post<void>(`${API_BASE_URL}/api/gift-cards/${id}/cancelar`, {});
+    return this.http.post<void>(urlApi(`/gift-cards/${id}/cancelar`), {});
   }
 }

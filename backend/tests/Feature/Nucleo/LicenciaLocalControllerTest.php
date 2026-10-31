@@ -40,7 +40,7 @@ class LicenciaLocalControllerTest extends TestCase
 
         $this->actingAs($usuario);
 
-        $this->getJson('/api/licencia-local')
+        $this->getJson('/api/v1/licencia-local')
             ->assertOk()
             ->assertJsonPath('data.estado', 'activa')
             ->assertJsonPath('data.tipo', 'saas')
@@ -61,7 +61,7 @@ class LicenciaLocalControllerTest extends TestCase
 
         $this->actingAs($usuario);
 
-        $this->getJson('/api/licencia-local')
+        $this->getJson('/api/v1/licencia-local')
             ->assertOk()
             ->assertJsonPath('data.en_periodo_gracia', true)
             ->assertJsonPath('data.dias_desde_ultima_validacion', 3);
@@ -72,11 +72,11 @@ class LicenciaLocalControllerTest extends TestCase
         ['usuario' => $usuario] = $this->crearUsuario();
         $this->actingAs($usuario);
 
-        $this->getJson('/api/licencia-local')->assertNotFound();
+        $this->getJson('/api/v1/licencia-local')->assertNotFound();
     }
 
     public function test_exige_autenticacion(): void
     {
-        $this->getJson('/api/licencia-local')->assertUnauthorized();
+        $this->getJson('/api/v1/licencia-local')->assertUnauthorized();
     }
 }

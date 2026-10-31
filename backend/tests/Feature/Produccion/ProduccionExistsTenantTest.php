@@ -21,7 +21,7 @@ class ProduccionExistsTenantTest extends TestCase
     {
         $this->actingAs($this->usuario);
 
-        $this->postJson('/api/insumos', [
+        $this->postJson('/api/v1/insumos', [
             'nombre' => 'Insumo',
             'unidad_medida_id' => $this->unidadMedidaB->id,
         ])->assertStatus(422)->assertJsonValidationErrors(['unidad_medida_id']);
@@ -31,7 +31,7 @@ class ProduccionExistsTenantTest extends TestCase
     {
         $this->actingAs($this->usuario);
 
-        $this->postJson('/api/insumos', [
+        $this->postJson('/api/v1/insumos', [
             'nombre' => 'Insumo',
             'unidad_medida_id' => $this->unidadMedidaGlobal->id,
         ])->assertCreated();
@@ -42,7 +42,7 @@ class ProduccionExistsTenantTest extends TestCase
         $insumo = $this->crearInsumo();
         $this->actingAs($this->usuario);
 
-        $this->postJson("/api/insumos/{$insumo->id}/stocks", [
+        $this->postJson("/api/v1/insumos/{$insumo->id}/stocks", [
             'sucursal_id' => $this->sucursalB->id,
             'cantidad' => 1,
         ])->assertStatus(422)->assertJsonValidationErrors(['sucursal_id']);
@@ -53,7 +53,7 @@ class ProduccionExistsTenantTest extends TestCase
         $insumo = $this->crearInsumo();
         $this->actingAs($this->usuario);
 
-        $this->postJson('/api/recetas', [
+        $this->postJson('/api/v1/recetas', [
             'variante_id' => $this->varianteB->id,
             'nombre' => 'Receta',
             'ingredientes' => [[
@@ -68,7 +68,7 @@ class ProduccionExistsTenantTest extends TestCase
     {
         $this->actingAs($this->usuario);
 
-        $this->postJson('/api/recetas', [
+        $this->postJson('/api/v1/recetas', [
             'variante_id' => $this->variante->id,
             'nombre' => 'Receta',
             'ingredientes' => [[
@@ -84,7 +84,7 @@ class ProduccionExistsTenantTest extends TestCase
         $insumo = $this->crearInsumo();
         $this->actingAs($this->usuario);
 
-        $this->postJson('/api/recetas', [
+        $this->postJson('/api/v1/recetas', [
             'variante_id' => $this->variante->id,
             'nombre' => 'Receta',
             'ingredientes' => [[
@@ -100,7 +100,7 @@ class ProduccionExistsTenantTest extends TestCase
         $insumo = $this->crearInsumo();
         $this->actingAs($this->usuario);
 
-        $this->postJson('/api/recetas', [
+        $this->postJson('/api/v1/recetas', [
             'variante_id' => $this->variante->id,
             'nombre' => 'Receta',
             'ingredientes' => [[
@@ -115,7 +115,7 @@ class ProduccionExistsTenantTest extends TestCase
     {
         $this->actingAs($this->usuario);
 
-        $this->postJson('/api/ordenes-produccion', [
+        $this->postJson('/api/v1/ordenes-produccion', [
             'receta_id' => $this->recetaB->id,
             'cantidad_programada' => 1,
         ])->assertStatus(422)->assertJsonValidationErrors(['receta_id']);
@@ -125,7 +125,7 @@ class ProduccionExistsTenantTest extends TestCase
     {
         $this->actingAs($this->usuario);
 
-        $this->postJson('/api/transformaciones', [
+        $this->postJson('/api/v1/transformaciones', [
             'variante_origen_id' => $this->varianteB->id,
             'variante_destino_id' => $this->variante->id,
             'cantidad_origen' => 1,
@@ -137,7 +137,7 @@ class ProduccionExistsTenantTest extends TestCase
     {
         $this->actingAs($this->usuario);
 
-        $this->postJson('/api/transformaciones', [
+        $this->postJson('/api/v1/transformaciones', [
             'variante_origen_id' => $this->variante->id,
             'variante_destino_id' => $this->varianteB->id,
             'cantidad_origen' => 1,

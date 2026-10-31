@@ -64,7 +64,7 @@ export const appConfig: ApplicationConfig = {
       // El header X-XSRF-TOKEN se pone a mano en xsrfInterceptor -- el
       // withXsrfConfiguration nativo de Angular NO sirve aqui porque salta
       // a proposito las URLs absolutas (ver el comentario en
-      // xsrf.interceptor.ts), y todas nuestras llamadas usan API_BASE_URL
+      // xsrf.interceptor.ts), y todas nuestras llamadas usan urlApi
       // absoluta porque el backend vive en otro origen/puerto.
       withInterceptors([credentialsInterceptor, xsrfInterceptor, authInterceptor]),
     ),

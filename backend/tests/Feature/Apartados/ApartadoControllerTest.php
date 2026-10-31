@@ -77,7 +77,7 @@ class ApartadoControllerTest extends TestCase
         $ctx = $this->prepararTenantConCatalogo();
         $this->actingAs($ctx['usuario']);
 
-        $respuesta = $this->postJson('/api/apartados', [
+        $respuesta = $this->postJson('/api/v1/apartados', [
             'cliente_id' => $ctx['cliente']->id,
             'items' => [['variante_id' => $ctx['variante']->id, 'cantidad' => 2]],
             'fecha_vencimiento' => '2026-08-15',
@@ -95,7 +95,7 @@ class ApartadoControllerTest extends TestCase
         $ctx = $this->prepararTenantConCatalogo([]);
         $this->actingAs($ctx['usuario']);
 
-        $this->postJson('/api/apartados', [
+        $this->postJson('/api/v1/apartados', [
             'cliente_id' => $ctx['cliente']->id,
             'items' => [['variante_id' => $ctx['variante']->id, 'cantidad' => 1]],
         ])->assertForbidden();
@@ -112,7 +112,7 @@ class ApartadoControllerTest extends TestCase
             'total' => 200, 'total_abonado' => 50, 'estado' => 'activo',
         ]);
 
-        $respuesta = $this->getJson('/api/apartados');
+        $respuesta = $this->getJson('/api/v1/apartados');
 
         $respuesta->assertOk()
             ->assertJsonCount(1, 'data')
@@ -125,12 +125,12 @@ class ApartadoControllerTest extends TestCase
         $ctx = $this->prepararTenantConCatalogo();
         $this->actingAs($ctx['usuario']);
 
-        $apartado = $this->postJson('/api/apartados', [
+        $apartado = $this->postJson('/api/v1/apartados', [
             'cliente_id' => $ctx['cliente']->id,
             'items' => [['variante_id' => $ctx['variante']->id, 'cantidad' => 2]],
         ])->json('data');
 
-        $respuesta = $this->postJson("/api/apartados/{$apartado['id']}/abonos", [
+        $respuesta = $this->postJson("/api/v1/apartados/{$apartado['id']}/abonos", [
             'monto' => 200,
             'pagos' => [
                 ['metodo_pago_id' => $ctx['efectivo']->id, 'monto' => 150],
@@ -146,12 +146,12 @@ class ApartadoControllerTest extends TestCase
         $ctx = $this->prepararTenantConCatalogo();
         $this->actingAs($ctx['usuario']);
 
-        $apartado = $this->postJson('/api/apartados', [
+        $apartado = $this->postJson('/api/v1/apartados', [
             'cliente_id' => $ctx['cliente']->id,
             'items' => [['variante_id' => $ctx['variante']->id, 'cantidad' => 1]],
         ])->json('data');
 
-        $this->postJson("/api/apartados/{$apartado['id']}/abonos", [
+        $this->postJson("/api/v1/apartados/{$apartado['id']}/abonos", [
             'monto' => 100,
             'pagos' => [['metodo_pago_id' => $ctx['efectivo']->id, 'monto' => 99]],
         ])->assertStatus(422)->assertJsonPath('error_code', 'abono_pago_no_cuadra');
@@ -163,17 +163,17 @@ class ApartadoControllerTest extends TestCase
         app(CajaService::class)->abrirCaja($ctx['sucursal']->id, $ctx['usuario']->id, 0);
         $this->actingAs($ctx['usuario']);
 
-        $apartado = $this->postJson('/api/apartados', [
+        $apartado = $this->postJson('/api/v1/apartados', [
             'cliente_id' => $ctx['cliente']->id,
             'items' => [['variante_id' => $ctx['variante']->id, 'cantidad' => 1]],
         ])->json('data');
 
-        $this->postJson("/api/apartados/{$apartado['id']}/abonos", [
+        $this->postJson("/api/v1/apartados/{$apartado['id']}/abonos", [
             'monto' => 200,
             'pagos' => [['metodo_pago_id' => $ctx['efectivo']->id, 'monto' => 200]],
         ])->assertOk();
 
-        $respuesta = $this->patchJson("/api/apartados/{$apartado['id']}/liquidar");
+        $respuesta = $this->patchJson("/api/v1/apartados/{$apartado['id']}/liquidar");
 
         $respuesta->assertOk()->assertJsonPath('data.estado', 'completado');
         $this->assertNotNull($respuesta->json('data.venta_id'));
@@ -184,12 +184,12 @@ class ApartadoControllerTest extends TestCase
         $ctx = $this->prepararTenantConCatalogo();
         $this->actingAs($ctx['usuario']);
 
-        $apartado = $this->postJson('/api/apartados', [
+        $apartado = $this->postJson('/api/v1/apartados', [
             'cliente_id' => $ctx['cliente']->id,
             'items' => [['variante_id' => $ctx['variante']->id, 'cantidad' => 1]],
         ])->json('data');
 
-        $this->patchJson("/api/apartados/{$apartado['id']}/liquidar")
+        $this->patchJson("/api/v1/apartados/{$apartado['id']}/liquidar")
             ->assertStatus(422)
             ->assertJsonPath('error_code', 'apartado_saldo_insuficiente');
     }
@@ -199,17 +199,17 @@ class ApartadoControllerTest extends TestCase
         $ctx = $this->prepararTenantConCatalogo();
         $this->actingAs($ctx['usuario']);
 
-        $apartado = $this->postJson('/api/apartados', [
+        $apartado = $this->postJson('/api/v1/apartados', [
             'cliente_id' => $ctx['cliente']->id,
             'items' => [['variante_id' => $ctx['variante']->id, 'cantidad' => 1]],
         ])->json('data');
 
-        $this->postJson("/api/apartados/{$apartado['id']}/abonos", [
+        $this->postJson("/api/v1/apartados/{$apartado['id']}/abonos", [
             'monto' => 100,
             'pagos' => [['metodo_pago_id' => $ctx['efectivo']->id, 'monto' => 100]],
         ])->assertOk();
 
-        $respuesta = $this->patchJson("/api/apartados/{$apartado['id']}/cancelar", ['motivo' => 'Cliente se arrepintio']);
+        $respuesta = $this->patchJson("/api/v1/apartados/{$apartado['id']}/cancelar", ['motivo' => 'Cliente se arrepintio']);
 
         $respuesta->assertOk()
             ->assertJsonPath('data.estado', 'cancelado')
@@ -222,12 +222,12 @@ class ApartadoControllerTest extends TestCase
         $ctx = $this->prepararTenantConCatalogo(['apartados.ver', 'apartados.crear']);
         $this->actingAs($ctx['usuario']);
 
-        $apartado = $this->postJson('/api/apartados', [
+        $apartado = $this->postJson('/api/v1/apartados', [
             'cliente_id' => $ctx['cliente']->id,
             'items' => [['variante_id' => $ctx['variante']->id, 'cantidad' => 1]],
         ])->json('data');
 
-        $this->patchJson("/api/apartados/{$apartado['id']}/cancelar", ['motivo' => 'x'])->assertForbidden();
+        $this->patchJson("/api/v1/apartados/{$apartado['id']}/cancelar", ['motivo' => 'x'])->assertForbidden();
     }
 
     public function test_show_incluye_detalles_y_abonos(): void
@@ -235,17 +235,17 @@ class ApartadoControllerTest extends TestCase
         $ctx = $this->prepararTenantConCatalogo();
         $this->actingAs($ctx['usuario']);
 
-        $apartado = $this->postJson('/api/apartados', [
+        $apartado = $this->postJson('/api/v1/apartados', [
             'cliente_id' => $ctx['cliente']->id,
             'items' => [['variante_id' => $ctx['variante']->id, 'cantidad' => 1]],
         ])->json('data');
 
-        $this->postJson("/api/apartados/{$apartado['id']}/abonos", [
+        $this->postJson("/api/v1/apartados/{$apartado['id']}/abonos", [
             'monto' => 50,
             'pagos' => [['metodo_pago_id' => $ctx['efectivo']->id, 'monto' => 50]],
         ])->assertOk();
 
-        $respuesta = $this->getJson("/api/apartados/{$apartado['id']}");
+        $respuesta = $this->getJson("/api/v1/apartados/{$apartado['id']}");
 
         $respuesta->assertOk()
             ->assertJsonCount(1, 'data.detalles')

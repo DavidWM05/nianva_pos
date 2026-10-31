@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable, map } from 'rxjs';
 
-import { API_BASE_URL } from '../../core/api-config';
+import { urlApi } from '../../core/api-config';
 import { Gasto } from './gasto.types';
 
 /**
@@ -17,13 +17,13 @@ export class GastoService {
 
   listar(cajaSesionId: number): Observable<Gasto[]> {
     return this.http
-      .get<{ data: Gasto[] }>(`${API_BASE_URL}/api/gastos`, { params: { caja_sesion_id: cajaSesionId } })
+      .get<{ data: Gasto[] }>(urlApi(`/gastos`), { params: { caja_sesion_id: cajaSesionId } })
       .pipe(map((r) => r.data));
   }
 
   registrar(descripcion: string, monto: number): Observable<Gasto> {
     return this.http
-      .post<{ data: Gasto }>(`${API_BASE_URL}/api/gastos`, { descripcion, monto })
+      .post<{ data: Gasto }>(urlApi(`/gastos`), { descripcion, monto })
       .pipe(map((r) => r.data));
   }
 }

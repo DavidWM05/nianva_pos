@@ -20,7 +20,7 @@ class ReglaPrecioMensajesTest extends TestCase
         $this->prepararNegocio(['reglas_precio.crear']);
         $this->actingAs($this->usuario);
 
-        $this->postJson('/api/reglas-precio', [
+        $this->postJson('/api/v1/reglas-precio', [
             'nombre' => 'Sin categoria',
             'tipo' => 'porcentaje',
             'valor' => 10,

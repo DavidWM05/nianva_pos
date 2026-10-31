@@ -3,10 +3,10 @@ import { Injectable, inject } from '@angular/core';
 import { AuditLogEntry, AuditLogSource } from '@nucleo/ui-shared';
 import { Observable, map } from 'rxjs';
 
-import { API_BASE_URL } from './api-config';
+import { urlApi } from './api-config';
 
 /**
- * Implementacion real (HttpClient + API_BASE_URL) de AuditLogSource, la
+ * Implementacion real (HttpClient + urlApi) de AuditLogSource, la
  * clase abstracta que pide AuditLogViewerComponent por DI -- registrada en
  * app.config.ts. ui-shared no conoce esta clase, solo su contrato.
  */
@@ -16,7 +16,7 @@ export class AuditoriaService implements AuditLogSource {
 
   listar(tabla: string, registroId: number): Observable<AuditLogEntry[]> {
     return this.http
-      .get<{ data: AuditLogEntry[] }>(`${API_BASE_URL}/api/auditoria`, {
+      .get<{ data: AuditLogEntry[] }>(urlApi(`/auditoria`), {
         params: { tabla, registro_id: String(registroId) },
       })
       .pipe(map((respuesta) => respuesta.data));

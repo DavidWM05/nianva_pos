@@ -21,9 +21,9 @@ class ValidacionesNegocioTest extends TestCase
     {
         $this->actingAs($this->usuario);
 
-        $this->patchJson("/api/caja/{$this->caja->id}/cerrar", ['monto_fisico' => 500])->assertOk();
+        $this->patchJson("/api/v1/caja/{$this->caja->id}/cerrar", ['monto_fisico' => 500])->assertOk();
 
-        $this->patchJson("/api/caja/{$this->caja->id}/cerrar", ['monto_fisico' => 500])
+        $this->patchJson("/api/v1/caja/{$this->caja->id}/cerrar", ['monto_fisico' => 500])
             ->assertStatus(422)
             ->assertJsonPath('error_code', 'caja_ya_cerrada')
             ->assertJsonPath('caja_sesion_id', $this->caja->id);
@@ -33,7 +33,7 @@ class ValidacionesNegocioTest extends TestCase
     {
         $this->actingAs($this->usuario);
 
-        $this->postJson('/api/ventas', $this->payloadVenta(['descuento_manual' => 200]))
+        $this->postJson('/api/v1/ventas', $this->payloadVenta(['descuento_manual' => 200]))
             ->assertStatus(422)
             ->assertJsonPath('error_code', 'venta_total_negativo')
             ->assertJsonStructure(['message', 'error_code', 'subtotal', 'descuento_manual', 'descuento_cupon']);
@@ -45,7 +45,7 @@ class ValidacionesNegocioTest extends TestCase
         $venta->update(['estado' => 'anulada']);
         $this->actingAs($this->usuario);
 
-        $this->patchJson("/api/ventas/{$venta->id}/anular", ['motivo' => 'prueba'])
+        $this->patchJson("/api/v1/ventas/{$venta->id}/anular", ['motivo' => 'prueba'])
             ->assertStatus(422)
             ->assertJsonPath('error_code', 'venta_ya_anulada')
             ->assertJsonPath('venta_id', $venta->id);
@@ -59,7 +59,7 @@ class ValidacionesNegocioTest extends TestCase
             'items' => [['variante_id' => $this->varianteB->id, 'cantidad' => 1]],
         ]);
 
-        $this->postJson('/api/ventas', $payload)
+        $this->postJson('/api/v1/ventas', $payload)
             ->assertStatus(422)
             ->assertJsonValidationErrors(['items.0.variante_id']);
     }
@@ -68,7 +68,7 @@ class ValidacionesNegocioTest extends TestCase
     {
         $this->actingAs($this->usuario);
 
-        $this->postJson('/api/ventas/cotizar', [
+        $this->postJson('/api/v1/ventas/cotizar', [
             'items' => [['variante_id' => $this->varianteB->id, 'cantidad' => 1]],
         ])
             ->assertStatus(422)
@@ -79,7 +79,7 @@ class ValidacionesNegocioTest extends TestCase
     {
         $this->actingAs($this->usuario);
 
-        $this->postJson('/api/ventas', $this->payloadVenta(['cliente_id' => $this->clienteB->id]))
+        $this->postJson('/api/v1/ventas', $this->payloadVenta(['cliente_id' => $this->clienteB->id]))
             ->assertStatus(422)
             ->assertJsonValidationErrors(['cliente_id']);
     }

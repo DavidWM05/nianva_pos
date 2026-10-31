@@ -3,7 +3,7 @@ import { Injectable, inject } from '@angular/core';
 import { DataTableLazyEvent } from '@nucleo/ui-shared';
 import { Observable, map } from 'rxjs';
 
-import { API_BASE_URL } from '../../core/api-config';
+import { urlApi } from '../../core/api-config';
 import { EstadoPedido, Pedido, PedidoCrearPayload } from './pedido.types';
 
 export interface PedidosPermisos {
@@ -46,27 +46,27 @@ export class PedidoService {
     }
 
     return this.http
-      .get<{ data: Pedido[]; meta: { total: number; permisos: PedidosPermisos } }>(`${API_BASE_URL}/api/pedidos`, { params })
+      .get<{ data: Pedido[]; meta: { total: number; permisos: PedidosPermisos } }>(urlApi(`/pedidos`), { params })
       .pipe(map((r) => ({ data: r.data, total: r.meta.total, permisos: r.meta.permisos })));
   }
 
   obtener(id: number): Observable<Pedido> {
-    return this.http.get<{ data: Pedido }>(`${API_BASE_URL}/api/pedidos/${id}`).pipe(map((r) => r.data));
+    return this.http.get<{ data: Pedido }>(urlApi(`/pedidos/${id}`)).pipe(map((r) => r.data));
   }
 
   crear(payload: PedidoCrearPayload): Observable<Pedido> {
-    return this.http.post<{ data: Pedido }>(`${API_BASE_URL}/api/pedidos`, payload).pipe(map((r) => r.data));
+    return this.http.post<{ data: Pedido }>(urlApi(`/pedidos`), payload).pipe(map((r) => r.data));
   }
 
   cambiarEstado(id: number, estado: EstadoPedido): Observable<Pedido> {
     return this.http
-      .patch<{ data: Pedido }>(`${API_BASE_URL}/api/pedidos/${id}/estado`, { estado })
+      .patch<{ data: Pedido }>(urlApi(`/pedidos/${id}/estado`), { estado })
       .pipe(map((r) => r.data));
   }
 
   asignarRepartidor(id: number, repartidorId: number): Observable<Pedido> {
     return this.http
-      .patch<{ data: Pedido }>(`${API_BASE_URL}/api/pedidos/${id}/repartidor`, { repartidor_id: repartidorId })
+      .patch<{ data: Pedido }>(urlApi(`/pedidos/${id}/repartidor`), { repartidor_id: repartidorId })
       .pipe(map((r) => r.data));
   }
 }

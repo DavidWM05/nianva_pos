@@ -21,7 +21,7 @@ class GastoExistsTenantTest extends TestCase
     {
         $this->actingAs($this->usuario);
 
-        $this->getJson("/api/gastos?caja_sesion_id={$this->cajaB->id}")
+        $this->getJson("/api/v1/gastos?caja_sesion_id={$this->cajaB->id}")
             ->assertStatus(422)
             ->assertJsonValidationErrors(['caja_sesion_id']);
     }

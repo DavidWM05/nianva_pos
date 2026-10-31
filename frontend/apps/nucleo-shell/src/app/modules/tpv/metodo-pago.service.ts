@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable, map } from 'rxjs';
 
-import { API_BASE_URL } from '../../core/api-config';
+import { urlApi } from '../../core/api-config';
 import { MetodoPago } from './metodo-pago.types';
 
 @Injectable({ providedIn: 'root' })
@@ -17,7 +17,7 @@ export class MetodoPagoService {
    */
   listar(): Observable<MetodoPago[]> {
     return this.http
-      .get<{ data: MetodoPago[] }>(`${API_BASE_URL}/api/metodos-pago`, { params: { solo_activos: 1 } })
+      .get<{ data: MetodoPago[] }>(urlApi(`/metodos-pago`), { params: { solo_activos: 1 } })
       .pipe(map((r) => r.data));
   }
 }

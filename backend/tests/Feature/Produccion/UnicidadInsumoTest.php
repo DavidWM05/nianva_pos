@@ -32,7 +32,7 @@ class UnicidadInsumoTest extends TestCase
     {
         $this->actingAs($this->usuario);
 
-        $this->postJson('/api/insumos', [
+        $this->postJson('/api/v1/insumos', [
             'nombre' => 'Insumo A',
             'sku' => 'SKU-DUP',
             'unidad_medida_id' => $this->unidad->id,
@@ -40,7 +40,7 @@ class UnicidadInsumoTest extends TestCase
 
         $this->actingAs($this->usuarioB);
 
-        $this->postJson('/api/insumos', [
+        $this->postJson('/api/v1/insumos', [
             'nombre' => 'Insumo B',
             'sku' => 'SKU-DUP',
             'unidad_medida_id' => $this->unidad->id,
@@ -48,7 +48,7 @@ class UnicidadInsumoTest extends TestCase
 
         $this->actingAs($this->usuario);
 
-        $this->postJson('/api/insumos', [
+        $this->postJson('/api/v1/insumos', [
             'nombre' => 'Insumo A repetido',
             'sku' => 'SKU-DUP',
             'unidad_medida_id' => $this->unidad->id,

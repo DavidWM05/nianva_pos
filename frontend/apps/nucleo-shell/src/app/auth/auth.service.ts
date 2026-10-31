@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable, switchMap } from 'rxjs';
 
-import { API_BASE_URL } from '../core/api-config';
+import { urlApi, urlSesion } from '../core/api-config';
 import { LoginResponse, TwoFactorConfirmResponse, TwoFactorSetupResponse, Usuario } from './usuario.types';
 
 /**
@@ -21,30 +21,30 @@ export class AuthService {
    * rechaza la request por CSRF invalido.
    */
   private ensureCsrfCookie(): Observable<void> {
-    return this.http.get<void>(`${API_BASE_URL}/sanctum/csrf-cookie`);
+    return this.http.get<void>(urlSesion('/sanctum/csrf-cookie'));
   }
 
   login(correo: string, password: string): Observable<LoginResponse> {
     return this.ensureCsrfCookie().pipe(
-      switchMap(() => this.http.post<LoginResponse>(`${API_BASE_URL}/login`, { correo, password })),
+      switchMap(() => this.http.post<LoginResponse>(urlSesion('/login'), { correo, password })),
     );
   }
 
   verifyTwoFactor(code: string): Observable<{ user: Usuario }> {
-    return this.http.post<{ user: Usuario }>(`${API_BASE_URL}/login/2fa-verify`, { code });
+    return this.http.post<{ user: Usuario }>(urlSesion('/login/2fa-verify'), { code });
   }
 
   logout(): Observable<void> {
-    return this.http.post<void>(`${API_BASE_URL}/logout`, {});
+    return this.http.post<void>(urlSesion('/logout'), {});
   }
 
   me(): Observable<Usuario> {
-    return this.http.get<Usuario>(`${API_BASE_URL}/api/user`);
+    return this.http.get<Usuario>(urlApi(`/user`));
   }
 
   requestPasswordReset(correo: string): Observable<{ status: string }> {
     return this.ensureCsrfCookie().pipe(
-      switchMap(() => this.http.post<{ status: string }>(`${API_BASE_URL}/password/forgot`, { correo })),
+      switchMap(() => this.http.post<{ status: string }>(urlSesion('/password/forgot'), { correo })),
     );
   }
 
@@ -55,15 +55,15 @@ export class AuthService {
     password_confirmation: string;
   }): Observable<{ status: string }> {
     return this.ensureCsrfCookie().pipe(
-      switchMap(() => this.http.post<{ status: string }>(`${API_BASE_URL}/password/reset`, payload)),
+      switchMap(() => this.http.post<{ status: string }>(urlSesion('/password/reset'), payload)),
     );
   }
 
   getTwoFactorSetup(): Observable<TwoFactorSetupResponse> {
-    return this.http.get<TwoFactorSetupResponse>(`${API_BASE_URL}/api/two-factor/qr-code`);
+    return this.http.get<TwoFactorSetupResponse>(urlApi(`/two-factor/qr-code`));
   }
 
   confirmTwoFactor(code: string): Observable<TwoFactorConfirmResponse> {
-    return this.http.post<TwoFactorConfirmResponse>(`${API_BASE_URL}/api/two-factor/confirm`, { code });
+    return this.http.post<TwoFactorConfirmResponse>(urlApi(`/two-factor/confirm`), { code });
   }
 }

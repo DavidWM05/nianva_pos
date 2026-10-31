@@ -46,7 +46,7 @@ class SucursalControllerTest extends TestCase
         ['usuario' => $usuario] = $this->crearUsuarioConPermisos([]);
         $this->actingAs($usuario);
 
-        $this->getJson('/api/sucursales')->assertForbidden();
+        $this->getJson('/api/v1/sucursales')->assertForbidden();
     }
 
     public function test_index_devuelve_solo_las_sucursales_activas(): void
@@ -56,7 +56,7 @@ class SucursalControllerTest extends TestCase
 
         $this->actingAs($usuario);
 
-        $respuesta = $this->getJson('/api/sucursales');
+        $respuesta = $this->getJson('/api/v1/sucursales');
 
         $respuesta->assertOk()->assertJsonCount(1, 'data')->assertJsonPath('data.0.nombre', 'Centro');
     }
