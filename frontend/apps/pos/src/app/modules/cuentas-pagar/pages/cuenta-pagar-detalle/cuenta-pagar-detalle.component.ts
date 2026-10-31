@@ -3,7 +3,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
-import { AuditLogViewerComponent, ConfirmDialogService, RecordTabConfig, RecordTabsComponent, StatusBadgeComponent, ToastService } from '@nianva/ui-shared';
+import { AuditLogViewerComponent, ConfirmDialogService, RecordTabConfig, RecordTabsComponent, StatusBadgeComponent, ToastService, mensajeError } from '@nianva/ui-shared';
 import { Button } from 'primeng/button';
 import { Dialog } from 'primeng/dialog';
 import { InputText } from 'primeng/inputtext';
@@ -92,7 +92,7 @@ export class CuentaPagarDetalleComponent implements OnInit {
         },
         error: (error: HttpErrorResponse) => {
           this.pagando.set(false);
-          this.toast.error(this.mensajeError(error, 'No se pudo registrar el pago.'));
+          this.toast.error(mensajeError(error, 'No se pudo registrar el pago.'));
         },
       });
   }
@@ -115,7 +115,7 @@ export class CuentaPagarDetalleComponent implements OnInit {
         this.cargar(cuenta.id);
       },
       error: (error: HttpErrorResponse) => {
-        this.toast.error(this.mensajeError(error, 'No se pudo anular la cuenta.'));
+        this.toast.error(mensajeError(error, 'No se pudo anular la cuenta.'));
       },
     });
   }
@@ -131,9 +131,4 @@ export class CuentaPagarDetalleComponent implements OnInit {
     });
   }
 
-  private mensajeError(error: HttpErrorResponse, fallback: string): string {
-    const cuerpo = error.error as { message?: string } | undefined;
-
-    return cuerpo?.message ?? fallback;
-  }
 }

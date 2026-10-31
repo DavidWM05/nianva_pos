@@ -3,14 +3,13 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { ChangeDetectionStrategy, Component, OnInit, ViewChild, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
-import { AuditLogViewerComponent, RecordTabConfig, RecordTabsComponent, StatusBadgeComponent, ToastService } from '@nianva/ui-shared';
+import { AuditLogViewerComponent, RecordTabConfig, RecordTabsComponent, StatusBadgeComponent, ToastService, mensajeError } from '@nianva/ui-shared';
 import { Button } from 'primeng/button';
 import { Dialog } from 'primeng/dialog';
 import { InputText } from 'primeng/inputtext';
 import { Textarea } from 'primeng/textarea';
 
 import { LineasPagoCambio, LineasPagoComponent } from '../../../tpv/lineas-pago/lineas-pago.component';
-import { ErrorNegocioTpv } from '../../../tpv/tpv-error.types';
 import { ApartadoService } from '../../apartado.service';
 import { AbonoPagoPayload, Apartado, ApartadoDetallePermisos, ResultadoCancelacion } from '../../apartado.types';
 
@@ -134,7 +133,7 @@ export class ApartadoDetalleComponent implements OnInit {
       },
       error: (error: HttpErrorResponse) => {
         this.registrandoAbono.set(false);
-        this.toast.error(this.mensajeError(error, 'No se pudo registrar el abono.'));
+        this.toast.error(mensajeError(error, 'No se pudo registrar el abono.'));
       },
     });
   }
@@ -153,7 +152,7 @@ export class ApartadoDetalleComponent implements OnInit {
       },
       error: (error: HttpErrorResponse) => {
         this.liquidando.set(false);
-        this.toast.error(this.mensajeError(error, 'No se pudo liquidar el apartado.'));
+        this.toast.error(mensajeError(error, 'No se pudo liquidar el apartado.'));
       },
     });
   }
@@ -183,7 +182,7 @@ export class ApartadoDetalleComponent implements OnInit {
       },
       error: (error: HttpErrorResponse) => {
         this.cancelando.set(false);
-        this.toast.error(this.mensajeError(error, 'No se pudo cancelar el apartado.'));
+        this.toast.error(mensajeError(error, 'No se pudo cancelar el apartado.'));
       },
     });
   }
@@ -192,9 +191,4 @@ export class ApartadoDetalleComponent implements OnInit {
     this.resultadoCancelacion.set(null);
   }
 
-  private mensajeError(error: HttpErrorResponse, fallback: string): string {
-    const cuerpo = error.error as ErrorNegocioTpv | undefined;
-
-    return cuerpo?.message ?? fallback;
-  }
 }

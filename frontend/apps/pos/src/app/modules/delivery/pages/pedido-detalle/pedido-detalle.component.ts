@@ -2,7 +2,7 @@ import { DatePipe } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { AuditLogViewerComponent, EntidadSelectorComponent, RecordTabConfig, RecordTabsComponent, StatusBadgeComponent, ToastService } from '@nianva/ui-shared';
+import { AuditLogViewerComponent, EntidadSelectorComponent, RecordTabConfig, RecordTabsComponent, StatusBadgeComponent, ToastService, mensajeError } from '@nianva/ui-shared';
 import { Button } from 'primeng/button';
 
 import { BUSCADOR_USUARIO } from '../../../../core/buscadores-entidad.tokens';
@@ -81,7 +81,7 @@ export class PedidoDetalleComponent implements OnInit {
       },
       error: (error: HttpErrorResponse) => {
         this.cambiandoEstado.set(false);
-        this.toast.error(this.mensajeError(error, 'No se pudo cambiar el estado del pedido.'));
+        this.toast.error(mensajeError(error, 'No se pudo cambiar el estado del pedido.'));
       },
     });
   }
@@ -100,7 +100,7 @@ export class PedidoDetalleComponent implements OnInit {
       },
       error: (error: HttpErrorResponse) => {
         this.asignandoRepartidor.set(false);
-        this.toast.error(this.mensajeError(error, 'No se pudo asignar el repartidor.'));
+        this.toast.error(mensajeError(error, 'No se pudo asignar el repartidor.'));
       },
     });
   }
@@ -116,9 +116,4 @@ export class PedidoDetalleComponent implements OnInit {
     });
   }
 
-  private mensajeError(error: HttpErrorResponse, fallback: string): string {
-    const cuerpo = error.error as { message?: string } | undefined;
-
-    return cuerpo?.message ?? fallback;
-  }
 }

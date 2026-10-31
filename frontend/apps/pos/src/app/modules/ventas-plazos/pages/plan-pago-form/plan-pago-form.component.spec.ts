@@ -1,9 +1,10 @@
+import { HttpErrorResponse } from '@angular/common/http';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { Router, provideRouter } from '@angular/router';
 import { ToastService } from '@nianva/ui-shared';
 import { providePrimeNG } from 'primeng/config';
-import { of } from 'rxjs';
+import { of, throwError } from 'rxjs';
 import { describe, expect, it, vi } from 'vitest';
 
 import { BUSCADOR_VENTA } from '../../../../core/buscadores-entidad.tokens';
@@ -72,5 +73,32 @@ describe('PlanPagoFormComponent', () => {
       expect.objectContaining({ numero_cuotas: 6, tasa_interes: 10, periodicidad: 'mensual' }),
     );
     expect(router.navigate).toHaveBeenCalledWith(['/ventas-plazos', 7]);
+  });
+
+  it('si la venta ya tiene plan activo, navega al plan existente', async () => {
+    await crearComponente();
+    const toast = TestBed.inject(ToastService);
+    const errorSpy = vi.spyOn(toast, 'error');
+    planPagoService.crearPlan.mockReturnValue(
+      throwError(
+        () =>
+          new HttpErrorResponse({
+            status: 422,
+            error: {
+              message: 'La venta 3 ya tiene un plan de pago activo.',
+              error_code: 'plan_pago_ya_activo',
+              venta_id: 3,
+              plan_pago_id: 9,
+            },
+          }),
+      ),
+    );
+
+    fixture.componentInstance['ventaId'].set(3);
+    fixture.componentInstance['numeroCuotas'].set(6);
+    fixture.componentInstance.crear();
+
+    expect(errorSpy).toHaveBeenCalledWith('La venta 3 ya tiene un plan de pago activo.');
+    expect(router.navigate).toHaveBeenCalledWith(['/ventas-plazos', 9]);
   });
 });

@@ -1,9 +1,10 @@
+import { HttpErrorResponse } from '@angular/common/http';
 import { ComponentFixture, DeferBlockBehavior, TestBed } from '@angular/core/testing';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { ActivatedRoute, convertToParamMap } from '@angular/router';
 import { AuditLogSource, ToastService } from '@nianva/ui-shared';
 import { providePrimeNG } from 'primeng/config';
-import { of } from 'rxjs';
+import { of, throwError } from 'rxjs';
 import { describe, expect, it, vi } from 'vitest';
 
 // jsdom no implementa ResizeObserver -- lo usa PrimeNG's TabList (detras de
@@ -88,5 +89,27 @@ describe('PlanPagoDetalleComponent', () => {
 
     expect(planPagoService.pagarCuota).toHaveBeenCalledWith(7, { cuota_id: 1, monto: 275 });
     expect(toast.success).toHaveBeenCalled();
+  });
+
+  it('si la cuota ya estaba pagada, recarga el plan', async () => {
+    const plan = planCon({});
+    const cuota = plan.cuotas?.[0];
+    if (!cuota) throw new Error('fixture sin cuotas');
+    await crearComponente(plan);
+    planPagoService.pagarCuota.mockReturnValue(
+      throwError(
+        () =>
+          new HttpErrorResponse({
+            status: 422,
+            error: { message: 'La cuota ya esta pagada.', error_code: 'cuota_ya_pagada', plan_pago_id: 7, cuota_id: 1 },
+          }),
+      ),
+    );
+
+    fixture.componentInstance.abrirPagarCuota(cuota);
+    fixture.componentInstance.confirmarPagarCuota();
+
+    expect(toast.error).toHaveBeenCalledWith('La cuota ya esta pagada.');
+    expect(planPagoService.obtener).toHaveBeenCalledTimes(2);
   });
 });

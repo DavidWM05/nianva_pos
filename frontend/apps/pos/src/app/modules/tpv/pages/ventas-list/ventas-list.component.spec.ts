@@ -1,9 +1,10 @@
+import { HttpErrorResponse } from '@angular/common/http';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { Router, provideRouter } from '@angular/router';
 import { ToastService } from '@nianva/ui-shared';
 import { providePrimeNG } from 'primeng/config';
-import { of } from 'rxjs';
+import { of, throwError } from 'rxjs';
 import { describe, expect, it, vi } from 'vitest';
 
 import { Venta, VentasPagina, VentasPermisos } from '../../venta.types';
@@ -100,4 +101,24 @@ describe('VentasListComponent', () => {
 
     expect(ventaService.anular).toHaveBeenCalledWith(1, 'Cliente se arrepintió');
   });
-});
+  it('si la venta ya estaba anulada, recarga la lista y muestra el mensaje', async () => {
+    await crearComponente({ anular: true });
+    const toast = TestBed.inject(ToastService);
+    const errorSpy = vi.spyOn(toast, 'error');
+    ventaService.anular.mockReturnValue(
+      throwError(
+        () =>
+          new HttpErrorResponse({
+            status: 422,
+            error: { message: 'La venta ya esta anulada.', error_code: 'venta_ya_anulada' },
+          }),
+      ),
+    );
+
+    fixture.componentInstance.abrirAnulacion(ventas[0]);
+    fixture.componentInstance['motivoAnulacion'].set('Cliente se arrepintio');
+    fixture.componentInstance.confirmarAnulacion();
+
+    expect(errorSpy).toHaveBeenCalledWith('La venta ya esta anulada.');
+    expect(ventaService.listar).toHaveBeenCalledTimes(2);
+  });});

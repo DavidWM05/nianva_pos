@@ -2,7 +2,7 @@ import { DatePipe } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { ToastService } from '@nianva/ui-shared';
+import { ToastService, esErrorNegocio, mensajeError } from '@nianva/ui-shared';
 import { Button } from 'primeng/button';
 import { Dialog } from 'primeng/dialog';
 import { InputText } from 'primeng/inputtext';
@@ -11,7 +11,6 @@ import { CajaService } from '../../caja.service';
 import { CajaActual, CajaDesglose, CajaSesion } from '../../caja.types';
 import { Gasto } from '../../gasto.types';
 import { GastoService } from '../../gasto.service';
-import { ErrorNegocioTpv } from '../../tpv-error.types';
 
 /**
  * Pantalla de caja: abrir/ver estado/cerrar la sesion de la sucursal del
@@ -109,7 +108,7 @@ export class CajaComponent implements OnInit {
       },
       error: (error: HttpErrorResponse) => {
         this.abriendo.set(false);
-        this.toast.error(this.mensajeError(error, 'No se pudo abrir la caja.'));
+        this.toast.error(mensajeError(error, 'No se pudo abrir la caja.'));
       },
     });
   }
@@ -131,7 +130,11 @@ export class CajaComponent implements OnInit {
       },
       error: (error: HttpErrorResponse) => {
         this.cerrando.set(false);
-        this.toast.error(this.mensajeError(error, 'No se pudo cerrar la caja.'));
+        this.toast.error(mensajeError(error, 'No se pudo cerrar la caja.'));
+
+        if (esErrorNegocio(error, 'caja_ya_cerrada')) {
+          this.cargarEstado();
+        }
       },
     });
   }
@@ -169,14 +172,9 @@ export class CajaComponent implements OnInit {
       },
       error: (error: HttpErrorResponse) => {
         this.registrandoGasto.set(false);
-        this.toast.error(this.mensajeError(error, 'No se pudo registrar el gasto.'));
+        this.toast.error(mensajeError(error, 'No se pudo registrar el gasto.'));
       },
     });
   }
 
-  private mensajeError(error: HttpErrorResponse, fallback: string): string {
-    const cuerpo = error.error as ErrorNegocioTpv | undefined;
-
-    return cuerpo?.message ?? fallback;
-  }
 }

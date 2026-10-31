@@ -1,4 +1,5 @@
 import { DatePipe } from '@angular/common';
+import { HttpErrorResponse } from '@angular/common/http';
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -10,6 +11,8 @@ import {
   DataTableLazyEvent,
   StatusBadgeComponent,
   ToastService,
+  esErrorNegocio,
+  mensajeError,
 } from '@nianva/ui-shared';
 import { Button } from 'primeng/button';
 import { Dialog } from 'primeng/dialog';
@@ -142,8 +145,16 @@ export class VentasListComponent {
         this.toast.success('Venta anulada.');
         this.cargar(this.ultimoEvento);
       },
-      error: () => {
+      error: (error: HttpErrorResponse) => {
         this.anulando.set(false);
+
+        if (esErrorNegocio(error, 'venta_ya_anulada')) {
+          this.toast.error(mensajeError(error, 'No se pudo anular la venta.'));
+          this.cargar(this.ultimoEvento);
+
+          return;
+        }
+
         this.toast.error('No se pudo anular la venta.');
       },
     });

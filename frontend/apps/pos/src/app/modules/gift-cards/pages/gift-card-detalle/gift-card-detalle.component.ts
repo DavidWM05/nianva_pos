@@ -3,7 +3,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
-import { AuditLogViewerComponent, ConfirmDialogService, RecordTabConfig, RecordTabsComponent, StatusBadgeComponent, ToastService } from '@nianva/ui-shared';
+import { AuditLogViewerComponent, ConfirmDialogService, RecordTabConfig, RecordTabsComponent, StatusBadgeComponent, ToastService, mensajeError } from '@nianva/ui-shared';
 import { Button } from 'primeng/button';
 import { Dialog } from 'primeng/dialog';
 import { InputText } from 'primeng/inputtext';
@@ -84,7 +84,7 @@ export class GiftCardDetalleComponent implements OnInit {
       },
       error: (error: HttpErrorResponse) => {
         this.recargando.set(false);
-        this.toast.error(this.mensajeError(error, 'No se pudo recargar la gift card.'));
+        this.toast.error(mensajeError(error, 'No se pudo recargar la gift card.'));
       },
     });
   }
@@ -107,7 +107,7 @@ export class GiftCardDetalleComponent implements OnInit {
         this.cargar(giftCard.id);
       },
       error: (error: HttpErrorResponse) => {
-        this.toast.error(this.mensajeError(error, 'No se pudo cancelar la gift card.'));
+        this.toast.error(mensajeError(error, 'No se pudo cancelar la gift card.'));
       },
     });
   }
@@ -127,9 +127,4 @@ export class GiftCardDetalleComponent implements OnInit {
     });
   }
 
-  private mensajeError(error: HttpErrorResponse, fallback: string): string {
-    const cuerpo = error.error as { message?: string } | undefined;
-
-    return cuerpo?.message ?? fallback;
-  }
 }

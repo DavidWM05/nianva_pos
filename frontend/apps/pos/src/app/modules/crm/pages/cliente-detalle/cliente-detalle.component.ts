@@ -3,7 +3,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { ChangeDetectionStrategy, Component, OnInit, ViewChild, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
-import { AuditLogViewerComponent, RecordTabConfig, RecordTabsComponent, ToastService } from '@nianva/ui-shared';
+import { AuditLogViewerComponent, RecordTabConfig, RecordTabsComponent, ToastService, mensajeError } from '@nianva/ui-shared';
 import { Button } from 'primeng/button';
 import { Dialog } from 'primeng/dialog';
 import { InputText } from 'primeng/inputtext';
@@ -188,7 +188,7 @@ export class ClienteDetalleComponent implements OnInit {
         },
         error: (error: HttpErrorResponse) => {
           this.guardandoInteraccion.set(false);
-          this.toast.error(this.mensajeError(error, 'No se pudo registrar la interacción.'));
+          this.toast.error(mensajeError(error, 'No se pudo registrar la interacción.'));
         },
       });
   }
@@ -225,7 +225,7 @@ export class ClienteDetalleComponent implements OnInit {
       },
       error: (error: HttpErrorResponse) => {
         this.ajustandoPuntos.set(false);
-        this.toast.error(this.mensajeError(error, 'No se pudo ajustar los puntos.'));
+        this.toast.error(mensajeError(error, 'No se pudo ajustar los puntos.'));
       },
     });
   }
@@ -252,18 +252,4 @@ export class ClienteDetalleComponent implements OnInit {
     });
   }
 
-  /**
-   * Sin `error_code` que distinguir aqui (a diferencia de ErrorNegocioTpv):
-   * CrmAvanzadoService::ajustarPuntos() lanza un InvalidArgumentException
-   * plano en el backend, sin mapeo a error_code en bootstrap/app.php --
-   * fuera del alcance de este cambio (requiere tocar el backend). El
-   * `message` sigue siendo confiable en desarrollo/staging (APP_DEBUG=true);
-   * en produccion con debug apagado, Laravel devuelve un mensaje generico
-   * en su lugar y este fallback es lo unico que el cajero vera.
-   */
-  private mensajeError(error: HttpErrorResponse, fallback: string): string {
-    const cuerpo = error.error as { message?: string } | undefined;
-
-    return cuerpo?.message ?? fallback;
-  }
 }

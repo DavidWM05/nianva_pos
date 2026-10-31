@@ -13,3 +13,5 @@ export * from './lib/entidad-selector/entidad-selector.component';
 export * from './lib/entidad-selector/entidad-selector.types';
 export * from './lib/toast/toast.service';
 export * from './lib/toast/toast-host.component';
+export * from './lib/errores/codigos-error';
+export * from './lib/errores/errores';

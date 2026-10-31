@@ -1,9 +1,10 @@
+import { HttpErrorResponse } from '@angular/common/http';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { Router, provideRouter } from '@angular/router';
 import { ToastService } from '@nianva/ui-shared';
 import { providePrimeNG } from 'primeng/config';
-import { of } from 'rxjs';
+import { of, throwError } from 'rxjs';
 import { describe, expect, it, vi } from 'vitest';
 
 import { AuthStateService } from '../../../../auth/auth-state.service';
@@ -104,4 +105,21 @@ describe('NominasListComponent', () => {
     });
     expect(toast.success).toHaveBeenCalledWith('Nómina generada.');
   });
-});
+  it('si el backend reporta sucursal_requerida, muestra el mensaje fijo', async () => {
+    await crearComponente();
+    nominaService.generar.mockReturnValue(
+      throwError(
+        () =>
+          new HttpErrorResponse({
+            status: 422,
+            error: { message: 'La operacion requiere una sucursal.', error_code: 'sucursal_requerida' },
+          }),
+      ),
+    );
+
+    fixture.componentInstance['periodoInicio'].set(new Date('2026-07-01T00:00:00Z'));
+    fixture.componentInstance['periodoFin'].set(new Date('2026-07-15T00:00:00Z'));
+    fixture.componentInstance.confirmarGenerar();
+
+    expect(toast.error).toHaveBeenCalledWith('Tu usuario no tiene sucursal asignada; pide a un administrador que te asigne una.');
+  });});

@@ -2,7 +2,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { ChangeDetectionStrategy, Component, HostListener, OnInit, ViewChild, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
-import { EntidadSelectorComponent, ToastService } from '@nianva/ui-shared';
+import { EntidadSelectorComponent, ToastService, mensajeError } from '@nianva/ui-shared';
 import { Button } from 'primeng/button';
 import { InputText } from 'primeng/inputtext';
 import { Select } from 'primeng/select';
@@ -15,7 +15,6 @@ import { CajaSesion } from '../../caja.types';
 import { CuponValidacion, CuponValidacionService } from '../../cupon-validacion.service';
 import { LineasPagoCambio, LineasPagoComponent } from '../../lineas-pago/lineas-pago.component';
 import { LineasProductoCambio, LineasProductoComponent } from '../../lineas-producto/lineas-producto.component';
-import { ErrorNegocioTpv } from '../../tpv-error.types';
 import { Venta, VentaFormPayload, VentaItemPayload, VentaPagoPayload } from '../../venta.types';
 import { VentaService } from '../../venta.service';
 
@@ -246,7 +245,7 @@ export class VentaComponent implements OnInit {
       error: (error: HttpErrorResponse) => {
         this.validandoCupon.set(false);
         this.cuponAplicado.set(null);
-        this.toast.error(this.mensajeError(error, 'Cupón inválido.'));
+        this.toast.error(mensajeError(error, 'Cupón inválido.'));
       },
     });
   }
@@ -279,7 +278,7 @@ export class VentaComponent implements OnInit {
       },
       error: (error: HttpErrorResponse) => {
         this.registrando.set(false);
-        this.toast.error(this.mensajeError(error, 'No se pudo registrar la venta.'));
+        this.toast.error(mensajeError(error, 'No se pudo registrar la venta.'));
       },
     });
   }
@@ -300,9 +299,4 @@ export class VentaComponent implements OnInit {
     this.notaCreditoSeleccionadaId.set(null);
   }
 
-  private mensajeError(error: HttpErrorResponse, fallback: string): string {
-    const cuerpo = error.error as ErrorNegocioTpv | undefined;
-
-    return cuerpo?.message ?? fallback;
-  }
 }
