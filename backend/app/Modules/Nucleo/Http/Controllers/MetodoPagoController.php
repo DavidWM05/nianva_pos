@@ -3,11 +3,12 @@
 namespace App\Modules\Nucleo\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Modules\Nucleo\Http\Requests\GuardarMetodoPagoRequest;
 use App\Modules\Nucleo\Http\Resources\MetodoPagoResource;
 use App\Modules\Nucleo\Models\MetodoPago;
 use App\Modules\Nucleo\Services\TenantContext;
+use App\Modules\Nucleo\Support\GuardasDeRecurso;
 use Illuminate\Http\Request;
-use Illuminate\Validation\Rule;
 
 /**
  * CRUD completo (Fase C). `?solo_activos=1` preserva el contrato original
@@ -18,7 +19,7 @@ use Illuminate\Validation\Rule;
  * Transferencia, ver MetodosPagoSeeder) -- visible para todos los
  * tenants via TenantScope, pero NUNCA editable/desactivable por un
  * tenant normal (solo un superadmin), aunque tenga el permiso
- * metodos_pago.editar/eliminar: ver rechazarSiEsGlobal(). store()
+ * metodos_pago.editar/eliminar: ver GuardasDeRecurso::metodoPagoGlobal(). store()
  * siempre crea con el tenant_id del usuario actual, nunca uno global.
  */
 class MetodoPagoController extends Controller
@@ -67,50 +68,41 @@ class MetodoPagoController extends Controller
         ]);
     }
 
-    public function store(Request $request)
+    public function store(GuardarMetodoPagoRequest $request)
     {
-        $validated = $this->validarDatos($request);
-        $validated['tenant_id'] = app(TenantContext::class)->id();
-        $validated['activo'] = true;
+        $dto = $request->toDto();
 
-        $metodoPago = MetodoPago::create($validated);
+        $metodoPago = MetodoPago::create([
+            'tenant_id' => app(TenantContext::class)->id(),
+            'nombre' => $dto->nombre,
+            'tipo' => $dto->tipo,
+            'incluir_en_financiero' => $dto->incluirEnFinanciero,
+            'activo' => true,
+        ]);
 
         return (new MetodoPagoResource($metodoPago))->response()->setStatusCode(201);
     }
 
-    public function update(Request $request, MetodoPago $metodoPago)
+    public function update(GuardarMetodoPagoRequest $request, MetodoPago $metodoPago)
     {
-        $this->rechazarSiEsGlobal($request, $metodoPago);
+        $dto = $request->toDto();
 
-        $validated = $this->validarDatos($request);
-        $metodoPago->update($validated);
+        $metodoPago->update([
+            'nombre' => $dto->nombre,
+            'tipo' => $dto->tipo,
+            'incluir_en_financiero' => $dto->incluirEnFinanciero,
+        ]);
 
         return new MetodoPagoResource($metodoPago);
     }
 
     public function desactivar(Request $request, MetodoPago $metodoPago)
     {
-        $this->rechazarSiEsGlobal($request, $metodoPago);
+        GuardasDeRecurso::metodoPagoGlobal($metodoPago, $request->user());
 
         $metodoPago->update(['activo' => false]);
 
         return new MetodoPagoResource($metodoPago);
-    }
-
-    private function rechazarSiEsGlobal(Request $request, MetodoPago $metodoPago): void
-    {
-        if ($metodoPago->tenant_id === null && ! $request->user()->esSuperadmin()) {
-            abort(403, 'Este es un método de pago global y no se puede modificar.');
-        }
-    }
-
-    private function validarDatos(Request $request): array
-    {
-        return $request->validate([
-            'nombre' => ['required', 'string', 'max:80'],
-            'tipo' => ['required', Rule::in(['efectivo', 'tarjeta', 'transferencia', 'digital', 'otro'])],
-            'incluir_en_financiero' => ['required', 'boolean'],
-        ]);
     }
 
     /**

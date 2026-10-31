@@ -3,8 +3,9 @@
 namespace App\Modules\Auditoria\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Modules\Auditoria\Http\Requests\FiltrarAuditoriaRequest;
+use App\Modules\Auditoria\Http\Requests\ListarAuditoriaRegistroRequest;
 use App\Modules\Auditoria\Models\Auditoria;
-use Illuminate\Http\Request;
 
 /**
  * Consumido por AuditLogViewerComponent (ui-shared) via AuditoriaService
@@ -24,28 +25,23 @@ class AuditoriaController extends Controller
      * registro de la que "heredar" la autorizacion, es una pantalla de
      * administracion que ve TODOS los cambios del tenant de una vez.
      */
-    public function global(Request $request)
+    public function global(FiltrarAuditoriaRequest $request)
     {
-        $validated = $request->validate([
-            'tabla' => ['nullable', 'string'],
-            'usuario_id' => ['nullable', 'integer'],
-            'fecha_desde' => ['nullable', 'date'],
-            'fecha_hasta' => ['nullable', 'date'],
-        ]);
+        $dto = $request->toDto();
 
         $query = Auditoria::query()->with('usuario:id,nombre,apellido');
 
-        if (! empty($validated['tabla'])) {
-            $query->where('tabla_afectada', $validated['tabla']);
+        if (! empty($dto->tabla)) {
+            $query->where('tabla_afectada', $dto->tabla);
         }
-        if (! empty($validated['usuario_id'])) {
-            $query->where('usuario_id', $validated['usuario_id']);
+        if (! empty($dto->usuarioId)) {
+            $query->where('usuario_id', $dto->usuarioId);
         }
-        if (! empty($validated['fecha_desde'])) {
-            $query->whereDate('created_at', '>=', $validated['fecha_desde']);
+        if (! empty($dto->fechaDesde)) {
+            $query->whereDate('created_at', '>=', $dto->fechaDesde);
         }
-        if (! empty($validated['fecha_hasta'])) {
-            $query->whereDate('created_at', '<=', $validated['fecha_hasta']);
+        if (! empty($dto->fechaHasta)) {
+            $query->whereDate('created_at', '<=', $dto->fechaHasta);
         }
 
         $sortField = $request->query('sort_field');
@@ -77,15 +73,12 @@ class AuditoriaController extends Controller
         ]);
     }
 
-    public function index(Request $request)
+    public function index(ListarAuditoriaRegistroRequest $request)
     {
-        $validated = $request->validate([
-            'tabla' => ['required', 'string'],
-            'registro_id' => ['required', 'integer'],
-        ]);
+        $dto = $request->toDto();
 
-        $entradas = Auditoria::where('tabla_afectada', $validated['tabla'])
-            ->where('registro_id', $validated['registro_id'])
+        $entradas = Auditoria::where('tabla_afectada', $dto->tabla)
+            ->where('registro_id', $dto->registroId)
             ->with('usuario:id,nombre,apellido')
             ->orderByDesc('created_at')
             ->limit(100)

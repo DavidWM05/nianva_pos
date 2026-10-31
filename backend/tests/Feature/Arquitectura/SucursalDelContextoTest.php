@@ -15,7 +15,7 @@ class SucursalDelContextoTest extends TestCase
      * @var array<string, string>
      */
     private const ATRIBUTOS = [
-        'app/Modules/Nucleo/Http/Controllers/UsuarioController.php::validarDatos' => 'Asigna la sucursal de un usuario; es atributo del usuario, no la sucursal de la operacion.',
+        'app/Modules/Nucleo/Http/Requests/GuardarUsuarioRequest.php::rules' => 'Asigna la sucursal de un usuario; es atributo del usuario, no la sucursal de la operacion.',
         'app/Modules/Payroll/Http/Controllers/PayrollController.php::empleadosStore' => 'Asigna la sucursal de un empleado; es atributo del empleado, no la sucursal de la operacion.',
     ];
 

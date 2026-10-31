@@ -18,17 +18,8 @@ class EntradasTipadasTest extends TestCase
      * @var array<string, string>
      */
     private const PENDIENTES = [
-        'app/Modules/Auditoria/Http/Controllers/AuditoriaController.php' => 'Pendiente de lote posterior.',
-        'app/Modules/Configuracion/Http/Controllers/ConfiguracionController.php' => 'Pendiente de lote posterior.',
         'app/Modules/CrmAvanzado/Http/Controllers/CrmAvanzadoController.php' => 'Pendiente de lote posterior.',
         'app/Modules/Delivery/Http/Controllers/PedidoController.php' => 'Pendiente de lote posterior.',
-        'app/Modules/Nucleo/Http/Controllers/AuthController.php' => 'Pendiente de lote posterior.',
-        'app/Modules/Nucleo/Http/Controllers/ConfiguracionSeguridadController.php' => 'Pendiente de lote posterior.',
-        'app/Modules/Nucleo/Http/Controllers/MetodoPagoController.php' => 'Pendiente de lote posterior.',
-        'app/Modules/Nucleo/Http/Controllers/PasswordResetController.php' => 'Pendiente de lote posterior.',
-        'app/Modules/Nucleo/Http/Controllers/RolController.php' => 'Pendiente de lote posterior.',
-        'app/Modules/Nucleo/Http/Controllers/TwoFactorController.php' => 'Pendiente de lote posterior.',
-        'app/Modules/Nucleo/Http/Controllers/UsuarioController.php' => 'Pendiente de lote posterior.',
         'app/Modules/Payroll/Http/Controllers/PayrollController.php' => 'Pendiente de lote posterior.',
         'app/Modules/Prestamos/Http/Controllers/PrestamoController.php' => 'Pendiente de lote posterior.',
     ];

@@ -3,14 +3,12 @@
 namespace App\Modules\Nucleo\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Modules\Nucleo\Http\Requests\GuardarUsuarioRequest;
 use App\Modules\Nucleo\Http\Resources\UsuarioAdminResource;
 use App\Modules\Nucleo\Models\Rol;
 use App\Modules\Nucleo\Models\Usuario;
 use App\Modules\Nucleo\Services\TenantContext;
-use App\Modules\Nucleo\Support\ReglasTenant;
 use Illuminate\Http\Request;
-use Illuminate\Validation\Rule;
-use Illuminate\Validation\Rules\Password as PasswordRule;
 
 /**
  * Fase C: primer CRUD de administracion (Usuarios/Roles). Mismo esquema
@@ -61,35 +59,35 @@ class UsuarioController extends Controller
         ]);
     }
 
-    public function store(Request $request)
+    public function store(GuardarUsuarioRequest $request)
     {
-        $validated = $this->validarDatos($request);
-        $roles = $this->rolesVisiblesDelTenant($validated['roles'] ?? []);
-        unset($validated['roles']);
+        $dto = $request->toDto();
+        $roles = $this->rolesVisiblesDelTenant($dto->rolesParaSync());
+        $datos = $dto->datosPresentes();
 
-        $validated['tenant_id'] = app(TenantContext::class)->id();
-        $validated['activo'] = true;
+        $datos['tenant_id'] = app(TenantContext::class)->id();
+        $datos['activo'] = true;
 
-        $usuario = Usuario::create($validated);
+        $usuario = Usuario::create($datos);
         $usuario->roles()->sync($roles);
         $usuario->load(['sucursal:id,nombre', 'roles:id,nombre']);
 
         return (new UsuarioAdminResource($usuario))->response()->setStatusCode(201);
     }
 
-    public function update(Request $request, Usuario $usuario)
+    public function update(GuardarUsuarioRequest $request, Usuario $usuario)
     {
-        $validated = $this->validarDatos($request, $usuario->id);
-        $roles = $this->rolesVisiblesDelTenant($validated['roles'] ?? []);
-        unset($validated['roles']);
+        $dto = $request->toDto();
+        $roles = $this->rolesVisiblesDelTenant($dto->rolesParaSync());
+        $datos = $dto->datosPresentes();
 
         // Contrasena opcional en edicion -- omitirla del array deja el
         // valor actual intacto (nunca se sobreescribe con null/vacio).
-        if (empty($validated['password'])) {
-            unset($validated['password']);
+        if (empty($datos['password'])) {
+            unset($datos['password']);
         }
 
-        $usuario->update($validated);
+        $usuario->update($datos);
         $usuario->roles()->sync($roles);
         $usuario->load(['sucursal:id,nombre', 'roles:id,nombre']);
 
@@ -160,28 +158,6 @@ class UsuarioController extends Controller
         }
 
         return Rol::whereIn('id', $rolesIds)->pluck('id')->all();
-    }
-
-    private function validarDatos(Request $request, ?int $usuarioIdActual = null): array
-    {
-        $tenantId = app(TenantContext::class)->id();
-
-        $validated = $request->validate([
-            'nombre' => ['required', 'string', 'max:150'],
-            'apellido' => ['nullable', 'string', 'max:150'],
-            'alias' => ['nullable', 'string', 'max:50'],
-            'correo' => [
-                'required', 'email', 'max:150',
-                Rule::unique('usuarios', 'correo')->ignore($usuarioIdActual),
-            ],
-            'password' => [$usuarioIdActual === null ? 'required' : 'nullable', PasswordRule::min(8)],
-            'telefono' => ['nullable', 'string', 'max:20'],
-            'sucursal_id' => ['nullable', 'integer', ReglasTenant::existe('sucursales', $tenantId)],
-            'roles' => ['nullable', 'array'],
-            'roles.*' => ['integer', ReglasTenant::existeGlobalODelTenant('roles', $tenantId)],
-        ]);
-
-        return $validated;
     }
 
     /**
