@@ -48,9 +48,11 @@ Action y devuelve el Resource. Solo los controladores importan `App\Aplicacion`.
 ## 3. Patrones obligatorios — no reinventar
 
 - **Aislamiento de tenant**: todo modelo de negocio usa `BelongsToTenant` (columna `tenant_id`
-  propia) o `BelongsToTenantViaRelacion` (`tenantRelacion()` vía `whereHas`). Nunca confíes
-  solo en una Policy para aislar por tenant — las Policies de este repo no están conectadas a
-  `authorize()` en ningún controller.
+  propia) o `BelongsToTenantViaRelacion` (`tenantRelacion()` vía `whereHas`).
+- **Permisos (SEG-03)**: toda ruta bajo `auth:sanctum` lleva el middleware
+  `permiso:<modulo.accion>`; es la única autoridad (no hay Policies). Una ruta sin permiso va
+  en `EXENTAS` de `Arquitectura/RutasConPermisoTest` con su razón. Un permiso nuevo se
+  agrega a `NucleoRolesPermisosSeeder`.
 - **Auditoría**: agregar el FQCN del modelo a `config/auditoria.php` (array `auditables`).
   Nunca un trait en el modelo, nunca lógica de auditoría dentro del propio módulo.
 - **Pago mixto**: toda entidad que cobra/paga usa una tabla `*_pagos` dedicada

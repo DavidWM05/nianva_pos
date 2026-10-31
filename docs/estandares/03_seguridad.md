@@ -36,8 +36,11 @@
 
 ### SEG-03 · Permisos conectados
 - **Regla:**
-  - toda acción está protegida por un permiso (`modulo.accion`), verificado en el
-    `authorize()` del FormRequest o con una Policy;
+  - toda acción está protegida por un permiso (`modulo.accion`), verificado por el
+    middleware `permiso:<modulo.accion>` de su ruta; es la única autoridad (sin Policies, para
+    no tener dos reglas que se contradigan);
+  - una ruta autenticada sin permiso solo se acepta como autoservicio del propio usuario o
+    dato público del tenant, y queda listada con su razón en el test;
   - las lecturas sensibles (reportes financieros, utilidad, costo, kardex, bitácora) tienen
     permisos propios: ver ventas no implica ver costos;
   - el frontend usa los mismos permisos para el menú y los guards, pero la autoridad es el
@@ -46,9 +49,10 @@
   - en Pro, las Policies existen y ningún controlador las llama (C2);
   - en Lite hubo reportes visibles para roles que no debían verlos (L-29).
 - **Verifica:**
-  - un test que recorre las rutas y exige un middleware `permiso:*` o un `authorize()` no
-    trivial;
-  - una matriz rol × endpoint en tests (vendedor, cajero, supervisor, admin).
+  - `Arquitectura/RutasConPermisoTest`: recorre las rutas y exige `permiso:*` salvo las
+    `EXENTAS`;
+  - `Permisos/MatrizPermisosTest`: matriz rol × endpoint (hoy `admin` y `vendedor`; cajero y
+    supervisor se agregan cuando existan).
 - **Desde:** Fase 1.
 
 ### SEG-04 · Sin HTML sin escapar

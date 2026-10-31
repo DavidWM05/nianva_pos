@@ -13,7 +13,8 @@
 
   - **Controller:** delgado. Recibe el FormRequest, llama una Action y devuelve un Resource. Sin
     consultas, sin reglas de negocio y sin transacciones.
-  - **FormRequest:** valida, autoriza (Policy) y entrega un DTO.
+  - **FormRequest:** valida y entrega un DTO. El permiso lo revisa el middleware `permiso:*`
+    de la ruta (SEG-03).
   - **Action:** un caso de uso (`RegistrarVenta`, `AbonarCredito`). Es dueña de la transacción.
   - **Service:** lógica de dominio reutilizable y sin estado (`PricingService`, `StockLedger`).
   - **Model:** relaciones, scopes y casts. Sin reglas de negocio.
