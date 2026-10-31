@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Modules\Inventario\Support\ReglasVariante;
 use App\Modules\Nucleo\Services\TenantContext;
 use App\Modules\Nucleo\Support\ReglasTenant;
+use App\Modules\Nucleo\Support\SucursalOperacion;
 use App\Modules\Produccion\Http\Resources\InsumoResource;
 use App\Modules\Produccion\Http\Resources\OrdenProduccionResource;
 use App\Modules\Produccion\Http\Resources\RecetaResource;
@@ -89,15 +90,23 @@ class ProduccionController extends Controller
         $tenantId = app(TenantContext::class)->id();
 
         $validated = $request->validate([
-            'sucursal_id' => ['required', 'integer', ReglasTenant::existe('sucursales', $tenantId)],
+            'sucursal_id' => ['nullable', 'integer', ReglasTenant::existe('sucursales', $tenantId)],
             'cantidad' => ['required', 'numeric', 'min:0.01'],
             'lote' => ['nullable', 'string', 'max:50'],
             'fecha_vencimiento' => ['nullable', 'date'],
         ]);
 
+        $usuario = $request->user();
+
+        if ($usuario === null) {
+            abort(401);
+        }
+
+        $sucursalId = SucursalOperacion::paraEscritura($usuario, $validated['sucursal_id'] ?? null);
+
         $stock = InsumoStock::firstOrNew([
             'insumo_id' => $insumo->id,
-            'sucursal_id' => $validated['sucursal_id'],
+            'sucursal_id' => $sucursalId,
             'lote' => $validated['lote'] ?? null,
         ]);
 

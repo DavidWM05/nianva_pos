@@ -29,7 +29,7 @@ class NucleoRolesPermisosSeeder extends Seeder
      */
     private const PERMISOS = [
         'tenants' => ['ver', 'crear', 'editar', 'eliminar'],
-        'sucursales' => ['ver', 'crear', 'editar', 'eliminar'],
+        'sucursales' => ['ver', 'crear', 'editar', 'eliminar', 'todas'],
         'roles' => ['ver', 'crear', 'editar', 'eliminar'],
         'permisos' => ['ver', 'crear', 'editar', 'eliminar'],
         'usuarios' => ['ver', 'crear', 'editar', 'eliminar'],

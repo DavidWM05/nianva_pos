@@ -8,6 +8,7 @@ use App\Modules\Cotizaciones\Models\Cotizacion;
 use App\Modules\Cotizaciones\Services\CotizacionService;
 use App\Modules\Inventario\Support\ReglasVariante;
 use App\Modules\Nucleo\Support\ReglasTenant;
+use App\Modules\Nucleo\Support\SucursalOperacion;
 use Illuminate\Http\Request;
 
 /**
@@ -75,7 +76,7 @@ class CotizacionController extends Controller
 
         $validated = $request->validate([
             'cliente_id' => ['nullable', 'integer', ReglasTenant::existe('clientes', $tenantId)],
-            'sucursal_id' => ['required', 'integer', ReglasTenant::existe('sucursales', $tenantId)],
+            'sucursal_id' => ['nullable', 'integer', ReglasTenant::existe('sucursales', $tenantId)],
             'validez_dias' => ['nullable', 'integer', 'min:1', 'max:365'],
             'descuento' => ['nullable', 'numeric', 'min:0'],
             'uso_cfdi' => ['nullable', 'string', 'max:10'],
@@ -89,10 +90,16 @@ class CotizacionController extends Controller
 
         $usuario = $request->user();
 
+        if ($usuario === null) {
+            abort(401);
+        }
+
+        $sucursalId = SucursalOperacion::paraEscritura($usuario, $validated['sucursal_id'] ?? null);
+
         $cotizacion = $cotizacionService->crear(
             [
                 'tenant_id' => $tenantId,
-                'sucursal_id' => $validated['sucursal_id'],
+                'sucursal_id' => $sucursalId,
                 'usuario_id' => $usuario->id,
                 'cliente_id' => $validated['cliente_id'] ?? null,
                 'validez_dias' => $validated['validez_dias'] ?? 15,

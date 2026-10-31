@@ -9,6 +9,7 @@ use App\Modules\Delivery\Services\PedidoService;
 use App\Modules\Inventario\Support\ReglasVariante;
 use App\Modules\Nucleo\Services\TenantContext;
 use App\Modules\Nucleo\Support\ReglasTenant;
+use App\Modules\Nucleo\Support\SucursalOperacion;
 use Illuminate\Http\Request;
 
 class PedidoController extends Controller
@@ -61,7 +62,7 @@ class PedidoController extends Controller
 
         $validated = $request->validate([
             'cliente_id' => ['required', 'integer', ReglasTenant::existe('clientes', $tenantId)],
-            'sucursal_id' => ['required', 'integer', ReglasTenant::existe('sucursales', $tenantId)],
+            'sucursal_id' => ['nullable', 'integer', ReglasTenant::existe('sucursales', $tenantId)],
             'direccion_entrega' => ['nullable', 'string', 'max:500'],
             'referencia' => ['nullable', 'string', 'max:255'],
             'costo_delivery' => ['nullable', 'numeric', 'min:0'],
@@ -75,10 +76,16 @@ class PedidoController extends Controller
 
         $usuario = $request->user();
 
+        if ($usuario === null) {
+            abort(401);
+        }
+
+        $sucursalId = SucursalOperacion::paraEscritura($usuario, $validated['sucursal_id'] ?? null);
+
         $pedido = $service->crear(
             [
                 'tenant_id' => $tenantId,
-                'sucursal_id' => $validated['sucursal_id'],
+                'sucursal_id' => $sucursalId,
                 'usuario_id' => $usuario->id,
                 'cliente_id' => $validated['cliente_id'],
                 'direccion_entrega' => $validated['direccion_entrega'] ?? null,
