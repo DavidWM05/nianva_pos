@@ -3,10 +3,10 @@
 namespace App\Modules\CuentasPagar\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Modules\CuentasPagar\Http\Requests\RegistrarPagoRequest;
 use App\Modules\CuentasPagar\Http\Resources\CuentaPagarResource;
 use App\Modules\CuentasPagar\Models\CuentaPagar;
 use App\Modules\CuentasPagar\Services\CuentasPagarService;
-use App\Modules\Nucleo\Support\ReglasTenant;
 use Illuminate\Http\Request;
 
 class CuentaPagarController extends Controller
@@ -56,24 +56,22 @@ class CuentaPagarController extends Controller
         return new CuentaPagarResource($cuentaPagar);
     }
 
-    public function registrarPago(Request $request, int $id, CuentasPagarService $service)
+    public function registrarPago(RegistrarPagoRequest $request, int $id, CuentasPagarService $service)
     {
-        $tenantId = $request->user()->tenant_id;
-
-        $validated = $request->validate([
-            'monto' => ['required', 'numeric', 'min:0.01'],
-            'metodo_pago_id' => ['required', 'integer', ReglasTenant::existeGlobalODelTenant('metodos_pago', $tenantId)],
-            'referencia' => ['nullable', 'string', 'max:100'],
-        ]);
-
         $usuario = $request->user();
 
+        if ($usuario === null) {
+            abort(401);
+        }
+
+        $dto = $request->toDto();
+
         $abono = $service->registrarPago($id, [
-            'sucursal_id' => $usuario->sucursal_id,
+            'sucursal_id' => (int) $usuario->getAttribute('sucursal_id'),
             'usuario_id' => $usuario->id,
-            'monto' => $validated['monto'],
-            'metodo_pago_id' => $validated['metodo_pago_id'],
-            'referencia' => $validated['referencia'] ?? null,
+            'monto' => $dto->monto,
+            'metodo_pago_id' => $dto->metodoPagoId,
+            'referencia' => $dto->referencia,
         ]);
 
         $cuenta = CuentaPagar::with('proveedor')->findOrFail($id);

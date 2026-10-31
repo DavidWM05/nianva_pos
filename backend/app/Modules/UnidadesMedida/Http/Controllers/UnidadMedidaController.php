@@ -3,6 +3,7 @@
 namespace App\Modules\UnidadesMedida\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Modules\UnidadesMedida\Http\Requests\GuardarUnidadMedidaRequest;
 use App\Modules\UnidadesMedida\Http\Resources\UnidadMedidaResource;
 use App\Modules\UnidadesMedida\Models\UnidadMedida;
 use App\Modules\UnidadesMedida\Services\UnidadMedidaService;
@@ -35,31 +36,25 @@ class UnidadMedidaController extends Controller
         ]);
     }
 
-    public function store(Request $request, UnidadMedidaService $service)
+    public function store(GuardarUnidadMedidaRequest $request, UnidadMedidaService $service)
     {
-        $validated = $request->validate([
-            'nombre' => ['required', 'string', 'max:50'],
-            'abreviatura' => ['required', 'string', 'max:10'],
-            'tipo' => ['required', 'string', 'in:entero,fraccionario'],
-        ]);
+        $usuario = $request->user();
 
-        $validated['tenant_id'] = $request->user()->tenant_id;
+        if ($usuario === null) {
+            abort(401);
+        }
 
-        $unidad = $service->crear($validated);
+        $datos = $request->toDto()->datosPresentes();
+        $datos['tenant_id'] = (int) $usuario->getAttribute('tenant_id');
+
+        $unidad = $service->crear($datos);
 
         return (new UnidadMedidaResource($unidad))->response()->setStatusCode(201);
     }
 
-    public function update(Request $request, int $id, UnidadMedidaService $service)
+    public function update(GuardarUnidadMedidaRequest $request, int $id, UnidadMedidaService $service)
     {
-        $validated = $request->validate([
-            'nombre' => ['sometimes', 'string', 'max:50'],
-            'abreviatura' => ['sometimes', 'string', 'max:10'],
-            'tipo' => ['sometimes', 'string', 'in:entero,fraccionario'],
-            'activo' => ['sometimes', 'boolean'],
-        ]);
-
-        $unidad = $service->actualizar($id, $validated);
+        $unidad = $service->actualizar($id, $request->toDto()->datosPresentes());
 
         return new UnidadMedidaResource($unidad);
     }

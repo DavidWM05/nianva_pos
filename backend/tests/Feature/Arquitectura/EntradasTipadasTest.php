@@ -20,12 +20,8 @@ class EntradasTipadasTest extends TestCase
     private const PENDIENTES = [
         'app/Modules/Auditoria/Http/Controllers/AuditoriaController.php' => 'Pendiente de lote posterior.',
         'app/Modules/Configuracion/Http/Controllers/ConfiguracionController.php' => 'Pendiente de lote posterior.',
-        'app/Modules/Cotizaciones/Http/Controllers/CotizacionController.php' => 'Pendiente de lote posterior.',
         'app/Modules/CrmAvanzado/Http/Controllers/CrmAvanzadoController.php' => 'Pendiente de lote posterior.',
-        'app/Modules/CuentasCobrar/Http/Controllers/CuentaCobrarController.php' => 'Pendiente de lote posterior.',
-        'app/Modules/CuentasPagar/Http/Controllers/CuentaPagarController.php' => 'Pendiente de lote posterior.',
         'app/Modules/Delivery/Http/Controllers/PedidoController.php' => 'Pendiente de lote posterior.',
-        'app/Modules/GiftCards/Http/Controllers/GiftCardController.php' => 'Pendiente de lote posterior.',
         'app/Modules/Nucleo/Http/Controllers/AuthController.php' => 'Pendiente de lote posterior.',
         'app/Modules/Nucleo/Http/Controllers/ConfiguracionSeguridadController.php' => 'Pendiente de lote posterior.',
         'app/Modules/Nucleo/Http/Controllers/MetodoPagoController.php' => 'Pendiente de lote posterior.',
@@ -35,8 +31,6 @@ class EntradasTipadasTest extends TestCase
         'app/Modules/Nucleo/Http/Controllers/UsuarioController.php' => 'Pendiente de lote posterior.',
         'app/Modules/Payroll/Http/Controllers/PayrollController.php' => 'Pendiente de lote posterior.',
         'app/Modules/Prestamos/Http/Controllers/PrestamoController.php' => 'Pendiente de lote posterior.',
-        'app/Modules/Produccion/Http/Controllers/ProduccionController.php' => 'Pendiente de lote posterior.',
-        'app/Modules/UnidadesMedida/Http/Controllers/UnidadMedidaController.php' => 'Pendiente de lote posterior.',
     ];
 
     public function test_los_controladores_no_validan_en_linea(): void

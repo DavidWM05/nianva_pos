@@ -3,12 +3,12 @@
 namespace App\Modules\Cotizaciones\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Modules\Cotizaciones\Http\Requests\ActualizarCotizacionRequest;
+use App\Modules\Cotizaciones\Http\Requests\ConvertirCotizacionRequest;
+use App\Modules\Cotizaciones\Http\Requests\CrearCotizacionRequest;
 use App\Modules\Cotizaciones\Http\Resources\CotizacionResource;
 use App\Modules\Cotizaciones\Models\Cotizacion;
 use App\Modules\Cotizaciones\Services\CotizacionService;
-use App\Modules\Inventario\Support\ReglasVariante;
-use App\Modules\Nucleo\Support\ReglasTenant;
-use App\Modules\Nucleo\Support\SucursalOperacion;
 use Illuminate\Http\Request;
 
 /**
@@ -70,44 +70,28 @@ class CotizacionController extends Controller
         ]);
     }
 
-    public function store(Request $request, CotizacionService $cotizacionService)
+    public function store(CrearCotizacionRequest $request, CotizacionService $cotizacionService)
     {
-        $tenantId = $request->user()->tenant_id;
-
-        $validated = $request->validate([
-            'cliente_id' => ['nullable', 'integer', ReglasTenant::existe('clientes', $tenantId)],
-            'sucursal_id' => ['nullable', 'integer', ReglasTenant::existe('sucursales', $tenantId)],
-            'validez_dias' => ['nullable', 'integer', 'min:1', 'max:365'],
-            'descuento' => ['nullable', 'numeric', 'min:0'],
-            'uso_cfdi' => ['nullable', 'string', 'max:10'],
-            'observaciones' => ['nullable', 'string', 'max:1000'],
-            'items' => ['required', 'array', 'min:1'],
-            'items.*.variante_id' => ['required', 'integer', ReglasVariante::delTenant($tenantId)],
-            'items.*.cantidad' => ['required', 'integer', 'min:1'],
-            'items.*.precio_unitario' => ['required', 'numeric', 'min:0'],
-            'items.*.descuento' => ['nullable', 'numeric', 'min:0'],
-        ]);
-
         $usuario = $request->user();
 
         if ($usuario === null) {
             abort(401);
         }
 
-        $sucursalId = SucursalOperacion::paraEscritura($usuario, $validated['sucursal_id'] ?? null);
+        $dto = $request->toDto();
 
         $cotizacion = $cotizacionService->crear(
             [
-                'tenant_id' => $tenantId,
-                'sucursal_id' => $sucursalId,
+                'tenant_id' => (int) $usuario->getAttribute('tenant_id'),
+                'sucursal_id' => $dto->sucursalId,
                 'usuario_id' => $usuario->id,
-                'cliente_id' => $validated['cliente_id'] ?? null,
-                'validez_dias' => $validated['validez_dias'] ?? 15,
-                'descuento' => $validated['descuento'] ?? 0,
-                'observaciones' => $validated['observaciones'] ?? null,
-                'uso_cfdi' => $validated['uso_cfdi'] ?? null,
+                'cliente_id' => $dto->clienteId,
+                'validez_dias' => $dto->validezDias,
+                'descuento' => $dto->descuento,
+                'observaciones' => $dto->observaciones,
+                'uso_cfdi' => $dto->usoCfdi,
             ],
-            $validated['items'],
+            $dto->itemsParaServicio(),
         );
 
         return (new CotizacionResource($cotizacion))->response()->setStatusCode(201);
@@ -120,24 +104,11 @@ class CotizacionController extends Controller
         return new CotizacionResource($cotizacion);
     }
 
-    public function update(Request $request, int $id, CotizacionService $cotizacionService)
+    public function update(ActualizarCotizacionRequest $request, int $id, CotizacionService $cotizacionService)
     {
-        $tenantId = $request->user()->tenant_id;
+        $dto = $request->toDto();
 
-        $validated = $request->validate([
-            'cliente_id' => ['nullable', 'integer', ReglasTenant::existe('clientes', $tenantId)],
-            'validez_dias' => ['nullable', 'integer', 'min:1', 'max:365'],
-            'descuento' => ['nullable', 'numeric', 'min:0'],
-            'uso_cfdi' => ['nullable', 'string', 'max:10'],
-            'observaciones' => ['nullable', 'string', 'max:1000'],
-            'items' => ['required', 'array', 'min:1'],
-            'items.*.variante_id' => ['required', 'integer', ReglasVariante::delTenant($tenantId)],
-            'items.*.cantidad' => ['required', 'integer', 'min:1'],
-            'items.*.precio_unitario' => ['required', 'numeric', 'min:0'],
-            'items.*.descuento' => ['nullable', 'numeric', 'min:0'],
-        ]);
-
-        $cotizacion = $cotizacionService->actualizar($id, $validated, $validated['items']);
+        $cotizacion = $cotizacionService->actualizar($id, $dto->datosPresentes(), $dto->itemsParaServicio());
 
         return new CotizacionResource($cotizacion);
     }
@@ -149,19 +120,17 @@ class CotizacionController extends Controller
         return response()->json(['message' => 'Cotización anulada correctamente.']);
     }
 
-    public function convertir(Request $request, int $id, CotizacionService $cotizacionService)
+    public function convertir(ConvertirCotizacionRequest $request, int $id, CotizacionService $cotizacionService)
     {
-        $tenantId = $request->user()->tenant_id;
-
-        $validated = $request->validate([
-            'metodo_pago_id' => ['required', 'integer', ReglasTenant::existeGlobalODelTenant('metodos_pago', $tenantId)],
-        ]);
-
         $usuario = $request->user();
+
+        if ($usuario === null) {
+            abort(401);
+        }
 
         $venta = $cotizacionService->convertirAVenta($id, [
             'usuario_id' => $usuario->id,
-            'metodo_pago_id' => $validated['metodo_pago_id'],
+            'metodo_pago_id' => $request->toDto()->metodoPagoId,
         ]);
 
         return response()->json([

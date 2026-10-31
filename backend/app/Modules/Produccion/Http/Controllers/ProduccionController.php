@@ -3,10 +3,14 @@
 namespace App\Modules\Produccion\Http\Controllers;
 
 use App\Http\Controllers\Controller;
-use App\Modules\Inventario\Support\ReglasVariante;
+use App\Modules\Nucleo\Models\Usuario;
 use App\Modules\Nucleo\Services\TenantContext;
-use App\Modules\Nucleo\Support\ReglasTenant;
-use App\Modules\Nucleo\Support\SucursalOperacion;
+use App\Modules\Produccion\Http\Requests\CambiarEstadoOrdenRequest;
+use App\Modules\Produccion\Http\Requests\CrearInsumoRequest;
+use App\Modules\Produccion\Http\Requests\CrearOrdenProduccionRequest;
+use App\Modules\Produccion\Http\Requests\CrearRecetaRequest;
+use App\Modules\Produccion\Http\Requests\CrearTransformacionRequest;
+use App\Modules\Produccion\Http\Requests\GuardarInsumoStockRequest;
 use App\Modules\Produccion\Http\Resources\InsumoResource;
 use App\Modules\Produccion\Http\Resources\OrdenProduccionResource;
 use App\Modules\Produccion\Http\Resources\RecetaResource;
@@ -18,7 +22,6 @@ use App\Modules\Produccion\Models\Receta;
 use App\Modules\Produccion\Models\TransformacionProducto;
 use App\Modules\Produccion\Services\ProduccionService;
 use Illuminate\Http\Request;
-use Illuminate\Validation\Rule;
 
 class ProduccionController extends Controller
 {
@@ -62,20 +65,12 @@ class ProduccionController extends Controller
         ]);
     }
 
-    public function insumosStore(Request $request)
+    public function insumosStore(CrearInsumoRequest $request)
     {
-        $tenantId = app(TenantContext::class)->id();
+        $datos = $request->toDto()->datosPresentes();
+        $datos['tenant_id'] = app(TenantContext::class)->id();
 
-        $v = $request->validate([
-            'nombre' => 'required|string|max:200',
-            'sku' => ['nullable', 'string', 'max:50', Rule::unique('insumos', 'sku')->where('tenant_id', $tenantId)],
-            'unidad_medida_id' => ['required', 'integer', ReglasTenant::existeGlobalODelTenant('unidades_medida', $tenantId)],
-            'costo' => 'nullable|numeric|min:0',
-            'stock_minimo' => 'nullable|numeric|min:0',
-        ]);
-        $v['tenant_id'] = $tenantId;
-
-        return (new InsumoResource(Insumo::create($v)))->response()->setStatusCode(201);
+        return (new InsumoResource(Insumo::create($datos)))->response()->setStatusCode(201);
     }
 
     public function insumoStocks(Insumo $insumo)
@@ -85,37 +80,22 @@ class ProduccionController extends Controller
         return response()->json(['data' => $stocks]);
     }
 
-    public function insumoStocksStore(Request $request, Insumo $insumo)
+    public function insumoStocksStore(GuardarInsumoStockRequest $request, Insumo $insumo)
     {
-        $tenantId = app(TenantContext::class)->id();
-
-        $validated = $request->validate([
-            'sucursal_id' => ['nullable', 'integer', ReglasTenant::existe('sucursales', $tenantId)],
-            'cantidad' => ['required', 'numeric', 'min:0.01'],
-            'lote' => ['nullable', 'string', 'max:50'],
-            'fecha_vencimiento' => ['nullable', 'date'],
-        ]);
-
-        $usuario = $request->user();
-
-        if ($usuario === null) {
-            abort(401);
-        }
-
-        $sucursalId = SucursalOperacion::paraEscritura($usuario, $validated['sucursal_id'] ?? null);
+        $dto = $request->toDto();
 
         $stock = InsumoStock::firstOrNew([
             'insumo_id' => $insumo->id,
-            'sucursal_id' => $sucursalId,
-            'lote' => $validated['lote'] ?? null,
+            'sucursal_id' => $dto->sucursalId,
+            'lote' => $dto->lote,
         ]);
 
         if ($stock->exists) {
-            $stock->increment('cantidad', $validated['cantidad']);
+            $stock->increment('cantidad', $dto->cantidad);
         } else {
             $stock->fill([
-                'cantidad' => $validated['cantidad'],
-                'fecha_vencimiento' => $validated['fecha_vencimiento'] ?? null,
+                'cantidad' => $dto->cantidad,
+                'fecha_vencimiento' => $dto->fechaVencimiento,
             ])->save();
         }
 
@@ -150,22 +130,12 @@ class ProduccionController extends Controller
         ]);
     }
 
-    public function recetasStore(Request $request)
+    public function recetasStore(CrearRecetaRequest $request)
     {
-        $tenantId = app(TenantContext::class)->id();
+        $datos = $request->toDto()->datos();
+        $datos['tenant_id'] = app(TenantContext::class)->id();
 
-        $v = $request->validate([
-            'variante_id' => ['required', 'integer', ReglasVariante::delTenant($tenantId)],
-            'nombre' => 'required|string|max:200', 'rendimiento' => 'nullable|numeric|min:0.01',
-            'instrucciones' => 'nullable|string', 'descripcion' => 'nullable|string',
-            'ingredientes' => 'required|array|min:1',
-            'ingredientes.*.insumo_id' => ['required', 'integer', ReglasTenant::existe('insumos', $tenantId)],
-            'ingredientes.*.cantidad' => 'required|numeric|min:0.01',
-            'ingredientes.*.unidad_medida_id' => ['required', 'integer', ReglasTenant::existeGlobalODelTenant('unidades_medida', $tenantId)],
-        ]);
-        $v['tenant_id'] = app(TenantContext::class)->id();
-
-        return (new RecetaResource($this->produccionService->crearReceta($v)))->response()->setStatusCode(201);
+        return (new RecetaResource($this->produccionService->crearReceta($datos)))->response()->setStatusCode(201);
     }
 
     public function ordenesIndex(Request $request)
@@ -192,30 +162,25 @@ class ProduccionController extends Controller
         ]);
     }
 
-    public function ordenesStore(Request $request)
+    public function ordenesStore(CrearOrdenProduccionRequest $request)
     {
-        $tenantId = app(TenantContext::class)->id();
+        $usuario = $this->usuario($request);
+        $datos = $request->toDto()->datos();
+        $datos['tenant_id'] = app(TenantContext::class)->id();
+        $datos['sucursal_id'] = (int) $usuario->getAttribute('sucursal_id');
+        $datos['usuario_id'] = $usuario->id;
 
-        $v = $request->validate([
-            'receta_id' => ['required', 'integer', ReglasTenant::existe('recetas', $tenantId)],
-            'cantidad_programada' => 'required|integer|min:1',
-            'fecha_programada' => 'nullable|date',
-            'notas' => 'nullable|string|max:1000',
-        ]);
-        $v['tenant_id'] = app(TenantContext::class)->id();
-        $v['sucursal_id'] = $request->user()->sucursal_id;
-        $v['usuario_id'] = $request->user()->id;
-
-        return (new OrdenProduccionResource($this->produccionService->crearOrdenProduccion($v)))->response()->setStatusCode(201);
+        return (new OrdenProduccionResource($this->produccionService->crearOrdenProduccion($datos)))->response()->setStatusCode(201);
     }
 
-    public function ordenesCambiarEstado(Request $request, int $id)
+    public function ordenesCambiarEstado(CambiarEstadoOrdenRequest $request, int $id)
     {
-        $v = $request->validate(['estado' => 'required|string|in:pendiente,en_proceso,completada,cancelada', 'cantidad_producida' => 'required_if:estado,completada|integer|min:1']);
-        if ($v['estado'] === 'completada') {
-            return new OrdenProduccionResource($this->produccionService->completarOrden($id, $v['cantidad_producida']));
+        $dto = $request->toDto();
+
+        if ($dto->estado === 'completada') {
+            return new OrdenProduccionResource($this->produccionService->completarOrden($id, (int) $dto->cantidadProducida));
         }
-        OrdenProduccion::where('id', $id)->update(['estado' => $v['estado']]);
+        OrdenProduccion::where('id', $id)->update(['estado' => $dto->estado]);
 
         return response()->json(['message' => 'Estado actualizado.']);
     }
@@ -244,22 +209,26 @@ class ProduccionController extends Controller
         ]);
     }
 
-    public function transformacionStore(Request $request)
+    public function transformacionStore(CrearTransformacionRequest $request)
     {
-        $tenantId = app(TenantContext::class)->id();
+        $usuario = $this->usuario($request);
+        $datos = $request->toDto()->datos();
+        $datos['tenant_id'] = app(TenantContext::class)->id();
+        $datos['sucursal_id'] = (int) $usuario->getAttribute('sucursal_id');
+        $datos['usuario_id'] = $usuario->id;
 
-        $v = $request->validate([
-            'variante_origen_id' => ['required', 'integer', ReglasVariante::delTenant($tenantId)],
-            'variante_destino_id' => ['required', 'integer', ReglasVariante::delTenant($tenantId)],
-            'cantidad_origen' => 'required|numeric|min:0.01',
-            'cantidad_destino' => 'required|numeric|min:0.01',
-            'notas' => 'nullable|string|max:1000',
-        ]);
-        $v['tenant_id'] = app(TenantContext::class)->id();
-        $v['sucursal_id'] = $request->user()->sucursal_id;
-        $v['usuario_id'] = $request->user()->id;
+        return (new TransformacionResource($this->produccionService->registrarTransformacion($datos)))->response()->setStatusCode(201);
+    }
 
-        return (new TransformacionResource($this->produccionService->registrarTransformacion($v)))->response()->setStatusCode(201);
+    private function usuario(Request $request): Usuario
+    {
+        $usuario = $request->user();
+
+        if ($usuario === null) {
+            abort(401);
+        }
+
+        return $usuario;
     }
 
     private function permisosDe(Request $request, string $modulo, array $acciones): array

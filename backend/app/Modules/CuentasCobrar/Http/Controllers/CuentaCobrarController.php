@@ -3,10 +3,10 @@
 namespace App\Modules\CuentasCobrar\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Modules\CuentasCobrar\Http\Requests\RegistrarAbonoRequest;
 use App\Modules\CuentasCobrar\Http\Resources\CuentaCobrarResource;
 use App\Modules\CuentasCobrar\Models\CuentaCobrar;
 use App\Modules\CuentasCobrar\Services\CuentasCobrarService;
-use App\Modules\Nucleo\Support\ReglasTenant;
 use Illuminate\Http\Request;
 
 /**
@@ -67,24 +67,22 @@ class CuentaCobrarController extends Controller
         return new CuentaCobrarResource($cuentaCobrar);
     }
 
-    public function registrarAbono(Request $request, int $id, CuentasCobrarService $service)
+    public function registrarAbono(RegistrarAbonoRequest $request, int $id, CuentasCobrarService $service)
     {
-        $tenantId = $request->user()->tenant_id;
-
-        $validated = $request->validate([
-            'monto' => ['required', 'numeric', 'min:0.01'],
-            'metodo_pago_id' => ['required', 'integer', ReglasTenant::existeGlobalODelTenant('metodos_pago', $tenantId)],
-            'referencia' => ['nullable', 'string', 'max:100'],
-        ]);
-
         $usuario = $request->user();
 
+        if ($usuario === null) {
+            abort(401);
+        }
+
+        $dto = $request->toDto();
+
         $abono = $service->registrarAbono($id, [
-            'sucursal_id' => $usuario->sucursal_id,
+            'sucursal_id' => (int) $usuario->getAttribute('sucursal_id'),
             'usuario_id' => $usuario->id,
-            'monto' => $validated['monto'],
-            'metodo_pago_id' => $validated['metodo_pago_id'],
-            'referencia' => $validated['referencia'] ?? null,
+            'monto' => $dto->monto,
+            'metodo_pago_id' => $dto->metodoPagoId,
+            'referencia' => $dto->referencia,
         ]);
 
         $cuenta = CuentaCobrar::with('cliente')->findOrFail($id);

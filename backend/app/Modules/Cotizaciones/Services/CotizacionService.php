@@ -228,7 +228,7 @@ class CotizacionService
      * Convierte cotizacion en venta. Crea la venta con VentaService,
      * descuenta stock, registra pagos.
      *
-     * @param  array{forma_pago:string, metodo_pago_id:int, monto_recibido:float, caja_sesion_id:?int}  $dataVenta
+     * @param  array{usuario_id:int, metodo_pago_id:int}  $dataVenta
      *
      * @throws CotizacionVencidaException
      * @throws CotizacionYaConvertidaException
