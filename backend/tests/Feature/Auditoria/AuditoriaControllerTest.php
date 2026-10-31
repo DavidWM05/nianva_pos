@@ -53,21 +53,26 @@ class AuditoriaControllerTest extends TestCase
 
     public function test_index_exige_tabla_y_registro_id(): void
     {
-        ['usuario' => $usuario] = $this->crearUsuarioConPermisos([]);
+        ['usuario' => $usuario] = $this->crearUsuarioConPermisos(['auditoria.ver']);
         $this->actingAs($usuario);
 
         $this->getJson('/api/auditoria')->assertUnprocessable();
     }
 
-    public function test_index_no_exige_ningun_permiso(): void
+    public function test_index_exige_el_permiso_auditoria_ver(): void
     {
-        ['tenant' => $tenant, 'usuario' => $usuario] = $this->crearUsuarioConPermisos([]);
+        ['usuario' => $usuario] = $this->crearUsuarioConPermisos([]);
+        $this->actingAs($usuario);
+
+        $this->getJson('/api/auditoria?tabla=productos&registro_id=555')->assertForbidden();
+
+        ['tenant' => $tenant, 'usuario' => $conPermiso] = $this->crearUsuarioConPermisos(['auditoria.ver']);
         Auditoria::create([
             'tenant_id' => $tenant->id, 'tabla_afectada' => 'productos', 'registro_id' => 555,
-            'accion' => 'create', 'usuario_id' => $usuario->id,
+            'accion' => 'create', 'usuario_id' => $conPermiso->id,
         ]);
 
-        $this->actingAs($usuario);
+        $this->actingAs($conPermiso);
 
         $this->getJson('/api/auditoria?tabla=productos&registro_id=555')->assertOk()->assertJsonCount(1, 'data');
     }

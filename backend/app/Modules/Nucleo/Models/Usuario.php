@@ -4,10 +4,8 @@ namespace App\Modules\Nucleo\Models;
 
 use App\Modules\Nucleo\Models\Concerns\BelongsToTenant;
 use App\Modules\Nucleo\Notifications\ResetPasswordNotification;
-use App\Modules\Nucleo\Policies\UsuarioPolicy;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
-use Illuminate\Database\Eloquent\Attributes\UsePolicy;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -20,7 +18,6 @@ use Illuminate\Notifications\Notification;
     'password', 'telefono', 'avatar_url', 'activo',
 ])]
 #[Hidden(['password', 'remember_token', 'two_factor_secret', 'two_factor_recovery_codes'])]
-#[UsePolicy(UsuarioPolicy::class)]
 class Usuario extends Authenticatable
 {
     use BelongsToTenant, Notifiable, SoftDeletes;

@@ -9,10 +9,9 @@ use Illuminate\Http\Request;
 /**
  * Consumido por AuditLogViewerComponent (ui-shared) via AuditoriaService
  * del frontend -- ver ese componente para el contrato exacto de forma.
- * Sin permiso dedicado: si el usuario ya pudo llegar a la vista de
- * registro de un modulo (clientes.ver, ventas.ver, etc.), ver el
- * historial de ESE registro es parte de lo mismo, no una capacidad
- * separada. El aislamiento real lo da BelongsToTenant en Auditoria.
+ * index() y global() exigen `permiso:auditoria.ver`: ver el historial es
+ * una capacidad propia, no algo que se herede de haber podido abrir el
+ * registro. El aislamiento real lo da BelongsToTenant en Auditoria.
  */
 class AuditoriaController extends Controller
 {

@@ -47,7 +47,7 @@ class CuentaPagarErrorCodeTest extends TestCase
         app(TenantContext::class)->set($this->tenant);
 
         $rol = Rol::create(['tenant_id' => null, 'nombre' => 'rol-cxp-'.uniqid(), 'es_sistema' => false]);
-        $ids = collect(['cuentas_pagar.ver', 'cuentas_pagar.registrar_pago'])->map(function (string $nombre) {
+        $ids = collect(['cuentas_pagar.ver', 'cuentas_pagar.registrar_pago', 'cuentas_pagar.anular'])->map(function (string $nombre) {
             [$modulo, $accion] = explode('.', $nombre);
 
             return Permiso::firstOrCreate(['nombre' => $nombre], ['modulo' => $modulo, 'accion' => $accion])->id;

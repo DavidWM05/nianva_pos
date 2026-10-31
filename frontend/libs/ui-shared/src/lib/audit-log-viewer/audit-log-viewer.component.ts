@@ -36,16 +36,21 @@ export class AuditLogViewerComponent implements OnChanges {
   protected readonly accionColorMap = ACCION_COLOR_MAP;
   protected readonly loading = signal(false);
   protected readonly entries = signal<AuditLogEntry[]>([]);
+  protected readonly sinPermiso = signal(false);
 
   ngOnChanges(): void {
     this.loading.set(true);
+    this.sinPermiso.set(false);
 
     this.source.listar(this.tabla, this.registroId).subscribe({
       next: (entries) => {
         this.entries.set(entries);
         this.loading.set(false);
       },
-      error: () => this.loading.set(false),
+      error: (error: { status?: number }) => {
+        this.sinPermiso.set(error?.status === 403);
+        this.loading.set(false);
+      },
     });
   }
 }

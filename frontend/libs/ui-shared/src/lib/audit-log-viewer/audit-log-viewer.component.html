@@ -1,5 +1,7 @@
 @if (loading()) {
   <p>Cargando auditoria...</p>
+} @else if (sinPermiso()) {
+  <p class="audit-log-viewer__sin-permiso">No tienes permiso para ver el historial</p>
 } @else if (entries().length === 0) {
   <p class="audit-log-viewer__empty">Sin actividad registrada.</p>
 } @else {

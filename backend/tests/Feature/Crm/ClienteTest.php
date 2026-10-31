@@ -170,7 +170,7 @@ class ClienteTest extends TestCase
 
     public function test_auditoria_devuelve_las_entradas_del_registro_solicitado(): void
     {
-        ['tenant' => $tenant, 'usuario' => $usuario] = $this->crearUsuarioConPermisos(['clientes.editar']);
+        ['tenant' => $tenant, 'usuario' => $usuario] = $this->crearUsuarioConPermisos(['clientes.editar', 'auditoria.ver']);
         $this->actingAs($usuario);
 
         $cliente = Cliente::create(['tenant_id' => $tenant->id, 'nombre' => 'Fernanda Ibarra']);

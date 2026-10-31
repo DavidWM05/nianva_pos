@@ -2,15 +2,12 @@
 
 namespace App\Modules\Nucleo\Models;
 
-use App\Modules\Nucleo\Policies\TenantPolicy;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
-use Illuminate\Database\Eloquent\Attributes\UsePolicy;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 #[Fillable(['nombre', 'razon_social', 'rfc', 'telefono', 'correo', 'direccion', 'pais', 'activo'])]
-#[UsePolicy(TenantPolicy::class)]
 class Tenant extends Model
 {
     use SoftDeletes;

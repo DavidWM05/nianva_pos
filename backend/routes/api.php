@@ -126,8 +126,8 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/clientes/{cliente}/ventas', [VentaController::class, 'porCliente'])
             ->middleware('permiso:clientes.ver');
 
-        // Sin permiso dedicado -- ver AuditoriaController::index().
-        Route::get('/auditoria', [AuditoriaController::class, 'index']);
+        // Mismo permiso dedicado que el navegador global (ver AuditoriaController).
+        Route::get('/auditoria', [AuditoriaController::class, 'index'])->middleware('permiso:auditoria.ver');
         // Navegador global (Fase C, punto 5) -- SI exige permiso dedicado
         // (ver AuditoriaController::global()). Ruta estatica ANTES de que
         // exista cualquier /auditoria/{id} (no existe hoy, pero mantiene
@@ -265,11 +265,11 @@ Route::middleware('auth:sanctum')->group(function () {
         // Sin permiso dedicado a proposito -- ver el docblock de publica().
         Route::get('/configuracion/publica', [ConfiguracionController::class, 'publica']);
 
-        // Unidades de Medida: catalogo transversal, sin permiso dedicado.
-        Route::get('/unidades-medida', [UnidadMedidaController::class, 'index']);
-        Route::post('/unidades-medida', [UnidadMedidaController::class, 'store']);
-        Route::put('/unidades-medida/{id}', [UnidadMedidaController::class, 'update']);
-        Route::delete('/unidades-medida/{id}', [UnidadMedidaController::class, 'destroy']);
+        // Unidades de Medida: catalogo de Inventario.
+        Route::get('/unidades-medida', [UnidadMedidaController::class, 'index'])->middleware('permiso:inventario.ver');
+        Route::post('/unidades-medida', [UnidadMedidaController::class, 'store'])->middleware('permiso:inventario.crear');
+        Route::put('/unidades-medida/{id}', [UnidadMedidaController::class, 'update'])->middleware('permiso:inventario.editar');
+        Route::delete('/unidades-medida/{id}', [UnidadMedidaController::class, 'destroy'])->middleware('permiso:inventario.eliminar');
 
         // Cotizaciones / Presupuestos
         Route::middleware('modulo:cotizaciones')->group(function () {
@@ -296,7 +296,7 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::get('/cuentas-pagar/reporte', [CuentaPagarController::class, 'reporte'])->middleware('permiso:reportes_cuentas_pagar.ver');
             Route::get('/cuentas-pagar/{cuentaPagar}', [CuentaPagarController::class, 'show'])->middleware('permiso:cuentas_pagar.ver');
             Route::post('/cuentas-pagar/{id}/pagos', [CuentaPagarController::class, 'registrarPago'])->middleware('permiso:cuentas_pagar.registrar_pago');
-            Route::post('/cuentas-pagar/{id}/anular', [CuentaPagarController::class, 'anular'])->middleware('permiso:cuentas_pagar.ver');
+            Route::post('/cuentas-pagar/{id}/anular', [CuentaPagarController::class, 'anular'])->middleware('permiso:cuentas_pagar.anular');
         });
 
         // CRM Avanzado (extension del modulo CRM existente)
