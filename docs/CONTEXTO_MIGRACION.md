@@ -253,6 +253,17 @@ repo.
   `backend/README.md` y `frontend/README.md`, las rutas pasan a `/api/v1` y se corrigen dos
   permisos que habían cambiado (anular CxP y unidades de medida). Los nombres del paquete y
   de la app siguen siendo los actuales hasta el renombre.
+- **Factories, lote 1, PRO-08** (decimoséptimo encargo, hecho por DS): 40 factories para los
+  modelos base, más instalación, licencia y plan, en `Modules/<Modulo>/Database/Factories/`,
+  resueltas con `Factory::guessFactoryNamesUsing` en `AppServiceProvider`. Estados con nombre
+  (`admin()`, `vendedor()`, `superadmin()`, `anulada()`, etc.). En la revisión, el primer
+  entregable creaba las relaciones por adelantado: con tenant y sucursal dados, una venta
+  quedaba con cliente y usuario de otro tenant y creaba 9 tenants de más (~32 s). Se corrigió
+  a closures perezosos y lo cubre `Factories/FactoriesConDatosDadosTest` (20 casos). Los
+  totales de los documentos padre no se sincronizan con sus hijos sin pasar por los
+  Services. `Arquitectura/FactoriesTest` exige factory a todo modelo, salvo los pivotes
+  (`SIN_FACTORY`) y las 27 extensiones del lote 2 (`PENDIENTES`). Ningún test existente
+  modificado. Backend: 519 tests.
 - **Pendientes detectados:**
   - dependencias fuera del grafo: `Crm` lee `Venta` de Tpv (`PlanPagoController`,
     `PlanPagoCliente`, `VentasPlazosService`; es un ciclo, porque Tpv → Crm);
@@ -288,7 +299,8 @@ repo.
      en las Fases 3 a 5); `RequiereDosFactorReciente` sigue validando dentro del middleware;
    - un chequeo en CI de codificación rota en `app/` y `tests/` (`??` seguido de letra,
      además de U+FFFD; DAT-12);
-   - factories;
+   - factories, lote 2 (27 modelos de las extensiones, en `PENDIENTES` de
+     `FactoriesTest`) y seeders por escenario (PRO-08);
    - opcional: rama `master` → `main`.
 2. **Fase 2**: sistema de diseño.
 

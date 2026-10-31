@@ -129,6 +129,11 @@ Route → middleware permiso:* → FormRequest → Controller → Action / Servi
 - **Un bug, su test primero (PRO-04):** escribe el test, míralo fallar, corrige y míralo pasar.
 - **Funcionalidad nueva = tests permanentes:** PHPUnit en `backend/tests/Feature/...` o Vitest
   (`*.spec.ts`). Un script suelto (`tinker`, un `curl`, un `console.log`) no reemplaza un test.
+- **Datos de prueba (PRO-08):** los tests nuevos usan las factories
+  (`Modules/<Modulo>/Database/Factories/`). En una factory, toda relación y el tenant se
+  resuelven **dentro de un closure** (`fn (array $a) => …`) a partir de los atributos ya
+  resueltos, nunca con `create()` por adelantado: así respeta lo que pasa el test y no mezcla
+  tenants (`Factories/FactoriesConDatosDadosTest`).
 - **Servicio compartido (PRO-07):** si tocas `VentaService`, `InventarioService`,
   `PrecioService`, `TenantContext` u otro con varios consumidores, corre la suite completa.
 - **Antes de cerrar**, todo en verde (es lo que corre CI):
