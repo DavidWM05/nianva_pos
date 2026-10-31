@@ -74,7 +74,7 @@ Cuándo usar cada componente:
     vez de `form.value` -- un control deshabilitado no aparece en `.value`, pero su valor sigue
     siendo parte del registro que se envía.
 - `AuditLogViewerComponent` (`nucleo-audit-log-viewer`) -- pestaña de auditoría montable en
-  cualquier vista de registro, recibe `[tabla]` + `[registroId]` y consulta `GET /api/auditoria`
+  cualquier vista de registro, recibe `[tabla]` + `[registroId]` y consulta `GET /api/v1/auditoria`
   filtrado. Úsalo solo si el modelo está en `config('auditoria.auditables')` del backend (ver
   `backend/README.md`) -- si no, la pestaña no tendría nada que mostrar.
 - `RecordTabsComponent` (`nucleo-record-tabs`) -- patrón de vista de registro con pestañas
@@ -221,7 +221,7 @@ Cada módulo es una ruta con `loadComponent` propia en `apps/nucleo-shell/src/ap
 
 Dentro de una pantalla ya cargada, la pestaña de Auditoría de cualquier vista de registro se
 difiere un nivel más con `@defer (on viewport)`, para no pagar el costo de
-`AuditLogViewerComponent` (ni la llamada a `GET /api/auditoria`) hasta que el usuario
+`AuditLogViewerComponent` (ni la llamada a `GET /api/v1/auditoria`) hasta que el usuario
 efectivamente hace scroll hasta esa pestaña. Ejemplo real, `cliente-detalle.component.html`:
 
 ```html
