@@ -8,7 +8,9 @@ use App\Modules\Nucleo\Models\Sucursal;
 use App\Modules\Nucleo\Models\Tenant;
 use App\Modules\Nucleo\Models\Usuario;
 use App\Modules\Precios\Models\Cupon;
+use App\Modules\Tpv\Database\Factories\VentaFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -21,6 +23,9 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class Venta extends Model
 {
     use BelongsToTenant;
+
+    /** @use HasFactory<VentaFactory> */
+    use HasFactory;
 
     const CREATED_AT = 'fecha';
 

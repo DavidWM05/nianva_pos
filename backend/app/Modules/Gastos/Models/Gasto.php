@@ -2,11 +2,13 @@
 
 namespace App\Modules\Gastos\Models;
 
+use App\Modules\Gastos\Database\Factories\GastoFactory;
 use App\Modules\Nucleo\Models\Concerns\BelongsToTenantViaRelacion;
 use App\Modules\Nucleo\Models\Sucursal;
 use App\Modules\Nucleo\Models\Usuario;
 use App\Modules\Tpv\Models\CajaSesion;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
@@ -20,6 +22,9 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class Gasto extends Model
 {
     use BelongsToTenantViaRelacion;
+
+    /** @use HasFactory<GastoFactory> */
+    use HasFactory;
 
     const CREATED_AT = 'fecha';
 

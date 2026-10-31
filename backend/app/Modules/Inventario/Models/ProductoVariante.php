@@ -2,8 +2,10 @@
 
 namespace App\Modules\Inventario\Models;
 
+use App\Modules\Inventario\Database\Factories\ProductoVarianteFactory;
 use App\Modules\Nucleo\Models\Concerns\BelongsToTenantViaRelacion;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -18,6 +20,9 @@ use InvalidArgumentException;
 class ProductoVariante extends Model
 {
     use BelongsToTenantViaRelacion;
+
+    /** @use HasFactory<ProductoVarianteFactory> */
+    use HasFactory;
 
     const UPDATED_AT = null;
 

@@ -2,9 +2,11 @@
 
 namespace App\Modules\Inventario\Models;
 
+use App\Modules\Inventario\Database\Factories\ProveedorFactory;
 use App\Modules\Nucleo\Models\Concerns\BelongsToTenant;
 use App\Modules\Nucleo\Models\Tenant;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -13,6 +15,9 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class Proveedor extends Model
 {
     use BelongsToTenant;
+
+    /** @use HasFactory<ProveedorFactory> */
+    use HasFactory;
 
     const UPDATED_AT = null;
 

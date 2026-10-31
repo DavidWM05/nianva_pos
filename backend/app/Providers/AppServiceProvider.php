@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\ServiceProvider;
 
@@ -20,6 +21,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        Factory::guessFactoryNamesUsing($this->factoryDe(...));
+
         // Fuera de produccion, Eloquent no falla en silencio (DAT-14):
         // - un campo mass-assigned que no esta en el #[Fillable] revienta con
         //   MassAssignmentException en vez de descartarse (bug real de
@@ -32,5 +35,20 @@ class AppServiceProvider extends ServiceProvider
         Model::preventSilentlyDiscardingAttributes(! app()->isProduction());
         Model::preventLazyLoading(! app()->isProduction());
         Model::preventAccessingMissingAttributes(! app()->isProduction());
+    }
+
+    /**
+     * @param  class-string<Model>  $model
+     * @return class-string<Factory<Model>>
+     */
+    private function factoryDe(string $model): string
+    {
+        $factory = str_replace('\\Models\\', '\\Database\\Factories\\', $model).'Factory';
+
+        if (! class_exists($factory) || ! is_subclass_of($factory, Factory::class)) {
+            throw new \RuntimeException("No existe la factory {$factory}.");
+        }
+
+        return $factory;
     }
 }

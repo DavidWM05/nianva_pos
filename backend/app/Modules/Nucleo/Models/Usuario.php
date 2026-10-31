@@ -2,10 +2,12 @@
 
 namespace App\Modules\Nucleo\Models;
 
+use App\Modules\Nucleo\Database\Factories\UsuarioFactory;
 use App\Modules\Nucleo\Models\Concerns\BelongsToTenant;
 use App\Modules\Nucleo\Notifications\ResetPasswordNotification;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -21,6 +23,9 @@ use Illuminate\Notifications\Notification;
 class Usuario extends Authenticatable
 {
     use BelongsToTenant, Notifiable, SoftDeletes;
+
+    /** @use HasFactory<UsuarioFactory> */
+    use HasFactory;
 
     protected $table = 'usuarios';
 

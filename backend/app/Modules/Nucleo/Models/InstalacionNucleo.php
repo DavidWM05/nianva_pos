@@ -2,7 +2,9 @@
 
 namespace App\Modules\Nucleo\Models;
 
+use App\Modules\Nucleo\Database\Factories\InstalacionNucleoFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 
@@ -21,6 +23,9 @@ use Illuminate\Support\Str;
 #[Fillable(['identificador'])]
 class InstalacionNucleo extends Model
 {
+    /** @use HasFactory<InstalacionNucleoFactory> */
+    use HasFactory;
+
     public $timestamps = false;
 
     protected $table = 'instalacion_nucleo';

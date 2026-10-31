@@ -2,9 +2,11 @@
 
 namespace App\Modules\Nucleo\Models;
 
+use App\Modules\Nucleo\Database\Factories\LicenciaLocalFactory;
 use App\Modules\Nucleo\Models\Concerns\BelongsToTenant;
 use App\Modules\Nucleo\Services\TenantContext;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
@@ -15,6 +17,9 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class LicenciaLocal extends Model
 {
     use BelongsToTenant;
+
+    /** @use HasFactory<LicenciaLocalFactory> */
+    use HasFactory;
 
     protected $table = 'licencia_local';
 

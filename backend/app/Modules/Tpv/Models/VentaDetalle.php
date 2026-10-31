@@ -5,7 +5,9 @@ namespace App\Modules\Tpv\Models;
 use App\Modules\Inventario\Models\ProductoVariante;
 use App\Modules\Nucleo\Models\Concerns\BelongsToTenantViaRelacion;
 use App\Modules\Precios\Models\ReglaPrecio;
+use App\Modules\Tpv\Database\Factories\VentaDetalleFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
@@ -17,6 +19,9 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class VentaDetalle extends Model
 {
     use BelongsToTenantViaRelacion;
+
+    /** @use HasFactory<VentaDetalleFactory> */
+    use HasFactory;
 
     public $timestamps = false;
 

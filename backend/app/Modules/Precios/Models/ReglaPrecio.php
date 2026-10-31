@@ -7,7 +7,9 @@ use App\Modules\Inventario\Models\Producto;
 use App\Modules\Inventario\Models\ProductoVariante;
 use App\Modules\Nucleo\Models\Concerns\BelongsToTenant;
 use App\Modules\Nucleo\Models\Tenant;
+use App\Modules\Precios\Database\Factories\ReglaPrecioFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
@@ -19,6 +21,9 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class ReglaPrecio extends Model
 {
     use BelongsToTenant;
+
+    /** @use HasFactory<ReglaPrecioFactory> */
+    use HasFactory;
 
     const UPDATED_AT = null;
 

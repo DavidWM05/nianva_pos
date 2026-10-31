@@ -2,10 +2,12 @@
 
 namespace App\Modules\Configuracion\Models;
 
+use App\Modules\Configuracion\Database\Factories\ConfiguracionTenantFactory;
 use App\Modules\Nucleo\Models\Concerns\BelongsToTenant;
 use App\Modules\Nucleo\Models\Tenant;
 use App\Modules\Nucleo\Services\TenantContext;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
@@ -17,6 +19,9 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class ConfiguracionTenant extends Model
 {
     use BelongsToTenant;
+
+    /** @use HasFactory<ConfiguracionTenantFactory> */
+    use HasFactory;
 
     public $timestamps = false;
 

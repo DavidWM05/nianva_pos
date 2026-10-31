@@ -2,7 +2,9 @@
 
 namespace App\Modules\Nucleo\Models;
 
+use App\Modules\Nucleo\Database\Factories\PlanSuscripcionFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
@@ -12,6 +14,9 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 ])]
 class PlanSuscripcion extends Model
 {
+    /** @use HasFactory<PlanSuscripcionFactory> */
+    use HasFactory;
+
     protected $table = 'planes_suscripcion';
 
     protected function casts(): array

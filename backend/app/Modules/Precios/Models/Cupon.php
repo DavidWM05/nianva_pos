@@ -4,7 +4,9 @@ namespace App\Modules\Precios\Models;
 
 use App\Modules\Nucleo\Models\Concerns\BelongsToTenant;
 use App\Modules\Nucleo\Models\Tenant;
+use App\Modules\Precios\Database\Factories\CuponFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
@@ -15,6 +17,9 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class Cupon extends Model
 {
     use BelongsToTenant;
+
+    /** @use HasFactory<CuponFactory> */
+    use HasFactory;
 
     const UPDATED_AT = null;
 

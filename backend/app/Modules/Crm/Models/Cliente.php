@@ -2,9 +2,11 @@
 
 namespace App\Modules\Crm\Models;
 
+use App\Modules\Crm\Database\Factories\ClienteFactory;
 use App\Modules\Nucleo\Models\Concerns\BelongsToTenant;
 use App\Modules\Nucleo\Models\Tenant;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -13,6 +15,9 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class Cliente extends Model
 {
     use BelongsToTenant;
+
+    /** @use HasFactory<ClienteFactory> */
+    use HasFactory;
 
     const CREATED_AT = 'fecha_registro';
 

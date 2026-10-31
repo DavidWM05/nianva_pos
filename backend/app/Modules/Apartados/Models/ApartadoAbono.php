@@ -2,9 +2,11 @@
 
 namespace App\Modules\Apartados\Models;
 
+use App\Modules\Apartados\Database\Factories\ApartadoAbonoFactory;
 use App\Modules\Nucleo\Models\Concerns\BelongsToTenantViaRelacion;
 use App\Modules\Nucleo\Models\Usuario;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -17,6 +19,9 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class ApartadoAbono extends Model
 {
     use BelongsToTenantViaRelacion;
+
+    /** @use HasFactory<ApartadoAbonoFactory> */
+    use HasFactory;
 
     const CREATED_AT = 'fecha';
 

@@ -2,9 +2,11 @@
 
 namespace App\Modules\Inventario\Models;
 
+use App\Modules\Inventario\Database\Factories\InventarioStockFactory;
 use App\Modules\Nucleo\Models\Concerns\BelongsToTenantViaRelacion;
 use App\Modules\Nucleo\Models\Sucursal;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
@@ -21,6 +23,9 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class InventarioStock extends Model
 {
     use BelongsToTenantViaRelacion;
+
+    /** @use HasFactory<InventarioStockFactory> */
+    use HasFactory;
 
     const CREATED_AT = null;
 
