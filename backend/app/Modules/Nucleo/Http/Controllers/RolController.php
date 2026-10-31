@@ -3,16 +3,18 @@
 namespace App\Modules\Nucleo\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Modules\Nucleo\Http\Requests\GuardarRolRequest;
 use App\Modules\Nucleo\Http\Resources\RolResource;
 use App\Modules\Nucleo\Models\Permiso;
 use App\Modules\Nucleo\Models\Rol;
 use App\Modules\Nucleo\Services\TenantContext;
+use App\Modules\Nucleo\Support\GuardasDeRecurso;
 use Illuminate\Http\Request;
 
 /**
  * Fase C. A diferencia del resto del catalogo (desactivar/activo), Rol no
  * tiene columna `activo` -- destroy() es un DELETE fisico real, guardado
- * por rechazarSiEsSistema() (admin/vendedor, tenant_id NULL, sembrados
+ * por GuardasDeRecurso::rolSistema() (admin/vendedor, tenant_id NULL, sembrados
  * por NucleoRolesPermisosSeeder) y por "no eliminar un rol con usuarios
  * asignados" (evita dejar usuarios sin rol de golpe).
  */
@@ -58,31 +60,28 @@ class RolController extends Controller
         ]);
     }
 
-    public function store(Request $request)
+    public function store(GuardarRolRequest $request)
     {
-        $validated = $this->validarDatos($request);
-        $permisos = $this->permisosValidos($validated['permisos'] ?? []);
-        unset($validated['permisos']);
+        $dto = $request->toDto();
+        $permisos = $this->permisosValidos($dto->permisosParaSync());
+        $datos = $dto->datosPresentes();
 
-        $validated['tenant_id'] = app(TenantContext::class)->id();
-        $validated['es_sistema'] = false;
+        $datos['tenant_id'] = app(TenantContext::class)->id();
+        $datos['es_sistema'] = false;
 
-        $rol = Rol::create($validated);
+        $rol = Rol::create($datos);
         $rol->permisos()->sync($permisos);
         $rol->load('permisos:id');
 
         return (new RolResource($rol))->response()->setStatusCode(201);
     }
 
-    public function update(Request $request, Rol $rol)
+    public function update(GuardarRolRequest $request, Rol $rol)
     {
-        $this->rechazarSiEsSistema($request, $rol);
+        $dto = $request->toDto();
+        $permisos = $this->permisosValidos($dto->permisosParaSync());
 
-        $validated = $this->validarDatos($request);
-        $permisos = $this->permisosValidos($validated['permisos'] ?? []);
-        unset($validated['permisos']);
-
-        $rol->update($validated);
+        $rol->update($dto->datosPresentes());
         $rol->permisos()->sync($permisos);
         $rol->load('permisos:id');
 
@@ -91,7 +90,7 @@ class RolController extends Controller
 
     public function destroy(Request $request, Rol $rol)
     {
-        $this->rechazarSiEsSistema($request, $rol);
+        GuardasDeRecurso::rolSistema($rol, $request->user());
 
         if ($rol->usuarios()->exists()) {
             abort(422, 'No puedes eliminar un rol con usuarios asignados. Quita el rol de esos usuarios primero.');
@@ -100,18 +99,6 @@ class RolController extends Controller
         $rol->delete();
 
         return response()->json(['data' => null]);
-    }
-
-    /**
-     * Los roles de sistema (admin/vendedor, tenant_id NULL) solo los
-     * puede tocar un superadmin -- ni siquiera un admin del tenant con
-     * roles.editar/roles.eliminar puede modificarlos o borrarlos.
-     */
-    private function rechazarSiEsSistema(Request $request, Rol $rol): void
-    {
-        if ($rol->es_sistema && ! $request->user()->esSuperadmin()) {
-            abort(403, 'Este es un rol de sistema y solo un superadmin puede modificarlo.');
-        }
     }
 
     /**
@@ -125,16 +112,6 @@ class RolController extends Controller
         }
 
         return Permiso::whereIn('id', $permisosIds)->pluck('id')->all();
-    }
-
-    private function validarDatos(Request $request): array
-    {
-        return $request->validate([
-            'nombre' => ['required', 'string', 'max:80'],
-            'descripcion' => ['nullable', 'string'],
-            'permisos' => ['nullable', 'array'],
-            'permisos.*' => ['integer', 'exists:permisos,id'],
-        ]);
     }
 
     /**

@@ -3,11 +3,12 @@
 namespace App\Modules\Nucleo\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Modules\Nucleo\Http\Requests\CambiarPasswordRequest;
+use App\Modules\Nucleo\Http\Requests\ResetPasswordRequest;
+use App\Modules\Nucleo\Http\Requests\SendResetLinkRequest;
 use App\Modules\Nucleo\Services\TrustedDeviceService;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Password;
-use Illuminate\Validation\Rules\Password as PasswordRule;
 use Illuminate\Validation\ValidationException;
 
 /**
@@ -23,32 +24,26 @@ class PasswordResetController extends Controller
 {
     public function __construct(private readonly TrustedDeviceService $trustedDeviceService) {}
 
-    public function sendResetLink(Request $request)
+    public function sendResetLink(SendResetLinkRequest $request)
     {
-        $validated = $request->validate(['correo' => ['required', 'email']]);
-
         // Siempre responde 200 con el mismo mensaje generico exista o no el
         // correo -- evita que este endpoint sirva para enumerar cuentas.
-        Password::broker()->sendResetLink(['correo' => $validated['correo']]);
+        Password::broker()->sendResetLink(['correo' => $request->toDto()->correo]);
 
         return response()->json([
             'status' => 'Si el correo existe, se envio un enlace para restablecer la contrasena.',
         ]);
     }
 
-    public function reset(Request $request)
+    public function reset(ResetPasswordRequest $request)
     {
-        $validated = $request->validate([
-            'correo' => ['required', 'email'],
-            'token' => ['required', 'string'],
-            'password' => ['required', 'confirmed', PasswordRule::min(8)],
-        ]);
+        $dto = $request->toDto();
 
         $status = Password::broker()->reset(
             [
-                'correo' => $validated['correo'],
-                'token' => $validated['token'],
-                'password' => $validated['password'],
+                'correo' => $dto->correo,
+                'token' => $dto->token,
+                'password' => $dto->password,
             ],
             function ($usuario, $password): void {
                 $usuario->forceFill(['password' => $password])->save();
@@ -68,20 +63,16 @@ class PasswordResetController extends Controller
      * reset(), que es el flujo de "olvide mi contrasena" via token de
      * correo). Protegida por el middleware dos-factor.reciente en la ruta.
      */
-    public function cambiar(Request $request)
+    public function cambiar(CambiarPasswordRequest $request)
     {
-        $validated = $request->validate([
-            'password_actual' => ['required', 'string'],
-            'password' => ['required', 'confirmed', PasswordRule::min(8)],
-        ]);
-
+        $dto = $request->toDto();
         $usuario = $request->user();
 
-        if (! Hash::check($validated['password_actual'], $usuario->password)) {
+        if (! Hash::check($dto->passwordActual, $usuario->password)) {
             throw ValidationException::withMessages(['password_actual' => ['La contrasena actual no es correcta.']]);
         }
 
-        $usuario->forceFill(['password' => $validated['password']])->save();
+        $usuario->forceFill(['password' => $dto->password])->save();
         $this->trustedDeviceService->revocarTodos($usuario);
 
         return response()->json(['status' => 'Contrasena actualizada.']);

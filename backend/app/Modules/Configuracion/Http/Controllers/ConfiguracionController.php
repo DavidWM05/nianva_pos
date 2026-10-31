@@ -3,10 +3,10 @@
 namespace App\Modules\Configuracion\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Modules\Configuracion\Http\Requests\ActualizarConfiguracionRequest;
 use App\Modules\Configuracion\Http\Resources\ConfiguracionTenantResource;
 use App\Modules\Configuracion\Models\ConfiguracionTenant;
 use Illuminate\Http\Request;
-use Illuminate\Validation\Rule;
 
 /**
  * Un solo registro por tenant (ConfiguracionTenant::actual(), sembrado
@@ -29,27 +29,10 @@ class ConfiguracionController extends Controller
         return new ConfiguracionTenantResource($configuracion);
     }
 
-    public function update(Request $request)
+    public function update(ActualizarConfiguracionRequest $request)
     {
-        $configuracion = ConfiguracionTenant::actual();
-
-        if (! $configuracion) {
-            abort(404, 'No hay un tenant activo.');
-        }
-
-        $validated = $request->validate([
-            'moneda' => ['required', 'string', 'max:5'],
-            'mensaje_ticket' => ['nullable', 'string'],
-            'logo_url' => ['nullable', 'string', 'max:500', 'url'],
-            'mostrar_rfc' => ['required', 'boolean'],
-            'mostrar_telefono' => ['required', 'boolean'],
-            'mostrar_correo' => ['required', 'boolean'],
-            'backup_auto' => ['required', 'boolean'],
-            'backup_frecuencia' => ['required', Rule::in(['diario', 'semanal', 'mensual'])],
-            'codigo_barras_automatico' => ['required', 'boolean'],
-        ]);
-
-        $configuracion->update($validated);
+        $configuracion = $request->configuracion();
+        $configuracion->update($request->toDto()->datosPresentes());
 
         return new ConfiguracionTenantResource($configuracion);
     }

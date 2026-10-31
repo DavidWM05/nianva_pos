@@ -3,6 +3,7 @@
 namespace App\Modules\Nucleo\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Modules\Nucleo\Http\Requests\LoginRequest;
 use App\Modules\Nucleo\Http\Resources\UsuarioResource;
 use App\Modules\Nucleo\Models\Tenant;
 use App\Modules\Nucleo\Models\Usuario;
@@ -23,18 +24,15 @@ class AuthController extends Controller
 {
     public function __construct(private readonly TrustedDeviceService $trustedDeviceService) {}
 
-    public function login(Request $request)
+    public function login(LoginRequest $request)
     {
-        $validated = $request->validate([
-            'correo' => ['required', 'email'],
-            'password' => ['required', 'string'],
-        ]);
+        $dto = $request->toDto();
 
-        $usuario = Usuario::sinTenant()->where('correo', $validated['correo'])->first();
+        $usuario = Usuario::sinTenant()->where('correo', $dto->correo)->first();
 
         // Mensaje generico e identico para "no existe" y "password incorrecta"
         // -- evita que un atacante use este endpoint para enumerar correos.
-        if (! $usuario || ! Hash::check($validated['password'], $usuario->password)) {
+        if (! $usuario || ! Hash::check($dto->password, $usuario->password)) {
             throw ValidationException::withMessages([
                 'correo' => ['Las credenciales no son validas.'],
             ]);

@@ -3,6 +3,8 @@
 namespace App\Modules\Nucleo\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Modules\Nucleo\Http\Requests\ConfirmTwoFactorRequest;
+use App\Modules\Nucleo\Http\Requests\VerifyLoginRequest;
 use App\Modules\Nucleo\Http\Resources\UsuarioResource;
 use App\Modules\Nucleo\Models\Usuario;
 use App\Modules\Nucleo\Services\TrustedDeviceService;
@@ -57,16 +59,15 @@ class TwoFactorController extends Controller
      * valido, activa el 2FA y genera los codigos de recuperacion -- se
      * devuelven UNA sola vez aqui, nunca se pueden volver a consultar.
      */
-    public function confirm(Request $request)
+    public function confirm(ConfirmTwoFactorRequest $request)
     {
-        $validated = $request->validate(['code' => ['required', 'string']]);
         $usuario = $request->user();
 
         if ($usuario->two_factor_secret === null) {
             abort(400, 'Primero solicita el codigo QR.');
         }
 
-        if (! $this->twoFactorService->verifyKey($usuario->two_factor_secret, $validated['code'])) {
+        if (! $this->twoFactorService->verifyKey($usuario->two_factor_secret, $request->toDto()->code)) {
             throw ValidationException::withMessages(['code' => ['Codigo invalido.']]);
         }
 
@@ -88,10 +89,9 @@ class TwoFactorController extends Controller
      * Acepta un codigo TOTP o, si se agoto/perdio el dispositivo, un codigo
      * de recuperacion (de un solo uso -- se consume al usarlo).
      */
-    public function verifyLogin(Request $request)
+    public function verifyLogin(VerifyLoginRequest $request)
     {
-        $validated = $request->validate(['code' => ['required', 'string']]);
-
+        $code = $request->toDto()->code;
         $userId = $request->session()->get('auth.2fa.user_id');
 
         if (! $userId) {
@@ -100,8 +100,8 @@ class TwoFactorController extends Controller
 
         $usuario = Usuario::sinTenant()->findOrFail($userId);
 
-        if (! $this->intentarConCodigoTotp($usuario, $validated['code'])
-            && ! $this->intentarConCodigoDeRecuperacion($usuario, $validated['code'])
+        if (! $this->intentarConCodigoTotp($usuario, $code)
+            && ! $this->intentarConCodigoDeRecuperacion($usuario, $code)
         ) {
             throw ValidationException::withMessages(['code' => ['Codigo invalido.']]);
         }
