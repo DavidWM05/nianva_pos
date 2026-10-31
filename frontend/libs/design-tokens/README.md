@@ -9,12 +9,12 @@ de Nucleo. Ningun componente debe hardcodear un color/espaciado/radio -- siempre
   editas cuando cambias un token.
 - `src/lib/primeng-preset.ts` -- toma `tokens.ts` y construye `nucleoPreset`, el preset de
   PrimeNG (via `definePreset(Aura, ...)`) que se registra en `app.config.ts` de
-  `nucleo-shell`. Todos los componentes de PrimeNG (botones, tabla, dialogos, etc.) leen su
+  `pos`. Todos los componentes de PrimeNG (botones, tabla, dialogos, etc.) leen su
   color de aqui, no del tema Aura default.
 - `src/styles/tokens.scss` -- el mismo valor de cada token, como CSS custom properties
   (`--nucleo-color-primary-500`, etc.), para el SCSS de nuestros propios componentes
   (`ui-shared`, el shell) que no pueden importar TypeScript. Se importa una sola vez en
-  `apps/nucleo-shell/src/styles.scss`.
+  `apps/pos/src/styles.scss`.
 
 ## Como cambiar un token (ej. el color primario)
 

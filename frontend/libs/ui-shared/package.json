@@ -1,5 +1,5 @@
 {
-  "name": "@nucleo/ui-shared",
+  "name": "@nianva/ui-shared",
   "version": "0.0.1",
   "peerDependencies": {
     "@angular/common": "^22.0.0",

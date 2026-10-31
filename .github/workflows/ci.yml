@@ -166,3 +166,30 @@ jobs:
           fi
 
           echo "Todos los skips u only tienen una referencia 'issue:' en la misma linea."
+
+      - name: Buscar nombres internos viejos
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          patron="$(printf '@%s/|@%s/|nucleo-%s' nucleo org shell)"
+
+          coincidencias=$(
+            {
+              grep -rnE "$patron" frontend/apps frontend/libs \
+                --exclude-dir=node_modules \
+                --exclude-dir=.nx \
+                --exclude-dir=dist \
+                --exclude-dir=.angular || true
+              grep -nE "$patron" frontend/*.json backend/composer.json \
+                .github/workflows/*.yml .github/workflows/*.yaml 2>/dev/null || true
+            }
+          )
+
+          if [ -n "$coincidencias" ]; then
+            echo "Se encontraron nombres internos viejos:"
+            printf '%s\n' "$coincidencias"
+            exit 1
+          fi
+
+          echo "OK: no quedan nombres internos viejos."

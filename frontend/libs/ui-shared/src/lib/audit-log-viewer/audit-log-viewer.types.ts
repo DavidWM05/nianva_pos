@@ -20,7 +20,7 @@ export interface AuditLogEntry {
  * ui-shared no sabe donde vive el backend (la URL base es de la app, no
  * de la libreria) -- AuditLogViewerComponent pide esta clase abstracta por
  * DI, y la app la implementa contra HttpClient (ver
- * apps/nucleo-shell/src/app/core/auditoria.service.ts) y la registra en
+ * apps/pos/src/app/core/auditoria.service.ts) y la registra en
  * app.config.ts. Mismo motivo por el que ConfirmDialogService no importa
  * nada especifico de la app: mantiene la libreria reutilizable fuera de
  * este proyecto en particular.

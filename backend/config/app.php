@@ -59,7 +59,7 @@ return [
     | Frontend URL
     |--------------------------------------------------------------------------
     |
-    | Origen del SPA (frontend/apps/nucleo-shell). Se usa para construir el
+    | Origen del SPA (frontend/apps/pos). Se usa para construir el
     | link de la notificacion de reset de contrasena -- el formulario que
     | recibe el token vive en el Angular app, no en una vista Blade del
     | backend (ver Notifications/ResetPasswordNotification).
