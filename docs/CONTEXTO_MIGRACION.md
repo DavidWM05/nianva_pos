@@ -269,6 +269,19 @@ repo.
   tiene factory salvo los pivotes. Nota de crédito, cuentas por cobrar y por pagar nacen de las
   factories del lote 1 (devolución, venta y compra) en el mismo tenant. Ningún test existente
   modificado. Backend: 597 tests.
+- **Nombres internos** (decimonoveno encargo, hecho por DS). Decisión del responsable:
+  - el paquete composer es `nianva/pos`;
+  - el workspace Nx es `@nianva/source`, y las librerías, `@nianva/ui-shared` y
+    `@nianva/design-tokens`;
+  - la app Nx `nucleo-shell` pasa a `pos` (`frontend/apps/pos`, `nx serve pos`, salida en
+    `dist/apps/pos`), movida con `git mv`.
+
+  El prefijo de selector `nucleo-` se queda hasta la Fase 2. Excepción a PRO-01 autorizada:
+  en 68 specs solo cambió la línea de import (`@nucleo/` → `@nianva/`), verificado con
+  `--word-diff`. Un paso nuevo del job `escaneo-skip` falla si reaparecen `@nucleo/`, `@org/`
+  o `nucleo-shell`. Los locks no cambiaron de versiones. Los documentos y los README usan los
+  nombres nuevos; las entradas anteriores de este archivo conservan los nombres de su
+  momento.
 - **Pendientes detectados:**
   - dependencias fuera del grafo: `Crm` lee `Venta` de Tpv (`PlanPagoController`,
     `PlanPagoCliente`, `VentasPlazosService`; es un ciclo, porque Tpv → Crm);
@@ -296,8 +309,6 @@ repo.
    bloqueante (Pint, ESLint, PHPStan), C7 (DAT-14), C2 (SEG-03), C3 (SEG-02), C8 (ARQ-02), C5 (API-01) y la documentación del repo (`README.md` y
    `.claude/CLAUDE.md`). Lo que sigue:
    - `composer audit`: revisar los 23 advisories;
-   - nombres internos: composer `nianva/pos` y alcance Nx `@nianva/*` (hoy `laravel/laravel`
-     y `@org`); el nombre de la app Nx `nucleo-shell` queda por decidir;
    - resolver los conflictos C1-C11 del README de estándares;
    - resto de PRO-05: stylelint, diff de OpenAPI y CODEOWNERS;
    - después de C8: que los Services reciban DTOs en vez de arreglos (se hace al reescribirlos
