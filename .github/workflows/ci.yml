@@ -48,6 +48,9 @@ jobs:
       - name: Instalar dependencias de Composer
         run: composer install --no-interaction --prefer-dist --no-progress
 
+      - name: Revisar avisos de seguridad de Composer
+        run: composer audit --no-interaction --abandoned=ignore
+
       - name: Preparar entorno de pruebas
         run: |
           cp .env.example .env

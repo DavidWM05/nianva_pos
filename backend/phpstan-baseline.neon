@@ -4045,12 +4045,6 @@ parameters:
 			path: app/Modules/Nucleo/Database/Seeders/DesarrolloSeeder.php
 
 		-
-			message: '#^Property Illuminate\\Database\\Seeder\:\:\$command \(Illuminate\\Console\\Command\) in isset\(\) is not nullable\.$#'
-			identifier: isset.property
-			count: 1
-			path: app/Modules/Nucleo/Database/Seeders/DesarrolloSeeder.php
-
-		-
 			message: '#^Method App\\Modules\\Nucleo\\Exceptions\\ExcepcionNegocio\:\:contexto\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
