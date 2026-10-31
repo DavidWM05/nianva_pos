@@ -44,9 +44,9 @@ nianva_pos/
 Auditoría, Configuración, Inventario, Precios, CRM, TPV, Apartados, Devoluciones y Gastos.
 
 **Módulos de extensión**, activables por tenant (`modulo:<slug>`): Cotizaciones, Cuentas por
-Cobrar, Cuentas por Pagar, Gift Cards, Notas de Crédito, Producción, Unidades de Medida, y los
-congelados CRM Avanzado, Delivery, Nómina y Préstamos. Las ventas a plazos viven en CRM. El
-detalle de cada uno está en [backend/README.md](backend/README.md).
+Cobrar, Cuentas por Pagar, Gift Cards, Notas de Crédito, Producción, Unidades de Medida, Ventas
+a Plazos, y los congelados CRM Avanzado, Delivery, Nómina y Préstamos. El detalle de cada uno
+está en [backend/README.md](backend/README.md).
 
 ## Cómo levantarlo
 
