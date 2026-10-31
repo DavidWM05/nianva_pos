@@ -27,14 +27,17 @@
 
 ### ARQ-02 · Entradas tipadas
 - **Regla:**
-  - todo endpoint de escritura usa un FormRequest con `rules()` y `authorize()`;
-  - el FormRequest expone `toDto()`, que devuelve un DTO `readonly`;
+  - todo endpoint de escritura usa un FormRequest con `rules()` que extiende
+    `Nucleo/Http/Requests/SolicitudNegocio` (su `authorize()` devuelve `true`: el permiso lo
+    revisa el middleware `permiso:*`, SEG-03);
+  - el FormRequest expone `toDto()`, que devuelve un DTO `final readonly` de
+    `Modules/<Modulo>/Dtos/`;
   - las Actions reciben DTOs, nunca `Request` ni arreglos sueltos.
 - **Por qué:**
   - en Lite, una variable indefinida borró el perfil de giro sin ningún error (L-15);
   - en Pro, la validación vive en el controlador (C8).
-- **Verifica:** test de arquitectura (sin `$request->validate(` en controladores) y PHPStan en
-  nivel 8 sobre `app/Modules`.
+- **Verifica:** `Arquitectura/EntradasTipadasTest` (sin `->validate(` ni `Validator::make` en
+  controladores, salvo su lista `PENDIENTES`, que solo baja) y PHPStan en nivel 8.
 - **Desde:** Fase 1.
 
 ### ARQ-03 · Orquestación entre módulos en Actions de aplicación

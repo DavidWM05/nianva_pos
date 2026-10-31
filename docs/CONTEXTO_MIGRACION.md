@@ -187,6 +187,15 @@ repo.
   de todas las sucursales. Ningún test existente modificado. Backend: 417 tests; línea
   base de PHPStan: 1477. En una instalación existente, `sucursales.todas` aparece al correr
   `NucleoRolesPermisosSeeder`.
+- **C8, ARQ-02, lote 1** (undécimo encargo, hecho por DS): base
+  `Nucleo/Http/Requests/SolicitudNegocio` (`authorize()` en `true`, `toDto()` abstracto) y
+  FormRequests + DTOs `readonly` en Tpv (ventas, cotizar, anular, abrir y cerrar caja),
+  Apartados (crear, abonar, cancelar), Devoluciones y Gastos (listar y crear).
+  `RegistrarVenta` y `RegistrarDevolucion` reciben su DTO; los Services compartidos
+  conservan su firma (se migran después). Refactor sin cambio de comportamiento: ningún test
+  existente modificado. `Arquitectura/EntradasTipadasTest` deja 29 controllers en
+  `PENDIENTES`. Fuera del test queda `RequiereDosFactorReciente`, un middleware que también
+  valida. Backend: 422 tests; línea base de PHPStan: 1458.
 - **Pendientes detectados:**
   - dependencias fuera del grafo: `Crm` lee `Venta` de Tpv (`PlanPagoController`,
     `PlanPagoCliente`, `VentasPlazosService`; es un ciclo, porque Tpv → Crm);
@@ -217,7 +226,8 @@ repo.
    - resto de PRO-05: stylelint, diff de OpenAPI y CODEOWNERS;
    - prefijo `/api/v1` y configuración del frontend en tiempo de ejecución (sin
      `localhost:8000` fijo);
-   - FormRequests y factories;
+   - FormRequests (C8): lotes siguientes hasta vaciar `PENDIENTES` (29 controllers);
+   - factories;
    - actualizar `.claude/CLAUDE.md` para que resuma los estándares;
    - opcional: rama `master` → `main`.
 2. **Fase 2**: sistema de diseño.
