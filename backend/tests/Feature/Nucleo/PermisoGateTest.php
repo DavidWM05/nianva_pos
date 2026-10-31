@@ -44,7 +44,7 @@ class PermisoGateTest extends TestCase
     {
         $this->actingAs($this->usuario);
 
-        $this->postJson('/api/insumos', [
+        $this->postJson('/api/v1/insumos', [
             'nombre' => 'Test',
             'unidad_medida_id' => 1,
         ])->assertForbidden();
@@ -54,7 +54,7 @@ class PermisoGateTest extends TestCase
     {
         $this->actingAs($this->usuario);
 
-        $this->postJson('/api/empleados', [
+        $this->postJson('/api/v1/empleados', [
             'usuario_id' => $this->usuario->id,
             'sucursal_id' => $this->sucursal->id,
             'salario_base' => 8000,
@@ -65,7 +65,7 @@ class PermisoGateTest extends TestCase
     {
         $this->actingAs($this->usuario);
 
-        $this->postJson('/api/prestamos', [
+        $this->postJson('/api/v1/prestamos', [
             'monto' => 10000,
             'fecha_prestamo' => now()->toDateString(),
         ])->assertForbidden();

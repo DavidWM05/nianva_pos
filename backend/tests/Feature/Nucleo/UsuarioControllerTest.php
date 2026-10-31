@@ -52,7 +52,7 @@ class UsuarioControllerTest extends TestCase
         ['usuario' => $usuario] = $this->crearUsuarioConPermisos([]);
         $this->actingAs($usuario);
 
-        $this->getJson('/api/usuarios')->assertForbidden();
+        $this->getJson('/api/v1/usuarios')->assertForbidden();
     }
 
     public function test_index_pagina_filtra_y_reporta_permisos(): void
@@ -62,7 +62,7 @@ class UsuarioControllerTest extends TestCase
 
         $this->actingAs($usuario);
 
-        $respuesta = $this->getJson('/api/usuarios?filtro_nombre=carlos');
+        $respuesta = $this->getJson('/api/v1/usuarios?filtro_nombre=carlos');
 
         $respuesta->assertOk()
             ->assertJsonCount(1, 'data')
@@ -76,7 +76,7 @@ class UsuarioControllerTest extends TestCase
         ['usuario' => $usuario] = $this->crearUsuarioConPermisos(['usuarios.ver']);
         $this->actingAs($usuario);
 
-        $respuesta = $this->getJson('/api/usuarios');
+        $respuesta = $this->getJson('/api/v1/usuarios');
 
         $respuesta->assertOk();
         $respuesta->assertJsonMissingPath('data.0.password');
@@ -90,7 +90,7 @@ class UsuarioControllerTest extends TestCase
 
         $this->actingAs($usuario);
 
-        $respuesta = $this->postJson('/api/usuarios', [
+        $respuesta = $this->postJson('/api/v1/usuarios', [
             'nombre' => 'Carlos', 'apellido' => 'Ruiz', 'correo' => 'carlos.ruiz@test.com',
             'password' => 'password-valida-123', 'sucursal_id' => $sucursal->id, 'roles' => [$rol->id],
         ]);
@@ -107,7 +107,7 @@ class UsuarioControllerTest extends TestCase
         ['usuario' => $usuario] = $this->crearUsuarioConPermisos(['usuarios.crear']);
         $this->actingAs($usuario);
 
-        $this->postJson('/api/usuarios', ['nombre' => 'Carlos', 'correo' => 'carlos2@test.com', 'password' => 'corta'])
+        $this->postJson('/api/v1/usuarios', ['nombre' => 'Carlos', 'correo' => 'carlos2@test.com', 'password' => 'corta'])
             ->assertUnprocessable()
             ->assertJsonValidationErrors('password');
     }
@@ -119,7 +119,7 @@ class UsuarioControllerTest extends TestCase
 
         $this->actingAs($usuarioA);
 
-        $this->postJson('/api/usuarios', ['nombre' => 'Otro', 'correo' => 'repetido@test.com', 'password' => 'password-valida-123'])
+        $this->postJson('/api/v1/usuarios', ['nombre' => 'Otro', 'correo' => 'repetido@test.com', 'password' => 'password-valida-123'])
             ->assertUnprocessable()
             ->assertJsonValidationErrors('correo');
     }
@@ -132,7 +132,7 @@ class UsuarioControllerTest extends TestCase
 
         $this->actingAs($usuario);
 
-        $this->putJson("/api/usuarios/{$objetivo->id}", ['nombre' => 'Carlos Ruiz', 'correo' => 'carlos3@test.com'])
+        $this->putJson("/api/v1/usuarios/{$objetivo->id}", ['nombre' => 'Carlos Ruiz', 'correo' => 'carlos3@test.com'])
             ->assertOk()
             ->assertJsonPath('data.nombre', 'Carlos Ruiz');
 
@@ -146,7 +146,7 @@ class UsuarioControllerTest extends TestCase
 
         $this->actingAs($usuario);
 
-        $this->patchJson("/api/usuarios/{$objetivo->id}/desactivar")
+        $this->patchJson("/api/v1/usuarios/{$objetivo->id}/desactivar")
             ->assertOk()
             ->assertJsonPath('data.activo', false);
     }
@@ -156,7 +156,7 @@ class UsuarioControllerTest extends TestCase
         ['usuario' => $usuario] = $this->crearUsuarioConPermisos(['usuarios.eliminar']);
         $this->actingAs($usuario);
 
-        $this->patchJson("/api/usuarios/{$usuario->id}/desactivar")->assertForbidden();
+        $this->patchJson("/api/v1/usuarios/{$usuario->id}/desactivar")->assertForbidden();
     }
 
     /**
@@ -172,7 +172,7 @@ class UsuarioControllerTest extends TestCase
         $objetivo = Usuario::create(['tenant_id' => $tenant->id, 'nombre' => 'Carlos', 'correo' => 'carlos5@test.com', 'password' => 'password-valida-123']);
         $this->actingAs($usuario);
 
-        $this->postJson("/api/usuarios/{$objetivo->id}/desactivar-2fa", [])->assertForbidden();
+        $this->postJson("/api/v1/usuarios/{$objetivo->id}/desactivar-2fa", [])->assertForbidden();
     }
 
     public function test_desactivar_2fa_de_un_usuario_sin_2fa_activo_falla(): void
@@ -181,7 +181,7 @@ class UsuarioControllerTest extends TestCase
         $objetivo = Usuario::create(['tenant_id' => $tenant->id, 'nombre' => 'Carlos', 'correo' => 'carlos6@test.com', 'password' => 'password-valida-123']);
         $this->actingAs($usuario);
 
-        $this->postJson("/api/usuarios/{$objetivo->id}/desactivar-2fa", [])->assertStatus(409);
+        $this->postJson("/api/v1/usuarios/{$objetivo->id}/desactivar-2fa", [])->assertStatus(409);
     }
 
     public function test_desactivar_2fa_de_otro_usuario_funciona(): void
@@ -194,7 +194,7 @@ class UsuarioControllerTest extends TestCase
         ])->save();
         $this->actingAs($usuario);
 
-        $this->postJson("/api/usuarios/{$objetivo->id}/desactivar-2fa", [])
+        $this->postJson("/api/v1/usuarios/{$objetivo->id}/desactivar-2fa", [])
             ->assertOk()
             ->assertJsonPath('data.dos_factor_confirmado', false);
 

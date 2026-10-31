@@ -42,7 +42,7 @@ class SucursalEndpointsTest extends TestCase
     {
         $this->actingAs($this->usuario);
 
-        $this->postJson('/api/cotizaciones', $this->payloadCotizacion($this->sucursalExtra->id))
+        $this->postJson('/api/v1/cotizaciones', $this->payloadCotizacion($this->sucursalExtra->id))
             ->assertStatus(422)
             ->assertJsonPath('error_code', 'sucursal_no_permitida')
             ->assertJsonPath('sucursal_id', $this->sucursalExtra->id);
@@ -54,7 +54,7 @@ class SucursalEndpointsTest extends TestCase
     {
         $this->actingAs($this->usuario);
 
-        $this->postJson('/api/cotizaciones', $this->payloadCotizacion())
+        $this->postJson('/api/v1/cotizaciones', $this->payloadCotizacion())
             ->assertCreated();
 
         $cotizacion = Cotizacion::latest('id')->firstOrFail();
@@ -66,7 +66,7 @@ class SucursalEndpointsTest extends TestCase
         $this->darPermisosA($this->usuario, ['sucursales.todas']);
         $this->actingAs($this->usuario);
 
-        $this->postJson('/api/cotizaciones', $this->payloadCotizacion($this->sucursalExtra->id))
+        $this->postJson('/api/v1/cotizaciones', $this->payloadCotizacion($this->sucursalExtra->id))
             ->assertCreated();
 
         $cotizacion = Cotizacion::latest('id')->firstOrFail();
@@ -77,7 +77,7 @@ class SucursalEndpointsTest extends TestCase
     {
         $this->actingAs($this->usuario);
 
-        $this->postJson('/api/pedidos', $this->payloadPedido($this->sucursalExtra->id))
+        $this->postJson('/api/v1/pedidos', $this->payloadPedido($this->sucursalExtra->id))
             ->assertStatus(422)
             ->assertJsonPath('error_code', 'sucursal_no_permitida')
             ->assertJsonPath('sucursal_id', $this->sucursalExtra->id);
@@ -89,7 +89,7 @@ class SucursalEndpointsTest extends TestCase
     {
         $this->actingAs($this->usuario);
 
-        $this->postJson('/api/pedidos', $this->payloadPedido())
+        $this->postJson('/api/v1/pedidos', $this->payloadPedido())
             ->assertCreated();
 
         $pedido = Pedido::latest('id')->firstOrFail();
@@ -101,7 +101,7 @@ class SucursalEndpointsTest extends TestCase
         $this->darPermisosA($this->usuario, ['sucursales.todas']);
         $this->actingAs($this->usuario);
 
-        $this->postJson('/api/pedidos', $this->payloadPedido($this->sucursalExtra->id))
+        $this->postJson('/api/v1/pedidos', $this->payloadPedido($this->sucursalExtra->id))
             ->assertCreated();
 
         $pedido = Pedido::latest('id')->firstOrFail();
@@ -113,7 +113,7 @@ class SucursalEndpointsTest extends TestCase
         $insumo = $this->crearInsumo();
         $this->actingAs($this->usuario);
 
-        $this->postJson("/api/insumos/{$insumo->id}/stocks", [
+        $this->postJson("/api/v1/insumos/{$insumo->id}/stocks", [
             'sucursal_id' => $this->sucursalExtra->id,
             'cantidad' => 1,
             'lote' => 'LOTE-RECHAZADO',
@@ -130,7 +130,7 @@ class SucursalEndpointsTest extends TestCase
         $insumo = $this->crearInsumo();
         $this->actingAs($this->usuario);
 
-        $this->postJson("/api/insumos/{$insumo->id}/stocks", [
+        $this->postJson("/api/v1/insumos/{$insumo->id}/stocks", [
             'cantidad' => 1,
             'lote' => 'LOTE-PROPIO',
         ])->assertCreated();
@@ -147,7 +147,7 @@ class SucursalEndpointsTest extends TestCase
         $this->darPermisosA($this->usuario, ['sucursales.todas']);
         $this->actingAs($this->usuario);
 
-        $this->postJson("/api/insumos/{$insumo->id}/stocks", [
+        $this->postJson("/api/v1/insumos/{$insumo->id}/stocks", [
             'sucursal_id' => $this->sucursalExtra->id,
             'cantidad' => 1,
             'lote' => 'LOTE-EXTRA',
@@ -164,7 +164,7 @@ class SucursalEndpointsTest extends TestCase
         $this->crearEmpleado($this->sucursalExtra);
         $this->actingAs($this->usuario);
 
-        $this->postJson('/api/nominas/generar', $this->payloadNomina($this->sucursalExtra->id))
+        $this->postJson('/api/v1/nominas/generar', $this->payloadNomina($this->sucursalExtra->id))
             ->assertStatus(422)
             ->assertJsonPath('error_code', 'sucursal_no_permitida')
             ->assertJsonPath('sucursal_id', $this->sucursalExtra->id);
@@ -177,7 +177,7 @@ class SucursalEndpointsTest extends TestCase
         $this->crearEmpleado($this->sucursal);
         $this->actingAs($this->usuario);
 
-        $this->postJson('/api/nominas/generar', $this->payloadNomina())
+        $this->postJson('/api/v1/nominas/generar', $this->payloadNomina())
             ->assertCreated();
 
         $nomina = Nomina::latest('id')->firstOrFail();
@@ -190,7 +190,7 @@ class SucursalEndpointsTest extends TestCase
         $this->darPermisosA($this->usuario, ['sucursales.todas']);
         $this->actingAs($this->usuario);
 
-        $this->postJson('/api/nominas/generar', $this->payloadNomina($this->sucursalExtra->id))
+        $this->postJson('/api/v1/nominas/generar', $this->payloadNomina($this->sucursalExtra->id))
             ->assertCreated();
 
         $nomina = Nomina::latest('id')->firstOrFail();
@@ -203,7 +203,7 @@ class SucursalEndpointsTest extends TestCase
         $this->crearVentaEn($this->sucursalExtra, 200);
         $this->actingAs($this->usuario);
 
-        $response = $this->getJson('/api/ventas/reporte?sucursal_id='.$this->sucursalExtra->id);
+        $response = $this->getJson('/api/v1/ventas/reporte?sucursal_id='.$this->sucursalExtra->id);
 
         $response->assertOk();
         $this->assertEquals(100.0, $response->json('data.total_ventas'));
@@ -219,7 +219,7 @@ class SucursalEndpointsTest extends TestCase
         $this->darPermisosA($this->usuario, ['sucursales.todas']);
         $this->actingAs($this->usuario);
 
-        $response = $this->getJson('/api/ventas/reporte?sucursal_id='.$this->sucursalExtra->id);
+        $response = $this->getJson('/api/v1/ventas/reporte?sucursal_id='.$this->sucursalExtra->id);
 
         $response->assertOk();
         $this->assertEquals(200.0, $response->json('data.total_ventas'));
@@ -235,7 +235,7 @@ class SucursalEndpointsTest extends TestCase
         $this->darPermisosA($this->usuario, ['sucursales.todas']);
         $this->actingAs($this->usuario);
 
-        $response = $this->getJson('/api/ventas/reporte');
+        $response = $this->getJson('/api/v1/ventas/reporte');
 
         $response->assertOk();
         $this->assertEquals(300.0, $response->json('data.total_ventas'));

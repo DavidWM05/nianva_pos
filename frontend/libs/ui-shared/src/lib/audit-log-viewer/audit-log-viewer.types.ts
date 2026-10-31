@@ -17,7 +17,7 @@ export interface AuditLogEntry {
 }
 
 /**
- * ui-shared no sabe donde vive el backend (API_BASE_URL es de la app, no
+ * ui-shared no sabe donde vive el backend (la URL base es de la app, no
  * de la libreria) -- AuditLogViewerComponent pide esta clase abstracta por
  * DI, y la app la implementa contra HttpClient (ver
  * apps/nucleo-shell/src/app/core/auditoria.service.ts) y la registra en

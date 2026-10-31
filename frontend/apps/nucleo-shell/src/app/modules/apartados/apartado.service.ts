@@ -3,7 +3,7 @@ import { Injectable, inject } from '@angular/core';
 import { DataTableLazyEvent } from '@nucleo/ui-shared';
 import { Observable, map } from 'rxjs';
 
-import { API_BASE_URL } from '../../core/api-config';
+import { urlApi } from '../../core/api-config';
 import {
   AbonoFormPayload,
   Apartado,
@@ -32,7 +32,7 @@ export class ApartadoService {
     }
 
     return this.http
-      .get<{ data: Apartado[]; meta: { total: number; permisos: ApartadosPagina['permisos'] } }>(`${API_BASE_URL}/api/apartados`, {
+      .get<{ data: Apartado[]; meta: { total: number; permisos: ApartadosPagina['permisos'] } }>(urlApi(`/apartados`), {
         params,
       })
       .pipe(map((r) => ({ data: r.data, total: r.meta.total, permisos: r.meta.permisos })));
@@ -40,28 +40,28 @@ export class ApartadoService {
 
   obtener(id: number): Observable<{ apartado: Apartado; permisos: ApartadoDetallePermisos }> {
     return this.http
-      .get<{ data: Apartado; meta: { permisos: ApartadoDetallePermisos } }>(`${API_BASE_URL}/api/apartados/${id}`)
+      .get<{ data: Apartado; meta: { permisos: ApartadoDetallePermisos } }>(urlApi(`/apartados/${id}`))
       .pipe(map((r) => ({ apartado: r.data, permisos: r.meta.permisos })));
   }
 
   crear(payload: ApartadoFormPayload): Observable<Apartado> {
-    return this.http.post<{ data: Apartado }>(`${API_BASE_URL}/api/apartados`, payload).pipe(map((r) => r.data));
+    return this.http.post<{ data: Apartado }>(urlApi(`/apartados`), payload).pipe(map((r) => r.data));
   }
 
   registrarAbono(id: number, payload: AbonoFormPayload): Observable<Apartado> {
     return this.http
-      .post<{ data: Apartado }>(`${API_BASE_URL}/api/apartados/${id}/abonos`, payload)
+      .post<{ data: Apartado }>(urlApi(`/apartados/${id}/abonos`), payload)
       .pipe(map((r) => r.data));
   }
 
   liquidar(id: number): Observable<Apartado> {
-    return this.http.patch<{ data: Apartado }>(`${API_BASE_URL}/api/apartados/${id}/liquidar`, {}).pipe(map((r) => r.data));
+    return this.http.patch<{ data: Apartado }>(urlApi(`/apartados/${id}/liquidar`), {}).pipe(map((r) => r.data));
   }
 
   cancelar(id: number, motivo: string): Observable<ResultadoCancelacion> {
     return this.http
       .patch<{ data: Apartado; meta: { tiene_abonos_pendientes: boolean; monto_abonado_pendiente: number } }>(
-        `${API_BASE_URL}/api/apartados/${id}/cancelar`,
+        urlApi(`/apartados/${id}/cancelar`),
         { motivo },
       )
       .pipe(

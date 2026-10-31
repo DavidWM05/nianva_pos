@@ -3,7 +3,7 @@ import { Injectable, inject } from '@angular/core';
 import { DataTableLazyEvent } from '@nucleo/ui-shared';
 import { Observable, map } from 'rxjs';
 
-import { API_BASE_URL } from '../../core/api-config';
+import { urlApi } from '../../core/api-config';
 import { MetodoPagoAdmin, MetodosPagoPagina, MetodosPagoPermisos, TipoMetodoPago } from './metodo-pago.types';
 
 export interface MetodoPagoFormPayload {
@@ -35,7 +35,7 @@ export class MetodoPagoAdminService {
 
     return this.http
       .get<{ data: MetodoPagoAdmin[]; meta: { total: number; permisos: MetodosPagoPermisos } }>(
-        `${API_BASE_URL}/api/metodos-pago`,
+        urlApi(`/metodos-pago`),
         { params },
       )
       .pipe(map((r) => ({ data: r.data, total: r.meta.total, permisos: r.meta.permisos })));
@@ -43,23 +43,23 @@ export class MetodoPagoAdminService {
 
   obtener(id: number): Observable<{ metodoPago: MetodoPagoAdmin; permisos: MetodosPagoPermisos }> {
     return this.http
-      .get<{ data: MetodoPagoAdmin; meta: { permisos: MetodosPagoPermisos } }>(`${API_BASE_URL}/api/metodos-pago/${id}`)
+      .get<{ data: MetodoPagoAdmin; meta: { permisos: MetodosPagoPermisos } }>(urlApi(`/metodos-pago/${id}`))
       .pipe(map((r) => ({ metodoPago: r.data, permisos: r.meta.permisos })));
   }
 
   crear(payload: MetodoPagoFormPayload): Observable<MetodoPagoAdmin> {
-    return this.http.post<{ data: MetodoPagoAdmin }>(`${API_BASE_URL}/api/metodos-pago`, payload).pipe(map((r) => r.data));
+    return this.http.post<{ data: MetodoPagoAdmin }>(urlApi(`/metodos-pago`), payload).pipe(map((r) => r.data));
   }
 
   actualizar(id: number, payload: MetodoPagoFormPayload): Observable<MetodoPagoAdmin> {
     return this.http
-      .put<{ data: MetodoPagoAdmin }>(`${API_BASE_URL}/api/metodos-pago/${id}`, payload)
+      .put<{ data: MetodoPagoAdmin }>(urlApi(`/metodos-pago/${id}`), payload)
       .pipe(map((r) => r.data));
   }
 
   desactivar(id: number): Observable<MetodoPagoAdmin> {
     return this.http
-      .patch<{ data: MetodoPagoAdmin }>(`${API_BASE_URL}/api/metodos-pago/${id}/desactivar`, {})
+      .patch<{ data: MetodoPagoAdmin }>(urlApi(`/metodos-pago/${id}/desactivar`), {})
       .pipe(map((r) => r.data));
   }
 }

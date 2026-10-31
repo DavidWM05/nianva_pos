@@ -31,7 +31,7 @@ class ReglaPrecioExistsTenantTest extends TestCase
     {
         $this->actingAs($this->usuario);
 
-        $this->postJson('/api/reglas-precio', $this->payload(['categoria_id' => $this->categoriaB->id]))
+        $this->postJson('/api/v1/reglas-precio', $this->payload(['categoria_id' => $this->categoriaB->id]))
             ->assertStatus(422)
             ->assertJsonValidationErrors(['categoria_id']);
     }
@@ -40,7 +40,7 @@ class ReglaPrecioExistsTenantTest extends TestCase
     {
         $this->actingAs($this->usuario);
 
-        $this->postJson('/api/reglas-precio', $this->payload(['producto_id' => $this->productoB->id]))
+        $this->postJson('/api/v1/reglas-precio', $this->payload(['producto_id' => $this->productoB->id]))
             ->assertStatus(422)
             ->assertJsonValidationErrors(['producto_id']);
     }
@@ -49,7 +49,7 @@ class ReglaPrecioExistsTenantTest extends TestCase
     {
         $this->actingAs($this->usuario);
 
-        $this->postJson('/api/reglas-precio', $this->payload(['variante_id' => $this->varianteB->id]))
+        $this->postJson('/api/v1/reglas-precio', $this->payload(['variante_id' => $this->varianteB->id]))
             ->assertStatus(422)
             ->assertJsonValidationErrors(['variante_id']);
     }

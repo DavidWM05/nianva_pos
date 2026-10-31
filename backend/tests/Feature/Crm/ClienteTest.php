@@ -57,7 +57,7 @@ class ClienteTest extends TestCase
 
         $this->actingAs($usuario);
 
-        $respuesta = $this->getJson('/api/clientes?rows=2&page=1&sort_field=nombre&sort_order=asc');
+        $respuesta = $this->getJson('/api/v1/clientes?rows=2&page=1&sort_field=nombre&sort_order=asc');
 
         $respuesta->assertOk();
         $respuesta->assertJsonPath('meta.total', 3);
@@ -66,7 +66,7 @@ class ClienteTest extends TestCase
         $respuesta->assertJsonCount(2, 'data');
         $respuesta->assertJsonPath('data.0.nombre', 'Beatriz Solis');
 
-        $filtrado = $this->getJson('/api/clientes?filtro_nombre=carlos');
+        $filtrado = $this->getJson('/api/v1/clientes?filtro_nombre=carlos');
         $filtrado->assertOk()->assertJsonCount(1, 'data')->assertJsonPath('data.0.nombre', 'Carlos Ruiz');
     }
 
@@ -77,7 +77,7 @@ class ClienteTest extends TestCase
 
         $this->actingAs($usuario);
 
-        $this->getJson("/api/clientes/{$cliente->id}")
+        $this->getJson("/api/v1/clientes/{$cliente->id}")
             ->assertOk()
             ->assertJsonPath('data.nombre', 'Gabriel Rios')
             ->assertJsonPath('meta.permisos.editar', true)
@@ -89,21 +89,21 @@ class ClienteTest extends TestCase
         ['usuario' => $usuario] = $this->crearUsuarioConPermisos([]);
         $this->actingAs($usuario);
 
-        $this->getJson('/api/clientes')->assertForbidden();
+        $this->getJson('/api/v1/clientes')->assertForbidden();
     }
 
     public function test_crear_cliente_exige_permiso_y_valida_el_nombre(): void
     {
         ['usuario' => $sinPermiso] = $this->crearUsuarioConPermisos(['clientes.ver']);
         $this->actingAs($sinPermiso);
-        $this->postJson('/api/clientes', ['nombre' => 'Nuevo'])->assertForbidden();
+        $this->postJson('/api/v1/clientes', ['nombre' => 'Nuevo'])->assertForbidden();
 
         ['usuario' => $conPermiso] = $this->crearUsuarioConPermisos(['clientes.ver', 'clientes.crear']);
         $this->actingAs($conPermiso);
 
-        $this->postJson('/api/clientes', [])->assertUnprocessable()->assertJsonValidationErrors('nombre');
+        $this->postJson('/api/v1/clientes', [])->assertUnprocessable()->assertJsonValidationErrors('nombre');
 
-        $this->postJson('/api/clientes', ['nombre' => 'Diana Torres', 'correo' => 'diana@test.com'])
+        $this->postJson('/api/v1/clientes', ['nombre' => 'Diana Torres', 'correo' => 'diana@test.com'])
             ->assertCreated()
             ->assertJsonPath('data.nombre', 'Diana Torres')
             ->assertJsonPath('data.activo', true)
@@ -117,8 +117,8 @@ class ClienteTest extends TestCase
 
         $this->actingAs($usuario);
 
-        $this->putJson("/api/clientes/{$publicoGeneral->id}", ['nombre' => 'Intento de cambio'])->assertForbidden();
-        $this->patchJson("/api/clientes/{$publicoGeneral->id}/desactivar")->assertForbidden();
+        $this->putJson("/api/v1/clientes/{$publicoGeneral->id}", ['nombre' => 'Intento de cambio'])->assertForbidden();
+        $this->patchJson("/api/v1/clientes/{$publicoGeneral->id}/desactivar")->assertForbidden();
 
         $this->assertSame('Publico General', $publicoGeneral->fresh()->nombre);
         $this->assertTrue($publicoGeneral->fresh()->activo);
@@ -131,7 +131,7 @@ class ClienteTest extends TestCase
 
         $this->actingAs($usuario);
 
-        $this->patchJson("/api/clientes/{$cliente->id}/desactivar")
+        $this->patchJson("/api/v1/clientes/{$cliente->id}/desactivar")
             ->assertOk()
             ->assertJsonPath('data.activo', false);
 
@@ -163,7 +163,7 @@ class ClienteTest extends TestCase
 
         $this->actingAs($usuario);
 
-        $respuesta = $this->getJson("/api/clientes/{$clienteA->id}/ventas");
+        $respuesta = $this->getJson("/api/v1/clientes/{$clienteA->id}/ventas");
 
         $respuesta->assertOk()->assertJsonCount(1, 'data')->assertJsonPath('data.0.total', '150.00');
     }
@@ -174,9 +174,9 @@ class ClienteTest extends TestCase
         $this->actingAs($usuario);
 
         $cliente = Cliente::create(['tenant_id' => $tenant->id, 'nombre' => 'Fernanda Ibarra']);
-        $this->putJson("/api/clientes/{$cliente->id}", ['nombre' => 'Fernanda I. Torres'])->assertOk();
+        $this->putJson("/api/v1/clientes/{$cliente->id}", ['nombre' => 'Fernanda I. Torres'])->assertOk();
 
-        $respuesta = $this->getJson("/api/auditoria?tabla=clientes&registro_id={$cliente->id}");
+        $respuesta = $this->getJson("/api/v1/auditoria?tabla=clientes&registro_id={$cliente->id}");
 
         $respuesta->assertOk();
         $acciones = collect($respuesta->json('data'))->pluck('accion');

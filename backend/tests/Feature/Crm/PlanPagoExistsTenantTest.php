@@ -23,7 +23,7 @@ class PlanPagoExistsTenantTest extends TestCase
         $plan = $this->crearPlan($venta);
         $this->actingAs($this->usuario);
 
-        $this->postJson("/api/planes-pago-cliente/{$plan->id}/pagar-cuota", [
+        $this->postJson("/api/v1/planes-pago-cliente/{$plan->id}/pagar-cuota", [
             'cuota_id' => $this->cuotaB->id,
             'monto' => 50,
         ])->assertStatus(422)->assertJsonValidationErrors(['cuota_id']);

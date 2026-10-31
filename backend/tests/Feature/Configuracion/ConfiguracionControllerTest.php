@@ -50,7 +50,7 @@ class ConfiguracionControllerTest extends TestCase
         ['usuario' => $usuario] = $this->crearUsuarioConPermisos(['configuracion.editar']);
         $this->actingAs($usuario);
 
-        $this->getJson('/api/configuracion')->assertOk()
+        $this->getJson('/api/v1/configuracion')->assertOk()
             ->assertJsonPath('data.moneda', '$')
             ->assertJsonPath('data.mostrar_rfc', true)
             ->assertJsonPath('data.backup_frecuencia', 'semanal');
@@ -61,7 +61,7 @@ class ConfiguracionControllerTest extends TestCase
         ['usuario' => $usuario] = $this->crearUsuarioConPermisos([]);
         $this->actingAs($usuario);
 
-        $this->getJson('/api/configuracion')->assertForbidden();
+        $this->getJson('/api/v1/configuracion')->assertForbidden();
     }
 
     public function test_update_guarda_los_nuevos_valores(): void
@@ -69,7 +69,7 @@ class ConfiguracionControllerTest extends TestCase
         ['tenant' => $tenant, 'usuario' => $usuario] = $this->crearUsuarioConPermisos(['configuracion.editar']);
         $this->actingAs($usuario);
 
-        $respuesta = $this->putJson('/api/configuracion', [
+        $respuesta = $this->putJson('/api/v1/configuracion', [
             'moneda' => 'USD',
             'mensaje_ticket' => 'Gracias por su compra',
             'logo_url' => 'https://ejemplo.com/logo.png',
@@ -95,7 +95,7 @@ class ConfiguracionControllerTest extends TestCase
         ['usuario' => $usuario] = $this->crearUsuarioConPermisos(['configuracion.editar']);
         $this->actingAs($usuario);
 
-        $this->putJson('/api/configuracion', [
+        $this->putJson('/api/v1/configuracion', [
             'moneda' => '$',
             'mostrar_rfc' => true,
             'mostrar_telefono' => true,
@@ -111,14 +111,14 @@ class ConfiguracionControllerTest extends TestCase
         ['usuario' => $usuario] = $this->crearUsuarioConPermisos([]);
         $this->actingAs($usuario);
 
-        $this->putJson('/api/configuracion', ['moneda' => 'USD'])->assertForbidden();
+        $this->putJson('/api/v1/configuracion', ['moneda' => 'USD'])->assertForbidden();
     }
 
     public function test_aislamiento_entre_tenants(): void
     {
         ['tenant' => $tenant1, 'usuario' => $usuario1] = $this->crearUsuarioConPermisos(['configuracion.editar']);
         $this->actingAs($usuario1);
-        $this->putJson('/api/configuracion', [
+        $this->putJson('/api/v1/configuracion', [
             'moneda' => 'USD', 'mostrar_rfc' => true, 'mostrar_telefono' => true, 'mostrar_correo' => true,
             'backup_auto' => false, 'backup_frecuencia' => 'diario', 'codigo_barras_automatico' => false,
         ])->assertOk();
@@ -126,7 +126,7 @@ class ConfiguracionControllerTest extends TestCase
         ['usuario' => $usuario2] = $this->crearUsuarioConPermisos(['configuracion.editar']);
         $this->actingAs($usuario2);
 
-        $this->getJson('/api/configuracion')->assertOk()->assertJsonPath('data.moneda', '$');
+        $this->getJson('/api/v1/configuracion')->assertOk()->assertJsonPath('data.moneda', '$');
 
         $this->assertSame(2, ConfiguracionTenant::sinTenant()->count());
     }
@@ -139,7 +139,7 @@ class ConfiguracionControllerTest extends TestCase
 
         // inventario.crear, NO configuracion.editar -- publica() es
         // deliberadamente accesible sin ese permiso (ver su docblock).
-        $this->getJson('/api/configuracion/publica')
+        $this->getJson('/api/v1/configuracion/publica')
             ->assertOk()
             ->assertExactJson(['codigo_barras_automatico' => true]);
     }

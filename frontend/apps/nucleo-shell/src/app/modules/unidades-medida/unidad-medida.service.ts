@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable, map } from 'rxjs';
 
-import { API_BASE_URL } from '../../core/api-config';
+import { urlApi } from '../../core/api-config';
 import { TipoUnidadMedida, UnidadMedida } from './unidad-medida.types';
 
 export interface UnidadMedidaFormPayload {
@@ -28,22 +28,22 @@ export class UnidadMedidaService {
   private readonly http = inject(HttpClient);
 
   listar(): Observable<UnidadMedida[]> {
-    return this.http.get<{ data: UnidadMedida[] }>(`${API_BASE_URL}/api/unidades-medida`).pipe(map((r) => r.data));
+    return this.http.get<{ data: UnidadMedida[] }>(urlApi(`/unidades-medida`)).pipe(map((r) => r.data));
   }
 
   crear(payload: UnidadMedidaFormPayload): Observable<UnidadMedida> {
     return this.http
-      .post<{ data: UnidadMedida }>(`${API_BASE_URL}/api/unidades-medida`, payload)
+      .post<{ data: UnidadMedida }>(urlApi(`/unidades-medida`), payload)
       .pipe(map((r) => r.data));
   }
 
   actualizar(id: number, payload: UnidadMedidaFormPayload): Observable<UnidadMedida> {
     return this.http
-      .put<{ data: UnidadMedida }>(`${API_BASE_URL}/api/unidades-medida/${id}`, payload)
+      .put<{ data: UnidadMedida }>(urlApi(`/unidades-medida/${id}`), payload)
       .pipe(map((r) => r.data));
   }
 
   eliminar(id: number): Observable<void> {
-    return this.http.delete<void>(`${API_BASE_URL}/api/unidades-medida/${id}`);
+    return this.http.delete<void>(urlApi(`/unidades-medida/${id}`));
   }
 }

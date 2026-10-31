@@ -22,7 +22,7 @@ class ApartadoExistsTenantTest extends TestCase
         $apartado = $this->crearApartado();
         $this->actingAs($this->usuario);
 
-        $this->postJson("/api/apartados/{$apartado->id}/abonos", [
+        $this->postJson("/api/v1/apartados/{$apartado->id}/abonos", [
             'monto' => 10,
             'pagos' => [['metodo_pago_id' => $this->metodoPagoB->id, 'monto' => 10]],
         ])->assertStatus(422)->assertJsonValidationErrors(['pagos.0.metodo_pago_id']);
@@ -33,7 +33,7 @@ class ApartadoExistsTenantTest extends TestCase
         $apartado = $this->crearApartado();
         $this->actingAs($this->usuario);
 
-        $this->postJson("/api/apartados/{$apartado->id}/abonos", [
+        $this->postJson("/api/v1/apartados/{$apartado->id}/abonos", [
             'monto' => 10,
             'pagos' => [['metodo_pago_id' => $this->metodoPagoGlobal->id, 'monto' => 10]],
         ])->assertOk();

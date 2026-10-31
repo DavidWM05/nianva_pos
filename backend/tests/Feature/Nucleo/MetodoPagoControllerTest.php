@@ -54,7 +54,7 @@ class MetodoPagoControllerTest extends TestCase
 
         $this->actingAs($usuario);
 
-        $respuesta = $this->getJson('/api/metodos-pago?solo_activos=1');
+        $respuesta = $this->getJson('/api/v1/metodos-pago?solo_activos=1');
 
         $respuesta->assertOk()
             ->assertJsonCount(2, 'data')
@@ -68,7 +68,7 @@ class MetodoPagoControllerTest extends TestCase
         ['usuario' => $usuario] = $this->crearUsuarioConPermisos([]);
         $this->actingAs($usuario);
 
-        $this->getJson('/api/metodos-pago')->assertForbidden();
+        $this->getJson('/api/v1/metodos-pago')->assertForbidden();
     }
 
     public function test_index_pagina_filtra_y_reporta_permisos(): void
@@ -79,7 +79,7 @@ class MetodoPagoControllerTest extends TestCase
 
         $this->actingAs($usuario);
 
-        $respuesta = $this->getJson('/api/metodos-pago?filtro_nombre=vale');
+        $respuesta = $this->getJson('/api/v1/metodos-pago?filtro_nombre=vale');
 
         $respuesta->assertOk()
             ->assertJsonCount(1, 'data')
@@ -96,7 +96,7 @@ class MetodoPagoControllerTest extends TestCase
 
         $this->actingAs($usuario);
 
-        $this->getJson('/api/metodos-pago')->assertOk()->assertJsonCount(2, 'data');
+        $this->getJson('/api/v1/metodos-pago')->assertOk()->assertJsonCount(2, 'data');
     }
 
     public function test_crear_metodo_de_pago_siempre_lo_asigna_al_tenant_actual(): void
@@ -104,7 +104,7 @@ class MetodoPagoControllerTest extends TestCase
         ['tenant' => $tenant, 'usuario' => $usuario] = $this->crearUsuarioConPermisos(['metodos_pago.crear']);
         $this->actingAs($usuario);
 
-        $respuesta = $this->postJson('/api/metodos-pago', [
+        $respuesta = $this->postJson('/api/v1/metodos-pago', [
             'nombre' => 'Vales de despensa', 'tipo' => 'otro', 'incluir_en_financiero' => true,
         ]);
 
@@ -119,7 +119,7 @@ class MetodoPagoControllerTest extends TestCase
 
         $this->actingAs($usuario);
 
-        $this->putJson("/api/metodos-pago/{$global->id}", [
+        $this->putJson("/api/v1/metodos-pago/{$global->id}", [
             'nombre' => 'Efectivo (modificado)', 'tipo' => 'efectivo', 'incluir_en_financiero' => true,
         ])->assertForbidden();
     }
@@ -131,7 +131,7 @@ class MetodoPagoControllerTest extends TestCase
 
         $this->actingAs($usuario);
 
-        $this->patchJson("/api/metodos-pago/{$global->id}/desactivar")->assertForbidden();
+        $this->patchJson("/api/v1/metodos-pago/{$global->id}/desactivar")->assertForbidden();
     }
 
     public function test_editar_un_metodo_de_pago_propio_del_tenant_funciona(): void
@@ -141,7 +141,7 @@ class MetodoPagoControllerTest extends TestCase
 
         $this->actingAs($usuario);
 
-        $this->putJson("/api/metodos-pago/{$propio->id}", [
+        $this->putJson("/api/v1/metodos-pago/{$propio->id}", [
             'nombre' => 'Vales de despensa', 'tipo' => 'otro', 'incluir_en_financiero' => false,
         ])->assertOk()->assertJsonPath('data.nombre', 'Vales de despensa');
     }

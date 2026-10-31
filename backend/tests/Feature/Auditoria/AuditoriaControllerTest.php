@@ -56,7 +56,7 @@ class AuditoriaControllerTest extends TestCase
         ['usuario' => $usuario] = $this->crearUsuarioConPermisos(['auditoria.ver']);
         $this->actingAs($usuario);
 
-        $this->getJson('/api/auditoria')->assertUnprocessable();
+        $this->getJson('/api/v1/auditoria')->assertUnprocessable();
     }
 
     public function test_index_exige_el_permiso_auditoria_ver(): void
@@ -64,7 +64,7 @@ class AuditoriaControllerTest extends TestCase
         ['usuario' => $usuario] = $this->crearUsuarioConPermisos([]);
         $this->actingAs($usuario);
 
-        $this->getJson('/api/auditoria?tabla=productos&registro_id=555')->assertForbidden();
+        $this->getJson('/api/v1/auditoria?tabla=productos&registro_id=555')->assertForbidden();
 
         ['tenant' => $tenant, 'usuario' => $conPermiso] = $this->crearUsuarioConPermisos(['auditoria.ver']);
         Auditoria::create([
@@ -74,7 +74,7 @@ class AuditoriaControllerTest extends TestCase
 
         $this->actingAs($conPermiso);
 
-        $this->getJson('/api/auditoria?tabla=productos&registro_id=555')->assertOk()->assertJsonCount(1, 'data');
+        $this->getJson('/api/v1/auditoria?tabla=productos&registro_id=555')->assertOk()->assertJsonCount(1, 'data');
     }
 
     public function test_global_exige_el_permiso_auditoria_ver(): void
@@ -82,7 +82,7 @@ class AuditoriaControllerTest extends TestCase
         ['usuario' => $usuario] = $this->crearUsuarioConPermisos([]);
         $this->actingAs($usuario);
 
-        $this->getJson('/api/auditoria/global')->assertForbidden();
+        $this->getJson('/api/v1/auditoria/global')->assertForbidden();
     }
 
     public function test_global_pagina_y_reporta_el_total(): void
@@ -93,7 +93,7 @@ class AuditoriaControllerTest extends TestCase
 
         $this->actingAs($usuario);
 
-        $respuesta = $this->getJson('/api/auditoria/global?tabla=productos');
+        $respuesta = $this->getJson('/api/v1/auditoria/global?tabla=productos');
 
         $respuesta->assertOk()
             ->assertJsonCount(2, 'data')
@@ -109,7 +109,7 @@ class AuditoriaControllerTest extends TestCase
 
         $this->actingAs($usuario);
 
-        $respuesta = $this->getJson('/api/auditoria/global?tabla=departamentos');
+        $respuesta = $this->getJson('/api/v1/auditoria/global?tabla=departamentos');
 
         $respuesta->assertOk()->assertJsonCount(1, 'data')->assertJsonPath('data.0.tabla_afectada', 'departamentos');
     }
@@ -124,7 +124,7 @@ class AuditoriaControllerTest extends TestCase
 
         $this->actingAs($usuario);
 
-        $respuesta = $this->getJson("/api/auditoria/global?tabla=productos&usuario_id={$otro->id}");
+        $respuesta = $this->getJson("/api/v1/auditoria/global?tabla=productos&usuario_id={$otro->id}");
 
         $respuesta->assertOk()->assertJsonCount(1, 'data')->assertJsonPath('data.0.usuario_nombre', 'Carlos');
     }
@@ -140,7 +140,7 @@ class AuditoriaControllerTest extends TestCase
 
         $this->actingAs($usuario);
 
-        $respuesta = $this->getJson('/api/auditoria/global?tabla=productos&fecha_desde='.today()->subDay()->toDateString());
+        $respuesta = $this->getJson('/api/v1/auditoria/global?tabla=productos&fecha_desde='.today()->subDay()->toDateString());
 
         $respuesta->assertOk()->assertJsonCount(1, 'data')->assertJsonPath('data.0.registro_id', 802);
     }
@@ -155,6 +155,6 @@ class AuditoriaControllerTest extends TestCase
 
         $this->actingAs($usuarioA);
 
-        $this->getJson('/api/auditoria/global?tabla=productos')->assertOk()->assertJsonCount(1, 'data');
+        $this->getJson('/api/v1/auditoria/global?tabla=productos')->assertOk()->assertJsonCount(1, 'data');
     }
 }

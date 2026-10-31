@@ -54,7 +54,7 @@ class DepartamentoControllerTest extends TestCase
 
         $this->actingAs($usuario);
 
-        $respuesta = $this->getJson('/api/departamentos?solo_activos=1');
+        $respuesta = $this->getJson('/api/v1/departamentos?solo_activos=1');
 
         $respuesta->assertOk()->assertJsonCount(1, 'data')->assertJsonPath('data.0.nombre', 'Damas');
         $respuesta->assertJsonMissingPath('meta');
@@ -68,7 +68,7 @@ class DepartamentoControllerTest extends TestCase
 
         $this->actingAs($usuario);
 
-        $respuesta = $this->getJson('/api/departamentos?filtro_nombre=dama');
+        $respuesta = $this->getJson('/api/v1/departamentos?filtro_nombre=dama');
 
         $respuesta->assertOk()
             ->assertJsonCount(1, 'data')
@@ -82,7 +82,7 @@ class DepartamentoControllerTest extends TestCase
         ['usuario' => $usuario] = $this->crearUsuarioConPermisos([]);
         $this->actingAs($usuario);
 
-        $this->getJson('/api/departamentos')->assertForbidden();
+        $this->getJson('/api/v1/departamentos')->assertForbidden();
     }
 
     public function test_crear_departamento(): void
@@ -90,7 +90,7 @@ class DepartamentoControllerTest extends TestCase
         ['usuario' => $usuario] = $this->crearUsuarioConPermisos(['inventario.crear']);
         $this->actingAs($usuario);
 
-        $this->postJson('/api/departamentos', ['nombre' => 'Niños', 'descripcion' => 'Ropa infantil'])
+        $this->postJson('/api/v1/departamentos', ['nombre' => 'Niños', 'descripcion' => 'Ropa infantil'])
             ->assertCreated()
             ->assertJsonPath('data.nombre', 'Niños')
             ->assertJsonPath('data.activo', true);
@@ -101,7 +101,7 @@ class DepartamentoControllerTest extends TestCase
         ['usuario' => $usuario] = $this->crearUsuarioConPermisos(['inventario.crear']);
         $this->actingAs($usuario);
 
-        $this->postJson('/api/departamentos', ['nombre' => ''])
+        $this->postJson('/api/v1/departamentos', ['nombre' => ''])
             ->assertUnprocessable()
             ->assertJsonValidationErrors('nombre');
     }
@@ -113,7 +113,7 @@ class DepartamentoControllerTest extends TestCase
 
         $this->actingAs($usuario);
 
-        $this->putJson("/api/departamentos/{$departamento->id}", ['nombre' => 'Damas y Juniors'])
+        $this->putJson("/api/v1/departamentos/{$departamento->id}", ['nombre' => 'Damas y Juniors'])
             ->assertOk()
             ->assertJsonPath('data.nombre', 'Damas y Juniors');
     }
@@ -125,7 +125,7 @@ class DepartamentoControllerTest extends TestCase
 
         $this->actingAs($usuario);
 
-        $this->patchJson("/api/departamentos/{$departamento->id}/desactivar")
+        $this->patchJson("/api/v1/departamentos/{$departamento->id}/desactivar")
             ->assertOk()
             ->assertJsonPath('data.activo', false);
 

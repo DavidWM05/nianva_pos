@@ -41,7 +41,7 @@ class CotizacionEdicionParcialTest extends TestCase
 
         $this->actingAs($this->usuario);
 
-        $this->putJson("/api/cotizaciones/{$cotizacion->id}", [
+        $this->putJson("/api/v1/cotizaciones/{$cotizacion->id}", [
             'observaciones' => 'Actualizada',
             'items' => [[
                 'variante_id' => $this->variante->id,

@@ -54,7 +54,7 @@ class CuponTest extends TestCase
 
         $this->actingAs($usuario);
 
-        $respuesta = $this->getJson('/api/cupones?filtro_nombre=verano');
+        $respuesta = $this->getJson('/api/v1/cupones?filtro_nombre=verano');
 
         $respuesta->assertOk()->assertJsonCount(1, 'data')->assertJsonPath('data.0.codigo', 'VERANO10');
     }
@@ -66,7 +66,7 @@ class CuponTest extends TestCase
 
         $this->actingAs($usuario);
 
-        $this->getJson("/api/cupones/{$cupon->id}")
+        $this->getJson("/api/v1/cupones/{$cupon->id}")
             ->assertOk()
             ->assertJsonPath('data.codigo', 'VERANO10')
             ->assertJsonPath('meta.permisos.editar', false);
@@ -79,7 +79,7 @@ class CuponTest extends TestCase
 
         $this->actingAs($usuario);
 
-        $this->getJson("/api/cupones/{$cupon->id}")->assertForbidden();
+        $this->getJson("/api/v1/cupones/{$cupon->id}")->assertForbidden();
     }
 
     public function test_index_exige_el_permiso_cupones_ver(): void
@@ -87,7 +87,7 @@ class CuponTest extends TestCase
         ['usuario' => $usuario] = $this->crearUsuarioConPermisos([]);
         $this->actingAs($usuario);
 
-        $this->getJson('/api/cupones')->assertForbidden();
+        $this->getJson('/api/v1/cupones')->assertForbidden();
     }
 
     public function test_el_codigo_del_cupon_es_unico_por_tenant_no_globalmente(): void
@@ -96,14 +96,14 @@ class CuponTest extends TestCase
         Cupon::create(['tenant_id' => $tenantA->id, 'codigo' => 'DESC10', 'nombre' => 'Descuento', 'tipo' => 'porcentaje', 'valor' => 10]);
 
         $this->actingAs($usuarioA);
-        $this->postJson('/api/cupones', ['codigo' => 'DESC10', 'nombre' => 'Otro', 'tipo' => 'porcentaje', 'valor' => 5])
+        $this->postJson('/api/v1/cupones', ['codigo' => 'DESC10', 'nombre' => 'Otro', 'tipo' => 'porcentaje', 'valor' => 5])
             ->assertUnprocessable()
             ->assertJsonValidationErrors('codigo');
 
         // Mismo codigo, tenant DISTINTO: no deberia chocar.
         ['usuario' => $usuarioB] = $this->crearUsuarioConPermisos(['cupones.crear']);
         $this->actingAs($usuarioB);
-        $this->postJson('/api/cupones', ['codigo' => 'DESC10', 'nombre' => 'Descuento tenant B', 'tipo' => 'porcentaje', 'valor' => 8])
+        $this->postJson('/api/v1/cupones', ['codigo' => 'DESC10', 'nombre' => 'Descuento tenant B', 'tipo' => 'porcentaje', 'valor' => 8])
             ->assertCreated();
     }
 
@@ -114,7 +114,7 @@ class CuponTest extends TestCase
 
         $this->actingAs($usuario);
 
-        $this->patchJson("/api/cupones/{$cupon->id}/desactivar")
+        $this->patchJson("/api/v1/cupones/{$cupon->id}/desactivar")
             ->assertOk()
             ->assertJsonPath('data.activo', false);
 
@@ -132,7 +132,7 @@ class CuponTest extends TestCase
 
         $this->actingAs($usuario);
 
-        $respuesta = $this->postJson('/api/cupones/validar', ['codigo' => 'VERANO10', 'total' => 200]);
+        $respuesta = $this->postJson('/api/v1/cupones/validar', ['codigo' => 'VERANO10', 'total' => 200]);
 
         $respuesta->assertOk()
             ->assertJsonPath('data.cupon.codigo', 'VERANO10')
@@ -145,7 +145,7 @@ class CuponTest extends TestCase
         ['usuario' => $usuario] = $this->crearUsuarioConPermisos(['ventas.crear']);
         $this->actingAs($usuario);
 
-        $this->postJson('/api/cupones/validar', ['codigo' => 'NOEXISTE', 'total' => 100])
+        $this->postJson('/api/v1/cupones/validar', ['codigo' => 'NOEXISTE', 'total' => 100])
             ->assertStatus(422)
             ->assertJsonPath('error_code', 'cupon_invalido');
     }
@@ -157,6 +157,6 @@ class CuponTest extends TestCase
 
         $this->actingAs($usuario);
 
-        $this->postJson('/api/cupones/validar', ['codigo' => 'VERANO10', 'total' => 200])->assertForbidden();
+        $this->postJson('/api/v1/cupones/validar', ['codigo' => 'VERANO10', 'total' => 200])->assertForbidden();
     }
 }

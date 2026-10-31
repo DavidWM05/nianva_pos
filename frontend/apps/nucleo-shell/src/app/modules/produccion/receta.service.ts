@@ -3,7 +3,7 @@ import { Injectable, inject } from '@angular/core';
 import { DataTableLazyEvent } from '@nucleo/ui-shared';
 import { Observable, map } from 'rxjs';
 
-import { API_BASE_URL } from '../../core/api-config';
+import { urlApi } from '../../core/api-config';
 import { Receta, RecetaCrearPayload } from './receta.types';
 
 export interface RecetasPermisos {
@@ -32,11 +32,11 @@ export class RecetaService {
     }
 
     return this.http
-      .get<{ data: Receta[]; meta: { total: number; permisos: RecetasPermisos } }>(`${API_BASE_URL}/api/recetas`, { params })
+      .get<{ data: Receta[]; meta: { total: number; permisos: RecetasPermisos } }>(urlApi(`/recetas`), { params })
       .pipe(map((r) => ({ data: r.data, total: r.meta.total, permisos: r.meta.permisos })));
   }
 
   crear(payload: RecetaCrearPayload): Observable<Receta> {
-    return this.http.post<{ data: Receta }>(`${API_BASE_URL}/api/recetas`, payload).pipe(map((r) => r.data));
+    return this.http.post<{ data: Receta }>(urlApi(`/recetas`), payload).pipe(map((r) => r.data));
   }
 }

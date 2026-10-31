@@ -3,7 +3,7 @@ import { Injectable, inject } from '@angular/core';
 import { DataTableLazyEvent } from '@nucleo/ui-shared';
 import { Observable, map } from 'rxjs';
 
-import { API_BASE_URL } from '../../core/api-config';
+import { urlApi } from '../../core/api-config';
 import { TransformacionCrearPayload, TransformacionProducto } from './transformacion.types';
 
 export interface TransformacionesPermisos {
@@ -32,13 +32,13 @@ export class TransformacionService {
     }
 
     return this.http
-      .get<{ data: TransformacionProducto[]; meta: { total: number; permisos: TransformacionesPermisos } }>(`${API_BASE_URL}/api/transformaciones`, { params })
+      .get<{ data: TransformacionProducto[]; meta: { total: number; permisos: TransformacionesPermisos } }>(urlApi(`/transformaciones`), { params })
       .pipe(map((r) => ({ data: r.data, total: r.meta.total, permisos: r.meta.permisos })));
   }
 
   crear(payload: TransformacionCrearPayload): Observable<TransformacionProducto> {
     return this.http
-      .post<{ data: TransformacionProducto }>(`${API_BASE_URL}/api/transformaciones`, payload)
+      .post<{ data: TransformacionProducto }>(urlApi(`/transformaciones`), payload)
       .pipe(map((r) => r.data));
   }
 }

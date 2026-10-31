@@ -100,7 +100,7 @@ class VentaReporteTest extends TestCase
 
         $this->actingAs($this->usuario);
 
-        $response = $this->getJson('/api/ventas/reporte');
+        $response = $this->getJson('/api/v1/ventas/reporte');
 
         $response->assertOk();
         $data = $response->json('data');
@@ -121,7 +121,7 @@ class VentaReporteTest extends TestCase
         $this->actingAs($this->usuario);
 
         $ayer = now()->subDay()->toDateString();
-        $response = $this->getJson("/api/ventas/reporte?fecha_desde={$ayer}&fecha_hasta={$ayer}");
+        $response = $this->getJson("/api/v1/ventas/reporte?fecha_desde={$ayer}&fecha_hasta={$ayer}");
 
         $response->assertOk();
         $this->assertSame(0, $response->json('data.numero_ventas'));
@@ -137,7 +137,7 @@ class VentaReporteTest extends TestCase
 
         $this->actingAs($this->usuario);
 
-        $response = $this->getJson('/api/ventas/reporte');
+        $response = $this->getJson('/api/v1/ventas/reporte');
         $response->assertOk();
 
         $top = $response->json('data.top_productos');

@@ -21,7 +21,7 @@ class ApartadoValidacionesTest extends TestCase
     {
         $this->actingAs($this->usuario);
 
-        $this->postJson('/api/apartados', [
+        $this->postJson('/api/v1/apartados', [
             'cliente_id' => $this->cliente->id,
             'items' => [['variante_id' => $this->varianteB->id, 'cantidad' => 1]],
         ])
@@ -33,7 +33,7 @@ class ApartadoValidacionesTest extends TestCase
     {
         $this->actingAs($this->usuario);
 
-        $this->postJson('/api/apartados', [
+        $this->postJson('/api/v1/apartados', [
             'cliente_id' => $this->clienteB->id,
             'items' => [['variante_id' => $this->variante->id, 'cantidad' => 1]],
         ])

@@ -28,7 +28,7 @@ class RolEdicionParcialTest extends TestCase
         ]);
         $this->actingAs($this->usuario);
 
-        $this->putJson("/api/roles/{$rol->id}", ['nombre' => 'Cajero actualizado'])
+        $this->putJson("/api/v1/roles/{$rol->id}", ['nombre' => 'Cajero actualizado'])
             ->assertOk();
 
         $rol->refresh();

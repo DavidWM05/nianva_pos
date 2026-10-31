@@ -28,7 +28,7 @@ class ConfiguracionEdicionParcialTest extends TestCase
 
         $this->actingAs($this->usuario);
 
-        $this->putJson('/api/configuracion', [
+        $this->putJson('/api/v1/configuracion', [
             'moneda' => 'USD',
             'mostrar_rfc' => true,
             'mostrar_telefono' => true,

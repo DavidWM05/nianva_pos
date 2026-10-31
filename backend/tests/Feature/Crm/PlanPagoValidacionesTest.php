@@ -23,7 +23,7 @@ class PlanPagoValidacionesTest extends TestCase
         $plan = $this->crearPlan($venta);
         $this->actingAs($this->usuario);
 
-        $this->postJson("/api/ventas/{$venta->id}/plan-pago", [
+        $this->postJson("/api/v1/ventas/{$venta->id}/plan-pago", [
             'numero_cuotas' => 2,
             'periodicidad' => 'mensual',
         ])
@@ -41,7 +41,7 @@ class PlanPagoValidacionesTest extends TestCase
         $cuota->update(['estado' => 'pagada']);
         $this->actingAs($this->usuario);
 
-        $this->postJson("/api/planes-pago-cliente/{$plan->id}/pagar-cuota", [
+        $this->postJson("/api/v1/planes-pago-cliente/{$plan->id}/pagar-cuota", [
             'cuota_id' => $cuota->id,
             'monto' => $cuota->monto,
         ])
@@ -58,7 +58,7 @@ class PlanPagoValidacionesTest extends TestCase
         $cuota = $plan->cuotas()->first();
         $this->actingAs($this->usuario);
 
-        $this->postJson("/api/planes-pago-cliente/{$plan->id}/pagar-cuota", [
+        $this->postJson("/api/v1/planes-pago-cliente/{$plan->id}/pagar-cuota", [
             'cuota_id' => $cuota->id,
             'monto' => 1,
         ])

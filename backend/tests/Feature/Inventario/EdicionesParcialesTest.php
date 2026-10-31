@@ -30,7 +30,7 @@ class EdicionesParcialesTest extends TestCase
         ]);
         $this->actingAs($this->usuario);
 
-        $this->putJson("/api/categorias/{$categoria->id}", ['nombre' => 'Actualizada'])
+        $this->putJson("/api/v1/categorias/{$categoria->id}", ['nombre' => 'Actualizada'])
             ->assertOk();
 
         $categoria->refresh();
@@ -47,7 +47,7 @@ class EdicionesParcialesTest extends TestCase
         ]);
         $this->actingAs($this->usuario);
 
-        $this->putJson("/api/departamentos/{$departamento->id}", ['nombre' => 'Actualizado'])
+        $this->putJson("/api/v1/departamentos/{$departamento->id}", ['nombre' => 'Actualizado'])
             ->assertOk();
 
         $departamento->refresh();
@@ -65,7 +65,7 @@ class EdicionesParcialesTest extends TestCase
         ]);
         $this->actingAs($this->usuario);
 
-        $this->putJson("/api/productos/{$producto->id}", ['nombre' => 'Actualizado'])
+        $this->putJson("/api/v1/productos/{$producto->id}", ['nombre' => 'Actualizado'])
             ->assertOk();
 
         $producto->refresh();
@@ -84,7 +84,7 @@ class EdicionesParcialesTest extends TestCase
         ]);
         $this->actingAs($this->usuario);
 
-        $this->putJson("/api/producto-variantes/{$variante->id}", ['talla' => 'M'])
+        $this->putJson("/api/v1/producto-variantes/{$variante->id}", ['talla' => 'M'])
             ->assertOk();
 
         $variante->refresh();

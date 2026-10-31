@@ -59,7 +59,7 @@ class CajaControllerTest extends TestCase
         ['usuario' => $usuario] = $this->crearUsuarioConPermisos(['caja.ver']);
         $this->actingAs($usuario);
 
-        $this->getJson('/api/caja/actual')->assertOk()->assertJsonPath('data', null);
+        $this->getJson('/api/v1/caja/actual')->assertOk()->assertJsonPath('data', null);
     }
 
     public function test_abrir_crea_sesion_y_actual_la_refleja(): void
@@ -67,12 +67,12 @@ class CajaControllerTest extends TestCase
         ['usuario' => $usuario] = $this->crearUsuarioConPermisos(['caja.ver', 'caja.abrir']);
         $this->actingAs($usuario);
 
-        $this->postJson('/api/caja/abrir', ['monto_apertura' => 500])
+        $this->postJson('/api/v1/caja/abrir', ['monto_apertura' => 500])
             ->assertCreated()
             ->assertJsonPath('data.estado', 'abierta')
             ->assertJsonPath('data.monto_apertura', '500.00');
 
-        $this->getJson('/api/caja/actual')->assertOk()->assertJsonPath('data.estado', 'abierta');
+        $this->getJson('/api/v1/caja/actual')->assertOk()->assertJsonPath('data.estado', 'abierta');
     }
 
     public function test_actual_incluye_el_resumen_en_vivo_de_ventas_de_la_sesion(): void
@@ -99,7 +99,7 @@ class CajaControllerTest extends TestCase
 
         $this->actingAs($usuario);
 
-        $this->getJson('/api/caja/actual')->assertOk()
+        $this->getJson('/api/v1/caja/actual')->assertOk()
             ->assertJsonPath('meta.resumen.ventas_count', 1)
             ->assertJsonPath('meta.resumen.total_ventas', 100);
     }
@@ -110,7 +110,7 @@ class CajaControllerTest extends TestCase
         app(CajaService::class)->abrirCaja($sucursal->id, $usuario->id, 500);
         $this->actingAs($usuario);
 
-        $this->postJson('/api/caja/abrir', ['monto_apertura' => 300])
+        $this->postJson('/api/v1/caja/abrir', ['monto_apertura' => 300])
             ->assertStatus(422)
             ->assertJsonPath('error_code', 'caja_ya_abierta');
     }
@@ -120,7 +120,7 @@ class CajaControllerTest extends TestCase
         ['usuario' => $usuario] = $this->crearUsuarioConPermisos([]);
         $this->actingAs($usuario);
 
-        $this->postJson('/api/caja/abrir', ['monto_apertura' => 500])->assertForbidden();
+        $this->postJson('/api/v1/caja/abrir', ['monto_apertura' => 500])->assertForbidden();
     }
 
     public function test_cerrar_calcula_diferencia_y_marca_cerrada(): void
@@ -129,7 +129,7 @@ class CajaControllerTest extends TestCase
         $sesion = app(CajaService::class)->abrirCaja($sucursal->id, $usuario->id, 500);
         $this->actingAs($usuario);
 
-        $respuesta = $this->patchJson("/api/caja/{$sesion->id}/cerrar", ['monto_fisico' => 480]);
+        $respuesta = $this->patchJson("/api/v1/caja/{$sesion->id}/cerrar", ['monto_fisico' => 480]);
 
         $respuesta->assertOk()
             ->assertJsonPath('data.estado', 'cerrada')
@@ -144,7 +144,7 @@ class CajaControllerTest extends TestCase
 
         $this->actingAs($usuario);
 
-        $this->getJson('/api/caja/actual')->assertOk()
+        $this->getJson('/api/v1/caja/actual')->assertOk()
             ->assertJsonPath('meta.resumen.total_gastos', 80)
             ->assertJsonPath('meta.permisos.gastos_ver', false)
             ->assertJsonPath('meta.permisos.gastos_crear', false);
@@ -160,7 +160,7 @@ class CajaControllerTest extends TestCase
         $this->actingAs($usuario);
 
         // total_teorico = apertura(500) + ventas(0) - gastos(80) = 420.
-        $respuesta = $this->patchJson("/api/caja/{$sesion->id}/cerrar", ['monto_fisico' => 420]);
+        $respuesta = $this->patchJson("/api/v1/caja/{$sesion->id}/cerrar", ['monto_fisico' => 420]);
 
         $respuesta->assertOk()->assertJsonPath('data.diferencia', '0.00');
     }

@@ -3,7 +3,7 @@ import { Injectable, inject } from '@angular/core';
 import { DataTableLazyEvent } from '@nucleo/ui-shared';
 import { Observable, map } from 'rxjs';
 
-import { API_BASE_URL } from '../../core/api-config';
+import { urlApi } from '../../core/api-config';
 import { EstadoOrdenProduccion, OrdenProduccion, OrdenProduccionCrearPayload } from './orden.types';
 
 export interface OrdenesPermisos {
@@ -35,12 +35,12 @@ export class OrdenProduccionService {
     }
 
     return this.http
-      .get<{ data: OrdenProduccion[]; meta: { total: number; permisos: OrdenesPermisos } }>(`${API_BASE_URL}/api/ordenes-produccion`, { params })
+      .get<{ data: OrdenProduccion[]; meta: { total: number; permisos: OrdenesPermisos } }>(urlApi(`/ordenes-produccion`), { params })
       .pipe(map((r) => ({ data: r.data, total: r.meta.total, permisos: r.meta.permisos })));
   }
 
   crear(payload: OrdenProduccionCrearPayload): Observable<OrdenProduccion> {
-    return this.http.post<{ data: OrdenProduccion }>(`${API_BASE_URL}/api/ordenes-produccion`, payload).pipe(map((r) => r.data));
+    return this.http.post<{ data: OrdenProduccion }>(urlApi(`/ordenes-produccion`), payload).pipe(map((r) => r.data));
   }
 
   /**
@@ -51,7 +51,7 @@ export class OrdenProduccionService {
    */
   cambiarEstado(id: number, estado: EstadoOrdenProduccion, cantidadProducida?: number): Observable<void> {
     return this.http
-      .patch<unknown>(`${API_BASE_URL}/api/ordenes-produccion/${id}/estado`, {
+      .patch<unknown>(urlApi(`/ordenes-produccion/${id}/estado`), {
         estado,
         ...(cantidadProducida !== undefined ? { cantidad_producida: cantidadProducida } : {}),
       })

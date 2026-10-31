@@ -22,7 +22,7 @@ class CuentaCobrarExistsTenantTest extends TestCase
         $cuenta = $this->crearCuentaCobrar();
         $this->actingAs($this->usuario);
 
-        $this->postJson("/api/cuentas-cobrar/{$cuenta->id}/abonos", [
+        $this->postJson("/api/v1/cuentas-cobrar/{$cuenta->id}/abonos", [
             'monto' => 10,
             'metodo_pago_id' => $this->metodoPagoB->id,
         ])->assertStatus(422)->assertJsonValidationErrors(['metodo_pago_id']);
@@ -33,7 +33,7 @@ class CuentaCobrarExistsTenantTest extends TestCase
         $cuenta = $this->crearCuentaCobrar();
         $this->actingAs($this->usuario);
 
-        $this->postJson("/api/cuentas-cobrar/{$cuenta->id}/abonos", [
+        $this->postJson("/api/v1/cuentas-cobrar/{$cuenta->id}/abonos", [
             'monto' => 10,
             'metodo_pago_id' => $this->metodoPagoGlobal->id,
         ])->assertOk();

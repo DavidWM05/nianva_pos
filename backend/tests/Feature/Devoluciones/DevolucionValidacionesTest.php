@@ -22,7 +22,7 @@ class DevolucionValidacionesTest extends TestCase
         $venta = $this->crearVenta();
         $this->actingAs($this->usuario);
 
-        $this->postJson('/api/devoluciones', [
+        $this->postJson('/api/v1/devoluciones', [
             'venta_id' => $venta->id,
             'tipo' => 'devolucion',
             'items_devueltos' => [['variante_id' => $this->variante->id, 'cantidad' => 1]],
@@ -37,7 +37,7 @@ class DevolucionValidacionesTest extends TestCase
         $venta = $this->crearVenta();
         $this->actingAs($this->usuario);
 
-        $this->postJson('/api/devoluciones', [
+        $this->postJson('/api/v1/devoluciones', [
             'venta_id' => $venta->id,
             'tipo' => 'cambio',
             'items_devueltos' => [['variante_id' => $this->variante->id, 'cantidad' => 1]],
@@ -51,7 +51,7 @@ class DevolucionValidacionesTest extends TestCase
         $venta = $this->crearVenta();
         $this->actingAs($this->usuario);
 
-        $this->postJson('/api/devoluciones', [
+        $this->postJson('/api/v1/devoluciones', [
             'venta_id' => $venta->id,
             'tipo' => 'devolucion',
             'items_devueltos' => [['variante_id' => $this->varianteExtra->id, 'cantidad' => 1]],
@@ -67,7 +67,7 @@ class DevolucionValidacionesTest extends TestCase
         $venta = $this->crearVenta();
         $this->actingAs($this->usuario);
 
-        $this->postJson('/api/devoluciones', [
+        $this->postJson('/api/v1/devoluciones', [
             'venta_id' => $venta->id,
             'tipo' => 'devolucion',
             'items_devueltos' => [['variante_id' => $this->variante->id, 'cantidad' => 100]],

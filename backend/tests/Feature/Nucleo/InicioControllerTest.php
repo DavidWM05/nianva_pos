@@ -55,7 +55,7 @@ class InicioControllerTest extends TestCase
         ['usuario' => $usuario] = $this->crearUsuarioConPermisos([]);
         $this->actingAs($usuario);
 
-        $this->getJson('/api/inicio/resumen')->assertForbidden();
+        $this->getJson('/api/v1/inicio/resumen')->assertForbidden();
     }
 
     public function test_resumen_suma_solo_las_ventas_de_hoy_de_la_sucursal_del_usuario(): void
@@ -82,7 +82,7 @@ class InicioControllerTest extends TestCase
 
         $this->actingAs($usuario);
 
-        $respuesta = $this->getJson('/api/inicio/resumen');
+        $respuesta = $this->getJson('/api/v1/inicio/resumen');
 
         $respuesta->assertOk()
             ->assertJsonPath('data.ventas_hoy.cantidad', 1)
@@ -111,7 +111,7 @@ class InicioControllerTest extends TestCase
 
         $this->actingAs($usuario);
 
-        $respuesta = $this->getJson('/api/inicio/resumen');
+        $respuesta = $this->getJson('/api/v1/inicio/resumen');
 
         $respuesta->assertOk()
             ->assertJsonCount(1, 'data.apartados_por_vencer')

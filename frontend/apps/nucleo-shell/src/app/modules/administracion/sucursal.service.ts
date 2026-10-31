@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable, map } from 'rxjs';
 
-import { API_BASE_URL } from '../../core/api-config';
+import { urlApi } from '../../core/api-config';
 
 export interface SucursalSimple {
   id: number;
@@ -15,6 +15,6 @@ export class SucursalService {
   private readonly http = inject(HttpClient);
 
   listar(): Observable<SucursalSimple[]> {
-    return this.http.get<{ data: SucursalSimple[] }>(`${API_BASE_URL}/api/sucursales`).pipe(map((r) => r.data));
+    return this.http.get<{ data: SucursalSimple[] }>(urlApi(`/sucursales`)).pipe(map((r) => r.data));
   }
 }

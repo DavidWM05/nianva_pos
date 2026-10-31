@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable, map } from 'rxjs';
 
-import { API_BASE_URL } from '../core/api-config';
+import { urlApi } from '../core/api-config';
 import { CambiarPasswordPayload, DispositivoConfiable } from './seguridad.types';
 
 /**
@@ -21,20 +21,20 @@ export class SeguridadService {
 
   listarDispositivosConfiables(): Observable<DispositivoConfiable[]> {
     return this.http
-      .get<{ data: DispositivoConfiable[] }>(`${API_BASE_URL}/api/dispositivos-confiables`)
+      .get<{ data: DispositivoConfiable[] }>(urlApi(`/dispositivos-confiables`))
       .pipe(map((respuesta) => respuesta.data));
   }
 
   revocarDispositivo(id: number): Observable<void> {
-    return this.http.delete<void>(`${API_BASE_URL}/api/dispositivos-confiables/${id}`);
+    return this.http.delete<void>(urlApi(`/dispositivos-confiables/${id}`));
   }
 
   revocarTodosLosDispositivos(): Observable<void> {
-    return this.http.delete<void>(`${API_BASE_URL}/api/dispositivos-confiables`);
+    return this.http.delete<void>(urlApi(`/dispositivos-confiables`));
   }
 
   /** Protegido por dos-factor.reciente en el backend -- ver `code` en CambiarPasswordPayload. */
   cambiarPassword(payload: CambiarPasswordPayload): Observable<void> {
-    return this.http.post<void>(`${API_BASE_URL}/api/password/change`, payload);
+    return this.http.post<void>(urlApi(`/password/change`), payload);
   }
 }

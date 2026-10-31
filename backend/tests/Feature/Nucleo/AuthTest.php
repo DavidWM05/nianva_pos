@@ -121,11 +121,11 @@ class AuthTest extends TestCase
         $this->getJson('/test-protegida')->assertStatus(423);
 
         // Pero SI puede llegar al endpoint de configuracion (el escape hatch).
-        $this->getJson('/api/two-factor/qr-code')->assertOk()->assertJsonStructure(['secret', 'otpauth_url']);
+        $this->getJson('/api/v1/two-factor/qr-code')->assertOk()->assertJsonStructure(['secret', 'otpauth_url']);
 
         $twoFactorService = app(TwoFactorService::class);
         $secret = $usuario->fresh()->two_factor_secret;
-        $this->postJson('/api/two-factor/confirm', ['code' => $this->generarCodigoValido($secret)])
+        $this->postJson('/api/v1/two-factor/confirm', ['code' => $this->generarCodigoValido($secret)])
             ->assertOk()
             ->assertJsonStructure(['recovery_codes']);
 

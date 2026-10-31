@@ -3,7 +3,7 @@ import { Injectable, inject } from '@angular/core';
 import { DataTableLazyEvent } from '@nucleo/ui-shared';
 import { Observable, map } from 'rxjs';
 
-import { API_BASE_URL } from '../../core/api-config';
+import { urlApi } from '../../core/api-config';
 import { PagarCuotaPayload, PlanPago, PlanPagoCrearPayload, PlanPagoCuota } from './plan-pago.types';
 
 export interface PlanesPagoPermisos {
@@ -31,23 +31,23 @@ export class PlanPagoService {
     }
 
     return this.http
-      .get<{ data: PlanPago[]; meta: { total: number; permisos: PlanesPagoPermisos } }>(`${API_BASE_URL}/api/planes-pago-cliente`, { params })
+      .get<{ data: PlanPago[]; meta: { total: number; permisos: PlanesPagoPermisos } }>(urlApi(`/planes-pago-cliente`), { params })
       .pipe(map((r) => ({ data: r.data, total: r.meta.total, permisos: r.meta.permisos })));
   }
 
   obtener(id: number): Observable<PlanPago> {
-    return this.http.get<{ data: PlanPago }>(`${API_BASE_URL}/api/planes-pago-cliente/${id}`).pipe(map((r) => r.data));
+    return this.http.get<{ data: PlanPago }>(urlApi(`/planes-pago-cliente/${id}`)).pipe(map((r) => r.data));
   }
 
   crearPlan(ventaId: number, payload: PlanPagoCrearPayload): Observable<PlanPago> {
     return this.http
-      .post<{ data: PlanPago }>(`${API_BASE_URL}/api/ventas/${ventaId}/plan-pago`, payload)
+      .post<{ data: PlanPago }>(urlApi(`/ventas/${ventaId}/plan-pago`), payload)
       .pipe(map((r) => r.data));
   }
 
   pagarCuota(planId: number, payload: PagarCuotaPayload): Observable<PlanPagoCuota> {
     return this.http
-      .post<{ data: PlanPagoCuota }>(`${API_BASE_URL}/api/planes-pago-cliente/${planId}/pagar-cuota`, payload)
+      .post<{ data: PlanPagoCuota }>(urlApi(`/planes-pago-cliente/${planId}/pagar-cuota`), payload)
       .pipe(map((r) => r.data));
   }
 }

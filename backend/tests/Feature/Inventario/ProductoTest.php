@@ -68,7 +68,7 @@ class ProductoTest extends TestCase
 
         $this->actingAs($usuario);
 
-        $respuesta = $this->getJson('/api/productos?sort_field=nombre&sort_order=asc');
+        $respuesta = $this->getJson('/api/v1/productos?sort_field=nombre&sort_order=asc');
 
         $respuesta->assertOk();
         $respuesta->assertJsonPath('meta.total', 2);
@@ -80,7 +80,7 @@ class ProductoTest extends TestCase
         $respuesta->assertJsonPath('data.1.stock_total', 8);
         $respuesta->assertJsonPath('data.1.categoria.nombre', 'Playeras');
 
-        $filtrado = $this->getJson('/api/productos?filtro_nombre=playera');
+        $filtrado = $this->getJson('/api/v1/productos?filtro_nombre=playera');
         $filtrado->assertOk()->assertJsonCount(1, 'data')->assertJsonPath('data.0.nombre', 'Playera Basica');
     }
 
@@ -89,21 +89,21 @@ class ProductoTest extends TestCase
         ['usuario' => $usuario] = $this->crearUsuarioConPermisos([]);
         $this->actingAs($usuario);
 
-        $this->getJson('/api/productos')->assertForbidden();
+        $this->getJson('/api/v1/productos')->assertForbidden();
     }
 
     public function test_crear_producto_exige_permiso_y_valida_el_nombre(): void
     {
         ['usuario' => $sinPermiso] = $this->crearUsuarioConPermisos(['inventario.ver']);
         $this->actingAs($sinPermiso);
-        $this->postJson('/api/productos', ['nombre' => 'Nuevo'])->assertForbidden();
+        $this->postJson('/api/v1/productos', ['nombre' => 'Nuevo'])->assertForbidden();
 
         ['usuario' => $conPermiso] = $this->crearUsuarioConPermisos(['inventario.ver', 'inventario.crear']);
         $this->actingAs($conPermiso);
 
-        $this->postJson('/api/productos', [])->assertUnprocessable()->assertJsonValidationErrors('nombre');
+        $this->postJson('/api/v1/productos', [])->assertUnprocessable()->assertJsonValidationErrors('nombre');
 
-        $this->postJson('/api/productos', ['nombre' => 'Sudadera Gris', 'precio_venta' => 450])
+        $this->postJson('/api/v1/productos', ['nombre' => 'Sudadera Gris', 'precio_venta' => 450])
             ->assertCreated()
             ->assertJsonPath('data.nombre', 'Sudadera Gris')
             ->assertJsonPath('data.activo', true);
@@ -116,11 +116,11 @@ class ProductoTest extends TestCase
 
         $this->actingAs($usuario);
 
-        $this->putJson("/api/productos/{$producto->id}", ['nombre' => 'Chamarra Impermeable'])
+        $this->putJson("/api/v1/productos/{$producto->id}", ['nombre' => 'Chamarra Impermeable'])
             ->assertOk()
             ->assertJsonPath('data.nombre', 'Chamarra Impermeable');
 
-        $this->patchJson("/api/productos/{$producto->id}/desactivar")
+        $this->patchJson("/api/v1/productos/{$producto->id}/desactivar")
             ->assertOk()
             ->assertJsonPath('data.activo', false);
 
@@ -136,7 +136,7 @@ class ProductoTest extends TestCase
 
         $this->actingAs($usuario);
 
-        $respuesta = $this->getJson("/api/productos/{$producto->id}");
+        $respuesta = $this->getJson("/api/v1/productos/{$producto->id}");
 
         $respuesta->assertOk();
         $respuesta->assertJsonPath('data.variantes.0.color', 'Negro');
@@ -166,7 +166,7 @@ class ProductoTest extends TestCase
 
         $this->actingAs($usuario);
 
-        $respuesta = $this->getJson("/api/productos/{$producto->id}");
+        $respuesta = $this->getJson("/api/v1/productos/{$producto->id}");
 
         $respuesta->assertOk();
         $respuesta->assertJsonPath('data.variantes.0.stock_actual', 7);
@@ -180,17 +180,17 @@ class ProductoTest extends TestCase
 
         $this->actingAs($usuario);
 
-        $creada = $this->postJson("/api/productos/{$producto->id}/variantes", [
+        $creada = $this->postJson("/api/v1/productos/{$producto->id}/variantes", [
             'talla' => '27', 'color' => 'Blanco', 'codigo_barras' => 'ABC123',
         ]);
         $creada->assertCreated()->assertJsonPath('data.talla', '27');
         $varianteId = $creada->json('data.id');
 
-        $this->putJson("/api/producto-variantes/{$varianteId}", ['talla' => '28', 'color' => 'Blanco'])
+        $this->putJson("/api/v1/producto-variantes/{$varianteId}", ['talla' => '28', 'color' => 'Blanco'])
             ->assertOk()
             ->assertJsonPath('data.talla', '28');
 
-        $this->patchJson("/api/producto-variantes/{$varianteId}/desactivar")
+        $this->patchJson("/api/v1/producto-variantes/{$varianteId}/desactivar")
             ->assertOk()
             ->assertJsonPath('data.activo', false);
     }
@@ -208,7 +208,7 @@ class ProductoTest extends TestCase
 
         $this->actingAs($usuario);
 
-        $respuesta = $this->postJson("/api/productos/{$producto->id}/variantes", ['talla' => 'Unica']);
+        $respuesta = $this->postJson("/api/v1/productos/{$producto->id}/variantes", ['talla' => 'Unica']);
 
         $respuesta->assertCreated();
         $codigo = $respuesta->json('data.codigo_barras');
@@ -224,7 +224,7 @@ class ProductoTest extends TestCase
 
         $this->actingAs($usuario);
 
-        $respuesta = $this->postJson("/api/productos/{$producto->id}/variantes", [
+        $respuesta = $this->postJson("/api/v1/productos/{$producto->id}/variantes", [
             'talla' => 'Unica', 'codigo_barras' => 'MANUAL-1',
         ]);
 
@@ -238,7 +238,7 @@ class ProductoTest extends TestCase
 
         $this->actingAs($usuario);
 
-        $respuesta = $this->postJson("/api/productos/{$producto->id}/variantes", ['talla' => 'Unica']);
+        $respuesta = $this->postJson("/api/v1/productos/{$producto->id}/variantes", ['talla' => 'Unica']);
 
         $respuesta->assertCreated()->assertJsonPath('data.codigo_barras', null);
     }
@@ -255,7 +255,7 @@ class ProductoTest extends TestCase
 
         $this->actingAs($usuario);
 
-        $respuesta = $this->getJson("/api/producto-variantes/{$variante->id}/kardex");
+        $respuesta = $this->getJson("/api/v1/producto-variantes/{$variante->id}/kardex");
 
         $respuesta->assertOk();
         $respuesta->assertJsonCount(2, 'data');

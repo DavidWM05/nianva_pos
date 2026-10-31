@@ -99,7 +99,7 @@ class DevolucionControllerTest extends TestCase
         $ctx = $this->prepararTenantConVentaOrigen();
         $this->actingAs($ctx['usuario']);
 
-        $respuesta = $this->postJson('/api/devoluciones', [
+        $respuesta = $this->postJson('/api/v1/devoluciones', [
             'venta_id' => $ctx['ventaOrigenId'],
             'tipo' => 'devolucion',
             'items_devueltos' => [['variante_id' => $ctx['varianteE']->id, 'cantidad' => 1, 'va_a_merma' => false]],
@@ -123,7 +123,7 @@ class DevolucionControllerTest extends TestCase
 
         $stockAntes = InventarioStock::sinTenant()->where('variante_id', $ctx['varianteE']->id)->first()->stock_actual;
 
-        $this->postJson('/api/devoluciones', [
+        $this->postJson('/api/v1/devoluciones', [
             'venta_id' => $ctx['ventaOrigenId'],
             'tipo' => 'devolucion',
             'items_devueltos' => [['variante_id' => $ctx['varianteE']->id, 'cantidad' => 1, 'va_a_merma' => true]],
@@ -138,7 +138,7 @@ class DevolucionControllerTest extends TestCase
         $ctx = $this->prepararTenantConVentaOrigen();
         $this->actingAs($ctx['usuario']);
 
-        $respuesta = $this->postJson('/api/devoluciones', [
+        $respuesta = $this->postJson('/api/v1/devoluciones', [
             'venta_id' => $ctx['ventaOrigenId'],
             'tipo' => 'cambio',
             'items_devueltos' => [['variante_id' => $ctx['varianteE']->id, 'cantidad' => 1, 'va_a_merma' => false]],
@@ -162,7 +162,7 @@ class DevolucionControllerTest extends TestCase
         $ctx = $this->prepararTenantConVentaOrigen();
         $this->actingAs($ctx['usuario']);
 
-        $cambio = $this->postJson('/api/devoluciones', [
+        $cambio = $this->postJson('/api/v1/devoluciones', [
             'venta_id' => $ctx['ventaOrigenId'],
             'tipo' => 'cambio',
             'items_devueltos' => [['variante_id' => $ctx['varianteE']->id, 'cantidad' => 1, 'va_a_merma' => false]],
@@ -170,7 +170,7 @@ class DevolucionControllerTest extends TestCase
             'pagos' => [['metodo_pago_id' => $ctx['efectivo']->id, 'monto' => 280]],
         ])->json('data');
 
-        $this->postJson('/api/devoluciones', [
+        $this->postJson('/api/v1/devoluciones', [
             'venta_id' => $cambio['venta_sombra_id'],
             'tipo' => 'devolucion',
             'items_devueltos' => [['variante_id' => $ctx['varianteG']->id, 'cantidad' => 1, 'va_a_merma' => false]],
@@ -182,7 +182,7 @@ class DevolucionControllerTest extends TestCase
         $ctx = $this->prepararTenantConVentaOrigen();
         $this->actingAs($ctx['usuario']);
 
-        $this->postJson('/api/devoluciones', [
+        $this->postJson('/api/v1/devoluciones', [
             'venta_id' => $ctx['ventaOrigenId'],
             'tipo' => 'devolucion',
             'items_devueltos' => [['variante_id' => $ctx['varianteE']->id, 'cantidad' => 1, 'va_a_merma' => false]],
@@ -197,7 +197,7 @@ class DevolucionControllerTest extends TestCase
         $ctx = $this->prepararTenantConVentaOrigen([]);
         $this->actingAs($ctx['usuario']);
 
-        $this->postJson('/api/devoluciones', [
+        $this->postJson('/api/v1/devoluciones', [
             'venta_id' => $ctx['ventaOrigenId'],
             'tipo' => 'devolucion',
             'items_devueltos' => [['variante_id' => $ctx['varianteE']->id, 'cantidad' => 1]],
@@ -210,7 +210,7 @@ class DevolucionControllerTest extends TestCase
         $ctx = $this->prepararTenantConVentaOrigen(['devoluciones.ver']);
         $this->actingAs($ctx['usuario']);
 
-        $respuesta = $this->getJson('/api/devoluciones');
+        $respuesta = $this->getJson('/api/v1/devoluciones');
 
         $respuesta->assertOk()->assertJsonPath('meta.permisos.crear', false)->assertJsonCount(0, 'data');
     }
@@ -220,14 +220,14 @@ class DevolucionControllerTest extends TestCase
         $ctx = $this->prepararTenantConVentaOrigen();
         $this->actingAs($ctx['usuario']);
 
-        $creada = $this->postJson('/api/devoluciones', [
+        $creada = $this->postJson('/api/v1/devoluciones', [
             'venta_id' => $ctx['ventaOrigenId'],
             'tipo' => 'devolucion',
             'items_devueltos' => [['variante_id' => $ctx['varianteE']->id, 'cantidad' => 1, 'va_a_merma' => false]],
             'pagos' => [['metodo_pago_id' => $ctx['efectivo']->id, 'monto' => 120]],
         ])->json('data');
 
-        $respuesta = $this->getJson("/api/devoluciones/{$creada['id']}");
+        $respuesta = $this->getJson("/api/v1/devoluciones/{$creada['id']}");
 
         $respuesta->assertOk()
             ->assertJsonPath('data.venta.cliente_nombre', 'Publico General')

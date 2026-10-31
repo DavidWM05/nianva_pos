@@ -21,7 +21,7 @@ class CompraValidacionesTest extends TestCase
     {
         $this->actingAs($this->usuario);
 
-        $this->postJson('/api/compras', [
+        $this->postJson('/api/v1/compras', [
             'proveedor_id' => $this->proveedor->id,
             'items' => [['variante_id' => $this->varianteB->id, 'cantidad' => 1, 'precio_compra' => 50]],
         ])
@@ -33,7 +33,7 @@ class CompraValidacionesTest extends TestCase
     {
         $this->actingAs($this->usuario);
 
-        $this->postJson('/api/compras', [
+        $this->postJson('/api/v1/compras', [
             'proveedor_id' => $this->proveedorB->id,
             'items' => [['variante_id' => $this->variante->id, 'cantidad' => 1, 'precio_compra' => 50]],
         ])

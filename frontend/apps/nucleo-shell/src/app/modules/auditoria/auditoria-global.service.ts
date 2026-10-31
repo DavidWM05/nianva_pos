@@ -3,7 +3,7 @@ import { Injectable, inject } from '@angular/core';
 import { AuditLogEntry, DataTableLazyEvent } from '@nucleo/ui-shared';
 import { Observable, map } from 'rxjs';
 
-import { API_BASE_URL } from '../../core/api-config';
+import { urlApi } from '../../core/api-config';
 import { AuditoriaGlobalFiltros } from './auditoria-global.types';
 
 export interface AuditoriaGlobalPagina {
@@ -44,7 +44,7 @@ export class AuditoriaGlobalService {
     }
 
     return this.http
-      .get<{ data: AuditLogEntry[]; meta: { total: number; tablas: string[] } }>(`${API_BASE_URL}/api/auditoria/global`, {
+      .get<{ data: AuditLogEntry[]; meta: { total: number; tablas: string[] } }>(urlApi(`/auditoria/global`), {
         params,
       })
       .pipe(map((r) => ({ data: r.data, total: r.meta.total, tablas: r.meta.tablas })));

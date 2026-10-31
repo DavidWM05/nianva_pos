@@ -81,7 +81,7 @@ class CuentasPagarReporteTest extends TestCase
 
         $this->actingAs($this->usuario);
 
-        $response = $this->getJson('/api/cuentas-pagar/reporte?limite=10');
+        $response = $this->getJson('/api/v1/cuentas-pagar/reporte?limite=10');
 
         $response->assertOk();
 
@@ -102,7 +102,7 @@ class CuentasPagarReporteTest extends TestCase
 
         $this->actingAs($this->usuario);
 
-        $response = $this->getJson('/api/cuentas-pagar/reporte?limite=10');
+        $response = $this->getJson('/api/v1/cuentas-pagar/reporte?limite=10');
 
         $response->assertOk();
 
@@ -119,7 +119,7 @@ class CuentasPagarReporteTest extends TestCase
 
         $this->actingAs($this->usuario);
 
-        $response = $this->getJson('/api/cuentas-pagar/reporte');
+        $response = $this->getJson('/api/v1/cuentas-pagar/reporte');
 
         $response->assertOk();
 

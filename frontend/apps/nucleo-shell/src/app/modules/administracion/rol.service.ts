@@ -3,7 +3,7 @@ import { Injectable, inject } from '@angular/core';
 import { DataTableLazyEvent } from '@nucleo/ui-shared';
 import { Observable, map } from 'rxjs';
 
-import { API_BASE_URL } from '../../core/api-config';
+import { urlApi } from '../../core/api-config';
 import { Rol, RolesPagina, RolesPermisos } from './rol.types';
 
 export interface RolFormPayload {
@@ -30,7 +30,7 @@ export class RolService {
     }
 
     return this.http
-      .get<{ data: Rol[]; meta: { total: number; permisos: RolesPermisos } }>(`${API_BASE_URL}/api/roles`, { params })
+      .get<{ data: Rol[]; meta: { total: number; permisos: RolesPermisos } }>(urlApi(`/roles`), { params })
       .pipe(map((r) => ({ data: r.data, total: r.meta.total, permisos: r.meta.permisos })));
   }
 
@@ -43,19 +43,19 @@ export class RolService {
 
   obtener(id: number): Observable<{ rol: Rol; permisos: RolesPermisos }> {
     return this.http
-      .get<{ data: Rol; meta: { permisos: RolesPermisos } }>(`${API_BASE_URL}/api/roles/${id}`)
+      .get<{ data: Rol; meta: { permisos: RolesPermisos } }>(urlApi(`/roles/${id}`))
       .pipe(map((r) => ({ rol: r.data, permisos: r.meta.permisos })));
   }
 
   crear(payload: RolFormPayload): Observable<Rol> {
-    return this.http.post<{ data: Rol }>(`${API_BASE_URL}/api/roles`, payload).pipe(map((r) => r.data));
+    return this.http.post<{ data: Rol }>(urlApi(`/roles`), payload).pipe(map((r) => r.data));
   }
 
   actualizar(id: number, payload: RolFormPayload): Observable<Rol> {
-    return this.http.put<{ data: Rol }>(`${API_BASE_URL}/api/roles/${id}`, payload).pipe(map((r) => r.data));
+    return this.http.put<{ data: Rol }>(urlApi(`/roles/${id}`), payload).pipe(map((r) => r.data));
   }
 
   eliminar(id: number): Observable<void> {
-    return this.http.delete<void>(`${API_BASE_URL}/api/roles/${id}`);
+    return this.http.delete<void>(urlApi(`/roles/${id}`));
   }
 }

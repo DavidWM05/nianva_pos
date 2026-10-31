@@ -46,7 +46,7 @@ class RegistrarVentaAtomicidadTest extends TestCase
         // La variante tiene 50 en stock; se piden 100. La Gift Card alcanza
         // a cubrir 100 y el resto va en efectivo, pero el stock revienta
         // despues de que la Action ya desconto saldo: todo debe revertirse.
-        $this->postJson('/api/ventas', [
+        $this->postJson('/api/v1/ventas', [
             'cliente_id' => $this->cliente->id,
             'items' => [['variante_id' => $this->variante->id, 'cantidad' => 100]],
             'pagos' => [['metodo_pago_id' => $this->metodoPago->id, 'monto' => 9900]],

@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable, map } from 'rxjs';
 
-import { API_BASE_URL } from '../../core/api-config';
+import { urlApi } from '../../core/api-config';
 import { Campana, CampanaEnviarPayload } from './campana.types';
 
 /**
@@ -17,7 +17,7 @@ export class CampanaService {
 
   enviar(payload: CampanaEnviarPayload): Observable<Campana> {
     return this.http
-      .post<{ data: Campana }>(`${API_BASE_URL}/api/crm/campanas/enviar`, payload)
+      .post<{ data: Campana }>(urlApi(`/crm/campanas/enviar`), payload)
       .pipe(map((r) => r.data));
   }
 }

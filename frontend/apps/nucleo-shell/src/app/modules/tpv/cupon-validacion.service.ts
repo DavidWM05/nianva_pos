@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable, map } from 'rxjs';
 
-import { API_BASE_URL } from '../../core/api-config';
+import { urlApi } from '../../core/api-config';
 
 /** Espejo de CuponController::validar() del backend. */
 export interface CuponValidacion {
@@ -30,7 +30,7 @@ export class CuponValidacionService {
 
   validar(codigo: string, total: number): Observable<CuponValidacion> {
     return this.http
-      .post<{ data: CuponValidacion }>(`${API_BASE_URL}/api/cupones/validar`, { codigo, total })
+      .post<{ data: CuponValidacion }>(urlApi(`/cupones/validar`), { codigo, total })
       .pipe(map((r) => r.data));
   }
 }

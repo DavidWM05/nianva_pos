@@ -133,17 +133,17 @@ class TrustedDeviceTest extends TestCase
         ['usuario' => $usuario] = $this->crearUsuarioCon2fa(esAdmin: true, conPermisoConfiguracion: true);
         $this->actingAs($usuario);
 
-        $this->putJson('/api/configuracion-seguridad', [
+        $this->putJson('/api/v1/configuracion-seguridad', [
             'dias_dispositivo_normal' => 30,
             'dias_dispositivo_admin' => 91,
         ])->assertUnprocessable()->assertJsonValidationErrors('dias_dispositivo_admin');
 
-        $this->putJson('/api/configuracion-seguridad', [
+        $this->putJson('/api/v1/configuracion-seguridad', [
             'dias_dispositivo_normal' => 0,
             'dias_dispositivo_admin' => 14,
         ])->assertUnprocessable()->assertJsonValidationErrors('dias_dispositivo_normal');
 
-        $this->putJson('/api/configuracion-seguridad', [
+        $this->putJson('/api/v1/configuracion-seguridad', [
             'dias_dispositivo_normal' => 45,
             'dias_dispositivo_admin' => 20,
         ])->assertOk()->assertJson(['dias_dispositivo_normal' => 45, 'dias_dispositivo_admin' => 20]);
@@ -154,7 +154,7 @@ class TrustedDeviceTest extends TestCase
         ['usuario' => $usuario, 'secret' => $secret] = $this->crearUsuarioCon2fa();
         $cookie = $this->loginYConfiarDispositivo($usuario, $secret);
 
-        $this->postJson('/api/password/change', [
+        $this->postJson('/api/v1/password/change', [
             'password_actual' => self::PASSWORD,
             'password' => 'nueva-password-456',
             'password_confirmation' => 'nueva-password-456',
@@ -176,10 +176,10 @@ class TrustedDeviceTest extends TestCase
         ['usuario' => $usuario, 'secret' => $secret] = $this->crearUsuarioCon2fa();
         $cookie = $this->loginYConfiarDispositivo($usuario, $secret);
 
-        $lista = $this->getJson('/api/dispositivos-confiables')->assertOk()->json('data');
+        $lista = $this->getJson('/api/v1/dispositivos-confiables')->assertOk()->json('data');
         $this->assertCount(1, $lista);
 
-        $this->deleteJson("/api/dispositivos-confiables/{$lista[0]['id']}")->assertNoContent();
+        $this->deleteJson("/api/v1/dispositivos-confiables/{$lista[0]['id']}")->assertNoContent();
 
         $this->postJson('/logout')->assertNoContent();
 
@@ -191,7 +191,7 @@ class TrustedDeviceTest extends TestCase
 
     /**
      * Desactivar 2FA ya no es autoservicio (ver el reporte): un admin lo
-     * hace sobre OTRO usuario, via /api/usuarios/{id}/desactivar-2fa. El
+     * hace sobre OTRO usuario, via /api/v1/usuarios/{id}/desactivar-2fa. El
      * TOTP que exige dos-factor.reciente es del ADMIN que ejecuta la
      * accion, no del usuario objetivo -- sigue sin importar si el
      * dispositivo del admin ya esta confiado.
@@ -209,14 +209,14 @@ class TrustedDeviceTest extends TestCase
         $secretObjetivo = app(TwoFactorService::class)->generateSecretKey();
         $objetivo->forceFill(['two_factor_secret' => $secretObjetivo, 'two_factor_confirmed_at' => now()])->save();
 
-        $this->postJson("/api/usuarios/{$objetivo->id}/desactivar-2fa", [])
+        $this->postJson("/api/v1/usuarios/{$objetivo->id}/desactivar-2fa", [])
             ->assertUnprocessable()
             ->assertJsonValidationErrors('code');
 
-        $this->postJson("/api/usuarios/{$objetivo->id}/desactivar-2fa", ['code' => '000000'])
+        $this->postJson("/api/v1/usuarios/{$objetivo->id}/desactivar-2fa", ['code' => '000000'])
             ->assertUnprocessable();
 
-        $this->postJson("/api/usuarios/{$objetivo->id}/desactivar-2fa", ['code' => $this->generarCodigoValido($secretAdmin)])
+        $this->postJson("/api/v1/usuarios/{$objetivo->id}/desactivar-2fa", ['code' => $this->generarCodigoValido($secretAdmin)])
             ->assertOk();
 
         $this->assertNull($objetivo->fresh()->two_factor_confirmed_at);
@@ -236,7 +236,7 @@ class TrustedDeviceTest extends TestCase
         $objetivo->forceFill(['two_factor_secret' => $secretObjetivo, 'two_factor_confirmed_at' => now()])->save();
         $objetivo->roles()->attach($rolAdmin->id);
 
-        $this->postJson("/api/usuarios/{$objetivo->id}/desactivar-2fa", ['code' => $this->generarCodigoValido($secretAdmin)])
+        $this->postJson("/api/v1/usuarios/{$objetivo->id}/desactivar-2fa", ['code' => $this->generarCodigoValido($secretAdmin)])
             ->assertForbidden();
 
         $this->assertNotNull($objetivo->fresh()->two_factor_confirmed_at);

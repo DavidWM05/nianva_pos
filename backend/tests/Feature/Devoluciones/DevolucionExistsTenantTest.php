@@ -21,7 +21,7 @@ class DevolucionExistsTenantTest extends TestCase
     {
         $this->actingAs($this->usuario);
 
-        $this->postJson('/api/devoluciones', [
+        $this->postJson('/api/v1/devoluciones', [
             'venta_id' => $this->ventaB->id,
             'tipo' => 'devolucion',
             'items_devueltos' => [['variante_id' => $this->variante->id, 'cantidad' => 1]],
@@ -33,7 +33,7 @@ class DevolucionExistsTenantTest extends TestCase
         $venta = $this->crearVenta();
         $this->actingAs($this->usuario);
 
-        $this->postJson('/api/devoluciones', [
+        $this->postJson('/api/v1/devoluciones', [
             'venta_id' => $venta->id,
             'tipo' => 'devolucion',
             'items_devueltos' => [['variante_id' => $this->varianteB->id, 'cantidad' => 1]],
@@ -45,7 +45,7 @@ class DevolucionExistsTenantTest extends TestCase
         $venta = $this->crearVenta();
         $this->actingAs($this->usuario);
 
-        $this->postJson('/api/devoluciones', [
+        $this->postJson('/api/v1/devoluciones', [
             'venta_id' => $venta->id,
             'tipo' => 'cambio',
             'items_devueltos' => [['variante_id' => $this->variante->id, 'cantidad' => 1]],
@@ -58,7 +58,7 @@ class DevolucionExistsTenantTest extends TestCase
         $venta = $this->crearVenta();
         $this->actingAs($this->usuario);
 
-        $this->postJson('/api/devoluciones', [
+        $this->postJson('/api/v1/devoluciones', [
             'venta_id' => $venta->id,
             'tipo' => 'devolucion',
             'items_devueltos' => [['variante_id' => $this->variante->id, 'cantidad' => 1]],
@@ -71,7 +71,7 @@ class DevolucionExistsTenantTest extends TestCase
         $venta = $this->crearVenta();
         $this->actingAs($this->usuario);
 
-        $this->postJson('/api/devoluciones', [
+        $this->postJson('/api/v1/devoluciones', [
             'venta_id' => $venta->id,
             'tipo' => 'devolucion',
             'items_devueltos' => [['variante_id' => $this->variante->id, 'cantidad' => 1]],
