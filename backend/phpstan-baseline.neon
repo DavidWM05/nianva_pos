@@ -799,18 +799,6 @@ parameters:
 			path: app/Modules/Cotizaciones/Exceptions/CotizacionTotalNegativoException.php
 
 		-
-			message: '#^Cannot access property \$id on App\\Modules\\Nucleo\\Models\\Usuario\|null\.$#'
-			identifier: property.nonObject
-			count: 1
-			path: app/Modules/Cotizaciones/Http/Controllers/CotizacionController.php
-
-		-
-			message: '#^Cannot access property \$tenant_id on App\\Modules\\Nucleo\\Models\\Usuario\|null\.$#'
-			identifier: property.nonObject
-			count: 3
-			path: app/Modules/Cotizaciones/Http/Controllers/CotizacionController.php
-
-		-
 			message: '#^Cannot call method tienePermiso\(\) on App\\Modules\\Nucleo\\Models\\Usuario\|null\.$#'
 			identifier: method.nonObject
 			count: 1
@@ -861,12 +849,6 @@ parameters:
 		-
 			message: '#^Method App\\Modules\\Cotizaciones\\Http\\Controllers\\CotizacionController\:\:update\(\) has no return type specified\.$#'
 			identifier: missingType.return
-			count: 1
-			path: app/Modules/Cotizaciones/Http/Controllers/CotizacionController.php
-
-		-
-			message: '#^Parameter \#2 \$dataVenta of method App\\Modules\\Cotizaciones\\Services\\CotizacionService\:\:convertirAVenta\(\) expects array\{forma_pago\: string, metodo_pago_id\: int, monto_recibido\: float, caja_sesion_id\: int\|null\}, array\{usuario_id\: int, metodo_pago_id\: mixed\} given\.$#'
-			identifier: argument.type
 			count: 1
 			path: app/Modules/Cotizaciones/Http/Controllers/CotizacionController.php
 
@@ -1203,12 +1185,6 @@ parameters:
 		-
 			message: '#^Offset ''precio_unitario'' on array\{variante_id\: int, cantidad\: int\<1, max\>, precio_unitario\: float, descuento\: float\} on left side of \?\? always exists and is not nullable\.$#'
 			identifier: nullCoalesce.offset
-			count: 1
-			path: app/Modules/Cotizaciones/Services/CotizacionService.php
-
-		-
-			message: '#^Offset ''usuario_id'' does not exist on array\{forma_pago\: string, metodo_pago_id\: int, monto_recibido\: float, caja_sesion_id\: int\|null\}\.$#'
-			identifier: offsetAccess.notFound
 			count: 1
 			path: app/Modules/Cotizaciones/Services/CotizacionService.php
 
@@ -1939,24 +1915,6 @@ parameters:
 			path: app/Modules/CuentasCobrar/Http/Controllers/CuentaCobrarController.php
 
 		-
-			message: '#^Cannot access property \$id on App\\Modules\\Nucleo\\Models\\Usuario\|null\.$#'
-			identifier: property.nonObject
-			count: 1
-			path: app/Modules/CuentasCobrar/Http/Controllers/CuentaCobrarController.php
-
-		-
-			message: '#^Cannot access property \$sucursal_id on App\\Modules\\Nucleo\\Models\\Usuario\|null\.$#'
-			identifier: property.nonObject
-			count: 1
-			path: app/Modules/CuentasCobrar/Http/Controllers/CuentaCobrarController.php
-
-		-
-			message: '#^Cannot access property \$tenant_id on App\\Modules\\Nucleo\\Models\\Usuario\|null\.$#'
-			identifier: property.nonObject
-			count: 1
-			path: app/Modules/CuentasCobrar/Http/Controllers/CuentaCobrarController.php
-
-		-
 			message: '#^Cannot call method tienePermiso\(\) on App\\Modules\\Nucleo\\Models\\Usuario\|null\.$#'
 			identifier: method.nonObject
 			count: 1
@@ -2265,24 +2223,6 @@ parameters:
 		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$razon_social\.$#'
 			identifier: property.notFound
-			count: 1
-			path: app/Modules/CuentasPagar/Http/Controllers/CuentaPagarController.php
-
-		-
-			message: '#^Cannot access property \$id on App\\Modules\\Nucleo\\Models\\Usuario\|null\.$#'
-			identifier: property.nonObject
-			count: 1
-			path: app/Modules/CuentasPagar/Http/Controllers/CuentaPagarController.php
-
-		-
-			message: '#^Cannot access property \$sucursal_id on App\\Modules\\Nucleo\\Models\\Usuario\|null\.$#'
-			identifier: property.nonObject
-			count: 1
-			path: app/Modules/CuentasPagar/Http/Controllers/CuentaPagarController.php
-
-		-
-			message: '#^Cannot access property \$tenant_id on App\\Modules\\Nucleo\\Models\\Usuario\|null\.$#'
-			identifier: property.nonObject
 			count: 1
 			path: app/Modules/CuentasPagar/Http/Controllers/CuentaPagarController.php
 
@@ -3241,18 +3181,6 @@ parameters:
 			path: app/Modules/GiftCards/Http/Controllers/GiftCardController.php
 
 		-
-			message: '#^Cannot access property \$id on App\\Modules\\Nucleo\\Models\\Usuario\|null\.$#'
-			identifier: property.nonObject
-			count: 1
-			path: app/Modules/GiftCards/Http/Controllers/GiftCardController.php
-
-		-
-			message: '#^Cannot access property \$sucursal_id on App\\Modules\\Nucleo\\Models\\Usuario\|null\.$#'
-			identifier: property.nonObject
-			count: 1
-			path: app/Modules/GiftCards/Http/Controllers/GiftCardController.php
-
-		-
 			message: '#^Cannot call method tienePermiso\(\) on App\\Modules\\Nucleo\\Models\\Usuario\|null\.$#'
 			identifier: method.nonObject
 			count: 1
@@ -3297,12 +3225,6 @@ parameters:
 		-
 			message: '#^Method App\\Modules\\GiftCards\\Http\\Controllers\\GiftCardController\:\:store\(\) has no return type specified\.$#'
 			identifier: missingType.return
-			count: 1
-			path: app/Modules/GiftCards/Http/Controllers/GiftCardController.php
-
-		-
-			message: '#^Parameter \#2 \$tenantId of static method App\\Modules\\Nucleo\\Support\\ReglasTenant\:\:existe\(\) expects int, int\|null given\.$#'
-			identifier: argument.type
 			count: 1
 			path: app/Modules/GiftCards/Http/Controllers/GiftCardController.php
 
@@ -6307,15 +6229,9 @@ parameters:
 			path: app/Modules/Prestamos/Services/PrestamoService.php
 
 		-
-			message: '#^Cannot access property \$id on App\\Modules\\Nucleo\\Models\\Usuario\|null\.$#'
-			identifier: property.nonObject
-			count: 2
-			path: app/Modules/Produccion/Http/Controllers/ProduccionController.php
-
-		-
 			message: '#^Cannot access property \$sucursal_id on App\\Modules\\Nucleo\\Models\\Usuario\|null\.$#'
 			identifier: property.nonObject
-			count: 4
+			count: 2
 			path: app/Modules/Produccion/Http/Controllers/ProduccionController.php
 
 		-
@@ -6400,24 +6316,6 @@ parameters:
 			message: '#^Method App\\Modules\\Produccion\\Http\\Controllers\\ProduccionController\:\:transformacionesIndex\(\) has no return type specified\.$#'
 			identifier: missingType.return
 			count: 1
-			path: app/Modules/Produccion/Http/Controllers/ProduccionController.php
-
-		-
-			message: '#^Parameter \#1 \$tenantId of static method App\\Modules\\Inventario\\Support\\ReglasVariante\:\:delTenant\(\) expects int, int\|null given\.$#'
-			identifier: argument.type
-			count: 3
-			path: app/Modules/Produccion/Http/Controllers/ProduccionController.php
-
-		-
-			message: '#^Parameter \#2 \$tenantId of static method App\\Modules\\Nucleo\\Support\\ReglasTenant\:\:existe\(\) expects int, int\|null given\.$#'
-			identifier: argument.type
-			count: 3
-			path: app/Modules/Produccion/Http/Controllers/ProduccionController.php
-
-		-
-			message: '#^Parameter \#2 \$tenantId of static method App\\Modules\\Nucleo\\Support\\ReglasTenant\:\:existeGlobalODelTenant\(\) expects int, int\|null given\.$#'
-			identifier: argument.type
-			count: 2
 			path: app/Modules/Produccion/Http/Controllers/ProduccionController.php
 
 		-
@@ -7499,12 +7397,6 @@ parameters:
 			identifier: method.notFound
 			count: 1
 			path: app/Modules/UnidadesMedida/Database/Migrations/2026_08_10_000001_create_unidades_medida_table.php
-
-		-
-			message: '#^Cannot access property \$tenant_id on App\\Modules\\Nucleo\\Models\\Usuario\|null\.$#'
-			identifier: property.nonObject
-			count: 1
-			path: app/Modules/UnidadesMedida/Http/Controllers/UnidadMedidaController.php
 
 		-
 			message: '#^Method App\\Modules\\UnidadesMedida\\Http\\Controllers\\UnidadMedidaController\:\:destroy\(\) has no return type specified\.$#'

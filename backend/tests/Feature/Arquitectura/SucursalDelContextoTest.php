@@ -62,10 +62,14 @@ class SucursalDelContextoTest extends TestCase
             ->filter(fn (\SplFileInfo $archivo) => $archivo->getExtension() === 'php'
                 && str_contains(str_replace('\\', '/', $archivo->getPathname()), '/Http/Controllers/'));
 
+        $requests = collect(File::allFiles(app_path('Modules')))
+            ->filter(fn (\SplFileInfo $archivo) => $archivo->getExtension() === 'php'
+                && str_contains(str_replace('\\', '/', $archivo->getPathname()), '/Http/Requests/'));
+
         $acciones = collect(File::allFiles(app_path('Aplicacion')))
             ->filter(fn (\SplFileInfo $archivo) => $archivo->getExtension() === 'php');
 
-        return $controladores->merge($acciones)->values()->all();
+        return $controladores->merge($requests)->merge($acciones)->values()->all();
     }
 
     private function metodoEn(string $contenido, int $offset): string

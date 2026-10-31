@@ -3,11 +3,12 @@
 namespace App\Modules\GiftCards\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Modules\GiftCards\Http\Requests\EmitirGiftCardRequest;
+use App\Modules\GiftCards\Http\Requests\RecargarGiftCardRequest;
 use App\Modules\GiftCards\Http\Resources\GiftCardResource;
 use App\Modules\GiftCards\Models\GiftCard;
 use App\Modules\GiftCards\Services\GiftCardService;
 use App\Modules\Nucleo\Services\TenantContext;
-use App\Modules\Nucleo\Support\ReglasTenant;
 use App\Modules\Tpv\Models\CajaSesion;
 use Illuminate\Http\Request;
 
@@ -51,21 +52,15 @@ class GiftCardController extends Controller
         ]);
     }
 
-    public function store(Request $request, GiftCardService $service)
+    public function store(EmitirGiftCardRequest $request, GiftCardService $service)
     {
-        $tenantId = app(TenantContext::class)->id();
-
-        $validated = $request->validate([
-            'cliente_id' => ['nullable', 'integer', ReglasTenant::existe('clientes', $tenantId)],
-            'monto' => ['required', 'numeric', 'min:0.01'],
-            'fecha_expiracion' => ['nullable', 'date', 'after:today'],
-        ]);
+        $dto = $request->toDto();
 
         $giftCard = $service->emitir([
-            'tenant_id' => $tenantId,
-            'cliente_id' => $validated['cliente_id'] ?? null,
-            'monto' => $validated['monto'],
-            'fecha_expiracion' => $validated['fecha_expiracion'] ?? null,
+            'tenant_id' => app(TenantContext::class)->id(),
+            'cliente_id' => $dto->clienteId,
+            'monto' => $dto->monto,
+            'fecha_expiracion' => $dto->fechaExpiracion,
         ]);
 
         return (new GiftCardResource($giftCard))->response()->setStatusCode(201);
@@ -78,17 +73,21 @@ class GiftCardController extends Controller
         return new GiftCardResource($giftCard);
     }
 
-    public function recargar(Request $request, int $id, GiftCardService $service)
+    public function recargar(RecargarGiftCardRequest $request, int $id, GiftCardService $service)
     {
-        $validated = $request->validate(['monto' => ['required', 'numeric', 'min:0.01']]);
+        $usuario = $request->user();
+
+        if ($usuario === null) {
+            abort(401);
+        }
 
         $cajaSesion = CajaSesion::sinTenant()
-            ->where('sucursal_id', $request->user()->sucursal_id)
+            ->where('sucursal_id', (int) $usuario->getAttribute('sucursal_id'))
             ->where('estado', 'abierta')
             ->latest('id')
             ->first();
 
-        $giftCard = $service->recargar($id, $validated['monto'], $request->user()->id, $cajaSesion?->id);
+        $giftCard = $service->recargar($id, $request->toDto()->monto, $usuario->id, $cajaSesion?->id);
 
         return new GiftCardResource($giftCard);
     }
