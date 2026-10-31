@@ -4,7 +4,9 @@ namespace App\Modules\Produccion\Models;
 
 use App\Modules\Nucleo\Models\Concerns\BelongsToTenantViaRelacion;
 use App\Modules\Nucleo\Models\Sucursal;
+use App\Modules\Produccion\Database\Factories\InsumoStockFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
@@ -12,6 +14,9 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class InsumoStock extends Model
 {
     use BelongsToTenantViaRelacion;
+
+    /** @use HasFactory<InsumoStockFactory> */
+    use HasFactory;
 
     public $timestamps = false;
 

@@ -5,7 +5,9 @@ namespace App\Modules\Produccion\Models;
 use App\Modules\Inventario\Models\ProductoVariante;
 use App\Modules\Nucleo\Models\Concerns\BelongsToTenant;
 use App\Modules\Nucleo\Models\Tenant;
+use App\Modules\Produccion\Database\Factories\RecetaFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -14,6 +16,9 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class Receta extends Model
 {
     use BelongsToTenant;
+
+    /** @use HasFactory<RecetaFactory> */
+    use HasFactory;
 
     protected $table = 'recetas';
 

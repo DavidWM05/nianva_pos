@@ -2,6 +2,7 @@
 
 namespace App\Modules\Cotizaciones\Models;
 
+use App\Modules\Cotizaciones\Database\Factories\CotizacionFactory;
 use App\Modules\Crm\Models\Cliente;
 use App\Modules\Nucleo\Models\Concerns\BelongsToTenant;
 use App\Modules\Nucleo\Models\Sucursal;
@@ -9,6 +10,7 @@ use App\Modules\Nucleo\Models\Tenant;
 use App\Modules\Nucleo\Models\Usuario;
 use App\Modules\Tpv\Models\Venta;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -21,6 +23,9 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class Cotizacion extends Model
 {
     use BelongsToTenant;
+
+    /** @use HasFactory<CotizacionFactory> */
+    use HasFactory;
 
     protected $table = 'cotizaciones';
 

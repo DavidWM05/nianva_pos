@@ -2,11 +2,13 @@
 
 namespace App\Modules\CuentasPagar\Models;
 
+use App\Modules\CuentasPagar\Database\Factories\CuentaPagarFactory;
 use App\Modules\Inventario\Models\Compra;
 use App\Modules\Inventario\Models\Proveedor;
 use App\Modules\Nucleo\Models\Concerns\BelongsToTenant;
 use App\Modules\Nucleo\Models\Tenant;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -18,6 +20,9 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class CuentaPagar extends Model
 {
     use BelongsToTenant;
+
+    /** @use HasFactory<CuentaPagarFactory> */
+    use HasFactory;
 
     protected $table = 'cuentas_pagar';
 

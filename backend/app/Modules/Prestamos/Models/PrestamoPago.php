@@ -3,8 +3,10 @@
 namespace App\Modules\Prestamos\Models;
 
 use App\Modules\Nucleo\Models\Concerns\BelongsToTenantViaRelacion;
+use App\Modules\Prestamos\Database\Factories\PrestamoPagoFactory;
 use App\Modules\Tpv\Models\CajaSesion;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
@@ -12,6 +14,9 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class PrestamoPago extends Model
 {
     use BelongsToTenantViaRelacion;
+
+    /** @use HasFactory<PrestamoPagoFactory> */
+    use HasFactory;
 
     public $timestamps = false;
 
