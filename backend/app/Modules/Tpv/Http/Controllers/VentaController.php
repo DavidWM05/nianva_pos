@@ -5,11 +5,13 @@ namespace App\Modules\Tpv\Http\Controllers;
 use App\Aplicacion\Ventas\RegistrarVenta;
 use App\Http\Controllers\Controller;
 use App\Modules\Crm\Models\Cliente;
-use App\Modules\Inventario\Support\ReglasVariante;
 use App\Modules\Nucleo\Models\Sucursal;
 use App\Modules\Nucleo\Services\TenantContext;
-use App\Modules\Nucleo\Support\ReglasTenant;
 use App\Modules\Nucleo\Support\SucursalOperacion;
+use App\Modules\Tpv\Dtos\LineaVentaDto;
+use App\Modules\Tpv\Http\Requests\AnularVentaRequest;
+use App\Modules\Tpv\Http\Requests\CotizarVentaRequest;
+use App\Modules\Tpv\Http\Requests\CrearVentaRequest;
 use App\Modules\Tpv\Http\Resources\VentaResource;
 use App\Modules\Tpv\Models\Venta;
 use App\Modules\Tpv\Models\VentaDetalle;
@@ -83,63 +85,58 @@ class VentaController extends Controller
     /**
      * Orquestacion: App\Aplicacion\Ventas\RegistrarVenta.
      */
-    public function store(Request $request, RegistrarVenta $registrarVenta)
+    public function store(CrearVentaRequest $request, RegistrarVenta $registrarVenta)
     {
-        $tenantId = $request->user()->tenant_id;
+        $usuario = $request->user();
 
-        $validated = $request->validate([
-            'cliente_id' => ['required', 'integer', ReglasTenant::existe('clientes', $tenantId)],
-            'items' => ['required', 'array', 'min:1'],
-            'items.*.variante_id' => ['required', 'integer', ReglasVariante::delTenant($tenantId)],
-            'items.*.cantidad' => ['required', 'integer', 'min:1'],
-            'pagos' => ['required', 'array', 'min:1'],
-            'pagos.*.metodo_pago_id' => ['required', 'integer', ReglasTenant::existeGlobalODelTenant('metodos_pago', $tenantId)],
-            'pagos.*.monto' => ['required', 'numeric', 'min:0.01'],
-            'cupon_codigo' => ['nullable', 'string'],
-            'descuento_manual' => ['nullable', 'numeric', 'min:0'],
-            'gift_card_codigo' => ['nullable', 'string', 'max:50'],
-            'nota_credito_id' => ['nullable', 'integer', ReglasTenant::existe('notas_credito', $tenantId)],
-        ]);
+        if ($usuario === null) {
+            abort(401);
+        }
 
-        $venta = $registrarVenta->ejecutar(
-            clienteId: $validated['cliente_id'],
-            items: $validated['items'],
-            pagos: $validated['pagos'],
-            cuponCodigo: $validated['cupon_codigo'] ?? null,
-            descuentoManual: round((float) ($validated['descuento_manual'] ?? 0), 2),
-            giftCardCodigo: $validated['gift_card_codigo'] ?? null,
-            notaCreditoId: $validated['nota_credito_id'] ?? null,
-            usuario: $request->user(),
-        );
+        $venta = $registrarVenta->ejecutar($request->toDto(), $usuario);
 
         $venta->load(['cliente', 'pagos.metodoPago', 'detalles.variante.producto']);
 
         return (new VentaResource($venta))->response()->setStatusCode(201);
     }
 
-    public function anular(Request $request, Venta $venta, VentaService $ventaService)
+    public function anular(AnularVentaRequest $request, Venta $venta, VentaService $ventaService)
     {
-        $validated = $request->validate([
-            'motivo' => ['required', 'string', 'max:255'],
-        ]);
+        $usuario = $request->user();
 
-        $venta = $ventaService->anularVenta($venta, $validated['motivo'], $request->user());
+        if ($usuario === null) {
+            abort(401);
+        }
+
+        $venta = $ventaService->anularVenta($venta, $request->toDto()->motivo, $usuario);
         $venta->load(['cliente', 'pagos.metodoPago', 'detalles.variante.producto']);
 
         return new VentaResource($venta);
     }
 
-    public function cotizar(Request $request, VentaService $ventaService)
+    public function cotizar(CotizarVentaRequest $request, VentaService $ventaService)
     {
-        $tenantId = $request->user()->tenant_id;
+        $usuario = $request->user();
 
-        $validated = $request->validate([
-            'items' => ['required', 'array', 'min:1'],
-            'items.*.variante_id' => ['required', 'integer', ReglasVariante::delTenant($tenantId)],
-            'items.*.cantidad' => ['required', 'integer', 'min:1'],
-        ]);
+        if ($usuario === null) {
+            abort(401);
+        }
 
-        [$lineas, $subtotal] = $ventaService->cotizarItems($tenantId, $validated['items']);
+        $items = array_map(
+            fn (LineaVentaDto $item) => [
+                'variante_id' => $item->varianteId,
+                'cantidad' => $item->cantidad,
+            ],
+            $request->toDto()->items,
+        );
+
+        $tenantId = app(TenantContext::class)->id();
+
+        if ($tenantId === null) {
+            abort(500);
+        }
+
+        [$lineas, $subtotal] = $ventaService->cotizarItems($tenantId, $items);
 
         return response()->json(['data' => ['items' => $lineas, 'subtotal' => $subtotal]]);
     }

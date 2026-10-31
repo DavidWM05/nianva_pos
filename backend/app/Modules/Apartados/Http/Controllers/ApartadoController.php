@@ -3,11 +3,14 @@
 namespace App\Modules\Apartados\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Modules\Apartados\Dtos\LineaApartadoDto;
+use App\Modules\Apartados\Dtos\PagoApartadoDto;
+use App\Modules\Apartados\Http\Requests\CancelarApartadoRequest;
+use App\Modules\Apartados\Http\Requests\CrearApartadoRequest;
+use App\Modules\Apartados\Http\Requests\RegistrarAbonoRequest;
 use App\Modules\Apartados\Http\Resources\ApartadoResource;
 use App\Modules\Apartados\Models\Apartado;
 use App\Modules\Apartados\Services\ApartadoService;
-use App\Modules\Inventario\Support\ReglasVariante;
-use App\Modules\Nucleo\Support\ReglasTenant;
 use Illuminate\Http\Request;
 
 /**
@@ -68,31 +71,33 @@ class ApartadoController extends Controller
         ]);
     }
 
-    public function store(Request $request, ApartadoService $apartadoService)
+    public function store(CrearApartadoRequest $request, ApartadoService $apartadoService)
     {
-        $tenantId = $request->user()->tenant_id;
-
-        $validated = $request->validate([
-            'cliente_id' => ['required', 'integer', ReglasTenant::existe('clientes', $tenantId)],
-            'items' => ['required', 'array', 'min:1'],
-            'items.*.variante_id' => ['required', 'integer', ReglasVariante::delTenant($tenantId)],
-            'items.*.cantidad' => ['required', 'integer', 'min:1'],
-            'fecha_vencimiento' => ['nullable', 'date'],
-            'notas' => ['nullable', 'string'],
-        ]);
-
         $usuario = $request->user();
+
+        if ($usuario === null) {
+            abort(401);
+        }
+
+        $dto = $request->toDto();
+        $items = array_map(
+            fn (LineaApartadoDto $item) => [
+                'variante_id' => $item->varianteId,
+                'cantidad' => $item->cantidad,
+            ],
+            $dto->items,
+        );
 
         $apartado = $apartadoService->crearApartado(
             [
-                'tenant_id' => $tenantId,
-                'sucursal_id' => $usuario->sucursal_id,
-                'cliente_id' => $validated['cliente_id'],
+                'tenant_id' => (int) $usuario->getAttribute('tenant_id'),
+                'sucursal_id' => (int) $usuario->getAttribute('sucursal_id'),
+                'cliente_id' => $dto->clienteId,
                 'usuario_id' => $usuario->id,
-                'fecha_vencimiento' => $validated['fecha_vencimiento'] ?? null,
-                'notas' => $validated['notas'] ?? null,
+                'fecha_vencimiento' => $dto->fechaVencimiento,
+                'notas' => $dto->notas,
             ],
-            $validated['items'],
+            $items,
         );
 
         $apartado->load(['cliente', 'detalles.variante.producto']);
@@ -100,24 +105,29 @@ class ApartadoController extends Controller
         return (new ApartadoResource($apartado))->response()->setStatusCode(201);
     }
 
-    public function registrarAbono(Request $request, Apartado $apartado, ApartadoService $apartadoService)
+    public function registrarAbono(RegistrarAbonoRequest $request, Apartado $apartado, ApartadoService $apartadoService)
     {
-        $tenantId = $request->user()->tenant_id;
+        $usuario = $request->user();
 
-        $validated = $request->validate([
-            'monto' => ['required', 'numeric', 'min:0.01'],
-            'pagos' => ['required', 'array', 'min:1'],
-            'pagos.*.metodo_pago_id' => ['required', 'integer', ReglasTenant::existeGlobalODelTenant('metodos_pago', $tenantId)],
-            'pagos.*.monto' => ['required', 'numeric', 'min:0.01'],
-            'notas' => ['nullable', 'string'],
-        ]);
+        if ($usuario === null) {
+            abort(401);
+        }
+
+        $dto = $request->toDto();
+        $pagos = array_map(
+            fn (PagoApartadoDto $pago) => [
+                'metodo_pago_id' => $pago->metodoPagoId,
+                'monto' => $pago->monto,
+            ],
+            $dto->pagos,
+        );
 
         $apartadoService->registrarAbono(
             $apartado,
-            $validated['monto'],
-            $request->user()->id,
-            $validated['pagos'],
-            $validated['notas'] ?? null,
+            $dto->monto,
+            $usuario->id,
+            $pagos,
+            $dto->notas,
         );
 
         return new ApartadoResource($apartado->fresh(['cliente', 'detalles.variante.producto', 'abonos.pagos.metodoPago']));
@@ -130,13 +140,15 @@ class ApartadoController extends Controller
         return new ApartadoResource($apartado->fresh(['cliente', 'detalles.variante.producto', 'abonos.pagos.metodoPago']));
     }
 
-    public function cancelar(Request $request, Apartado $apartado, ApartadoService $apartadoService)
+    public function cancelar(CancelarApartadoRequest $request, Apartado $apartado, ApartadoService $apartadoService)
     {
-        $validated = $request->validate([
-            'motivo' => ['required', 'string', 'max:255'],
-        ]);
+        $usuario = $request->user();
 
-        $resultado = $apartadoService->cancelar($apartado, $validated['motivo'], $request->user());
+        if ($usuario === null) {
+            abort(401);
+        }
+
+        $resultado = $apartadoService->cancelar($apartado, $request->toDto()->motivo, $usuario);
 
         return response()->json([
             'data' => new ApartadoResource($resultado->apartado->load(['cliente', 'detalles.variante.producto', 'abonos.pagos.metodoPago'])),

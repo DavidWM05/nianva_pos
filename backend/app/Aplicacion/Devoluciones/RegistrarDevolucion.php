@@ -2,6 +2,10 @@
 
 namespace App\Aplicacion\Devoluciones;
 
+use App\Modules\Devoluciones\Dtos\CrearDevolucionDto;
+use App\Modules\Devoluciones\Dtos\ItemDevueltoDto;
+use App\Modules\Devoluciones\Dtos\ItemNuevoDto;
+use App\Modules\Devoluciones\Dtos\PagoDevolucionDto;
 use App\Modules\Devoluciones\Models\Devolucion;
 use App\Modules\Devoluciones\Services\DevolucionService;
 use App\Modules\NotasCredito\Models\NotaCredito;
@@ -22,21 +26,37 @@ class RegistrarDevolucion
     ) {}
 
     /**
-     * @param  list<array{variante_id:int, cantidad:int, va_a_merma?:bool}>  $itemsDevueltos
-     * @param  list<array{variante_id:int, cantidad:int}>  $itemsNuevos
-     * @param  list<array{metodo_pago_id:int, monto:float|string}>  $pagos
      * @return array{devolucion: Devolucion, nota_credito: ?NotaCredito}
      */
-    public function ejecutar(
-        int $ventaId,
-        string $tipo,
-        array $itemsDevueltos,
-        array $itemsNuevos,
-        array $pagos,
-        ?string $motivo,
-        string $tipoReembolso,
-        Usuario $usuario,
-    ): array {
+    public function ejecutar(CrearDevolucionDto $dto, Usuario $usuario): array
+    {
+        $ventaId = $dto->ventaId;
+        $tipo = $dto->tipo;
+        $itemsDevueltos = array_map(
+            fn (ItemDevueltoDto $item) => [
+                'variante_id' => $item->varianteId,
+                'cantidad' => $item->cantidad,
+                'va_a_merma' => $item->vaAMerma,
+            ],
+            $dto->itemsDevueltos,
+        );
+        $itemsNuevos = array_map(
+            fn (ItemNuevoDto $item) => [
+                'variante_id' => $item->varianteId,
+                'cantidad' => $item->cantidad,
+            ],
+            $dto->itemsNuevos,
+        );
+        $pagos = array_map(
+            fn (PagoDevolucionDto $pago) => [
+                'metodo_pago_id' => $pago->metodoPagoId,
+                'monto' => $pago->monto,
+            ],
+            $dto->pagos,
+        );
+        $motivo = $dto->motivo;
+        $tipoReembolso = $dto->tipoReembolso;
+
         return DB::transaction(function () use (
             $ventaId,
             $tipo,

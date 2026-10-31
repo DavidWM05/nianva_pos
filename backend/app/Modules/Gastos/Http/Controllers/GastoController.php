@@ -3,11 +3,11 @@
 namespace App\Modules\Gastos\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Modules\Gastos\Http\Requests\CrearGastoRequest;
+use App\Modules\Gastos\Http\Requests\ListarGastosRequest;
 use App\Modules\Gastos\Http\Resources\GastoResource;
 use App\Modules\Gastos\Models\Gasto;
 use App\Modules\Gastos\Services\GastoService;
-use App\Modules\Tpv\Support\ReglasCaja;
-use Illuminate\Http\Request;
 
 /**
  * Sin pantalla propia (ver el reporte) -- vive dentro de la vista de
@@ -18,35 +18,30 @@ use Illuminate\Http\Request;
  */
 class GastoController extends Controller
 {
-    public function index(Request $request)
+    public function index(ListarGastosRequest $request)
     {
-        $tenantId = $request->user()->tenant_id;
-
-        $validated = $request->validate([
-            'caja_sesion_id' => ['required', 'integer', ReglasCaja::delTenant($tenantId)],
-        ]);
-
-        $gastos = Gasto::where('caja_sesion_id', $validated['caja_sesion_id'])
+        $gastos = Gasto::where('caja_sesion_id', $request->toDto()->cajaSesionId)
             ->orderByDesc('fecha')
             ->get();
 
         return response()->json(['data' => GastoResource::collection($gastos)]);
     }
 
-    public function store(Request $request, GastoService $gastoService)
+    public function store(CrearGastoRequest $request, GastoService $gastoService)
     {
-        $validated = $request->validate([
-            'descripcion' => ['required', 'string', 'max:255'],
-            'monto' => ['required', 'numeric', 'min:0.01'],
-        ]);
-
         $usuario = $request->user();
 
+        if ($usuario === null) {
+            abort(401);
+        }
+
+        $dto = $request->toDto();
+
         $gasto = $gastoService->registrarGasto(
-            $usuario->sucursal_id,
+            (int) $usuario->getAttribute('sucursal_id'),
             $usuario->id,
-            $validated['descripcion'],
-            $validated['monto'],
+            $dto->descripcion,
+            $dto->monto,
         );
 
         return (new GastoResource($gasto))->response()->setStatusCode(201);

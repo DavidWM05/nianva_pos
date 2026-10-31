@@ -9,6 +9,9 @@ use App\Modules\Nucleo\Models\Usuario;
 use App\Modules\Precios\Exceptions\CuponInvalidoException;
 use App\Modules\Precios\Models\Cupon;
 use App\Modules\Precios\Services\PrecioService;
+use App\Modules\Tpv\Dtos\CrearVentaDto;
+use App\Modules\Tpv\Dtos\LineaVentaDto;
+use App\Modules\Tpv\Dtos\PagoDto;
 use App\Modules\Tpv\Models\Venta;
 use App\Modules\Tpv\Services\VentaService;
 use Illuminate\Support\Facades\DB;
@@ -26,20 +29,28 @@ class RegistrarVenta
         private readonly PrecioService $precioService,
     ) {}
 
-    /**
-     * @param  list<array{variante_id:int, cantidad:int}>  $items
-     * @param  list<array{metodo_pago_id:int, monto:float|string}>  $pagos
-     */
-    public function ejecutar(
-        int $clienteId,
-        array $items,
-        array $pagos,
-        ?string $cuponCodigo,
-        float $descuentoManual,
-        ?string $giftCardCodigo,
-        ?int $notaCreditoId,
-        Usuario $usuario,
-    ): Venta {
+    public function ejecutar(CrearVentaDto $dto, Usuario $usuario): Venta
+    {
+        $clienteId = $dto->clienteId;
+        $items = array_map(
+            fn (LineaVentaDto $linea) => [
+                'variante_id' => $linea->varianteId,
+                'cantidad' => $linea->cantidad,
+            ],
+            $dto->items,
+        );
+        $pagos = array_map(
+            fn (PagoDto $pago) => [
+                'metodo_pago_id' => $pago->metodoPagoId,
+                'monto' => $pago->monto,
+            ],
+            $dto->pagos,
+        );
+        $cuponCodigo = $dto->cuponCodigo;
+        $descuentoManual = $dto->descuentoManual;
+        $giftCardCodigo = $dto->giftCardCodigo;
+        $notaCreditoId = $dto->notaCreditoId;
+
         $tenantId = $usuario->tenant_id;
 
         $cuponId = null;
