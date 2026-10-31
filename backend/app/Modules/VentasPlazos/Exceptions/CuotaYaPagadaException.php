@@ -1,28 +1,28 @@
 <?php
 
-namespace App\Modules\Crm\Exceptions;
+namespace App\Modules\VentasPlazos\Exceptions;
 
 use App\Modules\Nucleo\Exceptions\ExcepcionNegocio;
 
-class PlanPagoYaActivoException extends ExcepcionNegocio
+class CuotaYaPagadaException extends ExcepcionNegocio
 {
     public function __construct(
-        public readonly int $ventaId,
         public readonly int $planPagoId,
+        public readonly int $cuotaId,
     ) {
-        parent::__construct("La venta {$ventaId} ya tiene un plan de pago activo.");
+        parent::__construct("La cuota {$cuotaId} ya está pagada.");
     }
 
     public function errorCode(): string
     {
-        return 'plan_pago_ya_activo';
+        return 'cuota_ya_pagada';
     }
 
     public function contexto(): array
     {
         return [
-            'venta_id' => $this->ventaId,
             'plan_pago_id' => $this->planPagoId,
+            'cuota_id' => $this->cuotaId,
         ];
     }
 }

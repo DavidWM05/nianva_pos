@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Modules\Crm\Models;
+namespace App\Modules\VentasPlazos\Models;
 
-use App\Modules\Crm\Database\Factories\PlanPagoClienteCuotaFactory;
 use App\Modules\Nucleo\Models\Concerns\BelongsToTenantViaRelacion;
+use App\Modules\VentasPlazos\Database\Factories\PlanPagoClienteCuotaFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;

@@ -1,11 +1,12 @@
 <?php
 
-namespace App\Modules\Crm\Models;
+namespace App\Modules\VentasPlazos\Models;
 
-use App\Modules\Crm\Database\Factories\PlanPagoClienteFactory;
+use App\Modules\Crm\Models\Cliente;
 use App\Modules\Nucleo\Models\Concerns\BelongsToTenant;
 use App\Modules\Nucleo\Models\Tenant;
 use App\Modules\Tpv\Models\Venta;
+use App\Modules\VentasPlazos\Database\Factories\PlanPagoClienteFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;

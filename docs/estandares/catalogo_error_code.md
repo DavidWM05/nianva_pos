@@ -22,7 +22,7 @@ Generado con `php artisan errores:catalogo` desde las excepciones de negocio.
 | `cuenta_pagar_con_abonos` | 422 | `App\Modules\CuentasPagar\Exceptions\CuentaPagarConAbonosException` | CuentasPagar | — |
 | `cuenta_pagar_ya_pagada` | 422 | `App\Modules\CuentasPagar\Exceptions\CuentaPagarYaPagadaException` | CuentasPagar | — |
 | `cuenta_ya_pagada` | 422 | `App\Modules\CuentasCobrar\Exceptions\CuentaYaPagadaException` | CuentasCobrar | — |
-| `cuota_ya_pagada` | 422 | `App\Modules\Crm\Exceptions\CuotaYaPagadaException` | Crm | plan_pago_id, cuota_id |
+| `cuota_ya_pagada` | 422 | `App\Modules\VentasPlazos\Exceptions\CuotaYaPagadaException` | VentasPlazos | plan_pago_id, cuota_id |
 | `cupon_invalido` | 422 | `App\Modules\Precios\Exceptions\CuponInvalidoException` | Precios | codigo |
 | `devolucion_excede_cantidad_vendida` | 422 | `App\Modules\Devoluciones\Exceptions\DevolucionExcedeCantidadVendidaException` | Devoluciones | venta_id, variante_id, solicitado, vendido |
 | `devolucion_pago_no_cuadra` | 422 | `App\Modules\Devoluciones\Exceptions\DevolucionPagoNoCuadraException` | Devoluciones | diferencia, suma_pagos |
@@ -41,12 +41,12 @@ Generado con `php artisan errores:catalogo` desde las excepciones de negocio.
 | `nota_credito_saldo_insuficiente` | 422 | `App\Modules\NotasCredito\Exceptions\NotaCreditoSaldoInsuficienteException` | NotasCredito | — |
 | `nota_credito_sin_saldo` | 422 | `App\Modules\NotasCredito\Exceptions\NotaCreditoSinSaldoException` | NotasCredito | — |
 | `orden_produccion_no_completable` | 422 | `App\Modules\Produccion\Exceptions\OrdenProduccionNoCompletableException` | Produccion | — |
-| `pago_cuota_insuficiente` | 422 | `App\Modules\Crm\Exceptions\PagoCuotaInsuficienteException` | Crm | cuota_id, monto_requerido, monto_recibido |
+| `pago_cuota_insuficiente` | 422 | `App\Modules\VentasPlazos\Exceptions\PagoCuotaInsuficienteException` | VentasPlazos | cuota_id, monto_requerido, monto_recibido |
 | `pago_excede_saldo` | 422 | `App\Modules\CuentasPagar\Exceptions\PagoExcedeSaldoException` | CuentasPagar | saldo_pendiente, monto_pago |
 | `pago_excede_saldo_prestamo` | 422 | `App\Modules\Prestamos\Exceptions\PagoExcedeSaldoPrestamoException` | Prestamos | saldo_pendiente, monto_pago |
 | `pago_no_cuadra` | 422 | `App\Modules\Tpv\Exceptions\PagoNoCuadraException` | Tpv | total, suma_pagos |
 | `pedido_no_asignable` | 422 | `App\Modules\Delivery\Exceptions\PedidoNoAsignableException` | Delivery | — |
-| `plan_pago_ya_activo` | 422 | `App\Modules\Crm\Exceptions\PlanPagoYaActivoException` | Crm | venta_id, plan_pago_id |
+| `plan_pago_ya_activo` | 422 | `App\Modules\VentasPlazos\Exceptions\PlanPagoYaActivoException` | VentasPlazos | venta_id, plan_pago_id |
 | `prestamo_ya_pagado` | 422 | `App\Modules\Prestamos\Exceptions\PrestamoPagadoException` | Prestamos | — |
 | `puntos_insuficientes` | 422 | `App\Modules\CrmAvanzado\Exceptions\PuntosInsuficientesException` | CrmAvanzado | — |
 | `puntos_no_generados` | 422 | `App\Modules\CrmAvanzado\Exceptions\PuntosNoGeneradosException` | CrmAvanzado | — |

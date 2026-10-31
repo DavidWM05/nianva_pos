@@ -5,7 +5,6 @@ use App\Modules\Auditoria\Http\Controllers\AuditoriaController;
 use App\Modules\Configuracion\Http\Controllers\ConfiguracionController;
 use App\Modules\Cotizaciones\Http\Controllers\CotizacionController;
 use App\Modules\Crm\Http\Controllers\ClienteController;
-use App\Modules\Crm\Http\Controllers\PlanPagoController;
 use App\Modules\CrmAvanzado\Http\Controllers\CrmAvanzadoController;
 use App\Modules\CuentasCobrar\Http\Controllers\CuentaCobrarController;
 use App\Modules\CuentasPagar\Http\Controllers\CuentaPagarController;
@@ -41,6 +40,7 @@ use App\Modules\Produccion\Http\Controllers\ProduccionController;
 use App\Modules\Tpv\Http\Controllers\CajaController;
 use App\Modules\Tpv\Http\Controllers\VentaController;
 use App\Modules\UnidadesMedida\Http\Controllers\UnidadMedidaController;
+use App\Modules\VentasPlazos\Http\Controllers\PlanPagoController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -349,7 +349,7 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::post('/transformaciones', [ProduccionController::class, 'transformacionStore'])->middleware('permiso:produccion.transformar');
         });
 
-        // Ventas a Plazos (extiende CRM)
+        // Ventas a Plazos (extension; depende de Tpv y Crm, no al reves)
         Route::middleware('modulo:ventas_plazos')->group(function () {
             Route::get('/planes-pago-cliente', [PlanPagoController::class, 'index'])->middleware('permiso:ventas_plazos.ver');
             Route::get('/planes-pago-cliente/{plan}', [PlanPagoController::class, 'show'])->middleware('permiso:ventas_plazos.ver');

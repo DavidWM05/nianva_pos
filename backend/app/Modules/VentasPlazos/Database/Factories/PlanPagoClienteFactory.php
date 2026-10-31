@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Modules\Crm\Database\Factories;
+namespace App\Modules\VentasPlazos\Database\Factories;
 
 use App\Modules\Crm\Models\Cliente;
-use App\Modules\Crm\Models\PlanPagoCliente;
 use App\Modules\Nucleo\Support\TenantParaFactory;
+use App\Modules\VentasPlazos\Models\PlanPagoCliente;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /** @extends Factory<PlanPagoCliente> */

@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Modules\Crm\Http\Resources;
+namespace App\Modules\VentasPlazos\Http\Resources;
 
-use App\Modules\Crm\Models\PlanPagoCliente;
+use App\Modules\VentasPlazos\Models\PlanPagoCliente;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 

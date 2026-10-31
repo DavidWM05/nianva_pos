@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Modules\Crm\Services;
+namespace App\Modules\VentasPlazos\Services;
 
-use App\Modules\Crm\Models\PlanPagoCliente;
-use App\Modules\Crm\Models\PlanPagoClienteCuota;
+use App\Modules\VentasPlazos\Models\PlanPagoCliente;
+use App\Modules\VentasPlazos\Models\PlanPagoClienteCuota;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use InvalidArgumentException;

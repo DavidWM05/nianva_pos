@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Modules\Crm\Database\Factories;
+namespace App\Modules\VentasPlazos\Database\Factories;
 
-use App\Modules\Crm\Models\PlanPagoCliente;
-use App\Modules\Crm\Models\PlanPagoClienteCuota;
+use App\Modules\VentasPlazos\Models\PlanPagoCliente;
+use App\Modules\VentasPlazos\Models\PlanPagoClienteCuota;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /** @extends Factory<PlanPagoClienteCuota> */

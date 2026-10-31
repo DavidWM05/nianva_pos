@@ -1201,30 +1201,6 @@ parameters:
 			path: app/Modules/Cotizaciones/Services/CotizacionService.php
 
 		-
-			message: '#^Call to an undefined method Illuminate\\Database\\Schema\\ForeignKeyDefinition\:\:comment\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: app/Modules/Crm/Database/Migrations/2026_08_10_000004_add_venta_a_plazos_to_planes_pago_cliente_table.php
-
-		-
-			message: '#^Method App\\Modules\\Crm\\Exceptions\\CuotaYaPagadaException\:\:contexto\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Modules/Crm/Exceptions/CuotaYaPagadaException.php
-
-		-
-			message: '#^Method App\\Modules\\Crm\\Exceptions\\PagoCuotaInsuficienteException\:\:contexto\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Modules/Crm/Exceptions/PagoCuotaInsuficienteException.php
-
-		-
-			message: '#^Method App\\Modules\\Crm\\Exceptions\\PlanPagoYaActivoException\:\:contexto\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Modules/Crm/Exceptions/PlanPagoYaActivoException.php
-
-		-
 			message: '#^Access to an undefined property App\\Modules\\Crm\\Models\\Cliente\:\:\$es_sistema\.$#'
 			identifier: property.notFound
 			count: 1
@@ -1265,36 +1241,6 @@ parameters:
 			identifier: missingType.return
 			count: 1
 			path: app/Modules/Crm/Http/Controllers/ClienteController.php
-
-		-
-			message: '#^Cannot call method tienePermiso\(\) on App\\Modules\\Nucleo\\Models\\Usuario\|null\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: app/Modules/Crm/Http/Controllers/PlanPagoController.php
-
-		-
-			message: '#^Method App\\Modules\\Crm\\Http\\Controllers\\PlanPagoController\:\:crearPlan\(\) has no return type specified\.$#'
-			identifier: missingType.return
-			count: 1
-			path: app/Modules/Crm/Http/Controllers/PlanPagoController.php
-
-		-
-			message: '#^Method App\\Modules\\Crm\\Http\\Controllers\\PlanPagoController\:\:index\(\) has no return type specified\.$#'
-			identifier: missingType.return
-			count: 1
-			path: app/Modules/Crm/Http/Controllers/PlanPagoController.php
-
-		-
-			message: '#^Method App\\Modules\\Crm\\Http\\Controllers\\PlanPagoController\:\:pagarCuota\(\) has no return type specified\.$#'
-			identifier: missingType.return
-			count: 1
-			path: app/Modules/Crm/Http/Controllers/PlanPagoController.php
-
-		-
-			message: '#^Method App\\Modules\\Crm\\Http\\Controllers\\PlanPagoController\:\:show\(\) has no return type specified\.$#'
-			identifier: missingType.return
-			count: 1
-			path: app/Modules/Crm/Http/Controllers/PlanPagoController.php
 
 		-
 			message: '#^Access to an undefined property App\\Modules\\Crm\\Http\\Resources\\ClienteResource\:\:\$activo\.$#'
@@ -1351,84 +1297,6 @@ parameters:
 			path: app/Modules/Crm/Http/Resources/ClienteResource.php
 
 		-
-			message: '#^Access to an undefined property App\\Modules\\Crm\\Http\\Resources\\PlanPagoResource\:\:\$concepto\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Modules/Crm/Http/Resources/PlanPagoResource.php
-
-		-
-			message: '#^Access to an undefined property App\\Modules\\Crm\\Http\\Resources\\PlanPagoResource\:\:\$created_at\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Modules/Crm/Http/Resources/PlanPagoResource.php
-
-		-
-			message: '#^Access to an undefined property App\\Modules\\Crm\\Http\\Resources\\PlanPagoResource\:\:\$fecha_inicio\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Modules/Crm/Http/Resources/PlanPagoResource.php
-
-		-
-			message: '#^Access to an undefined property App\\Modules\\Crm\\Http\\Resources\\PlanPagoResource\:\:\$interes_total\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Modules/Crm/Http/Resources/PlanPagoResource.php
-
-		-
-			message: '#^Access to an undefined property App\\Modules\\Crm\\Http\\Resources\\PlanPagoResource\:\:\$monto_total\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Modules/Crm/Http/Resources/PlanPagoResource.php
-
-		-
-			message: '#^Access to an undefined property App\\Modules\\Crm\\Http\\Resources\\PlanPagoResource\:\:\$numero_cuotas\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Modules/Crm/Http/Resources/PlanPagoResource.php
-
-		-
-			message: '#^Access to an undefined property App\\Modules\\Crm\\Http\\Resources\\PlanPagoResource\:\:\$periodicidad\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Modules/Crm/Http/Resources/PlanPagoResource.php
-
-		-
-			message: '#^Access to an undefined property App\\Modules\\Crm\\Http\\Resources\\PlanPagoResource\:\:\$tasa_interes\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Modules/Crm/Http/Resources/PlanPagoResource.php
-
-		-
-			message: '#^Access to an undefined property App\\Modules\\Crm\\Http\\Resources\\PlanPagoResource\:\:\$venta_id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Modules/Crm/Http/Resources/PlanPagoResource.php
-
-		-
-			message: '#^Cannot access property \$id on Illuminate\\Database\\Eloquent\\Model\|null\.$#'
-			identifier: property.nonObject
-			count: 1
-			path: app/Modules/Crm/Http/Resources/PlanPagoResource.php
-
-		-
-			message: '#^Cannot access property \$nombre on Illuminate\\Database\\Eloquent\\Model\|null\.$#'
-			identifier: property.nonObject
-			count: 1
-			path: app/Modules/Crm/Http/Resources/PlanPagoResource.php
-
-		-
-			message: '#^Method App\\Modules\\Crm\\Http\\Resources\\PlanPagoResource\:\:toArray\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Modules/Crm/Http/Resources/PlanPagoResource.php
-
-		-
-			message: '#^Method App\\Modules\\Crm\\Models\\Cliente\:\:planesPago\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\HasMany does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Modules/Crm/Models/Cliente.php
-
-		-
 			message: '#^Method App\\Modules\\Crm\\Models\\Cliente\:\:sinTenant\(\) return type with generic class Illuminate\\Database\\Eloquent\\Builder does not specify its types\: TModel$#'
 			identifier: missingType.generics
 			count: 1
@@ -1439,120 +1307,6 @@ parameters:
 			identifier: missingType.generics
 			count: 1
 			path: app/Modules/Crm/Models/Cliente.php
-
-		-
-			message: '#^Method App\\Modules\\Crm\\Models\\PlanPagoCliente\:\:cliente\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Modules/Crm/Models/PlanPagoCliente.php
-
-		-
-			message: '#^Method App\\Modules\\Crm\\Models\\PlanPagoCliente\:\:cuotas\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\HasMany does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Modules/Crm/Models/PlanPagoCliente.php
-
-		-
-			message: '#^Method App\\Modules\\Crm\\Models\\PlanPagoCliente\:\:sinTenant\(\) return type with generic class Illuminate\\Database\\Eloquent\\Builder does not specify its types\: TModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Modules/Crm/Models/PlanPagoCliente.php
-
-		-
-			message: '#^Method App\\Modules\\Crm\\Models\\PlanPagoCliente\:\:tenant\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Modules/Crm/Models/PlanPagoCliente.php
-
-		-
-			message: '#^Method App\\Modules\\Crm\\Models\\PlanPagoCliente\:\:venta\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Modules/Crm/Models/PlanPagoCliente.php
-
-		-
-			message: '#^Method App\\Modules\\Crm\\Models\\PlanPagoClienteCuota\:\:planPagoCliente\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Modules/Crm/Models/PlanPagoClienteCuota.php
-
-		-
-			message: '#^Method App\\Modules\\Crm\\Models\\PlanPagoClienteCuota\:\:sinTenant\(\) return type with generic class Illuminate\\Database\\Eloquent\\Builder does not specify its types\: TModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Modules/Crm/Models/PlanPagoClienteCuota.php
-
-		-
-			message: '#^Access to an undefined property App\\Modules\\Crm\\Models\\PlanPagoCliente\:\:\$fecha_inicio\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Modules/Crm/Services/PlanPagoClienteService.php
-
-		-
-			message: '#^Access to an undefined property App\\Modules\\Crm\\Models\\PlanPagoCliente\:\:\$monto_total\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Modules/Crm/Services/PlanPagoClienteService.php
-
-		-
-			message: '#^Access to an undefined property App\\Modules\\Crm\\Models\\PlanPagoClienteCuota\:\:\$estado\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Modules/Crm/Services/VentasPlazosService.php
-
-		-
-			message: '#^Access to an undefined property App\\Modules\\Crm\\Models\\PlanPagoClienteCuota\:\:\$monto\.$#'
-			identifier: property.notFound
-			count: 3
-			path: app/Modules/Crm/Services/VentasPlazosService.php
-
-		-
-			message: '#^Access to an undefined property App\\Modules\\Tpv\\Models\\Venta\:\:\$cliente_id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Modules/Crm/Services/VentasPlazosService.php
-
-		-
-			message: '#^Access to an undefined property App\\Modules\\Tpv\\Models\\Venta\:\:\$tenant_id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Modules/Crm/Services/VentasPlazosService.php
-
-		-
-			message: '#^Access to an undefined property App\\Modules\\Tpv\\Models\\Venta\:\:\$total\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Modules/Crm/Services/VentasPlazosService.php
-
-		-
-			message: '#^Match expression does not handle remaining value\: mixed$#'
-			identifier: match.unhandled
-			count: 1
-			path: app/Modules/Crm/Services/VentasPlazosService.php
-
-		-
-			message: '#^Method App\\Modules\\Crm\\Services\\VentasPlazosService\:\:crearPlan\(\) has parameter \$data with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Modules/Crm/Services/VentasPlazosService.php
-
-		-
-			message: '#^Method App\\Modules\\Crm\\Services\\VentasPlazosService\:\:pagarCuota\(\) has parameter \$dataPago with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Modules/Crm/Services/VentasPlazosService.php
-
-		-
-			message: '#^Method App\\Modules\\Crm\\Services\\VentasPlazosService\:\:pagarCuota\(\) should return App\\Modules\\Crm\\Models\\PlanPagoClienteCuota but returns App\\Modules\\Crm\\Models\\PlanPagoClienteCuota\|null\.$#'
-			identifier: return.type
-			count: 1
-			path: app/Modules/Crm/Services/VentasPlazosService.php
-
-		-
-			message: '#^Parameter \#2 \$timestamp of function date expects int\|null, int\|false given\.$#'
-			identifier: argument.type
-			count: 3
-			path: app/Modules/Crm/Services/VentasPlazosService.php
 
 		-
 			message: '#^Call to an undefined method Illuminate\\Database\\Schema\\ForeignKeyDefinition\:\:comment\(\)\.$#'
@@ -6721,18 +6475,6 @@ parameters:
 			path: app/Modules/Tpv/Exceptions/VentaYaAnuladaException.php
 
 		-
-			message: '#^Cannot access property \$sucursal_id on App\\Modules\\Nucleo\\Models\\Usuario\|null\.$#'
-			identifier: property.nonObject
-			count: 1
-			path: app/Modules/Tpv/Http/Controllers/CajaController.php
-
-		-
-			message: '#^Cannot call method tienePermiso\(\) on App\\Modules\\Nucleo\\Models\\Usuario\|null\.$#'
-			identifier: method.nonObject
-			count: 4
-			path: app/Modules/Tpv/Http/Controllers/CajaController.php
-
-		-
 			message: '#^Method App\\Modules\\Tpv\\Http\\Controllers\\CajaController\:\:abrir\(\) has no return type specified\.$#'
 			identifier: missingType.return
 			count: 1
@@ -7439,3 +7181,243 @@ parameters:
 			identifier: missingType.generics
 			count: 1
 			path: app/Modules/UnidadesMedida/Services/UnidadMedidaService.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Schema\\ForeignKeyDefinition\:\:comment\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Modules/VentasPlazos/Database/Migrations/2026_08_10_000004_add_venta_a_plazos_to_planes_pago_cliente_table.php
+
+		-
+			message: '#^Method App\\Modules\\VentasPlazos\\Exceptions\\CuotaYaPagadaException\:\:contexto\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Modules/VentasPlazos/Exceptions/CuotaYaPagadaException.php
+
+		-
+			message: '#^Method App\\Modules\\VentasPlazos\\Exceptions\\PagoCuotaInsuficienteException\:\:contexto\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Modules/VentasPlazos/Exceptions/PagoCuotaInsuficienteException.php
+
+		-
+			message: '#^Method App\\Modules\\VentasPlazos\\Exceptions\\PlanPagoYaActivoException\:\:contexto\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Modules/VentasPlazos/Exceptions/PlanPagoYaActivoException.php
+
+		-
+			message: '#^Cannot call method tienePermiso\(\) on App\\Modules\\Nucleo\\Models\\Usuario\|null\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: app/Modules/VentasPlazos/Http/Controllers/PlanPagoController.php
+
+		-
+			message: '#^Method App\\Modules\\VentasPlazos\\Http\\Controllers\\PlanPagoController\:\:crearPlan\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Modules/VentasPlazos/Http/Controllers/PlanPagoController.php
+
+		-
+			message: '#^Method App\\Modules\\VentasPlazos\\Http\\Controllers\\PlanPagoController\:\:index\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Modules/VentasPlazos/Http/Controllers/PlanPagoController.php
+
+		-
+			message: '#^Method App\\Modules\\VentasPlazos\\Http\\Controllers\\PlanPagoController\:\:pagarCuota\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Modules/VentasPlazos/Http/Controllers/PlanPagoController.php
+
+		-
+			message: '#^Method App\\Modules\\VentasPlazos\\Http\\Controllers\\PlanPagoController\:\:show\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Modules/VentasPlazos/Http/Controllers/PlanPagoController.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\VentasPlazos\\Http\\Resources\\PlanPagoResource\:\:\$concepto\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/VentasPlazos/Http/Resources/PlanPagoResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\VentasPlazos\\Http\\Resources\\PlanPagoResource\:\:\$created_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/VentasPlazos/Http/Resources/PlanPagoResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\VentasPlazos\\Http\\Resources\\PlanPagoResource\:\:\$fecha_inicio\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/VentasPlazos/Http/Resources/PlanPagoResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\VentasPlazos\\Http\\Resources\\PlanPagoResource\:\:\$interes_total\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/VentasPlazos/Http/Resources/PlanPagoResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\VentasPlazos\\Http\\Resources\\PlanPagoResource\:\:\$monto_total\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/VentasPlazos/Http/Resources/PlanPagoResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\VentasPlazos\\Http\\Resources\\PlanPagoResource\:\:\$numero_cuotas\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/VentasPlazos/Http/Resources/PlanPagoResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\VentasPlazos\\Http\\Resources\\PlanPagoResource\:\:\$periodicidad\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/VentasPlazos/Http/Resources/PlanPagoResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\VentasPlazos\\Http\\Resources\\PlanPagoResource\:\:\$tasa_interes\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/VentasPlazos/Http/Resources/PlanPagoResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\VentasPlazos\\Http\\Resources\\PlanPagoResource\:\:\$venta_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/VentasPlazos/Http/Resources/PlanPagoResource.php
+
+		-
+			message: '#^Cannot access property \$id on Illuminate\\Database\\Eloquent\\Model\|null\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: app/Modules/VentasPlazos/Http/Resources/PlanPagoResource.php
+
+		-
+			message: '#^Cannot access property \$nombre on Illuminate\\Database\\Eloquent\\Model\|null\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: app/Modules/VentasPlazos/Http/Resources/PlanPagoResource.php
+
+		-
+			message: '#^Method App\\Modules\\VentasPlazos\\Http\\Resources\\PlanPagoResource\:\:toArray\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Modules/VentasPlazos/Http/Resources/PlanPagoResource.php
+
+		-
+			message: '#^Method App\\Modules\\VentasPlazos\\Models\\PlanPagoCliente\:\:cliente\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Modules/VentasPlazos/Models/PlanPagoCliente.php
+
+		-
+			message: '#^Method App\\Modules\\VentasPlazos\\Models\\PlanPagoCliente\:\:cuotas\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\HasMany does not specify its types\: TRelatedModel, TDeclaringModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Modules/VentasPlazos/Models/PlanPagoCliente.php
+
+		-
+			message: '#^Method App\\Modules\\VentasPlazos\\Models\\PlanPagoCliente\:\:sinTenant\(\) return type with generic class Illuminate\\Database\\Eloquent\\Builder does not specify its types\: TModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Modules/VentasPlazos/Models/PlanPagoCliente.php
+
+		-
+			message: '#^Method App\\Modules\\VentasPlazos\\Models\\PlanPagoCliente\:\:tenant\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Modules/VentasPlazos/Models/PlanPagoCliente.php
+
+		-
+			message: '#^Method App\\Modules\\VentasPlazos\\Models\\PlanPagoCliente\:\:venta\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Modules/VentasPlazos/Models/PlanPagoCliente.php
+
+		-
+			message: '#^Method App\\Modules\\VentasPlazos\\Models\\PlanPagoClienteCuota\:\:planPagoCliente\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Modules/VentasPlazos/Models/PlanPagoClienteCuota.php
+
+		-
+			message: '#^Method App\\Modules\\VentasPlazos\\Models\\PlanPagoClienteCuota\:\:sinTenant\(\) return type with generic class Illuminate\\Database\\Eloquent\\Builder does not specify its types\: TModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Modules/VentasPlazos/Models/PlanPagoClienteCuota.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\VentasPlazos\\Models\\PlanPagoCliente\:\:\$fecha_inicio\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/VentasPlazos/Services/PlanPagoClienteService.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\VentasPlazos\\Models\\PlanPagoCliente\:\:\$monto_total\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/VentasPlazos/Services/PlanPagoClienteService.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\Tpv\\Models\\Venta\:\:\$cliente_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/VentasPlazos/Services/VentasPlazosService.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\Tpv\\Models\\Venta\:\:\$tenant_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/VentasPlazos/Services/VentasPlazosService.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\Tpv\\Models\\Venta\:\:\$total\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/VentasPlazos/Services/VentasPlazosService.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\VentasPlazos\\Models\\PlanPagoClienteCuota\:\:\$estado\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/VentasPlazos/Services/VentasPlazosService.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\VentasPlazos\\Models\\PlanPagoClienteCuota\:\:\$monto\.$#'
+			identifier: property.notFound
+			count: 3
+			path: app/Modules/VentasPlazos/Services/VentasPlazosService.php
+
+		-
+			message: '#^Match expression does not handle remaining value\: mixed$#'
+			identifier: match.unhandled
+			count: 1
+			path: app/Modules/VentasPlazos/Services/VentasPlazosService.php
+
+		-
+			message: '#^Method App\\Modules\\VentasPlazos\\Services\\VentasPlazosService\:\:crearPlan\(\) has parameter \$data with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Modules/VentasPlazos/Services/VentasPlazosService.php
+
+		-
+			message: '#^Method App\\Modules\\VentasPlazos\\Services\\VentasPlazosService\:\:pagarCuota\(\) has parameter \$dataPago with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Modules/VentasPlazos/Services/VentasPlazosService.php
+
+		-
+			message: '#^Method App\\Modules\\VentasPlazos\\Services\\VentasPlazosService\:\:pagarCuota\(\) should return App\\Modules\\VentasPlazos\\Models\\PlanPagoClienteCuota but returns App\\Modules\\VentasPlazos\\Models\\PlanPagoClienteCuota\|null\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Modules/VentasPlazos/Services/VentasPlazosService.php
+
+		-
+			message: '#^Parameter \#2 \$timestamp of function date expects int\|null, int\|false given\.$#'
+			identifier: argument.type
+			count: 3
+			path: app/Modules/VentasPlazos/Services/VentasPlazosService.php

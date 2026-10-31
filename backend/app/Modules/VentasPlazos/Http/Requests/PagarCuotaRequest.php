@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Modules\Crm\Http\Requests;
+namespace App\Modules\VentasPlazos\Http\Requests;
 
-use App\Modules\Crm\Dtos\PagarCuotaDto;
-use App\Modules\Crm\Support\ReglasCuota;
 use App\Modules\Nucleo\Http\Requests\SolicitudNegocio;
+use App\Modules\VentasPlazos\Dtos\PagarCuotaDto;
+use App\Modules\VentasPlazos\Support\ReglasCuota;
 
 class PagarCuotaRequest extends SolicitudNegocio
 {

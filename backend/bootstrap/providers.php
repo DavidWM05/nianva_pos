@@ -21,6 +21,7 @@ use App\Modules\Prestamos\Providers\PrestamosServiceProvider;
 use App\Modules\Produccion\Providers\ProduccionServiceProvider;
 use App\Modules\Tpv\Providers\TpvServiceProvider;
 use App\Modules\UnidadesMedida\Providers\UnidadesMedidaServiceProvider;
+use App\Modules\VentasPlazos\Providers\VentasPlazosServiceProvider;
 use App\Providers\AppServiceProvider;
 
 return [
@@ -46,4 +47,5 @@ return [
     PrestamosServiceProvider::class,
     ProduccionServiceProvider::class,
     UnidadesMedidaServiceProvider::class,
+    VentasPlazosServiceProvider::class,
 ];

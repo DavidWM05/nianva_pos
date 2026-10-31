@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Modules\Crm\Support;
+namespace App\Modules\VentasPlazos\Support;
 
-use App\Modules\Crm\Models\PlanPagoCliente;
+use App\Modules\VentasPlazos\Models\PlanPagoCliente;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Exists;
 
