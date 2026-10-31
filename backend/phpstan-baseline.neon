@@ -13,12 +13,6 @@ parameters:
 			path: app/Aplicacion/Devoluciones/RegistrarDevolucion.php
 
 		-
-			message: '#^Parameter \$pagos of method App\\Modules\\Devoluciones\\Services\\DevolucionService\:\:registrarDevolucion\(\) expects list\<array\{metodo_pago_id\: int, monto\: float\}\>, list\<array\{metodo_pago_id\: int, monto\: float\|string\}\> given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Aplicacion/Devoluciones/RegistrarDevolucion.php
-
-		-
 			message: '#^Access to an undefined property App\\Modules\\Apartados\\Models\\Apartado\:\:\$fecha_vencimiento\.$#'
 			identifier: property.notFound
 			count: 1
@@ -91,12 +85,6 @@ parameters:
 			path: app/Aplicacion/Ventas/RegistrarVenta.php
 
 		-
-			message: '#^Parameter \#3 \$pagos of method App\\Modules\\Tpv\\Services\\VentaService\:\:registrarVenta\(\) expects list\<array\{metodo_pago_id\: int, monto\: float\}\>, list\<array\{metodo_pago_id\: mixed, monto\: float\|string\}\> given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Aplicacion/Ventas/RegistrarVenta.php
-
-		-
 			message: '#^Return type of call to function collect contains unresolvable type\.$#'
 			identifier: function.unresolvableReturnType
 			count: 1
@@ -135,19 +123,7 @@ parameters:
 		-
 			message: '#^Cannot access property \$id on App\\Modules\\Nucleo\\Models\\Usuario\|null\.$#'
 			identifier: property.nonObject
-			count: 3
-			path: app/Modules/Apartados/Http/Controllers/ApartadoController.php
-
-		-
-			message: '#^Cannot access property \$sucursal_id on App\\Modules\\Nucleo\\Models\\Usuario\|null\.$#'
-			identifier: property.nonObject
 			count: 1
-			path: app/Modules/Apartados/Http/Controllers/ApartadoController.php
-
-		-
-			message: '#^Cannot access property \$tenant_id on App\\Modules\\Nucleo\\Models\\Usuario\|null\.$#'
-			identifier: property.nonObject
-			count: 2
 			path: app/Modules/Apartados/Http/Controllers/ApartadoController.php
 
 		-
@@ -189,12 +165,6 @@ parameters:
 		-
 			message: '#^Method App\\Modules\\Apartados\\Http\\Controllers\\ApartadoController\:\:store\(\) has no return type specified\.$#'
 			identifier: missingType.return
-			count: 1
-			path: app/Modules/Apartados/Http/Controllers/ApartadoController.php
-
-		-
-			message: '#^Parameter \#3 \$usuario of method App\\Modules\\Apartados\\Services\\ApartadoService\:\:cancelar\(\) expects App\\Modules\\Nucleo\\Models\\Usuario, App\\Modules\\Nucleo\\Models\\Usuario\|null given\.$#'
-			identifier: argument.type
 			count: 1
 			path: app/Modules/Apartados/Http/Controllers/ApartadoController.php
 
@@ -2893,12 +2863,6 @@ parameters:
 			path: app/Modules/Devoluciones/Http/Controllers/DevolucionController.php
 
 		-
-			message: '#^Cannot access property \$tenant_id on App\\Modules\\Nucleo\\Models\\Usuario\|null\.$#'
-			identifier: property.nonObject
-			count: 1
-			path: app/Modules/Devoluciones/Http/Controllers/DevolucionController.php
-
-		-
 			message: '#^Cannot call method tienePermiso\(\) on App\\Modules\\Nucleo\\Models\\Usuario\|null\.$#'
 			identifier: method.nonObject
 			count: 1
@@ -2919,12 +2883,6 @@ parameters:
 		-
 			message: '#^Method App\\Modules\\Devoluciones\\Http\\Controllers\\DevolucionController\:\:store\(\) has no return type specified\.$#'
 			identifier: missingType.return
-			count: 1
-			path: app/Modules/Devoluciones/Http/Controllers/DevolucionController.php
-
-		-
-			message: '#^Parameter \$usuario of method App\\Aplicacion\\Devoluciones\\RegistrarDevolucion\:\:ejecutar\(\) expects App\\Modules\\Nucleo\\Models\\Usuario, App\\Modules\\Nucleo\\Models\\Usuario\|null given\.$#'
-			identifier: argument.type
 			count: 1
 			path: app/Modules/Devoluciones/Http/Controllers/DevolucionController.php
 
@@ -3209,24 +3167,6 @@ parameters:
 			identifier: property.notFound
 			count: 1
 			path: app/Modules/Devoluciones/Services/DevolucionService.php
-
-		-
-			message: '#^Cannot access property \$id on App\\Modules\\Nucleo\\Models\\Usuario\|null\.$#'
-			identifier: property.nonObject
-			count: 1
-			path: app/Modules/Gastos/Http/Controllers/GastoController.php
-
-		-
-			message: '#^Cannot access property \$sucursal_id on App\\Modules\\Nucleo\\Models\\Usuario\|null\.$#'
-			identifier: property.nonObject
-			count: 1
-			path: app/Modules/Gastos/Http/Controllers/GastoController.php
-
-		-
-			message: '#^Cannot access property \$tenant_id on App\\Modules\\Nucleo\\Models\\Usuario\|null\.$#'
-			identifier: property.nonObject
-			count: 1
-			path: app/Modules/Gastos/Http/Controllers/GastoController.php
 
 		-
 			message: '#^Method App\\Modules\\Gastos\\Http\\Controllers\\GastoController\:\:index\(\) has no return type specified\.$#'
@@ -7063,15 +7003,9 @@ parameters:
 			path: app/Modules/Tpv/Exceptions/VentaYaAnuladaException.php
 
 		-
-			message: '#^Cannot access property \$id on App\\Modules\\Nucleo\\Models\\Usuario\|null\.$#'
-			identifier: property.nonObject
-			count: 1
-			path: app/Modules/Tpv/Http/Controllers/CajaController.php
-
-		-
 			message: '#^Cannot access property \$sucursal_id on App\\Modules\\Nucleo\\Models\\Usuario\|null\.$#'
 			identifier: property.nonObject
-			count: 2
+			count: 1
 			path: app/Modules/Tpv/Http/Controllers/CajaController.php
 
 		-
@@ -7171,12 +7105,6 @@ parameters:
 			path: app/Modules/Tpv/Http/Controllers/VentaController.php
 
 		-
-			message: '#^Cannot access property \$tenant_id on App\\Modules\\Nucleo\\Models\\Usuario\|null\.$#'
-			identifier: property.nonObject
-			count: 2
-			path: app/Modules/Tpv/Http/Controllers/VentaController.php
-
-		-
 			message: '#^Cannot call method tienePermiso\(\) on App\\Modules\\Nucleo\\Models\\Usuario\|null\.$#'
 			identifier: method.nonObject
 			count: 1
@@ -7239,18 +7167,6 @@ parameters:
 		-
 			message: '#^Parameter \#1 \$callback of method Illuminate\\Database\\Eloquent\\Collection\<int,App\\Modules\\Tpv\\Models\\VentaPago\>\:\:map\(\) contains unresolvable type\.$#'
 			identifier: argument.unresolvableType
-			count: 1
-			path: app/Modules/Tpv/Http/Controllers/VentaController.php
-
-		-
-			message: '#^Parameter \#3 \$usuario of method App\\Modules\\Tpv\\Services\\VentaService\:\:anularVenta\(\) expects App\\Modules\\Nucleo\\Models\\Usuario, App\\Modules\\Nucleo\\Models\\Usuario\|null given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Modules/Tpv/Http/Controllers/VentaController.php
-
-		-
-			message: '#^Parameter \$usuario of method App\\Aplicacion\\Ventas\\RegistrarVenta\:\:ejecutar\(\) expects App\\Modules\\Nucleo\\Models\\Usuario, App\\Modules\\Nucleo\\Models\\Usuario\|null given\.$#'
-			identifier: argument.type
 			count: 1
 			path: app/Modules/Tpv/Http/Controllers/VentaController.php
 

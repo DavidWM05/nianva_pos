@@ -5,6 +5,8 @@ namespace App\Modules\Tpv\Http\Controllers;
 use App\Aplicacion\Caja\CerrarCaja;
 use App\Http\Controllers\Controller;
 use App\Modules\Gastos\Services\GastoService;
+use App\Modules\Tpv\Http\Requests\AbrirCajaRequest;
+use App\Modules\Tpv\Http\Requests\CerrarCajaRequest;
 use App\Modules\Tpv\Http\Resources\CajaSesionResource;
 use App\Modules\Tpv\Models\CajaSesion;
 use App\Modules\Tpv\Services\CajaService;
@@ -46,14 +48,17 @@ class CajaController extends Controller
         ]);
     }
 
-    public function abrir(Request $request, CajaService $cajaService)
+    public function abrir(AbrirCajaRequest $request, CajaService $cajaService)
     {
-        $validated = $request->validate([
-            'monto_apertura' => ['required', 'numeric', 'min:0'],
-        ]);
-
         $usuario = $request->user();
-        $sesion = $cajaService->abrirCaja($usuario->sucursal_id, $usuario->id, $validated['monto_apertura']);
+
+        if ($usuario === null) {
+            abort(401);
+        }
+
+        $dto = $request->toDto();
+        $sucursalId = (int) $usuario->getAttribute('sucursal_id');
+        $sesion = $cajaService->abrirCaja($sucursalId, $usuario->id, $dto->montoApertura);
 
         return (new CajaSesionResource($sesion))->response()->setStatusCode(201);
     }
@@ -61,13 +66,11 @@ class CajaController extends Controller
     /**
      * Orquestacion: App\Aplicacion\Caja\CerrarCaja.
      */
-    public function cerrar(Request $request, CajaSesion $cajaSesion, CerrarCaja $cerrarCaja)
+    public function cerrar(CerrarCajaRequest $request, CajaSesion $cajaSesion, CerrarCaja $cerrarCaja)
     {
-        $validated = $request->validate([
-            'monto_fisico' => ['required', 'numeric', 'min:0'],
-        ]);
+        $dto = $request->toDto();
 
-        $resultado = $cerrarCaja->ejecutar($cajaSesion, $validated['monto_fisico']);
+        $resultado = $cerrarCaja->ejecutar($cajaSesion, $dto->montoFisico);
 
         return response()->json([
             'data' => new CajaSesionResource($resultado['sesion']),
