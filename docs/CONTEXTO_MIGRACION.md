@@ -196,6 +196,16 @@ repo.
   existente modificado. `Arquitectura/EntradasTipadasTest` deja 29 controllers en
   `PENDIENTES`. Fuera del test queda `RequiereDosFactorReciente`, un middleware que también
   valida. Backend: 422 tests; línea base de PHPStan: 1458.
+- **C8, lote 2** (duodécimo encargo, hecho por DS): Inventario (categorías, departamentos,
+  productos, variantes, proveedores, compras), Precios (cupones, validar cupón, reglas de
+  precio) y Crm (clientes, planes de pago). Un `Guardar<Recurso>Request` por recurso para
+  crear y editar. Las ediciones parciales conservan la diferencia entre campo ausente y
+  `null` (`camposPresentes()` / `datosPresentes()`), con un test por recurso. Las reglas de
+  precio siguen limpiando los campos del tipo anterior, como antes. Corrección propia en la
+  revisión: un mensaje de `GuardarReglaPrecioRequest` llegó con la codificación rota
+  (`categor??a`); se corrigió y lo cubre `Precios/ReglaPrecioMensajesTest`. El checklist de
+  DS busca U+FFFD, pero esta rotura (`??`) no lo usa. Quedan 19 controllers en `PENDIENTES`.
+  Backend: 431 tests; línea base de PHPStan: 1441.
 - **Pendientes detectados:**
   - dependencias fuera del grafo: `Crm` lee `Venta` de Tpv (`PlanPagoController`,
     `PlanPagoCliente`, `VentasPlazosService`; es un ciclo, porque Tpv → Crm);
@@ -226,7 +236,9 @@ repo.
    - resto de PRO-05: stylelint, diff de OpenAPI y CODEOWNERS;
    - prefijo `/api/v1` y configuración del frontend en tiempo de ejecución (sin
      `localhost:8000` fijo);
-   - FormRequests (C8): lotes siguientes hasta vaciar `PENDIENTES` (29 controllers);
+   - FormRequests (C8): lotes siguientes hasta vaciar `PENDIENTES` (19 controllers);
+   - un chequeo en CI de codificación rota en `app/` y `tests/` (`??` seguido de letra,
+     además de U+FFFD; DAT-12);
    - factories;
    - actualizar `.claude/CLAUDE.md` para que resuma los estándares;
    - opcional: rama `master` → `main`.
