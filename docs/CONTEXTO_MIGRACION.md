@@ -216,6 +216,17 @@ repo.
   cotizaciones y unidades de medida, con test. Quedan 13 controllers en `PENDIENTES`
   (Núcleo y autenticación, Auditoría, Configuración y los congelados). Backend: 436 tests;
   línea base de PHPStan: 1413.
+- **C8, lote 4** (decimocuarto encargo, hecho por DS): Núcleo (login, 2FA, recuperación y
+  cambio de contraseña, usuarios, roles, métodos de pago, configuración de seguridad),
+  Configuración y Auditoría. Las rutas sin sesión no usan el tenant. Contraseñas, códigos
+  TOTP y tokens van en los DTOs con `#[\SensitiveParameter]`. DS se detuvo al ver que roles,
+  métodos de pago y configuración revisan el recurso antes de validar (403/404). Decisión del
+  responsable: esa guarda va en el `authorize()` del FormRequest con `abort()`
+  (`Nucleo/Support/GuardasDeRecurso`); `Nucleo/GuardasDeRecursoTest` comprueba que un
+  payload inválido sigue recibiendo el 403/404 y no 422. Excepción a PRO-01 autorizada: la
+  entrada de usuario en `ATRIBUTOS` de `SucursalDelContextoTest` apunta al FormRequest.
+  Quedan en `PENDIENTES` solo los 4 módulos congelados. Backend: 444 tests; línea base de
+  PHPStan: 1404.
 - **Pendientes detectados:**
   - dependencias fuera del grafo: `Crm` lee `Venta` de Tpv (`PlanPagoController`,
     `PlanPagoCliente`, `VentasPlazosService`; es un ciclo, porque Tpv → Crm);
@@ -225,6 +236,9 @@ repo.
     `produccion.crear` aunque existe `produccion.completar` (Producción, congelado); el
     resto (`desactivar` con `.eliminar`, catálogos de apoyo) es intencional;
   - la matriz de permisos no cubre las 60 rutas con route model binding;
+  - un `PUT` a un rol o a un usuario que omite `permisos` o `roles` los quita todos
+    (`sync([])`): no distingue "no llegó" de "llegó vacía". Se conservó en el lote 4 de C8;
+    se corrige aparte con su test, y revisando que el frontend siempre mande la lista;
   - el frontend no conoce los 9 códigos nuevos (`tpv-error.types.ts` y similares), ni
     `sucursal_no_permitida` y `sucursal_requerida`;
   - `VentaController` y `CompraController` toman el tenant de `$request->user()` y el resto
@@ -246,7 +260,7 @@ repo.
    - resto de PRO-05: stylelint, diff de OpenAPI y CODEOWNERS;
    - prefijo `/api/v1` y configuración del frontend en tiempo de ejecución (sin
      `localhost:8000` fijo);
-   - FormRequests (C8): lotes siguientes hasta vaciar `PENDIENTES` (13 controllers);
+   - FormRequests (C8): lotes siguientes hasta vaciar `PENDIENTES` (4 controllers, los módulos congelados);
    - un chequeo en CI de codificación rota en `app/` y `tests/` (`??` seguido de letra,
      además de U+FFFD; DAT-12);
    - factories;
