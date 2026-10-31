@@ -206,6 +206,14 @@ repo.
   (`categor??a`); se corrigió y lo cubre `Precios/ReglaPrecioMensajesTest`. El checklist de
   DS busca U+FFFD, pero esta rotura (`??`) no lo usa. Quedan 19 controllers en `PENDIENTES`.
   Backend: 431 tests; línea base de PHPStan: 1441.
+- **C8, lote 3** (decimotercer encargo, hecho por DS): extensiones activas (Cotizaciones,
+  CxC, CxP, GiftCards, Produccion, UnidadesMedida). En cotizaciones y stock de insumos la
+  sucursal se resuelve con `SucursalOperacion` dentro del `toDto()` y el DTO la entrega ya
+  resuelta. Excepción a PRO-01 autorizada: `SucursalDelContextoTest` también revisa
+  `Http/Requests`; DS comprobó que falla si se quita el resolvedor. Ediciones parciales en
+  cotizaciones y unidades de medida, con test. Quedan 13 controllers en `PENDIENTES`
+  (Núcleo y autenticación, Auditoría, Configuración y los congelados). Backend: 436 tests;
+  línea base de PHPStan: 1413.
 - **Pendientes detectados:**
   - dependencias fuera del grafo: `Crm` lee `Venta` de Tpv (`PlanPagoController`,
     `PlanPagoCliente`, `VentasPlazosService`; es un ciclo, porque Tpv → Crm);
@@ -236,7 +244,7 @@ repo.
    - resto de PRO-05: stylelint, diff de OpenAPI y CODEOWNERS;
    - prefijo `/api/v1` y configuración del frontend en tiempo de ejecución (sin
      `localhost:8000` fijo);
-   - FormRequests (C8): lotes siguientes hasta vaciar `PENDIENTES` (19 controllers);
+   - FormRequests (C8): lotes siguientes hasta vaciar `PENDIENTES` (13 controllers);
    - un chequeo en CI de codificación rota en `app/` y `tests/` (`??` seguido de letra,
      además de U+FFFD; DAT-12);
    - factories;
