@@ -30,6 +30,10 @@
   - todo endpoint de escritura usa un FormRequest con `rules()` que extiende
     `Nucleo/Http/Requests/SolicitudNegocio` (su `authorize()` devuelve `true`: el permiso lo
     revisa el middleware `permiso:*`, SEG-03);
+  - un FormRequest solo sobrescribe `authorize()` para una **guarda del recurso** que debe
+    responder antes de validar (rol de sistema, registro global, tenant sin configuración):
+    hace `abort()` con el código y el mensaje del caso, nunca `return false`, y nunca revisa
+    permisos;
   - el FormRequest expone `toDto()`, que devuelve un DTO `final readonly` de
     `Modules/<Modulo>/Dtos/`;
   - las Actions reciben DTOs, nunca `Request` ni arreglos sueltos.
