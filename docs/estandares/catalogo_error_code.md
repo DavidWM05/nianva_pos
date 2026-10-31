@@ -54,6 +54,8 @@ Generado con `php artisan errores:catalogo` desde las excepciones de negocio.
 | `sin_empleados` | 422 | `App\Modules\Payroll\Exceptions\SinEmpleadosException` | Payroll | — |
 | `stock_insuficiente` | 422 | `App\Modules\Inventario\Exceptions\StockInsuficienteException` | Inventario | variante_id, sucursal_id, solicitado, disponible |
 | `stock_insumos_insuficiente` | 422 | `App\Modules\Produccion\Exceptions\StockInsumosInsuficienteException` | Produccion | — |
+| `sucursal_no_permitida` | 422 | `App\Modules\Nucleo\Exceptions\SucursalNoPermitidaException` | Nucleo | sucursal_id |
+| `sucursal_requerida` | 422 | `App\Modules\Nucleo\Exceptions\SucursalRequeridaException` | Nucleo | — |
 | `transicion_estado_invalida` | 422 | `App\Modules\Delivery\Exceptions\TransicionEstadoInvalidaException` | Delivery | — |
 | `unidad_en_uso` | 422 | `App\Modules\UnidadesMedida\Exceptions\UnidadEnUsoException` | UnidadesMedida | — |
 | `venta_total_negativo` | 422 | `App\Modules\Tpv\Exceptions\VentaTotalNegativoException` | Tpv | subtotal, descuento_manual, descuento_cupon |

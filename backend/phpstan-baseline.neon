@@ -831,7 +831,7 @@ parameters:
 		-
 			message: '#^Cannot access property \$id on App\\Modules\\Nucleo\\Models\\Usuario\|null\.$#'
 			identifier: property.nonObject
-			count: 2
+			count: 1
 			path: app/Modules/Cotizaciones/Http/Controllers/CotizacionController.php
 
 		-
@@ -2573,12 +2573,6 @@ parameters:
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Modules/CuentasPagar/Services/CuentasPagarService.php
-
-		-
-			message: '#^Cannot access property \$id on App\\Modules\\Nucleo\\Models\\Usuario\|null\.$#'
-			identifier: property.nonObject
-			count: 1
-			path: app/Modules/Delivery/Http/Controllers/PedidoController.php
 
 		-
 			message: '#^Cannot call method tienePermiso\(\) on App\\Modules\\Nucleo\\Models\\Usuario\|null\.$#'

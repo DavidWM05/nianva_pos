@@ -9,6 +9,7 @@ use App\Modules\Inventario\Support\ReglasVariante;
 use App\Modules\Nucleo\Models\Sucursal;
 use App\Modules\Nucleo\Services\TenantContext;
 use App\Modules\Nucleo\Support\ReglasTenant;
+use App\Modules\Nucleo\Support\SucursalOperacion;
 use App\Modules\Tpv\Http\Resources\VentaResource;
 use App\Modules\Tpv\Models\Venta;
 use App\Modules\Tpv\Models\VentaDetalle;
@@ -149,7 +150,17 @@ class VentaController extends Controller
 
         $fechaDesde = $request->query('fecha_desde', now()->startOfMonth()->toDateString());
         $fechaHasta = $request->query('fecha_hasta', now()->toDateString());
-        $sucursalId = $request->query('sucursal_id');
+        $usuario = $request->user();
+
+        if ($usuario === null) {
+            abort(401);
+        }
+
+        $sucursalSolicitada = $request->query('sucursal_id');
+        $sucursalId = SucursalOperacion::paraFiltro(
+            $usuario,
+            $sucursalSolicitada !== null ? (int) $sucursalSolicitada : null,
+        );
 
         $base = Venta::where('tenant_id', $tenantId)
             ->where('estado', 'completada')

@@ -5,6 +5,7 @@ namespace App\Modules\Payroll\Http\Controllers;
 use App\Http\Controllers\Controller;
 use App\Modules\Nucleo\Services\TenantContext;
 use App\Modules\Nucleo\Support\ReglasTenant;
+use App\Modules\Nucleo\Support\SucursalOperacion;
 use App\Modules\Payroll\Http\Resources\EmpleadoResource;
 use App\Modules\Payroll\Http\Resources\NominaResource;
 use App\Modules\Payroll\Models\Empleado;
@@ -102,12 +103,20 @@ class PayrollController extends Controller
         $tenantId = app(TenantContext::class)->id();
 
         $v = $request->validate([
-            'sucursal_id' => ['required', 'integer', ReglasTenant::existe('sucursales', $tenantId)],
+            'sucursal_id' => ['nullable', 'integer', ReglasTenant::existe('sucursales', $tenantId)],
             'periodo_inicio' => 'required|date',
             'periodo_fin' => 'required|date|after_or_equal:periodo_inicio',
         ]);
 
-        return (new NominaResource($this->nominaService->generarNomina($v['sucursal_id'], $v['periodo_inicio'], $v['periodo_fin'])))->response()->setStatusCode(201);
+        $usuario = $request->user();
+
+        if ($usuario === null) {
+            abort(401);
+        }
+
+        $sucursalId = SucursalOperacion::paraEscritura($usuario, $v['sucursal_id'] ?? null);
+
+        return (new NominaResource($this->nominaService->generarNomina($sucursalId, $v['periodo_inicio'], $v['periodo_fin'])))->response()->setStatusCode(201);
     }
 
     public function nominasPagar(int $id)
