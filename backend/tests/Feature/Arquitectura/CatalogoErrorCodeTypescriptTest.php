@@ -16,11 +16,16 @@ class CatalogoErrorCodeTypescriptTest extends TestCase
 
         $comando = new ErroresCatalogoCommand;
 
-        $this->assertSame(
-            $comando->contenidoTypescript(),
-            File::get($ruta),
+        $this->assertTrue(
+            ErroresCatalogoCommand::contenidoEquivalente(File::get($ruta), $comando->contenidoTypescript()),
             'El TypeScript del catalogo esta desactualizado. Ejecuta php artisan errores:catalogo.',
         );
+    }
+
+    public function test_la_comparacion_ignora_el_fin_de_linea_pero_no_el_contenido(): void
+    {
+        $this->assertTrue(ErroresCatalogoCommand::contenidoEquivalente("a\r\nb\r\n", "a\nb\n"));
+        $this->assertFalse(ErroresCatalogoCommand::contenidoEquivalente("a\r\nc\r\n", "a\nb\n"));
     }
 
     public function test_el_comando_check_valida_catalogo_y_typescript_sin_escribir(): void
