@@ -37,7 +37,7 @@ class ErroresCatalogoCommand extends Command
             $desactualizados = [];
 
             foreach ($destinos as $ruta => $contenido) {
-                if (! File::exists($ruta) || File::get($ruta) !== $contenido) {
+                if (! File::exists($ruta) || ! self::contenidoEquivalente(File::get($ruta), $contenido)) {
                     $desactualizados[] = $this->rutaRelativa($ruta);
                 }
             }
@@ -61,6 +61,15 @@ class ErroresCatalogoCommand extends Command
         $this->info('Catalogo generado con '.count($filas).' filas en docs/estandares/catalogo_error_code.md y frontend/libs/ui-shared/src/lib/errores/codigos-error.ts');
 
         return self::SUCCESS;
+    }
+
+    /**
+     * Compara ignorando el fin de linea: con core.autocrlf=true, Git en
+     * Windows deja los archivos generados con CRLF y el contenido es el mismo.
+     */
+    public static function contenidoEquivalente(string $enDisco, string $esperado): bool
+    {
+        return str_replace("\r\n", "\n", $enDisco) === str_replace("\r\n", "\n", $esperado);
     }
 
     public function contenidoTypescript(): string
