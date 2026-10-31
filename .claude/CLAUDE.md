@@ -13,7 +13,7 @@ Cada módulo vive en `backend/app/Modules/<Modulo>`.
 - **Base:** Nucleo, Auditoria, Configuracion, Inventario, Precios, Crm, Tpv, Apartados,
   Devoluciones, Gastos.
 - **Extensiones:** Cotizaciones, CuentasCobrar, CuentasPagar, GiftCards, NotasCredito,
-  Produccion, UnidadesMedida, y los congelados CrmAvanzado, Delivery, Payroll y Prestamos
+  Produccion, UnidadesMedida, VentasPlazos, y los congelados CrmAvanzado, Delivery, Payroll y Prestamos
   (cambio mínimo; sin mejoras fuera del encargo).
 
 Dependencias permitidas entre módulos base, y solo estas:
@@ -29,9 +29,9 @@ Dependencias permitidas entre módulos base, y solo estas:
   cualquier módulo.
 
 Las extensiones pueden depender de los módulos base, nunca entre sí, y ningún módulo base
-depende de ellas. `Arquitectura/DependenciasEntreModulosTest` lo verifica; su lista
-`PENDIENTES` es deuda conocida y no recibe entradas nuevas. **Si crees que necesitas otra
-dependencia, pregunta antes de escribir código.**
+depende de ellas. `Arquitectura/DependenciasEntreModulosTest` lo verifica y no tiene
+pendientes: una dependencia nueva fuera del grafo lo hace fallar. **Si crees que necesitas
+otra dependencia, pregunta antes de escribir código.**
 
 ## 2. Capas (ARQ-01 a ARQ-03)
 

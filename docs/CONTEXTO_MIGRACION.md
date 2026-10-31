@@ -294,11 +294,19 @@ repo.
     fijo en cotización, pedido y nómina.
 
   Backend: 599 tests; `ui-shared`: 22; `pos`: 436.
+- **Grafo sin pendientes, ARQ-03** (vigesimoprimer encargo, hecho por DS):
+  - las ventas a plazos pasan de Crm a la extensión `Modules/VentasPlazos` (decisión del
+    responsable), movidas con `git mv`: modelos, servicios, controller, requests, DTOs,
+    excepciones, `ReglasCuota`, factories y migraciones. Tablas, rutas, permisos y
+    `error_code` no cambian; se quitó `Cliente::planesPago()`, que no se usaba;
+  - `CajaController::actual()` usa la Action `Aplicacion/Caja/ObtenerCajaActual`.
+
+  `DependenciasEntreModulosTest` queda sin `PENDIENTES`. Excepción a PRO-01 autorizada: en los
+  tests solo cambiaron los namespaces de las clases movidas. Backend: 603 tests; línea base de
+  PHPStan: 1386.
 - **Pendientes detectados:**
-  - dependencias fuera del grafo: `Crm` lee `Venta` de Tpv (`PlanPagoController`,
-    `PlanPagoCliente`, `VentasPlazosService`; es un ciclo, porque Tpv → Crm);
-    `CajaController::actual()` usa `GastoService`; `Produccion` usa `UnidadMedida`
-    (extensión → extensión). Las unidades se rediseñan en la Fase 3 (DAT-01);
+  - `Produccion` usa `UnidadMedida` (extensión → extensión); las unidades se rediseñan en la
+    Fase 3 (DAT-01);
   - permisos que no corresponden a la acción: `PATCH ordenes-produccion/{id}/estado` pide
     `produccion.crear` aunque existe `produccion.completar` (Producción, congelado); el
     resto (`desactivar` con `.eliminar`, catálogos de apoyo) es intencional;

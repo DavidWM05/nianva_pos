@@ -69,11 +69,10 @@ resolvía con una lista numerada de "excepciones de orquestación en Controller"
 retiró.
 
 Los módulos de extensión (Cotizaciones, Delivery, CxC, CxP, CrmAvanzado, GiftCards,
-NotasCredito, Produccion, Payroll, Prestamos, UnidadesMedida) pueden depender de los módulos
-base, nunca entre sí. `ConfiguracionTenant` y las reglas `Support\Reglas*` son transversales.
-`tests/Feature/Arquitectura/DependenciasEntreModulosTest.php` verifica el grafo; su lista
-`PENDIENTES` registra la deuda conocida (Crm lee `Venta` de Tpv en `PlanPagoController`, y
-`CajaController::actual()` usa `GastoService`).
+NotasCredito, Produccion, Payroll, Prestamos, UnidadesMedida, VentasPlazos) pueden depender de
+los módulos base, nunca entre sí. `ConfiguracionTenant` y las reglas `Support\Reglas*` son
+transversales. `tests/Feature/Arquitectura/DependenciasEntreModulosTest.php` verifica el grafo y
+no tiene pendientes.
 
 Si necesitas una cuarta instancia de este patrón, es válida siempre que: (a) la orquestación
 quede en el Controller, nunca en el Service; (b) el docblock del método la documente

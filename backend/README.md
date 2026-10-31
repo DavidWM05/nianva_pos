@@ -32,7 +32,7 @@ la sección "Usuarios de prueba para desarrollo" para eso.
 | Auditoría | `app/Modules/Auditoria` | historial de create/update/delete de los modelos listados en `config/auditoria.php`, errores del sistema |
 | Inventario | `app/Modules/Inventario` | catálogo (productos/variantes), stock por sucursal, kardex, compras, proveedores |
 | Precios y Promociones | `app/Modules/Precios` | reglas de descuento (%, monto fijo, nxm, bundle) y cupones |
-| CRM | `app/Modules/Crm` | clientes, financiamiento propio del negocio, ventas a plazos |
+| CRM | `app/Modules/Crm` | clientes (las ventas a plazos son la extensión `app/Modules/VentasPlazos`) |
 | TPV / Ventas | `app/Modules/Tpv` | ventas, pagos mixtos, apertura/cierre de caja, reporte de ventas |
 | Apartados | `app/Modules/Apartados` | layaway con abonos y pagos mixtos por abono |
 | Devoluciones | `app/Modules/Devoluciones` | devoluciones y cambios, nota de crédito como reembolso |
