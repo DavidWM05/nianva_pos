@@ -164,11 +164,26 @@ repo.
   porque `actingAs()` quita la marca de recién creado y el usuario en memoria no tenía las
   columnas de 2FA. No se encontraron N+1 en los listados. Backend: 381 tests; línea base
   de PHPStan: 1495. En desarrollo local, una ruta sin test con N+1 ahora responde 500.
+- **C2 resuelto, SEG-03** (noveno encargo, hecho por DS): decisión del responsable, el
+  middleware `permiso:*` de cada ruta es la única autoridad; se retiraron las 6 Policies de
+  Núcleo (registradas con `#[UsePolicy]`, nadie las llamaba). Huecos cerrados:
+  `unidades-medida` no exigía permiso (y su controller fallaba por un `use` faltante);
+  `GET /auditoria` ahora exige `auditoria.ver` (el visor de historial muestra "No tienes
+  permiso" ante un 403); anular una CxP pedía `cuentas_pagar.ver` y ahora
+  `cuentas_pagar.anular` (permiso nuevo en el seeder). Tests: `RutasConPermisoTest` (10
+  rutas exentas con razón) y `MatrizPermisosTest` (admin y vendedor, 89 rutas; quedan fuera
+  60 con route model binding). Excepción a PRO-01 autorizada en 4 tests (permisos del
+  usuario de prueba; el de `/auditoria` sin permiso se reescribió). Backend: 390 tests;
+  línea base de PHPStan: 1479.
 - **Pendientes detectados:**
   - dependencias fuera del grafo: `Crm` lee `Venta` de Tpv (`PlanPagoController`,
     `PlanPagoCliente`, `VentasPlazosService`; es un ciclo, porque Tpv → Crm);
     `CajaController::actual()` usa `GastoService`; `Produccion` usa `UnidadMedida`
     (extensión → extensión). Las unidades se rediseñan en la Fase 3 (DAT-01);
+  - permisos que no corresponden a la acción: `PATCH ordenes-produccion/{id}/estado` pide
+    `produccion.crear` aunque existe `produccion.completar` (Producción, congelado); el
+    resto (`desactivar` con `.eliminar`, catálogos de apoyo) es intencional;
+  - la matriz de permisos no cubre las 60 rutas con route model binding;
   - el frontend no conoce los 9 códigos nuevos (`tpv-error.types.ts` y similares);
   - `VentaController` y `CompraController` toman el tenant de `$request->user()` y el resto
     de `TenantContext` (equivalentes); se unifica al migrar a FormRequest (C8).
@@ -180,7 +195,7 @@ repo.
 1. **Saneamiento de la Fase 1**, en encargos de un tema cada uno. Hecho: CI con ambas
    suites, C1 (D4), las validaciones de negocio (500 → 422) y las reglas `exists` con
    tenant (API-05), la unicidad con tenant (DAT-09, C4), C11 (D5) y el análisis estático
-   bloqueante (Pint, ESLint, PHPStan) y C7 (DAT-14). Lo que sigue:
+   bloqueante (Pint, ESLint, PHPStan), C7 (DAT-14) y C2 (SEG-03). Lo que sigue:
    - `composer audit`: revisar los 23 advisories;
    - nombres internos: composer `nianva/pos` y alcance Nx `@nianva/*` (hoy `laravel/laravel`
      y `@org`); el nombre de la app Nx `nucleo-shell` queda por decidir;
