@@ -264,6 +264,11 @@ repo.
   Services. `Arquitectura/FactoriesTest` exige factory a todo modelo, salvo los pivotes
   (`SIN_FACTORY`) y las 27 extensiones del lote 2 (`PENDIENTES`). Ningún test existente
   modificado. Backend: 519 tests.
+- **Factories, lote 2** (decimoctavo encargo, hecho por DS): los 27 modelos de las extensiones,
+  con el mismo patrón de closures. `PENDIENTES` de `FactoriesTest` queda vacía: todo modelo
+  tiene factory salvo los pivotes. Nota de crédito, cuentas por cobrar y por pagar nacen de las
+  factories del lote 1 (devolución, venta y compra) en el mismo tenant. Ningún test existente
+  modificado. Backend: 597 tests.
 - **Pendientes detectados:**
   - dependencias fuera del grafo: `Crm` lee `Venta` de Tpv (`PlanPagoController`,
     `PlanPagoCliente`, `VentasPlazosService`; es un ciclo, porque Tpv → Crm);
@@ -299,8 +304,8 @@ repo.
      en las Fases 3 a 5); `RequiereDosFactorReciente` sigue validando dentro del middleware;
    - un chequeo en CI de codificación rota en `app/` y `tests/` (`??` seguido de letra,
      además de U+FFFD; DAT-12);
-   - factories, lote 2 (27 modelos de las extensiones, en `PENDIENTES` de
-     `FactoriesTest`) y seeders por escenario (PRO-08);
+   - seeders por escenario (PRO-08): tenant ropa, abarrotes con granel, multi-sucursal y plan
+     Lite;
    - opcional: rama `master` → `main`.
 2. **Fase 2**: sistema de diseño.
 
