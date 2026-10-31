@@ -175,6 +175,18 @@ repo.
   60 con route model binding). Excepción a PRO-01 autorizada en 4 tests (permisos del
   usuario de prueba; el de `/auditoria` sin permiso se reescribió). Backend: 390 tests;
   línea base de PHPStan: 1479.
+- **C3 resuelto, SEG-02** (décimo encargo, hecho por DS): `Nucleo/Support/SucursalOperacion`
+  resuelve la sucursal de una operación. Es la del usuario; otra solo con el permiso nuevo
+  `sucursales.todas` y si es del mismo tenant. En escrituras responde 422
+  `sucursal_no_permitida` (o `sucursal_requerida` si el usuario no tiene sucursal); en
+  filtros ignora la solicitada. Se aplicó en `POST /cotizaciones`, `POST /pedidos`,
+  `POST /insumos/{insumo}/stocks`, `POST /nominas/generar` (antes la tomaban del payload,
+  ahora opcional) y `GET /ventas/reporte`. La asignación de sucursal a usuarios y empleados
+  es un atributo y queda exenta en `Arquitectura/SucursalDelContextoTest`. Corrección
+  propia en la revisión: un usuario sin sucursal ni `sucursales.todas` ya no ve el reporte
+  de todas las sucursales. Ningún test existente modificado. Backend: 417 tests; línea
+  base de PHPStan: 1477. En una instalación existente, `sucursales.todas` aparece al correr
+  `NucleoRolesPermisosSeeder`.
 - **Pendientes detectados:**
   - dependencias fuera del grafo: `Crm` lee `Venta` de Tpv (`PlanPagoController`,
     `PlanPagoCliente`, `VentasPlazosService`; es un ciclo, porque Tpv → Crm);
@@ -184,7 +196,8 @@ repo.
     `produccion.crear` aunque existe `produccion.completar` (Producción, congelado); el
     resto (`desactivar` con `.eliminar`, catálogos de apoyo) es intencional;
   - la matriz de permisos no cubre las 60 rutas con route model binding;
-  - el frontend no conoce los 9 códigos nuevos (`tpv-error.types.ts` y similares);
+  - el frontend no conoce los 9 códigos nuevos (`tpv-error.types.ts` y similares), ni
+    `sucursal_no_permitida` y `sucursal_requerida`;
   - `VentaController` y `CompraController` toman el tenant de `$request->user()` y el resto
     de `TenantContext` (equivalentes); se unifica al migrar a FormRequest (C8).
 - **Git:** `master` está protegido (ruleset `proteger-master`): todo entra por PR con los tres
@@ -195,7 +208,7 @@ repo.
 1. **Saneamiento de la Fase 1**, en encargos de un tema cada uno. Hecho: CI con ambas
    suites, C1 (D4), las validaciones de negocio (500 → 422) y las reglas `exists` con
    tenant (API-05), la unicidad con tenant (DAT-09, C4), C11 (D5) y el análisis estático
-   bloqueante (Pint, ESLint, PHPStan), C7 (DAT-14) y C2 (SEG-03). Lo que sigue:
+   bloqueante (Pint, ESLint, PHPStan), C7 (DAT-14), C2 (SEG-03) y C3 (SEG-02). Lo que sigue:
    - `composer audit`: revisar los 23 advisories;
    - nombres internos: composer `nianva/pos` y alcance Nx `@nianva/*` (hoy `laravel/laravel`
      y `@org`); el nombre de la app Nx `nucleo-shell` queda por decidir;
