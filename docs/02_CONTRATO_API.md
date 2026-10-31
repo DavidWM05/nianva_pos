@@ -64,7 +64,7 @@ Si el módulo no está activo, responde `403` con `error_code: "modulo_no_activo
 
 ### Permiso base: `cuentas_cobrar.ver`
 
-#### `GET /api/cuentas-cobrar`
+#### `GET /api/v1/cuentas-cobrar`
 Lista paginada de cuentas por cobrar.
 
 | Query Param | Tipo | Default | Descripción |
@@ -90,7 +90,7 @@ Lista paginada de cuentas por cobrar.
 }
 ```
 
-#### `GET /api/cuentas-cobrar/{id}`
+#### `GET /api/v1/cuentas-cobrar/{id}`
 Detalle de una cuenta + sus abonos.
 
 ```json
@@ -110,7 +110,7 @@ Detalle de una cuenta + sus abonos.
 }
 ```
 
-#### `POST /api/cuentas-cobrar/{id}/abonos`
+#### `POST /api/v1/cuentas-cobrar/{id}/abonos`
 Registrar un abono. **Permiso:** `cuentas_cobrar.registrar_abono`
 
 ```json
@@ -140,7 +140,7 @@ Registrar un abono. **Permiso:** `cuentas_cobrar.registrar_abono`
 }
 ```
 
-#### `POST /api/cuentas-cobrar/{id}/anular`
+#### `POST /api/v1/cuentas-cobrar/{id}/anular`
 Anular una CxC (por ejemplo, si se anula la venta original). **Permiso:** `cuentas_cobrar.anular`
 
 | Código | Condición |
@@ -153,15 +153,15 @@ Anular una CxC (por ejemplo, si se anula la venta original). **Permiso:** `cuent
 
 ### Permiso base: `cuentas_pagar.ver`
 
-#### `GET /api/cuentas-pagar`
+#### `GET /api/v1/cuentas-pagar`
 Misma estructura que CxC pero con `proveedor_id` en vez de `cliente_id`.
 
 Query params: `estado`, `proveedor_id`, `search`, `per_page`.
 
-#### `GET /api/cuentas-pagar/{id}`
+#### `GET /api/v1/cuentas-pagar/{id}`
 Detalle + pagos realizados.
 
-#### `POST /api/cuentas-pagar/{id}/pagos`
+#### `POST /api/v1/cuentas-pagar/{id}/pagos`
 Registrar pago a proveedor. **Permiso:** `cuentas_pagar.registrar_pago`
 
 ```json
@@ -181,7 +181,7 @@ Registrar pago a proveedor. **Permiso:** `cuentas_pagar.registrar_pago`
 
 ### Permiso base: `cotizaciones.ver`
 
-#### `GET /api/cotizaciones`
+#### `GET /api/v1/cotizaciones`
 Lista paginada.
 
 | Query | Tipo | Descripción |
@@ -192,7 +192,7 @@ Lista paginada.
 | `hasta` | date | Fecha creación hasta |
 | `search` | string | Buscar por número o cliente |
 
-#### `POST /api/cotizaciones`
+#### `POST /api/v1/cotizaciones`
 Crear cotización. **Permiso:** `cotizaciones.crear`
 
 ```json
@@ -223,10 +223,10 @@ Crear cotización. **Permiso:** `cotizaciones.crear`
 | 422 | `cantidad_invalida` — si cantidad ≤ 0 |
 | 422 | `cliente_inactivo` |
 
-#### `GET /api/cotizaciones/{id}`
+#### `GET /api/v1/cotizaciones/{id}`
 Detalle completo + items.
 
-#### `PUT /api/cotizaciones/{id}`
+#### `PUT /api/v1/cotizaciones/{id}`
 Editar cotización. **Permiso:** `cotizaciones.editar`
 
 Solo si `estado = pendiente`. Mismas validaciones que POST.
@@ -235,14 +235,14 @@ Solo si `estado = pendiente`. Mismas validaciones que POST.
 |--------|-----------|
 | 422 | `cotizacion_no_editable` — estado no es `pendiente` |
 
-#### `DELETE /api/cotizaciones/{id}`
+#### `DELETE /api/v1/cotizaciones/{id}`
 Solo si `estado = pendiente`. Marca como `anulada`, no borra físicamente.
 
 | Código | Condición |
 |--------|-----------|
 | 422 | `cotizacion_no_anulable` — ya está convertida o vencida |
 
-#### `POST /api/cotizaciones/{id}/convertir`
+#### `POST /api/v1/cotizaciones/{id}/convertir`
 Convertir cotización en venta. **Permiso:** `cotizaciones.convertir`
 
 ```json
@@ -273,10 +273,10 @@ Convertir cotización en venta. **Permiso:** `cotizaciones.convertir`
 
 ### Permiso base por sub-modulo
 
-#### `GET /api/clientes/{id}/interacciones`
+#### `GET /api/v1/clientes/{id}/interacciones`
 Lista de interacciones CRM de un cliente. **Permiso:** `crm.interacciones.ver`
 
-#### `POST /api/clientes/{id}/interacciones`
+#### `POST /api/v1/clientes/{id}/interacciones`
 Crear interacción. **Permiso:** `crm.interacciones.crear`
 
 ```json
@@ -286,7 +286,7 @@ Crear interacción. **Permiso:** `crm.interacciones.crear`
 }
 ```
 
-#### `GET /api/clientes/{id}/loyalty`
+#### `GET /api/v1/clientes/{id}/loyalty`
 Historial de puntos de fidelidad del cliente. **Permiso:** `loyalty.ver`
 
 ```json
@@ -302,7 +302,7 @@ Historial de puntos de fidelidad del cliente. **Permiso:** `loyalty.ver`
 }
 ```
 
-#### `POST /api/clientes/{id}/loyalty/ajustar`
+#### `POST /api/v1/clientes/{id}/loyalty/ajustar`
 Ajuste manual de puntos. **Permiso:** `loyalty.ajustar`
 
 ```json
@@ -312,7 +312,7 @@ Ajuste manual de puntos. **Permiso:** `loyalty.ajustar`
 }
 ```
 
-#### `POST /api/crm/campanas/enviar`
+#### `POST /api/v1/crm/campanas/enviar`
 Enviar campaña por email a un segmento. **Permiso:** `crm.campanas.enviar`
 
 ```json
@@ -336,7 +336,7 @@ Enviar campaña por email a un segmento. **Permiso:** `crm.campanas.enviar`
 
 ### Permiso base: `pedidos.ver`
 
-#### `GET /api/pedidos`
+#### `GET /api/v1/pedidos`
 Lista paginada.
 
 | Query | Tipo | Descripción |
@@ -347,7 +347,7 @@ Lista paginada.
 | `desde` | date | |
 | `search` | string | Por número de pedido |
 
-#### `POST /api/pedidos`
+#### `POST /api/v1/pedidos`
 Crear pedido. **Permiso:** `pedidos.crear`
 
 ```json
@@ -371,7 +371,7 @@ Crear pedido. **Permiso:** `pedidos.crear`
 - El pedido se crea en estado `pendiente`
 - `numero_pedido` se auto-genera: `PED-{correlativo}`
 
-#### `PATCH /api/pedidos/{id}/estado`
+#### `PATCH /api/v1/pedidos/{id}/estado`
 Cambiar estado del pedido. **Permiso:** `pedidos.cambiar_estado`
 
 ```json
@@ -390,7 +390,7 @@ cualquier_estado → cancelado
 |--------|-----------|
 | 422 | `transicion_estado_invalida` — ej. de `pendiente` a `entregado` sin pasar por `en_camino` |
 
-#### `PATCH /api/pedidos/{id}/repartidor`
+#### `PATCH /api/v1/pedidos/{id}/repartidor`
 Asignar repartidor. **Permiso:** `pedidos.asignar_repartidor`
 
 ```json
@@ -410,7 +410,7 @@ Asignar repartidor. **Permiso:** `pedidos.asignar_repartidor`
 
 ### Permiso base: `gift_cards.ver`
 
-#### `GET /api/gift-cards`
+#### `GET /api/v1/gift-cards`
 Lista paginada.
 
 | Query | Descripción |
@@ -419,7 +419,7 @@ Lista paginada.
 | `estado` | `activa`, `usada`, `expirada`, `cancelada` |
 | `search` | Por código |
 
-#### `POST /api/gift-cards`
+#### `POST /api/v1/gift-cards`
 Emitir tarjeta de regalo. **Permiso:** `gift_cards.emitir`
 
 ```json
@@ -436,10 +436,10 @@ Emitir tarjeta de regalo. **Permiso:** `gift_cards.emitir`
 
 El `codigo` se genera automáticamente: `GC-{tenant_id}-{random_alphanumeric_8}`.
 
-#### `GET /api/gift-cards/{id}`
+#### `GET /api/v1/gift-cards/{id}`
 Detalle + recargas.
 
-#### `POST /api/gift-cards/{id}/recargar`
+#### `POST /api/v1/gift-cards/{id}/recargar`
 Recargar saldo. **Permiso:** `gift_cards.recargar`
 
 ```json
@@ -453,7 +453,7 @@ Recargar saldo. **Permiso:** `gift_cards.recargar`
 | 422 | `gift_card_expirada` |
 | 422 | `gift_card_cancelada` |
 
-#### `POST /api/gift-cards/{id}/cancelar`
+#### `POST /api/v1/gift-cards/{id}/cancelar`
 Cancelar gift card. **Permiso:** `gift_cards.cancelar`
 
 ---
@@ -462,13 +462,13 @@ Cancelar gift card. **Permiso:** `gift_cards.cancelar`
 
 ### Permiso base: `notas_credito.ver`
 
-#### `GET /api/notas-credito`
+#### `GET /api/v1/notas-credito`
 Lista paginada de notas de crédito.
 
-#### `GET /api/notas-credito/{id}`
+#### `GET /api/v1/notas-credito/{id}`
 Detalle + usos.
 
-#### `GET /api/clientes/{id}/notas-credito`
+#### `GET /api/v1/clientes/{id}/notas-credito`
 Notas de crédito activas de un cliente.
 
 ---
@@ -477,13 +477,13 @@ Notas de crédito activas de un cliente.
 
 ### Permiso base: `reportes.*`
 
-#### `GET /api/reportes/cuentas-cobrar`
+#### `GET /api/v1/reportes/cuentas-cobrar`
 Reporte de CxC: resumen por cliente, antigüedad de saldos.
 
-#### `GET /api/reportes/cuentas-pagar`
+#### `GET /api/v1/reportes/cuentas-pagar`
 Reporte de CxP: resumen por proveedor.
 
-#### `GET /api/reportes/crm`
+#### `GET /api/v1/reportes/crm`
 Reporte CRM: clientes por segmento, total puntos emitidos/canjeados.
 
 ---
@@ -492,10 +492,10 @@ Reporte CRM: clientes por segmento, total puntos emitidos/canjeados.
 
 ### Permiso base: No requiere — es catálogo transversal
 
-#### `GET /api/unidades-medida`
+#### `GET /api/v1/unidades-medida`
 Lista de unidades activas del tenant.
 
-#### `POST /api/unidades-medida`
+#### `POST /api/v1/unidades-medida`
 Crear unidad.
 
 ```json
@@ -506,10 +506,10 @@ Crear unidad.
 }
 ```
 
-#### `PUT /api/unidades-medida/{id}`
+#### `PUT /api/v1/unidades-medida/{id}`
 Editar.
 
-#### `DELETE /api/unidades-medida/{id}`
+#### `DELETE /api/v1/unidades-medida/{id}`
 Eliminar (solo si no está en uso en `producto_variantes`).
 
 | Código | Condición |
@@ -522,7 +522,7 @@ Eliminar (solo si no está en uso en `producto_variantes`).
 
 ### Permiso base: No requiere permiso propio — usa los existentes de Inventario
 
-#### `GET /api/insumos`
+#### `GET /api/v1/insumos`
 Lista paginada de insumos.
 
 | Query | Descripción |
@@ -530,7 +530,7 @@ Lista paginada de insumos.
 | `search` | Por nombre o SKU |
 | `stock_bajo` | bool — solo insumos con stock ≤ stock_minimo |
 
-#### `POST /api/insumos`
+#### `POST /api/v1/insumos`
 Crear insumo.
 
 ```json
@@ -543,13 +543,13 @@ Crear insumo.
 }
 ```
 
-#### `PUT /api/insumos/{id}`
+#### `PUT /api/v1/insumos/{id}`
 Editar.
 
-#### `GET /api/insumos/{id}/stocks`
+#### `GET /api/v1/insumos/{id}/stocks`
 Stock del insumo por sucursal + lotes.
 
-#### `POST /api/insumos/{id}/ajustar-stock`
+#### `POST /api/v1/insumos/{id}/ajustar-stock`
 Ajustar stock (entrada/salida manual).
 
 ```json
@@ -562,14 +562,14 @@ Ajustar stock (entrada/salida manual).
 }
 ```
 
-#### `GET /api/recetas`
+#### `GET /api/v1/recetas`
 Lista paginada de recetas.
 
 | Query | Descripción |
 |-------|-------------|
 | `variante_id` | Filtrar por producto terminado |
 
-#### `POST /api/recetas`
+#### `POST /api/v1/recetas`
 Crear receta.
 
 ```json
@@ -587,13 +587,13 @@ Crear receta.
 
 El response incluye `costo_total` y `costo_unitario` calculados automáticamente.
 
-#### `PUT /api/recetas/{id}`
+#### `PUT /api/v1/recetas/{id}`
 Editar receta + sus ingredientes (borra y reinserta).
 
-#### `GET /api/ordenes-produccion`
+#### `GET /api/v1/ordenes-produccion`
 Lista de órdenes de producción.
 
-#### `POST /api/ordenes-produccion`
+#### `POST /api/v1/ordenes-produccion`
 Crear orden.
 
 ```json
@@ -612,7 +612,7 @@ El sistema valida que haya stock suficiente de todos los ingredientes y calcula 
 |--------|-----------|
 | 422 | `stock_insumos_insuficiente` — No hay materia prima suficiente para la cantidad programada |
 
-#### `PATCH /api/ordenes-produccion/{id}/estado`
+#### `PATCH /api/v1/ordenes-produccion/{id}/estado`
 Cambiar estado.
 
 ```json
@@ -626,7 +626,7 @@ Al cambiar a `completada`, el sistema ejecuta automáticamente:
 1. Deduce ingredientes de `insumo_stocks` (FIFO con lote más próximo a vencer)
 2. Incrementa `inventario_stock` de la variante destino
 
-#### `POST /api/transformaciones`
+#### `POST /api/v1/transformaciones`
 Registrar transformación entre variantes.
 
 ```json
@@ -650,7 +650,7 @@ Registrar transformación entre variantes.
 
 ### Permiso base: Usa permisos existentes de CRM (`clientes.*`)
 
-#### `POST /api/ventas/{ventaId}/plan-pago`
+#### `POST /api/v1/ventas/{ventaId}/plan-pago`
 Crear plan de pago para una venta existente.
 
 ```json
@@ -672,10 +672,10 @@ El sistema calcula:
 | 422 | `venta_ya_tiene_plan` — La venta ya tiene un plan de pago activo |
 | 422 | `numero_cuotas_invalido` — Menos de 2 o más de 36 cuotas |
 
-#### `GET /api/planes-pago-cliente/{id}`
+#### `GET /api/v1/planes-pago-cliente/{id}`
 Detalle del plan + cuotas.
 
-#### `POST /api/planes-pago-cliente/{id}/pagar-cuota`
+#### `POST /api/v1/planes-pago-cliente/{id}/pagar-cuota`
 Registrar pago de una cuota específica.
 
 ```json
@@ -693,10 +693,10 @@ Registrar pago de una cuota específica.
 
 ### Permiso base: `usuarios.ver` (admin)
 
-#### `GET /api/empleados`
+#### `GET /api/v1/empleados`
 Lista de empleados.
 
-#### `POST /api/empleados`
+#### `POST /api/v1/empleados`
 Registrar empleado (vinculado a un `usuario` existente).
 
 ```json
@@ -709,10 +709,10 @@ Registrar empleado (vinculado a un `usuario` existente).
 }
 ```
 
-#### `GET /api/nominas`
+#### `GET /api/v1/nominas`
 Lista de nóminas generadas.
 
-#### `POST /api/nominas/generar`
+#### `POST /api/v1/nominas/generar`
 Generar nómina para un período.
 
 ```json
@@ -725,7 +725,7 @@ Generar nómina para un período.
 
 El sistema calcula automáticamente percepciones y deducciones para cada empleado activo de la sucursal.
 
-#### `PATCH /api/nominas/{id}/pagar`
+#### `PATCH /api/v1/nominas/{id}/pagar`
 Marcar nómina como pagada (deduce de caja).
 
 ```json
@@ -740,10 +740,10 @@ Marcar nómina como pagada (deduce de caja).
 
 ### Permiso base: `gastos.ver` (admin)
 
-#### `GET /api/prestamos`
+#### `GET /api/v1/prestamos`
 Lista de préstamos recibidos.
 
-#### `POST /api/prestamos`
+#### `POST /api/v1/prestamos`
 Registrar préstamo recibido.
 
 ```json
@@ -759,7 +759,7 @@ Registrar préstamo recibido.
 
 El sistema calcula `monto_a_pagar = monto + (monto * interes / 100)`.
 
-#### `POST /api/prestamos/{id}/pagos`
+#### `POST /api/v1/prestamos/{id}/pagos`
 Registrar pago de préstamo.
 
 ```json
