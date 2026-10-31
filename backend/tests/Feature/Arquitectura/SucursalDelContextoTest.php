@@ -16,7 +16,7 @@ class SucursalDelContextoTest extends TestCase
      */
     private const ATRIBUTOS = [
         'app/Modules/Nucleo/Http/Requests/GuardarUsuarioRequest.php::rules' => 'Asigna la sucursal de un usuario; es atributo del usuario, no la sucursal de la operacion.',
-        'app/Modules/Payroll/Http/Controllers/PayrollController.php::empleadosStore' => 'Asigna la sucursal de un empleado; es atributo del empleado, no la sucursal de la operacion.',
+        'app/Modules/Payroll/Http/Requests/CrearEmpleadoRequest.php::rules' => 'Asigna la sucursal de un empleado; es atributo del empleado, no la sucursal de la operacion.',
     ];
 
     public function test_las_reglas_de_sucursal_id_usan_el_resolvedor_del_contexto(): void

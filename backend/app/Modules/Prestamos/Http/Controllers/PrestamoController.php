@@ -4,11 +4,11 @@ namespace App\Modules\Prestamos\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Modules\Nucleo\Services\TenantContext;
-use App\Modules\Nucleo\Support\ReglasTenant;
+use App\Modules\Prestamos\Http\Requests\CrearPrestamoRequest;
+use App\Modules\Prestamos\Http\Requests\RegistrarPagoPrestamoRequest;
 use App\Modules\Prestamos\Http\Resources\PrestamoResource;
 use App\Modules\Prestamos\Models\Prestamo;
 use App\Modules\Prestamos\Services\PrestamoService;
-use App\Modules\Tpv\Support\ReglasCaja;
 use Illuminate\Http\Request;
 
 class PrestamoController extends Controller
@@ -48,35 +48,17 @@ class PrestamoController extends Controller
         ]);
     }
 
-    public function store(Request $request)
+    public function store(CrearPrestamoRequest $request)
     {
-        $tenantId = app(TenantContext::class)->id();
+        $datos = $request->toDto()->datos();
+        $datos['tenant_id'] = app(TenantContext::class)->id();
 
-        $v = $request->validate([
-            'proveedor_id' => ['nullable', 'integer', ReglasTenant::existe('proveedores', $tenantId)],
-            'referencia' => 'nullable|string|max:100',
-            'monto' => 'required|numeric|min:0.01',
-            'interes' => 'nullable|numeric|min:0|max:100',
-            'fecha_prestamo' => 'required|date',
-            'fecha_vencimiento' => 'nullable|date|after_or_equal:fecha_prestamo',
-            'notas' => 'nullable|string|max:1000',
-        ]);
-        $v['tenant_id'] = app(TenantContext::class)->id();
-
-        return (new PrestamoResource($this->prestamoService->registrar($v)))->response()->setStatusCode(201);
+        return (new PrestamoResource($this->prestamoService->registrar($datos)))->response()->setStatusCode(201);
     }
 
-    public function registrarPago(Request $request, int $id)
+    public function registrarPago(RegistrarPagoPrestamoRequest $request, int $id)
     {
-        $tenantId = app(TenantContext::class)->id();
-
-        $v = $request->validate([
-            'monto' => 'required|numeric|min:0.01',
-            'caja_sesion_id' => ['nullable', 'integer', ReglasCaja::delTenant($tenantId)],
-            'notas' => 'nullable|string|max:500',
-        ]);
-
-        return response()->json(['data' => $this->prestamoService->registrarPago($id, $v)]);
+        return response()->json(['data' => $this->prestamoService->registrarPago($id, $request->toDto()->datosParaServicio())]);
     }
 
     private function permisosDe(Request $request, string $modulo, array $acciones): array

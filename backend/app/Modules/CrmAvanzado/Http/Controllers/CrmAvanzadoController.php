@@ -4,13 +4,16 @@ namespace App\Modules\CrmAvanzado\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Modules\Crm\Models\Cliente;
+use App\Modules\CrmAvanzado\Http\Requests\AjustarPuntosRequest;
+use App\Modules\CrmAvanzado\Http\Requests\CrearInteraccionRequest;
+use App\Modules\CrmAvanzado\Http\Requests\EnviarCampanaRequest;
 use App\Modules\CrmAvanzado\Http\Resources\CrmCampanaResource;
 use App\Modules\CrmAvanzado\Http\Resources\CrmInteraccionResource;
 use App\Modules\CrmAvanzado\Models\CrmCampana;
 use App\Modules\CrmAvanzado\Models\CrmInteraccion;
 use App\Modules\CrmAvanzado\Models\LoyaltyTransaccion;
 use App\Modules\CrmAvanzado\Services\CrmAvanzadoService;
-use App\Modules\Nucleo\Support\ReglasTenant;
+use App\Modules\CrmAvanzado\Support\GuardasCliente;
 use Illuminate\Http\Request;
 
 class CrmAvanzadoController extends Controller
@@ -23,7 +26,7 @@ class CrmAvanzadoController extends Controller
 
     public function interacciones(Cliente $cliente, Request $request)
     {
-        $this->authorizeCliente($cliente, $request);
+        GuardasCliente::delTenant($cliente, $request->user());
 
         $interacciones = $this->crmAvanzadoService->obtenerInteracciones(
             $cliente->id,
@@ -38,21 +41,16 @@ class CrmAvanzadoController extends Controller
         ]);
     }
 
-    public function crearInteraccion(Cliente $cliente, Request $request)
+    public function crearInteraccion(CrearInteraccionRequest $request, Cliente $cliente)
     {
-        $this->authorizeCliente($cliente, $request);
-
-        $validated = $request->validate([
-            'tipo' => ['required', 'string', 'in:llamada,email,whatsapp,nota,visita'],
-            'observacion' => ['required', 'string', 'max:5000'],
-        ]);
+        $dto = $request->toDto();
 
         $interaccion = $this->crmAvanzadoService->registrarInteraccion(
             $cliente->id,
             [
                 'usuario_id' => $request->user()->id,
-                'tipo' => $validated['tipo'],
-                'observacion' => $validated['observacion'],
+                'tipo' => $dto->tipo,
+                'observacion' => $dto->observacion,
             ],
         );
 
@@ -76,17 +74,14 @@ class CrmAvanzadoController extends Controller
         ]);
     }
 
-    public function ajustarPuntos(Cliente $cliente, Request $request)
+    public function ajustarPuntos(AjustarPuntosRequest $request, Cliente $cliente)
     {
-        $validated = $request->validate([
-            'puntos' => ['required', 'integer', 'min:-999999', 'max:999999'],
-            'motivo' => ['required', 'string', 'max:500'],
-        ]);
+        $dto = $request->toDto();
 
         $transaccion = $this->crmAvanzadoService->ajustarPuntos(
             $cliente->id,
-            $validated['puntos'],
-            $validated['motivo'],
+            $dto->puntos,
+            $dto->motivo,
         );
 
         return response()->json([
@@ -95,20 +90,12 @@ class CrmAvanzadoController extends Controller
         ]);
     }
 
-    public function enviarCampana(Request $request)
+    public function enviarCampana(EnviarCampanaRequest $request)
     {
-        $tenantId = $request->user()->tenant_id;
-
-        $validated = $request->validate([
-            'segmento' => ['nullable', 'string', 'in:todos,nuevo,frecuente,vip,inactivo'],
-            'cliente_ids' => ['nullable', 'array'],
-            'cliente_ids.*' => ['integer', ReglasTenant::existe('clientes', $tenantId)],
-            'asunto' => ['required', 'string', 'max:200'],
-            'mensaje' => ['required', 'string', 'max:5000'],
-        ]);
+        $dto = $request->toDto();
 
         $campana = $this->crmAvanzadoService->enviarCampana(
-            $validated,
+            $dto->datos(),
             $request->user()->tenant_id,
             $request->user()->id,
         );
@@ -161,13 +148,6 @@ class CrmAvanzadoController extends Controller
             ],
             'campanas_recientes' => $campanas,
         ]]);
-    }
-
-    private function authorizeCliente(Cliente $cliente, Request $request): void
-    {
-        if ($cliente->tenant_id !== $request->user()->tenant_id) {
-            abort(404);
-        }
     }
 
     private function permisosDe(Request $request, string $modulo, array $acciones): array
