@@ -129,7 +129,8 @@ Route → middleware permiso:* → FormRequest → Controller → Action / Servi
 
 - **No reescribas tests existentes (PRO-01):** un archivo de test solo recibe métodos nuevos.
   Cambiar o borrar uno requiere la aprobación del responsable y decirlo en el reporte. Un test
-  que falla se arregla en el código.
+  que falla se arregla en el código. CI falla si un archivo de test pierde métodos o se
+  borra; solo la etiqueta `pro-01-autorizado`, que pone el responsable, lo deja pasar.
 - **Un bug, su test primero (PRO-04):** escribe el test, míralo fallar, corrige y míralo pasar.
 - **Funcionalidad nueva = tests permanentes:** PHPUnit en `backend/tests/Feature/...` o Vitest
   (`*.spec.ts`). Un script suelto (`tinker`, un `curl`, un `console.log`) no reemplaza un test.

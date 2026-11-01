@@ -15,7 +15,9 @@
 - **Verifica:**
   - CODEOWNERS sobre `backend/tests/**` y `**/*.spec.ts`;
   - un script en CI que compara el número de métodos de test por archivo contra la rama base y
-    falla si alguno baja.
+    falla si alguno baja o si se borra un archivo de test (un `git mv` no cuenta como pérdida).
+    Cuando el responsable aprueba la excepción, pone la etiqueta `pro-01-autorizado` en el PR y
+    el paso solo informa; nunca la pone el autor del cambio.
 - **Desde:** Fase 1.
 
 ### PRO-02 · La suite siempre en verde
@@ -65,7 +67,8 @@
 - **Por qué:** una función inexistente (`escapeAttr`, L-02) y una variable indefinida (L-15)
   llegaron a producción porque nada las revisaba antes de ejecutar.
 - **Verifica:** el propio pipeline.
-- **Desde:** Fase 1.
+- **Desde:** Fase 1, salvo dos piezas: stylelint entra en la Fase 2, con el sistema de diseño
+  que sus reglas protegen, y el diff de OpenAPI cuando se genere la especificación (API-08).
 
 ### PRO-06 · Un tema por encargo y sin pisar otras sesiones
 - **Regla:**
