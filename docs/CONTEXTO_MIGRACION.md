@@ -339,6 +339,15 @@ repo.
 
   Las migraciones de Nx 23.2 y 23.3 no aplican: los `targetDefaults` ya declaran `cache` y no
   hay objetivos `prune-lockfile` ni `deploy`. Ningún test modificado; ui-shared 22 y pos 436.
+- **Roles y permisos en una edición parcial** (vigesimoquinto encargo, hecho por Claude): un
+  `PUT` a un rol o a un usuario que omitía `permisos` o `roles` los quitaba todos (`sync([])`).
+  - Ahora `RolDto::permisosParaSync()` y `UsuarioDto::rolesParaSync()` devuelven `null` si la
+    lista no llegó, y `update` la conserva.
+  - Una lista vacía, o `null` explícito, sí llega y la vacía. Crear sin lista no cambia.
+  - El frontend no tenía el problema: sus formularios siempre mandan la lista.
+  - Cinco tests nuevos en `RolEdicionParcialTest` y `UsuarioEdicionParcialTest`; los dos que
+    reproducen el bug fallaron antes de la corrección.
+  - Backend: 608 tests.
 - **Pendientes detectados:**
   - `Produccion` usa `UnidadMedida` (extensión → extensión); las unidades se rediseñan en la
     Fase 3 (DAT-01);
@@ -346,9 +355,6 @@ repo.
     `produccion.crear` aunque existe `produccion.completar` (Producción, congelado); el
     resto (`desactivar` con `.eliminar`, catálogos de apoyo) es intencional;
   - la matriz de permisos no cubre las 60 rutas con route model binding;
-  - un `PUT` a un rol o a un usuario que omite `permisos` o `roles` los quita todos
-    (`sync([])`): no distingue "no llegó" de "llegó vacía". Se conservó en el lote 4 de C8;
-    se corrige aparte con su test, y revisando que el frontend siempre mande la lista;
   - la suite de `pos` tuvo timeouts de 5 s bajo carga en una corrida local (Nx la marcó
     inestable); vigilar en CI y, si se repite, revisar los specs más lentos;
   - `VentaController` y `CompraController` toman el tenant de `$request->user()` y el resto
