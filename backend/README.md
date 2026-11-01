@@ -278,6 +278,7 @@ resumen por módulo.
 | `UnidadesMedidaSeeder` | `app/Modules/UnidadesMedida/Database/Seeders/` | ✅ Sí | 12 unidades globales (und, kg, l, m, bal, bol, cja, rol, par, pli, var, tbo) |
 | `poblarModulosActivos()` | `database/seeders/DatabaseSeeder.php` | ✅ Sí | Asigna los 11 slugs de módulos activos a todos los tenants |
 | `DesarrolloSeeder` | `app/Modules/Nucleo/Database/Seeders/` | ❌ Manual | Crea tenant demo + admin/vendedor con 2FA preconfigurado |
+| `EscenariosSeeder` | `database/seeders/Escenarios/` | ❌ Manual | Cuatro tenants de ejemplo (ropa, abarrotes con granel, multi-sucursal y plan Lite), ver abajo |
 
 ## Permisos sembrados por módulo
 
@@ -471,6 +472,32 @@ php artisan db:seed --class="App\Modules\Nucleo\Database\Seeders\DesarrolloSeede
 
 > [!WARNING]
 > **`DesarrolloSeeder` nunca debe correr en un entorno de producción.**
+
+## Escenarios de datos (PRO-08)
+
+Cuatro tenants con catálogo, stock, clientes, caja abierta y ventas, sembrados con las
+factories y los mismos Services y Actions que usa la API (el kardex cuadra con el stock):
+
+```bash
+php artisan db:seed --class="Database\Seeders\Escenarios\EscenariosSeeder"
+# o uno solo, p. ej.:
+php artisan db:seed --class="Database\Seeders\Escenarios\EscenarioLiteSeeder"
+```
+
+| Escenario | Tenant | Cuentas |
+|---|---|---|
+| Ropa | Boutique Escenario Ropa | `admin@ropa.test`, `vendedor@ropa.test` |
+| Abarrotes con granel | Abarrotes Escenario Granel | `admin@abarrotes.test`, `vendedor@abarrotes.test` |
+| Multi-sucursal (3) | Cadena Escenario Multi | `admin@multi.test`, `gerente@multi.test` (`sucursales.todas`), `vendedor1..3@multi.test` |
+| Plan Lite | Tienda Escenario Lite | `admin@lite.test`, `vendedor@lite.test` |
+
+- Contraseña de todas: `password-dev-123`. Los `admin` tienen 2FA preconfirmado; su secreto
+  TOTP se imprime en consola (cambia en cada carga).
+- Reproducibles (semilla fija de Faker) e idempotentes: si el tenant ya existe, el escenario se
+  salta. Cada escenario es atómico: si falla, no deja nada.
+- Granel usa variantes en `kg` con cantidades enteras hasta que la Fase 3 pase las cantidades a
+  decimal (C6).
+- Se niegan a correr en producción. CI los carga en cada corrida sobre una SQLite en archivo.
 
 ## Pruebas
 
