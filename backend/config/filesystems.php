@@ -33,7 +33,8 @@ return [
         'local' => [
             'driver' => 'local',
             'root' => storage_path('app/private'),
-            'serve' => true,
+            // SEG-08: no se expone ningun archivo de storage por HTTP.
+            'serve' => false,
             'throw' => false,
             'report' => false,
         ],
@@ -73,8 +74,8 @@ return [
     |
     */
 
-    'links' => [
-        public_path('storage') => storage_path('app/public'),
-    ],
+    // SEG-08: respaldos, adjuntos y exportaciones viven fuera del docroot.
+    // storage:link no debe publicar storage/app/public en public/.
+    'links' => [],
 
 ];
