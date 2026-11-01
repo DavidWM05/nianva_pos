@@ -325,6 +325,20 @@ repo.
   bloquearía sus propios PRs. En la revisión se corrigieron tres fallos: un archivo de test
   nuevo hacía fallar el paso, la comparación usaba la punta de `master` en vez de la base del
   merge (falso rojo si `master` avanzaba) y la etiqueta no volvía a disparar el workflow.
+- **Seguridad de dependencias del frontend** (vigesimocuarto encargo, hecho por DS):
+  - antes: `pnpm audit --prod` daba 7 avisos (4 altos) y el árbol completo 126 (2 críticos y
+    52 altos);
+  - cambios: Angular pasa de 22.0 a 22.2, Nx de 23.1 a 23.3 y PrimeNG a 22.1; el resto de las
+    herramientas se actualizó dentro de su versión mayor. Hay un override en
+    `pnpm-workspace.yaml`, `undici >=7.30.1 <8`, que llegaba por Nx. No hubo salto de versión
+    mayor;
+  - después: producción sin avisos y el árbol completo sin altos ni críticos;
+  - queda un moderado en `minimatch` (dev), que solo se corrige pasando a la 11;
+  - el job Frontend corre `pnpm audit --prod` (bloquea con cualquier aviso) y
+    `pnpm audit --audit-level high`.
+
+  Las migraciones de Nx 23.2 y 23.3 no aplican: los `targetDefaults` ya declaran `cache` y no
+  hay objetivos `prune-lockfile` ni `deploy`. Ningún test modificado; ui-shared 22 y pos 436.
 - **Pendientes detectados:**
   - `Produccion` usa `UnidadMedida` (extensión → extensión); las unidades se rediseñan en la
     Fase 3 (DAT-01);
@@ -338,7 +352,9 @@ repo.
   - la suite de `pos` tuvo timeouts de 5 s bajo carga en una corrida local (Nx la marcó
     inestable); vigilar en CI y, si se repite, revisar los specs más lentos;
   - `VentaController` y `CompraController` toman el tenant de `$request->user()` y el resto
-    de `TenantContext` (equivalentes); se unifica al migrar a FormRequest (C8).
+    de `TenantContext` (equivalentes); se unifica al migrar a FormRequest (C8);
+  - `frontend/package.json` no declara `"packageManager": "pnpm@11.5.3"`; con ese campo,
+    corepack fuerza la versión de pnpm y rechaza un `npm install` por error.
 - **Git:** `master` está protegido (ruleset `proteger-master`): todo entra por PR con los tres
   checks en verde.
 
@@ -348,10 +364,8 @@ repo.
    suites, C1 (D4), las validaciones de negocio (500 → 422) y las reglas `exists` con
    tenant (API-05), la unicidad con tenant (DAT-09, C4), C11 (D5) y el análisis estático
    bloqueante (Pint, ESLint, PHPStan), C7 (DAT-14), C2 (SEG-03), C3 (SEG-02), C8 (ARQ-02), C5 (API-01), la documentación del repo (`README.md` y
-   `.claude/CLAUDE.md`), `composer audit` y las guardas de PRO-01 y DAT-12 con CODEOWNERS.
-   Lo que sigue:
-   - `pnpm audit --prod` en el frontend: 7 avisos en 5 paquetes (4 altos), en
-     `@angular/common`, `@angular/compiler`, `@angular/core`, `@angular/router` y `zod`;
+   `.claude/CLAUDE.md`), `composer audit`, las guardas de PRO-01 y DAT-12 con CODEOWNERS
+   y `pnpm audit`. Lo que sigue:
    - resolver los conflictos C1-C11 del README de estándares;
    - resto de PRO-05: stylelint pasa a la Fase 2 y el diff de OpenAPI espera a que se genere
      la especificación (API-08);
