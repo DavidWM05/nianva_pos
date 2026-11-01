@@ -29,6 +29,12 @@ class AuditObserver
 
     public function created(Model $model): void
     {
+        if ($this->esPivote($model)) {
+            $this->registrarPivote($model, 'created');
+
+            return;
+        }
+
         $this->registrar($model, 'create', $this->diffCreacion($model));
     }
 
@@ -45,6 +51,12 @@ class AuditObserver
 
     public function deleted(Model $model): void
     {
+        if ($this->esPivote($model)) {
+            $this->registrarPivote($model, 'deleted');
+
+            return;
+        }
+
         $this->registrar($model, 'delete', $this->diffEliminacion($model));
     }
 
@@ -91,6 +103,97 @@ class AuditObserver
         }
 
         return $cambios;
+    }
+
+    private function esPivote(Model $model): bool
+    {
+        return isset(config('auditoria.pivotes', [])[$model::class]);
+    }
+
+    /**
+     * Los eventos de un pivote no traen la relacion completa. Se acumulan en
+     * una sola fila por padre y request: el primer created/deleted crea la
+     * fila con el antes calculado y los siguientes eventos actualizan el
+     * despues. Un sync vacio no dispara eventos y no deja fila.
+     */
+    private function registrarPivote(Model $model, string $evento): void
+    {
+        $config = config('auditoria.pivotes', [])[$model::class] ?? null;
+
+        if ($config === null || ! Auth::check()) {
+            return;
+        }
+
+        $padreClase = $config['padre'];
+        $padre = $padreClase::sinTenant()->find($model->getAttribute($config['clave']));
+
+        if ($padre === null) {
+            return;
+        }
+
+        $tenantId = $padre->getAttributes()['tenant_id'] ?? app(TenantContext::class)->id();
+
+        if ($tenantId === null) {
+            return;
+        }
+
+        $despues = $padre->{$config['relacion']}()
+            ->pluck($config['relacion_clave'])
+            ->map(fn ($id): int => (int) $id)
+            ->sort(SORT_NUMERIC)
+            ->values()
+            ->all();
+
+        $id = (int) $model->getAttribute($config['relacion_clave']);
+
+        $antes = $evento === 'created'
+            ? array_values(array_diff($despues, [$id]))
+            : array_values(array_unique([...$despues, $id]));
+
+        sort($antes, SORT_NUMERIC);
+        sort($despues, SORT_NUMERIC);
+
+        $llave = 'auditoria_pivote_'.$config['tabla'].'_'.$padre->getKey().'_'.$config['campo'];
+        $solicitud = request();
+        $filaId = $solicitud->attributes->get($llave);
+
+        if (is_int($filaId)) {
+            $fila = Auditoria::sinTenant()->find($filaId);
+
+            if ($fila !== null) {
+                $cambios = $fila->cambios ?? [];
+                $antesOriginal = $cambios[$config['campo']]['antes'] ?? $antes;
+
+                $fila->update([
+                    'cambios' => [
+                        $config['campo'] => [
+                            'antes' => $antesOriginal,
+                            'despues' => $despues,
+                        ],
+                    ],
+                ]);
+
+                return;
+            }
+        }
+
+        $fila = Auditoria::create([
+            'tenant_id' => $tenantId,
+            'tabla_afectada' => $config['tabla'],
+            'registro_id' => $padre->getKey(),
+            'accion' => 'update',
+            'usuario_id' => Auth::id(),
+            'cambios' => [
+                $config['campo'] => [
+                    'antes' => $antes,
+                    'despues' => $despues,
+                ],
+            ],
+            'ip' => request()->ip(),
+            'user_agent' => substr((string) request()->userAgent(), 0, 255),
+        ]);
+
+        $solicitud->attributes->set($llave, $fila->id);
     }
 
     /**
