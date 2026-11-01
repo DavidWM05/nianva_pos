@@ -24,7 +24,9 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('licencia_local', function (Blueprint $table) {
-            $table->text('token_firmado')->comment('JWT firmado por el servidor central')->change();
+            // change() redefine la columna completa: se repiten la nulabilidad y el
+            // comentario originales para que el rollback deje la columna como estaba.
+            $table->text('token_firmado')->nullable(false)->comment('JWT firmado por el servidor central')->change();
         });
     }
 };

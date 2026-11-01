@@ -104,6 +104,28 @@ jobs:
           DB_CONNECTION=sqlite DB_DATABASE="$PWD/database/escenarios.sqlite" php artisan migrate:fresh --seed --force
           DB_CONNECTION=sqlite DB_DATABASE="$PWD/database/escenarios.sqlite" php artisan db:seed --class='Database\Seeders\Escenarios\EscenariosSeeder' --force
 
+      - name: Verificar rollback de migraciones en SQLite
+        run: |
+          set -euo pipefail
+
+          sqlite="$PWD/storage/framework/testing/rollback.sqlite"
+          mkdir -p "$(dirname "$sqlite")"
+          rm -f "$sqlite"
+          touch "$sqlite"
+
+          export DB_CONNECTION=sqlite
+          export DB_DATABASE="$sqlite"
+
+          php artisan migrate:fresh --force
+          php artisan migrate:rollback --step=1000 --force
+
+          php -r '$pdo = new PDO("sqlite:".getenv("DB_DATABASE")); $stmt = $pdo->prepare("select name from sqlite_master where type = ? and name not like ? and name <> ?"); $stmt->execute(["table", "sqlite_%", "migrations"]); $tablas = $stmt->fetchAll(PDO::FETCH_COLUMN); if ($tablas !== []) { fwrite(STDERR, "Quedaron tablas: ".implode(", ", $tablas).PHP_EOL); exit(1); } echo "OK: rollback dejo solo migrations.".PHP_EOL;'
+
+          php artisan migrate --force
+
+      - name: Verificar snapshot del esquema
+        run: php artisan esquema:snapshot --check
+
   frontend:
     name: Frontend
     runs-on: ubuntu-latest
