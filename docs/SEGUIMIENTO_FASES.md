@@ -34,9 +34,9 @@ Revisado contra el repo el 2026-11-01.
 | ARQ-08 | Tipado estricto | Parcial | PHPStan nivel 8 con línea base que solo baja (CI); falta la guarda de `strict_types` en lo nuevo | — |
 | ARQ-10 | Módulos congelados | Hecho | `.github/CODEOWNERS` | 28 |
 | ARQ-13 | Configuración en tiempo de ejecución | Hecho | Paso de CI "Buscar URLs fijas en el frontend"; `core/runtime-config.spec.ts` | C5, 28 |
-| DAT-06 | Zona horaria del tenant (configuración) | Pendiente | Falta la columna `zona_horaria` | — |
+| DAT-06 | Zona horaria del tenant (configuración) | Hecho | Columna `configuracion_tenant.zona_horaria` (default `America/Mexico_City`, `timezone:all`); `Configuracion/ZonaHorariaTenantTest` | 30 |
 | DAT-09 | Unicidad con tenant: código de barras | Hecho | `Arquitectura/UnicidadConTenantTest` | C4 |
-| DAT-11 | Migraciones: una sola fuente | Parcial | CI corre `migrate:fresh --seed` (paso de escenarios); faltan `migrate:rollback` y el snapshot del esquema | — |
+| DAT-11 | Migraciones: una sola fuente | Hecho | Pasos de CI "Verificar rollback de migraciones en SQLite" y "Verificar snapshot del esquema" (`esquema:snapshot --check`); `Arquitectura/EsquemaSnapshotTest` contra `tests/Fixtures/esquema.json` (esquema SQLite) | 26, 30 |
 | DAT-12 | UTF-8 de extremo a extremo | Parcial | Paso de CI "Revisar codificacion" (UTF-8 inválido, BOM, U+FFFD, `??`+letra); faltan la búsqueda de `Ã` y `conciliar:texto` (el test del importador va cuando exista un importador) | 23 |
 | DAT-14 | Nada se descarta en silencio | Hecho | `Arquitectura/ModelosEstrictosTest` | C7 |
 | API-01 | Versión en la ruta | Hecho | `Arquitectura/RutasVersionadasTest` | C5 |

@@ -420,6 +420,24 @@ repo.
       primera ruta de descarga (Fase 6 u 8);
   - tests nuevos: `ErroresSinDetallesInternosTest` y `StorageFueraDelDocrootTest`, más un
     método en `CatalogoErrorCodeTest`. Ningún test existente modificado. Backend: 633 tests.
+- **Rollback y snapshot del esquema; zona horaria del tenant** (trigésimo encargo, hecho por
+  DS):
+  - **DAT-11, rollback:** el job Backend corre `migrate:fresh` y `migrate:rollback
+    --step=1000` sobre SQLite y falla si queda alguna tabla de la app; después vuelve a
+    migrar;
+  - **DAT-11, snapshot:** `php artisan esquema:snapshot` (con `--check`) genera
+    `tests/Fixtures/esquema.json` con tablas, columnas, índices y llaves foráneas, en una
+    SQLite temporal propia. Lo comprueban CI y `EsquemaSnapshotTest`. El snapshot es del
+    esquema en SQLite; los tipos en MySQL pueden diferir;
+  - el `down()` de `make_token_firmado_nullable_en_licencia_local` no devolvía la columna a
+    NOT NULL. DS lo corrigió; en la revisión se le devolvió el `comment` original, porque
+    `change()` redefine la columna completa;
+  - **DAT-06:** columna `zona_horaria` en `configuracion_tenant` (en la migración original,
+    por DAT-11), default `America/Mexico_City`, validada con `timezone:all`. Es opcional en
+    el `PUT` y la devuelve el Resource. Los cálculos en esa zona van en la Fase 6;
+  - tests nuevos: `EsquemaSnapshotTest` y `ZonaHorariaTenantTest`. Backend: 638 tests.
+  - Para una BD de desarrollo existente: `php artisan migrate:fresh --seed` y volver a correr
+    `DesarrolloSeeder`.
 - **Pendientes detectados:**
   - `Produccion` usa `UnidadMedida` (extensión → extensión); las unidades se rediseñan en la
     Fase 3 (DAT-01);
@@ -450,8 +468,8 @@ repo.
       URLs fijas en el frontend (ARQ-13)~~, hecho en el encargo 28;
    2. ~~errores 500 sin detalles internos y con `correlation_id` (SEG-11); `storage/` fuera
       del docroot, con sus tests (SEG-08)~~, hecho en el encargo 29;
-   3. `migrate:rollback` en CI y snapshot del esquema (DAT-11); `zona_horaria` en la
-      configuración del tenant (DAT-06);
+   3. ~~`migrate:rollback` en CI y snapshot del esquema (DAT-11); `zona_horaria` en la
+      configuración del tenant (DAT-06)~~, hecho en el encargo 30;
    4. auditar los tests que piden SEG-10, API-05 y SEG-01 (el test que recorre las rutas con
       modelo y exige su test de aislamiento), y completar los que falten;
    5. `strict_types` en el código nuevo y tocado, con una lista que solo baja (ARQ-08); test de
