@@ -12,9 +12,12 @@ use App\Modules\Gastos\Models\Gasto;
 use App\Modules\GiftCards\Models\GiftCard;
 use App\Modules\Inventario\Models\Compra;
 use App\Modules\Inventario\Models\Producto;
+use App\Modules\Inventario\Models\ProductoVariante;
 use App\Modules\NotasCredito\Models\NotaCredito;
 use App\Modules\Nucleo\Models\Rol;
+use App\Modules\Nucleo\Models\RolPermiso;
 use App\Modules\Nucleo\Models\Usuario;
+use App\Modules\Nucleo\Models\UsuarioRol;
 use App\Modules\Payroll\Models\Empleado;
 use App\Modules\Payroll\Models\Nomina;
 use App\Modules\Precios\Models\Cupon;
@@ -41,9 +44,9 @@ return [
     | modelo de un modulo futuro es solo agregar su FQCN aqui -- no
     | requiere tocar ni el modelo ni el modulo Auditoria.
     |
-    | Deliberadamente NO incluye ProductoVariante ni InventarioStock: el
-    | volumen de movimientos (cada entrada/salida) haria la tabla de
-    | auditoria enorme sin aportar mucho -- kardex ya es su historial.
+    | ProductoVariante SI se incluye: un cambio de sus datos (talla, color,
+    | codigo de barras) es una operacion sensible de catalogo. InventarioStock
+    | y kardex no se incluyen por volumen, su historial es el kardex.
     |
     | Cupon SI se incluye, aunque el pedido original de Precios sugeria
     | dejarlo fuera "por volumen/bajo riesgo": volumen-wise se parece mas a
@@ -59,7 +62,7 @@ return [
     | Tampoco incluye PlanPagoClienteCuota: su propio estado (pendiente/
     | pagada/vencida) y fecha_pago ya documentan su historial relevante, y
     | son varias filas por plan -- mismo criterio de volumen que
-    | ProductoVariante/InventarioStock.
+    | InventarioStock.
     |
     | Venta SI se incluye (anular una venta, en particular, es exactamente
     | el tipo de evento que alguien querria poder auditar). VentaDetalle y
@@ -100,10 +103,30 @@ return [
     | Gastos y Configuracion a la vez; ninguno de esos modulos importa nada
     | de los otros directamente.
     */
+    'pivotes' => [
+        RolPermiso::class => [
+            'tabla' => 'roles',
+            'padre' => Rol::class,
+            'clave' => 'rol_id',
+            'relacion' => 'permisos',
+            'campo' => 'permisos',
+            'relacion_clave' => 'permiso_id',
+        ],
+        UsuarioRol::class => [
+            'tabla' => 'usuarios',
+            'padre' => Usuario::class,
+            'clave' => 'usuario_id',
+            'relacion' => 'roles',
+            'campo' => 'roles',
+            'relacion_clave' => 'rol_id',
+        ],
+    ],
+
     'auditables' => [
         Usuario::class,
         Rol::class,
         Producto::class,
+        ProductoVariante::class,
         Compra::class,
         ReglaPrecio::class,
         Cupon::class,

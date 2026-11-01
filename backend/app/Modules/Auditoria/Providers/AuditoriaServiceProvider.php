@@ -23,5 +23,12 @@ class AuditoriaServiceProvider extends ServiceProvider
         foreach ($auditables as $modelo) {
             $modelo::observe(AuditObserver::class);
         }
+
+        /** @var array<class-string<Model>, array<string, mixed>> $pivotes */
+        $pivotes = config('auditoria.pivotes', []);
+
+        foreach (array_keys($pivotes) as $pivote) {
+            $pivote::observe(AuditObserver::class);
+        }
     }
 }
