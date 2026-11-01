@@ -1,6 +1,6 @@
 # Catalogo de error_code
 
-Generado con `php artisan errores:catalogo` desde las excepciones de negocio.
+Generado con `php artisan errores:catalogo` desde las excepciones de negocio y el mapa generico de errores HTTP.
 
 | error_code | HTTP | Clase | Modulo | Claves de contexto |
 |---|---|---|---|---|
@@ -12,6 +12,8 @@ Generado con `php artisan errores:catalogo` desde las excepciones de negocio.
 | `caja_no_abierta` | 422 | `App\Modules\Tpv\Exceptions\CajaSesionNoAbiertaException` | Tpv | sucursal_id |
 | `caja_ya_abierta` | 422 | `App\Modules\Tpv\Exceptions\CajaYaAbiertaException` | Tpv | sucursal_id |
 | `caja_ya_cerrada` | 422 | `App\Modules\Tpv\Exceptions\CajaYaCerradaException` | Tpv | caja_sesion_id |
+| `conflicto` | 409 | `App\Modules\Nucleo\Support\MapaErroresHttp` | Nucleo | - |
+| `contenido_demasiado_grande` | 413 | `App\Modules\Nucleo\Support\MapaErroresHttp` | Nucleo | - |
 | `cotizacion_no_editable` | 422 | `App\Modules\Cotizaciones\Exceptions\CotizacionNoEditableException` | Cotizaciones | — |
 | `cotizacion_total_negativo` | 422 | `App\Modules\Cotizaciones\Exceptions\CotizacionTotalNegativoException` | Cotizaciones | subtotal, descuento |
 | `cotizacion_vencida` | 422 | `App\Modules\Cotizaciones\Exceptions\CotizacionVencidaException` | Cotizaciones | — |
@@ -24,18 +26,25 @@ Generado con `php artisan errores:catalogo` desde las excepciones de negocio.
 | `cuenta_ya_pagada` | 422 | `App\Modules\CuentasCobrar\Exceptions\CuentaYaPagadaException` | CuentasCobrar | — |
 | `cuota_ya_pagada` | 422 | `App\Modules\VentasPlazos\Exceptions\CuotaYaPagadaException` | VentasPlazos | plan_pago_id, cuota_id |
 | `cupon_invalido` | 422 | `App\Modules\Precios\Exceptions\CuponInvalidoException` | Precios | codigo |
+| `datos_invalidos` | 422 | `App\Modules\Nucleo\Support\MapaErroresHttp` | Nucleo | - |
+| `demasiadas_solicitudes` | 429 | `App\Modules\Nucleo\Support\MapaErroresHttp` | Nucleo | - |
 | `devolucion_excede_cantidad_vendida` | 422 | `App\Modules\Devoluciones\Exceptions\DevolucionExcedeCantidadVendidaException` | Devoluciones | venta_id, variante_id, solicitado, vendido |
 | `devolucion_pago_no_cuadra` | 422 | `App\Modules\Devoluciones\Exceptions\DevolucionPagoNoCuadraException` | Devoluciones | diferencia, suma_pagos |
 | `devolucion_sobre_venta_sombra` | 422 | `App\Modules\Devoluciones\Exceptions\DevolucionSobreVentaSombraException` | Devoluciones | venta_id |
 | `devolucion_variante_no_vendida` | 422 | `App\Modules\Devoluciones\Exceptions\DevolucionVarianteNoVendidaException` | Devoluciones | venta_id, variante_id |
+| `dos_pasos_requeridos` | 423 | `App\Modules\Nucleo\Support\MapaErroresHttp` | Nucleo | - |
 | `empleado_ya_existe` | 422 | `App\Modules\Payroll\Exceptions\EmpleadoYaExisteException` | Payroll | — |
+| `error_interno` | 500 | `App\Modules\Nucleo\Support\MapaErroresHttp` | Nucleo | - |
 | `gift_card_cancelada` | 422 | `App\Modules\GiftCards\Exceptions\GiftCardCanceladaException` | GiftCards | — |
 | `gift_card_expirada` | 422 | `App\Modules\GiftCards\Exceptions\GiftCardExpiradaException` | GiftCards | — |
 | `gift_card_saldo_insuficiente` | 422 | `App\Modules\GiftCards\Exceptions\GiftCardSaldoInsuficienteException` | GiftCards | — |
 | `gift_card_sin_saldo` | 422 | `App\Modules\GiftCards\Exceptions\GiftCardSinSaldoException` | GiftCards | — |
 | `gift_card_ya_cancelada` | 422 | `App\Modules\GiftCards\Exceptions\GiftCardYaCanceladaException` | GiftCards | — |
+| `metodo_no_permitido` | 405 | `App\Modules\Nucleo\Support\MapaErroresHttp` | Nucleo | - |
 | `modulo_no_activo` | 403 | `App\Modules\Nucleo\Exceptions\ModuloNoActivoException` | Nucleo | — |
 | `monto_invalido` | 422 | `App\Modules\GiftCards\Exceptions\MontoInvalidoException` | GiftCards | — |
+| `no_autenticado` | 401 | `App\Modules\Nucleo\Support\MapaErroresHttp` | Nucleo | - |
+| `no_encontrado` | 404 | `App\Modules\Nucleo\Support\MapaErroresHttp` | Nucleo | - |
 | `nomina_ya_pagada` | 422 | `App\Modules\Payroll\Exceptions\NominaYaPagadaException` | Payroll | — |
 | `nota_credito_expirada` | 422 | `App\Modules\NotasCredito\Exceptions\NotaCreditoExpiradaException` | NotasCredito | — |
 | `nota_credito_saldo_insuficiente` | 422 | `App\Modules\NotasCredito\Exceptions\NotaCreditoSaldoInsuficienteException` | NotasCredito | — |
@@ -50,12 +59,18 @@ Generado con `php artisan errores:catalogo` desde las excepciones de negocio.
 | `prestamo_ya_pagado` | 422 | `App\Modules\Prestamos\Exceptions\PrestamoPagadoException` | Prestamos | — |
 | `puntos_insuficientes` | 422 | `App\Modules\CrmAvanzado\Exceptions\PuntosInsuficientesException` | CrmAvanzado | — |
 | `puntos_no_generados` | 422 | `App\Modules\CrmAvanzado\Exceptions\PuntosNoGeneradosException` | CrmAvanzado | — |
+| `servicio_no_disponible` | 503 | `App\Modules\Nucleo\Support\MapaErroresHttp` | Nucleo | - |
+| `sesion_expirada` | 419 | `App\Modules\Nucleo\Support\MapaErroresHttp` | Nucleo | - |
 | `sin_cliente` | 422 | `App\Modules\Cotizaciones\Exceptions\SinClienteException` | Cotizaciones | — |
 | `sin_empleados` | 422 | `App\Modules\Payroll\Exceptions\SinEmpleadosException` | Payroll | — |
+| `sin_permiso` | 403 | `App\Modules\Nucleo\Support\MapaErroresHttp` | Nucleo | - |
+| `solicitud_invalida` | 400 | `App\Modules\Nucleo\Support\MapaErroresHttp` | Nucleo | - |
 | `stock_insuficiente` | 422 | `App\Modules\Inventario\Exceptions\StockInsuficienteException` | Inventario | variante_id, sucursal_id, solicitado, disponible |
 | `stock_insumos_insuficiente` | 422 | `App\Modules\Produccion\Exceptions\StockInsumosInsuficienteException` | Produccion | — |
 | `sucursal_no_permitida` | 422 | `App\Modules\Nucleo\Exceptions\SucursalNoPermitidaException` | Nucleo | sucursal_id |
 | `sucursal_requerida` | 422 | `App\Modules\Nucleo\Exceptions\SucursalRequeridaException` | Nucleo | — |
+| `tiempo_agotado` | 504 | `App\Modules\Nucleo\Support\MapaErroresHttp` | Nucleo | - |
+| `tipo_contenido_no_soportado` | 415 | `App\Modules\Nucleo\Support\MapaErroresHttp` | Nucleo | - |
 | `transicion_estado_invalida` | 422 | `App\Modules\Delivery\Exceptions\TransicionEstadoInvalidaException` | Delivery | — |
 | `unidad_en_uso` | 422 | `App\Modules\UnidadesMedida\Exceptions\UnidadEnUsoException` | UnidadesMedida | — |
 | `venta_total_negativo` | 422 | `App\Modules\Tpv\Exceptions\VentaTotalNegativoException` | Tpv | subtotal, descuento_manual, descuento_cupon |

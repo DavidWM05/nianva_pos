@@ -4,6 +4,7 @@ namespace Tests\Feature\Arquitectura;
 
 use App\Modules\Nucleo\Exceptions\ExcepcionNegocio;
 use App\Modules\Nucleo\Exceptions\LicenciaActivacionFallidaException;
+use App\Modules\Nucleo\Support\MapaErroresHttp;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
 use ReflectionClass;
@@ -57,6 +58,45 @@ class CatalogoErrorCodeTest extends TestCase
 
         $this->assertNotEmpty($codigos);
         $this->assertSame(count($codigos), count(array_unique($codigos)));
+    }
+
+    public function test_los_codigos_genericos_no_chocan_con_los_de_negocio(): void
+    {
+        $codigosNegocio = [];
+
+        foreach ($this->clasesDeExcepciones() as $clase) {
+            if (isset(self::EXCEPCIONES_EXCLUIDAS[$clase])) {
+                continue;
+            }
+
+            $reflejo = new ReflectionClass($clase);
+
+            if (! $reflejo->isSubclassOf(ExcepcionNegocio::class)) {
+                continue;
+            }
+
+            $excepcion = $reflejo->newInstanceWithoutConstructor();
+            $codigosNegocio[] = $excepcion->errorCode();
+        }
+
+        $codigosGenericos = MapaErroresHttp::codigos();
+
+        $this->assertNotEmpty($codigosGenericos);
+        $this->assertSame(count($codigosGenericos), count(array_unique($codigosGenericos)));
+
+        foreach ($codigosGenericos as $status => $codigo) {
+            $this->assertGreaterThanOrEqual(400, $status);
+            $this->assertMatchesRegularExpression(
+                '/^[a-z][a-z0-9_]*$/',
+                $codigo,
+                "El error_code generico '{$codigo}' no esta en snake_case.",
+            );
+            $this->assertNotContains(
+                $codigo,
+                $codigosNegocio,
+                "El error_code generico '{$codigo}' choca con uno de negocio.",
+            );
+        }
     }
 
     /**

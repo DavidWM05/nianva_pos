@@ -1,12 +1,15 @@
 <?php
 
 use App\Modules\Nucleo\Exceptions\ExcepcionNegocio;
+use App\Modules\Nucleo\Http\Middleware\CorrelationId;
 use App\Modules\Nucleo\Http\Middleware\ModuloActivo;
 use App\Modules\Nucleo\Http\Middleware\ResolveTenant;
+use App\Modules\Nucleo\Support\MapaErroresHttp;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -17,6 +20,10 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        // SEG-11: todas las respuestas, incluidas las de error, llevan el id
+        // de correlacion generado por el servidor.
+        $middleware->prepend(CorrelationId::class);
+
         // Habilita la autenticacion SPA de Sanctum (cookie httpOnly + CSRF)
         // en el grupo 'api': agrega EnsureFrontendRequestsAreStateful, que
         // hace que 'auth:sanctum' reconozca la sesion de 'web' para
@@ -52,4 +59,18 @@ return Application::configure(basePath: dirname(__DIR__))
             'message' => $e->getMessage(),
             'error_code' => $e->errorCode(),
         ], $e->status()));
+
+        // API-03/SEG-11: el resto de errores JSON usa el sobre generico.
+        // El mapa vive en Nucleo/Support/MapaErroresHttp, no aqui.
+        $exceptions->render(fn (Throwable $e, Request $request) => MapaErroresHttp::respuesta($e, $request));
+
+        $exceptions->respond(function (Response $response, Throwable $e, Request $request): Response {
+            $id = $request->attributes->get(CorrelationId::ATRIBUTO);
+
+            if (is_string($id)) {
+                $response->headers->set(CorrelationId::CABECERA, $id);
+            }
+
+            return $response;
+        });
     })->create();
