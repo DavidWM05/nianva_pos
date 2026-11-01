@@ -310,6 +310,21 @@ repo.
   arrastraban (50 en total), sin cambiar `composer.json` ni ninguna versión mayor; Laravel
   pasa de 13.20 a 13.39. `composer audit` queda sin avisos, y el job Backend de CI tiene un
   paso nuevo que falla si aparece uno. Ningún test modificado. Línea base de PHPStan: 1385.
+- **Guardas de CI de PRO-01 y DAT-12, y CODEOWNERS** (vigesimotercer encargo, hecho por DS):
+  el job "Escaneo de skip sin referencia" suma dos pasos, sin cambiar el nombre de ningún job:
+  - en cada PR, compara los métodos de test por archivo contra la base del merge (`HEAD^1`) y
+    falla si alguno baja o si se borra un archivo de test. La etiqueta `pro-01-autorizado`, que
+    pone el responsable, convierte el fallo en aviso; el workflow también corre con `labeled`
+    y `unlabeled` para que la etiqueta surta efecto;
+  - siempre, revisa la codificación de `backend/{app,config,routes,database,tests}`,
+    `frontend/{apps,libs}` y `docs/estandares`: UTF-8 inválido, BOM, U+FFFD y `??` seguido de
+    letra. El repo está limpio.
+
+  `.github/CODEOWNERS` marca tests, specs, la línea base de PHPStan, los workflows y los
+  estándares. No se exige la revisión del dueño en el ruleset, porque con un solo dueño
+  bloquearía sus propios PRs. En la revisión se corrigieron tres fallos: un archivo de test
+  nuevo hacía fallar el paso, la comparación usaba la punta de `master` en vez de la base del
+  merge (falso rojo si `master` avanzaba) y la etiqueta no volvía a disparar el workflow.
 - **Pendientes detectados:**
   - `Produccion` usa `UnidadMedida` (extensión → extensión); las unidades se rediseñan en la
     Fase 3 (DAT-01);
@@ -332,16 +347,16 @@ repo.
 1. **Saneamiento de la Fase 1**, en encargos de un tema cada uno. Hecho: CI con ambas
    suites, C1 (D4), las validaciones de negocio (500 → 422) y las reglas `exists` con
    tenant (API-05), la unicidad con tenant (DAT-09, C4), C11 (D5) y el análisis estático
-   bloqueante (Pint, ESLint, PHPStan), C7 (DAT-14), C2 (SEG-03), C3 (SEG-02), C8 (ARQ-02), C5 (API-01) y la documentación del repo (`README.md` y
-   `.claude/CLAUDE.md`). Lo que sigue:
+   bloqueante (Pint, ESLint, PHPStan), C7 (DAT-14), C2 (SEG-03), C3 (SEG-02), C8 (ARQ-02), C5 (API-01), la documentación del repo (`README.md` y
+   `.claude/CLAUDE.md`), `composer audit` y las guardas de PRO-01 y DAT-12 con CODEOWNERS.
+   Lo que sigue:
    - `pnpm audit --prod` en el frontend: 7 avisos en 5 paquetes (4 altos), en
      `@angular/common`, `@angular/compiler`, `@angular/core`, `@angular/router` y `zod`;
    - resolver los conflictos C1-C11 del README de estándares;
-   - resto de PRO-05: stylelint, diff de OpenAPI y CODEOWNERS;
+   - resto de PRO-05: stylelint pasa a la Fase 2 y el diff de OpenAPI espera a que se genere
+     la especificación (API-08);
    - después de C8: que los Services reciban DTOs en vez de arreglos (se hace al reescribirlos
      en las Fases 3 a 5); `RequiereDosFactorReciente` sigue validando dentro del middleware;
-   - un chequeo en CI de codificación rota en `app/` y `tests/` (`??` seguido de letra,
-     además de U+FFFD; DAT-12);
    - seeders por escenario (PRO-08): tenant ropa, abarrotes con granel, multi-sucursal y plan
      Lite;
    - opcional: rama `master` → `main`.
