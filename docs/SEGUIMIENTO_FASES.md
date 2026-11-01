@@ -41,7 +41,7 @@ Revisado contra el repo el 2026-11-01.
 | DAT-14 | Nada se descarta en silencio | Hecho | `Arquitectura/ModelosEstrictosTest` | C7 |
 | API-01 | Versión en la ruta | Hecho | `Arquitectura/RutasVersionadasTest` | C5 |
 | API-02 | Sobre de respuesta y `JsonResource` | Pendiente | Falta la regla de arquitectura con `PENDIENTES` (hoy hay 93 `response()->json`) | — |
-| API-03 | Errores con `error_code` estable | Hecho | `Arquitectura/CatalogoErrorCodeTest`, `errores:catalogo --check`; la forma del 500 va con SEG-11 | C1 |
+| API-03 | Errores con `error_code` estable | Hecho | `Arquitectura/CatalogoErrorCodeTest`, `errores:catalogo --check`, `Arquitectura/ErroresSinDetallesInternosTest` (401/403/404/405/419/423/429/500 con `error_code`) | C1, 29 |
 | API-04 | Cada excepción sabe responder | Hecho | `Arquitectura/BootstrapSinMapeoPorExcepcionTest`, `ManejadorExcepcionNegocioTest` | C1 |
 | API-05 | Validación de entrada | Parcial | `Arquitectura/ExistenciasConTenantTest`; faltan los tests de manipulación (precio alterado → se ignora) | — |
 | API-06 | Listados uniformes | Pendiente | Falta el contrato común y un test por listado | — |
@@ -50,9 +50,9 @@ Revisado contra el repo el 2026-11-01.
 | SEG-02 | La sucursal viene del contexto | Hecho | `Arquitectura/SucursalDelContextoTest`, `Seguridad/SucursalEndpointsTest` | C3 |
 | SEG-03 | Permisos conectados | Hecho | `Arquitectura/RutasConPermisoTest`, `Permisos/MatrizPermisosTest` (incluye rutas con binding) | C2, 27 |
 | SEG-07 | Secretos | Hecho | Pasos de CI de gitleaks y de llaves privadas | 28 |
-| SEG-08 | Archivos fuera del docroot | Pendiente | Faltan `GET /storage/...` → 404 y descarga sin permiso → 403 | — |
+| SEG-08 | Archivos fuera del docroot: sin `/storage` público | Hecho | `Seguridad/StorageFueraDelDocrootTest` (404, `filesystems.links` vacío, sin disco `public` ni `Storage::url` en `app/`) | 29 |
 | SEG-10 | Auditoría | Parcial | `Auditoria/AuditoriaControllerTest`; falta un test por operación sensible | — |
-| SEG-11 | Errores sin detalles internos | Pendiente | Falta el test con `APP_DEBUG=false` y el `correlation_id` | — |
+| SEG-11 | Errores sin detalles internos | Hecho | `Arquitectura/ErroresSinDetallesInternosTest` (500 con `APP_DEBUG=false`, `RuntimeException` y `QueryException`; `correlation_id` en la respuesta, en la cabecera y en el log) | 29 |
 | PRO-01 | Tests existentes no se reescriben | Hecho | Paso de CI "Verificar que no bajen los metodos de test"; CODEOWNERS | 23 |
 | PRO-02 | Suite siempre en verde | Hecho | Jobs Backend y Frontend; paso "Buscar skip u only sin issue enlazada" | C9 |
 | PRO-03 | Las líneas base solo bajan | Hecho | Paso "Verificar que la linea base de PHPStan no crezca"; CODEOWNERS | 7 |
@@ -130,6 +130,7 @@ Conflicto que se resuelve aquí: C6. En las Fases 3 a 5, los Services pasan a re
 | Regla | Qué pide | Estado | Dónde se verifica | Encargo |
 |---|---|---|---|---|
 | ARQ-09 | Una sola capa de métricas | Pendiente | — | — |
+| SEG-08 | Descarga sin permiso → 403, con la primera descarga (exportaciones; si llegan antes los respaldos, en la Fase 8) | Pendiente | — | — |
 | DAT-06 | Reportes en la zona del tenant | Pendiente | — | — |
 | UI-10 | Plantilla de reporte | Pendiente | — | — |
 
