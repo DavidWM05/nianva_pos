@@ -156,6 +156,7 @@
     en claro, oscuro y 375 px; montos y cantidades con pipe
 [ ] Codificación: UTF-8 sin BOM, sin U+FFFD                                      (DAT-12)
 [ ] Git: sin commit salvo indicación; documentos de estrategia fuera             (PRO-09, PRO-10)
+[ ] Seguimiento: filas de docs/SEGUIMIENTO_FASES.md actualizadas                 (PRO-09)
 ```
 
 ## Excepciones

@@ -423,19 +423,24 @@ repo.
    y `pnpm audit`, la edición parcial de roles y usuarios, C9 y los seeders por escenario (PRO-08). De los conflictos C1-C11
    solo quedan C6 (Fase 3) y C10 (Fase 2).
 
-   **Falta en la Fase 1**, un encargo por línea, en este orden:
+   **Falta en la Fase 1.** El estado regla por regla está en
+   [SEGUIMIENTO_FASES.md](SEGUIMIENTO_FASES.md). En orden, un encargo por línea:
    1. ~~CODEOWNERS de los módulos congelados (ARQ-10), gitleaks en CI (SEG-07) y la guarda de
       URLs fijas en el frontend (ARQ-13)~~, hecho en el encargo 28;
    2. errores 500 sin detalles internos y con `correlation_id` (SEG-11); `storage/` fuera del
       docroot, con sus tests (SEG-08);
    3. `migrate:rollback` en CI y snapshot del esquema (DAT-11); `zona_horaria` en la
       configuración del tenant (DAT-06);
-   4. auditar los tests que piden SEG-10, API-05 y API-03, y completar los que falten;
-   5. `strict_types` en el código nuevo y tocado, con una lista que solo baja (ARQ-08);
-   6. especificación OpenAPI generada y su diff en CI (API-08, parte de la Fase 1);
-   7. regla "los controllers devuelven `JsonResource`", con `PENDIENTES` (API-02, parte de la
+   4. auditar los tests que piden SEG-10, API-05 y SEG-01 (el test que recorre las rutas con
+      modelo y exige su test de aislamiento), y completar los que falten;
+   5. `strict_types` en el código nuevo y tocado, con una lista que solo baja (ARQ-08); test de
+      que los controllers no usan `DB::` ni `Model::query()`, con `PENDIENTES` (ARQ-01); y que
+      toda ruta de un módulo opcional lleva `modulo:*` (ARQ-06);
+   6. DAT-12: búsqueda en CI de `Ã` (doble codificación) y el comando `conciliar:texto`;
+   7. especificación OpenAPI generada y su diff en CI (API-08, parte de la Fase 1);
+   8. regla "los controllers devuelven `JsonResource`", con `PENDIENTES` (API-02, parte de la
       Fase 1);
-   8. contrato común de listados, con `PENDIENTES` (API-06).
+   9. contrato común de listados, con `PENDIENTES` (API-06).
 
    Decisiones del responsable (2026-11-01):
    - de API-02, el dinero y las cantidades como cadena pasan a la Fase 3, con DAT-02;
