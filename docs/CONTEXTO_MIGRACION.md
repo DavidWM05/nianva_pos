@@ -470,6 +470,16 @@ repo.
       del docroot, con sus tests (SEG-08)~~, hecho en el encargo 29;
    3. ~~`migrate:rollback` en CI y snapshot del esquema (DAT-11); `zona_horaria` en la
       configuración del tenant (DAT-06)~~, hecho en el encargo 30;
+   3b. 2FA, por decisión del responsable (2026-11-01):
+       - comando `php artisan usuarios:resetear-2fa {correo}` para un admin que perdió el
+         teléfono y los códigos, con registro en la auditoría; reemplaza el paso con tinker de
+         `backend/README.md`;
+       - `DesarrolloSeeder` y los escenarios imprimen también los códigos de recuperación;
+       - "recordar dispositivo" para admin pasa de 14 a 30 días por defecto (cada tenant lo
+         ajusta entre 1 y 90).
+
+       El 2FA sigue siendo obligatorio para admin. Lo que quita la fricción en tiendas chicas
+       es el PIN de caja (SEG-12, Fase 4);
    4. auditar los tests que piden SEG-10, API-05 y SEG-01 (el test que recorre las rutas con
       modelo y exige su test de aislamiento), y completar los que falten;
    5. `strict_types` en el código nuevo y tocado, con una lista que solo baja (ARQ-08); test de

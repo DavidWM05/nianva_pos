@@ -473,6 +473,49 @@ php artisan db:seed --class="App\Modules\Nucleo\Database\Seeders\DesarrolloSeede
 > [!WARNING]
 > **`DesarrolloSeeder` nunca debe correr en un entorno de producción.**
 
+## Recuperar el acceso con 2FA
+
+El 2FA es obligatorio para `admin` y superadmin (`Usuario::requiereDosFactor()`). Al pasar el
+segundo factor, el navegador queda recordado: el siguiente login desde ahí solo pide correo y
+contraseña hasta que vence. Los días se configuran por tenant en **Configuración → Seguridad**,
+de 1 a 90 (14 para admin y 30 para el resto). Cambiar la contraseña o revocar el dispositivo
+desde el perfil vuelve a exigir el código.
+
+**Desarrollo** (el admin de `DesarrolloSeeder` o de los escenarios): vuelve a correr el seeder.
+Imprime un secreto TOTP nuevo, y el anterior deja de servir. Agrégalo en tu app de
+autenticación con "introducir clave manualmente":
+
+```bash
+php artisan db:seed --class="App\Modules\Nucleo\Database\Seeders\DesarrolloSeeder"
+```
+
+**Usuario sin rol admin que perdió el teléfono:**
+
+- en el login puede usar uno de sus códigos de recuperación (cada uno sirve una sola vez);
+- si no los tiene, un admin le desactiva el 2FA en Usuarios
+  (`POST /api/v1/usuarios/{id}/desactivar-2fa`, que pide el TOTP del admin).
+
+**Admin que perdió el teléfono y los códigos de recuperación:** ningún otro admin puede quitarle
+el 2FA, así que hoy solo se resuelve con acceso al servidor. Desde `backend/`, en PowerShell
+(cambia el correo; las comillas simples duplicadas son a propósito):
+
+```powershell
+php artisan tinker --execute='$u = App\Modules\Nucleo\Models\Usuario::sinTenant()->where(''correo'', ''admin@ejemplo.com'')->firstOrFail(); $u->forceFill([''two_factor_secret'' => null, ''two_factor_recovery_codes'' => null, ''two_factor_confirmed_at'' => null])->save(); app(App\Modules\Nucleo\Services\TrustedDeviceService::class)->revocarTodos($u); echo ''2FA reseteado para '' . $u->correo . PHP_EOL;'
+```
+
+En bash (Linux o Git Bash):
+
+```bash
+php artisan tinker --execute='$u = App\Modules\Nucleo\Models\Usuario::sinTenant()->where("correo", "admin@ejemplo.com")->firstOrFail(); $u->forceFill(["two_factor_secret" => null, "two_factor_recovery_codes" => null, "two_factor_confirmed_at" => null])->save(); app(App\Modules\Nucleo\Services\TrustedDeviceService::class)->revocarTodos($u); echo "2FA reseteado para ".$u->correo.PHP_EOL;'
+```
+
+Borra el secreto, los códigos de recuperación y los dispositivos confiables. En el siguiente
+login, el sistema le pide configurar el 2FA de nuevo.
+
+> [!NOTE]
+> **Pendiente (Fase 1):** el comando `php artisan usuarios:resetear-2fa {correo}`
+> reemplaza este paso y deja registro en la auditoría.
+
 ## Escenarios de datos (PRO-08)
 
 Cuatro tenants con catálogo, stock, clientes, caja abierta y ventas, sembrados con las
