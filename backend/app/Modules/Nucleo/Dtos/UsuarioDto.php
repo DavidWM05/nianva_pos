@@ -64,12 +64,13 @@ final readonly class UsuarioDto
     }
 
     /**
-     * Comportamiento existente: si `roles` no llega, se sincroniza vacio.
+     * null si `roles` no llego: la edicion conserva los actuales. Una lista
+     * vacia (o null explicito) si llega y los quita todos.
      *
-     * @return list<int>
+     * @return list<int>|null
      */
-    public function rolesParaSync(): array
+    public function rolesParaSync(): ?array
     {
-        return $this->roles;
+        return in_array('roles', $this->presentes, true) ? $this->roles : null;
     }
 }
