@@ -18,6 +18,7 @@ class ConfiguracionTenantFactory extends Factory
         return [
             'tenant_id' => fn () => TenantParaFactory::id(),
             'moneda' => '$',
+            'zona_horaria' => 'America/Mexico_City',
             'mensaje_ticket' => null,
             'logo_url' => null,
             'mostrar_rfc' => true,

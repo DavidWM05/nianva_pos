@@ -15,6 +15,7 @@ class ConfiguracionTenantResource extends JsonResource
     {
         return [
             'moneda' => $this->moneda,
+            'zona_horaria' => $this->zona_horaria,
             'mensaje_ticket' => $this->mensaje_ticket,
             'logo_url' => $this->logo_url,
             'mostrar_rfc' => $this->mostrar_rfc,

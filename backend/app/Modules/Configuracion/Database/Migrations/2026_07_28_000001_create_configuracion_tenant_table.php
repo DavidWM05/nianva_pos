@@ -12,6 +12,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('tenant_id')->unique()->constrained('tenants')->cascadeOnDelete();
             $table->string('moneda', 5)->default('$');
+            $table->string('zona_horaria', 64)->default('America/Mexico_City');
             $table->text('mensaje_ticket')->nullable();
             $table->string('logo_url', 500)->nullable();
             $table->boolean('mostrar_rfc')->default(true);

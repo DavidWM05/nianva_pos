@@ -9,6 +9,7 @@ final readonly class ConfiguracionTenantDto
      */
     public function __construct(
         public string $moneda,
+        public ?string $zonaHoraria,
         public ?string $mensajeTicket,
         public ?string $logoUrl,
         public bool $mostrarRfc,
@@ -37,6 +38,9 @@ final readonly class ConfiguracionTenantDto
 
         if (in_array('moneda', $this->presentes, true)) {
             $datos['moneda'] = $this->moneda;
+        }
+        if (in_array('zona_horaria', $this->presentes, true)) {
+            $datos['zona_horaria'] = $this->zonaHoraria;
         }
         if (in_array('mensaje_ticket', $this->presentes, true)) {
             $datos['mensaje_ticket'] = $this->mensajeTicket;
