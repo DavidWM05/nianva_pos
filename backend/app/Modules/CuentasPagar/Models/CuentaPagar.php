@@ -5,6 +5,7 @@ namespace App\Modules\CuentasPagar\Models;
 use App\Modules\CuentasPagar\Database\Factories\CuentaPagarFactory;
 use App\Modules\Inventario\Models\Compra;
 use App\Modules\Inventario\Models\Proveedor;
+use App\Modules\Nucleo\Models\Concerns\BelongsToSucursal;
 use App\Modules\Nucleo\Models\Concerns\BelongsToTenant;
 use App\Modules\Nucleo\Models\Tenant;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
@@ -19,6 +20,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 ])]
 class CuentaPagar extends Model
 {
+    use BelongsToSucursal;
     use BelongsToTenant;
 
     /** @use HasFactory<CuentaPagarFactory> */
@@ -35,6 +37,11 @@ class CuentaPagar extends Model
             'created_at' => 'datetime',
             'updated_at' => 'datetime',
         ];
+    }
+
+    public static function sucursalRelacion(): string
+    {
+        return 'compra';
     }
 
     public function tenant(): BelongsTo

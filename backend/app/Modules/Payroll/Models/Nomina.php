@@ -2,6 +2,7 @@
 
 namespace App\Modules\Payroll\Models;
 
+use App\Modules\Nucleo\Models\Concerns\BelongsToSucursal;
 use App\Modules\Nucleo\Models\Concerns\BelongsToTenant;
 use App\Modules\Nucleo\Models\Sucursal;
 use App\Modules\Nucleo\Models\Tenant;
@@ -15,6 +16,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 #[Fillable(['tenant_id', 'sucursal_id', 'periodo_inicio', 'periodo_fin', 'total_percepciones', 'total_deducciones', 'total_neto', 'estado', 'fecha_pago'])]
 class Nomina extends Model
 {
+    use BelongsToSucursal;
     use BelongsToTenant;
 
     /** @use HasFactory<NominaFactory> */

@@ -4,6 +4,7 @@ namespace App\Modules\Delivery\Models;
 
 use App\Modules\Crm\Models\Cliente;
 use App\Modules\Delivery\Database\Factories\PedidoFactory;
+use App\Modules\Nucleo\Models\Concerns\BelongsToSucursal;
 use App\Modules\Nucleo\Models\Concerns\BelongsToTenant;
 use App\Modules\Nucleo\Models\Sucursal;
 use App\Modules\Nucleo\Models\Tenant;
@@ -22,6 +23,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 ])]
 class Pedido extends Model
 {
+    use BelongsToSucursal;
     use BelongsToTenant;
 
     /** @use HasFactory<PedidoFactory> */

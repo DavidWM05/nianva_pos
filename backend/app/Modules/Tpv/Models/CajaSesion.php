@@ -2,6 +2,7 @@
 
 namespace App\Modules\Tpv\Models;
 
+use App\Modules\Nucleo\Models\Concerns\BelongsToSucursal;
 use App\Modules\Nucleo\Models\Concerns\BelongsToTenantViaRelacion;
 use App\Modules\Nucleo\Models\Sucursal;
 use App\Modules\Nucleo\Models\Usuario;
@@ -22,6 +23,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 ])]
 class CajaSesion extends Model
 {
+    use BelongsToSucursal;
     use BelongsToTenantViaRelacion;
 
     /** @use HasFactory<CajaSesionFactory> */

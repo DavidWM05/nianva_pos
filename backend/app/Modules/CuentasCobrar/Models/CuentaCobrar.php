@@ -4,6 +4,7 @@ namespace App\Modules\CuentasCobrar\Models;
 
 use App\Modules\Crm\Models\Cliente;
 use App\Modules\CuentasCobrar\Database\Factories\CuentaCobrarFactory;
+use App\Modules\Nucleo\Models\Concerns\BelongsToSucursal;
 use App\Modules\Nucleo\Models\Concerns\BelongsToTenant;
 use App\Modules\Nucleo\Models\Tenant;
 use App\Modules\Tpv\Models\Venta;
@@ -19,6 +20,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 ])]
 class CuentaCobrar extends Model
 {
+    use BelongsToSucursal;
     use BelongsToTenant;
 
     /** @use HasFactory<CuentaCobrarFactory> */
@@ -35,6 +37,11 @@ class CuentaCobrar extends Model
             'created_at' => 'datetime',
             'updated_at' => 'datetime',
         ];
+    }
+
+    public static function sucursalRelacion(): string
+    {
+        return 'venta';
     }
 
     public function tenant(): BelongsTo

@@ -2,6 +2,7 @@
 
 namespace App\Modules\Produccion\Models;
 
+use App\Modules\Nucleo\Models\Concerns\BelongsToSucursal;
 use App\Modules\Nucleo\Models\Concerns\BelongsToTenant;
 use App\Modules\Nucleo\Models\Sucursal;
 use App\Modules\Nucleo\Models\Tenant;
@@ -15,6 +16,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 #[Fillable(['tenant_id', 'sucursal_id', 'receta_id', 'usuario_id', 'cantidad_programada', 'cantidad_producida', 'estado', 'notas', 'fecha_programada', 'fecha_completada'])]
 class OrdenProduccion extends Model
 {
+    use BelongsToSucursal;
     use BelongsToTenant;
 
     /** @use HasFactory<OrdenProduccionFactory> */

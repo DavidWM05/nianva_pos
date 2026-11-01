@@ -2,15 +2,20 @@
 
 namespace Tests\Feature\Permisos;
 
+use App\Modules\CuentasCobrar\Models\CuentaCobrar;
+use App\Modules\CuentasPagar\Models\CuentaPagar;
+use App\Modules\Inventario\Models\Compra;
 use App\Modules\Inventario\Models\Producto;
 use App\Modules\Inventario\Models\ProductoVariante;
 use App\Modules\Nucleo\Database\Seeders\NucleoRolesPermisosSeeder;
 use App\Modules\Nucleo\Models\Rol;
 use App\Modules\Nucleo\Models\Usuario;
 use App\Modules\Tpv\Models\CajaSesion;
+use App\Modules\Tpv\Models\Venta;
 use Illuminate\Contracts\Routing\UrlRoutable;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Schema;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Tests\Support\PreparaNegocio;
 use Tests\TestCase;
@@ -159,7 +164,28 @@ class MatrizPermisosTest extends TestCase
             return ProductoVariante::factory()->create(['producto_id' => $producto->id]);
         }
 
-        return $clase::factory()->create(['tenant_id' => $this->tenant->id]);
+        // La matriz prueba permisos, no aislamiento (eso es AislamientoBindingTest):
+        // los recursos operativos se crean en la sucursal del usuario del test,
+        // para que el scope por sucursal (SEG-01) no convierta un 403 en 404.
+        if ($clase === CuentaCobrar::class) {
+            return CuentaCobrar::factory()->create([
+                'venta_id' => Venta::factory()->create(['tenant_id' => $this->tenant->id, 'sucursal_id' => $this->sucursal->id])->id,
+            ]);
+        }
+
+        if ($clase === CuentaPagar::class) {
+            return CuentaPagar::factory()->create([
+                'compra_id' => Compra::factory()->create(['tenant_id' => $this->tenant->id, 'sucursal_id' => $this->sucursal->id])->id,
+            ]);
+        }
+
+        $atributos = ['tenant_id' => $this->tenant->id];
+
+        if (Schema::hasColumn((new $clase)->getTable(), 'sucursal_id')) {
+            $atributos['sucursal_id'] = $this->sucursal->id;
+        }
+
+        return $clase::factory()->create($atributos);
     }
 
     private function usuarioConRol(string $rol): Usuario

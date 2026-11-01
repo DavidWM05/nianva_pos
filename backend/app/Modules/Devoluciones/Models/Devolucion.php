@@ -3,6 +3,7 @@
 namespace App\Modules\Devoluciones\Models;
 
 use App\Modules\Devoluciones\Database\Factories\DevolucionFactory;
+use App\Modules\Nucleo\Models\Concerns\BelongsToSucursal;
 use App\Modules\Nucleo\Models\Concerns\BelongsToTenant;
 use App\Modules\Nucleo\Models\Sucursal;
 use App\Modules\Nucleo\Models\Tenant;
@@ -21,6 +22,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 ])]
 class Devolucion extends Model
 {
+    use BelongsToSucursal;
     use BelongsToTenant;
 
     /** @use HasFactory<DevolucionFactory> */
