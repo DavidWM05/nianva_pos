@@ -385,6 +385,20 @@ repo.
   - **`packageManager`:** `frontend/package.json` declara `pnpm@11.5.3`, y CI toma la versión
     de ahí (`package_json_file`) en vez de repetirla.
   - Ningún test existente modificado. Backend: 622 tests.
+- **Guardas de ARQ-10, SEG-07 y ARQ-13** (vigesimoctavo encargo, hecho por DS):
+  - **CODEOWNERS:** marca los módulos congelados (Payroll, Prestamos, Delivery y CrmAvanzado)
+    en el backend y en el frontend. CRM avanzado no tiene carpeta propia en el frontend: se
+    listan sus archivos dentro de `modules/crm`;
+  - **gitleaks 8.30.1:** se instala en el job "Escaneo de skip sin referencia" con su
+    checksum verificado contra el oficial, y escanea el árbol versionado (`gitleaks dir`). El
+    historial completo, 121 commits, se revisó en local: sin hallazgos. No hizo falta
+    `.gitleaks.toml`;
+  - **guardas nuevas en el mismo job:**
+    - llaves privadas versionadas (`-----BEGIN … PRIVATE KEY-----`);
+    - URLs fijas (`localhost`, `127.0.0.1`, `http://`) en `frontend/apps` y `frontend/libs`;
+      solo se permite `public/config.json`;
+  - **test nuevo en `runtime-config.spec.ts`:** el mismo build con dos `config.json`;
+  - cada guarda se probó fallando y pasando. `pos` queda en 437 tests.
 - **Pendientes detectados:**
   - `Produccion` usa `UnidadMedida` (extensión → extensión); las unidades se rediseñan en la
     Fase 3 (DAT-01);
@@ -410,23 +424,23 @@ repo.
    solo quedan C6 (Fase 3) y C10 (Fase 2).
 
    **Falta en la Fase 1**, un encargo por línea, en este orden:
-   1. renombrar la rama `master` → `main`;
-   2. CODEOWNERS de los módulos congelados (ARQ-10), gitleaks en CI (SEG-07) y la guarda de
-      URLs fijas en el frontend (ARQ-13);
-   3. errores 500 sin detalles internos y con `correlation_id` (SEG-11); `storage/` fuera del
+   1. ~~CODEOWNERS de los módulos congelados (ARQ-10), gitleaks en CI (SEG-07) y la guarda de
+      URLs fijas en el frontend (ARQ-13)~~, hecho en el encargo 28;
+   2. errores 500 sin detalles internos y con `correlation_id` (SEG-11); `storage/` fuera del
       docroot, con sus tests (SEG-08);
-   4. `migrate:rollback` en CI y snapshot del esquema (DAT-11); `zona_horaria` en la
+   3. `migrate:rollback` en CI y snapshot del esquema (DAT-11); `zona_horaria` en la
       configuración del tenant (DAT-06);
-   5. auditar los tests que piden SEG-10, API-05 y API-03, y completar los que falten;
-   6. `strict_types` en el código nuevo y tocado, con una lista que solo baja (ARQ-08);
-   7. especificación OpenAPI generada y su diff en CI (API-08, parte de la Fase 1);
-   8. regla "los controllers devuelven `JsonResource`", con `PENDIENTES` (API-02, parte de la
+   4. auditar los tests que piden SEG-10, API-05 y API-03, y completar los que falten;
+   5. `strict_types` en el código nuevo y tocado, con una lista que solo baja (ARQ-08);
+   6. especificación OpenAPI generada y su diff en CI (API-08, parte de la Fase 1);
+   7. regla "los controllers devuelven `JsonResource`", con `PENDIENTES` (API-02, parte de la
       Fase 1);
-   9. contrato común de listados, con `PENDIENTES` (API-06).
+   8. contrato común de listados, con `PENDIENTES` (API-06).
 
-   Decisión del responsable (2026-11-01):
+   Decisiones del responsable (2026-11-01):
    - de API-02, el dinero y las cantidades como cadena pasan a la Fase 3, con DAT-02;
-   - de API-08, los tipos generados en el frontend pasan a la Fase 2.
+   - de API-08, los tipos generados en el frontend pasan a la Fase 2;
+   - la rama principal sigue siendo `master`: no se renombra a `main`.
 
    Quedan para fases posteriores:
    - stylelint (PRO-05) pasa a la Fase 2;
