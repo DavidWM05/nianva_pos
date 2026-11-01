@@ -62,7 +62,7 @@ class UsuarioController extends Controller
     public function store(GuardarUsuarioRequest $request)
     {
         $dto = $request->toDto();
-        $roles = $this->rolesVisiblesDelTenant($dto->rolesParaSync());
+        $roles = $this->rolesVisiblesDelTenant($dto->rolesParaSync() ?? []);
         $datos = $dto->datosPresentes();
 
         $datos['tenant_id'] = app(TenantContext::class)->id();
@@ -78,7 +78,7 @@ class UsuarioController extends Controller
     public function update(GuardarUsuarioRequest $request, Usuario $usuario)
     {
         $dto = $request->toDto();
-        $roles = $this->rolesVisiblesDelTenant($dto->rolesParaSync());
+        $roles = $dto->rolesParaSync();
         $datos = $dto->datosPresentes();
 
         // Contrasena opcional en edicion -- omitirla del array deja el
@@ -88,7 +88,9 @@ class UsuarioController extends Controller
         }
 
         $usuario->update($datos);
-        $usuario->roles()->sync($roles);
+        if ($roles !== null) {
+            $usuario->roles()->sync($this->rolesVisiblesDelTenant($roles));
+        }
         $usuario->load(['sucursal:id,nombre', 'roles:id,nombre']);
 
         return new UsuarioAdminResource($usuario);

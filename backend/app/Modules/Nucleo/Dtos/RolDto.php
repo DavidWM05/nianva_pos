@@ -41,12 +41,13 @@ final readonly class RolDto
     }
 
     /**
-     * Comportamiento existente: si `permisos` no llega, se sincroniza vacio.
+     * null si `permisos` no llego: la edicion conserva los actuales. Una lista
+     * vacia (o null explicito) si llega y los quita todos.
      *
-     * @return list<int>
+     * @return list<int>|null
      */
-    public function permisosParaSync(): array
+    public function permisosParaSync(): ?array
     {
-        return $this->permisos;
+        return in_array('permisos', $this->presentes, true) ? $this->permisos : null;
     }
 }

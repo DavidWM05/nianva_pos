@@ -63,7 +63,7 @@ class RolController extends Controller
     public function store(GuardarRolRequest $request)
     {
         $dto = $request->toDto();
-        $permisos = $this->permisosValidos($dto->permisosParaSync());
+        $permisos = $this->permisosValidos($dto->permisosParaSync() ?? []);
         $datos = $dto->datosPresentes();
 
         $datos['tenant_id'] = app(TenantContext::class)->id();
@@ -79,10 +79,12 @@ class RolController extends Controller
     public function update(GuardarRolRequest $request, Rol $rol)
     {
         $dto = $request->toDto();
-        $permisos = $this->permisosValidos($dto->permisosParaSync());
+        $permisos = $dto->permisosParaSync();
 
         $rol->update($dto->datosPresentes());
-        $rol->permisos()->sync($permisos);
+        if ($permisos !== null) {
+            $rol->permisos()->sync($this->permisosValidos($permisos));
+        }
         $rol->load('permisos:id');
 
         return new RolResource($rol);
