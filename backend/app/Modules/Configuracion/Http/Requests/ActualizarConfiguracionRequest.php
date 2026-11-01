@@ -29,6 +29,7 @@ class ActualizarConfiguracionRequest extends SolicitudNegocio
     {
         return [
             'moneda' => ['required', 'string', 'max:5'],
+            'zona_horaria' => ['sometimes', 'string', 'timezone:all'],
             'mensaje_ticket' => ['nullable', 'string'],
             'logo_url' => ['nullable', 'string', 'max:500', 'url'],
             'mostrar_rfc' => ['required', 'boolean'],
@@ -55,6 +56,7 @@ class ActualizarConfiguracionRequest extends SolicitudNegocio
 
         return new ConfiguracionTenantDto(
             moneda: (string) $v['moneda'],
+            zonaHoraria: isset($v['zona_horaria']) ? (string) $v['zona_horaria'] : null,
             mensajeTicket: isset($v['mensaje_ticket']) ? (string) $v['mensaje_ticket'] : null,
             logoUrl: isset($v['logo_url']) ? (string) $v['logo_url'] : null,
             mostrarRfc: (bool) $v['mostrar_rfc'],
