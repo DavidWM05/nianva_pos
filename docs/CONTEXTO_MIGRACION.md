@@ -399,6 +399,27 @@ repo.
       solo se permite `public/config.json`;
   - **test nuevo en `runtime-config.spec.ts`:** el mismo build con dos `config.json`;
   - cada guarda se probó fallando y pasando. `pos` queda en 437 tests.
+- **Errores sin detalles internos y `storage` fuera del docroot** (vigesimonoveno encargo,
+  hecho por DS):
+  - **SEG-11:**
+    - el middleware global `Nucleo/Http/Middleware/CorrelationId` genera un ULID por
+      petición. Lo pone en el contexto del log y en la cabecera `X-Correlation-Id`, y nunca
+      acepta uno que mande el cliente;
+    - un 500 con `APP_DEBUG=false` responde `{message, error_code: error_interno,
+      correlation_id}`, sin SQL, rutas ni trazas. El detalle queda en el log con el mismo id;
+  - **API-03:** los errores que no son de negocio llevan su `error_code`. El mapa de status a
+    código vive en `Nucleo/Support/MapaErroresHttp` (15 códigos, de `solicitud_invalida` a
+    `tiempo_agotado`). `errores:catalogo` los incluye y `CatalogoErrorCodeTest` comprueba
+    que no chocan con los de negocio. La validación conserva `{message, errors}` y
+    `ExcepcionNegocio` su propio código;
+  - **SEG-08:**
+    - `filesystems.links` queda vacío y el disco `local` deja de servir archivos
+      (`'serve' => false`; Laravel publicaba `storage/{path}` con URL firmada);
+    - `GET /storage/...` responde 404;
+    - por decisión del responsable, el 403 de una descarga sin permiso se prueba con la
+      primera ruta de descarga (Fase 6 u 8);
+  - tests nuevos: `ErroresSinDetallesInternosTest` y `StorageFueraDelDocrootTest`, más un
+    método en `CatalogoErrorCodeTest`. Ningún test existente modificado. Backend: 633 tests.
 - **Pendientes detectados:**
   - `Produccion` usa `UnidadMedida` (extensión → extensión); las unidades se rediseñan en la
     Fase 3 (DAT-01);
@@ -427,8 +448,8 @@ repo.
    [SEGUIMIENTO_FASES.md](SEGUIMIENTO_FASES.md). En orden, un encargo por línea:
    1. ~~CODEOWNERS de los módulos congelados (ARQ-10), gitleaks en CI (SEG-07) y la guarda de
       URLs fijas en el frontend (ARQ-13)~~, hecho en el encargo 28;
-   2. errores 500 sin detalles internos y con `correlation_id` (SEG-11); `storage/` fuera del
-      docroot, con sus tests (SEG-08);
+   2. ~~errores 500 sin detalles internos y con `correlation_id` (SEG-11); `storage/` fuera
+      del docroot, con sus tests (SEG-08)~~, hecho en el encargo 29;
    3. `migrate:rollback` en CI y snapshot del esquema (DAT-11); `zona_horaria` en la
       configuración del tenant (DAT-06);
    4. auditar los tests que piden SEG-10, API-05 y SEG-01 (el test que recorre las rutas con

@@ -119,7 +119,9 @@
   - los nombres de archivo los genera el servidor.
 - **Por qué:** los respaldos de Lite estaban dentro del docroot y se podían descargar (L-12).
 - **Verifica:** un test HTTP (`GET /storage/...` → 404) y un test de descarga sin permiso → 403.
-- **Desde:** Fase 1.
+- **Desde:** Fase 1, el 404 de `/storage` y la regla de arquitectura (nada de `Storage::url`
+  ni disco `public`); el test de descarga sin permiso → 403, con la primera ruta de descarga
+  (exportaciones en la Fase 6 o respaldos en la Fase 8).
 
 ### SEG-09 · Licencia
 - **Regla:**
