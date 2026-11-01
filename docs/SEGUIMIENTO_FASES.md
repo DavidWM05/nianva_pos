@@ -43,7 +43,7 @@ Revisado contra el repo el 2026-11-01.
 | API-02 | Sobre de respuesta y `JsonResource` | Pendiente | Falta la regla de arquitectura con `PENDIENTES` (hoy hay 93 `response()->json`) | — |
 | API-03 | Errores con `error_code` estable | Hecho | `Arquitectura/CatalogoErrorCodeTest`, `errores:catalogo --check`, `Arquitectura/ErroresSinDetallesInternosTest` (401/403/404/405/419/423/429/500 con `error_code`) | C1, 29 |
 | API-04 | Cada excepción sabe responder | Hecho | `Arquitectura/BootstrapSinMapeoPorExcepcionTest`, `ManejadorExcepcionNegocioTest` | C1 |
-| API-05 | Validación de entrada | Parcial | `Arquitectura/ExistenciasConTenantTest`; faltan los tests de manipulación (precio alterado → se ignora) | — |
+| API-05 | Validación de entrada | Hecho | `Arquitectura/ExistenciasConTenantTest`; `Seguridad/ManipulacionDePreciosTest` (ventas, cotizar, apartados, devoluciones, compras); `Cotizaciones/CotizacionPrecioManualTest` (excepción con `cotizaciones.precio_manual`) | 32 |
 | API-06 | Listados uniformes | Pendiente | Falta el contrato común y un test por listado | — |
 | API-08 | Especificación OpenAPI generada y su diff en CI | Pendiente | — | — |
 | SEG-01 | Scope de tenant y sucursal | Parcial | Tests `*ExistsTenantTest`, `Seguridad/SucursalEndpointsTest`; falta el test que recorre las rutas con modelo y exige su test de aislamiento | — |
@@ -51,7 +51,7 @@ Revisado contra el repo el 2026-11-01.
 | SEG-03 | Permisos conectados | Hecho | `Arquitectura/RutasConPermisoTest`, `Permisos/MatrizPermisosTest` (incluye rutas con binding) | C2, 27 |
 | SEG-07 | Secretos | Hecho | Pasos de CI de gitleaks y de llaves privadas | 28 |
 | SEG-08 | Archivos fuera del docroot: sin `/storage` público | Hecho | `Seguridad/StorageFueraDelDocrootTest` (404, `filesystems.links` vacío, sin disco `public` ni `Storage::url` en `app/`) | 29 |
-| SEG-10 | Auditoría | Parcial | `Auditoria/AuditoriaControllerTest`; falta un test por operación sensible | — |
+| SEG-10 | Auditoría | Hecho | `Auditoria/OperacionesSensiblesTest` (éxito deja fila, fallo no; permisos y roles por pivote); `Nucleo/ResetearDosFactorCommandTest`; inventario por Kardex | 31, 32 |
 | SEG-11 | Errores sin detalles internos | Hecho | `Arquitectura/ErroresSinDetallesInternosTest` (500 con `APP_DEBUG=false`, `RuntimeException` y `QueryException`; `correlation_id` en la respuesta, en la cabecera y en el log) | 29 |
 | PRO-01 | Tests existentes no se reescriben | Hecho | Paso de CI "Verificar que no bajen los metodos de test"; CODEOWNERS | 23 |
 | PRO-02 | Suite siempre en verde | Hecho | Jobs Backend y Frontend; paso "Buscar skip u only sin issue enlazada" | C9 |

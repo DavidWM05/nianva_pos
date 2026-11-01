@@ -77,7 +77,10 @@
     `API_SPECIFICATION.md` §1.5);
   - los límites (`max`, `min`, `decimal`) coinciden con las columnas;
   - el servidor ignora los campos calculados que lleguen del cliente (totales, precios,
-    costos, tipo de producto, unidad) y los recalcula (DAT-02).
+    costos, tipo de producto, unidad) y los recalcula (DAT-02);
+  - única excepción: una cotización acepta precio unitario y descuento manuales solo si el
+    usuario tiene `cotizaciones.precio_manual`; sin ese permiso se ignoran. Al convertirla
+    en venta, la venta recalcula con los precios del sistema.
 - **Por qué:** en Lite, el servidor confiaba en precios y totales del navegador hasta que se
   corrigió (convenciones de Lite §4).
 - **Verifica:** test de arquitectura (sin `exists:` plano en `rules()`) y tests de manipulación

@@ -145,7 +145,12 @@
     usuario, terminal, IP, antes y después;
   - se registra por configuración (`config/auditoria.php`, que se hereda de Pro), no con código
     en cada módulo;
-  - no se registra una acción que no ocurrió.
+  - no se registra una acción que no ocurrió;
+  - los cambios de permisos de un rol y de roles de un usuario (tablas pivote) también se
+    auditan, por configuración (`config/auditoria.php`, `pivotes`);
+  - **inventario:** los movimientos de stock (compras, ventas, ajustes, transformaciones) no
+    se duplican en la tabla de auditoría. Su registro es el Kardex (usuario, motivo, stock
+    resultante); el libro con saldo antes y después llega con DAT-04 en la Fase 3.
 - **Por qué:** en Lite, un registro protegido que se bloqueaba en el controlador dejaba en la
   bitácora una acción que no había ocurrido.
 - **Verifica:** un test por operación sensible (la acción fallida no deja registro; la exitosa,
