@@ -150,4 +150,47 @@ class VentaReporteTest extends TestCase
         $this->assertSame(3, $top[0]['cantidad_vendida']);
         $this->assertEquals(300.0, $top[0]['total_vendido']);
     }
+
+    public function test_reporte_agrupa_por_metodo_de_pago_con_su_nombre(): void
+    {
+        $tarjeta = MetodoPago::where('tenant_id', $this->tenant->id)->where('nombre', 'Tarjeta')->firstOrFail();
+
+        $this->ventaService->registrarVenta(
+            ['tenant_id' => $this->tenant->id, 'sucursal_id' => $this->sucursal->id, 'usuario_id' => $this->usuario->id, 'cliente_id' => $this->cliente->id],
+            [['variante_id' => $this->variante->id, 'cantidad' => 2]],
+            [['metodo_pago_id' => $this->efectivo->id, 'monto' => 120], ['metodo_pago_id' => $tarjeta->id, 'monto' => 80]],
+        );
+
+        $this->actingAs($this->usuario);
+
+        $porMetodo = collect($this->getJson('/api/v1/ventas/reporte')->assertOk()->json('data.por_metodo_pago'))
+            ->pluck('total', 'metodo_pago_nombre');
+
+        $this->assertEquals(120.0, $porMetodo['Efectivo']);
+        $this->assertEquals(80.0, $porMetodo['Tarjeta']);
+    }
+
+    public function test_reporte_top_productos_con_varias_variantes_trae_sus_nombres(): void
+    {
+        $otra = ProductoVariante::create(['producto_id' => $this->variante->producto_id, 'talla' => 'L', 'color' => 'Blanco']);
+        app(InventarioService::class)->registrarCompra(
+            ['tenant_id' => $this->tenant->id, 'proveedor_id' => Proveedor::firstOrFail()->id, 'sucursal_id' => $this->sucursal->id, 'usuario_id' => $this->usuario->id],
+            [['variante_id' => $otra->id, 'cantidad' => 10, 'precio_compra' => 50]],
+        );
+
+        $this->ventaService->registrarVenta(
+            ['tenant_id' => $this->tenant->id, 'sucursal_id' => $this->sucursal->id, 'usuario_id' => $this->usuario->id, 'cliente_id' => $this->cliente->id],
+            [['variante_id' => $this->variante->id, 'cantidad' => 2], ['variante_id' => $otra->id, 'cantidad' => 1]],
+            [['metodo_pago_id' => $this->efectivo->id, 'monto' => 300]],
+        );
+
+        $this->actingAs($this->usuario);
+
+        $top = collect($this->getJson('/api/v1/ventas/reporte')->assertOk()->json('data.top_productos'))
+            ->keyBy('variante_id');
+
+        $this->assertSame('Playera', $top[$this->variante->id]['producto_nombre']);
+        $this->assertSame('L', $top[$otra->id]['talla']);
+        $this->assertSame('Blanco', $top[$otra->id]['color']);
+    }
 }
