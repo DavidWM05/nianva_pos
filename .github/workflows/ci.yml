@@ -123,6 +123,12 @@ jobs:
       - name: Instalar dependencias con el lockfile
         run: pnpm install --frozen-lockfile
 
+      - name: Revisar avisos de seguridad de produccion
+        run: pnpm audit --prod
+
+      - name: Revisar avisos de seguridad altos
+        run: pnpm audit --audit-level high
+
       - name: Revisar lint
         run: pnpm nx run-many -t lint
 
