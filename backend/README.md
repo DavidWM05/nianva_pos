@@ -422,7 +422,7 @@ resumen por módulo.
 | POST | `/api/v1/recetas` | `produccion.crear` | Crear receta con ingredientes |
 | GET | `/api/v1/ordenes-produccion` | `produccion.ver` | Lista paginada de órdenes |
 | POST | `/api/v1/ordenes-produccion` | `produccion.crear` | Crear orden de producción |
-| PATCH | `/api/v1/ordenes-produccion/{id}/estado` | `produccion.crear` | Cambiar estado/completar (descuenta insumos, incrementa producto) |
+| PATCH | `/api/v1/ordenes-produccion/{id}/estado` | `produccion.completar` | Cambiar estado/completar (descuenta insumos, incrementa producto) |
 | GET | `/api/v1/transformaciones` | `produccion.ver` | Lista paginada de transformaciones |
 | POST | `/api/v1/transformaciones` | `produccion.transformar` | Registrar transformación entre variantes |
 

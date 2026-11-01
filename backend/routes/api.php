@@ -344,7 +344,7 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::post('/recetas', [ProduccionController::class, 'recetasStore'])->middleware('permiso:produccion.crear');
             Route::get('/ordenes-produccion', [ProduccionController::class, 'ordenesIndex'])->middleware('permiso:produccion.ver');
             Route::post('/ordenes-produccion', [ProduccionController::class, 'ordenesStore'])->middleware('permiso:produccion.crear');
-            Route::patch('/ordenes-produccion/{id}/estado', [ProduccionController::class, 'ordenesCambiarEstado'])->middleware('permiso:produccion.crear');
+            Route::patch('/ordenes-produccion/{id}/estado', [ProduccionController::class, 'ordenesCambiarEstado'])->middleware('permiso:produccion.completar');
             Route::get('/transformaciones', [ProduccionController::class, 'transformacionesIndex'])->middleware('permiso:produccion.ver');
             Route::post('/transformaciones', [ProduccionController::class, 'transformacionStore'])->middleware('permiso:produccion.transformar');
         });
