@@ -65,7 +65,7 @@ class CotizacionController extends Controller
             'data' => CotizacionResource::collection($paginador->items()),
             'meta' => [
                 'total' => $paginador->total(),
-                'permisos' => $this->permisosDe($request, 'cotizaciones', ['ver', 'crear', 'editar', 'eliminar', 'convertir']),
+                'permisos' => $this->permisosDe($request, 'cotizaciones', ['ver', 'crear', 'editar', 'eliminar', 'convertir', 'precio_manual']),
             ],
         ]);
     }
@@ -97,11 +97,20 @@ class CotizacionController extends Controller
         return (new CotizacionResource($cotizacion))->response()->setStatusCode(201);
     }
 
-    public function show(Cotizacion $cotizacion)
+    public function show(Request $request, Cotizacion $cotizacion)
     {
         $cotizacion->load(['cliente', 'usuario', 'detalles.variante.producto']);
 
-        return new CotizacionResource($cotizacion);
+        return response()->json([
+            'data' => new CotizacionResource($cotizacion),
+            'meta' => [
+                'permisos' => $this->permisosDe(
+                    $request,
+                    'cotizaciones',
+                    ['ver', 'crear', 'editar', 'eliminar', 'convertir', 'precio_manual'],
+                ),
+            ],
+        ]);
     }
 
     public function update(ActualizarCotizacionRequest $request, int $id, CotizacionService $cotizacionService)

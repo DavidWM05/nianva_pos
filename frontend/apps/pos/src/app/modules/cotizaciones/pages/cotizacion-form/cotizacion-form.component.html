@@ -16,7 +16,11 @@
     </section>
 
     <section class="cotizacion-form__seccion">
-      <nucleo-lineas-cotizacion [valorInicial]="cotizacionActual()?.detalles ?? null" (cambio)="onLineasCambio($event)" />
+      <nucleo-lineas-cotizacion
+        [valorInicial]="cotizacionActual()?.detalles ?? null"
+        [precioManual]="precioManual()"
+        (cambio)="onLineasCambio($event)"
+      />
     </section>
 
     <section class="cotizacion-form__seccion cotizacion-form__totales">

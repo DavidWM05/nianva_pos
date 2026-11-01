@@ -1093,12 +1093,6 @@ parameters:
 			path: app/Modules/Cotizaciones/Services/CotizacionService.php
 
 		-
-			message: '#^Access to an undefined property App\\Modules\\Cotizaciones\\Models\\Cotizacion\:\:\$total\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Modules/Cotizaciones/Services/CotizacionService.php
-
-		-
 			message: '#^Access to an undefined property App\\Modules\\Cotizaciones\\Models\\Cotizacion\:\:\$uso_cfdi\.$#'
 			identifier: property.notFound
 			count: 1

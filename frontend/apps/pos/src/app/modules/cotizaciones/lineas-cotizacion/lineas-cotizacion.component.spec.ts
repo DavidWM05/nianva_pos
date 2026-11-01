@@ -108,6 +108,24 @@ describe('LineasCotizacionComponent', () => {
     expect(fixture.componentInstance['subtotal']()).toBe(0);
   });
 
+  it('sin precio_manual, precio y descuento son de solo lectura y no se pueden alterar', async () => {
+    await crearComponente();
+    fixture.componentInstance.precioManual = false;
+    agregarLineaDeEjemplo();
+
+    fixture.componentInstance.actualizarPrecio(0, 150);
+    fixture.componentInstance.actualizarDescuento(0, 50);
+
+    expect(fixture.componentInstance['lineas']()[0].precio_unitario).toBe(100);
+    expect(fixture.componentInstance['lineas']()[0].descuento).toBe(10);
+
+    const inputs = Array.from(
+      (fixture.nativeElement as HTMLElement).querySelectorAll<HTMLInputElement>('input[type="number"]'),
+    ).filter((input) => input.min === '0');
+    expect(inputs).toHaveLength(2);
+    expect(inputs.every((input) => input.readOnly)).toBe(true);
+  });
+
   it('con valorInicial (editar una cotizacion existente), precarga las lineas desde los detalles crudos del backend', async () => {
     await crearComponente();
 
