@@ -36,7 +36,8 @@
   uniforme (C10).
 - **Verifica:** una regla de arquitectura (los controladores devuelven `JsonResource` o
   `ResourceCollection`) y tests del contrato OpenAPI (API-08).
-- **Desde:** Fase 1.
+- **Desde:** Fase 1, el sobre y la regla de `JsonResource` (con una lista de pendientes que
+  solo baja); Fase 3, el dinero y las cantidades como cadena decimal, con DAT-02.
 
 ### API-03 · Errores
 - **Regla:** solo hay tres formas de error, sin excepciones:
@@ -121,7 +122,8 @@
   se desincroniza.
 - **Verifica:** CI regenera la especificación y falla si difiere de la versionada, y un test de
   respuestas contra el esquema en las pruebas HTTP.
-- **Desde:** Fase 1.
+- **Desde:** Fase 1, la especificación generada y su diff en CI; Fase 2, los tipos y clientes
+  generados en el frontend.
 
 ### API-09 · Features y permisos en la respuesta
 - **Regla:**

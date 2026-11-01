@@ -374,37 +374,65 @@ repo.
     - cada escenario corre en una transacción. Antes, uno que fallaba a medias dejaba su
       tenant y la siguiente corrida lo saltaba incompleto.
   - **Tests:** 11 nuevos (8 de escenarios y 3 de reporte). Backend: 618 tests.
+- **Lote de menores de la Fase 1** (vigesimoséptimo encargo, hecho por DS):
+  - **Matriz de permisos (SEG-03):** un método nuevo en `MatrizPermisosTest` crea con su
+    factory el modelo de cada ruta con route model binding y cubre las 60 rutas por rol.
+    `RUTAS_BINDING_SIN_CUBRIR` queda vacía. No hubo hallazgos de seguridad. Si se quita un
+    `permiso:*`, el test falla.
+  - **Producción:** `PATCH ordenes-produccion/{id}/estado` pide `produccion.completar` en vez
+    de `produccion.crear`. Lo cubre `CambiarEstadoOrdenPermisoTest`, que falló antes del
+    cambio. El frontend no se tocó, porque Producción está congelado.
+  - **`packageManager`:** `frontend/package.json` declara `pnpm@11.5.3`, y CI toma la versión
+    de ahí (`package_json_file`) en vez de repetirla.
+  - Ningún test existente modificado. Backend: 622 tests.
 - **Pendientes detectados:**
   - `Produccion` usa `UnidadMedida` (extensión → extensión); las unidades se rediseñan en la
     Fase 3 (DAT-01);
-  - permisos que no corresponden a la acción: `PATCH ordenes-produccion/{id}/estado` pide
-    `produccion.crear` aunque existe `produccion.completar` (Producción, congelado); el
-    resto (`desactivar` con `.eliminar`, catálogos de apoyo) es intencional;
-  - la matriz de permisos no cubre las 60 rutas con route model binding;
+  - permisos de acción distinta que son intencionales: `desactivar` con `.eliminar` y los
+    catálogos de apoyo;
   - la suite de `pos` tuvo timeouts de 5 s bajo carga en una corrida local (Nx la marcó
     inestable); vigilar en CI y, si se repite, revisar los specs más lentos;
   - `VentaController` y `CompraController` toman el tenant de `$request->user()` y el resto
-    de `TenantContext` (equivalentes); se unifica al migrar a FormRequest (C8);
-  - `frontend/package.json` no declara `"packageManager": "pnpm@11.5.3"`; con ese campo,
-    corepack fuerza la versión de pnpm y rechaza un `npm install` por error.
+    de `TenantContext` (equivalentes); se unifica al migrar a FormRequest (C8).
 - **Git:** `master` está protegido (ruleset `proteger-master`): todo entra por PR con los tres
   checks en verde.
 
 ## 6. Siguiente paso, en orden
 
-1. **Saneamiento de la Fase 1**, en encargos de un tema cada uno. Hecho: CI con ambas
+1. **Saneamiento de la Fase 1, en curso.** El 2026-11-01 se revisaron contra el repo todas las
+   reglas "Desde: Fase 1": varias no tienen todavía su "Verifica" (ver "Falta en la Fase 1",
+   abajo). Hecho: CI con ambas
    suites, C1 (D4), las validaciones de negocio (500 → 422) y las reglas `exists` con
    tenant (API-05), la unicidad con tenant (DAT-09, C4), C11 (D5) y el análisis estático
    bloqueante (Pint, ESLint, PHPStan), C7 (DAT-14), C2 (SEG-03), C3 (SEG-02), C8 (ARQ-02), C5 (API-01), la documentación del repo (`README.md` y
    `.claude/CLAUDE.md`), `composer audit`, las guardas de PRO-01 y DAT-12 con CODEOWNERS
    y `pnpm audit`, la edición parcial de roles y usuarios, C9 y los seeders por escenario (PRO-08). De los conflictos C1-C11
-   solo quedan C6 (Fase 3) y C10 (Fase 2). Lo que sigue:
-   - resto de PRO-05: stylelint pasa a la Fase 2 y el diff de OpenAPI espera a que se genere
-     la especificación (API-08);
+   solo quedan C6 (Fase 3) y C10 (Fase 2).
+
+   **Falta en la Fase 1**, un encargo por línea, en este orden:
+   1. renombrar la rama `master` → `main`;
+   2. CODEOWNERS de los módulos congelados (ARQ-10), gitleaks en CI (SEG-07) y la guarda de
+      URLs fijas en el frontend (ARQ-13);
+   3. errores 500 sin detalles internos y con `correlation_id` (SEG-11); `storage/` fuera del
+      docroot, con sus tests (SEG-08);
+   4. `migrate:rollback` en CI y snapshot del esquema (DAT-11); `zona_horaria` en la
+      configuración del tenant (DAT-06);
+   5. auditar los tests que piden SEG-10, API-05 y API-03, y completar los que falten;
+   6. `strict_types` en el código nuevo y tocado, con una lista que solo baja (ARQ-08);
+   7. especificación OpenAPI generada y su diff en CI (API-08, parte de la Fase 1);
+   8. regla "los controllers devuelven `JsonResource`", con `PENDIENTES` (API-02, parte de la
+      Fase 1);
+   9. contrato común de listados, con `PENDIENTES` (API-06).
+
+   Decisión del responsable (2026-11-01):
+   - de API-02, el dinero y las cantidades como cadena pasan a la Fase 3, con DAT-02;
+   - de API-08, los tipos generados en el frontend pasan a la Fase 2.
+
+   Quedan para fases posteriores:
+   - stylelint (PRO-05) pasa a la Fase 2;
    - después de C8: que los Services reciban DTOs en vez de arreglos (se hace al reescribirlos
-     en las Fases 3 a 5); `RequiereDosFactorReciente` sigue validando dentro del middleware;
-   - opcional: rama `master` → `main`.
-2. **Fase 2**: sistema de diseño.
+     en las Fases 3 a 5); `RequiereDosFactorReciente` sigue validando dentro del middleware.
+2. **Fase 2: sistema de diseño**, cuando cierre la Fase 1.
 
 ## 7. Reglas de trabajo con el responsable
 
