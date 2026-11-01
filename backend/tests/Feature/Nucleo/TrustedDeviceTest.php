@@ -250,9 +250,9 @@ class TrustedDeviceTest extends TestCase
         $dispositivo = DispositivoConfiable::where('usuario_id', $usuario->id)->firstOrFail();
         $expiracionOriginal = $dispositivo->fecha_expiracion->toDateTimeString();
 
-        // dias_dispositivo_admin por default es 14 (ver TenantObserver) --
+        // dias_dispositivo_admin por default es 30 (ver TenantObserver) --
         // confirma que el dispositivo ya confiado uso ese valor.
-        $this->assertSame(now()->addDays(14)->toDateString(), $dispositivo->fecha_expiracion->toDateString());
+        $this->assertSame(now()->addDays(30)->toDateString(), $dispositivo->fecha_expiracion->toDateString());
 
         ConfiguracionSeguridad::where('tenant_id', $tenant->id)->first()->update(['dias_dispositivo_admin' => 60]);
 
@@ -261,5 +261,28 @@ class TrustedDeviceTest extends TestCase
             $dispositivo->fresh()->fecha_expiracion->toDateTimeString(),
             'El dispositivo ya confiado no debe cambiar su expiracion cuando se edita la configuracion despues.',
         );
+    }
+
+    public function test_sin_configuracion_de_seguridad_un_admin_confia_su_dispositivo_por_30_dias(): void
+    {
+        ['usuario' => $usuario, 'secret' => $secret, 'tenant' => $tenant] = $this->crearUsuarioCon2fa(esAdmin: true);
+        ConfiguracionSeguridad::where('tenant_id', $tenant->id)->delete();
+
+        $this->loginYConfiarDispositivo($usuario, $secret);
+
+        $dispositivo = DispositivoConfiable::where('usuario_id', $usuario->id)->firstOrFail();
+        $this->assertSame(now()->addDays(30)->toDateString(), $dispositivo->fecha_expiracion->toDateString());
+    }
+
+    public function test_un_tenant_nuevo_confia_el_dispositivo_de_un_admin_por_30_dias(): void
+    {
+        ['usuario' => $usuario, 'secret' => $secret, 'tenant' => $tenant] = $this->crearUsuarioCon2fa(esAdmin: true);
+
+        $this->assertSame(30, ConfiguracionSeguridad::where('tenant_id', $tenant->id)->firstOrFail()->dias_dispositivo_admin);
+
+        $this->loginYConfiarDispositivo($usuario, $secret);
+
+        $dispositivo = DispositivoConfiable::where('usuario_id', $usuario->id)->firstOrFail();
+        $this->assertSame(now()->addDays(30)->toDateString(), $dispositivo->fecha_expiracion->toDateString());
     }
 }

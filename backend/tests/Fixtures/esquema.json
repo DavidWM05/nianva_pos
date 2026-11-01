@@ -1339,7 +1339,7 @@
                 "nombre": "dias_dispositivo_admin",
                 "tipo": "integer",
                 "nullable": false,
-                "default": "'14'"
+                "default": "'30'"
             },
             {
                 "nombre": "dias_dispositivo_normal",

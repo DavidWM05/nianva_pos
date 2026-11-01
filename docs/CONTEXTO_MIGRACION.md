@@ -438,6 +438,28 @@ repo.
   - tests nuevos: `EsquemaSnapshotTest` y `ZonaHorariaTenantTest`. Backend: 638 tests.
   - Para una BD de desarrollo existente: `php artisan migrate:fresh --seed` y volver a correr
     `DesarrolloSeeder`.
+- **Reseteo de emergencia del 2FA** (trigésimo primer encargo, hecho por DS y completado en la
+  revisión):
+  - **comando `php artisan usuarios:resetear-2fa {correo}`:** pide confirmación, que se omite
+    con `--force`. En una transacción borra el secreto, los códigos de recuperación y la
+    confirmación; revoca los dispositivos confiables y, con sesiones en base de datos, cierra
+    las sesiones abiertas;
+  - la auditoría la deja `AuditObserver` al guardar el usuario, con `usuario_id` nulo desde
+    consola; el comando no escribe auditoría a mano;
+  - en el siguiente login, el admin debe configurar el 2FA de nuevo (423
+    `dos_pasos_requeridos`). Reemplaza al paso con `tinker` del README;
+  - **seeders:** `DesarrolloSeeder` y los escenarios imprimen también los 8 códigos de
+    recuperación de cada admin;
+  - **"recordar dispositivo" para admin pasa de 14 a 30 días por defecto**, en
+    `TrustedDeviceService`, la migración de `configuracion_seguridad` (reescrita, DAT-11), la
+    factory y el comentario de `TenantObserver`. DS se detuvo porque `TrustedDeviceTest`
+    fijaba el 14. **Excepción a PRO-01 autorizada por el responsable:** esa aserción y su
+    comentario pasan a 30. La completé en la revisión, con dos tests nuevos que fallaron
+    antes del cambio;
+  - tests nuevos: `ResetearDosFactorCommandTest` (5), dos métodos en `EscenariosSeederTest`
+    y dos en `TrustedDeviceTest`. Backend: 647 tests.
+  - Para una BD de desarrollo existente: `migrate:fresh --seed`, porque cambió un default de
+    `configuracion_seguridad`.
 - **Pendientes detectados:**
   - `Produccion` usa `UnidadMedida` (extensión → extensión); las unidades se rediseñan en la
     Fase 3 (DAT-01);
@@ -470,16 +492,10 @@ repo.
       del docroot, con sus tests (SEG-08)~~, hecho en el encargo 29;
    3. ~~`migrate:rollback` en CI y snapshot del esquema (DAT-11); `zona_horaria` en la
       configuración del tenant (DAT-06)~~, hecho en el encargo 30;
-   3b. 2FA, por decisión del responsable (2026-11-01):
-       - comando `php artisan usuarios:resetear-2fa {correo}` para un admin que perdió el
-         teléfono y los códigos, con registro en la auditoría; reemplaza el paso con tinker de
-         `backend/README.md`;
-       - `DesarrolloSeeder` y los escenarios imprimen también los códigos de recuperación;
-       - "recordar dispositivo" para admin pasa de 14 a 30 días por defecto (cada tenant lo
-         ajusta entre 1 y 90).
-
-       El 2FA sigue siendo obligatorio para admin. Lo que quita la fricción en tiendas chicas
-       es el PIN de caja (SEG-12, Fase 4);
+   3b. ~~2FA: comando `usuarios:resetear-2fa`, códigos de recuperación en los seeders y 30
+       días por defecto para admin~~, hecho en el encargo 31. El 2FA sigue siendo obligatorio
+       para admin; lo que quita la fricción en tiendas chicas es el PIN de caja (SEG-12,
+       Fase 4);
    4. auditar los tests que piden SEG-10, API-05 y SEG-01 (el test que recorre las rutas con
       modelo y exige su test de aislamiento), y completar los que falten;
    5. `strict_types` en el código nuevo y tocado, con una lista que solo baja (ARQ-08); test de
