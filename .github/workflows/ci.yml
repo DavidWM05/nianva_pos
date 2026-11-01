@@ -98,6 +98,12 @@ jobs:
       - name: Ejecutar pruebas del backend
         run: php artisan test
 
+      - name: Ejecutar escenarios de seed en SQLite
+        run: |
+          touch database/escenarios.sqlite
+          DB_CONNECTION=sqlite DB_DATABASE="$PWD/database/escenarios.sqlite" php artisan migrate:fresh --seed --force
+          DB_CONNECTION=sqlite DB_DATABASE="$PWD/database/escenarios.sqlite" php artisan db:seed --class='Database\Seeders\Escenarios\EscenariosSeeder' --force
+
   frontend:
     name: Frontend
     runs-on: ubuntu-latest
