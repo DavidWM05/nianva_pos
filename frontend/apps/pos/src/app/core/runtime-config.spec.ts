@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { baseApiActual, configurarBaseApi } from './api-config';
+import { baseApiActual, configurarBaseApi, urlApi, urlSesion } from './api-config';
 import { cargarBaseApi } from './runtime-config';
 
 function fetchConConfiguracion(config: unknown): typeof fetch {
@@ -34,5 +34,19 @@ describe('runtime-config', () => {
 
     expect(base).toBe('');
     expect(baseApiActual()).toBe('');
+  });
+
+  it('el mismo build resuelve dos configuraciones distintas', async () => {
+    const baseLan = await cargarBaseApi(fetchConConfiguracion({ apiBaseUrl: 'http://servidor-lan:8080' }));
+
+    expect(baseLan).toBe('http://servidor-lan:8080');
+    expect(urlApi('/ventas')).toBe('http://servidor-lan:8080/api/v1/ventas');
+    expect(urlSesion('/login')).toBe('http://servidor-lan:8080/login');
+
+    const baseMismoOrigen = await cargarBaseApi(fetchConConfiguracion({ apiBaseUrl: '' }));
+
+    expect(baseMismoOrigen).toBe('');
+    expect(urlApi('/ventas')).toBe('/api/v1/ventas');
+    expect(urlSesion('/login')).toBe('/login');
   });
 });

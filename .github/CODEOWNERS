@@ -7,3 +7,20 @@ frontend/**/*.spec.ts @DavidWM05
 backend/phpstan-baseline.neon @DavidWM05
 .github/workflows/** @DavidWM05
 docs/estandares/** @DavidWM05
+
+# ARQ-10: modulos congelados (Payroll, Prestamos, Delivery y CrmAvanzado).
+# No se amplian; un PR que los toque necesita revision del responsable.
+backend/app/Modules/Payroll/** @DavidWM05
+backend/app/Modules/Prestamos/** @DavidWM05
+backend/app/Modules/Delivery/** @DavidWM05
+backend/app/Modules/CrmAvanzado/** @DavidWM05
+frontend/apps/pos/src/app/modules/payroll/** @DavidWM05
+frontend/apps/pos/src/app/modules/prestamos/** @DavidWM05
+frontend/apps/pos/src/app/modules/delivery/** @DavidWM05
+
+# CrmAvanzado no tiene carpeta frontend propia: su UI vive dentro de modules/crm.
+frontend/apps/pos/src/app/modules/crm/campana.service.ts @DavidWM05
+frontend/apps/pos/src/app/modules/crm/campana.types.ts @DavidWM05
+frontend/apps/pos/src/app/modules/crm/crm-avanzado.service.ts @DavidWM05
+frontend/apps/pos/src/app/modules/crm/crm-avanzado.types.ts @DavidWM05
+frontend/apps/pos/src/app/modules/crm/pages/campana-form/** @DavidWM05
