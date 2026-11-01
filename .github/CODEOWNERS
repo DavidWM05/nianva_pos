@@ -1,0 +1,9 @@
+# PRO-01 y PRO-03: estos archivos piden la revision del responsable.
+# No se activa "Require review from Code Owners" en el ruleset: con un solo
+# dueno bloquearia sus propios PRs; sirve como marca y para la notificacion.
+
+backend/tests/** @DavidWM05
+frontend/**/*.spec.ts @DavidWM05
+backend/phpstan-baseline.neon @DavidWM05
+.github/workflows/** @DavidWM05
+docs/estandares/** @DavidWM05

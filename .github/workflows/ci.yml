@@ -5,6 +5,8 @@ on:
     branches:
       - master
   pull_request:
+    # labeled/unlabeled: la etiqueta pro-01-autorizado vuelve a correr la guarda de PRO-01.
+    types: [opened, synchronize, reopened, labeled, unlabeled]
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -136,6 +138,9 @@ jobs:
     steps:
       - name: Obtener el codigo
         uses: actions/checkout@v4
+        with:
+          # En un PR, HEAD es el merge de prueba y HEAD^1 la base exacta con que se armó.
+          fetch-depth: 2
 
       - name: Buscar skip u only sin issue enlazada
         shell: bash
@@ -196,3 +201,156 @@ jobs:
           fi
 
           echo "OK: no quedan nombres internos viejos."
+
+      - name: Verificar que no bajen los metodos de test
+        if: github.event_name == 'pull_request'
+        shell: bash
+        env:
+          PRO01_AUTORIZADO: ${{ contains(github.event.pull_request.labels.*.name, 'pro-01-autorizado') }}
+        run: |
+          set -euo pipefail
+
+          base="HEAD^1"
+
+          contar_backend() {
+            awk '
+              /^[[:space:]]*public[[:space:]]+function[[:space:]]+test_/ { total++ }
+              /^[[:space:]]*#\[Test\]/ { total++ }
+              END { print total + 0 }
+            '
+          }
+
+          contar_frontend() {
+            awk '
+              /^[[:space:]]*(it|test)\(/ { total++ }
+              END { print total + 0 }
+            '
+          }
+
+          es_test_backend() {
+            case "$1" in
+              backend/tests/*.php) return 0 ;;
+            esac
+            return 1
+          }
+
+          es_test_frontend() {
+            case "$1" in
+              frontend/apps/*.spec.ts|frontend/libs/*.spec.ts) return 0 ;;
+            esac
+            return 1
+          }
+
+          contar_base() {
+            local ruta="$1"
+            if es_test_backend "$ruta"; then
+              git show "${base}:${ruta}" | contar_backend
+            elif es_test_frontend "$ruta"; then
+              git show "${base}:${ruta}" | contar_frontend
+            else
+              echo 0
+            fi
+          }
+
+          contar_actual() {
+            local ruta="$1"
+            if [ ! -f "$ruta" ]; then
+              echo 0
+            elif es_test_backend "$ruta"; then
+              contar_backend < "$ruta"
+            elif es_test_frontend "$ruta"; then
+              contar_frontend < "$ruta"
+            else
+              echo 0
+            fi
+          }
+
+          perdidas=""
+
+          while IFS=$'\t' read -r estado ruta1 ruta2; do
+            [ -z "${estado:-}" ] && continue
+
+            case "$estado" in
+              A) continue ;;
+              D) old="$ruta1"; new="" ;;
+              R*) old="$ruta1"; new="$ruta2" ;;
+              *) old="$ruta1"; new="$ruta1" ;;
+            esac
+
+            if es_test_backend "$old" || es_test_frontend "$old"; then
+              if [ -z "$new" ] || { ! es_test_backend "$new" && ! es_test_frontend "$new"; }; then
+                perdidas+="${old} -> eliminado o convertido en no-test"$'\n'
+                continue
+              fi
+
+              antes=$(contar_base "$old")
+              despues=$(contar_actual "$new")
+
+              if [ "$despues" -lt "$antes" ]; then
+                perdidas+="${old} -> ${new}: ${antes} -> ${despues}"$'\n'
+              fi
+            fi
+          done < <(git diff --name-status -M "$base" HEAD -- backend/tests frontend/apps frontend/libs)
+
+          if [ -n "$perdidas" ]; then
+            echo "Archivos de test con menos metodos:"
+            printf '%s' "$perdidas"
+
+            if [ "${PRO01_AUTORIZADO:-false}" = "true" ]; then
+              echo "AVISO: perdida autorizada por la etiqueta pro-01-autorizado."
+              exit 0
+            fi
+
+            exit 1
+          fi
+
+          echo "OK: ningun archivo de test perdio metodos."
+
+      - name: Revisar codificacion de archivos de texto
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          hallazgos=""
+
+          es_binaria() {
+            case "$1" in
+              *.png|*.jpg|*.jpeg|*.gif|*.webp|*.ico|*.svg|*.woff|*.woff2|*.ttf|*.otf|*.eot|*.pdf|*.zip|*.gz|*.tgz|*.mp4|*.mov|*.mp3|*.wav) return 0 ;;
+            esac
+            return 1
+          }
+
+          while IFS= read -r -d '' ruta; do
+            if es_binaria "$ruta"; then
+              continue
+            fi
+
+            if ! LC_ALL=C tr -d '\000' < "$ruta" | cmp -s - "$ruta"; then
+              continue
+            fi
+
+            if ! iconv -f UTF-8 -t UTF-8 "$ruta" >/dev/null 2>&1; then
+              hallazgos+="UTF-8 invalido: ${ruta}"$'\n'
+              continue
+            fi
+
+            if [ "$(head -c 3 "$ruta" | od -An -tx1 | tr -d ' \n')" = "efbbbf" ]; then
+              hallazgos+="BOM UTF-8: ${ruta}"$'\n'
+            fi
+
+            if LC_ALL=C grep -qF $'\xef\xbf\xbd' "$ruta"; then
+              hallazgos+="U+FFFD: ${ruta}"$'\n'
+            fi
+
+            while IFS=: read -r linea _; do
+              hallazgos+="??+letra: ${ruta}:${linea}"$'\n'
+            done < <(LC_ALL=C grep -nE '\?\?[[:alpha:]]' "$ruta" || true)
+          done < <(git ls-files -z -- backend/app backend/config backend/routes backend/database backend/tests frontend/apps frontend/libs docs/estandares)
+
+          if [ -n "$hallazgos" ]; then
+            echo "Hallazgos de codificacion:"
+            printf '%s' "$hallazgos"
+            exit 1
+          fi
+
+          echo "OK: archivos de texto con UTF-8 valido, sin BOM, U+FFFD ni ??+letra."
