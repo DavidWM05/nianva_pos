@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('tenant_id')->unique()->constrained('tenants')->cascadeOnDelete();
             $table->unsignedTinyInteger('dias_dispositivo_normal')->default(30);
-            $table->unsignedTinyInteger('dias_dispositivo_admin')->default(14);
+            $table->unsignedTinyInteger('dias_dispositivo_admin')->default(30);
         });
     }
 

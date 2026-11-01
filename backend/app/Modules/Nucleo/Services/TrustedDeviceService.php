@@ -23,7 +23,7 @@ class TrustedDeviceService
 {
     public const NOMBRE_COOKIE = 'dispositivo_confiable';
 
-    private const DIAS_ADMIN_DEFAULT = 14;
+    private const DIAS_ADMIN_DEFAULT = 30;
 
     private const DIAS_NORMAL_DEFAULT = 30;
 

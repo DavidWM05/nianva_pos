@@ -18,7 +18,7 @@ class ConfiguracionSeguridadFactory extends Factory
         return [
             'tenant_id' => fn () => TenantParaFactory::id(),
             'dias_dispositivo_normal' => 30,
-            'dias_dispositivo_admin' => 14,
+            'dias_dispositivo_admin' => 30,
         ];
     }
 
