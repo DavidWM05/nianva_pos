@@ -10,6 +10,7 @@ export interface CotizacionesPermisos {
   crear: boolean;
   editar: boolean;
   eliminar: boolean;
+  precio_manual?: boolean;
 }
 
 export interface CotizacionesPagina {
@@ -48,6 +49,13 @@ export class CotizacionService {
       .pipe(map((r) => ({ data: r.data, total: r.meta.total, permisos: r.meta.permisos })));
   }
 
+  permisos(): Observable<CotizacionesPermisos> {
+    return this.http
+      .get<{ meta: { permisos: CotizacionesPermisos } }>(urlApi('/cotizaciones'), {
+        params: new HttpParams().set('rows', 1),
+      })
+      .pipe(map((r) => r.meta.permisos));
+  }
   obtener(id: number): Observable<Cotizacion> {
     return this.http.get<{ data: Cotizacion }>(urlApi(`/cotizaciones/${id}`)).pipe(map((r) => r.data));
   }

@@ -57,6 +57,12 @@ export class LineasCotizacionComponent implements OnChanges {
   /** Lineas iniciales al editar una cotizacion existente (forma cruda del backend) -- vacio/null al crear. */
   @Input() valorInicial: CotizacionDetalle[] | null = null;
 
+  /**
+   * true solo con cotizaciones.precio_manual. Por defecto true para no
+   * romper usos previos; el formulario siempre passa el permiso real.
+   */
+  @Input() precioManual = true;
+
   @Output() cambio = new EventEmitter<LineasCotizacionCambio>();
 
   protected readonly productoSeleccionadoId = signal<number | null>(null);
@@ -161,13 +167,13 @@ export class LineasCotizacionComponent implements OnChanges {
   }
 
   actualizarPrecio(indice: number, precio: number): void {
-    if (precio < 0) return;
+    if (!this.precioManual || precio < 0) return;
     this.lineas.update((actuales) => actuales.map((l, i) => (i === indice ? { ...l, precio_unitario: precio } : l)));
     this.emitirCambio();
   }
 
   actualizarDescuento(indice: number, descuento: number): void {
-    if (descuento < 0) return;
+    if (!this.precioManual || descuento < 0) return;
     this.lineas.update((actuales) => actuales.map((l, i) => (i === indice ? { ...l, descuento } : l)));
     this.emitirCambio();
   }

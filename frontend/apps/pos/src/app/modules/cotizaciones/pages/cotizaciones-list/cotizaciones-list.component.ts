@@ -18,7 +18,7 @@ import { Subject, debounceTime } from 'rxjs';
 import { CotizacionesPermisos, CotizacionService } from '../../cotizacion.service';
 import { Cotizacion, EstadoCotizacion } from '../../cotizacion.types';
 
-const PERMISOS_VACIOS: CotizacionesPermisos = { crear: false, editar: false, eliminar: false };
+const PERMISOS_VACIOS: CotizacionesPermisos = { crear: false, editar: false, eliminar: false, precio_manual: false };
 
 const ESTADOS: { label: string; value: EstadoCotizacion | null }[] = [
   { label: 'Todas', value: null },

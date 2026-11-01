@@ -48,7 +48,7 @@ class NucleoRolesPermisosSeeder extends Seeder
         'reportes' => ['ver'],
         'auditoria' => ['ver'],
         // Modulos nuevos
-        'cotizaciones' => ['ver', 'crear', 'editar', 'eliminar', 'convertir'],
+        'cotizaciones' => ['ver', 'crear', 'editar', 'eliminar', 'convertir', 'precio_manual'],
         'cuentas_cobrar' => ['ver', 'crear', 'registrar_abono', 'anular'],
         'cuentas_pagar' => ['ver', 'registrar_pago', 'anular'],
         'pedidos' => ['ver', 'crear', 'cambiar_estado', 'asignar_repartidor'],

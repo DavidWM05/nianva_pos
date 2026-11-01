@@ -3,9 +3,10 @@
 namespace App\Modules\Cotizaciones\Http\Requests;
 
 use App\Modules\Cotizaciones\Dtos\ActualizarCotizacionDto;
-use App\Modules\Cotizaciones\Dtos\LineaCotizacionDto;
+use App\Modules\Cotizaciones\Support\ResolverPreciosCotizacion;
 use App\Modules\Inventario\Support\ReglasVariante;
 use App\Modules\Nucleo\Http\Requests\SolicitudNegocio;
+use App\Modules\Nucleo\Models\Usuario;
 use App\Modules\Nucleo\Support\ReglasTenant;
 
 class ActualizarCotizacionRequest extends SolicitudNegocio
@@ -26,7 +27,7 @@ class ActualizarCotizacionRequest extends SolicitudNegocio
             'items' => ['required', 'array', 'min:1'],
             'items.*.variante_id' => ['required', 'integer', ReglasVariante::delTenant($tenantId)],
             'items.*.cantidad' => ['required', 'integer', 'min:1'],
-            'items.*.precio_unitario' => ['required', 'numeric', 'min:0'],
+            'items.*.precio_unitario' => ['nullable', 'numeric', 'min:0'],
             'items.*.descuento' => ['nullable', 'numeric', 'min:0'],
         ];
     }
@@ -35,19 +36,14 @@ class ActualizarCotizacionRequest extends SolicitudNegocio
     {
         $v = $this->validated();
 
-        $items = array_values(array_map(
-            function (mixed $item): LineaCotizacionDto {
-                $item = (array) $item;
+        $usuario = $this->user();
+        $precioManual = $usuario instanceof Usuario
+            && $usuario->tienePermiso('cotizaciones.precio_manual');
 
-                return new LineaCotizacionDto(
-                    varianteId: (int) $item['variante_id'],
-                    cantidad: (int) $item['cantidad'],
-                    precioUnitario: (float) $item['precio_unitario'],
-                    descuento: (float) ($item['descuento'] ?? 0),
-                );
-            },
+        $items = app(ResolverPreciosCotizacion::class)->resolver(
             (array) ($v['items'] ?? []),
-        ));
+            $precioManual,
+        );
 
         return new ActualizarCotizacionDto(
             clienteId: isset($v['cliente_id']) ? (int) $v['cliente_id'] : null,

@@ -261,9 +261,15 @@ class CotizacionService
                 ];
             }
 
+            // El precio autoritativo es el que resuelve VentaService con
+            // PrecioService; una cotizacion con precio manual no debe fijar
+            // el pago de la venta resultante.
+            $tenantId = (int) $cotizacion->getAttribute('tenant_id');
+            [, $totalVenta] = $this->ventaService->cotizarItems($tenantId, $items);
+
             $pagos = [[
                 'metodo_pago_id' => $dataVenta['metodo_pago_id'],
-                'monto' => $cotizacion->total,
+                'monto' => $totalVenta,
             ]];
 
             $venta = $this->ventaService->registrarVenta(

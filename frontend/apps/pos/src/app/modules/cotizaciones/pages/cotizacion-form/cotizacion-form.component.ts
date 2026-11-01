@@ -58,6 +58,7 @@ export class CotizacionFormComponent implements OnInit {
   protected readonly descuentoGlobal = signal(0);
   protected readonly usoCfdi = signal('');
   protected readonly observaciones = signal('');
+  protected readonly precioManual = signal(false);
 
   protected readonly items = signal<CotizacionItemPayload[]>([]);
   protected readonly subtotal = signal(0);
@@ -66,6 +67,9 @@ export class CotizacionFormComponent implements OnInit {
   protected readonly guardando = signal(false);
 
   ngOnInit(): void {
+    const permisos$ = this.cotizacionService.permisos?.();
+    permisos$?.subscribe((permisos) => this.precioManual.set(permisos.precio_manual ?? false));
+
     const idParam = this.route.snapshot.paramMap.get('id');
     if (!idParam) return;
 
