@@ -460,6 +460,28 @@ repo.
     y dos en `TrustedDeviceTest`. Backend: 647 tests.
   - Para una BD de desarrollo existente: `migrate:fresh --seed`, porque cambió un default de
     `configuracion_seguridad`.
+- **Auditoría de SEG-10, API-05 y SEG-01** (trigésimo segundo encargo, hecho por DS):
+  - **fase 1:** un informe con tres tablas, revisado con el responsable. Encontró:
+    - permisos y roles sin auditoría;
+    - cotizaciones que aceptaban el precio del cliente;
+    - 15 huecos de aislamiento entre sucursales del mismo tenant (van en el encargo 32b);
+  - **SEG-10:** los `sync()` de `rol_permiso` y `usuario_rol` dejan una sola fila por padre y
+    petición, con los ids antes y después. Se declaran en `config/auditoria.php`
+    (`pivotes`). Solo se registran con un usuario autenticado; desde consola no. Además,
+    `ProductoVariante` pasa a ser auditable;
+  - **SEG-10, inventario:** por decisión del responsable, el Kardex es la bitácora de
+    inventario;
+  - **API-05:** tests de manipulación (ventas, cotizar, apartados, devoluciones, compras),
+    que ya pasaban con el código actual;
+  - **API-05, cotizaciones:** el precio sale de `PrecioService`. Un precio o descuento manual
+    solo se acepta con el permiso nuevo `cotizaciones.precio_manual`, que tiene admin. La
+    conversión a venta paga con el total que calcula la venta. En el frontend, sin el
+    permiso, los campos de precio y descuento son de solo lectura;
+  - tests nuevos: `OperacionesSensiblesTest`, `ManipulacionDePreciosTest`,
+    `CotizacionPrecioManualTest` y un spec en `lineas-cotizacion`. Backend: 663 tests; `pos`:
+    438. La línea base de PHPStan baja a 1384;
+  - para una instalación existente: correr `NucleoRolesPermisosSeeder`, para que aparezca
+    `cotizaciones.precio_manual`.
 - **Pendientes detectados:**
   - `Produccion` usa `UnidadMedida` (extensión → extensión); las unidades se rediseñan en la
     Fase 3 (DAT-01);
@@ -496,8 +518,8 @@ repo.
        días por defecto para admin~~, hecho en el encargo 31. El 2FA sigue siendo obligatorio
        para admin; lo que quita la fricción en tiendas chicas es el PIN de caja (SEG-12,
        Fase 4);
-   4. auditar los tests que piden SEG-10, API-05 y SEG-01 (el test que recorre las rutas con
-      modelo y exige su test de aislamiento), y completar los que falten;
+   4. ~~auditar y completar los tests de SEG-10 y API-05~~, hecho en el encargo 32; SEG-01
+      (aislamiento por sucursal) va en el encargo 32b;
    5. `strict_types` en el código nuevo y tocado, con una lista que solo baja (ARQ-08); test de
       que los controllers no usan `DB::` ni `Model::query()`, con `PENDIENTES` (ARQ-01); y que
       toda ruta de un módulo opcional lleva `modulo:*` (ARQ-06);
