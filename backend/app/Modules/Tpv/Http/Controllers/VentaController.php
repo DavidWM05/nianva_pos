@@ -196,6 +196,7 @@ class VentaController extends Controller
         $porMetodoPago = VentaPago::whereIn('venta_id', $ventaIds)
             ->selectRaw('metodo_pago_id, sum(monto) as total')
             ->groupBy('metodo_pago_id')
+            ->with('metodoPago:id,nombre')
             ->get()
             ->map(fn ($r) => [
                 'metodo_pago_id' => $r->metodo_pago_id,
@@ -209,6 +210,7 @@ class VentaController extends Controller
             ->groupBy('variante_id')
             ->orderByDesc('cantidad_vendida')
             ->limit(10)
+            ->with('variante.producto')
             ->get()
             ->map(fn ($r) => [
                 'variante_id' => $r->variante_id,
