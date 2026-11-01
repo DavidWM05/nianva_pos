@@ -348,6 +348,32 @@ repo.
   - Cinco tests nuevos en `RolEdicionParcialTest` y `UsuarioEdicionParcialTest`; los dos que
     reproducen el bug fallaron antes de la corrección.
   - Backend: 608 tests.
+- **Seeders por escenario, PRO-08** (vigesimosexto encargo, hecho por DS):
+  - **Qué hay:** `database/seeders/Escenarios/` tiene cuatro escenarios (ropa, abarrotes con
+    granel, multi-sucursal con 3 sucursales y plan Lite) y `EscenariosSeeder`, que los corre
+    todos. No se llaman desde `DatabaseSeeder`.
+  - **Cómo siembran:** el catálogo, con las factories. El stock entra por
+    `InventarioService::registrarCompra()`, la caja se abre con `CajaService` y las ventas pasan
+    por `RegistrarVenta`, así que el kardex cuadra con el stock.
+  - **Garantías:**
+    - semilla fija, así que dos cargas sobre una BD limpia dan los mismos datos;
+    - idempotentes por nombre de tenant;
+    - se niegan a correr en producción.
+  - **Plan Lite:**
+    - plan `lite` con 1 sucursal y 3 usuarios;
+    - licencia activa y `modulos_activos` vacío;
+    - los límites del plan todavía no se aplican en código.
+  - **Granel:** variantes en `kg` con cantidades enteras, hasta la Fase 3 (C6).
+  - **CI:** el job Backend corre `migrate:fresh --seed` y los escenarios sobre una SQLite en
+    archivo.
+  - **Corregido en la revisión:**
+    - `VentaController::reporte` respondía 500 fuera de producción, por cargas perezosas en
+      `por_metodo_pago` y `top_productos`. Se corrigió con `with()` y dos tests nuevos en
+      `VentaReporteTest`; DS lo había esquivado apagando el modo estricto en su test, y ese
+      parche se quitó;
+    - cada escenario corre en una transacción. Antes, uno que fallaba a medias dejaba su
+      tenant y la siguiente corrida lo saltaba incompleto.
+  - **Tests:** 11 nuevos (8 de escenarios y 3 de reporte). Backend: 618 tests.
 - **Pendientes detectados:**
   - `Produccion` usa `UnidadMedida` (extensión → extensión); las unidades se rediseñan en la
     Fase 3 (DAT-01);
@@ -371,14 +397,12 @@ repo.
    tenant (API-05), la unicidad con tenant (DAT-09, C4), C11 (D5) y el análisis estático
    bloqueante (Pint, ESLint, PHPStan), C7 (DAT-14), C2 (SEG-03), C3 (SEG-02), C8 (ARQ-02), C5 (API-01), la documentación del repo (`README.md` y
    `.claude/CLAUDE.md`), `composer audit`, las guardas de PRO-01 y DAT-12 con CODEOWNERS
-   y `pnpm audit`, la edición parcial de roles y usuarios y C9. De los conflictos C1-C11
+   y `pnpm audit`, la edición parcial de roles y usuarios, C9 y los seeders por escenario (PRO-08). De los conflictos C1-C11
    solo quedan C6 (Fase 3) y C10 (Fase 2). Lo que sigue:
    - resto de PRO-05: stylelint pasa a la Fase 2 y el diff de OpenAPI espera a que se genere
      la especificación (API-08);
    - después de C8: que los Services reciban DTOs en vez de arreglos (se hace al reescribirlos
      en las Fases 3 a 5); `RequiereDosFactorReciente` sigue validando dentro del middleware;
-   - seeders por escenario (PRO-08): tenant ropa, abarrotes con granel, multi-sucursal y plan
-     Lite;
    - opcional: rama `master` → `main`.
 2. **Fase 2**: sistema de diseño.
 
