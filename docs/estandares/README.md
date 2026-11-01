@@ -18,6 +18,9 @@ costó un parche vista por vista. Por eso aquí cada regla dice:
 - **Cómo se verifica**: test, lint, CI o revisión. Una regla sin verificación es un deseo.
 - **Desde**: la fase del plan en que empieza a exigirse.
 
+El estado de cada regla, fase por fase, está en
+[SEGUIMIENTO_FASES.md](../SEGUIMIENTO_FASES.md).
+
 ## Índice
 
 | Archivo | Prefijo | Contenido |
@@ -157,4 +160,5 @@ Cada lección es un hecho ocurrido. Las de Lite tienen el commit o el archivo; l
 | 2026-10-30 | C8 | Resuelto con el lote 5 (módulos congelados): `PENDIENTES` de `EntradasTipadasTest` queda vacía |
 | 2026-10-30 | C5, API-01 | Resuelto: `/api/v1`. API-01 aclara que las rutas de sesión de Sanctum quedan fuera del prefijo y que la dirección del backend sale de `config.json` |
 | 2026-10-31 | C9 | Resuelto: CI bloqueante con ambas suites y `master` protegido. Quedan abiertos C6 (Fase 3) y C10 (Fase 2) |
+| 2026-11-01 | PRO-09 | El checklist de cierre suma "`SEGUIMIENTO_FASES.md` actualizado"; la tabla de seguimiento por regla vive en `docs/SEGUIMIENTO_FASES.md` |
 | 2026-11-01 | API-02, API-08 | Decisión del responsable: se parten. API-02 deja el dinero y las cantidades como cadena para la Fase 3 (con DAT-02); API-08, los tipos generados en el frontend para la Fase 2 |

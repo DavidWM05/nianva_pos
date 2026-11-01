@@ -160,3 +160,5 @@ Route → middleware permiso:* → FormRequest → Controller → Action / Servi
 - Los documentos de estrategia (mercado, tabuladores, borradores de plan) no se suben al repo.
 - Los encargos a DS siguen PRO-09: prompt con contexto y reglas, reporte con conteos y
   checklist de cierre, revisión del diff contra el prompt.
+- Cada encargo actualiza en su PR las filas de `docs/SEGUIMIENTO_FASES.md` que toca. Una fase
+  se cierra solo cuando todas sus filas están en "Hecho".
