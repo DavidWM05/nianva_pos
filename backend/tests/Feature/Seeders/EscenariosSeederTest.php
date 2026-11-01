@@ -235,6 +235,36 @@ class EscenariosSeederTest extends TestCase
             ->assertJsonPath('data.por_sucursal.0.sucursal_id', $vendedor->sucursal_id);
     }
 
+    public function test_cada_admin_de_los_escenarios_tiene_ocho_codigos_de_recuperacion(): void
+    {
+        $admins = Usuario::sinTenant()
+            ->whereHas('roles', fn ($query) => $query->where('nombre', 'admin'))
+            ->get();
+
+        $this->assertCount(4, $admins);
+
+        foreach ($admins as $admin) {
+            $this->assertCount(8, $admin->two_factor_recovery_codes, "El admin {$admin->correo} no tiene 8 codigos.");
+            $this->assertCount(8, array_unique($admin->two_factor_recovery_codes));
+        }
+    }
+
+    public function test_el_login_con_un_codigo_de_recuperacion_funciona_y_lo_consume(): void
+    {
+        $admin = Usuario::sinTenant()->where('correo', 'admin@ropa.test')->firstOrFail();
+        $codigo = $admin->two_factor_recovery_codes[0];
+
+        $this->postJson('/login', [
+            'correo' => $admin->correo,
+            'password' => 'password-dev-123',
+        ])->assertOk()->assertJson(['two_factor_required' => true]);
+
+        $this->postJson('/login/2fa-verify', ['code' => $codigo])->assertOk();
+
+        $this->assertAuthenticated();
+        $this->assertNotContains($codigo, $admin->fresh()->two_factor_recovery_codes);
+    }
+
     private function enTenant(Tenant $tenant, callable $callback): mixed
     {
         app(TenantContext::class)->set($tenant);

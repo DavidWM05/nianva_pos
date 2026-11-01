@@ -116,7 +116,7 @@ abstract class EscenarioSeederBase extends Seeder
     }
 
     /**
-     * @return array{usuario: Usuario, secreto: ?string}
+     * @return array{usuario: Usuario, secreto: ?string, codigos: list<string>}
      */
     protected function crearUsuario(
         Tenant $tenant,
@@ -138,19 +138,21 @@ abstract class EscenarioSeederBase extends Seeder
         $usuario->roles()->syncWithoutDetaching([$rol->id]);
 
         $secreto = null;
+        $codigos = [];
 
         if ($admin) {
             $twoFactor = app(TwoFactorService::class);
             $secreto = $twoFactor->generateSecretKey();
+            $codigos = $twoFactor->generateRecoveryCodes();
 
             $usuario->forceFill([
                 'two_factor_secret' => $secreto,
                 'two_factor_confirmed_at' => now(),
-                'two_factor_recovery_codes' => $twoFactor->generateRecoveryCodes(),
+                'two_factor_recovery_codes' => $codigos,
             ])->save();
         }
 
-        return ['usuario' => $usuario, 'secreto' => $secreto];
+        return ['usuario' => $usuario, 'secreto' => $secreto, 'codigos' => $codigos];
     }
 
     protected function crearProveedor(Tenant $tenant, string $razonSocial): Proveedor
@@ -305,7 +307,7 @@ abstract class EscenarioSeederBase extends Seeder
     }
 
     /**
-     * @param  list<array{correo: string, rol: string, sucursal: string, secreto: ?string}>  $cuentas
+     * @param  list<array{correo: string, rol: string, sucursal: string, secreto: ?string, codigos?: list<string>}>  $cuentas
      */
     protected function imprimirCuentas(array $cuentas): void
     {
@@ -323,8 +325,18 @@ abstract class EscenarioSeederBase extends Seeder
         );
 
         foreach ($cuentas as $cuenta) {
-            if ($cuenta['secreto'] !== null) {
-                $this->command->line("TOTP {$cuenta['correo']}: {$cuenta['secreto']}");
+            if ($cuenta['secreto'] === null) {
+                continue;
+            }
+
+            $this->command->line("TOTP {$cuenta['correo']}: {$cuenta['secreto']}");
+
+            $codigos = $cuenta['codigos'] ?? Usuario::sinTenant()
+                ->where('correo', $cuenta['correo'])
+                ->first()?->two_factor_recovery_codes ?? [];
+
+            foreach ($codigos as $codigo) {
+                $this->command->line("RECUPERACION {$cuenta['correo']}: {$codigo}");
             }
         }
     }
