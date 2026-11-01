@@ -46,7 +46,7 @@ Revisado contra el repo el 2026-11-01.
 | API-05 | Validación de entrada | Hecho | `Arquitectura/ExistenciasConTenantTest`; `Seguridad/ManipulacionDePreciosTest` (ventas, cotizar, apartados, devoluciones, compras); `Cotizaciones/CotizacionPrecioManualTest` (excepción con `cotizaciones.precio_manual`) | 32 |
 | API-06 | Listados uniformes | Pendiente | Falta el contrato común y un test por listado | — |
 | API-08 | Especificación OpenAPI generada y su diff en CI | Pendiente | — | — |
-| SEG-01 | Scope de tenant y sucursal | Parcial | Tests `*ExistsTenantTest`, `Seguridad/SucursalEndpointsTest`; falta el test que recorre las rutas con modelo y exige su test de aislamiento | — |
+| SEG-01 | Scope de tenant y sucursal | Hecho | `Seguridad/AislamientoBindingTest` (60 rutas con binding contra otro tenant; rutas operativas, rutas con `{id}`, listados, kardex y gastos contra otra sucursal; `EXENTAS` con razón); scope `BelongsToSucursal` | 32b |
 | SEG-02 | La sucursal viene del contexto | Hecho | `Arquitectura/SucursalDelContextoTest`, `Seguridad/SucursalEndpointsTest` | C3 |
 | SEG-03 | Permisos conectados | Hecho | `Arquitectura/RutasConPermisoTest`, `Permisos/MatrizPermisosTest` (incluye rutas con binding) | C2, 27 |
 | SEG-07 | Secretos | Hecho | Pasos de CI de gitleaks y de llaves privadas | 28 |

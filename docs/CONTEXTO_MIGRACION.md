@@ -482,6 +482,31 @@ repo.
     438. La línea base de PHPStan baja a 1384;
   - para una instalación existente: correr `NucleoRolesPermisosSeeder`, para que aparezca
     `cotizaciones.precio_manual`.
+- **Aislamiento por sucursal, SEG-01** (encargo 32b, hecho por DS):
+  - **el problema:** un usuario sin `sucursales.todas` veía y operaba ventas, apartados,
+    devoluciones, cotizaciones, cuentas, pedidos y cajas de otra sucursal del mismo tenant.
+    La auditoría del 32 confirmó 15 huecos, más los listados y las rutas con `{id}` manual;
+  - **la corrección:**
+    - scope global `Nucleo/Scopes/SucursalScope` con el trait `BelongsToSucursal` y su
+      bypass `sinSucursal()`;
+    - se aplica a `Venta`, `Apartado`, `Devolucion`, `Cotizacion`, `Pedido`, `CajaSesion`,
+      `OrdenProduccion` y `Nomina`;
+    - por relación, en `CuentaCobrar` (vía la venta), `CuentaPagar` (vía la compra) y
+      `NotaCredito` (vía la devolución);
+    - no filtra sin usuario autenticado (consola, jobs, seeders) ni con `sucursales.todas`;
+      un usuario sin sucursal no ve nada;
+    - kardex y gastos filtran en la consulta con `SucursalOperacion::paraFiltro()`;
+    - sin cambios de esquema;
+  - **test nuevo `Seguridad/AislamientoBindingTest`:** las 60 rutas con binding contra otro
+    tenant, y las rutas operativas, las rutas con `{id}`, los listados, el kardex y los gastos
+    contra otra sucursal. Las `EXENTAS` llevan su razón;
+  - **excepción a PRO-01 autorizada por el responsable:** la función auxiliar
+    `crearModeloParaBinding` de `MatrizPermisosTest` crea los recursos operativos en la
+    sucursal del usuario del test. La matriz prueba permisos y el aislamiento lo prueba el
+    test nuevo. No se perdió ningún método;
+  - backend: 666 tests. Los escenarios de seed (con un tenant multi-sucursal) siguen en verde;
+  - **pendiente menor:** el scope consulta `tienePermiso('sucursales.todas')` en cada
+    consulta. Si se nota en rendimiento, cachear los permisos del usuario por petición.
 - **Pendientes detectados:**
   - `Produccion` usa `UnidadMedida` (extensión → extensión); las unidades se rediseñan en la
     Fase 3 (DAT-01);
@@ -518,8 +543,8 @@ repo.
        días por defecto para admin~~, hecho en el encargo 31. El 2FA sigue siendo obligatorio
        para admin; lo que quita la fricción en tiendas chicas es el PIN de caja (SEG-12,
        Fase 4);
-   4. ~~auditar y completar los tests de SEG-10 y API-05~~, hecho en el encargo 32; SEG-01
-      (aislamiento por sucursal) va en el encargo 32b;
+   4. ~~auditar y completar los tests de SEG-10, API-05 y SEG-01~~, hecho en los encargos 32
+      y 32b;
    5. `strict_types` en el código nuevo y tocado, con una lista que solo baja (ARQ-08); test de
       que los controllers no usan `DB::` ni `Model::query()`, con `PENDIENTES` (ARQ-01); y que
       toda ruta de un módulo opcional lleva `modulo:*` (ARQ-06);
