@@ -1,6 +1,7 @@
 {
   "name": "@nianva/source",
   "version": "0.0.0",
+  "packageManager": "pnpm@11.5.3",
   "license": "MIT",
   "scripts": {},
   "private": true,

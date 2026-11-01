@@ -114,10 +114,10 @@ jobs:
       - name: Obtener el codigo
         uses: actions/checkout@v4
 
-      - name: Configurar pnpm 11.5.3
+      - name: Configurar pnpm
         uses: pnpm/action-setup@v4
         with:
-          version: 11.5.3
+          package_json_file: frontend/package.json
 
       - name: Configurar Node.js 22 y cache de pnpm
         uses: actions/setup-node@v4
