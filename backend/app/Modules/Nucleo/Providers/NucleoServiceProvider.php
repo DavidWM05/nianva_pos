@@ -4,6 +4,7 @@ namespace App\Modules\Nucleo\Providers;
 
 use App\Modules\Nucleo\Console\Commands\ActivarLicenciaCommand;
 use App\Modules\Nucleo\Console\Commands\ErroresCatalogoCommand;
+use App\Modules\Nucleo\Console\Commands\EsquemaSnapshotCommand;
 use App\Modules\Nucleo\Console\Commands\RevalidarLicenciasCommand;
 use App\Modules\Nucleo\Http\Middleware\CheckPermiso;
 use App\Modules\Nucleo\Http\Middleware\EnsureTwoFactorIsConfigured;
@@ -51,6 +52,7 @@ class NucleoServiceProvider extends ServiceProvider
                 ActivarLicenciaCommand::class,
                 RevalidarLicenciasCommand::class,
                 ErroresCatalogoCommand::class,
+                EsquemaSnapshotCommand::class,
             ]);
         }
     }
