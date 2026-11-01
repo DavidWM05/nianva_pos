@@ -66,10 +66,11 @@ class DesarrolloSeeder extends Seeder
         // cada corrida y solo se imprime en consola (ver run() abajo).
         $twoFactor = app(TwoFactorService::class);
         $secreto = $twoFactor->generateSecretKey();
+        $codigosRecuperacion = $twoFactor->generateRecoveryCodes();
         $admin->forceFill([
             'two_factor_secret' => $secreto,
             'two_factor_confirmed_at' => now(),
-            'two_factor_recovery_codes' => $twoFactor->generateRecoveryCodes(),
+            'two_factor_recovery_codes' => $codigosRecuperacion,
         ])->save();
 
         $vendedor = $this->crearUsuario(self::CORREO_VENDEDOR, 'Vendedor', $tenant->id, $sucursal->id);
@@ -82,6 +83,10 @@ class DesarrolloSeeder extends Seeder
             $this->command->line('  Secreto TOTP del admin (agregalo a tu app de autenticacion para generar el codigo de 6 digitos que pide /login/2fa-verify):');
             $this->command->line('    '.$secreto);
             $this->command->line('  otpauth URI equivalente: '.$twoFactor->getOtpAuthUrl((string) config('app.name'), $admin->correo, $secreto));
+            $this->command->line('  Codigos de recuperacion del admin (solo desarrollo; se consumen al usarse):');
+            foreach ($codigosRecuperacion as $codigo) {
+                $this->command->line('    '.$codigo);
+            }
         }
     }
 
