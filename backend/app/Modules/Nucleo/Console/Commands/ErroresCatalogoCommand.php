@@ -3,6 +3,7 @@
 namespace App\Modules\Nucleo\Console\Commands;
 
 use App\Modules\Nucleo\Exceptions\ExcepcionNegocio;
+use App\Modules\Nucleo\Support\MapaErroresHttp;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
@@ -20,7 +21,7 @@ class ErroresCatalogoCommand extends Command
     protected $signature = 'errores:catalogo
         {--check : Verifica que el catalogo Markdown y el TypeScript esten al dia sin escribir en disco}';
 
-    protected $description = 'Genera el catalogo de error_code desde las excepciones de negocio.';
+    protected $description = 'Genera el catalogo de error_code desde las excepciones de negocio y el mapa generico HTTP.';
 
     public function handle(): int
     {
@@ -117,6 +118,16 @@ class ErroresCatalogoCommand extends Command
             ];
         }
 
+        foreach (MapaErroresHttp::codigos() as $status => $codigo) {
+            $filas[] = [
+                'error_code' => $codigo,
+                'status' => $status,
+                'clase' => MapaErroresHttp::class,
+                'modulo' => 'Nucleo',
+                'contexto' => '-',
+            ];
+        }
+
         usort($filas, fn (array $a, array $b) => strcmp($a['error_code'], $b['error_code']));
 
         return $filas;
@@ -130,7 +141,7 @@ class ErroresCatalogoCommand extends Command
         $lineas = [
             '# Catalogo de error_code',
             '',
-            'Generado con `php artisan errores:catalogo` desde las excepciones de negocio.',
+            'Generado con `php artisan errores:catalogo` desde las excepciones de negocio y el mapa generico de errores HTTP.',
             '',
             '| error_code | HTTP | Clase | Modulo | Claves de contexto |',
             '|---|---|---|---|---|',
