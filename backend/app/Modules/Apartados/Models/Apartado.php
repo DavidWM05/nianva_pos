@@ -4,6 +4,7 @@ namespace App\Modules\Apartados\Models;
 
 use App\Modules\Apartados\Database\Factories\ApartadoFactory;
 use App\Modules\Crm\Models\Cliente;
+use App\Modules\Nucleo\Models\Concerns\BelongsToSucursal;
 use App\Modules\Nucleo\Models\Concerns\BelongsToTenant;
 use App\Modules\Nucleo\Models\Sucursal;
 use App\Modules\Nucleo\Models\Tenant;
@@ -22,6 +23,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 ])]
 class Apartado extends Model
 {
+    use BelongsToSucursal;
     use BelongsToTenant;
 
     /** @use HasFactory<ApartadoFactory> */

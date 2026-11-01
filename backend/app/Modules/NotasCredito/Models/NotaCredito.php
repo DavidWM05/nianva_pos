@@ -5,6 +5,7 @@ namespace App\Modules\NotasCredito\Models;
 use App\Modules\Crm\Models\Cliente;
 use App\Modules\Devoluciones\Models\Devolucion;
 use App\Modules\NotasCredito\Database\Factories\NotaCreditoFactory;
+use App\Modules\Nucleo\Models\Concerns\BelongsToSucursal;
 use App\Modules\Nucleo\Models\Concerns\BelongsToTenant;
 use App\Modules\Nucleo\Models\Tenant;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
@@ -19,6 +20,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 ])]
 class NotaCredito extends Model
 {
+    use BelongsToSucursal;
     use BelongsToTenant;
 
     /** @use HasFactory<NotaCreditoFactory> */
@@ -35,6 +37,11 @@ class NotaCredito extends Model
             'created_at' => 'datetime',
             'updated_at' => 'datetime',
         ];
+    }
+
+    public static function sucursalRelacion(): string
+    {
+        return 'devolucion';
     }
 
     public function tenant(): BelongsTo

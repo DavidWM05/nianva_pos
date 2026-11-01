@@ -180,7 +180,7 @@ class ProduccionController extends Controller
         if ($dto->estado === 'completada') {
             return new OrdenProduccionResource($this->produccionService->completarOrden($id, (int) $dto->cantidadProducida));
         }
-        OrdenProduccion::where('id', $id)->update(['estado' => $dto->estado]);
+        OrdenProduccion::findOrFail($id)->update(['estado' => $dto->estado]);
 
         return response()->json(['message' => 'Estado actualizado.']);
     }

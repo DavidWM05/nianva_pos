@@ -8,6 +8,8 @@ use App\Modules\Gastos\Http\Requests\ListarGastosRequest;
 use App\Modules\Gastos\Http\Resources\GastoResource;
 use App\Modules\Gastos\Models\Gasto;
 use App\Modules\Gastos\Services\GastoService;
+use App\Modules\Nucleo\Models\Usuario;
+use App\Modules\Nucleo\Support\SucursalOperacion;
 
 /**
  * Sin pantalla propia (ver el reporte) -- vive dentro de la vista de
@@ -20,9 +22,16 @@ class GastoController extends Controller
 {
     public function index(ListarGastosRequest $request)
     {
-        $gastos = Gasto::where('caja_sesion_id', $request->toDto()->cajaSesionId)
-            ->orderByDesc('fecha')
-            ->get();
+        $usuario = $request->user();
+        $sucursalId = $usuario instanceof Usuario ? SucursalOperacion::paraFiltro($usuario, null) : null;
+
+        $consulta = Gasto::where('caja_sesion_id', $request->toDto()->cajaSesionId);
+
+        if ($sucursalId !== null) {
+            $consulta->where('sucursal_id', $sucursalId);
+        }
+
+        $gastos = $consulta->orderByDesc('fecha')->get();
 
         return response()->json(['data' => GastoResource::collection($gastos)]);
     }
