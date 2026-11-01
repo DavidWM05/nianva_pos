@@ -96,10 +96,10 @@ repo.
   `Escaneo de skip sin referencia`. Se borró el `frontend/.github/workflows/ci.yml` de Nx, que
   nunca corría. Falta activar la protección de `master` cuando la primera corrida pase.
 - **Spec intermitente** de `ventas-list`: no reproducible en más de 20 corridas, ni con un solo
-  worker. No se cambió nada; si reaparece en CI, se abre un encargo con esa evidencia. Quedan 6
-  specs que llaman `vi.useFakeTimers()` sin restaurar (`usuarios-list`, `metodos-pago-list`,
-  `roles-list`, `clientes-list`, `categorias-list`, `departamentos-list`); no se comprobó que
-  afecten a otros archivos.
+  worker. No se cambió nada; si reaparece en CI, se abre un encargo con esa evidencia. Los 6
+  specs que llaman `vi.useFakeTimers()` (`usuarios-list`, `metodos-pago-list`, `roles-list`,
+  `clientes-list`, `categorias-list`, `departamentos-list`) restauran el reloj en `afterEach`
+  (revisado el 2026-10-31).
 - **Línea base inicial** (medida por DS; el séptimo encargo la dejó en cero, ver abajo):
   - `vendor/bin/pint --test`: 84 archivos con fallas;
   - `nx run-many -t lint`: 9 errores en `ui-shared` (selectores sin prefijo `lib`) y 7
@@ -371,8 +371,8 @@ repo.
    tenant (API-05), la unicidad con tenant (DAT-09, C4), C11 (D5) y el análisis estático
    bloqueante (Pint, ESLint, PHPStan), C7 (DAT-14), C2 (SEG-03), C3 (SEG-02), C8 (ARQ-02), C5 (API-01), la documentación del repo (`README.md` y
    `.claude/CLAUDE.md`), `composer audit`, las guardas de PRO-01 y DAT-12 con CODEOWNERS
-   y `pnpm audit`. Lo que sigue:
-   - resolver los conflictos C1-C11 del README de estándares;
+   y `pnpm audit`, la edición parcial de roles y usuarios y C9. De los conflictos C1-C11
+   solo quedan C6 (Fase 3) y C10 (Fase 2). Lo que sigue:
    - resto de PRO-05: stylelint pasa a la Fase 2 y el diff de OpenAPI espera a que se genere
      la especificación (API-08);
    - después de C8: que los Services reciban DTOs en vez de arreglos (se hace al reescribirlos
