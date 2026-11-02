@@ -131,6 +131,17 @@ jobs:
         run: |
           set -euo pipefail
 
+          # Scramble lee el esquema de la BD al analizar los modelos: se genera
+          # siempre contra una SQLite nueva y migrada, igual que en local
+          # (ver config/scramble.php), para que el archivo no dependa de ninguna BD.
+          sqlite="$PWD/storage/framework/testing/openapi.sqlite"
+          mkdir -p "$(dirname "$sqlite")"
+          rm -f "$sqlite"
+          touch "$sqlite"
+          export DB_CONNECTION=sqlite
+          export DB_DATABASE="$sqlite"
+
+          php artisan migrate --force
           php artisan scramble:export --path=../docs/api/openapi.json
 
           if ! git diff --quiet -- ../docs/api/openapi.json; then

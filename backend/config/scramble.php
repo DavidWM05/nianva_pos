@@ -7,6 +7,11 @@ return [
 
     'api_domain' => null,
 
+    // Regenerar (igual que CI): contra una SQLite nueva y migrada, nunca contra la BD
+    // de desarrollo, porque Scramble lee el esquema de los modelos. Desde backend/:
+    //   touch storage/framework/testing/openapi.sqlite
+    //   DB_CONNECTION=sqlite DB_DATABASE=$PWD/storage/framework/testing/openapi.sqlite php artisan migrate --force
+    //   DB_CONNECTION=sqlite DB_DATABASE=$PWD/storage/framework/testing/openapi.sqlite php artisan scramble:export
     'export_path' => '../docs/api/openapi.json',
 
     'cache' => [
