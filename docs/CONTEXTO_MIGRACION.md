@@ -541,11 +541,26 @@ repo.
     OpenAPI 3.x, que incluye todas las rutas de `api/v1` con `permiso:*` (`EXENTAS` vacía) y
     que `/docs/api` está protegido. Backend: 675 tests;
   - **pendientes:**
-    - Scramble emite 19 avisos al exportar: los FormRequests que validan con
-      `ReglasTenant` no tienen tenant activo al generar, así que esos request bodies salen
-      incompletos. Se resuelve junto con API-02 y API-06;
+    - Scramble emitía 19 avisos al exportar, porque los FormRequests que validan con
+      `ReglasTenant` no tienen tenant activo al generar. Se resolvió en el encargo 35, y
+      resultó que no faltaba nada en la especificación, que salió idéntica;
     - hay 96 `response()->json` sin esquema propio (API-02);
     - los tipos del frontend generados desde la especificación van en la Fase 2.
+- **Respuestas con `JsonResource`, API-02 (parte de la Fase 1)** (trigésimo quinto encargo,
+  hecho por DS):
+  - **guarda:** `Arquitectura/RespuestasConResourceTest` prohíbe `response()->json(` y los
+    arreglos, modelos o variables devueltos directo en los métodos públicos de los
+    controllers;
+    - hay 92 casos en 38 archivos en `PENDIENTES`, por archivo y con su conteo, que solo baja;
+    - `AuthController` queda exento por ser sesión web, fuera de `api/v1`;
+    - el patrón de un listado está en el docblock:
+      `XResource::collection($items)->additional(['meta' => [...]])`;
+    - no se convirtió ningún controller: entran al tocar cada módulo;
+  - **Scramble sin avisos:** `SolicitudNegocio::tenantId()` devuelve 0 solo en consola y sin
+    ruta (el caso de `scramble:export`), y 0 no coincide con ningún tenant. En una petición
+    HTTP sin tenant sigue el 500. `SolicitudNegocioTenantTest` comprueba los dos casos. La
+    especificación no cambió;
+  - backend: 678 tests.
 - **Pendientes detectados:**
   - `Produccion` usa `UnidadMedida` (extensión → extensión); las unidades se rediseñan en la
     Fase 3 (DAT-01);
@@ -588,8 +603,8 @@ repo.
    6. ~~DAT-12: doble codificación en CI y `conciliar:texto`~~, hecho en el encargo 33;
    7. ~~especificación OpenAPI generada y su diff en CI (API-08, parte de la Fase 1)~~, hecho
       en el encargo 34;
-   8. regla "los controllers devuelven `JsonResource`", con `PENDIENTES` (API-02, parte de la
-      Fase 1);
+   8. ~~regla "los controllers devuelven `JsonResource`", con `PENDIENTES` (API-02, parte de
+      la Fase 1)~~, hecho en el encargo 35;
    9. contrato común de listados, con `PENDIENTES` (API-06).
 
    Decisiones del responsable (2026-11-01):
