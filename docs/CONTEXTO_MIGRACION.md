@@ -561,6 +561,23 @@ repo.
     HTTP sin tenant sigue el 500. `SolicitudNegocioTenantTest` comprueba los dos casos. La
     especificación no cambió;
   - backend: 678 tests.
+- **Listados uniformes, API-06** (trigésimo sexto encargo, hecho por DS; cierra la Fase 1):
+  - **helper `Nucleo/Support/Listado::aplicar()`:** a partir de una declaración por listado
+    (campos ordenables con su orden por defecto, filtros `=`, `like` y rango de fechas, columnas
+    de búsqueda para `q` y filtros por defecto) aplica `page`, `rows` (máximo 100), el orden y
+    los filtros. Devuelve `meta` con `total`, `page`, `rows`, `filtros_aplicados` y `permisos`;
+    el listado responde con `XResource::collection()->additional(['meta' => …])`;
+  - **convertidos de referencia:** roles y usuarios. Sus respuestas solo ganan claves en
+    `meta`, y los specs del frontend siguen en verde sin cambios;
+  - **guarda:** `Arquitectura/ListadosUniformesTest` exige el contrato a todo listado fuera
+    de `PENDIENTES` (25, que solo bajan): `meta` completo, `rows=500` ≤ 100, `sort_field`
+    inválido con el orden por defecto y `q` que filtra. `RespuestasConResourceTest` baja de 92
+    a 90 pendientes;
+  - **corrección en la revisión:** un parámetro de listado que llega como arreglo
+    (`?q[]=x`) daba 500. Ahora se ignora, con un test que falló antes del cambio;
+  - Scramble ya no infiere `sort_field` en esos dos listados, porque la lectura de parámetros
+    vive en el helper; se documentará cuando se conviertan los demás;
+  - backend: 680 tests.
 - **Pendientes detectados:**
   - `Produccion` usa `UnidadMedida` (extensión → extensión); las unidades se rediseñan en la
     Fase 3 (DAT-01);
@@ -575,9 +592,10 @@ repo.
 
 ## 6. Siguiente paso, en orden
 
-1. **Saneamiento de la Fase 1, en curso.** El 2026-11-01 se revisaron contra el repo todas las
-   reglas "Desde: Fase 1": varias no tienen todavía su "Verifica" (ver "Falta en la Fase 1",
-   abajo). Hecho: CI con ambas
+1. **Saneamiento de la Fase 1: cerrado el 2026-11-02.** Las 35 filas de la Fase 1 en
+   [SEGUIMIENTO_FASES.md](SEGUIMIENTO_FASES.md) están en Hecho. El 2026-11-01 se revisaron
+   contra el repo todas las reglas "Desde: Fase 1", y la lista de abajo fue lo que faltaba.
+   Hecho: CI con ambas
    suites, C1 (D4), las validaciones de negocio (500 → 422) y las reglas `exists` con
    tenant (API-05), la unicidad con tenant (DAT-09, C4), C11 (D5) y el análisis estático
    bloqueante (Pint, ESLint, PHPStan), C7 (DAT-14), C2 (SEG-03), C3 (SEG-02), C8 (ARQ-02), C5 (API-01), la documentación del repo (`README.md` y
@@ -605,7 +623,7 @@ repo.
       en el encargo 34;
    8. ~~regla "los controllers devuelven `JsonResource`", con `PENDIENTES` (API-02, parte de
       la Fase 1)~~, hecho en el encargo 35;
-   9. contrato común de listados, con `PENDIENTES` (API-06).
+   9. ~~contrato común de listados, con `PENDIENTES` (API-06)~~, hecho en el encargo 36.
 
    Decisiones del responsable (2026-11-01):
    - de API-02, el dinero y las cantidades como cadena pasan a la Fase 3, con DAT-02;
@@ -616,7 +634,9 @@ repo.
    - stylelint (PRO-05) pasa a la Fase 2;
    - después de C8: que los Services reciban DTOs en vez de arreglos (se hace al reescribirlos
      en las Fases 3 a 5); `RequiereDosFactorReciente` sigue validando dentro del middleware.
-2. **Fase 2: sistema de diseño**, cuando cierre la Fase 1.
+2. **Fase 2: sistema de diseño. Es la siguiente.** Sus filas están en
+   `SEGUIMIENTO_FASES.md` (tokens, `libs/ui`, temas claro y oscuro, stylelint, tipos generados
+   desde OpenAPI, C10).
 
 ## 7. Reglas de trabajo con el responsable
 
