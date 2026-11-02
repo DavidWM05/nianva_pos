@@ -524,6 +524,28 @@ repo.
     la base, junto con U+FFFD, sin corregir nada. En la revisión se ampliaron los tipos de
     columna para cubrir MySQL (`char`, `tinytext`, `mediumtext`, `longtext`);
   - cada guarda se probó fallando y pasando. Backend: 672 tests.
+- **Especificación OpenAPI, API-08 (parte de la Fase 1)** (trigésimo cuarto encargo, hecho por
+  DS):
+  - **Scramble:** `dedoc/scramble` `^0.13.52`, solo como dependencia de desarrollo, por
+    decisión del responsable. `composer audit` sigue sin avisos. La UI de `/docs/api` solo
+    está en local (`RestrictedDocsAccess`, sin gate: 403 en producción), y con
+    `composer install --no-dev` la app arranca sin ella;
+  - **artefacto:** `docs/api/openapi.json` (OpenAPI 3.1.2, 117 rutas, 158 operaciones),
+    generado con `php artisan scramble:export`. Es estable entre corridas;
+  - **corrección en la revisión:** el campo `servers` queda fijo en
+    `config/scramble.php`. Con el valor por defecto, Scramble antepone `APP_URL` y el archivo
+    cambiaba según el `.env` de cada máquina;
+  - **CI:** el job Backend regenera la especificación y falla con el diff si difiere de la
+    versionada;
+  - **test nuevo `Arquitectura/EspecificacionOpenApiTest`:** comprueba que el archivo es
+    OpenAPI 3.x, que incluye todas las rutas de `api/v1` con `permiso:*` (`EXENTAS` vacía) y
+    que `/docs/api` está protegido. Backend: 675 tests;
+  - **pendientes:**
+    - Scramble emite 19 avisos al exportar: los FormRequests que validan con
+      `ReglasTenant` no tienen tenant activo al generar, así que esos request bodies salen
+      incompletos. Se resuelve junto con API-02 y API-06;
+    - hay 96 `response()->json` sin esquema propio (API-02);
+    - los tipos del frontend generados desde la especificación van en la Fase 2.
 - **Pendientes detectados:**
   - `Produccion` usa `UnidadMedida` (extensión → extensión); las unidades se rediseñan en la
     Fase 3 (DAT-01);
@@ -564,7 +586,8 @@ repo.
       y 32b;
    5. ~~guardas de ARQ-08, ARQ-01 y ARQ-06~~, hecho en el encargo 33;
    6. ~~DAT-12: doble codificación en CI y `conciliar:texto`~~, hecho en el encargo 33;
-   7. especificación OpenAPI generada y su diff en CI (API-08, parte de la Fase 1);
+   7. ~~especificación OpenAPI generada y su diff en CI (API-08, parte de la Fase 1)~~, hecho
+      en el encargo 34;
    8. regla "los controllers devuelven `JsonResource`", con `PENDIENTES` (API-02, parte de la
       Fase 1);
    9. contrato común de listados, con `PENDIENTES` (API-06).

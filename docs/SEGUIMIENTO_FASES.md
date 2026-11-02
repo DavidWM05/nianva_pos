@@ -45,7 +45,7 @@ Revisado contra el repo el 2026-11-01.
 | API-04 | Cada excepción sabe responder | Hecho | `Arquitectura/BootstrapSinMapeoPorExcepcionTest`, `ManejadorExcepcionNegocioTest` | C1 |
 | API-05 | Validación de entrada | Hecho | `Arquitectura/ExistenciasConTenantTest`; `Seguridad/ManipulacionDePreciosTest` (ventas, cotizar, apartados, devoluciones, compras); `Cotizaciones/CotizacionPrecioManualTest` (excepción con `cotizaciones.precio_manual`) | 32 |
 | API-06 | Listados uniformes | Pendiente | Falta el contrato común y un test por listado | — |
-| API-08 | Especificación OpenAPI generada y su diff en CI | Pendiente | — | — |
+| API-08 | Especificación OpenAPI generada y su diff en CI | Hecho | `docs/api/openapi.json` (OpenAPI 3.1.2, 117 rutas); `Arquitectura/EspecificacionOpenApiTest`; paso de CI "Verificar especificacion OpenAPI" con `scramble:export` y diff | 34 |
 | SEG-01 | Scope de tenant y sucursal | Hecho | `Seguridad/AislamientoBindingTest` (60 rutas con binding contra otro tenant; rutas operativas, rutas con `{id}`, listados, kardex y gastos contra otra sucursal; `EXENTAS` con razón); scope `BelongsToSucursal` | 32b |
 | SEG-02 | La sucursal viene del contexto | Hecho | `Arquitectura/SucursalDelContextoTest`, `Seguridad/SucursalEndpointsTest` | C3 |
 | SEG-03 | Permisos conectados | Hecho | `Arquitectura/RutasConPermisoTest`, `Permisos/MatrizPermisosTest` (incluye rutas con binding) | C2, 27 |
