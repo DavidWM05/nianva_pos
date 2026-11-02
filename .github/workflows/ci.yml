@@ -126,6 +126,21 @@ jobs:
       - name: Verificar snapshot del esquema
         run: php artisan esquema:snapshot --check
 
+      - name: Verificar especificacion OpenAPI
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          php artisan scramble:export --path=../docs/api/openapi.json
+
+          if ! git diff --quiet -- ../docs/api/openapi.json; then
+            git diff -- ../docs/api/openapi.json
+            echo "::error::La especificacion OpenAPI versionada esta desactualizada."
+            exit 1
+          fi
+
+          echo "OK: la especificacion OpenAPI esta al dia."
+
   frontend:
     name: Frontend
     runs-on: ubuntu-latest
