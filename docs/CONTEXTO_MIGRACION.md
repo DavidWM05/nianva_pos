@@ -507,6 +507,23 @@ repo.
   - backend: 666 tests. Los escenarios de seed (con un tenant multi-sucursal) siguen en verde;
   - **pendiente menor:** el scope consulta `tienePermiso('sucursales.todas')` en cada
     consulta. Si se nota en rendimiento, cachear los permisos del usuario por petición.
+- **Guardas de arquitectura y codificación** (trigésimo tercer encargo, hecho por DS): cada
+  una tiene una lista de pendientes que solo baja. El test falla si aparece una violación
+  nueva o si una entrada de la lista ya cumple o ya no existe:
+  - **ARQ-08:** `StrictTypesTest` exige `declare(strict_types=1)` en todo PHP nuevo de
+    `app/`, `database/` y `routes/`. Los 594 archivos existentes están en
+    `tests/Fixtures/sin-strict-types.txt`, y `arquitectura:strict-types-pendientes` solo
+    quita entradas. No se agregó `strict_types` a archivos existentes: entra al reescribir
+    cada módulo;
+  - **ARQ-01:** `ControllersSinConsultasTest` prohíbe `DB::`, `::query(`, `::where(`,
+    `::whereIn(` y `->newQuery(` en los controllers. Hay 28 controllers en `PENDIENTES`;
+  - **ARQ-06:** `RutasDeModulosOpcionalesTest` exige `modulo:<slug>` en las rutas de los 11
+    módulos opcionales. `UnidadesMedida` queda exenta, con su razón;
+  - **DAT-12:** el paso de codificación de CI detecta la doble codificación (`Ã` o `Â`
+    seguidos de los bytes típicos), y el comando `php artisan conciliar:texto` la reporta en
+    la base, junto con U+FFFD, sin corregir nada. En la revisión se ampliaron los tipos de
+    columna para cubrir MySQL (`char`, `tinytext`, `mediumtext`, `longtext`);
+  - cada guarda se probó fallando y pasando. Backend: 672 tests.
 - **Pendientes detectados:**
   - `Produccion` usa `UnidadMedida` (extensión → extensión); las unidades se rediseñan en la
     Fase 3 (DAT-01);
@@ -545,10 +562,8 @@ repo.
        Fase 4);
    4. ~~auditar y completar los tests de SEG-10, API-05 y SEG-01~~, hecho en los encargos 32
       y 32b;
-   5. `strict_types` en el código nuevo y tocado, con una lista que solo baja (ARQ-08); test de
-      que los controllers no usan `DB::` ni `Model::query()`, con `PENDIENTES` (ARQ-01); y que
-      toda ruta de un módulo opcional lleva `modulo:*` (ARQ-06);
-   6. DAT-12: búsqueda en CI de `Ã` (doble codificación) y el comando `conciliar:texto`;
+   5. ~~guardas de ARQ-08, ARQ-01 y ARQ-06~~, hecho en el encargo 33;
+   6. ~~DAT-12: doble codificación en CI y `conciliar:texto`~~, hecho en el encargo 33;
    7. especificación OpenAPI generada y su diff en CI (API-08, parte de la Fase 1);
    8. regla "los controllers devuelven `JsonResource`", con `PENDIENTES` (API-02, parte de la
       Fase 1);
