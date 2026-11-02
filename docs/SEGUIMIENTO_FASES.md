@@ -40,7 +40,7 @@ Revisado contra el repo el 2026-11-01.
 | DAT-12 | UTF-8 de extremo a extremo | Hecho | Paso de CI "Revisar codificacion" (UTF-8 inválido, BOM, U+FFFD, `??`+letra, doble codificación `Ã…`/`Â…`); comando `conciliar:texto` (`Nucleo/ConciliarTextoCommandTest`). El test del importador, cuando exista un importador | 23, 33 |
 | DAT-14 | Nada se descarta en silencio | Hecho | `Arquitectura/ModelosEstrictosTest` | C7 |
 | API-01 | Versión en la ruta | Hecho | `Arquitectura/RutasVersionadasTest` | C5 |
-| API-02 | Sobre de respuesta y `JsonResource` | Pendiente | Falta la regla de arquitectura con `PENDIENTES` (hoy hay 93 `response()->json`) | — |
+| API-02 | Sobre de respuesta y `JsonResource` | Hecho | `Arquitectura/RespuestasConResourceTest`: 38 archivos y 92 `response()->json` en `PENDIENTES` (solo baja); `AuthController` exento por ser sesión web; detecta arreglos/modelos directos | 35 |
 | API-03 | Errores con `error_code` estable | Hecho | `Arquitectura/CatalogoErrorCodeTest`, `errores:catalogo --check`, `Arquitectura/ErroresSinDetallesInternosTest` (401/403/404/405/419/423/429/500 con `error_code`) | C1, 29 |
 | API-04 | Cada excepción sabe responder | Hecho | `Arquitectura/BootstrapSinMapeoPorExcepcionTest`, `ManejadorExcepcionNegocioTest` | C1 |
 | API-05 | Validación de entrada | Hecho | `Arquitectura/ExistenciasConTenantTest`; `Seguridad/ManipulacionDePreciosTest` (ventas, cotizar, apartados, devoluciones, compras); `Cotizaciones/CotizacionPrecioManualTest` (excepción con `cotizaciones.precio_manual`) | 32 |
