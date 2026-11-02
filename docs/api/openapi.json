@@ -7880,18 +7880,9 @@
                 "tags": [
                     "Rol"
                 ],
-                "parameters": [
-                    {
-                        "name": "sort_field",
-                        "in": "query",
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
                 "responses": {
                     "200": {
-                        "description": "",
+                        "description": "Array of `RolResource`",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -7908,6 +7899,21 @@
                                             "properties": {
                                                 "total": {
                                                     "type": "integer"
+                                                },
+                                                "page": {
+                                                    "type": "integer"
+                                                },
+                                                "rows": {},
+                                                "filtros_aplicados": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "q": {
+                                                            "type": "string"
+                                                        }
+                                                    },
+                                                    "required": [
+                                                        "q"
+                                                    ]
                                                 },
                                                 "permisos": {
                                                     "type": "object",
@@ -7931,6 +7937,9 @@
                                             },
                                             "required": [
                                                 "total",
+                                                "page",
+                                                "rows",
+                                                "filtros_aplicados",
                                                 "permisos"
                                             ]
                                         }
@@ -8548,18 +8557,9 @@
                 "tags": [
                     "Usuario"
                 ],
-                "parameters": [
-                    {
-                        "name": "sort_field",
-                        "in": "query",
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
                 "responses": {
                     "200": {
-                        "description": "",
+                        "description": "Array of `UsuarioAdminResource`",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -8576,6 +8576,21 @@
                                             "properties": {
                                                 "total": {
                                                     "type": "integer"
+                                                },
+                                                "page": {
+                                                    "type": "integer"
+                                                },
+                                                "rows": {},
+                                                "filtros_aplicados": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "q": {
+                                                            "type": "string"
+                                                        }
+                                                    },
+                                                    "required": [
+                                                        "q"
+                                                    ]
                                                 },
                                                 "permisos": {
                                                     "type": "object",
@@ -8599,6 +8614,9 @@
                                             },
                                             "required": [
                                                 "total",
+                                                "page",
+                                                "rows",
+                                                "filtros_aplicados",
                                                 "permisos"
                                             ]
                                         }
