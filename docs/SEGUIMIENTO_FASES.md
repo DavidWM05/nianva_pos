@@ -25,6 +25,11 @@ Revisado contra el repo el 2026-11-01.
 
 ## Fase 1: saneamiento
 
+**Cerrada el 2026-11-02**: sus 35 filas están en Hecho. La deuda que queda vive en listas de
+pendientes que solo bajan (`sin-strict-types.txt`, `PENDIENTES` de
+`ControllersSinConsultasTest`, `RespuestasConResourceTest` y `ListadosUniformesTest`) y en la
+línea base de PHPStan; se paga al tocar cada módulo.
+
 | Regla | Qué pide | Estado | Dónde se verifica | Encargo |
 |---|---|---|---|---|
 | ARQ-01 | Capas fijas; controller sin consultas (código nuevo y tocado) | Hecho | `Arquitectura/ControllersSinConsultasTest` (`DB::`, `::query(`, `::where(`, `::whereIn(`, `->newQuery(`); 28 controllers en `PENDIENTES`, que solo bajan | 33 |
@@ -40,11 +45,11 @@ Revisado contra el repo el 2026-11-01.
 | DAT-12 | UTF-8 de extremo a extremo | Hecho | Paso de CI "Revisar codificacion" (UTF-8 inválido, BOM, U+FFFD, `??`+letra, doble codificación `Ã…`/`Â…`); comando `conciliar:texto` (`Nucleo/ConciliarTextoCommandTest`). El test del importador, cuando exista un importador | 23, 33 |
 | DAT-14 | Nada se descarta en silencio | Hecho | `Arquitectura/ModelosEstrictosTest` | C7 |
 | API-01 | Versión en la ruta | Hecho | `Arquitectura/RutasVersionadasTest` | C5 |
-| API-02 | Sobre de respuesta y `JsonResource` | Hecho | `Arquitectura/RespuestasConResourceTest`: 38 archivos y 92 `response()->json` en `PENDIENTES` (solo baja); `AuthController` exento por ser sesión web; detecta arreglos/modelos directos | 35 |
+| API-02 | Sobre de respuesta y `JsonResource` | Hecho | `Arquitectura/RespuestasConResourceTest`: 38 archivos y 90 `response()->json` en `PENDIENTES` (solo baja); `AuthController` exento por ser sesión web; detecta arreglos/modelos directos | 35, 36 |
 | API-03 | Errores con `error_code` estable | Hecho | `Arquitectura/CatalogoErrorCodeTest`, `errores:catalogo --check`, `Arquitectura/ErroresSinDetallesInternosTest` (401/403/404/405/419/423/429/500 con `error_code`) | C1, 29 |
 | API-04 | Cada excepción sabe responder | Hecho | `Arquitectura/BootstrapSinMapeoPorExcepcionTest`, `ManejadorExcepcionNegocioTest` | C1 |
 | API-05 | Validación de entrada | Hecho | `Arquitectura/ExistenciasConTenantTest`; `Seguridad/ManipulacionDePreciosTest` (ventas, cotizar, apartados, devoluciones, compras); `Cotizaciones/CotizacionPrecioManualTest` (excepción con `cotizaciones.precio_manual`) | 32 |
-| API-06 | Listados uniformes | Pendiente | Falta el contrato común y un test por listado | — |
+| API-06 | Listados uniformes | Hecho | `Arquitectura/ListadosUniformesTest` (`meta`: `total`, `page`, `rows`, `filtros_aplicados`, `permisos`; `rows=500` ≤ 100; `q`, orden por defecto); helper `Nucleo/Support/Listado`; 25 listados en `PENDIENTES` (solo baja) | 36 |
 | API-08 | Especificación OpenAPI generada y su diff en CI | Hecho | `docs/api/openapi.json` (OpenAPI 3.1.2, 117 rutas); `Arquitectura/EspecificacionOpenApiTest`; paso de CI "Verificar especificacion OpenAPI" con `scramble:export` y diff | 34 |
 | SEG-01 | Scope de tenant y sucursal | Hecho | `Seguridad/AislamientoBindingTest` (60 rutas con binding contra otro tenant; rutas operativas, rutas con `{id}`, listados, kardex y gastos contra otra sucursal; `EXENTAS` con razón); scope `BelongsToSucursal` | 32b |
 | SEG-02 | La sucursal viene del contexto | Hecho | `Arquitectura/SucursalDelContextoTest`, `Seguridad/SucursalEndpointsTest` | C3 |
