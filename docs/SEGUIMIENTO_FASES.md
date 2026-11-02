@@ -27,17 +27,17 @@ Revisado contra el repo el 2026-11-01.
 
 | Regla | Qué pide | Estado | Dónde se verifica | Encargo |
 |---|---|---|---|---|
-| ARQ-01 | Capas fijas; controller sin consultas (código nuevo y tocado) | Pendiente | Falta el test que prohíbe `DB::` y `Model::query()` en `Http/Controllers`, con `PENDIENTES` | — |
+| ARQ-01 | Capas fijas; controller sin consultas (código nuevo y tocado) | Hecho | `Arquitectura/ControllersSinConsultasTest` (`DB::`, `::query(`, `::where(`, `::whereIn(`, `->newQuery(`); 28 controllers en `PENDIENTES`, que solo bajan | 33 |
 | ARQ-02 | Entradas tipadas: FormRequest + DTO | Hecho | `Arquitectura/EntradasTipadasTest`, PHPStan nivel 8 | C8 |
 | ARQ-03 | Orquestación entre módulos en Actions | Hecho | `Arquitectura/DependenciasEntreModulosTest` | C11 |
-| ARQ-06 | Middleware y convención de features | Parcial | `ModuloActivo` y `modulo:*` en las rutas; falta un test de que toda ruta de un módulo opcional lo lleva | — |
-| ARQ-08 | Tipado estricto | Parcial | PHPStan nivel 8 con línea base que solo baja (CI); falta la guarda de `strict_types` en lo nuevo | — |
+| ARQ-06 | Middleware y convención de features | Hecho | `Arquitectura/RutasDeModulosOpcionalesTest` (11 módulos opcionales con su `modulo:<slug>`; `UnidadesMedida` exenta con razón) | 33 |
+| ARQ-08 | Tipado estricto | Hecho | PHPStan nivel 8 con línea base que solo baja (CI); `Arquitectura/StrictTypesTest`: todo PHP nuevo con `strict_types`, existentes en `tests/Fixtures/sin-strict-types.txt` (594, solo baja) | 33 |
 | ARQ-10 | Módulos congelados | Hecho | `.github/CODEOWNERS` | 28 |
 | ARQ-13 | Configuración en tiempo de ejecución | Hecho | Paso de CI "Buscar URLs fijas en el frontend"; `core/runtime-config.spec.ts` | C5, 28 |
 | DAT-06 | Zona horaria del tenant (configuración) | Hecho | Columna `configuracion_tenant.zona_horaria` (default `America/Mexico_City`, `timezone:all`); `Configuracion/ZonaHorariaTenantTest` | 30 |
 | DAT-09 | Unicidad con tenant: código de barras | Hecho | `Arquitectura/UnicidadConTenantTest` | C4 |
 | DAT-11 | Migraciones: una sola fuente | Hecho | Pasos de CI "Verificar rollback de migraciones en SQLite" y "Verificar snapshot del esquema" (`esquema:snapshot --check`); `Arquitectura/EsquemaSnapshotTest` contra `tests/Fixtures/esquema.json` (esquema SQLite) | 26, 30 |
-| DAT-12 | UTF-8 de extremo a extremo | Parcial | Paso de CI "Revisar codificacion" (UTF-8 inválido, BOM, U+FFFD, `??`+letra); faltan la búsqueda de `Ã` y `conciliar:texto` (el test del importador va cuando exista un importador) | 23 |
+| DAT-12 | UTF-8 de extremo a extremo | Hecho | Paso de CI "Revisar codificacion" (UTF-8 inválido, BOM, U+FFFD, `??`+letra, doble codificación `Ã…`/`Â…`); comando `conciliar:texto` (`Nucleo/ConciliarTextoCommandTest`). El test del importador, cuando exista un importador | 23, 33 |
 | DAT-14 | Nada se descarta en silencio | Hecho | `Arquitectura/ModelosEstrictosTest` | C7 |
 | API-01 | Versión en la ruta | Hecho | `Arquitectura/RutasVersionadasTest` | C5 |
 | API-02 | Sobre de respuesta y `JsonResource` | Pendiente | Falta la regla de arquitectura con `PENDIENTES` (hoy hay 93 `response()->json`) | — |
