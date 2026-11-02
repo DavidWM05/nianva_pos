@@ -377,6 +377,10 @@ jobs:
             fi
 
             while IFS=: read -r linea _; do
+              hallazgos+="Doble codificacion: ${ruta}:${linea}"$'\n'
+            done < <(LC_ALL=C.UTF-8 grep -nE 'Ã[¡©­³º±‘‰“]|Â[^ -~]' "$ruta" || true)
+
+            while IFS=: read -r linea _; do
               hallazgos+="??+letra: ${ruta}:${linea}"$'\n'
             done < <(LC_ALL=C grep -nE '\?\?[[:alpha:]]' "$ruta" || true)
           done < <(git ls-files -z -- backend/app backend/config backend/routes backend/database backend/tests frontend/apps frontend/libs docs/estandares)
