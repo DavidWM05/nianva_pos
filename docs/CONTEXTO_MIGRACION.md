@@ -634,9 +634,49 @@ repo.
    - stylelint (PRO-05) pasa a la Fase 2;
    - después de C8: que los Services reciban DTOs en vez de arreglos (se hace al reescribirlos
      en las Fases 3 a 5); `RequiereDosFactorReciente` sigue validando dentro del middleware.
-2. **Fase 2: sistema de diseño. Es la siguiente.** Sus filas están en
-   `SEGUIMIENTO_FASES.md` (tokens, `libs/ui`, temas claro y oscuro, stylelint, tipos generados
-   desde OpenAPI, C10).
+2. **Fase 2: sistema de diseño, en curso.** Sus filas están en `SEGUIMIENTO_FASES.md`.
+
+   **Punto de partida (2026-11-02):**
+   - dos libs, `design-tokens` y `ui-shared` (9 componentes), que se reemplazan por las
+     `libs/ui/*` de `05_ui_sistema_diseno.md`;
+   - ninguna lib ni app tiene etiquetas Nx;
+   - 110 componentes y 112 SCSS de pantalla (3970 líneas); ningún color hex, `@media`,
+     `innerHTML` ni `HttpClient` en componentes;
+   - modo oscuro apagado (`darkModeSelector: false`) y 62 usos del pipe `date` de Angular.
+
+   **Encargos, en orden**, un tema por PR:
+   1. capas Nx con etiquetas y `enforce-module-boundaries`, y lint de SEG-04, UI-15 y ARQ-12
+      (sin `innerHTML`, sin `bypassSecurityTrust` y sin `HttpClient` en componentes);
+   2. `ui/tokens`: un JSON del que salen las variables CSS, el preset de PrimeNG y los
+      breakpoints; tema oscuro; test de contraste (UI-01, UI-03, UI-04);
+   3. stylelint bloqueante y `ui-baseline.json` del CSS por pantalla, que solo baja (PRO-05,
+      UI-16);
+   4. `ui/format`: pipes de dinero, cantidad, fecha, fecha y hora, y porcentaje, más la regla de
+      ESLint de plantillas (UI-05);
+   5. `ui/feedback`: registro de estados, badge, toast único, interceptor global de errores y el
+      de 401 y CSRF (UI-06, UI-13, ARQ-12, SEG-06);
+   6. `ui/layout` y `ui/actions`: shell, `ui-page-header`, registro de navegación,
+      `ui-btn-crear` y `ui-row-actions` (UI-07, UI-08);
+   7. `ui/data`: `ui-tabla` tipada, `ui-filter-bar` sobre el `meta` de API-06 y el generador
+      `ui-listado` (UI-09);
+   8. `ui/forms` y `ui/overlays`: inputs de dinero, cantidad, contraseña y PIN; errores por
+      campo; modal y drawer (UI-11, componente de SEG-12);
+   9. contrato generado con **openapi-typescript**: tipos en las libs `domain/*` desde
+      `docs/api/openapi.json`, sin interfaces escritas a mano (API-08 del frontend, API-09);
+   10. catálogo visual `catalogo-ui`, regresión visual con **Playwright** (claro, oscuro y 375,
+       768 y 1280 px) y axe (UI-14, UI-03, UI-17);
+   11. `ui/report`, solo el componente (UI-10);
+   12. migración de **las 110 pantallas** a `libs/ui`, en lotes por módulo. Los congelados van
+       con cambio mínimo. Al terminar se retiran `design-tokens` y `ui-shared` (C10, UI-02 y
+       UI-16).
+
+   **Decisiones del responsable (2026-11-02):**
+   - se migran todas las pantallas dentro de la Fase 2;
+   - la regresión visual se hace con Playwright;
+   - los tipos se generan con openapi-typescript, sin runtime, y los servicios de `domain/*`
+     siguen usando `HttpClient` tipado.
+
+   Los impresos (UI-12) y la accesibilidad del TPV son de la Fase 4.
 
 ## 7. Reglas de trabajo con el responsable
 
