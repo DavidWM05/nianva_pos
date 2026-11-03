@@ -9,6 +9,12 @@ export interface MetaListado {
   permisos: Record<string, boolean>;
 }
 
+/** Respuesta completa de un listado de API-06: `XResource::collection()->additional(['meta' => …])`. */
+export interface RespuestaListado<T> {
+  data: T[];
+  meta: MetaListado;
+}
+
 export interface CambioListado {
   page: number;
   rows: number;

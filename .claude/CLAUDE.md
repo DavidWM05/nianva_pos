@@ -123,6 +123,9 @@ Route → middleware permiso:* → FormRequest → Controller → Action / Servi
 - `RecordTabsComponent` (`nucleo-record-tabs`) es obligatorio en toda vista de registro.
 - Estados de carga (UI-18): skeleton con la forma del contenido en la primera carga, nunca un
   texto "Cargando…" suelto; el botón que envía muestra indicador y queda deshabilitado.
+- Una pantalla de listado nueva se crea con el generador (UI-09):
+  `pnpm nx g @nianva/generadores:ui-listado --entidad=… --plural=… --modulo=… --clave=… --endpoint=/…`.
+  Imprime los pasos que faltan (ruta, entrada del registro de navegación y `nx sync`).
 - Para buscar o elegir una entidad de otro módulo, usa `EntidadSelectorComponent` con el
   contrato `BuscadorEntidad`/`BuscadorDeHijos` y su token. Nunca importes el servicio concreto
   de otro módulo.

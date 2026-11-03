@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/schema",
+  "$id": "ui-listado",
+  "title": "Pantalla de listado (UI-09)",
+  "type": "object",
+  "properties": {
+    "entidad": {
+      "type": "string",
+      "description": "Entidad en singular y kebab-case: cliente, nota-credito."
+    },
+    "plural": {
+      "type": "string",
+      "description": "Plural en kebab-case: clientes, notas-credito."
+    },
+    "modulo": {
+      "type": "string",
+      "description": "Carpeta de apps/pos/src/app/modules y ruta del listado: crm."
+    },
+    "clave": {
+      "type": "string",
+      "description": "Clave de la entrada en el registro de navegación (UI-08)."
+    },
+    "endpoint": {
+      "type": "string",
+      "description": "Ruta del listado en la API, con barra inicial: /clientes."
+    },
+    "genero": {
+      "type": "string",
+      "enum": ["m", "f"],
+      "default": "m",
+      "description": "Para el botón de crear: m da Nuevo y f da Nueva."
+    }
+  },
+  "required": ["entidad", "plural", "modulo", "clave", "endpoint"]
+}
