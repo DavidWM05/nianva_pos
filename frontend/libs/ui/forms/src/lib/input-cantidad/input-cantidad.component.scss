@@ -1,0 +1,41 @@
+.ui-input-cantidad {
+  display: flex;
+  align-items: stretch;
+}
+
+.ui-input-cantidad input {
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  padding: var(--nv-spacing-2) var(--nv-spacing-3);
+  border: 1px solid var(--nv-borde);
+  border-radius: var(--nv-radius-md) 0 0 var(--nv-radius-md);
+  background: var(--nv-superficie);
+  color: var(--nv-texto);
+  font-size: var(--nv-font-size-base);
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
+.ui-input-cantidad input:focus {
+  border-color: var(--nv-foco);
+  outline: 2px solid var(--nv-foco);
+  outline-offset: 1px;
+}
+
+.ui-input-cantidad input:disabled {
+  background: var(--nv-color-surface-100);
+  color: var(--nv-texto-suave);
+}
+
+.ui-input-cantidad__unidad {
+  display: inline-flex;
+  align-items: center;
+  padding: 0 var(--nv-spacing-3);
+  border: 1px solid var(--nv-borde);
+  border-left: 0;
+  border-radius: 0 var(--nv-radius-md) var(--nv-radius-md) 0;
+  background: var(--nv-color-surface-100);
+  color: var(--nv-texto-suave);
+  font-size: var(--nv-font-size-sm);
+}

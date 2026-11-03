@@ -1,0 +1,24 @@
+.ui-campo {
+  display: grid;
+  gap: var(--nv-spacing-1);
+}
+
+.ui-campo label {
+  color: var(--nv-texto);
+  font-size: var(--nv-font-size-sm);
+  font-weight: var(--nv-font-weight-medium);
+}
+
+.ui-campo__requerido {
+  color: var(--nv-peligro);
+}
+
+.ui-campo__ayuda {
+  color: var(--nv-texto-suave);
+  font-size: var(--nv-font-size-xs);
+}
+
+.ui-campo__error {
+  color: var(--nv-peligro-texto);
+  font-size: var(--nv-font-size-xs);
+}

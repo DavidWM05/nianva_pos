@@ -1,0 +1,18 @@
+<div class="ui-campo">
+  <label [for]="controlId()">
+    {{ etiqueta() }}
+    @if (requerido()) {
+      <span class="ui-campo__requerido" aria-hidden="true">*</span>
+    }
+  </label>
+
+  <ng-content />
+
+  @if (ayuda(); as textoAyuda) {
+    <small class="ui-campo__ayuda">{{ textoAyuda }}</small>
+  }
+
+  @if (mensaje(); as error) {
+    <small [id]="errorId()" class="ui-campo__error" role="alert">{{ error }}</small>
+  }
+</div>

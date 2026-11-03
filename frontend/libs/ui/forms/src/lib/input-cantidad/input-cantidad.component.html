@@ -1,0 +1,18 @@
+<div class="ui-input-cantidad">
+  <input
+    type="text"
+    [attr.inputmode]="modoEntrada()"
+    autocomplete="off"
+    [id]="idControl()"
+    [value]="texto()"
+    [disabled]="deshabilitado()"
+    [attr.aria-required]="ariaRequerido() ? 'true' : null"
+    [attr.aria-invalid]="ariaInvalido() ? 'true' : null"
+    [attr.aria-describedby]="descritoPor()"
+    (input)="alEntrar($event)"
+    (blur)="alSalir()"
+  />
+  @if (unidad()) {
+    <span class="ui-input-cantidad__unidad">{{ unidad() }}</span>
+  }
+</div>

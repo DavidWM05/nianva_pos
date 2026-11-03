@@ -1,0 +1,59 @@
+.ui-input-pin {
+  display: grid;
+  gap: var(--nv-spacing-3);
+}
+
+.ui-input-pin__entrada {
+  width: 100%;
+  box-sizing: border-box;
+  padding: var(--nv-spacing-2) var(--nv-spacing-3);
+  border: 1px solid var(--nv-borde);
+  border-radius: var(--nv-radius-md);
+  background: var(--nv-superficie);
+  color: var(--nv-texto);
+  font-size: var(--nv-font-size-lg);
+  letter-spacing: var(--nv-spacing-2);
+  text-align: center;
+}
+
+.ui-input-pin__entrada:focus {
+  border-color: var(--nv-foco);
+  outline: 2px solid var(--nv-foco);
+  outline-offset: 1px;
+}
+
+.ui-input-pin__entrada:disabled {
+  background: var(--nv-color-surface-100);
+  color: var(--nv-texto-suave);
+}
+
+.ui-input-pin__teclado {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--nv-spacing-2);
+}
+
+.ui-input-pin__tecla {
+  min-height: var(--nv-spacing-12);
+  border: 1px solid var(--nv-borde);
+  border-radius: var(--nv-radius-md);
+  background: var(--nv-superficie);
+  color: var(--nv-texto);
+  font-size: var(--nv-font-size-lg);
+  font-weight: var(--nv-font-weight-medium);
+  cursor: pointer;
+}
+
+.ui-input-pin__tecla:focus-visible {
+  outline: 2px solid var(--nv-foco);
+  outline-offset: 1px;
+}
+
+.ui-input-pin__tecla:disabled {
+  cursor: default;
+  opacity: 0.6;
+}
+
+.ui-input-pin__tecla--accion {
+  font-size: var(--nv-font-size-sm);
+}
