@@ -23,7 +23,8 @@
       "@nianva/ui-feedback": ["./libs/ui/feedback/src/index.ts"],
       "@nianva/ui-forms": ["./libs/ui/forms/src/index.ts"],
       "@nianva/ui-layout": ["./libs/ui/layout/src/index.ts"],
-      "@nianva/ui-shared": ["./libs/ui-shared/src/index.ts"]
+      "@nianva/ui-shared": ["./libs/ui-shared/src/index.ts"],
+      "@nianva/generadores": ["./tools/generadores"]
     }
   }
 }

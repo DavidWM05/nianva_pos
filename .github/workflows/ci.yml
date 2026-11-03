@@ -194,6 +194,10 @@ jobs:
       - name: Probar reglas de lint propias
         run: pnpm exec vitest run tools/eslint-rules
 
+      # Igual que las reglas: el generador ui-listado (tools/generadores) no tiene target de test.
+      - name: Probar generadores
+        run: pnpm exec vitest run tools/generadores
+
       - name: Revisar estilos con stylelint
         run: pnpm stylelint
 

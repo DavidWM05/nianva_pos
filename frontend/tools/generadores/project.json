@@ -1,0 +1,8 @@
+{
+  "name": "generadores",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "tools/generadores",
+  "projectType": "library",
+  "tags": ["type:core"],
+  "targets": {}
+}

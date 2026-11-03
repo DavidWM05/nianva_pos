@@ -1,0 +1,9 @@
+{
+  "generators": {
+    "ui-listado": {
+      "factory": "./ui-listado/index.cjs",
+      "schema": "./ui-listado/schema.json",
+      "description": "Pantalla de listado con ui-page-header, ui-filter-bar y ui-tabla (UI-09)"
+    }
+  }
+}
