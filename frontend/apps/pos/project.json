@@ -69,7 +69,8 @@
       "executor": "@angular/build:unit-test",
       "options": {
         "watch": false,
-        "setupFiles": ["apps/pos/src/test-setup.ts"]
+        "setupFiles": ["apps/pos/src/test-setup.ts"],
+        "runnerConfig": "apps/pos/vitest.config.mts"
       }
     },
     "serve-static": {
