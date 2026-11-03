@@ -80,11 +80,11 @@ línea base de PHPStan; se paga al tocar cada módulo.
 | SEG-06 | Sesión y CSRF | Pendiente | — | — |
 | SEG-12 | Componente de PIN | Pendiente | — | — |
 | PRO-05 | stylelint | Hecho | stylelint bloqueante en CI (`frontend/stylelint.config.mjs`) con las reglas de UI-01 y UI-04 | 39 |
-| UI-01 | Solo tokens | Parcial | `libs/ui/tokens`: una fuente (`tokens.json`) de la que salen las variables CSS, el preset de PrimeNG y los breakpoints, con su `--check` en CI; stylelint bloquea colores literales y `font-family` fuera de tokens. Faltan la regla de ESLint en plantillas (encargo 40) y la migración de las pantallas a los semánticos `--nv-*` | 38, 39 |
+| UI-01 | Solo tokens | Parcial | `libs/ui/tokens`: una fuente (`tokens.json`) de la que salen las variables CSS, el preset de PrimeNG y los breakpoints, con su `--check` en CI; stylelint bloquea colores literales y `font-family` fuera de tokens; `nianva/sin-color-en-plantilla` bloquea colores literales y clases de color fijo en plantillas. Falta la migración de las pantallas a los semánticos `--nv-*` | 38, 39, 40 |
 | UI-02 | Componentes, no fragmentos | Pendiente | — | — |
 | UI-03 | Claro y oscuro | Parcial | Semánticos en claro y oscuro; `tokens-contrast.spec.ts` exige 4.5:1 en los pares de texto de ambos temas; `TemaService` aplica `.nv-tema-oscuro`. Por defecto queda en claro y sin interruptor hasta migrar las pantallas; faltan el catálogo y la regresión visual | 38 |
 | UI-04 | Responsivo en el componente | Parcial | Breakpoints únicos en `tokens.json` (`breakpoints.ts`); stylelint bloquea `@media` en `apps/**` y `feature/**`. Faltan los componentes responsivos, el catálogo a 375, 768 y 1280 px y el e2e de venta a 375 px | 38, 39 |
-| UI-05 | Formato solo por pipes | Pendiente | — | — |
+| UI-05 | Formato solo por pipes | Parcial | `libs/ui/format` (`dinero`, `cantidad`, `porcentaje`, `fecha`, `fechaHora`) con sus tests; `nianva/formato-por-pipe` exige esos pipes y prohíbe los de Angular, con 53 archivos en `formato-pendientes.json`, que solo baja. Faltan la migración de las pantallas, `tabular-nums` y los negativos en tono de peligro (con `ui-tabla`), y tomar el formato regional de la configuración del tenant | 40 |
 | UI-06 | Estados con un registro global | Pendiente | — | — |
 | UI-07 | Acciones | Pendiente | — | — |
 | UI-08 | Un módulo, un nombre | Pendiente | — | — |

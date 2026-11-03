@@ -655,7 +655,35 @@ repo.
     mismo criterio que `ErroresCatalogoCommand::contenidoEquivalente()` del backend, y tiene
     su test, que se vio fallar primero. Un token cambiado sin regenerar sigue fallando;
   - ui-tokens: 20 tests.
+- **`ui/format` y reglas de plantilla** (cuadragésimo encargo, hecho por DS):
+  - **lib nueva `libs/ui/format`** (`@nianva/ui-format`, `type:ui`):
+    - pipes `dinero` (`$1,250.50`), `cantidad` (`1 pza`, `0.5 kg`; el cero va solo, como
+      `0`), `porcentaje` (en puntos: `16` → `16%`), `fecha` y `fechaHora` (`dd/MM/yyyy HH:mm`
+      en la zona del tenant; una fecha sola no se desplaza);
+    - aceptan los decimales como texto de Laravel; un valor vacío o no numérico se muestra
+      `—`;
+    - `FORMATO_REGIONAL` y `provideFormatoRegional()`, por ahora con los valores por
+      defecto del backend (`es-MX`, `$`, `America/Mexico_City`);
+  - **`nianva/formato-por-pipe` (UI-05):**
+    - un campo con `precio`, `monto`, `total`, `cantidad` o `stock` en una interpolación
+      debe terminar en `dinero`, `cantidad` o `porcentaje`;
+    - prohíbe `date`, `currency`, `number`, `percent` y `decimal`;
+    - 53 archivos quedan en `tools/eslint-rules/formato-pendientes.json`, con la regla
+      apagada. Un test falla si alguno ya no la viola, así que la lista solo baja; está en
+      CODEOWNERS;
+  - **`nianva/sin-color-en-plantilla` (UI-01):** colores literales y clases de color fijo
+    (`bg-white`, `text-red-500`) en plantillas. Entró sin pendientes: había 0;
+  - **corregido en la revisión, con sus tests primero:**
+    - la regla no detectaba `venta?.total`, `obtenerTotal?.()` ni `fila['total']`, y marcaba
+      `(x.total | dinero)`;
+    - ahora recorre el árbol completo de la expresión. El recorrido no sigue `parent`: si lo
+      sigue, cada interpolación "ve" la plantilla entera;
+  - frontend: ui-format 11, ui-tokens 20, ui-shared 22 y pos 444 tests; reglas propias 14;
+    los mismos warnings.
 - **Pendientes detectados:**
+  - `FORMATO_REGIONAL` aún no lee la configuración del tenant (`moneda`, `zona_horaria`). Si
+    `moneda` es un código como `USD`, `dinero` da `USD1,250.50`, sin espacio. Se resuelve al
+    conectarlo;
   - las libs de feature aún no existen. Los patrones `feature/**` de `stylelint.config.mjs` y
     de `ui-baseline.mjs` apuntan a `frontend/feature/`. Al crear la primera, se ajustan a su
     ruta real;
@@ -732,9 +760,9 @@ repo.
       encargo 38;
    3. ~~stylelint bloqueante y `ui-baseline.json` del CSS por pantalla, que solo baja (PRO-05,
       UI-16)~~, hecho en el encargo 39;
-   4. `ui/format`: pipes de dinero, cantidad, fecha, fecha y hora, y porcentaje, más la regla de
-      ESLint de plantillas (UI-05) y la de colores literales y clases de color fijo en
-      plantillas (UI-01);
+   4. ~~`ui/format`: pipes de dinero, cantidad, fecha, fecha y hora, y porcentaje, más la regla
+      de ESLint de plantillas (UI-05) y la de colores literales y clases de color fijo en
+      plantillas (UI-01)~~, hecho en el encargo 40;
    5. `ui/feedback`: registro de estados, badge, toast único, interceptor global de errores y el
       de 401 y CSRF (UI-06, UI-13, ARQ-12, SEG-06); `ui-skeleton` y la regla de lint sin
       "Cargando…" literal (UI-18). Primer consumidor: el QR de la configuración del 2FA,
