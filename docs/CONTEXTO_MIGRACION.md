@@ -804,6 +804,31 @@ repo.
       de `app.routes.ts`;
     - los permisos y features de cada entrada;
   - frontend: ui-layout 15, pos 472 tests; los mismos warnings.
+- **`ui/data`: tabla tipada, barra de filtros y estado vacío** (encargo 43, hecho por DS en
+  paralelo con el 42c):
+  - **lib nueva `libs/ui/data`** (`@nianva/ui-data`, `type:ui`):
+    - el contrato de API-06: `MetaListado`, `CambioListado` y `parametrosListado()`, que
+      arma el query sin vacíos y limita `rows` a 100;
+    - columnas tipadas: una unión discriminada por `tipo` (`texto`, `principal` con
+      `apoyo`, `dinero`, `cantidad`, `porcentaje`, `fecha`, `fechaHora`, `estado` y
+      `acciones`), con `campo: keyof T`, verificado con `@ts-expect-error`;
+  - **`ui-tabla`,** sobre `p-table` lazy:
+    - formato con `ui/format`, números a la derecha con `tabular-nums` y dinero negativo en
+      tono de peligro;
+    - `ui-badge` en la columna `estado` y fila inactiva atenuada con "Inactivo";
+    - `ui-row-actions` en la columna de acciones, sin clic en la fila;
+    - un skeleton de filas en la primera carga, y en una recarga los datos se conservan con
+      el indicador (`conUmbral`);
+    - `ui-empty` cuando no hay filas, y paginación de 25, 50 y 100;
+  - **`ui-filter-bar`** ("Mostrando X–Y de Z" y "Limpiar") y **`ui-empty`**;
+  - **corregido en la revisión, con su test primero:**
+    - las acciones de la columna eran un arreglo fijo, igual para todas las filas, así que
+      no se podía mostrar Activar o Desactivar según la fila ni deshabilitar una acción en
+      una fila concreta. Ahora son `(fila) => AccionFila[]`, como pedía el encargo;
+    - se agregó el test de que el estado normal no pinta badge;
+  - DS no mostró los tests fallando antes de implementar; su reporte no trajo la API ni los
+    conteos por proyecto;
+  - ui-data: 23 tests.
 - **Pendientes detectados:**
   - `FORMATO_REGIONAL` aún no lee la configuración del tenant (`moneda`, `zona_horaria`). Si
     `moneda` es un código como `USD`, `dinero` da `USD1,250.50`, sin espacio. Se resuelve al
@@ -902,8 +927,10 @@ repo.
       - ~~42b: registro de navegación, `ui-page-header`, `ui-page` con carga y error,
         `ui-section` y `ui-form-actions` (UI-08, UI-18)~~, hecho;
       - 42c: shell responsivo y título del navegador desde el registro (UI-04, UI-08);
-   7. `ui/data`: `ui-tabla` tipada, `ui-filter-bar` sobre el `meta` de API-06 y el generador
-      `ui-listado` (UI-09); skeleton de filas de `ui-tabla` (UI-18);
+   7. `ui/data`, en dos PRs:
+      - ~~43: `ui-tabla` tipada, `ui-filter-bar` sobre el `meta` de API-06 y `ui-empty`
+        (UI-09, UI-05, UI-06, UI-18)~~, hecho;
+      - 43b: el generador de Nx `ui-listado` (UI-09);
    8. `ui/forms` y `ui/overlays`: inputs de dinero, cantidad, contraseña y PIN; errores por
       campo; modal y drawer (UI-11, componente de SEG-12); botones de envío con indicador
       (UI-18);
