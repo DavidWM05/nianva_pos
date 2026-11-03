@@ -467,7 +467,7 @@ php artisan db:seed --class="App\Modules\Nucleo\Database\Seeders\DesarrolloSeede
 
 | Usuario | Correo | Contraseña | 2FA |
 |---|---|---|---|
-| Admin | `admin@nucleo.test` | `password-dev-123` | ✅ Preconfigurado (secreto TOTP se imprime en consola) |
+| Admin | `admin@nucleo.test` | `password-dev-123` | ✅ Preconfigurado (el secreto TOTP y los 8 códigos de recuperación se imprimen en consola) |
 | Vendedor | `vendedor@nucleo.test` | `password-dev-123` | ❌ No requiere |
 
 > [!WARNING]

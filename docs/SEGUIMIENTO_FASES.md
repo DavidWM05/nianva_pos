@@ -96,6 +96,7 @@ línea base de PHPStan; se paga al tocar cada módulo.
 | UI-15 | Texto por interpolación | Hecho | Por SEG-04: `nianva/no-inner-html` impide pintar texto como HTML; queda la interpolación | 37 |
 | UI-16 | CSS por pantalla en línea base | Pendiente | — | — |
 | UI-17 | Accesibilidad mínima | Pendiente | — | — |
+| UI-18 | Estados de carga | Pendiente | — | — |
 
 Conflicto que se resuelve aquí: C10.
 
