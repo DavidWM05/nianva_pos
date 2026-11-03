@@ -858,6 +858,37 @@ repo.
     - si el PIN usa `type="password"`, falla el suyo;
   - DS no tenía la salida en rojo previa, y lo dijo;
   - ui-forms: 26 tests.
+- **`ui/overlays`, confirm, `ui-alert` y botón de envío** (encargo 44b, hecho por DS en
+  paralelo con el mantenimiento de los timeouts):
+  - **lib nueva `libs/ui/overlays`** (`@nianva/ui-overlays`, `type:ui`):
+    - `ui-modal` (sobre `p-dialog`) y `ui-drawer` (sobre `p-drawer`, desde la derecha);
+    - entradas `visible` (`model`), `titulo` y `tamano`, más la salida `(cerrado)`;
+    - las acciones van en `[acciones]`, dentro de `ui-form-actions`;
+    - se cierran con Escape y con el botón, y el foco vuelve al elemento que los abrió;
+    - en pantalla angosta (`PantallaService`) ocupan la pantalla completa;
+  - **en `ui/feedback`:**
+    - `ConfirmDialogService` y su host se movieron desde `ui-shared`, que los reexporta, así
+      que sus 54 usos no cambian;
+    - `confirmarEliminacion()` es nuevo y siempre usa el tono de peligro;
+    - `ui-alert` cubre los avisos fijos, con `role="alert"` o `role="status"` según el tono;
+  - **en `ui/forms`:** `ui-btn-enviar` se deshabilita en el acto y muestra su indicador
+    pasado el umbral;
+  - **corregido en la revisión:**
+    - los overlays daban el ancho con `[style]="estilo()"`. Así, ellos mismos habrían roto
+      el lint al quitar `allowBindToStyle`, que es justo la excepción que existen para
+      retirar. Ahora usan clases (`claseOverlay()` y `overlays.scss`, sin encapsulación,
+      porque PrimeNG pinta el contenedor fuera del componente). Un test comprueba que la
+      clase llega al `.p-dialog`;
+    - en `eslint.config.mjs`, `no-inline-styles` queda estricta para `libs/ui/**/*.html`,
+      con la opción explícita: un override que solo cambia la severidad conserva
+      `allowBindToStyle: true`. Se vio fallar en los overlays antes del cambio;
+  - **verificación por mutación:** con umbral 0, falla el test del indicador de
+    `ui-btn-enviar`;
+  - **visto en la revisión:** ESLint corrido a mano desde la carpeta de un proyecto no
+    aplica los patrones relativos a `frontend/` (pendientes y overrides). Nx y CI lo corren
+    desde la raíz, donde sí se aplican;
+  - DS no tenía la salida en rojo previa;
+  - ui-overlays 8, ui-feedback 32 y ui-forms 29 tests.
 - **Shell responsivo y título del navegador** (encargo 42c, hecho por Claude en un worktree
   aparte, en paralelo con el 43 de DS):
   - **`ui-shell`** (en `ui/layout`, porque stylelint no permite `@media` en `apps/**`):
@@ -907,6 +938,26 @@ repo.
     - se generó una pantalla real en un módulo temporal: con `nx sync`, `pos` pasó lint,
       build y test, con 3 tests generados más (480). Después se borró;
   - `.claude/CLAUDE.md` §6 dice cómo crear un listado nuevo.
+- **Mantenimiento: timeouts de los specs de `pos` bajo carga** (hecho por Claude en un
+  worktree aparte, en paralelo con el 44b de DS):
+  - **síntoma:** en casi cada corrida completa fallaban entre 5 y 10 specs de detalle y de
+    listado, y al correrlos solos pasaban siempre;
+  - **medición:**
+    - sin carga, ningún test pasa de 1.5 s y solo 5 pasan de 1 s. Son los primeros tests de
+      los specs que montan `RecordTabs` y PrimeNG;
+    - el costo está en el `beforeEach` asíncrono (`compileComponents`);
+    - con la máquina cargada (run-many en paralelo, el servidor de desarrollo u otra sesión
+      corriendo tests), ese paso llegó a 5–11 s;
+    - los fallos encajan con los dos límites por defecto de Vitest: `testTimeout` de 5 s
+      (fallos de 5.5–6.5 s) y `hookTimeout` de 10 s (fallos de 10–11 s, que Vitest atribuye
+      al primer test);
+  - **arreglo:**
+    - `apps/pos/vitest.config.mts` con `testTimeout: 15000` y `hookTimeout: 30000`,
+      conectado con `runnerConfig` en el target `test`;
+    - se comprobó que el builder lee el archivo: con 1 ms fallaron los specs en masa;
+    - con los valores reales pasan los 477 tests y la corrida completa de los 9 proyectos;
+  - **no se pudo reproducir a voluntad,** ni con tres corridas de `pos` en simultáneo. El
+    margen cubre el peor caso observado (11.3 s).
 - **Pendientes detectados:**
   - el aviso "Invalid PrimeUI License" aparece en toda la app y viene de la base heredada
     (nucleo-erp-base). Hay que revisar qué componente, tema o paquete de PrimeNG pide
@@ -921,10 +972,8 @@ repo.
     Fase 3 (DAT-01);
   - permisos de acción distinta que son intencionales: `desactivar` con `.eliminar` y los
     catálogos de apoyo;
-  - la suite de `pos` tuvo timeouts de 5 s bajo carga en una corrida local (Nx la marcó
-    inestable). **Se repitió en la revisión del 41b:** `ordenes-list.component.spec.ts` tardó
-    6.5 s con los cuatro proyectos en paralelo y pasó al correrlo solo. Hay que revisar los
-    specs más lentos;
+  - ~~la suite de `pos` tuvo timeouts bajo carga~~, resuelto en el mantenimiento de los
+    timeouts, más arriba;
   - `VentaController` y `CompraController` toman el tenant de `$request->user()` y el resto
     de `TenantContext` (equivalentes); se unifica al migrar a FormRequest (C8).
 - **Git:** `master` está protegido (ruleset `proteger-master`): todo entra por PR con los tres
@@ -1016,8 +1065,9 @@ repo.
    8. `ui/forms` y `ui/overlays`, en dos PRs:
       - ~~44a: inputs de dinero, cantidad, contraseña y PIN, `ui-campo` y errores por campo
         (UI-11, componente de SEG-12)~~, hecho;
-      - 44b: `ui-modal` y `ui-drawer` (retiran `allowBindToStyle`), `confirm` en tono de
-        peligro, `ui-alert` y botones de envío con indicador (UI-13, UI-18);
+      - ~~44b: `ui-modal` y `ui-drawer`, `confirm` en tono de peligro, `ui-alert` y
+        botones de envío con indicador (UI-13, UI-18)~~, hecho. `allowBindToStyle` se
+        retira de las pantallas en la migración;
    9. contrato generado con **openapi-typescript**: tipos en las libs `domain/*` desde
       `docs/api/openapi.json`, sin interfaces escritas a mano (API-08 del frontend, API-09);
    10. catálogo visual `catalogo-ui`, regresión visual con **Playwright** (claro, oscuro y 375,
