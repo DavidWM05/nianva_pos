@@ -1,0 +1,44 @@
+<div class="ui-input-pin">
+  <input
+    type="text"
+    inputmode="numeric"
+    autocomplete="off"
+    aria-label="PIN"
+    class="ui-input-pin__entrada"
+    [value]="puntos()"
+    [disabled]="deshabilitado()"
+    [id]="idControl()"
+    [attr.aria-required]="ariaRequerido() ? 'true' : null"
+    [attr.aria-invalid]="ariaInvalido() ? 'true' : null"
+    [attr.aria-describedby]="descritoPor()"
+    (keydown)="alTeclado($event)"
+    (input)="alEntrada($event)"
+    (blur)="alSalir()"
+  />
+
+  <div class="ui-input-pin__teclado">
+    @for (digito of teclas; track digito) {
+      <button type="button" class="ui-input-pin__tecla" [disabled]="deshabilitado()" (click)="agregar(digito)">
+        {{ digito }}
+      </button>
+    }
+    <button
+      type="button"
+      class="ui-input-pin__tecla ui-input-pin__tecla--accion"
+      [disabled]="deshabilitado()"
+      aria-label="Borrar"
+      title="Borrar"
+      (click)="borrar()"
+    >
+      <i class="pi pi-delete-left" aria-hidden="true"></i>
+    </button>
+    <button
+      type="button"
+      class="ui-input-pin__tecla ui-input-pin__tecla--accion"
+      [disabled]="deshabilitado()"
+      (click)="limpiar()"
+    >
+      Limpiar
+    </button>
+  </div>
+</div>

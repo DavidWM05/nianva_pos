@@ -1,0 +1,16 @@
+<div class="ui-input-dinero">
+  <input
+    type="text"
+    inputmode="decimal"
+    autocomplete="off"
+    [id]="idControl()"
+    [value]="texto()"
+    [disabled]="deshabilitado()"
+    [attr.aria-required]="ariaRequerido() ? 'true' : null"
+    [attr.aria-invalid]="ariaInvalido() ? 'true' : null"
+    [attr.aria-describedby]="descritoPor()"
+    (focus)="alEnfocar()"
+    (input)="alEntrar($event)"
+    (blur)="alSalir()"
+  />
+</div>

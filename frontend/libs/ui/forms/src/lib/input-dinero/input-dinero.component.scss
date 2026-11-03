@@ -1,0 +1,27 @@
+.ui-input-dinero {
+  display: block;
+}
+
+.ui-input-dinero input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: var(--nv-spacing-2) var(--nv-spacing-3);
+  border: 1px solid var(--nv-borde);
+  border-radius: var(--nv-radius-md);
+  background: var(--nv-superficie);
+  color: var(--nv-texto);
+  font-size: var(--nv-font-size-base);
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
+.ui-input-dinero input:focus {
+  border-color: var(--nv-foco);
+  outline: 2px solid var(--nv-foco);
+  outline-offset: 1px;
+}
+
+.ui-input-dinero input:disabled {
+  background: var(--nv-color-surface-100);
+  color: var(--nv-texto-suave);
+}

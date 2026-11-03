@@ -66,3 +66,29 @@ export function mensajeError(error: unknown, fallback: string): string {
 export function esErrorNegocio(error: unknown, codigo: CodigoError): boolean {
   return leerErrorNegocio(error)?.codigo === codigo;
 }
+
+/** Los `errors.campo` de un 422 de validación de Laravel, normalizados a listas de texto. */
+export function erroresValidacion(error: unknown): Record<string, string[]> {
+  const cuerpo = cuerpoDe(error);
+  const errores = cuerpo?.['errors'];
+
+  if (! esObjeto(errores)) {
+    return {};
+  }
+
+  const normalizados: Record<string, string[]> = {};
+
+  for (const [campo, valor] of Object.entries(errores)) {
+    if (Array.isArray(valor)) {
+      const mensajes = valor.filter((mensaje): mensaje is string => typeof mensaje === 'string');
+
+      if (mensajes.length > 0) {
+        normalizados[campo] = mensajes;
+      }
+    } else if (typeof valor === 'string') {
+      normalizados[campo] = [valor];
+    }
+  }
+
+  return normalizados;
+}
