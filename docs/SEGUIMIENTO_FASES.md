@@ -73,7 +73,7 @@ línea base de PHPStan; se paga al tocar cada módulo.
 | Regla | Qué pide | Estado | Dónde se verifica | Encargo |
 |---|---|---|---|---|
 | ARQ-11 | Capas de librerías Nx | Hecho | Etiquetas `type:*` en todos los proyectos; `@nx/enforce-module-boundaries` con `depConstraints` por capa (un `feature` no importa otro; un proyecto sin etiqueta falla) | 37 |
-| ARQ-12 | Estado y efectos | Parcial | ESLint: sin `HttpClient` en `*.component.ts`; falta el interceptor global de errores y su test | 37 |
+| ARQ-12 | Estado y efectos | Parcial | ESLint: sin `HttpClient` en `*.component.ts`; `erroresInterceptor` con su test: un toast ante errores técnicos (sin conexión, 403, 5xx) y `ERROR_EN_PANTALLA` para las pantallas que muestran su error. Faltan los 4xx de negocio en el interceptor (los componentes aún muestran sus propios toasts) y los servicios de `domain/*` con tipos del contrato | 37, 41c |
 | API-08 | Tipos y clientes generados en el frontend | Pendiente | — | — |
 | API-09 | Features y permisos en la respuesta | Pendiente | — | — |
 | SEG-04 | Sin HTML sin escapar | Parcial | ESLint: regla propia `nianva/no-inner-html` (test en `tools/eslint-rules`, paso de CI "Probar reglas de lint propias"), `no-restricted-syntax` para `bypassSecurityTrust*` y `@angular-eslint/template/no-inline-styles`. **Excepción temporal:** `allowBindToStyle` permite los 22 `[style]` de `p-dialog` hasta que `ui-modal` los reemplace. Falta el e2e con un producto `<img src=x onerror=…>` (con Playwright) | 37 |
@@ -91,7 +91,7 @@ línea base de PHPStan; se paga al tocar cada módulo.
 | UI-09 | Plantilla de listado | Pendiente | — | — |
 | UI-10 | Componente de reporte | Pendiente | — | — |
 | UI-11 | Formularios | Pendiente | — | — |
-| UI-13 | Mensajes | Parcial | `ToastService` vive en `libs/ui/feedback` (`ui-shared` lo reexporta) y descarta el mismo mensaje repetido dentro de 1.5 s. Faltan el interceptor global de errores con su test (41c), `confirm` en tono de peligro, `ui-alert` y el `correlation_id` en errores técnicos | 41a |
+| UI-13 | Mensajes | Parcial | `ToastService` vive en `libs/ui/feedback` (`ui-shared` lo reexporta) y descarta el mismo mensaje repetido dentro de 1.5 s. El interceptor muestra un toast por error técnico, con el `correlation_id` en 5xx, y descarta el `toast.error` que la pantalla dispara ante el mismo fallo (test de un solo toast). Faltan los 4xx de negocio en el interceptor, `confirm` en tono de peligro y `ui-alert` | 41a, 41c |
 | UI-14 | Catálogo visual | Pendiente | — | — |
 | UI-15 | Texto por interpolación | Hecho | Por SEG-04: `nianva/no-inner-html` impide pintar texto como HTML; queda la interpolación | 37 |
 | UI-16 | CSS por pantalla en línea base | Hecho | `tools/ui-baseline.mjs --check` en CI contra `frontend/ui-baseline.json` (3374 líneas en 112 archivos), que solo baja y está en CODEOWNERS | 39 |
