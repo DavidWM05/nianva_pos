@@ -85,18 +85,18 @@ línea base de PHPStan; se paga al tocar cada módulo.
 | UI-03 | Claro y oscuro | Parcial | Semánticos en claro y oscuro; `tokens-contrast.spec.ts` exige 4.5:1 en los pares de texto de ambos temas; `TemaService` aplica `.nv-tema-oscuro`. Por defecto queda en claro y sin interruptor hasta migrar las pantallas; faltan el catálogo y la regresión visual | 38 |
 | UI-04 | Responsivo en el componente | Parcial | Breakpoints únicos en `tokens.json` (`breakpoints.ts`); stylelint bloquea `@media` en `apps/**` y `feature/**`. Faltan los componentes responsivos, el catálogo a 375, 768 y 1280 px y el e2e de venta a 375 px | 38, 39 |
 | UI-05 | Formato solo por pipes | Parcial | `libs/ui/format` (`dinero`, `cantidad`, `porcentaje`, `fecha`, `fechaHora`) con sus tests; `nianva/formato-por-pipe` exige esos pipes y prohíbe los de Angular, con 53 archivos en `formato-pendientes.json`, que solo baja. Faltan la migración de las pantallas, `tabular-nums` y los negativos en tono de peligro (con `ui-tabla`), y tomar el formato regional de la configuración del tenant | 40 |
-| UI-06 | Estados con un registro global | Pendiente | — | — |
+| UI-06 | Estados con un registro global | Parcial | `REGISTRO_ESTADOS` en `libs/ui/feedback`, con 13 entidades; el valor por defecto de cada columna `estado` no lleva badge, y un test compara el registro con los enums de las migraciones. `ui-badge` lo usa. Faltan la columna `estado` de `ui-tabla`, la fila inactiva y migrar los `nucleo-status-badge` de las pantallas. La comparación con el contrato OpenAPI llega cuando los Resources declaren sus enums | 41a |
 | UI-07 | Acciones | Pendiente | — | — |
 | UI-08 | Un módulo, un nombre | Pendiente | — | — |
 | UI-09 | Plantilla de listado | Pendiente | — | — |
 | UI-10 | Componente de reporte | Pendiente | — | — |
 | UI-11 | Formularios | Pendiente | — | — |
-| UI-13 | Mensajes | Pendiente | — | — |
+| UI-13 | Mensajes | Parcial | `ToastService` vive en `libs/ui/feedback` (`ui-shared` lo reexporta) y descarta el mismo mensaje repetido dentro de 1.5 s. Faltan el interceptor global de errores con su test (41c), `confirm` en tono de peligro, `ui-alert` y el `correlation_id` en errores técnicos | 41a |
 | UI-14 | Catálogo visual | Pendiente | — | — |
 | UI-15 | Texto por interpolación | Hecho | Por SEG-04: `nianva/no-inner-html` impide pintar texto como HTML; queda la interpolación | 37 |
 | UI-16 | CSS por pantalla en línea base | Hecho | `tools/ui-baseline.mjs --check` en CI contra `frontend/ui-baseline.json` (3374 líneas en 112 archivos), que solo baja y está en CODEOWNERS | 39 |
 | UI-17 | Accesibilidad mínima | Pendiente | — | — |
-| UI-18 | Estados de carga | Pendiente | — | — |
+| UI-18 | Estados de carga | Parcial | `ui-skeleton` y `conUmbral()` (300 ms), con sus tests; `nianva/sin-texto-cargando` prohíbe "Cargando"/"Generando" en plantillas, con 36 archivos en `cargando-pendientes.json`, que solo baja. Primer uso: el QR del 2FA, con skeleton, error con "Reintentar" y "Confirmar" con indicador. Faltan los estados de `ui-page` y `ui-tabla`, los botones de envío de `ui/forms` y el catálogo visual | 41a |
 
 Conflicto que se resuelve aquí: C10.
 

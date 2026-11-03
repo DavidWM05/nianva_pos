@@ -701,6 +701,31 @@ repo.
   - **la prueba manual con dos pestañas** (logout en una y borrar la cookie `XSRF-TOKEN`)
     queda para el responsable: DS no tenía navegador;
   - pos: 457 tests.
+- **`ui/feedback`: estados, toast y estados de carga** (encargo 41a, hecho por Claude en un
+  worktree aparte, en paralelo con el 41b):
+  - **lib nueva `libs/ui/feedback`** (`@nianva/ui-feedback`, `type:ui`, selectores `ui-*`):
+    - `REGISTRO_ESTADOS`: 13 entidades. El estado normal de cada una (el valor por defecto
+      de su columna `estado`) no lleva badge, y un estado desconocido se muestra tal cual en
+      tono neutro. `registro-estados.spec.ts` lee las migraciones del backend y falla si un
+      enum gana o pierde un valor; se probó quitando un estado;
+    - `ui-badge`: etiqueta, tono e icono sacados del registro, con los tokens semánticos
+      `--nv-*`;
+    - `ToastService` y su host se movieron desde `ui-shared`, que los reexporta, así que los
+      113 archivos que lo usan no cambian. Ahora descarta el mismo mensaje repetido dentro de
+      1.5 s;
+    - `ui-skeleton`, sobre `p-skeleton`, con forma `texto`, `bloque` o `circulo` y
+      `role="status"`, y `conUmbral()`, que enciende un indicador a los 300 ms y lo apaga en
+      el acto;
+  - **`nianva/sin-texto-cargando`:** 66 textos en 37 archivos. Quedan 36 en
+    `cargando-pendientes.json`, que solo baja y está en CODEOWNERS;
+  - **2FA, primer uso,** con el test primero:
+    - el QR muestra su skeleton;
+    - si la generación fallaba, el formulario "Confirmar" se mostraba sin QR y sin forma de
+      reintentar. Ahora se muestra el error con "Reintentar";
+    - "Confirmar" muestra su indicador;
+    - el generador del QR entra por el token `GENERAR_QR`, para poder simularlo;
+    - no se agregó CSS: la línea base sigue en 3374;
+  - frontend: ui-feedback 20, pos 461 tests; reglas propias 19; los mismos warnings.
 - **Pendientes detectados:**
   - `FORMATO_REGIONAL` aún no lee la configuración del tenant (`moneda`, `zona_horaria`). Si
     `moneda` es un código como `USD`, `dinero` da `USD1,250.50`, sin espacio. Se resuelve al
@@ -787,9 +812,9 @@ repo.
       de ESLint de plantillas (UI-05) y la de colores literales y clases de color fijo en
       plantillas (UI-01)~~, hecho en el encargo 40;
    5. `ui/feedback`, en tres PRs:
-      - 41a: registro de estados, badge, toast único, `ui-skeleton` y la regla de lint sin
-        "Cargando…" literal (UI-06, UI-13, UI-18). Primer consumidor: el QR de la
-        configuración del 2FA, con su skeleton y el botón "Confirmar" con indicador;
+      - ~~41a: registro de estados, badge, toast único, `ui-skeleton` y la regla de lint sin
+        "Cargando…" literal (UI-06, UI-13, UI-18), con el QR del 2FA como primer uso~~,
+        hecho;
       - ~~41b: 401 en todas las pestañas y reintento ante 419 (SEG-06)~~, hecho;
       - 41c: interceptor global de errores sobre el toast (ARQ-12, UI-13);
    6. `ui/layout` y `ui/actions`: shell, `ui-page-header`, registro de navegación,
