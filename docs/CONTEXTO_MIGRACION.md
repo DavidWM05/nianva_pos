@@ -829,6 +829,35 @@ repo.
   - DS no mostró los tests fallando antes de implementar; su reporte no trajo la API ni los
     conteos por proyecto;
   - ui-data: 23 tests.
+- **`ui/forms`: inputs y errores por campo** (encargo 44a, hecho por DS en paralelo con el
+  43b):
+  - **lib nueva `libs/ui/forms`** (`@nianva/ui-forms`, `type:ui`). Todos los inputs son
+    `ControlValueAccessor` y respetan `disabled`:
+    - `ui-input-dinero`: 2 decimales, sin negativos salvo `permitirNegativo`, con `min` y
+      `max`; formato de `ui/format` al salir y número limpio al editar; el valor es
+      `number | null`;
+    - `ui-input-cantidad`: `decimales` de 0 a 3, con `unidad` como sufijo;
+    - `ui-input-password`: botón de ojo con `aria-pressed`;
+    - `ui-input-pin` (SEG-12): de 4 a 6 dígitos, sin `input[type=password]`, con teclado
+      físico y táctil, `(completo)` y `limpiar()`;
+    - `ui-select-filtro`: "Todas" equivale a `null`;
+  - **`ui-campo` y errores del servidor:**
+    - `ui-campo` lleva la etiqueta, el `*` y el error. Lee el control con `NgControl` y lo
+      comparte con los inputs por un token, para evitar la dependencia circular de un CVA
+      que inyecta `NgControl`;
+    - `aplicarErroresServidor()` usa `erroresValidacion()`, que se agregó a
+      `ui-shared/errores`, y `ui-campo` quita el error al editar;
+  - **corregido en la revisión, con su test primero:**
+    - el `id` del control se armaba solo con el nombre del campo, así que dos formularios
+      en la misma página (una pantalla y su modal) repetían `id` y rompían `label for` y
+      `aria-describedby`. Ahora lleva un contador;
+    - faltaban acentos en los mensajes ("más", "inválido"), y faltaba el comentario de
+      `erroresValidacion()`;
+  - **verificación por mutación:**
+    - si el dinero acepta 3 decimales, falla su test;
+    - si el PIN usa `type="password"`, falla el suyo;
+  - DS no tenía la salida en rojo previa, y lo dijo;
+  - ui-forms: 26 tests.
 - **Shell responsivo y título del navegador** (encargo 42c, hecho por Claude en un worktree
   aparte, en paralelo con el 43 de DS):
   - **`ui-shell`** (en `ui/layout`, porque stylelint no permite `@media` en `apps/**`):
@@ -963,9 +992,11 @@ repo.
       - ~~43: `ui-tabla` tipada, `ui-filter-bar` sobre el `meta` de API-06 y `ui-empty`
         (UI-09, UI-05, UI-06, UI-18)~~, hecho;
       - 43b: el generador de Nx `ui-listado` (UI-09);
-   8. `ui/forms` y `ui/overlays`: inputs de dinero, cantidad, contraseña y PIN; errores por
-      campo; modal y drawer (UI-11, componente de SEG-12); botones de envío con indicador
-      (UI-18);
+   8. `ui/forms` y `ui/overlays`, en dos PRs:
+      - ~~44a: inputs de dinero, cantidad, contraseña y PIN, `ui-campo` y errores por campo
+        (UI-11, componente de SEG-12)~~, hecho;
+      - 44b: `ui-modal` y `ui-drawer` (retiran `allowBindToStyle`), `confirm` en tono de
+        peligro, `ui-alert` y botones de envío con indicador (UI-13, UI-18);
    9. contrato generado con **openapi-typescript**: tipos en las libs `domain/*` desde
       `docs/api/openapi.json`, sin interfaces escritas a mano (API-08 del frontend, API-09);
    10. catálogo visual `catalogo-ui`, regresión visual con **Playwright** (claro, oscuro y 375,
