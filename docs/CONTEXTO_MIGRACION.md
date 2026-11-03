@@ -647,6 +647,14 @@ repo.
   - las reglas y el script se probaron fallando y pasando con archivos temporales;
   - frontend: ui-tokens 18 (2 nuevos), ui-shared 22 y pos 444 tests; los mismos warnings. La
     vulnerabilidad moderada de `pnpm audit` (`minimatch`, vía `@nx/*`) ya existía.
+- **`--check` de los tokens en Windows** (encargo 39b, hecho por DS):
+  - **el fallo:** con `core.autocrlf=true`, Git deja los generados en CRLF, y
+    `generate.mjs --check` los daba por desactualizados aunque el contenido era igual. CI, en
+    Linux, no lo veía;
+  - **la corrección:** la comparación pasa a `scripts/contenido-equivalente.mjs`, con el
+    mismo criterio que `ErroresCatalogoCommand::contenidoEquivalente()` del backend, y tiene
+    su test, que se vio fallar primero. Un token cambiado sin regenerar sigue fallando;
+  - ui-tokens: 20 tests.
 - **Pendientes detectados:**
   - las libs de feature aún no existen. Los patrones `feature/**` de `stylelint.config.mjs` y
     de `ui-baseline.mjs` apuntan a `frontend/feature/`. Al crear la primera, se ajustan a su
