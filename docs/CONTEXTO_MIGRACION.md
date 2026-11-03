@@ -829,7 +829,38 @@ repo.
   - DS no mostró los tests fallando antes de implementar; su reporte no trajo la API ni los
     conteos por proyecto;
   - ui-data: 23 tests.
+- **Shell responsivo y título del navegador** (encargo 42c, hecho por Claude en un worktree
+  aparte, en paralelo con el 43 de DS):
+  - **`ui-shell`** (en `ui/layout`, porque stylelint no permite `@media` en `apps/**`):
+    - menú, encabezado y contenido. `PantallaService` da la señal `angosta`, por debajo de
+      `md`. ui-tokens no se compila como lib, así que el ancho entra por
+      `ANCHO_PANTALLA_MD`, y un test lo compara con `breakpoints.md`;
+    - en pantalla angosta, el menú sale del flujo y es un panel que abre el botón ☰
+      (`aria-expanded`, `aria-controls`). Se cierra al navegar, con Escape, tocando fuera
+      o al pasar a pantalla ancha. Mientras está cerrado queda `inert` y `aria-hidden`;
+    - el `ShellLayoutComponent` de la app usa `ui-shell` y ya no tiene CSS: la línea base
+      bajó de 3374 a 3351 líneas;
+    - **corregido tras la prueba del responsable a 375 px:** dentro del panel seguía el
+      botón de colapsar del sidebar, que lo dejaba solo con iconos. En pantalla angosta ese
+      botón no se muestra y el sidebar se ve siempre completo. Al volver a pantalla ancha se
+      respeta otra vez la preferencia de colapsado (`sidebar-pantalla-angosta.spec.ts`,
+      visto fallando primero);
+  - **`TituloDesdeRegistro`:** una pantalla del menú toma su título del registro
+    (`Núcleo · <nombre>`); las demás (detalle y alta) usan el `title` de su ruta;
+  - **en la app,** con el test primero (`titulo-de-pantallas.spec.ts`):
+    - las entradas `inventario` y `crm` apuntaban a una redirección; ahora van directo a
+      `inventario/productos` y `crm/clientes`;
+    - se quitaron los 37 `title` de las pantallas del registro. En los reportes, la pestaña
+      dice ahora "Antigüedad de CxC" en vez de "Reporte de Cuentas por cobrar", como el
+      menú;
+  - **fuera de este encargo:** los permisos en el menú. El usuario no trae su lista de
+    permisos (cada listado los devuelve en `meta.permisos`), así que va con API-09 en el
+    encargo 45;
+  - frontend: ui-layout 26 y pos 477 tests; los mismos warnings.
 - **Pendientes detectados:**
+  - el aviso "Invalid PrimeUI License" aparece en toda la app y viene de la base heredada
+    (nucleo-erp-base). Hay que revisar qué componente, tema o paquete de PrimeNG pide
+    licencia, y retirarlo o configurarlo;
   - `FORMATO_REGIONAL` aún no lee la configuración del tenant (`moneda`, `zona_horaria`). Si
     `moneda` es un código como `USD`, `dinero` da `USD1,250.50`, sin espacio. Se resuelve al
     conectarlo;
@@ -926,7 +957,8 @@ repo.
       - ~~42a: `ui-btn-crear`, `ui-btn-exportar` y `ui-row-actions` (UI-07)~~, hecho por DS;
       - ~~42b: registro de navegación, `ui-page-header`, `ui-page` con carga y error,
         `ui-section` y `ui-form-actions` (UI-08, UI-18)~~, hecho;
-      - 42c: shell responsivo y título del navegador desde el registro (UI-04, UI-08);
+      - ~~42c: shell responsivo y título del navegador desde el registro (UI-04, UI-08)~~,
+        hecho. Los permisos del menú pasan al 45, con API-09;
    7. `ui/data`, en dos PRs:
       - ~~43: `ui-tabla` tipada, `ui-filter-bar` sobre el `meta` de API-06 y `ui-empty`
         (UI-09, UI-05, UI-06, UI-18)~~, hecho;
