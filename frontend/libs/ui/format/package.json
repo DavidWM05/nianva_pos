@@ -1,0 +1,9 @@
+{
+  "name": "@nianva/ui-format",
+  "version": "0.0.1",
+  "peerDependencies": {
+    "@angular/core": "^22.0.0",
+    "vitest": "^4.0.8"
+  },
+  "sideEffects": false
+}

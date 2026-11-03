@@ -5,6 +5,7 @@ import { provideAnimationsAsync } from '@angular/platform-browser/animations/asy
 import { providePrimeNG } from 'primeng/config';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { nucleoPreset } from '@nianva/ui-tokens';
+import { provideFormatoRegional } from '@nianva/ui-format';
 import { AuditLogSource } from '@nianva/ui-shared';
 import { appRoutes } from './app.routes';
 import { authInterceptor } from './auth/auth.interceptor';
@@ -37,6 +38,7 @@ import { VentaBuscadorService } from './modules/ventas-plazos/venta-buscador.ser
 export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
+    provideFormatoRegional(),
     provideRouter(appRoutes),
     provideAnimationsAsync(),
     ConfirmationService,

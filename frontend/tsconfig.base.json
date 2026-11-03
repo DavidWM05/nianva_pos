@@ -17,6 +17,7 @@
     "resolveJsonModule": true,
     "paths": {
       "@nianva/ui-tokens": ["./libs/ui/tokens/src/index.ts"],
+      "@nianva/ui-format": ["./libs/ui/format/src/index.ts"],
       "@nianva/ui-shared": ["./libs/ui-shared/src/index.ts"]
     }
   }

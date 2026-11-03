@@ -1,6 +1,14 @@
+import { readFileSync } from 'node:fs';
+
 import nx from '@nx/eslint-plugin';
 
+import { RULE_NAME as formatoPorPipeName, rule as formatoPorPipe } from './tools/eslint-rules/formato-por-pipe.mjs';
 import { RULE_NAME as noInnerHtmlName, rule as noInnerHtml } from './tools/eslint-rules/no-inner-html.mjs';
+import { RULE_NAME as sinColorName, rule as sinColor } from './tools/eslint-rules/sin-color-en-plantilla.mjs';
+
+const formatoPendientes = JSON.parse(
+  readFileSync(new URL('./tools/eslint-rules/formato-pendientes.json', import.meta.url), 'utf8'),
+);
 
 export default [
   ...nx.configs['flat/base'],
@@ -107,15 +115,25 @@ export default [
       nianva: {
         rules: {
           [noInnerHtmlName]: noInnerHtml,
+          [formatoPorPipeName]: formatoPorPipe,
+          [sinColorName]: sinColor,
         },
       },
     },
     rules: {
       [`nianva/${noInnerHtmlName}`]: 'error',
+      [`nianva/${formatoPorPipeName}`]: 'error',
+      [`nianva/${sinColorName}`]: 'error',
       // Temporal: el binding [style] se permite hasta que ui-modal (Fase 2,
       // encargo 8) reemplace los p-dialog. Al terminar la migracion se quita
       // allowBindToStyle y la regla queda estricta.
       '@angular-eslint/template/no-inline-styles': ['error', { allowBindToStyle: true }],
     },
   },
+  ...formatoPendientes.map((ruta) => ({
+    files: [ruta],
+    rules: {
+      [`nianva/${formatoPorPipeName}`]: 'off',
+    },
+  })),
 ];

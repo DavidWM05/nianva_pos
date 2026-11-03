@@ -11,6 +11,9 @@
       "path": "../../libs/ui-shared"
     },
     {
+      "path": "../../libs/ui/format"
+    },
+    {
       "path": "../../libs/ui/tokens"
     }
   ]
