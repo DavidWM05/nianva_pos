@@ -52,4 +52,39 @@ describe('ToastService', () => {
 
     expect(add).toHaveBeenCalledTimes(3);
   });
+
+  it('errorTecnico incluye el codigo de soporte', () => {
+    toast.errorTecnico('Fallo interno.', 'abc-123');
+
+    expect(add).toHaveBeenCalledWith({
+      severity: 'error',
+      summary: 'Error',
+      detail: 'Fallo interno. Código de soporte: abc-123',
+      life: 4000,
+    });
+  });
+
+  it('descarta los error() de pantalla durante la ventana tecnica', () => {
+    toast.errorTecnico('No hay conexión con el servidor.');
+    toast.error('No se pudo guardar.');
+
+    expect(add).toHaveBeenCalledTimes(1);
+  });
+
+  it('no descarta success, warn ni info durante la ventana tecnica', () => {
+    toast.errorTecnico('No hay conexión con el servidor.');
+    toast.success('Guardado');
+    toast.warn('Aviso');
+    toast.info('Info');
+
+    expect(add).toHaveBeenCalledTimes(4);
+  });
+
+  it('vuelve a mostrar error() despues de la ventana tecnica', () => {
+    toast.errorTecnico('No hay conexión con el servidor.');
+    vi.advanceTimersByTime(VENTANA_DUPLICADOS_MS);
+    toast.error('No se pudo guardar.');
+
+    expect(add).toHaveBeenCalledTimes(2);
+  });
 });

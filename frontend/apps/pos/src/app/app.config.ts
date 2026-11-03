@@ -14,6 +14,7 @@ import { AuthStateService } from './auth/auth-state.service';
 import { credentialsInterceptor } from './auth/credentials.interceptor';
 import { xsrfInterceptor } from './auth/xsrf.interceptor';
 import { AuditoriaService } from './core/auditoria.service';
+import { erroresInterceptor } from './core/errores.interceptor';
 import { TemaService } from './core/tema.service';
 import { SesionEntrePestanasService } from './auth/sesion-entre-pestanas.service';
 import {
@@ -71,7 +72,7 @@ export const appConfig: ApplicationConfig = {
       // a proposito las URLs absolutas (ver el comentario en
       // xsrf.interceptor.ts), y todas nuestras llamadas usan urlApi
       // absoluta porque el backend vive en otro origen/puerto.
-      withInterceptors([credentialsInterceptor, xsrfInterceptor, csrfRetryInterceptor, authInterceptor]),
+      withInterceptors([credentialsInterceptor, xsrfInterceptor, csrfRetryInterceptor, authInterceptor, erroresInterceptor]),
     ),
     // Resuelve quien es el usuario actual (si hay cookie de sesion valida)
     // ANTES de que el router evalue authGuard en la primera navegacion --
