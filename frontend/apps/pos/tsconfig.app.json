@@ -11,7 +11,7 @@
       "path": "../../libs/ui-shared"
     },
     {
-      "path": "../../libs/design-tokens"
+      "path": "../../libs/ui/tokens"
     }
   ]
 }

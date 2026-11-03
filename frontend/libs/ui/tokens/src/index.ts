@@ -1,2 +1,2 @@
-export * from './lib/tokens';
+export * from './lib/breakpoints';
 export * from './lib/primeng-preset';

@@ -4,7 +4,7 @@ import { provideRouter } from '@angular/router';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { providePrimeNG } from 'primeng/config';
 import { ConfirmationService, MessageService } from 'primeng/api';
-import { nucleoPreset } from '@nianva/design-tokens';
+import { nucleoPreset } from '@nianva/ui-tokens';
 import { AuditLogSource } from '@nianva/ui-shared';
 import { appRoutes } from './app.routes';
 import { authInterceptor } from './auth/auth.interceptor';
@@ -12,6 +12,7 @@ import { AuthStateService } from './auth/auth-state.service';
 import { credentialsInterceptor } from './auth/credentials.interceptor';
 import { xsrfInterceptor } from './auth/xsrf.interceptor';
 import { AuditoriaService } from './core/auditoria.service';
+import { TemaService } from './core/tema.service';
 import {
   BUSCADOR_CATEGORIA,
   BUSCADOR_CLIENTE,
@@ -74,13 +75,14 @@ export const appConfig: ApplicationConfig = {
     // a /login por una fraccion de segundo antes de confirmar que si tiene
     // sesion.
     provideAppInitializer(() => inject(AuthStateService).initialize()),
-    // Paleta, tipografia y radios vienen de libs/design-tokens (nucleoPreset),
-    // nunca del tema Aura default de PrimeNG -- ver libs/design-tokens/README.md.
+    provideAppInitializer(() => inject(TemaService).inicializar()),
+    // Paleta, tipografia y radios vienen de libs/ui/tokens (nucleoPreset),
+    // nunca del tema Aura default de PrimeNG -- ver libs/ui/tokens/README.md.
     providePrimeNG({
       theme: {
         preset: nucleoPreset,
         options: {
-          darkModeSelector: false,
+          darkModeSelector: '.nv-tema-oscuro',
         },
       },
     }),

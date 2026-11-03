@@ -23,7 +23,7 @@
         ],
         "styles": ["apps/pos/src/styles.scss"],
         "stylePreprocessorOptions": {
-          "includePaths": ["libs/design-tokens/src/styles"]
+          "includePaths": ["libs/ui/tokens/src/styles"]
         }
       },
       "configurations": {
