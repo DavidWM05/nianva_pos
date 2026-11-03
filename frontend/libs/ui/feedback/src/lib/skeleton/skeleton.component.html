@@ -1,0 +1,7 @@
+@for (fila of filas(); track fila; let ultima = $last) {
+  <p-skeleton
+    [shape]="forma() === 'circulo' ? 'circle' : 'rectangle'"
+    [width]="ultima && filas().length > 1 ? '60%' : anchoFinal()"
+    [height]="altoFinal()"
+  />
+}
