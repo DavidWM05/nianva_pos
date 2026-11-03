@@ -1,0 +1,6 @@
+<div class="ui-alert__cuerpo">
+  @if (titulo(); as titulo) {
+    <strong class="ui-alert__titulo">{{ titulo }}</strong>
+  }
+  <div class="ui-alert__contenido"><ng-content /></div>
+</div>

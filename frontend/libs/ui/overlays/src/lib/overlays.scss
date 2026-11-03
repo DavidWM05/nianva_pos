@@ -1,0 +1,24 @@
+// Sin encapsulacion (ViewEncapsulation.None en ui-modal y ui-drawer): PrimeNG pinta el
+// contenedor fuera del arbol del componente, asi que estas clases van con prefijo propio.
+
+.ui-overlay {
+  max-width: 100vw;
+}
+
+.ui-overlay--sm {
+  width: calc(var(--nv-spacing-16) * 6);
+}
+
+.ui-overlay--md {
+  width: calc(var(--nv-spacing-16) * 8);
+}
+
+.ui-overlay--lg {
+  width: calc(var(--nv-spacing-16) * 12);
+}
+
+.ui-overlay--completo {
+  width: 100vw;
+  height: 100vh;
+  max-height: 100vh;
+}
