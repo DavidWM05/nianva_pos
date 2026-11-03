@@ -77,7 +77,7 @@ línea base de PHPStan; se paga al tocar cada módulo.
 | API-08 | Tipos y clientes generados en el frontend | Pendiente | — | — |
 | API-09 | Features y permisos en la respuesta | Pendiente | — | — |
 | SEG-04 | Sin HTML sin escapar | Parcial | ESLint: regla propia `nianva/no-inner-html` (test en `tools/eslint-rules`, paso de CI "Probar reglas de lint propias"), `no-restricted-syntax` para `bypassSecurityTrust*` y `@angular-eslint/template/no-inline-styles`. **Excepción temporal:** `allowBindToStyle` permite los 22 `[style]` de `p-dialog` hasta que `ui-modal` los reemplace. Falta el e2e con un producto `<img src=x onerror=…>` (con Playwright) | 37 |
-| SEG-06 | Sesión y CSRF | Pendiente | — | — |
+| SEG-06 | Sesión y CSRF | Parcial | Un 401 cierra la sesión en todas las pestañas (`SesionEntrePestanasService`, con `BroadcastChannel` o el evento `storage`) con una sola navegación; un 419 renueva la cookie CSRF y reintenta una vez; tests del interceptor con 401 y del reintento. Faltan la inactividad definida por el tenant (backend) y el e2e de dos impresiones seguidas (Playwright) | 41b |
 | SEG-12 | Componente de PIN | Pendiente | — | — |
 | PRO-05 | stylelint | Hecho | stylelint bloqueante en CI (`frontend/stylelint.config.mjs`) con las reglas de UI-01 y UI-04 | 39 |
 | UI-01 | Solo tokens | Parcial | `libs/ui/tokens`: una fuente (`tokens.json`) de la que salen las variables CSS, el preset de PrimeNG y los breakpoints, con su `--check` en CI; stylelint bloquea colores literales y `font-family` fuera de tokens; `nianva/sin-color-en-plantilla` bloquea colores literales y clases de color fijo en plantillas. Falta la migración de las pantallas a los semánticos `--nv-*` | 38, 39, 40 |
