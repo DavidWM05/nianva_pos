@@ -186,6 +186,11 @@ jobs:
       - name: Revisar lint
         run: pnpm nx run-many -t lint
 
+      # Las reglas propias de tools/eslint-rules no son un proyecto Nx: sus tests
+      # no entran en run-many y se corren aqui.
+      - name: Probar reglas de lint propias
+        run: pnpm exec vitest run tools/eslint-rules
+
       - name: Compilar con tipos estrictos
         run: pnpm nx run-many -t build
 
