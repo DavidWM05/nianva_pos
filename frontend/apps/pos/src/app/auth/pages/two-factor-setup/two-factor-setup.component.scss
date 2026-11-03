@@ -32,7 +32,7 @@ form {
   padding: var(--nucleo-spacing-4);
   background: var(--nucleo-color-surface-50);
   border-radius: var(--nucleo-radius-md);
-  font-family: monospace;
+  font-family: var(--nv-font-family-mono);
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: var(--nucleo-spacing-2);

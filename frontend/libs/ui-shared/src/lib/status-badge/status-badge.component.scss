@@ -15,22 +15,22 @@
 }
 
 .badge--success {
-  background: color-mix(in srgb, var(--nucleo-color-success) 15%, white);
+  background: color-mix(in srgb, var(--nucleo-color-success) 15%, var(--nv-color-surface-0));
   color: var(--nucleo-color-success);
 }
 
 .badge--warning {
-  background: color-mix(in srgb, var(--nucleo-color-warning) 15%, white);
+  background: color-mix(in srgb, var(--nucleo-color-warning) 15%, var(--nv-color-surface-0));
   color: var(--nucleo-color-warning);
 }
 
 .badge--danger {
-  background: color-mix(in srgb, var(--nucleo-color-danger) 15%, white);
+  background: color-mix(in srgb, var(--nucleo-color-danger) 15%, var(--nv-color-surface-0));
   color: var(--nucleo-color-danger);
 }
 
 .badge--info {
-  background: color-mix(in srgb, var(--nucleo-color-info) 15%, white);
+  background: color-mix(in srgb, var(--nucleo-color-info) 15%, var(--nv-color-surface-0));
   color: var(--nucleo-color-info);
 }
 

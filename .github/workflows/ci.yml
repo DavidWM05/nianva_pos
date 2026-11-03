@@ -194,6 +194,12 @@ jobs:
       - name: Probar reglas de lint propias
         run: pnpm exec vitest run tools/eslint-rules
 
+      - name: Revisar estilos con stylelint
+        run: pnpm stylelint
+
+      - name: Verificar linea base de CSS
+        run: node tools/ui-baseline.mjs --check
+
       - name: Compilar con tipos estrictos
         run: pnpm nx run-many -t build
 

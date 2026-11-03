@@ -17,7 +17,7 @@
   background: var(--nucleo-color-surface-0);
   border-radius: var(--nucleo-radius-lg);
   padding: var(--nucleo-spacing-8);
-  box-shadow: 0 1px 3px rgb(0 0 0 / 10%);
+  box-shadow: var(--nv-shadow-tarjeta);
 
   h1 {
     margin: 0 0 var(--nucleo-spacing-2);
@@ -33,7 +33,7 @@
 }
 
 .auth-card__error {
-  background: color-mix(in srgb, var(--nucleo-color-danger) 10%, white);
+  background: color-mix(in srgb, var(--nucleo-color-danger) 10%, var(--nv-color-surface-0));
   color: var(--nucleo-color-danger);
   padding: var(--nucleo-spacing-3);
   border-radius: var(--nucleo-radius-md);
@@ -42,7 +42,7 @@
 }
 
 .auth-card__status {
-  background: color-mix(in srgb, var(--nucleo-color-success) 10%, white);
+  background: color-mix(in srgb, var(--nucleo-color-success) 10%, var(--nv-color-surface-0));
   color: var(--nucleo-color-success);
   padding: var(--nucleo-spacing-3);
   border-radius: var(--nucleo-radius-md);
