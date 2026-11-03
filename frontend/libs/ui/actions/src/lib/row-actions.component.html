@@ -1,0 +1,40 @@
+<div class="ui-row-actions">
+  @for (accion of visibles(); track accion.tipo + (accion.id ?? accion.indice)) {
+    <span
+      class="ui-row-actions__envoltura"
+      [pTooltip]="accion.motivoDeshabilitada ?? ''"
+      [tooltipDisabled]="!accion.motivoDeshabilitada"
+      tooltipPosition="top"
+    >
+      <button
+        pButton
+        type="button"
+        class="ui-row-actions__accion"
+        [severity]="accion.tono"
+        [text]="true"
+        [disabled]="!!accion.motivoDeshabilitada"
+        [attr.title]="aria(accion)"
+        [attr.aria-label]="aria(accion)"
+        (click)="ejecutar(accion)"
+      >
+        <i [class]="accion.icono" aria-hidden="true"></i>
+      </button>
+    </span>
+  }
+
+  @if (menuItems().length > 0) {
+    <button
+      pButton
+      type="button"
+      class="ui-row-actions__menu"
+      severity="secondary"
+      [text]="true"
+      title="Más acciones"
+      aria-label="Más acciones"
+      (click)="abrirMenu($event)"
+    >
+      <i class="pi pi-ellipsis-v" aria-hidden="true"></i>
+    </button>
+    <p-menu #menu [popup]="true" [model]="menuItems()" appendTo="body"></p-menu>
+  }
+</div>
