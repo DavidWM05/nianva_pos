@@ -1,0 +1,42 @@
+.ui-tabla__skeleton {
+  display: grid;
+  gap: var(--nv-spacing-2);
+  padding: var(--nv-spacing-3) 0;
+}
+
+.ui-tabla__skeleton-fila {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--nv-spacing-3);
+}
+
+.ui-tabla__fila--inactiva {
+  opacity: 0.6;
+}
+
+.ui-tabla__principal {
+  display: block;
+  font-weight: var(--nv-font-weight-medium);
+}
+
+.ui-tabla__apoyo {
+  display: block;
+  color: var(--nv-texto-suave);
+}
+
+.ui-tabla__inactivo {
+  display: inline-block;
+  margin-left: var(--nv-spacing-2);
+  color: var(--nv-texto-suave);
+  font-size: var(--nv-font-size-xs);
+}
+
+.ui-tabla__numero {
+  display: block;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.ui-tabla__numero--peligro {
+  color: var(--nv-peligro-texto);
+}

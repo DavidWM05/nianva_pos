@@ -1,0 +1,21 @@
+.ui-filter-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--nv-spacing-3);
+  margin-bottom: var(--nv-spacing-3);
+}
+
+.ui-filter-bar__filtros,
+.ui-filter-bar__resumen {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--nv-spacing-2);
+}
+
+.ui-filter-bar__resumen {
+  color: var(--nv-texto-suave);
+  font-size: var(--nv-font-size-sm);
+}

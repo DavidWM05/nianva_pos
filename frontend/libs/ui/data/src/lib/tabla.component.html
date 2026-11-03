@@ -1,0 +1,90 @@
+@if (primeraCarga()) {
+  <div class="ui-tabla__skeleton" aria-busy="true">
+    @for (fila of filasSkeleton(); track fila) {
+      <div class="ui-tabla__skeleton-fila">
+        @for (columna of columnas(); track columna.campo) {
+          <ui-skeleton forma="texto" />
+        }
+      </div>
+    }
+  </div>
+} @else if (!filas().length && !cargando()) {
+  <ui-empty [mensaje]="mensajeVacio()" />
+} @else {
+  <p-table
+    [value]="filas()"
+    [columns]="columnasTabla()"
+    [lazy]="true"
+    [paginator]="true"
+    [rows]="rowsActuales()"
+    [first]="first()"
+    [totalRecords]="meta()?.total ?? 0"
+    [rowsPerPageOptions]="[25, 50, 100]"
+    [loading]="indicadorCarga()"
+    (onLazyLoad)="onLazyLoad($event)"
+  >
+    <ng-template #header let-columnasTabla>
+      <tr>
+        @for (columna of columnasTabla; track columna.field) {
+          <th [pSortableColumn]="columna.sortable ? columna.field : undefined">
+            {{ columna.header }}
+            @if (columna.sortable) {
+              <p-sort-icon [field]="columna.field" />
+            }
+          </th>
+        }
+      </tr>
+    </ng-template>
+
+    <ng-template #body let-fila>
+      <tr [class.ui-tabla__fila--inactiva]="esInactiva(fila)">
+        @for (columna of columnas(); track columna.campo) {
+          <td>
+            @switch (columna.tipo) {
+              @case ('texto') {
+                {{ texto(fila, columna.campo) }}
+              }
+              @case ('principal') {
+                <span class="ui-tabla__principal">{{ texto(fila, columna.campo) }}</span>
+                @if (esInactiva(fila)) {
+                  <span class="ui-tabla__inactivo">Inactivo</span>
+                }
+                @if (apoyo(columna, fila); as datoApoyo) {
+                  <small class="ui-tabla__apoyo">{{ datoApoyo }}</small>
+                }
+              }
+              @case ('dinero') {
+                <span
+                  class="ui-tabla__numero"
+                  [class.ui-tabla__numero--peligro]="esNegativo(fila, columna.campo)"
+                >
+                  {{ valor(fila, columna.campo) | dinero }}
+                </span>
+              }
+              @case ('cantidad') {
+                <span class="ui-tabla__numero">
+                  {{ valor(fila, columna.campo) | cantidad: unidad(columna, fila) }}
+                </span>
+              }
+              @case ('porcentaje') {
+                <span class="ui-tabla__numero">{{ valor(fila, columna.campo) | porcentaje }}</span>
+              }
+              @case ('fecha') {
+                {{ valor(fila, columna.campo) | fecha }}
+              }
+              @case ('fechaHora') {
+                {{ valor(fila, columna.campo) | fechaHora }}
+              }
+              @case ('estado') {
+                <ui-badge [entidad]="columna.entidad" [estado]="valorEstado(fila, columna)" />
+              }
+              @case ('acciones') {
+                <ui-row-actions [acciones]="acciones(columna, fila)" (accion)="onAccion(fila, $event)" />
+              }
+            }
+          </td>
+        }
+      </tr>
+    </ng-template>
+  </p-table>
+}
