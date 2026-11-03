@@ -771,6 +771,39 @@ repo.
     - si se altera el orden, fallan el test de orden y el de salida;
   - DS no mostró los tests fallando antes de implementar;
   - ui-actions: 15 tests.
+- **`ui/layout`: registro de navegación, encabezado y estados de página** (encargo 42b,
+  hecho por Claude en un worktree aparte, en paralelo con el 42a de DS):
+  - **lib nueva `libs/ui/layout`** (`@nianva/ui-layout`, `type:ui`, selectores `ui-*`):
+    - el contrato del registro: `EntradaNavegacion` (`clave`, `ruta`, `nombre`, `icono` y,
+      opcionales, `permiso` y `feature`), `REGISTRO_NAVEGACION` y `problemaDeNombre()`, que
+      comprueba UI-08 y permite siglas como CxC o CRM;
+    - `ui-page-header`: nombre e icono por `clave`; no tiene entrada de título, y un test lo
+      comprueba. Una clave que no está en el registro falla;
+    - `ui-page`: `cargando` muestra un skeleton con la forma de un listado, un detalle o un
+      formulario; `error`, el mensaje con "Reintentar"; `listo`, el contenido;
+    - `ui-section` y `ui-form-actions`;
+  - **registro de la app:** `REGISTRO_NAVEGACION_POS` sale de `NUCLEO_NAV_GROUPS`, el mismo
+    menú del sidebar. Así hay una sola fuente;
+  - **`registro-navegacion.spec.ts`,** visto fallando primero. Comprueba:
+    - los nombres;
+    - que no haya claves ni rutas repetidas;
+    - que cada entrada lleve a una pantalla con componente, siguiendo redirecciones;
+    - que dos entradas no lleven a la misma pantalla;
+    - que toda pantalla raíz del shell tenga entrada o una razón en `SIN_ENTRADA`;
+  - **lo que encontró:**
+    - 8 nombres con mayúsculas a mitad ("Cuentas por Cobrar", "Gift Cards"…). Se corrigieron
+      en el registro y, para que coincidan, en los títulos, las migas de pan y siete `<h1>`;
+    - "Gastos" no tiene pantalla: redirige a Caja, así que el menú mostraba la misma
+      pantalla con dos nombres. **Decisión del responsable:** se quita del menú, porque los
+      gastos se registran en Caja. `/gastos` sigue redirigiendo para no romper enlaces;
+    - `gift-cards/emitir` y `cotizaciones/crear` no siguen la ruta `/modulo/nuevo`. Quedan
+      en `SIN_ENTRADA` hasta la migración;
+  - **fuera de este encargo:**
+    - el shell responsivo;
+    - el título del navegador desde el registro, que implica reescribir más de 100 `title`
+      de `app.routes.ts`;
+    - los permisos y features de cada entrada;
+  - frontend: ui-layout 15, pos 472 tests; los mismos warnings.
 - **Pendientes detectados:**
   - `FORMATO_REGIONAL` aún no lee la configuración del tenant (`moneda`, `zona_horaria`). Si
     `moneda` es un código como `USD`, `dinero` da `USD1,250.50`, sin espacio. Se resuelve al
@@ -864,9 +897,11 @@ repo.
       - ~~41c: interceptor global de errores sobre el toast (ARQ-12, UI-13)~~, hecho para
         los errores técnicos. Los 4xx de negocio pasan al interceptor con la migración de
         pantallas;
-   6. `ui/layout` y `ui/actions`: shell, `ui-page-header`, registro de navegación,
-      `ui-btn-crear` y `ui-row-actions` (UI-07, UI-08); estado de carga y error de `ui-page`
-      (UI-18);
+   6. `ui/layout` y `ui/actions`, en tres PRs:
+      - ~~42a: `ui-btn-crear`, `ui-btn-exportar` y `ui-row-actions` (UI-07)~~, hecho por DS;
+      - ~~42b: registro de navegación, `ui-page-header`, `ui-page` con carga y error,
+        `ui-section` y `ui-form-actions` (UI-08, UI-18)~~, hecho;
+      - 42c: shell responsivo y título del navegador desde el registro (UI-04, UI-08);
    7. `ui/data`: `ui-tabla` tipada, `ui-filter-bar` sobre el `meta` de API-06 y el generador
       `ui-listado` (UI-09); skeleton de filas de `ui-tabla` (UI-18);
    8. `ui/forms` y `ui/overlays`: inputs de dinero, cantidad, contraseña y PIN; errores por
