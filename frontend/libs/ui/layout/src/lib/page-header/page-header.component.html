@@ -1,0 +1,14 @@
+<header class="ui-page-header">
+  <div class="ui-page-header__titulo">
+    <i [class]="entrada().icono" aria-hidden="true"></i>
+    <div>
+      <h1>{{ entrada().nombre }}</h1>
+      @if (subtitulo(); as texto) {
+        <p class="ui-page-header__subtitulo">{{ texto }}</p>
+      }
+    </div>
+  </div>
+  <div class="ui-page-header__acciones">
+    <ng-content select="[acciones]" />
+  </div>
+</header>

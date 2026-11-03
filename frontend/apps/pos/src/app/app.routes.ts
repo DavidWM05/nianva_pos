@@ -242,11 +242,11 @@ export const appRoutes: Route[] = [
       },
       {
         path: 'precios',
-        data: { breadcrumb: 'Precios y Promociones' },
+        data: { breadcrumb: 'Precios y promociones' },
         children: [
           {
             path: '',
-            title: 'Núcleo · Precios y Promociones',
+            title: 'Núcleo · Precios y promociones',
             loadComponent: () =>
               import('./modules/precios/pages/precios/precios.component').then((m) => m.PreciosComponent),
           },
@@ -420,10 +420,10 @@ export const appRoutes: Route[] = [
       },
       {
         // Sin pantalla propia (ver el reporte del modulo Gastos): vive
-        // dentro de la vista de caja de TPV. El link del sidebar sigue
-        // apuntando a /gastos (ver NUCLEO_NAV_GROUPS) para no tocar esa
-        // lista compartida -- aqui simplemente se redirige a donde el
-        // usuario realmente puede registrar/ver gastos.
+        // dentro de la vista de caja de TPV. Ya no tiene entrada en el
+        // menu (UI-08: Caja y Gastos eran la misma pantalla con dos
+        // nombres); la ruta se conserva para enlaces guardados y se
+        // redirige a donde el usuario registra y ve los gastos.
         path: 'gastos',
         pathMatch: 'full',
         redirectTo: 'tpv/caja',
@@ -433,12 +433,12 @@ export const appRoutes: Route[] = [
         // destroy() (ver el docblock de NotaCreditoService): las notas se
         // generan unicamente desde una Devolucion. Sin rutas 'crear'/'editar'.
         path: 'notas-credito',
-        data: { breadcrumb: 'Notas de Crédito' },
+        data: { breadcrumb: 'Notas de crédito' },
         children: [
           {
             path: '',
             pathMatch: 'full',
-            title: 'Núcleo · Notas de Crédito',
+            title: 'Núcleo · Notas de crédito',
             loadComponent: () =>
               import('./modules/notas-credito/pages/notas-credito-list/notas-credito-list.component').then(
                 (m) => m.NotasCreditoListComponent,
@@ -457,12 +457,12 @@ export const appRoutes: Route[] = [
       },
       {
         path: 'gift-cards',
-        data: { breadcrumb: 'Gift Cards' },
+        data: { breadcrumb: 'Gift cards' },
         children: [
           {
             path: '',
             pathMatch: 'full',
-            title: 'Núcleo · Gift Cards',
+            title: 'Núcleo · Gift cards',
             loadComponent: () =>
               import('./modules/gift-cards/pages/gift-cards-list/gift-cards-list.component').then(
                 (m) => m.GiftCardsListComponent,
@@ -493,12 +493,12 @@ export const appRoutes: Route[] = [
         // Solo lectura + acciones -- CuentaCobrarController no tiene
         // store() (ver el docblock de CuentaCobrarService). Sin ruta 'crear'.
         path: 'cuentas-cobrar',
-        data: { breadcrumb: 'Cuentas por Cobrar' },
+        data: { breadcrumb: 'Cuentas por cobrar' },
         children: [
           {
             path: '',
             pathMatch: 'full',
-            title: 'Núcleo · Cuentas por Cobrar',
+            title: 'Núcleo · Cuentas por cobrar',
             loadComponent: () =>
               import('./modules/cuentas-cobrar/pages/cuentas-cobrar-list/cuentas-cobrar-list.component').then(
                 (m) => m.CuentasCobrarListComponent,
@@ -519,12 +519,12 @@ export const appRoutes: Route[] = [
         // Solo lectura + acciones -- CuentaPagarController no tiene
         // store() (ver el docblock de CuentaPagarService). Sin ruta 'crear'.
         path: 'cuentas-pagar',
-        data: { breadcrumb: 'Cuentas por Pagar' },
+        data: { breadcrumb: 'Cuentas por pagar' },
         children: [
           {
             path: '',
             pathMatch: 'full',
-            title: 'Núcleo · Cuentas por Pagar',
+            title: 'Núcleo · Cuentas por pagar',
             loadComponent: () =>
               import('./modules/cuentas-pagar/pages/cuentas-pagar-list/cuentas-pagar-list.component').then(
                 (m) => m.CuentasPagarListComponent,
@@ -687,8 +687,8 @@ export const appRoutes: Route[] = [
           {
             path: 'ordenes',
             pathMatch: 'full',
-            title: 'Núcleo · Órdenes de Producción',
-            data: { breadcrumb: 'Órdenes de Producción' },
+            title: 'Núcleo · Órdenes de producción',
+            data: { breadcrumb: 'Órdenes de producción' },
             loadComponent: () =>
               import('./modules/produccion/pages/ordenes-list/ordenes-list.component').then(
                 (m) => m.OrdenesListComponent,
@@ -717,12 +717,12 @@ export const appRoutes: Route[] = [
       },
       {
         path: 'ventas-plazos',
-        data: { breadcrumb: 'Ventas a Plazos' },
+        data: { breadcrumb: 'Ventas a plazos' },
         children: [
           {
             path: '',
             pathMatch: 'full',
-            title: 'Núcleo · Ventas a Plazos',
+            title: 'Núcleo · Ventas a plazos',
             loadComponent: () =>
               import('./modules/ventas-plazos/pages/planes-pago-list/planes-pago-list.component').then(
                 (m) => m.PlanesPagoListComponent,
@@ -806,8 +806,8 @@ export const appRoutes: Route[] = [
         children: [
           {
             path: 'cuentas-cobrar',
-            title: 'Núcleo · Reporte de Cuentas por Cobrar',
-            data: { breadcrumb: 'Cuentas por Cobrar' },
+            title: 'Núcleo · Reporte de Cuentas por cobrar',
+            data: { breadcrumb: 'Cuentas por cobrar' },
             loadComponent: () =>
               import('./modules/reportes/pages/reporte-cuentas-cobrar/reporte-cuentas-cobrar.component').then(
                 (m) => m.ReporteCuentasCobrarComponent,
@@ -815,8 +815,8 @@ export const appRoutes: Route[] = [
           },
           {
             path: 'cuentas-pagar',
-            title: 'Núcleo · Reporte de Cuentas por Pagar',
-            data: { breadcrumb: 'Cuentas por Pagar' },
+            title: 'Núcleo · Reporte de Cuentas por pagar',
+            data: { breadcrumb: 'Cuentas por pagar' },
             loadComponent: () =>
               import('./modules/reportes/pages/reporte-cuentas-pagar/reporte-cuentas-pagar.component').then(
                 (m) => m.ReporteCuentasPagarComponent,
@@ -844,8 +844,8 @@ export const appRoutes: Route[] = [
       },
       {
         path: 'unidades-medida',
-        title: 'Núcleo · Unidades de Medida',
-        data: { breadcrumb: 'Unidades de Medida' },
+        title: 'Núcleo · Unidades de medida',
+        data: { breadcrumb: 'Unidades de medida' },
         loadComponent: () =>
           import('./modules/unidades-medida/pages/unidades-medida-list/unidades-medida-list.component').then(
             (m) => m.UnidadesMedidaListComponent,

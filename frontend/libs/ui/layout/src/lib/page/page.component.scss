@@ -1,0 +1,26 @@
+:host {
+  display: block;
+}
+
+.ui-page__carga {
+  display: grid;
+  gap: var(--nv-spacing-3);
+}
+
+.ui-page__error {
+  display: grid;
+  justify-items: center;
+  gap: var(--nv-spacing-3);
+  padding: var(--nv-spacing-10) var(--nv-spacing-4);
+  text-align: center;
+  color: var(--nv-texto-suave);
+
+  i {
+    font-size: var(--nv-font-size-2xl);
+    color: var(--nv-peligro-texto);
+  }
+
+  p {
+    margin: 0;
+  }
+}

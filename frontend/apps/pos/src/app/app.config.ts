@@ -6,6 +6,7 @@ import { providePrimeNG } from 'primeng/config';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { nucleoPreset } from '@nianva/ui-tokens';
 import { provideFormatoRegional } from '@nianva/ui-format';
+import { REGISTRO_NAVEGACION } from '@nianva/ui-layout';
 import { AuditLogSource } from '@nianva/ui-shared';
 import { appRoutes } from './app.routes';
 import { authInterceptor } from './auth/auth.interceptor';
@@ -37,11 +38,14 @@ import { InsumoBuscadorService } from './modules/produccion/insumo-buscador.serv
 import { RecetaBuscadorService } from './modules/produccion/receta-buscador.service';
 import { UnidadMedidaBuscadorService } from './modules/unidades-medida/unidad-medida-buscador.service';
 import { VentaBuscadorService } from './modules/ventas-plazos/venta-buscador.service';
+import { REGISTRO_NAVEGACION_POS } from './modules/modules.config';
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
     provideFormatoRegional(),
+    // ui-page-header y el menu toman los nombres de aqui (UI-08).
+    { provide: REGISTRO_NAVEGACION, useValue: REGISTRO_NAVEGACION_POS },
     provideRouter(appRoutes),
     provideAnimationsAsync(),
     ConfirmationService,

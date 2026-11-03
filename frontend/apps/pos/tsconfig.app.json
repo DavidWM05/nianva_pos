@@ -17,6 +17,9 @@
       "path": "../../libs/ui/format"
     },
     {
+      "path": "../../libs/ui/layout"
+    },
+    {
       "path": "../../libs/ui/tokens"
     }
   ]

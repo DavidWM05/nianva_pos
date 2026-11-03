@@ -1,3 +1,5 @@
+import { EntradaNavegacion } from '@nianva/ui-layout';
+
 export interface NucleoModuleNavItem {
   key: string;
   label: string;
@@ -53,8 +55,8 @@ export const NUCLEO_NAV_GROUPS: NucleoNavGroup[] = [
       { key: 'inventario', label: 'Productos', path: 'inventario', icon: 'pi pi-box' },
       { key: 'categorias', label: 'Categorías', path: 'inventario/categorias', icon: 'pi pi-sitemap' },
       { key: 'departamentos', label: 'Departamentos', path: 'inventario/departamentos', icon: 'pi pi-building' },
-      { key: 'unidades-medida', label: 'Unidades de Medida', path: 'unidades-medida', icon: 'pi pi-arrows-h' },
-      { key: 'precios', label: 'Precios y Promociones', path: 'precios', icon: 'pi pi-tags' },
+      { key: 'unidades-medida', label: 'Unidades de medida', path: 'unidades-medida', icon: 'pi pi-arrows-h' },
+      { key: 'precios', label: 'Precios y promociones', path: 'precios', icon: 'pi pi-tags' },
       { key: 'crm', label: 'Clientes', path: 'crm', icon: 'pi pi-users' },
       {
         // Sin lista propia (ver el docblock de CampanaService) -- el link va directo al alta.
@@ -73,16 +75,17 @@ export const NUCLEO_NAV_GROUPS: NucleoNavGroup[] = [
       { key: 'tpv-caja', label: 'Caja', path: 'tpv/caja', icon: 'pi pi-wallet' },
       { key: 'tpv-ventas', label: 'Ventas', path: 'tpv/ventas', icon: 'pi pi-receipt' },
       { key: 'cotizaciones', label: 'Cotizaciones', path: 'cotizaciones', icon: 'pi pi-file-edit' },
-      { key: 'cuentas-cobrar', label: 'Cuentas por Cobrar', path: 'cuentas-cobrar', icon: 'pi pi-wallet' },
-      { key: 'cuentas-pagar', label: 'Cuentas por Pagar', path: 'cuentas-pagar', icon: 'pi pi-arrow-up-right' },
+      { key: 'cuentas-cobrar', label: 'Cuentas por cobrar', path: 'cuentas-cobrar', icon: 'pi pi-wallet' },
+      { key: 'cuentas-pagar', label: 'Cuentas por pagar', path: 'cuentas-pagar', icon: 'pi pi-arrow-up-right' },
       { key: 'prestamos', label: 'Préstamos', path: 'prestamos', icon: 'pi pi-percentage' },
-      { key: 'ventas-plazos', label: 'Ventas a Plazos', path: 'ventas-plazos', icon: 'pi pi-calendar' },
+      { key: 'ventas-plazos', label: 'Ventas a plazos', path: 'ventas-plazos', icon: 'pi pi-calendar' },
       { key: 'pedidos', label: 'Pedidos', path: 'pedidos', icon: 'pi pi-truck' },
       { key: 'apartados', label: 'Apartados', path: 'apartados', icon: 'pi pi-calendar-clock' },
       { key: 'devoluciones', label: 'Devoluciones', path: 'devoluciones', icon: 'pi pi-replay' },
-      { key: 'notas-credito', label: 'Notas de Crédito', path: 'notas-credito', icon: 'pi pi-ticket' },
-      { key: 'gift-cards', label: 'Gift Cards', path: 'gift-cards', icon: 'pi pi-credit-card' },
-      { key: 'gastos', label: 'Gastos', path: 'gastos', icon: 'pi pi-money-bill' },
+      { key: 'notas-credito', label: 'Notas de crédito', path: 'notas-credito', icon: 'pi pi-ticket' },
+      { key: 'gift-cards', label: 'Gift cards', path: 'gift-cards', icon: 'pi pi-credit-card' },
+      // Sin "Gastos": se registran dentro de Caja, y dos entradas no llevan a la
+      // misma pantalla (UI-08). /gastos sigue redirigiendo a Caja.
     ],
   },
   {
@@ -99,7 +102,7 @@ export const NUCLEO_NAV_GROUPS: NucleoNavGroup[] = [
     items: [
       { key: 'insumos', label: 'Insumos', path: 'produccion/insumos', icon: 'pi pi-box' },
       { key: 'recetas', label: 'Recetas', path: 'produccion/recetas', icon: 'pi pi-book' },
-      { key: 'ordenes-produccion', label: 'Órdenes de Producción', path: 'produccion/ordenes', icon: 'pi pi-cog' },
+      { key: 'ordenes-produccion', label: 'Órdenes de producción', path: 'produccion/ordenes', icon: 'pi pi-cog' },
       { key: 'transformaciones', label: 'Transformaciones', path: 'produccion/transformaciones', icon: 'pi pi-sync' },
     ],
   },
@@ -137,3 +140,13 @@ export const NUCLEO_NAV_GROUPS: NucleoNavGroup[] = [
     ],
   },
 ];
+
+/**
+ * El mismo menu como registro de navegacion de ui/layout (UI-08): una
+ * entrada por pantalla, de la que toman el nombre el sidebar y
+ * ui-page-header. Se provee como REGISTRO_NAVEGACION en app.config.ts.
+ */
+export const REGISTRO_NAVEGACION_POS: readonly EntradaNavegacion[] = [
+  NUCLEO_ITEM_INICIO,
+  ...NUCLEO_NAV_GROUPS.flatMap((grupo) => grupo.items),
+].map((item) => ({ clave: item.key, ruta: item.path, nombre: item.label, icono: item.icon }));

@@ -1,0 +1,12 @@
+.ui-section {
+  display: grid;
+  gap: var(--nv-spacing-3);
+  margin-bottom: var(--nv-spacing-6);
+
+  h2 {
+    margin: 0;
+    font-size: var(--nv-font-size-lg);
+    font-weight: var(--nv-font-weight-semibold);
+    color: var(--nv-texto);
+  }
+}
