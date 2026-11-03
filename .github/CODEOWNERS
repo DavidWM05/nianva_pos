@@ -6,6 +6,7 @@ backend/tests/** @DavidWM05
 frontend/**/*.spec.ts @DavidWM05
 frontend/ui-baseline.json @DavidWM05
 frontend/tools/eslint-rules/formato-pendientes.json @DavidWM05
+frontend/tools/eslint-rules/cargando-pendientes.json @DavidWM05
 backend/phpstan-baseline.neon @DavidWM05
 .github/workflows/** @DavidWM05
 docs/estandares/** @DavidWM05

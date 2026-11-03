@@ -5,9 +5,13 @@ import nx from '@nx/eslint-plugin';
 import { RULE_NAME as formatoPorPipeName, rule as formatoPorPipe } from './tools/eslint-rules/formato-por-pipe.mjs';
 import { RULE_NAME as noInnerHtmlName, rule as noInnerHtml } from './tools/eslint-rules/no-inner-html.mjs';
 import { RULE_NAME as sinColorName, rule as sinColor } from './tools/eslint-rules/sin-color-en-plantilla.mjs';
+import { RULE_NAME as sinCargandoName, rule as sinCargando } from './tools/eslint-rules/sin-texto-cargando.mjs';
 
 const formatoPendientes = JSON.parse(
   readFileSync(new URL('./tools/eslint-rules/formato-pendientes.json', import.meta.url), 'utf8'),
+);
+const cargandoPendientes = JSON.parse(
+  readFileSync(new URL('./tools/eslint-rules/cargando-pendientes.json', import.meta.url), 'utf8'),
 );
 
 export default [
@@ -117,6 +121,7 @@ export default [
           [noInnerHtmlName]: noInnerHtml,
           [formatoPorPipeName]: formatoPorPipe,
           [sinColorName]: sinColor,
+          [sinCargandoName]: sinCargando,
         },
       },
     },
@@ -124,6 +129,7 @@ export default [
       [`nianva/${noInnerHtmlName}`]: 'error',
       [`nianva/${formatoPorPipeName}`]: 'error',
       [`nianva/${sinColorName}`]: 'error',
+      [`nianva/${sinCargandoName}`]: 'error',
       // Temporal: el binding [style] se permite hasta que ui-modal (Fase 2,
       // encargo 8) reemplace los p-dialog. Al terminar la migracion se quita
       // allowBindToStyle y la regla queda estricta.
@@ -134,6 +140,12 @@ export default [
     files: [ruta],
     rules: {
       [`nianva/${formatoPorPipeName}`]: 'off',
+    },
+  })),
+  ...cargandoPendientes.map((ruta) => ({
+    files: [ruta],
+    rules: {
+      [`nianva/${sinCargandoName}`]: 'off',
     },
   })),
 ];

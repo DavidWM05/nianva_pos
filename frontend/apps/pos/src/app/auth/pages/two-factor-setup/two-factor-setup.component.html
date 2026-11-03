@@ -24,7 +24,19 @@
       }
 
       @if (cargando()) {
-        <p>Generando código...</p>
+        <div class="two-factor-setup__qr">
+          <ui-skeleton forma="bloque" ancho="200px" alto="200px" etiqueta="Generando el código QR" />
+        </div>
+        <ui-skeleton forma="texto" ancho="80%" />
+      } @else if (errorCarga(); as mensaje) {
+        <p class="auth-card__error">{{ mensaje }}</p>
+        <p-button
+          label="Reintentar"
+          icon="pi pi-refresh"
+          severity="secondary"
+          styleClass="auth-card__submit"
+          (click)="cargarQr()"
+        />
       } @else {
         @if (qrDataUrl(); as qr) {
           <img [src]="qr" alt="Código QR para configurar 2FA" class="two-factor-setup__qr" />
@@ -39,6 +51,7 @@
             type="submit"
             label="Confirmar"
             [disabled]="enviando() || code.value.length !== 6"
+            [loading]="indicadorEnvio()"
             styleClass="auth-card__submit"
           />
         </form>

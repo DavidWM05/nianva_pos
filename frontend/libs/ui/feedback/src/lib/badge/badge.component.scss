@@ -1,0 +1,36 @@
+.ui-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--nv-spacing-1);
+  padding: var(--nv-spacing-1) var(--nv-spacing-2);
+  border-radius: var(--nv-radius-full);
+  font-size: var(--nv-font-size-xs);
+  font-weight: var(--nv-font-weight-semibold);
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.ui-badge--exito {
+  background: color-mix(in srgb, var(--nv-exito) 15%, var(--nv-superficie));
+  color: var(--nv-exito-texto);
+}
+
+.ui-badge--advertencia {
+  background: color-mix(in srgb, var(--nv-advertencia) 15%, var(--nv-superficie));
+  color: var(--nv-advertencia-texto);
+}
+
+.ui-badge--peligro {
+  background: color-mix(in srgb, var(--nv-peligro) 15%, var(--nv-superficie));
+  color: var(--nv-peligro-texto);
+}
+
+.ui-badge--info {
+  background: color-mix(in srgb, var(--nv-info) 15%, var(--nv-superficie));
+  color: var(--nv-info-texto);
+}
+
+.ui-badge--neutro {
+  background: color-mix(in srgb, var(--nv-borde) 50%, var(--nv-superficie));
+  color: var(--nv-texto-suave);
+}

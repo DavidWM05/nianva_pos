@@ -1,0 +1,6 @@
+@if (visual(); as v) {
+  <span [class]="'ui-badge ui-badge--' + v.tono">
+    <i [class]="v.icono" aria-hidden="true"></i>
+    {{ v.etiqueta }}
+  </span>
+}
