@@ -886,6 +886,27 @@ repo.
     permisos (cada listado los devuelve en `meta.permisos`), así que va con API-09 en el
     encargo 45;
   - frontend: ui-layout 26 y pos 477 tests; los mismos warnings.
+- **Generador `ui-listado`** (encargo 43b, hecho por Claude en un worktree aparte, en
+  paralelo con el 44a de DS):
+  - **plugin local `@nianva/generadores`** (`frontend/tools/generadores`, proyecto
+    `type:core`): se resuelve por su alias en `tsconfig.base.json` y no depende de
+    `@nx/devkit`, porque escribe con el `tree` que le pasa Nx;
+  - **`pnpm nx g @nianva/generadores:ui-listado`:**
+    - opciones: `entidad`, `plural`, `modulo`, `clave`, `endpoint` y `genero`;
+    - crea el tipo de la fila, el servicio (`listar()` con el contrato de API-06, usando
+      `RespuestaListado<T>`, que se agregó a `ui-data`) y el componente con su spec;
+    - la plantilla sigue UI-09: `ui-page-header` con `ui-btn-crear`, `ui-filter-bar` con
+      búsqueda, `ui-tabla` con Ver, Editar y Estado por fila, dentro de `ui-page` para el
+      error con "Reintentar";
+    - no sobrescribe archivos e imprime lo que falta a mano: la ruta, la entrada del
+      registro y `nx sync`;
+  - **verificación:**
+    - 6 tests (`tools/generadores`, nuevo paso de CI "Probar generadores"). Pasan la
+      plantilla por las reglas de lint propias, y se comprobó por mutación que el de "no
+      sobrescribe" falla si se quita la protección;
+    - se generó una pantalla real en un módulo temporal: con `nx sync`, `pos` pasó lint,
+      build y test, con 3 tests generados más (480). Después se borró;
+  - `.claude/CLAUDE.md` §6 dice cómo crear un listado nuevo.
 - **Pendientes detectados:**
   - el aviso "Invalid PrimeUI License" aparece en toda la app y viene de la base heredada
     (nucleo-erp-base). Hay que revisar qué componente, tema o paquete de PrimeNG pide
@@ -991,7 +1012,7 @@ repo.
    7. `ui/data`, en dos PRs:
       - ~~43: `ui-tabla` tipada, `ui-filter-bar` sobre el `meta` de API-06 y `ui-empty`
         (UI-09, UI-05, UI-06, UI-18)~~, hecho;
-      - 43b: el generador de Nx `ui-listado` (UI-09);
+      - ~~43b: el generador de Nx `ui-listado` (UI-09)~~, hecho;
    8. `ui/forms` y `ui/overlays`, en dos PRs:
       - ~~44a: inputs de dinero, cantidad, contraseña y PIN, `ui-campo` y errores por campo
         (UI-11, componente de SEG-12)~~, hecho;
