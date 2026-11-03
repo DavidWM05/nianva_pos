@@ -1,9 +1,8 @@
 import { HttpErrorResponse, HttpInterceptorFn } from '@angular/common/http';
 import { inject } from '@angular/core';
-import { Router } from '@angular/router';
 import { catchError, throwError } from 'rxjs';
 
-import { AuthStateService } from './auth-state.service';
+import { SesionEntrePestanasService } from './sesion-entre-pestanas.service';
 
 /**
  * Maneja 401 de forma centralizada (sesion expirada/invalida) -- ningun
@@ -16,14 +15,12 @@ import { AuthStateService } from './auth-state.service';
  * siquiera haya hecho su primera navegacion.
  */
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
-  const authState = inject(AuthStateService);
-  const router = inject(Router);
+  const sesion = inject(SesionEntrePestanasService);
 
   return next(req).pipe(
     catchError((error: unknown) => {
       if (error instanceof HttpErrorResponse && error.status === 401 && !req.url.endsWith('/api/v1/user')) {
-        authState.clear();
-        router.navigate(['/login']);
+        sesion.cerrarSesion();
       }
 
       return throwError(() => error);

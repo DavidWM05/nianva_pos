@@ -1,4 +1,4 @@
-import { HttpInterceptorFn } from '@angular/common/http';
+import { HttpInterceptorFn, HttpRequest } from '@angular/common/http';
 import { esUrlBackend } from '../core/api-config';
 
 const COOKIE_XSRF = 'XSRF-TOKEN';
@@ -15,19 +15,26 @@ const METODOS_MUTANTES = new Set(['POST', 'PUT', 'PATCH', 'DELETE']);
  * responde 419 en cada POST. Este interceptor reemplaza esa pieza: lee la
  * cookie y pone el header a mano, solo para URLs de nuestro backend.
  */
-export const xsrfInterceptor: HttpInterceptorFn = (req, next) => {
+export const xsrfInterceptor: HttpInterceptorFn = (req, next) => next(conTokenXsrf(req));
+
+/**
+ * Pone el header con el valor actual de la cookie. Tambien lo usa el
+ * reintento ante 419 (csrf-retry.interceptor.ts), que necesita el token
+ * recien renovado.
+ */
+export function conTokenXsrf<T>(req: HttpRequest<T>): HttpRequest<T> {
   if (!METODOS_MUTANTES.has(req.method) || !esUrlBackend(req.url)) {
-    return next(req);
+    return req;
   }
 
   const token = leerCookie(COOKIE_XSRF);
 
   if (!token) {
-    return next(req);
+    return req;
   }
 
-  return next(req.clone({ setHeaders: { [HEADER_XSRF]: decodeURIComponent(token) } }));
-};
+  return req.clone({ setHeaders: { [HEADER_XSRF]: decodeURIComponent(token) } });
+}
 
 function leerCookie(nombre: string): string | null {
   const coincidencia = document.cookie.match(new RegExp(`(?:^|; )${nombre}=([^;]*)`));

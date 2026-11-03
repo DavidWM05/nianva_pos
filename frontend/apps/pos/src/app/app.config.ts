@@ -9,11 +9,13 @@ import { provideFormatoRegional } from '@nianva/ui-format';
 import { AuditLogSource } from '@nianva/ui-shared';
 import { appRoutes } from './app.routes';
 import { authInterceptor } from './auth/auth.interceptor';
+import { csrfRetryInterceptor } from './auth/csrf-retry.interceptor';
 import { AuthStateService } from './auth/auth-state.service';
 import { credentialsInterceptor } from './auth/credentials.interceptor';
 import { xsrfInterceptor } from './auth/xsrf.interceptor';
 import { AuditoriaService } from './core/auditoria.service';
 import { TemaService } from './core/tema.service';
+import { SesionEntrePestanasService } from './auth/sesion-entre-pestanas.service';
 import {
   BUSCADOR_CATEGORIA,
   BUSCADOR_CLIENTE,
@@ -69,7 +71,7 @@ export const appConfig: ApplicationConfig = {
       // a proposito las URLs absolutas (ver el comentario en
       // xsrf.interceptor.ts), y todas nuestras llamadas usan urlApi
       // absoluta porque el backend vive en otro origen/puerto.
-      withInterceptors([credentialsInterceptor, xsrfInterceptor, authInterceptor]),
+      withInterceptors([credentialsInterceptor, xsrfInterceptor, csrfRetryInterceptor, authInterceptor]),
     ),
     // Resuelve quien es el usuario actual (si hay cookie de sesion valida)
     // ANTES de que el router evalue authGuard en la primera navegacion --
@@ -78,6 +80,7 @@ export const appConfig: ApplicationConfig = {
     // sesion.
     provideAppInitializer(() => inject(AuthStateService).initialize()),
     provideAppInitializer(() => inject(TemaService).inicializar()),
+    provideAppInitializer(() => inject(SesionEntrePestanasService).inicializar()),
     // Paleta, tipografia y radios vienen de libs/ui/tokens (nucleoPreset),
     // nunca del tema Aura default de PrimeNG -- ver libs/ui/tokens/README.md.
     providePrimeNG({

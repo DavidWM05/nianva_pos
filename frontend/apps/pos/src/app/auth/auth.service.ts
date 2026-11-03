@@ -1,9 +1,10 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
-import { Observable, switchMap } from 'rxjs';
+import { Observable, switchMap, tap } from 'rxjs';
 
 import { urlApi, urlSesion } from '../core/api-config';
 import { LoginResponse, TwoFactorConfirmResponse, TwoFactorSetupResponse, Usuario } from './usuario.types';
+import { SesionEntrePestanasService } from './sesion-entre-pestanas.service';
 
 /**
  * Unico punto de acceso a los endpoints de autenticacion del backend.
@@ -14,6 +15,7 @@ import { LoginResponse, TwoFactorConfirmResponse, TwoFactorSetupResponse, Usuari
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private readonly http = inject(HttpClient);
+  private readonly sesion = inject(SesionEntrePestanasService);
 
   /**
    * Sanctum SPA exige pedir la cookie CSRF antes de cualquier POST que
@@ -35,7 +37,9 @@ export class AuthService {
   }
 
   logout(): Observable<void> {
-    return this.http.post<void>(urlSesion('/logout'), {});
+    return this.http.post<void>(urlSesion('/logout'), {}).pipe(
+      tap(() => this.sesion.cerrarSesion()),
+    );
   }
 
   me(): Observable<Usuario> {
