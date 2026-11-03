@@ -177,6 +177,9 @@ jobs:
       - name: Instalar dependencias con el lockfile
         run: pnpm install --frozen-lockfile
 
+      - name: Verificar tokens generados
+        run: node libs/ui/tokens/scripts/generate.mjs --check
+
       - name: Revisar avisos de seguridad de produccion
         run: pnpm audit --prod
 

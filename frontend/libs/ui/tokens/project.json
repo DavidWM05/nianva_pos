@@ -1,0 +1,16 @@
+{
+  "name": "ui-tokens",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/ui/tokens/src",
+  "projectType": "library",
+  "tags": ["type:tokens"],
+  "targets": {
+    "test": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "vitest run libs/ui/tokens/src/lib/tokens-contrast.spec.ts",
+        "cwd": "{workspaceRoot}"
+      }
+    }
+  }
+}
