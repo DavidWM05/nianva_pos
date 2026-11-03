@@ -1,8 +1,9 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpContext } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable, switchMap, tap } from 'rxjs';
 
 import { urlApi, urlSesion } from '../core/api-config';
+import { ERROR_EN_PANTALLA } from '../core/errores.interceptor';
 import { LoginResponse, TwoFactorConfirmResponse, TwoFactorSetupResponse, Usuario } from './usuario.types';
 import { SesionEntrePestanasService } from './sesion-entre-pestanas.service';
 
@@ -16,14 +17,16 @@ import { SesionEntrePestanasService } from './sesion-entre-pestanas.service';
 export class AuthService {
   private readonly http = inject(HttpClient);
   private readonly sesion = inject(SesionEntrePestanasService);
+  /** Estas pantallas muestran su error en la pagina: sin toast del interceptor (UI-13). */
+  private readonly contextoErrorEnPantalla = new HttpContext().set(ERROR_EN_PANTALLA, true);
 
   /**
    * Sanctum SPA exige pedir la cookie CSRF antes de cualquier POST que
    * cambie estado (login, forgot/reset password) -- si no, el backend
    * rechaza la request por CSRF invalido.
    */
-  private ensureCsrfCookie(): Observable<void> {
-    return this.http.get<void>(urlSesion('/sanctum/csrf-cookie'));
+  private ensureCsrfCookie(contexto?: HttpContext): Observable<void> {
+    return this.http.get<void>(urlSesion('/sanctum/csrf-cookie'), contexto ? { context: contexto } : {});
   }
 
   login(correo: string, password: string): Observable<LoginResponse> {
@@ -33,7 +36,9 @@ export class AuthService {
   }
 
   verifyTwoFactor(code: string): Observable<{ user: Usuario }> {
-    return this.http.post<{ user: Usuario }>(urlSesion('/login/2fa-verify'), { code });
+    return this.http.post<{ user: Usuario }>(urlSesion('/login/2fa-verify'), { code }, {
+      context: this.contextoErrorEnPantalla,
+    });
   }
 
   logout(): Observable<void> {
@@ -47,8 +52,12 @@ export class AuthService {
   }
 
   requestPasswordReset(correo: string): Observable<{ status: string }> {
-    return this.ensureCsrfCookie().pipe(
-      switchMap(() => this.http.post<{ status: string }>(urlSesion('/password/forgot'), { correo })),
+    return this.ensureCsrfCookie(this.contextoErrorEnPantalla).pipe(
+      switchMap(() => this.http.post<{ status: string }>(
+        urlSesion('/password/forgot'),
+        { correo },
+        { context: this.contextoErrorEnPantalla },
+      )),
     );
   }
 
@@ -58,16 +67,26 @@ export class AuthService {
     password: string;
     password_confirmation: string;
   }): Observable<{ status: string }> {
-    return this.ensureCsrfCookie().pipe(
-      switchMap(() => this.http.post<{ status: string }>(urlSesion('/password/reset'), payload)),
+    return this.ensureCsrfCookie(this.contextoErrorEnPantalla).pipe(
+      switchMap(() => this.http.post<{ status: string }>(
+        urlSesion('/password/reset'),
+        payload,
+        { context: this.contextoErrorEnPantalla },
+      )),
     );
   }
 
   getTwoFactorSetup(): Observable<TwoFactorSetupResponse> {
-    return this.http.get<TwoFactorSetupResponse>(urlApi(`/two-factor/qr-code`));
+    return this.http.get<TwoFactorSetupResponse>(urlApi(`/two-factor/qr-code`), {
+      context: this.contextoErrorEnPantalla,
+    });
   }
 
   confirmTwoFactor(code: string): Observable<TwoFactorConfirmResponse> {
-    return this.http.post<TwoFactorConfirmResponse>(urlApi(`/two-factor/confirm`), { code });
+    return this.http.post<TwoFactorConfirmResponse>(
+      urlApi(`/two-factor/confirm`),
+      { code },
+      { context: this.contextoErrorEnPantalla },
+    );
   }
 }

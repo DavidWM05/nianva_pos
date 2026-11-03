@@ -1,9 +1,10 @@
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpContext, HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { DataTableLazyEvent } from '@nianva/ui-shared';
 import { Observable, map } from 'rxjs';
 
 import { urlApi } from '../../core/api-config';
+import { ERROR_EN_PANTALLA } from '../../core/errores.interceptor';
 import { UsuarioAdmin, UsuariosPagina, UsuariosPermisos } from './usuario.types';
 
 export interface UsuarioFormPayload {
@@ -25,6 +26,7 @@ export interface UsuarioFormPayload {
 @Injectable({ providedIn: 'root' })
 export class UsuarioAdminService {
   private readonly http = inject(HttpClient);
+  private readonly contextoErrorEnPantalla = new HttpContext().set(ERROR_EN_PANTALLA, true);
 
   listar(evento: DataTableLazyEvent, busqueda: string): Observable<UsuariosPagina> {
     const rows = evento.rows || 25;
@@ -83,7 +85,9 @@ export class UsuarioAdminService {
    */
   desactivarDosFactor(id: number, code?: string): Observable<UsuarioAdmin> {
     return this.http
-      .post<{ data: UsuarioAdmin }>(urlApi(`/usuarios/${id}/desactivar-2fa`), code ? { code } : {})
+      .post<{ data: UsuarioAdmin }>(urlApi(`/usuarios/${id}/desactivar-2fa`), code ? { code } : {}, {
+        context: this.contextoErrorEnPantalla,
+      })
       .pipe(map((r) => r.data));
   }
 }

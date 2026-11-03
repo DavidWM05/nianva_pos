@@ -25,13 +25,25 @@ export const VENTANA_DUPLICADOS_MS = 1500;
 export class ToastService {
   private readonly messageService = inject(MessageService);
   private readonly mostrados = new Map<string, number>();
+  private ultimoErrorTecnico = 0;
 
   success(detail: string, summary = 'Listo'): void {
     this.mostrar('success', summary, detail, 3000);
   }
 
   error(detail: string, summary = 'Error'): void {
+    if (Date.now() - this.ultimoErrorTecnico < VENTANA_DUPLICADOS_MS) {
+      return;
+    }
+
     this.mostrar('error', summary, detail, 4000);
+  }
+
+  errorTecnico(detail: string, correlationId?: string): void {
+    const mensaje = correlationId ? `${detail} Código de soporte: ${correlationId}` : detail;
+
+    this.ultimoErrorTecnico = Date.now();
+    this.mostrar('error', 'Error', mensaje, 4000);
   }
 
   warn(detail: string, summary = 'Atención'): void {

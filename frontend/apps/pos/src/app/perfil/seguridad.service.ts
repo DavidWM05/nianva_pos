@@ -1,8 +1,9 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpContext } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable, map } from 'rxjs';
 
 import { urlApi } from '../core/api-config';
+import { ERROR_EN_PANTALLA } from '../core/errores.interceptor';
 import { CambiarPasswordPayload, DispositivoConfiable } from './seguridad.types';
 
 /**
@@ -18,6 +19,7 @@ import { CambiarPasswordPayload, DispositivoConfiable } from './seguridad.types'
 @Injectable({ providedIn: 'root' })
 export class SeguridadService {
   private readonly http = inject(HttpClient);
+  private readonly contextoErrorEnPantalla = new HttpContext().set(ERROR_EN_PANTALLA, true);
 
   listarDispositivosConfiables(): Observable<DispositivoConfiable[]> {
     return this.http
@@ -35,6 +37,8 @@ export class SeguridadService {
 
   /** Protegido por dos-factor.reciente en el backend -- ver `code` en CambiarPasswordPayload. */
   cambiarPassword(payload: CambiarPasswordPayload): Observable<void> {
-    return this.http.post<void>(urlApi(`/password/change`), payload);
+    return this.http.post<void>(urlApi(`/password/change`), payload, {
+      context: this.contextoErrorEnPantalla,
+    });
   }
 }
