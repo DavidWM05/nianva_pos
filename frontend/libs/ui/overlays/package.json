@@ -1,0 +1,12 @@
+{
+  "name": "@nianva/ui-overlays",
+  "version": "0.0.1",
+  "peerDependencies": {
+    "@angular/core": "^22.0.0",
+    "@angular/platform-browser": "^22.0.0",
+    "@nianva/ui-layout": "*",
+    "primeng": "^22.0.0",
+    "vitest": "^4.0.8"
+  },
+  "sideEffects": false
+}

@@ -1,0 +1,33 @@
+.ui-btn-enviar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--nv-spacing-2);
+  min-height: var(--nv-spacing-10);
+  padding: 0 var(--nv-spacing-4);
+  border: 0;
+  border-radius: var(--nv-radius-md);
+  background: var(--nv-primario);
+  color: var(--nv-primario-texto);
+  font-size: var(--nv-font-size-base);
+  font-weight: var(--nv-font-weight-medium);
+  cursor: pointer;
+}
+
+.ui-btn-enviar:hover:not(:disabled) {
+  background: var(--nv-color-primary-700);
+}
+
+.ui-btn-enviar:focus-visible {
+  outline: 2px solid var(--nv-foco);
+  outline-offset: 2px;
+}
+
+.ui-btn-enviar:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.ui-btn-enviar__indicador {
+  font-size: var(--nv-font-size-sm);
+}

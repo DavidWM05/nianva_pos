@@ -136,6 +136,15 @@ export default [
       '@angular-eslint/template/no-inline-styles': ['error', { allowBindToStyle: true }],
     },
   },
+  {
+    // libs/ui/* ya no necesita la excepcion: ui-modal y ui-drawer son los que la retiran.
+    // La opcion va explicita: un override que solo cambia la severidad conserva
+    // allowBindToStyle: true del bloque anterior.
+    files: ['libs/ui/**/*.html'],
+    rules: {
+      '@angular-eslint/template/no-inline-styles': ['error', { allowBindToStyle: false }],
+    },
+  },
   ...formatoPendientes.map((ruta) => ({
     files: [ruta],
     rules: {

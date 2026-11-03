@@ -1,0 +1,20 @@
+<p-drawer
+  [visible]="visible()"
+  (visibleChange)="visible.set($event)"
+  (onHide)="cerrado.emit()"
+  [header]="titulo()"
+  position="right"
+  [modal]="true"
+  [fullScreen]="pantalla.angosta()"
+  [closeOnEscape]="true"
+  [ariaCloseLabel]="'Cerrar'"
+  [styleClass]="clase()"
+>
+  <ng-content />
+
+  <ng-template #footer>
+    <ui-form-actions>
+      <ng-content select="[acciones]" />
+    </ui-form-actions>
+  </ng-template>
+</p-drawer>
