@@ -578,6 +578,27 @@ repo.
   - Scramble ya no infiere `sort_field` en esos dos listados, porque la lectura de parámetros
     vive en el helper; se documentará cuando se conviertan los demás;
   - backend: 680 tests.
+- **Capas Nx y reglas de lint** (trigésimo séptimo encargo, hecho por DS; primero de la Fase
+  2):
+  - **ARQ-11:** etiquetas `type:app` (`pos`), `type:ui` (`ui-shared`) y `type:tokens`
+    (`design-tokens`). `depConstraints` por capa: app → feature, domain, ui, core, tokens;
+    feature → domain, ui, core, tokens (nunca otro feature); domain → core; ui → ui, tokens;
+    core y tokens → nada. Un proyecto sin etiqueta falla. Una lib nueva lleva `type:*` y, si es
+    feature, `scope:<modulo>`;
+  - **SEG-04 y UI-15:**
+    - regla propia `nianva/no-inner-html` en `frontend/tools/eslint-rules`, con test en Vitest
+      y sin Jest. En la revisión se agregó el paso de CI "Probar reglas de lint propias",
+      porque ese test no entra en `nx run-many`;
+    - `no-restricted-syntax` contra `bypassSecurityTrust*`;
+    - `@angular-eslint/template/no-inline-styles`, con una **excepción temporal** decidida
+      por el responsable: `allowBindToStyle` permite los 22 `[style]="{ width }"` de
+      `p-dialog` (17 archivos) hasta que `ui-modal` los reemplace en la migración de
+      pantallas; después se quita;
+  - **ARQ-12:** `HttpClient` prohibido en `*.component.ts`;
+  - antes de activar cada regla se midió: 0 violaciones, salvo los 22 `[style]`. Cada regla y
+    frontera se probó fallando y pasando con proyectos y componentes temporales;
+  - frontend sin cambios: ui-shared 22 y pos 438, más los 4 tests de la regla; los mismos
+    warnings de lint.
 - **Pendientes detectados:**
   - `Produccion` usa `UnidadMedida` (extensión → extensión); las unidades se rediseñan en la
     Fase 3 (DAT-01);
@@ -645,8 +666,8 @@ repo.
    - modo oscuro apagado (`darkModeSelector: false`) y 62 usos del pipe `date` de Angular.
 
    **Encargos, en orden**, un tema por PR:
-   1. capas Nx con etiquetas y `enforce-module-boundaries`, y lint de SEG-04, UI-15 y ARQ-12
-      (sin `innerHTML`, sin `bypassSecurityTrust` y sin `HttpClient` en componentes);
+   1. ~~capas Nx con etiquetas y `enforce-module-boundaries`, y lint de SEG-04, UI-15 y
+      ARQ-12~~, hecho en el encargo 37;
    2. `ui/tokens`: un JSON del que salen las variables CSS, el preset de PrimeNG y los
       breakpoints; tema oscuro; test de contraste (UI-01, UI-03, UI-04);
    3. stylelint bloqueante y `ui-baseline.json` del CSS por pantalla, que solo baja (PRO-05,

@@ -72,11 +72,11 @@ línea base de PHPStan; se paga al tocar cada módulo.
 
 | Regla | Qué pide | Estado | Dónde se verifica | Encargo |
 |---|---|---|---|---|
-| ARQ-11 | Capas de librerías Nx | Pendiente | — | — |
-| ARQ-12 | Estado y efectos | Pendiente | — | — |
+| ARQ-11 | Capas de librerías Nx | Hecho | Etiquetas `type:*` en todos los proyectos; `@nx/enforce-module-boundaries` con `depConstraints` por capa (un `feature` no importa otro; un proyecto sin etiqueta falla) | 37 |
+| ARQ-12 | Estado y efectos | Parcial | ESLint: sin `HttpClient` en `*.component.ts`; falta el interceptor global de errores y su test | 37 |
 | API-08 | Tipos y clientes generados en el frontend | Pendiente | — | — |
 | API-09 | Features y permisos en la respuesta | Pendiente | — | — |
-| SEG-04 | Sin HTML sin escapar | Pendiente | — | — |
+| SEG-04 | Sin HTML sin escapar | Parcial | ESLint: regla propia `nianva/no-inner-html` (test en `tools/eslint-rules`, paso de CI "Probar reglas de lint propias"), `no-restricted-syntax` para `bypassSecurityTrust*` y `@angular-eslint/template/no-inline-styles`. **Excepción temporal:** `allowBindToStyle` permite los 22 `[style]` de `p-dialog` hasta que `ui-modal` los reemplace. Falta el e2e con un producto `<img src=x onerror=…>` (con Playwright) | 37 |
 | SEG-06 | Sesión y CSRF | Pendiente | — | — |
 | SEG-12 | Componente de PIN | Pendiente | — | — |
 | PRO-05 | stylelint | Pendiente | — | — |
@@ -93,7 +93,7 @@ línea base de PHPStan; se paga al tocar cada módulo.
 | UI-11 | Formularios | Pendiente | — | — |
 | UI-13 | Mensajes | Pendiente | — | — |
 | UI-14 | Catálogo visual | Pendiente | — | — |
-| UI-15 | Texto por interpolación | Pendiente | — | — |
+| UI-15 | Texto por interpolación | Hecho | Por SEG-04: `nianva/no-inner-html` impide pintar texto como HTML; queda la interpolación | 37 |
 | UI-16 | CSS por pantalla en línea base | Pendiente | — | — |
 | UI-17 | Accesibilidad mínima | Pendiente | — | — |
 
