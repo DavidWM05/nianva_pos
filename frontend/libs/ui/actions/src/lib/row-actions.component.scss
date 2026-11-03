@@ -1,0 +1,9 @@
+.ui-row-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--nv-spacing-1);
+}
+
+.ui-row-actions__envoltura {
+  display: inline-flex;
+}
