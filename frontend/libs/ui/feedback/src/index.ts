@@ -4,3 +4,6 @@ export * from './lib/toast/toast.service';
 export * from './lib/toast/toast-host.component';
 export * from './lib/skeleton/skeleton.component';
 export * from './lib/carga/con-umbral';
+export * from './lib/confirm-dialog/confirm-dialog.service';
+export * from './lib/confirm-dialog/confirm-dialog-host.component';
+export * from './lib/alert/alert.component';
