@@ -599,6 +599,28 @@ repo.
     frontera se probó fallando y pasando con proyectos y componentes temporales;
   - frontend sin cambios: ui-shared 22 y pos 438, más los 4 tests de la regla; los mismos
     warnings de lint.
+- **`ui/tokens`, una sola fuente y tema oscuro** (trigésimo octavo encargo, hecho por DS):
+  - **lib nueva `libs/ui/tokens`** (`@nianva/ui-tokens`, `type:tokens`): `tokens.json` con
+    los primitivos de siempre (mismos valores), los semánticos en claro y oscuro (`fondo`,
+    `superficie`, `borde`, `texto`, `texto-suave`, `primario`, los estados con su `-texto`,
+    `foco`…), las escalas y los breakpoints `sm` 576, `md` 768, `lg` 992 y `xl` 1200;
+  - **generador:** `scripts/generate.mjs`, sin dependencias, escribe `tokens.css`, el preset
+    de PrimeNG y `breakpoints.ts`. Su `--check` corre en CI (paso "Verificar tokens
+    generados");
+  - **compatibilidad:** los 51 `--nucleo-*` de antes son alias de los `--nv-*` y se retiran
+    al migrar las pantallas. En la revisión se comprobó que los 51 resuelven al mismo valor
+    que en `master`, y que el preset da en claro lo mismo que Aura con la paleta anterior: la
+    apariencia en tema claro no cambia;
+  - **contraste:** `tokens-contrast.spec.ts` exige 4.5:1 en los pares de texto de los dos
+    temas, y todos pasan;
+  - **tema oscuro:** `darkModeSelector: '.nv-tema-oscuro'` y `TemaService` (preferencia en
+    `localStorage`: claro, oscuro o sistema), sin interruptor visible. **Corregido en la
+    revisión, con su test primero:** DS dejó "sistema" como valor por defecto, así que con
+    el sistema operativo en oscuro la app se habría visto en un tema oscuro a medias y sin
+    forma de salir. Ahora el valor por defecto es claro hasta migrar las pantallas, y el
+    acceso a `localStorage` está protegido para modo privado;
+  - **retiro:** se eliminó `libs/design-tokens`;
+  - frontend: ui-tokens 16, ui-shared 22 y pos 444 tests; los mismos warnings de lint.
 - **Pendientes detectados:**
   - `Produccion` usa `UnidadMedida` (extensión → extensión); las unidades se rediseñan en la
     Fase 3 (DAT-01);
@@ -668,8 +690,9 @@ repo.
    **Encargos, en orden**, un tema por PR:
    1. ~~capas Nx con etiquetas y `enforce-module-boundaries`, y lint de SEG-04, UI-15 y
       ARQ-12~~, hecho en el encargo 37;
-   2. `ui/tokens`: un JSON del que salen las variables CSS, el preset de PrimeNG y los
-      breakpoints; tema oscuro; test de contraste (UI-01, UI-03, UI-04);
+   2. ~~`ui/tokens`: un JSON del que salen las variables CSS, el preset de PrimeNG y los
+      breakpoints; tema oscuro; test de contraste (UI-01, UI-03, UI-04)~~, hecho en el
+      encargo 38;
    3. stylelint bloqueante y `ui-baseline.json` del CSS por pantalla, que solo baja (PRO-05,
       UI-16);
    4. `ui/format`: pipes de dinero, cantidad, fecha, fecha y hora, y porcentaje, más la regla de
