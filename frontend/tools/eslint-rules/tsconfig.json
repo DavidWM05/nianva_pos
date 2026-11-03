@@ -1,0 +1,10 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "outDir": "../../dist/out-tsc/tools/eslint-rules",
+    "module": "commonjs",
+    "target": "es2022"
+  },
+  "include": ["**/*.ts", "**/*.js", "**/*.mjs"],
+  "exclude": ["**/*.test.mjs"]
+}
