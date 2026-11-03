@@ -121,6 +121,8 @@ Route → middleware permiso:* → FormRequest → Controller → Action / Servi
 - Toda entidad raíz tiene vistas dedicadas: `/modulo`, `/modulo/nuevo`, `/modulo/:id`. El modal
   (`p-dialog`) es solo para sub-recursos anidados sin lista ni detalle propios.
 - `RecordTabsComponent` (`nucleo-record-tabs`) es obligatorio en toda vista de registro.
+- Estados de carga (UI-18): skeleton con la forma del contenido en la primera carga, nunca un
+  texto "Cargando…" suelto; el botón que envía muestra indicador y queda deshabilitado.
 - Para buscar o elegir una entidad de otro módulo, usa `EntidadSelectorComponent` con el
   contrato `BuscadorEntidad`/`BuscadorDeHijos` y su token. Nunca importes el servicio concreto
   de otro módulo.

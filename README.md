@@ -102,9 +102,33 @@ cd frontend && pnpm exec nx serve pos   # http://localhost:4200
 - **Admin** hace falta para los módulos de extensión, los reportes y la administración: el rol
   `vendedor` no tiene esos permisos y el menú no los muestra.
 - **2FA del admin:** es obligatorio para el rol. El seeder lo deja confirmado y **imprime en la
-  consola** el secreto TOTP y el URI `otpauth://`; el secreto no se guarda en el código. Cárgalo
-  en una app de autenticación y usa el código de 6 dígitos en `/login/2fa-verify`. Si lo
-  pierdes, vuelve a correr el seeder: regenera solo el secreto.
+  consola** el secreto TOTP, el URI `otpauth://` y **8 códigos de recuperación**; nada de eso
+  se guarda en el código. Carga el secreto en una app de autenticación (introducir clave a
+  mano) y usa el código de 6 dígitos en `/login/2fa-verify`, o escribe ahí uno de los códigos
+  de recuperación (cada uno sirve una vez). Después de pasar el 2FA, ese navegador queda
+  recordado 30 días. Cada corrida del seeder genera un secreto y unos códigos nuevos.
+
+#### Si no puedes entrar
+
+- **"Credenciales no válidas" con las cuentas de prueba:** casi siempre es que la base se
+  recreó (`migrate:fresh`) y no hay usuarios. Desde `backend/`:
+
+  ```bash
+  php artisan db:seed
+  php artisan db:seed --class="App\Modules\Nucleo\Database\Seeders\DesarrolloSeeder"
+  ```
+
+- **Te pide el código de 2FA y no lo tienes:** usa uno de los códigos de recuperación que
+  imprimió el seeder, o reinicia el 2FA del admin. En el siguiente login te pide configurarlo
+  de nuevo con un QR:
+
+  ```bash
+  php artisan usuarios:resetear-2fa admin@nucleo.test --force
+  ```
+
+Más casos en [backend/README.md](backend/README.md), en "Recuperar el acceso con 2FA". Para
+tener tenants de ejemplo (ropa, abarrotes, multi-sucursal y plan Lite), ver "Escenarios de
+datos" en el mismo archivo.
 
 ## Calidad
 

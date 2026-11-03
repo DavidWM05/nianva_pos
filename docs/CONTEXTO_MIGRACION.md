@@ -698,21 +698,30 @@ repo.
    4. `ui/format`: pipes de dinero, cantidad, fecha, fecha y hora, y porcentaje, más la regla de
       ESLint de plantillas (UI-05);
    5. `ui/feedback`: registro de estados, badge, toast único, interceptor global de errores y el
-      de 401 y CSRF (UI-06, UI-13, ARQ-12, SEG-06);
+      de 401 y CSRF (UI-06, UI-13, ARQ-12, SEG-06); `ui-skeleton` y la regla de lint sin
+      "Cargando…" literal (UI-18). Primer consumidor: el QR de la configuración del 2FA,
+      con su skeleton y el botón "Confirmar" con indicador;
    6. `ui/layout` y `ui/actions`: shell, `ui-page-header`, registro de navegación,
-      `ui-btn-crear` y `ui-row-actions` (UI-07, UI-08);
+      `ui-btn-crear` y `ui-row-actions` (UI-07, UI-08); estado de carga y error de `ui-page`
+      (UI-18);
    7. `ui/data`: `ui-tabla` tipada, `ui-filter-bar` sobre el `meta` de API-06 y el generador
-      `ui-listado` (UI-09);
+      `ui-listado` (UI-09); skeleton de filas de `ui-tabla` (UI-18);
    8. `ui/forms` y `ui/overlays`: inputs de dinero, cantidad, contraseña y PIN; errores por
-      campo; modal y drawer (UI-11, componente de SEG-12);
+      campo; modal y drawer (UI-11, componente de SEG-12); botones de envío con indicador
+      (UI-18);
    9. contrato generado con **openapi-typescript**: tipos en las libs `domain/*` desde
       `docs/api/openapi.json`, sin interfaces escritas a mano (API-08 del frontend, API-09);
    10. catálogo visual `catalogo-ui`, regresión visual con **Playwright** (claro, oscuro y 375,
        768 y 1280 px) y axe (UI-14, UI-03, UI-17);
    11. `ui/report`, solo el componente (UI-10);
-   12. migración de **las 110 pantallas** a `libs/ui`, en lotes por módulo. Los congelados van
-       con cambio mínimo. Al terminar se retiran `design-tokens` y `ui-shared` (C10, UI-02 y
-       UI-16).
+   12. migración de **las 110 pantallas** a `libs/ui`, en lotes por módulo, que también
+       reemplaza los 35 textos "Cargando…" por los estados de carga (UI-18). Los congelados
+       van con cambio mínimo. Al terminar se retiran `design-tokens` y `ui-shared` (C10, UI-02
+       y UI-16).
+
+   **Regla nueva UI-18 "Estados de carga"** (2026-11-02, a pedido del responsable): skeleton en
+   la primera carga, indicador en el botón que envía y error con "Reintentar". Al aprobarla
+   había 35 textos "Cargando…", 22 detalles con `@if (cargando())` en texto y ningún skeleton.
 
    **Decisiones del responsable (2026-11-02):**
    - se migran todas las pantallas dentro de la Fase 2;

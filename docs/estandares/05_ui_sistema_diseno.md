@@ -258,6 +258,25 @@ mueven a la lib nueva que corresponda.
   teclado.
 - **Desde:** Fase 2; el TPV, en la Fase 4.
 
+### UI-18 · Estados de carga
+- **Regla:**
+  - la primera carga de una página, listado, detalle o formulario muestra un skeleton con la
+    forma del contenido (`ui-skeleton`, o el estado de carga de `ui-page` y `ui-tabla`), nunca
+    un texto "Cargando…" suelto;
+  - un área que se genera (un QR, un reporte, una gráfica) muestra su propio skeleton;
+  - mientras se envía una acción, su botón muestra un indicador y queda deshabilitado, sin
+    doble envío (se complementa con API-07);
+  - el indicador aparece después de un umbral corto, para no parpadear en respuestas rápidas;
+  - si la carga falla, se muestra el error con una acción "Reintentar".
+- **Por qué:**
+  - hay 35 textos "Cargando…" distintos y 22 vistas de detalle sin forma mientras cargan;
+  - el QR de la configuración del 2FA aparece de golpe después de un texto plano.
+- **Verifica:**
+  - una regla de lint que prohíbe texto "Cargando" o "Generando" literal en plantillas;
+  - `ui-skeleton` con sus tests;
+  - estados de carga y de error de cada componente en el catálogo visual (UI-14).
+- **Desde:** Fase 2.
+
 ## De las 28 reglas de `estandar_ui.md` de Lite a componentes
 
 | # | Regla de Lite (sección) | En la nueva base |
