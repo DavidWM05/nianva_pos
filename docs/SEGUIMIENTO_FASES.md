@@ -80,10 +80,10 @@ línea base de PHPStan; se paga al tocar cada módulo.
 | SEG-06 | Sesión y CSRF | Pendiente | — | — |
 | SEG-12 | Componente de PIN | Pendiente | — | — |
 | PRO-05 | stylelint | Pendiente | — | — |
-| UI-01 | Solo tokens | Pendiente | — | — |
+| UI-01 | Solo tokens | Parcial | `libs/ui/tokens`: una fuente (`tokens.json`) de la que salen las variables CSS, el preset de PrimeNG y los breakpoints, con su `--check` en CI. Faltan stylelint (encargo 39) y la migración de las pantallas a los semánticos `--nv-*` | 38 |
 | UI-02 | Componentes, no fragmentos | Pendiente | — | — |
-| UI-03 | Claro y oscuro | Pendiente | — | — |
-| UI-04 | Responsivo en el componente | Pendiente | — | — |
+| UI-03 | Claro y oscuro | Parcial | Semánticos en claro y oscuro; `tokens-contrast.spec.ts` exige 4.5:1 en los pares de texto de ambos temas; `TemaService` aplica `.nv-tema-oscuro`. Por defecto queda en claro y sin interruptor hasta migrar las pantallas; faltan el catálogo y la regresión visual | 38 |
+| UI-04 | Responsivo en el componente | Parcial | Breakpoints únicos en `tokens.json` (`breakpoints.ts`); faltan stylelint sin `@media` en pantallas y los componentes responsivos | 38 |
 | UI-05 | Formato solo por pipes | Pendiente | — | — |
 | UI-06 | Estados con un registro global | Pendiente | — | — |
 | UI-07 | Acciones | Pendiente | — | — |
