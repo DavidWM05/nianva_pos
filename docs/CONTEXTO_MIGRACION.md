@@ -680,6 +680,27 @@ repo.
       sigue, cada interpolación "ve" la plantilla entera;
   - frontend: ui-format 11, ui-tokens 20, ui-shared 22 y pos 444 tests; reglas propias 14;
     los mismos warnings.
+- **Sesión: 401 en todas las pestañas y reintento ante 419** (encargo 41b, hecho por DS en
+  paralelo con el 41a):
+  - **`SesionEntrePestanasService`:**
+    - un 401 (salvo el `GET /api/v1/user` del arranque) o un logout limpian el estado y avisan
+      a las demás pestañas por `BroadcastChannel('nianva-sesion')`. Si no existe, se usa el
+      evento `storage`, con solo una marca de tiempo;
+    - varios 401 navegan una sola vez, y en una ruta pública no se navega;
+  - **`csrfRetryInterceptor`:**
+    - un 419 en una petición mutante pide `/sanctum/csrf-cookie` y reintenta una sola vez con
+      el token nuevo;
+    - va antes de `authInterceptor`, así que un 401 del reintento cierra la sesión;
+  - **ajustado en la revisión:**
+    - el reintento usa `conTokenXsrf()` de `xsrf.interceptor.ts`, en vez de una copia
+      propia;
+    - se restauró un comentario que DS había borrado en `auth.service.ts`;
+  - **verificación por mutación:** los tests de "una sola navegación" fallan si se quita el
+    corte. El de "no reintenta dos veces" pasa aunque se quite la marca: el reintento se lanza
+    con `next()` dentro del `catchError`, y por estructura no puede repetirse;
+  - **la prueba manual con dos pestañas** (logout en una y borrar la cookie `XSRF-TOKEN`)
+    queda para el responsable: DS no tenía navegador;
+  - pos: 457 tests.
 - **Pendientes detectados:**
   - `FORMATO_REGIONAL` aún no lee la configuración del tenant (`moneda`, `zona_horaria`). Si
     `moneda` es un código como `USD`, `dinero` da `USD1,250.50`, sin espacio. Se resuelve al
@@ -692,7 +713,9 @@ repo.
   - permisos de acción distinta que son intencionales: `desactivar` con `.eliminar` y los
     catálogos de apoyo;
   - la suite de `pos` tuvo timeouts de 5 s bajo carga en una corrida local (Nx la marcó
-    inestable); vigilar en CI y, si se repite, revisar los specs más lentos;
+    inestable). **Se repitió en la revisión del 41b:** `ordenes-list.component.spec.ts` tardó
+    6.5 s con los cuatro proyectos en paralelo y pasó al correrlo solo. Hay que revisar los
+    specs más lentos;
   - `VentaController` y `CompraController` toman el tenant de `$request->user()` y el resto
     de `TenantContext` (equivalentes); se unifica al migrar a FormRequest (C8).
 - **Git:** `master` está protegido (ruleset `proteger-master`): todo entra por PR con los tres
@@ -763,10 +786,12 @@ repo.
    4. ~~`ui/format`: pipes de dinero, cantidad, fecha, fecha y hora, y porcentaje, más la regla
       de ESLint de plantillas (UI-05) y la de colores literales y clases de color fijo en
       plantillas (UI-01)~~, hecho en el encargo 40;
-   5. `ui/feedback`: registro de estados, badge, toast único, interceptor global de errores y el
-      de 401 y CSRF (UI-06, UI-13, ARQ-12, SEG-06); `ui-skeleton` y la regla de lint sin
-      "Cargando…" literal (UI-18). Primer consumidor: el QR de la configuración del 2FA,
-      con su skeleton y el botón "Confirmar" con indicador;
+   5. `ui/feedback`, en tres PRs:
+      - 41a: registro de estados, badge, toast único, `ui-skeleton` y la regla de lint sin
+        "Cargando…" literal (UI-06, UI-13, UI-18). Primer consumidor: el QR de la
+        configuración del 2FA, con su skeleton y el botón "Confirmar" con indicador;
+      - ~~41b: 401 en todas las pestañas y reintento ante 419 (SEG-06)~~, hecho;
+      - 41c: interceptor global de errores sobre el toast (ARQ-12, UI-13);
    6. `ui/layout` y `ui/actions`: shell, `ui-page-header`, registro de navegación,
       `ui-btn-crear` y `ui-row-actions` (UI-07, UI-08); estado de carga y error de `ui-page`
       (UI-18);
