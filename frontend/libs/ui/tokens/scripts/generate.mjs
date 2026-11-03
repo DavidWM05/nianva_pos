@@ -2,6 +2,8 @@ import { readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
+import { contenidoEquivalente } from './contenido-equivalente.mjs';
+
 const raiz = join(dirname(fileURLToPath(import.meta.url)), '..');
 const check = process.argv.includes('--check');
 const datos = JSON.parse(readFileSync(join(raiz, 'tokens.json'), 'utf8'));
@@ -206,7 +208,7 @@ for (const [ruta, contenido] of archivos) {
       actual = '';
     }
 
-    if (actual !== contenido) {
+    if (! contenidoEquivalente(actual, contenido)) {
       console.error(`Desactualizado: ${ruta.slice(raiz.length + 1)}`);
       fallos++;
     }
