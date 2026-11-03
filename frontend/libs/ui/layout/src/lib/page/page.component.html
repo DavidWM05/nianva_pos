@@ -1,0 +1,32 @@
+@switch (estado()) {
+  @case ('cargando') {
+    <div class="ui-page__carga">
+      @switch (forma()) {
+        @case ('listado') {
+          <ui-skeleton forma="bloque" alto="2.5rem" />
+          <ui-skeleton forma="texto" [lineas]="8" alto="2rem" />
+        }
+        @case ('formulario') {
+          @for (campo of [1, 2, 3, 4]; track campo) {
+            <ui-skeleton forma="texto" ancho="30%" />
+            <ui-skeleton forma="bloque" alto="2.5rem" />
+          }
+        }
+        @default {
+          <ui-skeleton forma="texto" ancho="40%" alto="1.5rem" />
+          <ui-skeleton forma="texto" [lineas]="6" />
+        }
+      }
+    </div>
+  }
+  @case ('error') {
+    <div class="ui-page__error" role="alert">
+      <i class="pi pi-exclamation-circle" aria-hidden="true"></i>
+      <p>{{ mensajeError() }}</p>
+      <p-button label="Reintentar" icon="pi pi-refresh" severity="secondary" (click)="reintentar.emit()" />
+    </div>
+  }
+  @default {
+    <ng-content />
+  }
+}
