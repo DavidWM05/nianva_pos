@@ -23,6 +23,7 @@ for (const [nombre, valor] of Object.entries(datos.primitive.spacing)) {
   primitivos.push([`--nv-spacing-${nombre}`, valor]);
 }
 primitivos.push(['--nv-font-family', datos.primitive.typography.fontFamily]);
+primitivos.push(['--nv-font-family-mono', datos.primitive.typography.fontFamilyMono]);
 for (const [nombre, valor] of Object.entries(datos.primitive.typography.fontSize)) {
   primitivos.push([`--nv-font-size-${nombre}`, valor]);
 }

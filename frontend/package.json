@@ -3,7 +3,9 @@
   "version": "0.0.0",
   "packageManager": "pnpm@11.5.3",
   "license": "MIT",
-  "scripts": {},
+  "scripts": {
+    "stylelint": "stylelint \"apps/**/*.scss\" \"apps/**/*.css\" \"libs/**/*.scss\" \"libs/**/*.css\" \"feature/**/*.scss\" \"feature/**/*.css\""
+  },
   "private": true,
   "devDependencies": {
     "@angular-devkit/core": "~22.2.5",
@@ -34,7 +36,9 @@
     "ng-packagr": "~22.2.5",
     "nx": "23.3.1",
     "postcss": "^8.5.32",
+    "postcss-scss": "4.0.9",
     "prettier": "^3.9.10",
+    "stylelint": "16.26.1",
     "tslib": "^2.9.1",
     "typescript": "~6.0.3",
     "typescript-eslint": "^8.72.1",

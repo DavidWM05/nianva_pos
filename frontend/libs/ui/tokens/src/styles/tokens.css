@@ -39,6 +39,7 @@
   --nv-spacing-12: 3rem;
   --nv-spacing-16: 4rem;
   --nv-font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --nv-font-family-mono: monospace;
   --nv-font-size-xs: 0.75rem;
   --nv-font-size-sm: 0.8125rem;
   --nv-font-size-base: 0.875rem;
@@ -58,6 +59,7 @@
   --nv-shadow-sm: 0 1px 2px 0 rgb(15 23 42 / 0.08);
   --nv-shadow-md: 0 4px 12px 0 rgb(15 23 42 / 0.12);
   --nv-shadow-lg: 0 12px 32px 0 rgb(15 23 42 / 0.18);
+  --nv-shadow-tarjeta: 0 1px 3px rgb(0 0 0 / 10%);
   --nv-z-dropdown: 1000;
   --nv-z-sticky: 1020;
   --nv-z-overlay: 1030;
