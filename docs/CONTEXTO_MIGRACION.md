@@ -726,6 +726,31 @@ repo.
     - el generador del QR entra por el token `GENERAR_QR`, para poder simularlo;
     - no se agregó CSS: la línea base sigue en 3374;
   - frontend: ui-feedback 20, pos 461 tests; reglas propias 19; los mismos warnings.
+- **Interceptor global de errores** (encargo 41c, hecho por DS):
+  - **alcance, medido antes de decidir:** 83 `toast.error` en 56 archivos, casi todos con un
+    texto fijo ante cualquier error, y 144 bloques `error:` en 84 archivos. El interceptor
+    se queda con los errores técnicos; los 4xx de negocio y de validación siguen en cada
+    pantalla hasta la migración;
+  - **`erroresInterceptor`** (`core/`, el último en `withInterceptors`):
+    - sin conexión (`status 0`), 403 y 5xx → un toast con
+      `ToastService.errorTecnico()`; en 5xx incluye el `correlation_id` como "Código de
+      soporte" (SEG-11);
+    - 401, 419 y los demás 4xx no se tocan, y el error siempre llega al que llamó;
+  - **un solo toast (UI-13):** durante 1.5 s después de un error técnico, `ToastService`
+    descarta los `error()` de la pantalla, así que los 56 archivos con su propio toast no
+    duplican el mensaje;
+  - **`ERROR_EN_PANTALLA`** marca las peticiones de las pantallas que muestran el error en
+    la página: reset de contraseña, verificación y configuración del 2FA, cambio de
+    contraseña y desactivar el 2FA de un usuario;
+  - **ajustado en la revisión:**
+    - DS había marcado también `UsuarioAdminService.actualizar`, pero esa pantalla solo
+      muestra un toast genérico, así que un 500 habría perdido su `correlation_id`. Se le
+      quitó la marca;
+    - se restauraron los comentarios de `AuthService` y `SeguridadService` que DS había
+      borrado;
+  - **verificación por mutación:** quitar la ventana de descarte o ignorar la marca hace
+    fallar sus tests;
+  - frontend: ui-feedback 24, pos 467 tests.
 - **Pendientes detectados:**
   - `FORMATO_REGIONAL` aún no lee la configuración del tenant (`moneda`, `zona_horaria`). Si
     `moneda` es un código como `USD`, `dinero` da `USD1,250.50`, sin espacio. Se resuelve al
@@ -816,7 +841,9 @@ repo.
         "Cargando…" literal (UI-06, UI-13, UI-18), con el QR del 2FA como primer uso~~,
         hecho;
       - ~~41b: 401 en todas las pestañas y reintento ante 419 (SEG-06)~~, hecho;
-      - 41c: interceptor global de errores sobre el toast (ARQ-12, UI-13);
+      - ~~41c: interceptor global de errores sobre el toast (ARQ-12, UI-13)~~, hecho para
+        los errores técnicos. Los 4xx de negocio pasan al interceptor con la migración de
+        pantallas;
    6. `ui/layout` y `ui/actions`: shell, `ui-page-header`, registro de navegación,
       `ui-btn-crear` y `ui-row-actions` (UI-07, UI-08); estado de carga y error de `ui-page`
       (UI-18);
