@@ -1,0 +1,17 @@
+.ui-empty {
+  display: grid;
+  justify-items: center;
+  gap: var(--nv-spacing-2);
+  padding: var(--nv-spacing-8) var(--nv-spacing-4);
+  color: var(--nv-texto-suave);
+  text-align: center;
+}
+
+.ui-empty i {
+  color: var(--nv-texto-suave);
+  font-size: var(--nv-font-size-2xl);
+}
+
+.ui-empty p {
+  margin: 0;
+}
