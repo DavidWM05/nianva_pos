@@ -79,11 +79,11 @@ línea base de PHPStan; se paga al tocar cada módulo.
 | SEG-04 | Sin HTML sin escapar | Parcial | ESLint: regla propia `nianva/no-inner-html` (test en `tools/eslint-rules`, paso de CI "Probar reglas de lint propias"), `no-restricted-syntax` para `bypassSecurityTrust*` y `@angular-eslint/template/no-inline-styles`. **Excepción temporal:** `allowBindToStyle` permite los 22 `[style]` de `p-dialog` hasta que `ui-modal` los reemplace. Falta el e2e con un producto `<img src=x onerror=…>` (con Playwright) | 37 |
 | SEG-06 | Sesión y CSRF | Pendiente | — | — |
 | SEG-12 | Componente de PIN | Pendiente | — | — |
-| PRO-05 | stylelint | Pendiente | — | — |
-| UI-01 | Solo tokens | Parcial | `libs/ui/tokens`: una fuente (`tokens.json`) de la que salen las variables CSS, el preset de PrimeNG y los breakpoints, con su `--check` en CI. Faltan stylelint (encargo 39) y la migración de las pantallas a los semánticos `--nv-*` | 38 |
+| PRO-05 | stylelint | Hecho | stylelint bloqueante en CI (`frontend/stylelint.config.mjs`) con las reglas de UI-01 y UI-04 | 39 |
+| UI-01 | Solo tokens | Parcial | `libs/ui/tokens`: una fuente (`tokens.json`) de la que salen las variables CSS, el preset de PrimeNG y los breakpoints, con su `--check` en CI; stylelint bloquea colores literales y `font-family` fuera de tokens. Faltan la regla de ESLint en plantillas (encargo 40) y la migración de las pantallas a los semánticos `--nv-*` | 38, 39 |
 | UI-02 | Componentes, no fragmentos | Pendiente | — | — |
 | UI-03 | Claro y oscuro | Parcial | Semánticos en claro y oscuro; `tokens-contrast.spec.ts` exige 4.5:1 en los pares de texto de ambos temas; `TemaService` aplica `.nv-tema-oscuro`. Por defecto queda en claro y sin interruptor hasta migrar las pantallas; faltan el catálogo y la regresión visual | 38 |
-| UI-04 | Responsivo en el componente | Parcial | Breakpoints únicos en `tokens.json` (`breakpoints.ts`); faltan stylelint sin `@media` en pantallas y los componentes responsivos | 38 |
+| UI-04 | Responsivo en el componente | Parcial | Breakpoints únicos en `tokens.json` (`breakpoints.ts`); stylelint bloquea `@media` en `apps/**` y `feature/**`. Faltan los componentes responsivos, el catálogo a 375, 768 y 1280 px y el e2e de venta a 375 px | 38, 39 |
 | UI-05 | Formato solo por pipes | Pendiente | — | — |
 | UI-06 | Estados con un registro global | Pendiente | — | — |
 | UI-07 | Acciones | Pendiente | — | — |
@@ -94,7 +94,7 @@ línea base de PHPStan; se paga al tocar cada módulo.
 | UI-13 | Mensajes | Pendiente | — | — |
 | UI-14 | Catálogo visual | Pendiente | — | — |
 | UI-15 | Texto por interpolación | Hecho | Por SEG-04: `nianva/no-inner-html` impide pintar texto como HTML; queda la interpolación | 37 |
-| UI-16 | CSS por pantalla en línea base | Pendiente | — | — |
+| UI-16 | CSS por pantalla en línea base | Hecho | `tools/ui-baseline.mjs --check` en CI contra `frontend/ui-baseline.json` (3374 líneas en 112 archivos), que solo baja y está en CODEOWNERS | 39 |
 | UI-17 | Accesibilidad mínima | Pendiente | — | — |
 | UI-18 | Estados de carga | Pendiente | — | — |
 

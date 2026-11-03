@@ -621,7 +621,36 @@ repo.
     acceso a `localStorage` está protegido para modo privado;
   - **retiro:** se eliminó `libs/design-tokens`;
   - frontend: ui-tokens 16, ui-shared 22 y pos 444 tests; los mismos warnings de lint.
+- **stylelint y línea base del CSS por pantalla** (trigésimo noveno encargo, hecho por DS):
+  - **stylelint 16.26.1** con `postcss-scss`, en CI (paso "Revisar estilos con stylelint"):
+    sin hex, colores con nombre, `rgb()`/`hsl()` ni `font-family` que no sea un token
+    `--nv-font-family*`; sin `@media` en `apps/**` y `feature/**`. Solo `libs/ui/tokens` queda
+    exenta;
+  - **las 9 violaciones de hoy**, corregidas sin cambiar la apariencia:
+    - 6 `white` dentro de `color-mix()` (en `auth-page` y en el `status-badge` de
+      `ui-shared`) pasan a `--nv-color-surface-0`, un primitivo `#ffffff` que no cambia en
+      tema oscuro;
+    - el `monospace` de los códigos de recuperación pasa a un primitivo nuevo,
+      `--nv-font-family-mono`;
+    - la sombra de la tarjeta de login pasa a otro primitivo nuevo, `--nv-shadow-tarjeta`, con
+      el mismo valor;
+    - en `styles.scss`, el `font-family` cambia del alias `--nucleo-*` a su `--nv-*`;
+  - **`tools/ui-baseline.mjs`:**
+    - cuenta las líneas no vacías de cada `.scss`/`.css` y de los estilos inline de
+      componentes en `apps/**` y `feature/**`, y las compara con `frontend/ui-baseline.json`
+      (3374 líneas en 112 archivos);
+    - `--check` falla si un archivo es nuevo, si sube o si baja sin actualizar la línea base;
+    - `--actualizar` solo acepta bajadas;
+    - el archivo está en CODEOWNERS;
+    - **corregido en la revisión:** los estilos inline escritos como cadena (`` styles: `…` ``)
+      no se contaban. Ahora sí, y se probó con un componente temporal;
+  - las reglas y el script se probaron fallando y pasando con archivos temporales;
+  - frontend: ui-tokens 18 (2 nuevos), ui-shared 22 y pos 444 tests; los mismos warnings. La
+    vulnerabilidad moderada de `pnpm audit` (`minimatch`, vía `@nx/*`) ya existía.
 - **Pendientes detectados:**
+  - las libs de feature aún no existen. Los patrones `feature/**` de `stylelint.config.mjs` y
+    de `ui-baseline.mjs` apuntan a `frontend/feature/`. Al crear la primera, se ajustan a su
+    ruta real;
   - `Produccion` usa `UnidadMedida` (extensión → extensión); las unidades se rediseñan en la
     Fase 3 (DAT-01);
   - permisos de acción distinta que son intencionales: `desactivar` con `.eliminar` y los
@@ -693,10 +722,11 @@ repo.
    2. ~~`ui/tokens`: un JSON del que salen las variables CSS, el preset de PrimeNG y los
       breakpoints; tema oscuro; test de contraste (UI-01, UI-03, UI-04)~~, hecho en el
       encargo 38;
-   3. stylelint bloqueante y `ui-baseline.json` del CSS por pantalla, que solo baja (PRO-05,
-      UI-16);
+   3. ~~stylelint bloqueante y `ui-baseline.json` del CSS por pantalla, que solo baja (PRO-05,
+      UI-16)~~, hecho en el encargo 39;
    4. `ui/format`: pipes de dinero, cantidad, fecha, fecha y hora, y porcentaje, más la regla de
-      ESLint de plantillas (UI-05);
+      ESLint de plantillas (UI-05) y la de colores literales y clases de color fijo en
+      plantillas (UI-01);
    5. `ui/feedback`: registro de estados, badge, toast único, interceptor global de errores y el
       de 401 y CSRF (UI-06, UI-13, ARQ-12, SEG-06); `ui-skeleton` y la regla de lint sin
       "Cargando…" literal (UI-18). Primer consumidor: el QR de la configuración del 2FA,
