@@ -55,13 +55,11 @@ export const appRoutes: Route[] = [
       { path: '', pathMatch: 'full', redirectTo: 'nucleo' },
       {
         path: 'nucleo',
-        title: 'Núcleo · Inicio',
         data: { breadcrumb: 'Inicio' },
         loadComponent: () => import('./modules/nucleo/pages/inicio/inicio.component').then((m) => m.InicioComponent),
       },
       {
         path: 'metodos-pago',
-        title: 'Núcleo · Métodos de pago',
         data: { breadcrumb: 'Métodos de pago' },
         loadComponent: () =>
           import('./modules/administracion/pages/metodos-pago-list/metodos-pago-list.component').then(
@@ -90,7 +88,6 @@ export const appRoutes: Route[] = [
       },
       {
         path: 'usuarios',
-        title: 'Núcleo · Usuarios',
         data: { breadcrumb: 'Usuarios' },
         loadComponent: () =>
           import('./modules/administracion/pages/usuarios-list/usuarios-list.component').then(
@@ -119,7 +116,6 @@ export const appRoutes: Route[] = [
       },
       {
         path: 'roles',
-        title: 'Núcleo · Roles',
         data: { breadcrumb: 'Roles' },
         loadComponent: () =>
           import('./modules/administracion/pages/roles-list/roles-list.component').then((m) => m.RolesListComponent),
@@ -141,7 +137,6 @@ export const appRoutes: Route[] = [
       },
       {
         path: 'auditoria',
-        title: 'Núcleo · Auditoría',
         data: { breadcrumb: 'Auditoría' },
         loadComponent: () =>
           import('./modules/auditoria/pages/auditoria-global/auditoria-global.component').then(
@@ -155,7 +150,6 @@ export const appRoutes: Route[] = [
           { path: '', pathMatch: 'full', redirectTo: 'productos' },
           {
             path: 'productos',
-            title: 'Núcleo · Productos',
             data: { breadcrumb: 'Productos' },
             loadComponent: () =>
               import('./modules/inventario/pages/productos-list/productos-list.component').then(
@@ -184,7 +178,6 @@ export const appRoutes: Route[] = [
           },
           {
             path: 'categorias',
-            title: 'Núcleo · Categorías',
             data: { breadcrumb: 'Categorías' },
             loadComponent: () =>
               import('./modules/inventario/pages/categorias-list/categorias-list.component').then(
@@ -212,7 +205,6 @@ export const appRoutes: Route[] = [
           },
           {
             path: 'departamentos',
-            title: 'Núcleo · Departamentos',
             data: { breadcrumb: 'Departamentos' },
             loadComponent: () =>
               import('./modules/inventario/pages/departamentos-list/departamentos-list.component').then(
@@ -246,7 +238,6 @@ export const appRoutes: Route[] = [
         children: [
           {
             path: '',
-            title: 'Núcleo · Precios y promociones',
             loadComponent: () =>
               import('./modules/precios/pages/precios/precios.component').then((m) => m.PreciosComponent),
           },
@@ -294,7 +285,6 @@ export const appRoutes: Route[] = [
           { path: '', pathMatch: 'full', redirectTo: 'clientes' },
           {
             path: 'clientes',
-            title: 'Núcleo · Clientes',
             data: { breadcrumb: 'Clientes' },
             loadComponent: () =>
               import('./modules/crm/pages/clientes-list/clientes-list.component').then((m) => m.ClientesListComponent),
@@ -326,19 +316,16 @@ export const appRoutes: Route[] = [
           { path: '', pathMatch: 'full', redirectTo: 'venta' },
           {
             path: 'venta',
-            title: 'Núcleo · Venta',
             data: { breadcrumb: 'Venta' },
             loadComponent: () => import('./modules/tpv/pages/venta/venta.component').then((m) => m.VentaComponent),
           },
           {
             path: 'caja',
-            title: 'Núcleo · Caja',
             data: { breadcrumb: 'Caja' },
             loadComponent: () => import('./modules/tpv/pages/caja/caja.component').then((m) => m.CajaComponent),
           },
           {
             path: 'ventas',
-            title: 'Núcleo · Ventas',
             data: { breadcrumb: 'Ventas' },
             loadComponent: () =>
               import('./modules/tpv/pages/ventas-list/ventas-list.component').then((m) => m.VentasListComponent),
@@ -359,7 +346,6 @@ export const appRoutes: Route[] = [
           {
             path: '',
             pathMatch: 'full',
-            title: 'Núcleo · Apartados',
             loadComponent: () =>
               import('./modules/apartados/pages/apartados-list/apartados-list.component').then(
                 (m) => m.ApartadosListComponent,
@@ -392,7 +378,6 @@ export const appRoutes: Route[] = [
           {
             path: '',
             pathMatch: 'full',
-            title: 'Núcleo · Devoluciones',
             loadComponent: () =>
               import('./modules/devoluciones/pages/devoluciones-list/devoluciones-list.component').then(
                 (m) => m.DevolucionesListComponent,
@@ -438,7 +423,6 @@ export const appRoutes: Route[] = [
           {
             path: '',
             pathMatch: 'full',
-            title: 'Núcleo · Notas de crédito',
             loadComponent: () =>
               import('./modules/notas-credito/pages/notas-credito-list/notas-credito-list.component').then(
                 (m) => m.NotasCreditoListComponent,
@@ -462,7 +446,6 @@ export const appRoutes: Route[] = [
           {
             path: '',
             pathMatch: 'full',
-            title: 'Núcleo · Gift cards',
             loadComponent: () =>
               import('./modules/gift-cards/pages/gift-cards-list/gift-cards-list.component').then(
                 (m) => m.GiftCardsListComponent,
@@ -498,7 +481,6 @@ export const appRoutes: Route[] = [
           {
             path: '',
             pathMatch: 'full',
-            title: 'Núcleo · Cuentas por cobrar',
             loadComponent: () =>
               import('./modules/cuentas-cobrar/pages/cuentas-cobrar-list/cuentas-cobrar-list.component').then(
                 (m) => m.CuentasCobrarListComponent,
@@ -524,7 +506,6 @@ export const appRoutes: Route[] = [
           {
             path: '',
             pathMatch: 'full',
-            title: 'Núcleo · Cuentas por pagar',
             loadComponent: () =>
               import('./modules/cuentas-pagar/pages/cuentas-pagar-list/cuentas-pagar-list.component').then(
                 (m) => m.CuentasPagarListComponent,
@@ -548,7 +529,6 @@ export const appRoutes: Route[] = [
           {
             path: '',
             pathMatch: 'full',
-            title: 'Núcleo · Préstamos',
             loadComponent: () =>
               import('./modules/prestamos/pages/prestamos-list/prestamos-list.component').then(
                 (m) => m.PrestamosListComponent,
@@ -581,7 +561,6 @@ export const appRoutes: Route[] = [
           {
             path: 'empleados',
             pathMatch: 'full',
-            title: 'Núcleo · Empleados',
             data: { breadcrumb: 'Empleados' },
             loadComponent: () =>
               import('./modules/payroll/pages/empleados-list/empleados-list.component').then(
@@ -600,7 +579,6 @@ export const appRoutes: Route[] = [
           {
             path: 'nominas',
             pathMatch: 'full',
-            title: 'Núcleo · Nóminas',
             data: { breadcrumb: 'Nóminas' },
             loadComponent: () =>
               import('./modules/payroll/pages/nominas-list/nominas-list.component').then(
@@ -625,7 +603,6 @@ export const appRoutes: Route[] = [
           {
             path: '',
             pathMatch: 'full',
-            title: 'Núcleo · Pedidos',
             loadComponent: () =>
               import('./modules/delivery/pages/pedidos-list/pedidos-list.component').then(
                 (m) => m.PedidosListComponent,
@@ -658,7 +635,6 @@ export const appRoutes: Route[] = [
           {
             path: 'insumos',
             pathMatch: 'full',
-            title: 'Núcleo · Insumos',
             data: { breadcrumb: 'Insumos' },
             loadComponent: () =>
               import('./modules/produccion/pages/insumos-list/insumos-list.component').then(
@@ -668,7 +644,6 @@ export const appRoutes: Route[] = [
           {
             path: 'recetas',
             pathMatch: 'full',
-            title: 'Núcleo · Recetas',
             data: { breadcrumb: 'Recetas' },
             loadComponent: () =>
               import('./modules/produccion/pages/recetas-list/recetas-list.component').then(
@@ -687,7 +662,6 @@ export const appRoutes: Route[] = [
           {
             path: 'ordenes',
             pathMatch: 'full',
-            title: 'Núcleo · Órdenes de producción',
             data: { breadcrumb: 'Órdenes de producción' },
             loadComponent: () =>
               import('./modules/produccion/pages/ordenes-list/ordenes-list.component').then(
@@ -697,7 +671,6 @@ export const appRoutes: Route[] = [
           {
             path: 'transformaciones',
             pathMatch: 'full',
-            title: 'Núcleo · Transformaciones',
             data: { breadcrumb: 'Transformaciones' },
             loadComponent: () =>
               import('./modules/produccion/pages/transformaciones-list/transformaciones-list.component').then(
@@ -722,7 +695,6 @@ export const appRoutes: Route[] = [
           {
             path: '',
             pathMatch: 'full',
-            title: 'Núcleo · Ventas a plazos',
             loadComponent: () =>
               import('./modules/ventas-plazos/pages/planes-pago-list/planes-pago-list.component').then(
                 (m) => m.PlanesPagoListComponent,
@@ -752,7 +724,6 @@ export const appRoutes: Route[] = [
       {
         // Sin lista (ver el docblock de CampanaService) -- solo alta.
         path: 'crm/campanas/nueva',
-        title: 'Núcleo · Nueva campaña',
         data: { breadcrumb: 'Nueva campaña' },
         loadComponent: () =>
           import('./modules/crm/pages/campana-form/campana-form.component').then((m) => m.CampanaFormComponent),
@@ -764,7 +735,6 @@ export const appRoutes: Route[] = [
           {
             path: '',
             pathMatch: 'full',
-            title: 'Núcleo · Cotizaciones',
             loadComponent: () =>
               import('./modules/cotizaciones/pages/cotizaciones-list/cotizaciones-list.component').then(
                 (m) => m.CotizacionesListComponent,
@@ -806,7 +776,6 @@ export const appRoutes: Route[] = [
         children: [
           {
             path: 'cuentas-cobrar',
-            title: 'Núcleo · Reporte de Cuentas por cobrar',
             data: { breadcrumb: 'Cuentas por cobrar' },
             loadComponent: () =>
               import('./modules/reportes/pages/reporte-cuentas-cobrar/reporte-cuentas-cobrar.component').then(
@@ -815,7 +784,6 @@ export const appRoutes: Route[] = [
           },
           {
             path: 'cuentas-pagar',
-            title: 'Núcleo · Reporte de Cuentas por pagar',
             data: { breadcrumb: 'Cuentas por pagar' },
             loadComponent: () =>
               import('./modules/reportes/pages/reporte-cuentas-pagar/reporte-cuentas-pagar.component').then(
@@ -824,7 +792,6 @@ export const appRoutes: Route[] = [
           },
           {
             path: 'crm',
-            title: 'Núcleo · Reporte de CRM',
             data: { breadcrumb: 'CRM' },
             loadComponent: () =>
               import('./modules/reportes/pages/reporte-crm/reporte-crm.component').then(
@@ -833,7 +800,6 @@ export const appRoutes: Route[] = [
           },
           {
             path: 'ventas',
-            title: 'Núcleo · Reporte de Ventas',
             data: { breadcrumb: 'Ventas' },
             loadComponent: () =>
               import('./modules/reportes/pages/reporte-ventas/reporte-ventas.component').then(
@@ -844,7 +810,6 @@ export const appRoutes: Route[] = [
       },
       {
         path: 'unidades-medida',
-        title: 'Núcleo · Unidades de medida',
         data: { breadcrumb: 'Unidades de medida' },
         loadComponent: () =>
           import('./modules/unidades-medida/pages/unidades-medida-list/unidades-medida-list.component').then(
@@ -853,7 +818,6 @@ export const appRoutes: Route[] = [
       },
       {
         path: 'configuracion',
-        title: 'Núcleo · Configuración',
         data: { breadcrumb: 'Configuración' },
         loadComponent: () =>
           import('./modules/configuracion/pages/configuracion/configuracion.component').then(
@@ -862,7 +826,6 @@ export const appRoutes: Route[] = [
       },
       {
         path: 'perfil/preferencias',
-        title: 'Núcleo · Preferencias',
         data: { breadcrumb: 'Preferencias' },
         loadComponent: () =>
           import('./perfil/pages/preferencias/preferencias.component').then((m) => m.PreferenciasComponent),

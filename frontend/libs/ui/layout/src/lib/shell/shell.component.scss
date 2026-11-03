@@ -1,0 +1,86 @@
+:host {
+  display: block;
+  height: 100vh;
+}
+
+.ui-shell {
+  display: flex;
+  height: 100%;
+}
+
+.ui-shell__menu {
+  flex: none;
+  height: 100%;
+}
+
+.ui-shell__principal {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+}
+
+.ui-shell__encabezado {
+  display: flex;
+  align-items: center;
+  gap: var(--nv-spacing-3);
+  padding: var(--nv-spacing-3) var(--nv-spacing-6);
+  border-bottom: 1px solid var(--nv-borde);
+  background: var(--nv-superficie);
+}
+
+.ui-shell__contenido {
+  flex: 1;
+  overflow-y: auto;
+}
+
+.ui-shell__abrir {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border: 0;
+  border-radius: var(--nv-radius-md);
+  background: transparent;
+  color: var(--nv-texto);
+  cursor: pointer;
+
+  &:focus-visible {
+    outline: 2px solid var(--nv-foco);
+    outline-offset: 2px;
+  }
+}
+
+// Pantalla angosta: el menu sale del flujo y se abre como panel.
+.ui-shell--angosta {
+  .ui-shell__encabezado {
+    padding: var(--nv-spacing-2) var(--nv-spacing-4);
+  }
+
+  .ui-shell__menu {
+    position: fixed;
+    inset: 0 auto 0 0;
+    z-index: var(--nv-z-overlay);
+    transform: translateX(-100%);
+    transition: transform 0.2s ease-in-out;
+    box-shadow: var(--nv-shadow-lg);
+  }
+
+  .ui-shell__menu--abierto {
+    transform: translateX(0);
+  }
+}
+
+.ui-shell__velo {
+  position: fixed;
+  inset: 0;
+  z-index: calc(var(--nv-z-overlay) - 1);
+  background: color-mix(in srgb, var(--nv-texto) 40%, transparent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ui-shell__menu {
+    transition: none;
+  }
+}

@@ -1,16 +1,18 @@
-<aside class="sidebar" [class.sidebar--collapsed]="collapsed()">
+<aside class="sidebar" [class.sidebar--collapsed]="colapsado()">
   <div class="sidebar__header">
-    @if (!collapsed()) {
+    @if (!colapsado()) {
       <span class="sidebar__brand">Núcleo</span>
     }
-    <p-button
-      [icon]="collapsed() ? 'pi pi-angle-right' : 'pi pi-angle-left'"
-      [text]="true"
-      [rounded]="true"
-      size="small"
-      (click)="toggleCollapsed()"
-      [attr.aria-label]="collapsed() ? 'Expandir menu' : 'Colapsar menu'"
-    />
+    @if (!angosta()) {
+      <p-button
+        [icon]="colapsado() ? 'pi pi-angle-right' : 'pi pi-angle-left'"
+        [text]="true"
+        [rounded]="true"
+        size="small"
+        (click)="toggleCollapsed()"
+        [attr.aria-label]="colapsado() ? 'Expandir menu' : 'Colapsar menu'"
+      />
+    }
   </div>
 
   <!-- Inicio: fuera de cualquier grupo a proposito, primer item (ver el reporte). -->
@@ -22,7 +24,7 @@
       [title]="itemInicio.label"
     >
       <i [class]="itemInicio.icon"></i>
-      @if (!collapsed()) {
+      @if (!colapsado()) {
         <span>{{ itemInicio.label }}</span>
       }
     </a>
@@ -37,7 +39,7 @@
           (click)="toggleGroup(grupo.key)"
           [attr.aria-expanded]="grupoExpandido(grupo.key)"
         >
-          @if (!collapsed()) {
+          @if (!colapsado()) {
             <span>{{ grupo.label }}</span>
             <i class="pi" [class.pi-chevron-down]="grupoExpandido(grupo.key)" [class.pi-chevron-right]="!grupoExpandido(grupo.key)"></i>
           } @else {
@@ -45,7 +47,7 @@
           }
         </button>
 
-        @if (grupoExpandido(grupo.key) || collapsed()) {
+        @if (grupoExpandido(grupo.key) || colapsado()) {
           @for (item of grupo.items; track item.key) {
             @if (item.separadorAntes) {
               <div class="sidebar__separador"></div>
@@ -57,7 +59,7 @@
               [title]="item.label"
             >
               <i [class]="item.icon"></i>
-              @if (!collapsed()) {
+              @if (!colapsado()) {
                 <span>{{ item.label }}</span>
               }
             </a>
@@ -76,7 +78,7 @@
       title="Demo: vista de registro"
     >
       <i class="pi pi-sparkles"></i>
-      @if (!collapsed()) {
+      @if (!colapsado()) {
         <span>Demo: vista de registro</span>
       }
     </a>

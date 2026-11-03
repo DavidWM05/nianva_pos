@@ -1,5 +1,5 @@
 {
-  "total": 3374,
+  "total": 3351,
   "archivos": {
     "apps/pos/src/app/app.scss": 4,
     "apps/pos/src/app/auth/auth-page.scss": 55,
@@ -110,7 +110,6 @@
     "apps/pos/src/app/perfil/cambiar-password-form/cambiar-password-form.component.scss": 8,
     "apps/pos/src/app/perfil/dispositivos-confiables-list/dispositivos-confiables-list.component.scss": 58,
     "apps/pos/src/app/perfil/pages/preferencias/preferencias.component.scss": 33,
-    "apps/pos/src/app/shell/shell-layout/shell-layout.component.scss": 23,
     "apps/pos/src/app/shell/sidebar/sidebar.component.scss": 86,
     "apps/pos/src/styles.scss": 16
   }
