@@ -52,12 +52,12 @@ export const NUCLEO_NAV_GROUPS: NucleoNavGroup[] = [
     key: 'catalogo',
     label: 'Catálogo',
     items: [
-      { key: 'inventario', label: 'Productos', path: 'inventario', icon: 'pi pi-box' },
+      { key: 'inventario', label: 'Productos', path: 'inventario/productos', icon: 'pi pi-box' },
       { key: 'categorias', label: 'Categorías', path: 'inventario/categorias', icon: 'pi pi-sitemap' },
       { key: 'departamentos', label: 'Departamentos', path: 'inventario/departamentos', icon: 'pi pi-building' },
       { key: 'unidades-medida', label: 'Unidades de medida', path: 'unidades-medida', icon: 'pi pi-arrows-h' },
       { key: 'precios', label: 'Precios y promociones', path: 'precios', icon: 'pi pi-tags' },
-      { key: 'crm', label: 'Clientes', path: 'crm', icon: 'pi pi-users' },
+      { key: 'crm', label: 'Clientes', path: 'crm/clientes', icon: 'pi pi-users' },
       {
         // Sin lista propia (ver el docblock de CampanaService) -- el link va directo al alta.
         key: 'crm-campanas',

@@ -1,5 +1,6 @@
-import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
+import { PantallaService } from '@nianva/ui-layout';
 import { Button } from 'primeng/button';
 
 import { NUCLEO_ITEM_INICIO, NUCLEO_NAV_GROUPS } from '../../modules/modules.config';
@@ -24,6 +25,9 @@ export class SidebarComponent {
   protected readonly itemInicio = NUCLEO_ITEM_INICIO;
   protected readonly groups = NUCLEO_NAV_GROUPS;
   protected readonly collapsed = signal(false);
+  /** En pantalla angosta el menu es un panel de ui-shell: se ve siempre completo y sin colapsar. */
+  protected readonly angosta = inject(PantallaService).angosta;
+  protected readonly colapsado = computed(() => this.collapsed() && !this.angosta());
 
   /**
    * El grupo que contiene la ruta activa arranca expandido -- el resto

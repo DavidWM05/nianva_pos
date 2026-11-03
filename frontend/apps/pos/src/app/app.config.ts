@@ -1,12 +1,12 @@
 import { provideHttpClient, withFetch, withInterceptors } from '@angular/common/http';
 import { ApplicationConfig, inject, provideAppInitializer, provideBrowserGlobalErrorListeners } from '@angular/core';
-import { provideRouter } from '@angular/router';
+import { TitleStrategy, provideRouter } from '@angular/router';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { providePrimeNG } from 'primeng/config';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { nucleoPreset } from '@nianva/ui-tokens';
 import { provideFormatoRegional } from '@nianva/ui-format';
-import { REGISTRO_NAVEGACION } from '@nianva/ui-layout';
+import { REGISTRO_NAVEGACION, TituloDesdeRegistro } from '@nianva/ui-layout';
 import { AuditLogSource } from '@nianva/ui-shared';
 import { appRoutes } from './app.routes';
 import { authInterceptor } from './auth/auth.interceptor';
@@ -47,6 +47,8 @@ export const appConfig: ApplicationConfig = {
     // ui-page-header y el menu toman los nombres de aqui (UI-08).
     { provide: REGISTRO_NAVEGACION, useValue: REGISTRO_NAVEGACION_POS },
     provideRouter(appRoutes),
+    // El titulo de la pestaña de una pantalla del menu sale del registro, no de su ruta.
+    { provide: TitleStrategy, useClass: TituloDesdeRegistro },
     provideAnimationsAsync(),
     ConfirmationService,
     MessageService,
