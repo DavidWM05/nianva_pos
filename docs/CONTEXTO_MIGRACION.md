@@ -751,6 +751,26 @@ repo.
   - **verificación por mutación:** quitar la ventana de descarte o ignorar la marca hace
     fallar sus tests;
   - frontend: ui-feedback 24, pos 467 tests.
+- **`ui/actions`: crear, exportar y acciones por fila** (encargo 42a, hecho por DS en
+  paralelo con el 42b):
+  - **lib nueva `libs/ui/actions`** (`@nianva/ui-actions`, `type:ui`):
+    - `ui-btn-crear`: "Nuevo/Nueva <objeto>", con `ruta` o la salida `(crear)`;
+    - `ui-btn-exportar`: "Exportar", con un indicador por `conUmbral()`;
+    - `ui-row-actions`: las acciones son solo de icono, porque el tipado no acepta texto;
+      `descripcion`, en las propias, va solo en `title` y `aria-label`;
+  - **orden y apariencia de `ui-row-actions`:**
+    - el componente fija el orden: ver, editar, imprimir, historial, las propias, estado,
+      eliminar y anular. También fija los iconos y el tono, que es de peligro en eliminar y
+      anular;
+    - con más de 3 acciones se muestran 2 y el resto va en un menú ⋮;
+    - una acción deshabilitada muestra su motivo en el tooltip y en el `aria-label`, y no
+      emite nada;
+  - **verificación por mutación, en la revisión:**
+    - si el tipo admite una `etiqueta`, la compilación falla (TS2578 del
+      `@ts-expect-error`);
+    - si se altera el orden, fallan el test de orden y el de salida;
+  - DS no mostró los tests fallando antes de implementar;
+  - ui-actions: 15 tests.
 - **Pendientes detectados:**
   - `FORMATO_REGIONAL` aún no lee la configuración del tenant (`moneda`, `zona_horaria`). Si
     `moneda` es un código como `USD`, `dinero` da `USD1,250.50`, sin espacio. Se resuelve al
