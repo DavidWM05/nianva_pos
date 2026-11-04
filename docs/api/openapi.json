@@ -14808,7 +14808,9 @@
                     },
                     "roles": {
                         "type": "array",
-                        "items": {}
+                        "items": {
+                            "type": "string"
+                        }
                     },
                     "requiere_dos_factor": {
                         "type": "boolean"
