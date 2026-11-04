@@ -7,7 +7,7 @@
   "targets": {
     "e2e": {
       "executor": "nx:run-commands",
-      "dependsOn": ["catalogo-ui:build:production"],
+      "dependsOn": [{ "projects": ["catalogo-ui"], "target": "build" }],
       "options": {
         "command": "pnpm exec playwright test",
         "cwd": "apps/catalogo-ui-e2e"

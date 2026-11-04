@@ -7,7 +7,7 @@
   "targets": {
     "e2e": {
       "executor": "nx:run-commands",
-      "dependsOn": ["pos:build:production"],
+      "dependsOn": [{ "projects": ["pos"], "target": "build" }],
       "options": {
         "command": "pnpm exec playwright test",
         "cwd": "apps/pos-e2e"
