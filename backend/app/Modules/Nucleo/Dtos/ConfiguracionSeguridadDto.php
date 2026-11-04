@@ -7,5 +7,6 @@ final readonly class ConfiguracionSeguridadDto
     public function __construct(
         public int $diasDispositivoNormal,
         public int $diasDispositivoAdmin,
+        public int $minutosInactividad,
     ) {}
 }

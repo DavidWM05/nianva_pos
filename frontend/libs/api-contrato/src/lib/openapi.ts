@@ -2051,6 +2051,7 @@ export interface components {
         ActualizarConfiguracionSeguridadRequest: {
             dias_dispositivo_normal: number;
             dias_dispositivo_admin: number;
+            minutos_inactividad: number;
         };
         /** ActualizarCotizacionRequest */
         ActualizarCotizacionRequest: {
@@ -2201,6 +2202,12 @@ export interface components {
             es_sistema: boolean;
             /** Format: date-time */
             fecha_registro: string;
+        };
+        /** ConfiguracionSeguridadResource */
+        ConfiguracionSeguridadResource: {
+            dias_dispositivo_normal: number;
+            dias_dispositivo_admin: number;
+            minutos_inactividad: number;
         };
         /** ConfiguracionTenantResource */
         ConfiguracionTenantResource: {
@@ -3446,6 +3453,7 @@ export type Categoria = components['schemas']['Categoria'];
 export type CategoriaResource = components['schemas']['CategoriaResource'];
 export type CerrarCajaRequest = components['schemas']['CerrarCajaRequest'];
 export type ClienteResource = components['schemas']['ClienteResource'];
+export type ConfiguracionSeguridadResource = components['schemas']['ConfiguracionSeguridadResource'];
 export type ConfiguracionTenantResource = components['schemas']['ConfiguracionTenantResource'];
 export type ConfirmTwoFactorRequest = components['schemas']['ConfirmTwoFactorRequest'];
 export type ConvertirCotizacionRequest = components['schemas']['ConvertirCotizacionRequest'];
@@ -4329,15 +4337,13 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
+            /** @description `ConfiguracionSeguridadResource` */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        dias_dispositivo_normal: number;
-                        dias_dispositivo_admin: number;
-                    };
+                    "application/json": components["schemas"]["ConfiguracionSeguridadResource"];
                 };
             };
             401: components["responses"]["AuthenticationException"];
@@ -4357,15 +4363,13 @@ export interface operations {
             };
         };
         responses: {
+            /** @description `ConfiguracionSeguridadResource` */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        dias_dispositivo_normal: number;
-                        dias_dispositivo_admin: number;
-                    };
+                    "application/json": components["schemas"]["ConfiguracionSeguridadResource"];
                 };
             };
             401: components["responses"]["AuthenticationException"];

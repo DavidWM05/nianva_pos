@@ -1,8 +1,10 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { ChangeDetectionStrategy, Component, ViewChild, inject, signal } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { Validators } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { DynamicFormComponent, DynamicFormField } from '@nianva/ui-shared';
+import { map } from 'rxjs';
 
 import { AuthStateService } from '../../auth-state.service';
 import { AuthService } from '../../auth.service';
@@ -19,6 +21,7 @@ export class LoginComponent {
   private readonly authService = inject(AuthService);
   private readonly authState = inject(AuthStateService);
   private readonly router = inject(Router);
+  private readonly ruta = inject(ActivatedRoute);
 
   @ViewChild(DynamicFormComponent) private formComponent!: DynamicFormComponent;
 
@@ -29,6 +32,12 @@ export class LoginComponent {
 
   protected readonly enviando = signal(false);
   protected readonly errorGeneral = signal<string | null>(null);
+  // Observable, no snapshot: si otra pestana expira con esta ya en /login, solo cambia el
+  // parametro y Angular reutiliza el componente.
+  protected readonly avisoInactividad = toSignal(
+    this.ruta.queryParamMap.pipe(map((parametros) => parametros.get('aviso') === 'inactividad')),
+    { initialValue: this.ruta.snapshot.queryParamMap.get('aviso') === 'inactividad' },
+  );
 
   onSubmit(value: Record<string, unknown>): void {
     this.enviando.set(true);

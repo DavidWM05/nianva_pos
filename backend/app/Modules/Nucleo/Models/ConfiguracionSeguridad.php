@@ -15,7 +15,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * dispositivo"). Separada de Configuracion\Models\ConfiguracionTenant a
  * proposito -- ver el comentario en la migracion.
  */
-#[Fillable(['tenant_id', 'dias_dispositivo_normal', 'dias_dispositivo_admin'])]
+#[Fillable(['tenant_id', 'dias_dispositivo_normal', 'dias_dispositivo_admin', 'minutos_inactividad'])]
 class ConfiguracionSeguridad extends Model
 {
     use BelongsToTenant;

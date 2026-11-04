@@ -2,6 +2,7 @@
 
 use App\Modules\Nucleo\Exceptions\ExcepcionNegocio;
 use App\Modules\Nucleo\Http\Middleware\CorrelationId;
+use App\Modules\Nucleo\Http\Middleware\ExpirarSesionInactiva;
 use App\Modules\Nucleo\Http\Middleware\ModuloActivo;
 use App\Modules\Nucleo\Http\Middleware\ResolveTenant;
 use App\Modules\Nucleo\Support\MapaErroresHttp;
@@ -37,6 +38,12 @@ return Application::configure(basePath: dirname(__DIR__))
         // tambien -- nadie tiene que acordarse de agregarlo ruta por ruta.
         $middleware->appendToGroup('web', ResolveTenant::class);
         $middleware->appendToGroup('api', ResolveTenant::class);
+
+        // SEG-06: va después de ResolveTenant y de StartSession (web) o de
+        // EnsureFrontendRequestsAreStateful (api), porque necesita el tenant
+        // del usuario y la sesión ya iniciada.
+        $middleware->appendToGroup('web', ExpirarSesionInactiva::class);
+        $middleware->appendToGroup('api', ExpirarSesionInactiva::class);
 
         $middleware->alias(['modulo' => ModuloActivo::class]);
     })

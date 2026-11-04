@@ -3,6 +3,10 @@
     <h1>Núcleo</h1>
     <p class="auth-card__subtitle">Inicia sesión con tu correo y contraseña.</p>
 
+    @if (avisoInactividad()) {
+      <p class="auth-card__error">Tu sesión se cerró por inactividad.</p>
+    }
+
     @if (errorGeneral(); as error) {
       <p class="auth-card__error">{{ error }}</p>
     }

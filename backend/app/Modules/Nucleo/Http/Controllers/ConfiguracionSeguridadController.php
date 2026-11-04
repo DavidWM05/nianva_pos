@@ -4,6 +4,7 @@ namespace App\Modules\Nucleo\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Modules\Nucleo\Http\Requests\ActualizarConfiguracionSeguridadRequest;
+use App\Modules\Nucleo\Http\Resources\ConfiguracionSeguridadResource;
 use App\Modules\Nucleo\Models\ConfiguracionSeguridad;
 use Illuminate\Http\Request;
 
@@ -23,10 +24,7 @@ class ConfiguracionSeguridadController extends Controller
             abort(404, 'No hay un tenant activo.');
         }
 
-        return response()->json([
-            'dias_dispositivo_normal' => $config->dias_dispositivo_normal,
-            'dias_dispositivo_admin' => $config->dias_dispositivo_admin,
-        ]);
+        return response()->json(new ConfiguracionSeguridadResource($config));
     }
 
     public function update(ActualizarConfiguracionSeguridadRequest $request)
@@ -41,11 +39,9 @@ class ConfiguracionSeguridadController extends Controller
         $config->update([
             'dias_dispositivo_normal' => $dto->diasDispositivoNormal,
             'dias_dispositivo_admin' => $dto->diasDispositivoAdmin,
+            'minutos_inactividad' => $dto->minutosInactividad,
         ]);
 
-        return response()->json([
-            'dias_dispositivo_normal' => $config->dias_dispositivo_normal,
-            'dias_dispositivo_admin' => $config->dias_dispositivo_admin,
-        ]);
+        return response()->json(new ConfiguracionSeguridadResource($config));
     }
 }

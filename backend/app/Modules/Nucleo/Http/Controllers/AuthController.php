@@ -3,6 +3,7 @@
 namespace App\Modules\Nucleo\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Modules\Nucleo\Http\Middleware\ExpirarSesionInactiva;
 use App\Modules\Nucleo\Http\Requests\LoginRequest;
 use App\Modules\Nucleo\Http\Resources\UsuarioResource;
 use App\Modules\Nucleo\Models\Tenant;
@@ -104,6 +105,7 @@ class AuthController extends Controller
     {
         Auth::login($usuario);
         $request->session()->regenerate();
+        $request->session()->put(ExpirarSesionInactiva::CLAVE_ULTIMA_ACTIVIDAD, now()->timestamp);
         $usuario->forceFill(['ultimo_login' => now()])->save();
     }
 }

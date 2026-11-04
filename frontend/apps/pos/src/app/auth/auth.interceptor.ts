@@ -1,5 +1,6 @@
 import { HttpErrorResponse, HttpInterceptorFn } from '@angular/common/http';
 import { inject } from '@angular/core';
+import { esErrorNegocio } from '@nianva/ui-shared';
 import { catchError, throwError } from 'rxjs';
 
 import { SesionEntrePestanasService } from './sesion-entre-pestanas.service';
@@ -27,7 +28,8 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
       const esChequeo = CHEQUEOS_DE_SESION.some((ruta) => req.url.endsWith(ruta));
 
       if (error instanceof HttpErrorResponse && error.status === 401 && !esChequeo) {
-        sesion.cerrarSesion();
+        const motivo = esErrorNegocio(error, 'sesion_inactiva') ? 'inactividad' : undefined;
+        sesion.cerrarSesion(motivo);
       }
 
       return throwError(() => error);

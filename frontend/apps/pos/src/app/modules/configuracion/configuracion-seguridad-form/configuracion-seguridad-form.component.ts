@@ -6,6 +6,8 @@ import { ConfiguracionSeguridad } from '../configuracion.types';
 
 const DIAS_MIN = 1;
 const DIAS_MAX = 90;
+const MINUTOS_INACTIVIDAD_MIN = 5;
+const MINUTOS_INACTIVIDAD_MAX = 480;
 
 /**
  * Dias de "recordar este dispositivo" (normal/admin) -- valida en el
@@ -50,13 +52,34 @@ export class ConfiguracionSeguridadFormComponent implements OnChanges {
         validators: [Validators.min(DIAS_MIN), Validators.max(DIAS_MAX)],
       },
     ];
+
+    if (this.valorInicial.minutos_inactividad !== undefined) {
+      this.fields.push({
+        name: 'minutos_inactividad',
+        label: 'Cerrar sesión por inactividad (minutos)',
+        type: 'number',
+        required: true,
+        defaultValue: this.valorInicial.minutos_inactividad,
+        validators: [
+          Validators.min(MINUTOS_INACTIVIDAD_MIN),
+          Validators.max(MINUTOS_INACTIVIDAD_MAX),
+          Validators.pattern(/^\d+$/),
+        ],
+      });
+    }
   }
 
   onSubmit(value: Record<string, unknown>): void {
-    this.guardar.emit({
+    const datos: ConfiguracionSeguridad = {
       dias_dispositivo_normal: Number(value['dias_dispositivo_normal']),
       dias_dispositivo_admin: Number(value['dias_dispositivo_admin']),
-    });
+    };
+
+    if (value['minutos_inactividad'] !== undefined) {
+      datos.minutos_inactividad = Number(value['minutos_inactividad']);
+    }
+
+    this.guardar.emit(datos);
   }
 
   setServerErrors(errors: Record<string, string | string[]>): void {

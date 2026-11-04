@@ -27,6 +27,7 @@ export type ConfiguracionTenantFormPayload = Omit<ConfiguracionTenant, 'backup_u
 export interface ConfiguracionSeguridad {
   dias_dispositivo_normal: number;
   dias_dispositivo_admin: number;
+  minutos_inactividad?: number;
 }
 
 /** Espejo de LicenciaLocalResource. */
