@@ -11,22 +11,22 @@
 }
 
 .ui-badge--exito {
-  background: color-mix(in srgb, var(--nv-exito) 15%, var(--nv-superficie));
+  background: color-mix(in srgb, var(--nv-exito) 5%, var(--nv-superficie));
   color: var(--nv-exito-texto);
 }
 
 .ui-badge--advertencia {
-  background: color-mix(in srgb, var(--nv-advertencia) 15%, var(--nv-superficie));
+  background: color-mix(in srgb, var(--nv-advertencia) 5%, var(--nv-superficie));
   color: var(--nv-advertencia-texto);
 }
 
 .ui-badge--peligro {
-  background: color-mix(in srgb, var(--nv-peligro) 15%, var(--nv-superficie));
+  background: color-mix(in srgb, var(--nv-peligro) 5%, var(--nv-superficie));
   color: var(--nv-peligro-texto);
 }
 
 .ui-badge--info {
-  background: color-mix(in srgb, var(--nv-info) 15%, var(--nv-superficie));
+  background: color-mix(in srgb, var(--nv-info) 5%, var(--nv-superficie));
   color: var(--nv-info-texto);
 }
 

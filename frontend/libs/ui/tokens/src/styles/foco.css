@@ -1,0 +1,8 @@
+/*
+ * Foco visible (UI-17), global para pos y el catalogo. El e2e del catalogo lo comprueba con
+ * Tab; por eso las dos apps cargan esta misma hoja.
+ */
+:focus-visible {
+  outline: 2px solid var(--nv-foco) !important;
+  outline-offset: 2px !important;
+}

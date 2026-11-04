@@ -51,3 +51,11 @@ Thumbs.db
 .angular
 
 __screenshots__/
+# Las capturas de referencia del catalogo se versionan, solo las de Linux (las de CI).
+!apps/catalogo-ui-e2e/src/__screenshots__/
+apps/catalogo-ui-e2e/src/__screenshots__/win32/
+apps/catalogo-ui-e2e/src/__screenshots__/darwin/
+apps/catalogo-ui-e2e/test-results/
+apps/catalogo-ui-e2e/playwright-report/
+test-results/
+playwright-report/

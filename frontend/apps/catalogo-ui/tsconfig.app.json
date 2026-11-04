@@ -1,0 +1,39 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "outDir": "../../dist/out-tsc",
+    "types": []
+  },
+  "files": ["src/main.ts"],
+  "include": ["src/**/*.d.ts", "src/**/*.ts"],
+  "exclude": ["src/**/*.spec.ts"],
+  "references": [
+    {
+      "path": "../../libs/ui/report"
+    },
+    {
+      "path": "../../libs/ui/overlays"
+    },
+    {
+      "path": "../../libs/ui/forms"
+    },
+    {
+      "path": "../../libs/ui/format"
+    },
+    {
+      "path": "../../libs/ui/data"
+    },
+    {
+      "path": "../../libs/ui/actions"
+    },
+    {
+      "path": "../../libs/ui/feedback"
+    },
+    {
+      "path": "../../libs/ui/tokens"
+    },
+    {
+      "path": "../../libs/ui/layout"
+    }
+  ]
+}

@@ -24,7 +24,7 @@
 }
 
 .ui-input-cantidad input:disabled {
-  background: var(--nv-color-surface-100);
+  background: var(--nv-fondo-elevado);
   color: var(--nv-texto-suave);
 }
 
@@ -35,7 +35,7 @@
   border: 1px solid var(--nv-borde);
   border-left: 0;
   border-radius: 0 var(--nv-radius-md) var(--nv-radius-md) 0;
-  background: var(--nv-color-surface-100);
+  background: var(--nv-fondo-elevado);
   color: var(--nv-texto-suave);
   font-size: var(--nv-font-size-sm);
 }

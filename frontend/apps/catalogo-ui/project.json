@@ -1,0 +1,78 @@
+{
+  "name": "catalogo-ui",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "application",
+  "prefix": "cat",
+  "sourceRoot": "apps/catalogo-ui/src",
+  "tags": ["type:app"],
+  "targets": {
+    "build": {
+      "executor": "@angular/build:application",
+      "outputs": ["{options.outputPath}"],
+      "defaultConfiguration": "production",
+      "options": {
+        "outputPath": "dist/apps/catalogo-ui",
+        "browser": "apps/catalogo-ui/src/main.ts",
+        "tsConfig": "apps/catalogo-ui/tsconfig.app.json",
+        "inlineStyleLanguage": "scss",
+        "assets": [
+          {
+            "glob": "**/*",
+            "input": "apps/catalogo-ui/public"
+          }
+        ],
+        "styles": ["libs/ui/tokens/src/styles/tokens.css", "node_modules/primeicons/primeicons.css", "libs/ui/tokens/src/styles/catalogo.css", "libs/ui/tokens/src/styles/foco.css"],
+        "stylePreprocessorOptions": {
+          "includePaths": ["libs/ui/tokens/src/styles"]
+        }
+      },
+      "configurations": {
+        "production": {
+          "budgets": [
+            {
+              "type": "initial",
+              "maximumWarning": "1mb",
+              "maximumError": "2mb"
+            },
+            {
+              "type": "anyComponentStyle",
+              "maximumWarning": "4kb",
+              "maximumError": "8kb"
+            }
+          ],
+          "outputHashing": "all"
+        },
+        "development": {
+          "optimization": false,
+          "extractLicenses": false,
+          "sourceMap": true
+        }
+      }
+    },
+    "serve": {
+      "continuous": true,
+      "executor": "@angular/build:dev-server",
+      "defaultConfiguration": "development",
+      "configurations": {
+        "production": {
+          "buildTarget": "catalogo-ui:build:production"
+        },
+        "development": {
+          "buildTarget": "catalogo-ui:build:development"
+        }
+      }
+    },
+    "serve-static": {
+      "continuous": true,
+      "executor": "@nx/web:file-server",
+      "options": {
+        "buildTarget": "catalogo-ui:build:production",
+        "staticFilePath": "dist/apps/catalogo-ui/browser",
+        "spa": true
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    }
+  }
+}
