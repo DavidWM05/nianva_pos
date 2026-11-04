@@ -51,7 +51,7 @@ interface FilaDemo {
     </ui-section>
 
     <ui-section titulo="Modo tarjeta en celular">
-      <p>ui-tabla aún no implementa el modo tarjeta; en 375 px se revisa el scroll horizontal. Se reporta como variante faltante.</p>
+      <p>Debajo de md, ui-tabla pasa a tarjetas; arriba sigue mostrando la tabla.</p>
     </ui-section>
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,

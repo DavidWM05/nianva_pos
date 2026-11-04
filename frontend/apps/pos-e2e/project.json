@@ -1,0 +1,17 @@
+{
+  "name": "pos-e2e",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/pos-e2e/src",
+  "projectType": "application",
+  "tags": ["type:e2e"],
+  "targets": {
+    "e2e": {
+      "executor": "nx:run-commands",
+      "dependsOn": ["pos:build:production"],
+      "options": {
+        "command": "pnpm exec playwright test",
+        "cwd": "apps/pos-e2e"
+      }
+    }
+  }
+}
