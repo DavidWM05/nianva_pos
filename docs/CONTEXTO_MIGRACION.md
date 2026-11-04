@@ -1110,6 +1110,32 @@ repo.
   - verificado por mutación: sin el modo tarjeta fallan 3 tests unitarios y el e2e de
     `/data` a 375;
   - ui-data 31 tests (6 nuevos); e2e 102 (27 nuevos).
+- **Inactividad de sesión por tenant** (encargo 48b, hecho por DS):
+  - `configuracion_seguridad.minutos_inactividad` (30 por defecto, entre 5 y 480), editable
+    en la configuración de seguridad. Vive en Nucleo, junto a los días de dispositivo
+    confiable, para no sumar dependencias entre módulos;
+  - el middleware `ExpirarSesionInactiva` (grupos `web` y `api`, después de la sesión y de
+    `ResolveTenant`) guarda el instante de la última petición. Si se pasa el límite, cierra la
+    sesión y lanza `SesionInactivaException` (401, `sesion_inactiva`). El superadmin usa
+    30. `AuthController::autenticar()`, que también usa el 2FA, reinicia el plazo;
+  - cierra la sesión quitando la clave del guard y migrando la sesión, no con `logout()`,
+    que en la pila de pruebas devolvía 200. Como no se usa "recordarme" (ningún `remember`),
+    es equivalente;
+  - `SESSION_LIFETIME` sube a 480 para que Laravel no corte antes que el tenant. El frontend
+    no tiene peticiones periódicas que mantengan viva la sesión;
+  - frontend: el interceptor pasa el motivo a `SesionEntrePestanasService`, que lo propaga a
+    las otras pestañas, y el login muestra "Tu sesión se cerró por inactividad." con
+    `?aviso=inactividad`;
+  - **por PRO-01**, el request conserva el valor actual si no llega el campo, porque
+    `TrustedDeviceTest` no lo manda. Por la misma razón, el formulario muestra el campo solo
+    si la configuración lo trae (el GET siempre lo trae);
+  - **corregido en la revisión, con el test primero:** el login leía el aviso del `snapshot`.
+    Si otra pestaña expiraba con esta ya en `/login`, Angular reutilizaba el componente y el
+    aviso no aparecía. Ahora lo lee de `queryParamMap` (`login-aviso-reactivo.spec.ts`);
+  - verificado por mutación: con un límite fijo de 120 fallan 3 tests; si no se renueva el
+    instante, 1;
+  - backend 703 tests (12 nuevos), pos 504 (7 nuevos); la línea base de PHPStan bajó 2
+    entradas.
 - **Pendientes detectados:**
   - el aviso "Invalid PrimeUI License" aparece en toda la app. **Causa (revisada en el 46):**
     PrimeNG 22 trae un verificador de licencia offline (`@primeui/license-manager`);
