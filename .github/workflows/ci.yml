@@ -257,6 +257,14 @@ jobs:
           path: frontend/apps/catalogo-ui-e2e/playwright-report
           retention-days: 7
 
+      # Una captura que existe pero cambio no se reescribe: Playwright deja la nueva en
+      # test-results como *-actual.png. Este paso las reescribe en su lugar para que el
+      # artifact de abajo traiga tambien las que cambiaron. No cambia el resultado del job.
+      - name: Regenerar las capturas que cambiaron si falla
+        if: failure()
+        working-directory: frontend/apps/catalogo-ui-e2e
+        run: pnpm exec playwright test visual --update-snapshots=changed || true
+
       # Si falta una captura de Linux, Playwright la escribe y falla. Este artifact trae las
       # que escribio, para versionarlas en src/__screenshots__/linux tras revisarlas.
       - name: Subir capturas Linux generadas si falla
