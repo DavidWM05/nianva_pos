@@ -10,6 +10,9 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
+/**
+ * @property string $nombre
+ */
 #[Fillable(['tenant_id', 'nombre', 'direccion', 'telefono', 'activo'])]
 class Sucursal extends Model
 {

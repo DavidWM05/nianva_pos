@@ -8194,6 +8194,37 @@
                 }
             }
         },
+        "/sesion": {
+            "get": {
+                "operationId": "sesion.show",
+                "tags": [
+                    "Sesion"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "`SesionResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/SesionResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
         "/sucursales": {
             "get": {
                 "operationId": "sucursal.index",
@@ -14449,6 +14480,79 @@
                     "es_sistema"
                 ],
                 "title": "RolResource"
+            },
+            "SesionResource": {
+                "type": "object",
+                "properties": {
+                    "usuario": {
+                        "$ref": "#/components/schemas/UsuarioResource"
+                    },
+                    "sucursal": {
+                        "type": [
+                            "object",
+                            "null"
+                        ],
+                        "properties": {
+                            "id": {
+                                "type": "integer"
+                            },
+                            "nombre": {
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "id",
+                            "nombre"
+                        ]
+                    },
+                    "terminal": {
+                        "type": "null"
+                    },
+                    "permisos": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    },
+                    "modulos_activos": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    },
+                    "regional": {
+                        "type": "object",
+                        "properties": {
+                            "locale": {
+                                "type": "string"
+                            },
+                            "moneda": {
+                                "type": "string"
+                            },
+                            "zona_horaria": {
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "locale",
+                            "moneda",
+                            "zona_horaria"
+                        ]
+                    },
+                    "perfil_giro": {
+                        "type": "null"
+                    }
+                },
+                "required": [
+                    "usuario",
+                    "sucursal",
+                    "terminal",
+                    "permisos",
+                    "modulos_activos",
+                    "regional",
+                    "perfil_giro"
+                ],
+                "title": "SesionResource"
             },
             "Sucursal": {
                 "type": "object",

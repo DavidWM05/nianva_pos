@@ -745,12 +745,6 @@ parameters:
 			path: app/Modules/Configuracion/Http/Resources/ConfiguracionTenantResource.php
 
 		-
-			message: '#^Access to an undefined property App\\Modules\\Configuracion\\Http\\Resources\\ConfiguracionTenantResource\:\:\$moneda\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Modules/Configuracion/Http/Resources/ConfiguracionTenantResource.php
-
-		-
 			message: '#^Access to an undefined property App\\Modules\\Configuracion\\Http\\Resources\\ConfiguracionTenantResource\:\:\$mostrar_correo\.$#'
 			identifier: property.notFound
 			count: 1
@@ -4665,13 +4659,13 @@ parameters:
 		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
 			identifier: property.notFound
-			count: 2
+			count: 1
 			path: app/Modules/Nucleo/Http/Resources/UsuarioAdminResource.php
 
 		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$nombre\.$#'
 			identifier: property.notFound
-			count: 2
+			count: 1
 			path: app/Modules/Nucleo/Http/Resources/UsuarioAdminResource.php
 
 		-
@@ -4910,18 +4904,6 @@ parameters:
 
 		-
 			message: '#^Method App\\Modules\\Nucleo\\Models\\Usuario\:\:sinTenant\(\) return type with generic class Illuminate\\Database\\Eloquent\\Builder does not specify its types\: TModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Modules/Nucleo/Models/Usuario.php
-
-		-
-			message: '#^Method App\\Modules\\Nucleo\\Models\\Usuario\:\:sucursal\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Modules/Nucleo/Models/Usuario.php
-
-		-
-			message: '#^Method App\\Modules\\Nucleo\\Models\\Usuario\:\:tenant\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
 			identifier: missingType.generics
 			count: 1
 			path: app/Modules/Nucleo/Models/Usuario.php

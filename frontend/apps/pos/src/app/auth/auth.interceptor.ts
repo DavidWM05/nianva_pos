@@ -13,13 +13,20 @@ import { SesionEntrePestanasService } from './sesion-entre-pestanas.service';
  * un resultado normal (invitado), no una sesion que "expiro" -- dejarlo
  * pasar evita un redirect a /login disparado antes de que el router
  * siquiera haya hecho su primera navegacion.
+ *
+ * Desde API-09 el arranque pide GET /api/v1/sesion; queda en la misma
+ * excepcion, igual que /user, que sigue existiendo.
  */
+const CHEQUEOS_DE_SESION = ['/api/v1/user', '/api/v1/sesion'];
+
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const sesion = inject(SesionEntrePestanasService);
 
   return next(req).pipe(
     catchError((error: unknown) => {
-      if (error instanceof HttpErrorResponse && error.status === 401 && !req.url.endsWith('/api/v1/user')) {
+      const esChequeo = CHEQUEOS_DE_SESION.some((ruta) => req.url.endsWith(ruta));
+
+      if (error instanceof HttpErrorResponse && error.status === 401 && !esChequeo) {
         sesion.cerrarSesion();
       }
 

@@ -1,9 +1,10 @@
 import { HttpClient, HttpContext } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
-import { Observable, switchMap, tap } from 'rxjs';
+import { Observable, map, switchMap, tap } from 'rxjs';
 
 import { urlApi, urlSesion } from '../core/api-config';
 import { ERROR_EN_PANTALLA } from '../core/errores.interceptor';
+import { Sesion } from './sesion.types';
 import { LoginResponse, TwoFactorConfirmResponse, TwoFactorSetupResponse, Usuario } from './usuario.types';
 import { SesionEntrePestanasService } from './sesion-entre-pestanas.service';
 
@@ -45,6 +46,11 @@ export class AuthService {
     return this.http.post<void>(urlSesion('/logout'), {}).pipe(
       tap(() => this.sesion.cerrarSesion()),
     );
+  }
+
+  /** GET /sesion (API-09): usuario, sucursal, permisos, modulos activos y formato regional. */
+  obtenerSesion(): Observable<Sesion> {
+    return this.http.get<{ data: Sesion }>(urlApi('/sesion')).pipe(map((respuesta) => respuesta.data));
   }
 
   me(): Observable<Usuario> {

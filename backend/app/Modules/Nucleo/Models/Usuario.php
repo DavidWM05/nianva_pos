@@ -45,11 +45,17 @@ class Usuario extends Authenticatable
         ];
     }
 
+    /**
+     * @return BelongsTo<Tenant, $this>
+     */
     public function tenant(): BelongsTo
     {
         return $this->belongsTo(Tenant::class);
     }
 
+    /**
+     * @return BelongsTo<Sucursal, $this>
+     */
     public function sucursal(): BelongsTo
     {
         return $this->belongsTo(Sucursal::class);
@@ -70,6 +76,24 @@ class Usuario extends Authenticatable
     public function tieneRol(string $nombre): bool
     {
         return $this->roles()->where('nombre', $nombre)->exists();
+    }
+
+    /**
+     * Nombres de todos los permisos del usuario, ordenados y sin repetir (API-09: los
+     * recibe el frontend en GET /sesion). El superadmin tiene todos, igual que en
+     * tienePermiso().
+     *
+     * @return list<string>
+     */
+    public function nombresPermisos(): array
+    {
+        $consulta = Permiso::query()->orderBy('nombre');
+
+        if (! $this->esSuperadmin()) {
+            $consulta->whereHas('roles.usuarios', fn ($query) => $query->whereKey($this->getKey()));
+        }
+
+        return array_values($consulta->get()->map(fn (Permiso $permiso): string => $permiso->nombre)->all());
     }
 
     public function tienePermiso(string $nombrePermiso): bool

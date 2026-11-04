@@ -8,6 +8,9 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
+/**
+ * @property string $nombre
+ */
 #[Fillable(['modulo', 'accion', 'nombre', 'descripcion'])]
 class Permiso extends Model
 {
