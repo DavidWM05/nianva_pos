@@ -1012,6 +1012,67 @@ repo.
     capa de métricas, el generador `ui-reporte` y migrar los 4 reportes;
   - DS no tenía la salida en rojo previa;
   - ui-report 11, ui-feedback 37 y ui-data 25 tests.
+- **Tipos generados desde OpenAPI** (encargo 45b, hecho por Claude en un worktree aparte, en
+  paralelo con el 46 de DS):
+  - **lib nueva `libs/api-contrato`** (`@nianva/api-contrato`, `type:core`, sin código en
+    ejecución):
+    - `src/lib/openapi.ts` lo genera `scripts/generar.mjs` con openapi-typescript 7.13.0 y
+      `rootTypes`, así que cada esquema se exporta con su nombre (`SesionResource`,
+      `GastoResource`);
+    - `RespuestaDe<ruta, metodo>` da el cuerpo de la respuesta 200 (o 201) con su `data`, y
+      `CuerpoDe<ruta, metodo>` el de la petición. Sus tests de tipos los corre `tsc` en el
+      target `test`;
+    - el paso de CI "Verificar tipos del contrato" (`generar.mjs --check`) completa la cadena:
+      el backend comprueba `openapi.json` contra el código y el frontend sus tipos contra
+      `openapi.json`;
+  - **regla `respuesta-del-contrato`:** el tipo de `http.get/post/put/patch/delete` sobre
+    `urlApi(...)` sale de la lib; rechaza interfaces a mano, objetos literales y llamadas sin
+    tipo. Las rutas de `urlSesion` no están en la especificación y quedan fuera. Hay 40
+    archivos (145 llamadas) en `contrato-pendientes.json`, que solo baja; salen con la
+    migración de pantallas;
+  - **piloto:** `auth.service` completo (`/sesion`, `/user` y 2FA) y `gasto.service`;
+    `Usuario`, `Sesion` y `Gasto` son alias de los esquemas generados;
+  - **bug encontrado por el contrato, con su test primero:** `me()` tipaba `/user` como el
+    usuario suelto, pero la respuesta viene en `data`. Nadie lo llama desde el 45a;
+  - `UsuarioResource` anota `roles` como `list<string>`: Scramble no infiere `pluck` y el
+    contrato decía `unknown[]`;
+  - verificación por mutación: con `RespuestaDe = any`, tsc da 4 errores; si la regla acepta
+    objetos literales, falla su test;
+  - api-contrato 9 tests, reglas propias 32 (7 nuevos), pos 497 (1 nuevo); backend 691.
+- **Catálogo visual con Playwright y axe** (encargo 46, hecho por DS en paralelo con el 45b):
+  - **`apps/catalogo-ui`:** una ruta por lib de `libs/ui`, con sus variantes y estados, datos
+    fijos y sin backend. Sin estilos propios: su base global vive en
+    `libs/ui/tokens/src/styles/catalogo.css`. Tema por interruptor o `?tema=oscuro`, con su
+    propio `TemaService` (misma clave y clase que el de `pos`);
+  - **`apps/catalogo-ui-e2e`** (Playwright 1.64.1 y @axe-core/playwright 4.14.0, solo
+    Chromium), corre con `nx e2e catalogo-ui-e2e`, fuera de `run-many -t test`:
+    - 54 capturas: 9 rutas × claro y oscuro × 375, 768 y 1280 px, con `maxDiffPixelRatio`
+      0.01;
+    - 21 pruebas de accesibilidad: axe WCAG 2 A y AA por ruta y tema, foco visible con Tab y
+      `aria-label` en los botones de solo icono;
+    - verificado por mutación: con otro color de fondo falla la captura, y sin el
+      `aria-label` de `ui-row-actions` falla la prueba de iconos;
+  - **capturas:** solo se versionan las de Linux (`{platform}` en la ruta). No hay Docker
+    local, así que salen de CI: si falta una, el job "Catálogo visual" la escribe, falla y
+    sube el artifact `catalogo-capturas-linux` para versionarla. El workflow manual
+    `catalogo-snapshots.yml` las regenera cuando un cambio visual es intencional (solo se
+    puede lanzar una vez que está en `master`);
+  - **correcciones de accesibilidad en `libs/ui`** (axe falló primero en 15 pruebas):
+    primario 600 en vez de 500, superficies del oscuro de PrimeNG con la escala correcta (la
+    anterior estaba invertida), botones de severidad con fondo AA, `ui-badge` con 5% de
+    tono, fila inactiva a 0.9, `ui-alert` y sufijo de cantidad con tokens semánticos,
+    `role="img"` en la variación de `ui-kpi` y `tabindex="0"` en el contenido de
+    `ui-shell`;
+  - **corregido en la revisión, con su test primero:**
+    - los botones de severidad tenían el mismo fondo en reposo, hover y activo; ahora el
+      hover y el activo lo oscurecen con `color-mix` (`primeng-preset-severidades.spec.ts`);
+    - el foco visible solo existía en la hoja del catálogo, así que el e2e no decía nada de
+      `pos`. Ahora está en `foco.css`, que cargan las dos apps (`foco-compartido.spec.ts`);
+    - el `.gitignore` vuelve a excluir todo `__screenshots__/` salvo el del catálogo;
+    - el presupuesto inicial del catálogo, una herramienta interna, sube a 1 MB de aviso;
+  - **para revisar en el catálogo:** el badge al 5% casi no se tiñe y la fila inactiva a 0.9
+    casi no se distingue. Si no convencen, la salida es oscurecer los tokens `*-texto`;
+  - ui-tokens 28, ui-feedback 38 y ui-layout 27 tests; e2e 75.
 - **Pendientes detectados:**
   - el aviso "Invalid PrimeUI License" aparece en toda la app y viene de la base heredada
     (nucleo-erp-base). Hay que revisar qué componente, tema o paquete de PrimeNG pide
@@ -1028,7 +1089,13 @@ repo.
   - ~~la suite de `pos` tuvo timeouts bajo carga~~, resuelto en el mantenimiento de los
     timeouts, más arriba;
   - `VentaController` y `CompraController` toman el tenant de `$request->user()` y el resto
-    de `TenantContext` (equivalentes); se unifica al migrar a FormRequest (C8).
+    de `TenantContext` (equivalentes); se unifica al migrar a FormRequest (C8);
+  - `ui-tabla` no pasa a tarjetas en pantalla angosta (UI-04): se agrega antes de migrar los
+    listados;
+  - el `TemaService` está duplicado en `pos` y en el catálogo. Pasa a una lib cuando `pos`
+    tenga interruptor de tema;
+  - `openapi-typescript` 7.13.0 declara TypeScript 5 como peer y el repo usa el 6: genera bien,
+    pero pnpm avisa.
 - **Git:** `master` está protegido (ruleset `proteger-master`): todo entra por PR con los tres
   checks en verde.
 
@@ -1124,10 +1191,13 @@ repo.
    9. contrato y sesión, en dos PRs:
       - ~~45a: `GET /sesion` con permisos, módulos y formato regional, y el menú filtrado
         (API-09)~~, hecho;
-      - 45b: tipos generados con **openapi-typescript** desde `docs/api/openapi.json` en las
-        libs `domain/*`, sin interfaces escritas a mano (API-08 del frontend);
-   10. catálogo visual `catalogo-ui`, regresión visual con **Playwright** (claro, oscuro y 375,
-       768 y 1280 px) y axe (UI-14, UI-03, UI-17);
+      - ~~45b: tipos generados con **openapi-typescript** desde `docs/api/openapi.json`, sin
+        interfaces escritas a mano (API-08 del frontend)~~, hecho en `libs/api-contrato`
+        (no existen libs `domain/*`), con el piloto en `auth` y Gastos. Los demás servicios
+        salen de `contrato-pendientes.json` con la migración de pantallas;
+   10. ~~catálogo visual `catalogo-ui`, regresión visual con **Playwright** (claro, oscuro y
+       375, 768 y 1280 px) y axe (UI-14, UI-03, UI-17)~~, hecho en el encargo 46. Quedan para
+       un 46b los e2e con backend: venta en celular, XSS y dos impresiones seguidas (SEG-06);
    11. ~~`ui/report`, solo el componente (UI-10)~~, hecho en el encargo 47;
    12. migración de **las 110 pantallas** a `libs/ui`, en lotes por módulo, que también
        reemplaza los 35 textos "Cargando…" por los estados de carga (UI-18). Los congelados
