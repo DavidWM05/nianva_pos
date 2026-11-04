@@ -42,6 +42,7 @@ export class TablaComponent<T extends object> {
   readonly cargando = input(false);
   readonly mensajeVacio = input('No hay resultados.');
   readonly filaInactiva = input<((fila: T) => boolean) | undefined>(undefined);
+  readonly totales = input<Partial<Record<keyof T, number>> | null>(null);
 
   readonly cambio = output<CambioListado>();
   readonly accion = output<{ fila: T; accion: AccionEmitida }>();
@@ -118,5 +119,30 @@ export class TablaComponent<T extends object> {
 
   protected valorEstado(fila: T, columna: { campo: keyof T }): string {
     return String(fila[columna.campo] ?? '');
+  }
+
+  protected hayTotal(columna: ColumnaListado<T>): boolean {
+    return this.totalDe(columna) !== null;
+  }
+
+  protected totalDe(columna: ColumnaListado<T>): number | null {
+    const campo = columna.campo;
+    const totales = this.totales();
+
+    if (campo === undefined) {
+      return null;
+    }
+
+    const total = totales?.[campo];
+
+    return typeof total === 'number' && Number.isFinite(total) ? total : null;
+  }
+
+  protected unidadTotal(columna: ColumnaListado<T>): string {
+    if (columna.tipo !== 'cantidad') {
+      return '';
+    }
+
+    return typeof columna.unidad === 'string' ? columna.unidad : '';
   }
 }

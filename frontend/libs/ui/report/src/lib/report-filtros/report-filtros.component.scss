@@ -1,0 +1,28 @@
+.ui-report-filtros {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: var(--nv-spacing-3);
+  padding: var(--nv-spacing-4);
+  border: 1px solid var(--nv-borde);
+  border-radius: var(--nv-radius-lg);
+  background: var(--nv-superficie);
+}
+
+.ui-report-filtros__campo {
+  display: grid;
+  gap: var(--nv-spacing-1);
+  min-width: var(--nv-spacing-16);
+  color: var(--nv-texto);
+  font-size: var(--nv-font-size-sm);
+}
+
+.ui-report-filtros__campo label,
+.ui-report-filtros__etiqueta {
+  font-weight: var(--nv-font-weight-medium);
+}
+
+.ui-report-filtros__sucursal {
+  padding: var(--nv-spacing-2) 0;
+  color: var(--nv-texto-suave);
+}

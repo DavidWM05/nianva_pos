@@ -1,0 +1,40 @@
+<div class="ui-kpi">
+  <span class="ui-kpi__etiqueta">{{ etiqueta() }}</span>
+
+  @if (cargando()) {
+    <div class="ui-kpi__carga">
+      <ui-skeleton forma="texto" ancho="55%" alto="2rem" />
+      <ui-skeleton forma="texto" ancho="35%" />
+    </div>
+  } @else {
+    <strong class="ui-kpi__valor">
+      @switch (formato()) {
+        @case ('dinero') {
+          {{ valor() | dinero }}
+        }
+        @case ('cantidad') {
+          {{ valor() | cantidad: unidad() }}
+        }
+        @case ('porcentaje') {
+          {{ valor() | porcentaje }}
+        }
+        @default {
+          {{ valor() }}
+        }
+      }
+    </strong>
+
+    @if (textoVariacion(); as texto) {
+      <span
+        class="ui-kpi__variacion"
+        [class.ui-kpi__variacion--exito]="tonoVariacion() === 'exito'"
+        [class.ui-kpi__variacion--peligro]="tonoVariacion() === 'peligro'"
+        [class.ui-kpi__variacion--neutro]="tonoVariacion() === 'neutro'"
+        [attr.aria-label]="ariaVariacion()"
+      >
+        <i [class]="iconoVariacion()" aria-hidden="true"></i>
+        <span aria-hidden="true">{{ texto }}</span>
+      </span>
+    }
+  }
+</div>
