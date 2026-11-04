@@ -35,3 +35,26 @@ for (const ruta of rutas) {
     });
   }
 }
+
+// En CI (Linux) la fuente de reserva es mas ancha que en Windows, y /data a 768 se desbordaba
+// solo alli (main 582px > 568px). Con una fuente ancha forzada, el mismo caso se reproduce en
+// cualquier plataforma: el contenido tiene que acomodarse sin depender de la fuente.
+for (const ruta of rutas) {
+  test(`sin desborde con fuente ancha ${ruta} 768`, async ({ page }) => {
+    await page.setViewportSize({ width: 768, height: 900 });
+    await page.goto(`/${ruta}?tema=claro`);
+    await page.waitForLoadState('networkidle');
+    await expect(page.locator('cat-root')).toBeVisible();
+    await page.addStyleTag({ content: '* { font-family: Verdana, "DejaVu Sans", sans-serif !important; }' });
+
+    const main = await page.evaluate(() => {
+      const elemento = document.querySelector('main');
+
+      return { scroll: elemento?.scrollWidth ?? 0, cliente: elemento?.clientWidth ?? 0 };
+    });
+
+    expect(main.scroll, `${ruta} a 768px con fuente ancha: main ${main.scroll}px > ${main.cliente}px`).toBeLessThanOrEqual(
+      main.cliente,
+    );
+  });
+}

@@ -1102,6 +1102,11 @@ repo.
       pantalla; ahora es único por instancia;
     - DS quitó los acentos y parte del detalle de las filas UI-04 y UI-14 de
       `SEGUIMIENTO_FASES.md`; se restauraron;
+    - en CI, `/data` a 768 px se desbordaba solo en Linux (main 582 > 568): la fuente de
+      reserva es más ancha, y `ui-section`, un grid sin columnas, tomaba el ancho mínimo de
+      la tabla. Ahora `ui-section` usa `minmax(0, 1fr)` y la tabla se desplaza dentro de su
+      contenedor (`ui-tabla__desplazable`). Un caso del e2e con fuente ancha lo reproduce
+      en cualquier plataforma;
   - verificado por mutación: sin el modo tarjeta fallan 3 tests unitarios y el e2e de
     `/data` a 375;
   - ui-data 31 tests (6 nuevos); e2e 102 (27 nuevos).

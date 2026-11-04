@@ -1,3 +1,14 @@
+:host {
+  display: block;
+  min-width: 0;
+  max-width: 100%;
+}
+
+.ui-tabla__desplazable {
+  max-width: 100%;
+  overflow-x: auto;
+}
+
 .ui-tabla__skeleton {
   display: grid;
   gap: var(--nv-spacing-2);
