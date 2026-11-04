@@ -21,7 +21,7 @@
             "input": "apps/pos/public"
           }
         ],
-        "styles": ["apps/pos/src/styles.scss"],
+        "styles": ["apps/pos/src/styles.scss", "libs/ui/tokens/src/styles/foco.css"],
         "stylePreprocessorOptions": {
           "includePaths": ["libs/ui/tokens/src/styles"]
         }

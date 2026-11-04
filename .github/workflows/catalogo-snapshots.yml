@@ -1,0 +1,50 @@
+name: Catalogo snapshots
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  generar-snapshots:
+    name: Generar snapshots Linux
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - name: Obtener el codigo
+        uses: actions/checkout@v4
+
+      - name: Configurar pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          package_json_file: frontend/package.json
+
+      - name: Configurar Node.js 22 y cache de pnpm
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22.20.0'
+          cache: pnpm
+          cache-dependency-path: frontend/pnpm-lock.yaml
+
+      - name: Instalar dependencias con el lockfile
+        run: pnpm install --frozen-lockfile
+
+      - name: Instalar Chromium de Playwright
+        run: pnpm exec playwright install --with-deps chromium
+
+      - name: Compilar el catálogo
+        run: pnpm nx build catalogo-ui
+
+      - name: Generar capturas Linux
+        run: pnpm exec playwright test --update-snapshots
+        working-directory: frontend/apps/catalogo-ui-e2e
+
+      - name: Subir capturas Linux
+        uses: actions/upload-artifact@v4
+        with:
+          name: catalogo-snapshots-linux
+          path: frontend/apps/catalogo-ui-e2e/src/__screenshots__/linux
+          retention-days: 7

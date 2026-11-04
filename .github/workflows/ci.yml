@@ -215,6 +215,59 @@ jobs:
       - name: Ejecutar pruebas del frontend
         run: pnpm nx run-many -t test
 
+  catalogo:
+    name: Catálogo visual
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - name: Obtener el codigo
+        uses: actions/checkout@v4
+
+      - name: Configurar pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          package_json_file: frontend/package.json
+
+      - name: Configurar Node.js 22 y cache de pnpm
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22.20.0'
+          cache: pnpm
+          cache-dependency-path: frontend/pnpm-lock.yaml
+
+      - name: Instalar dependencias con el lockfile
+        run: pnpm install --frozen-lockfile
+
+      - name: Instalar Chromium de Playwright
+        run: pnpm exec playwright install --with-deps chromium
+
+      - name: Compilar el catálogo
+        run: pnpm nx build catalogo-ui
+
+      - name: Ejecutar e2e del catálogo
+        run: pnpm nx e2e catalogo-ui-e2e
+
+      - name: Subir reporte de Playwright si falla
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: catalogo-playwright-report
+          path: frontend/apps/catalogo-ui-e2e/playwright-report
+          retention-days: 7
+
+      # Si falta una captura de Linux, Playwright la escribe y falla. Este artifact trae las
+      # que escribio, para versionarlas en src/__screenshots__/linux tras revisarlas.
+      - name: Subir capturas Linux generadas si falla
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: catalogo-capturas-linux
+          path: frontend/apps/catalogo-ui-e2e/src/__screenshots__/linux
+          if-no-files-found: ignore
+          retention-days: 7
+
   escaneo-skip:
     name: Escaneo de skip sin referencia
     runs-on: ubuntu-latest

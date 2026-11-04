@@ -1,0 +1,17 @@
+{
+  "name": "catalogo-ui-e2e",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/catalogo-ui-e2e/src",
+  "projectType": "application",
+  "tags": ["type:e2e"],
+  "targets": {
+    "e2e": {
+      "executor": "nx:run-commands",
+      "dependsOn": ["catalogo-ui:build:production"],
+      "options": {
+        "command": "pnpm exec playwright test",
+        "cwd": "apps/catalogo-ui-e2e"
+      }
+    }
+  }
+}
