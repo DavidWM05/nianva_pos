@@ -1136,6 +1136,31 @@ repo.
     instante, 1;
   - backend 703 tests (12 nuevos), pos 504 (7 nuevos); la línea base de PHPStan bajó 2
     entradas.
+- **Symfony 7.4.23** (2026-11-04): `composer audit` empezó a fallar en todas las ramas por 6
+  avisos de `symfony/http-foundation`, `http-kernel` y `routing`. Se subieron de 7.4.22 a
+  7.4.23 en un PR aparte, y el 48b se rebasó encima.
+- **e2e con backend y XSS** (encargo 48c, hecho por DS):
+  - **decisión del responsable:** "dos impresiones seguidas" (SEG-06) y "venta a 375 px"
+    (UI-04) pasan a la Fase 4, porque hoy no hay impresos (UI-12) y el TPV se rehace allí.
+    Con eso, SEG-06 y UI-04 de la Fase 2 quedan en Hecho;
+  - **`apps/pos-e2e`** (Playwright):
+    - levanta el backend real con `php artisan serve` sobre una SQLite nueva, sembrada con
+      `EscenarioAbarrotesSeeder`, y el build de `pos` con su `config.json` apuntando a él;
+    - Sanctum SPA, la sesión y CORS se configuran solo con variables de entorno, sin tocar
+      `config/`;
+    - el login va por la pantalla real (`iniciarSesion`). El vendedor del escenario recibe,
+      solo en esa SQLite, los permisos para crear inventario;
+  - **XSS (SEG-04):** un producto y un cliente llamados
+    `<img src=x onerror="window.__xss=1">Producto <b>prueba</b>` se ven literales, sin nodos
+    ni ejecución, en el listado y el detalle de productos, la búsqueda del TPV y el listado
+    de clientes. Verificado por mutación: con `[innerHTML]` en el detalle, falla;
+  - job de CI "e2e con backend";
+  - el catálogo ya no dice que `ui-tabla` no tiene modo tarjeta;
+  - **corregido en la revisión:** el backend de prueba usaba el puerto 8000 y se reutilizaba
+    si ya había uno levantado, así que en local habría escrito el producto con XSS en la base
+    de desarrollo. Ahora usa el 8100 y nunca se reutiliza. Además, `backend-server.mjs`
+    respetaba `DB_DATABASE` del entorno antes de correr `migrate:fresh`; ahora siempre usa
+    su propia SQLite.
 - **Pendientes detectados:**
   - el aviso "Invalid PrimeUI License" aparece en toda la app. **Causa (revisada en el 46):**
     PrimeNG 22 trae un verificador de licencia offline (`@primeui/license-manager`);
