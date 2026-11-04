@@ -1,0 +1,16 @@
+{
+  "name": "@nianva/ui-report",
+  "version": "0.0.1",
+  "peerDependencies": {
+    "@angular/core": "^22.0.0",
+    "@angular/forms": "^22.0.0",
+    "@angular/platform-browser": "^22.0.0",
+    "@nianva/ui-actions": "*",
+    "@nianva/ui-feedback": "*",
+    "@nianva/ui-forms": "*",
+    "@nianva/ui-layout": "*",
+    "primeng": "^22.0.0",
+    "vitest": "^4.0.8"
+  },
+  "sideEffects": false
+}

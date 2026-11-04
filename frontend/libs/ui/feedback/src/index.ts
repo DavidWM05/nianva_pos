@@ -7,3 +7,4 @@ export * from './lib/carga/con-umbral';
 export * from './lib/confirm-dialog/confirm-dialog.service';
 export * from './lib/confirm-dialog/confirm-dialog-host.component';
 export * from './lib/alert/alert.component';
+export * from './lib/kpi/kpi.component';
