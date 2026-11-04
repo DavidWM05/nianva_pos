@@ -530,10 +530,13 @@ jobs:
         run: |
           set -euo pipefail
 
+          # Los proyectos *-e2e levantan su propio servidor local de pruebas (Playwright):
+          # su 127.0.0.1 no es una URL de la app, igual que la de los specs.
           coincidencias=$(
             grep -rnE 'localhost|127\.0\.0\.1|http://' frontend/apps frontend/libs \
               --exclude='*.spec.ts' \
               --exclude='test-setup.ts' \
+              --exclude-dir='*-e2e' \
               --exclude-dir=node_modules \
               --exclude-dir=dist \
               --exclude-dir=.nx \
