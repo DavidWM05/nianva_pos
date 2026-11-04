@@ -7,6 +7,7 @@
     "@nianva/ui-actions": "*",
     "@nianva/ui-feedback": "*",
     "@nianva/ui-format": "*",
+    "@nianva/ui-layout": "*",
     "primeng": "^22.0.0",
     "vitest": "^4.0.8"
   },

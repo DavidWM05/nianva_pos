@@ -1,15 +1,145 @@
 @if (primeraCarga()) {
-  <div class="ui-tabla__skeleton" aria-busy="true">
-    @for (fila of filasSkeleton(); track fila) {
-      <div class="ui-tabla__skeleton-fila">
-        @for (columna of columnas(); track columna.campo) {
-          <ui-skeleton forma="texto" />
-        }
-      </div>
-    }
-  </div>
+  @if (pantalla.angosta()) {
+    <div class="ui-tabla__tarjetas-skeleton" aria-busy="true">
+      @for (fila of filasSkeleton(); track fila) {
+        <div class="ui-tabla__tarjeta-skeleton">
+          <ui-skeleton forma="texto" ancho="50%" alto="1.5rem" />
+          <ui-skeleton forma="texto" ancho="30%" />
+          <ui-skeleton forma="texto" [lineas]="3" />
+        </div>
+      }
+    </div>
+  } @else {
+    <div class="ui-tabla__skeleton" aria-busy="true">
+      @for (fila of filasSkeleton(); track fila) {
+        <div class="ui-tabla__skeleton-fila">
+          @for (columna of columnas(); track columna.campo) {
+            <ui-skeleton forma="texto" />
+          }
+        </div>
+      }
+    </div>
+  }
 } @else if (!filas().length && !cargando()) {
   <ui-empty [mensaje]="mensajeVacio()" />
+} @else if (pantalla.angosta()) {
+  <div class="ui-tabla__tarjetas">
+    @if (columnasOrdenables().length > 0) {
+      <div class="ui-tabla__orden">
+        <label [for]="idOrden">Ordenar</label>
+        <select [id]="idOrden" [value]="ordenCampo() ?? ''" (change)="cambiarOrden($event)">
+          <option value="">Sin ordenar</option>
+          @for (columna of columnasOrdenables(); track columna.campo) {
+            <option [value]="columna.campo">{{ columna.encabezado }}</option>
+          }
+        </select>
+        <button type="button" class="ui-tabla__orden-direccion" (click)="alternarDireccion()">
+          {{ ordenDireccion() === 'asc' ? 'Ascendente' : 'Descendente' }}
+        </button>
+      </div>
+    }
+
+    @for (fila of filas(); track fila) {
+      <article
+        class="ui-tabla__tarjeta"
+        [class.ui-tabla__tarjeta--inactiva]="esInactiva(fila)"
+      >
+        @for (columna of columnas(); track columna.campo) {
+          @switch (columna.tipo) {
+            @case ('principal') {
+              <div class="ui-tabla__tarjeta-titulo">
+                <h3 class="ui-tabla__principal">{{ texto(fila, columna.campo) }}</h3>
+                @if (esInactiva(fila)) {
+                  <span class="ui-tabla__inactivo">Inactivo</span>
+                }
+                @if (apoyo(columna, fila); as datoApoyo) {
+                  <small class="ui-tabla__apoyo">{{ datoApoyo }}</small>
+                }
+              </div>
+            }
+            @case ('acciones') {
+              <div class="ui-tabla__tarjeta-acciones">
+                <ui-row-actions [acciones]="acciones(columna, fila)" (accion)="onAccion(fila, $event)" />
+              </div>
+            }
+            @default {
+              <div class="ui-tabla__par">
+                <span class="ui-tabla__etiqueta">{{ columna.encabezado }}</span>
+                <span class="ui-tabla__valor">
+                  @switch (columna.tipo) {
+                    @case ('texto') {
+                      {{ texto(fila, columna.campo) }}
+                    }
+                    @case ('dinero') {
+                      <span
+                        class="ui-tabla__numero"
+                        [class.ui-tabla__numero--peligro]="esNegativo(fila, columna.campo)"
+                      >
+                        {{ valor(fila, columna.campo) | dinero }}
+                      </span>
+                    }
+                    @case ('cantidad') {
+                      <span class="ui-tabla__numero">
+                        {{ valor(fila, columna.campo) | cantidad: unidad(columna, fila) }}
+                      </span>
+                    }
+                    @case ('porcentaje') {
+                      <span class="ui-tabla__numero">{{ valor(fila, columna.campo) | porcentaje }}</span>
+                    }
+                    @case ('fecha') {
+                      {{ valor(fila, columna.campo) | fecha }}
+                    }
+                    @case ('fechaHora') {
+                      {{ valor(fila, columna.campo) | fechaHora }}
+                    }
+                    @case ('estado') {
+                      <ui-badge [entidad]="columna.entidad" [estado]="valorEstado(fila, columna)" />
+                    }
+                  }
+                </span>
+              </div>
+            }
+          }
+        }
+      </article>
+    }
+
+    @if (totales() !== null) {
+      <article class="ui-tabla__total-tarjeta">
+        <h3>Total</h3>
+        @for (columna of columnas(); track columna.campo) {
+          @if (hayTotal(columna)) {
+            <div class="ui-tabla__par">
+              <span class="ui-tabla__etiqueta">{{ columna.encabezado }}</span>
+              <span class="ui-tabla__valor">
+                @switch (columna.tipo) {
+                  @case ('dinero') {
+                    <span class="ui-tabla__numero">{{ totalDe(columna) | dinero }}</span>
+                  }
+                  @case ('cantidad') {
+                    <span class="ui-tabla__numero">
+                      {{ totalDe(columna) | cantidad: unidadTotal(columna) }}
+                    </span>
+                  }
+                  @case ('porcentaje') {
+                    <span class="ui-tabla__numero">{{ totalDe(columna) | porcentaje }}</span>
+                  }
+                }
+              </span>
+            </div>
+          }
+        }
+      </article>
+    }
+  </div>
+
+  <p-paginator
+    [first]="first()"
+    [rows]="rowsActuales()"
+    [totalRecords]="meta()?.total ?? 0"
+    [rowsPerPageOptions]="[25, 50, 100]"
+    (onPageChange)="onPagina($event)"
+  />
 } @else {
   <p-table
     [value]="filas()"

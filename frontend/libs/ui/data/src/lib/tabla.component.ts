@@ -1,5 +1,7 @@
-import { ChangeDetectionStrategy, Component, computed, input, output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, input, output, signal } from '@angular/core';
 import { TableLazyLoadEvent, SortableColumn, SortIcon, Table } from 'primeng/table';
+import { Paginator, PaginatorState } from 'primeng/paginator';
+import { PantallaService } from '@nianva/ui-layout';
 import type { AccionEmitida } from '@nianva/ui-actions';
 import { BadgeComponent, SkeletonComponent, conUmbral } from '@nianva/ui-feedback';
 import { CantidadPipe, DineroPipe, FechaHoraPipe, FechaPipe, PorcentajePipe } from '@nianva/ui-format';
@@ -14,11 +16,14 @@ import {
 } from './listado.types';
 import { RowActionsComponent } from '@nianva/ui-actions';
 
+let siguienteIdOrden = 0;
+
 @Component({
   selector: 'ui-tabla',
   standalone: true,
   imports: [
     Table,
+    Paginator,
     SortableColumn,
     SortIcon,
     BadgeComponent,
@@ -47,6 +52,16 @@ export class TablaComponent<T extends object> {
   readonly cambio = output<CambioListado>();
   readonly accion = output<{ fila: T; accion: AccionEmitida }>();
 
+  protected readonly pantalla = inject(PantallaService);
+  /** Unico por instancia: con dos tablas en la pantalla, cada "Ordenar" apunta a su selector. */
+  protected readonly idOrden = `ui-tabla-orden-${++siguienteIdOrden}`;
+  protected readonly ordenCampo = signal<string | null>(null);
+  protected readonly ordenDireccion = signal<'asc' | 'desc'>('asc');
+  protected readonly columnasOrdenables = computed(() =>
+    this.columnas()
+      .filter((columna) => columna.ordenable === true && columna.campo !== undefined)
+      .map((columna) => ({ campo: String(columna.campo), encabezado: columna.encabezado ?? '' })),
+  );
   protected readonly columnasTabla = computed(() =>
     this.columnas().map((columna) => ({
       field: columna.campo === undefined ? 'acciones' : String(columna.campo),
@@ -67,11 +82,45 @@ export class TablaComponent<T extends object> {
     const first = evento.first ?? 0;
     const orden = evento.sortOrder === 1 ? 'asc' : evento.sortOrder === -1 ? 'desc' : null;
 
+    this.ordenCampo.set((evento.sortField as string | undefined) ?? null);
+    this.ordenDireccion.set(orden ?? 'asc');
+
     this.cambio.emit({
       page: Math.floor(first / rows) + 1,
       rows,
       sortField: (evento.sortField as string | undefined) ?? null,
       sortOrder: orden,
+    });
+  }
+
+  protected onPagina(evento: PaginatorState): void {
+    this.cambio.emit({
+      page: (evento.page ?? 0) + 1,
+      rows: evento.rows ?? this.rowsActuales(),
+      sortField: this.ordenCampo(),
+      sortOrder: this.ordenCampo() === null ? null : this.ordenDireccion(),
+    });
+  }
+
+  protected cambiarOrden(evento: Event): void {
+    const campo = (evento.target as HTMLSelectElement).value;
+
+    this.ordenCampo.set(campo === '' ? null : campo);
+    this.emitirCambioDeOrden();
+  }
+
+  protected alternarDireccion(): void {
+    this.ordenDireccion.update((direccion) => (direccion === 'asc' ? 'desc' : 'asc'));
+    this.emitirCambioDeOrden();
+  }
+
+  // Igual que p-table al ordenar: un orden nuevo vuelve a la primera pagina.
+  private emitirCambioDeOrden(): void {
+    this.cambio.emit({
+      page: 1,
+      rows: this.rowsActuales(),
+      sortField: this.ordenCampo(),
+      sortOrder: this.ordenCampo() === null ? null : this.ordenDireccion(),
     });
   }
 
