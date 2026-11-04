@@ -5,7 +5,6 @@ import { provideAnimationsAsync } from '@angular/platform-browser/animations/asy
 import { providePrimeNG } from 'primeng/config';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { nucleoPreset } from '@nianva/ui-tokens';
-import { provideFormatoRegional } from '@nianva/ui-format';
 import { REGISTRO_NAVEGACION, TituloDesdeRegistro } from '@nianva/ui-layout';
 import { AuditLogSource } from '@nianva/ui-shared';
 import { appRoutes } from './app.routes';
@@ -18,6 +17,8 @@ import { AuditoriaService } from './core/auditoria.service';
 import { erroresInterceptor } from './core/errores.interceptor';
 import { TemaService } from './core/tema.service';
 import { SesionEntrePestanasService } from './auth/sesion-entre-pestanas.service';
+import { CargaSesionService } from './auth/carga-sesion.service';
+import { provideFormatoRegionalDeSesion } from './auth/formato-regional-de-sesion';
 import {
   BUSCADOR_CATEGORIA,
   BUSCADOR_CLIENTE,
@@ -43,7 +44,8 @@ import { REGISTRO_NAVEGACION_POS } from './modules/modules.config';
 export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
-    provideFormatoRegional(),
+    // Moneda, zona horaria y locale del tenant, de GET /sesion (API-09).
+    provideFormatoRegionalDeSesion(),
     // ui-page-header y el menu toman los nombres de aqui (UI-08).
     { provide: REGISTRO_NAVEGACION, useValue: REGISTRO_NAVEGACION_POS },
     provideRouter(appRoutes),
@@ -88,6 +90,8 @@ export const appConfig: ApplicationConfig = {
     provideAppInitializer(() => inject(AuthStateService).initialize()),
     provideAppInitializer(() => inject(TemaService).inicializar()),
     provideAppInitializer(() => inject(SesionEntrePestanasService).inicializar()),
+    // Tras el login o el 2FA (que solo traen el usuario) carga GET /sesion.
+    provideAppInitializer(() => inject(CargaSesionService).iniciar()),
     // Paleta, tipografia y radios vienen de libs/ui/tokens (nucleoPreset),
     // nunca del tema Aura default de PrimeNG -- ver libs/ui/tokens/README.md.
     providePrimeNG({

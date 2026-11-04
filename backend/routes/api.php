@@ -28,6 +28,7 @@ use App\Modules\Nucleo\Http\Controllers\MetodoPagoController;
 use App\Modules\Nucleo\Http\Controllers\PasswordResetController;
 use App\Modules\Nucleo\Http\Controllers\PermisoController;
 use App\Modules\Nucleo\Http\Controllers\RolController;
+use App\Modules\Nucleo\Http\Controllers\SesionController;
 use App\Modules\Nucleo\Http\Controllers\SucursalController;
 use App\Modules\Nucleo\Http\Controllers\TwoFactorController;
 use App\Modules\Nucleo\Http\Controllers\UsuarioController;
@@ -49,6 +50,10 @@ Route::middleware('auth:sanctum')->group(function () {
     // debe mostrar la pantalla de configuracion de 2FA -- por eso NO puede
     // estar detras de two-factor.confirmed (ver mas abajo).
     Route::get('/user', fn (Request $request) => new UsuarioResource($request->user()));
+
+    // API-09: usuario, sucursal, permisos, modulos activos y configuracion regional en una
+    // sola respuesta. Fuera de two-factor.confirmed por la misma razon que /user.
+    Route::get('/sesion', [SesionController::class, 'show']);
 
     // Escape hatch: si estas rutas estuvieran detras de two-factor.confirmed,
     // un admin sin 2FA configurado nunca podria terminar de configurarlo.

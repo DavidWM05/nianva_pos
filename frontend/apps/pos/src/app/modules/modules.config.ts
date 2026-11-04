@@ -13,6 +13,13 @@ export interface NucleoModuleNavItem {
    * grupo ni darle su propio encabezado.
    */
   separadorAntes?: boolean;
+  /**
+   * Permiso del endpoint con el que carga la pantalla (el `permiso:` de su GET). Sin el,
+   * el menu oculta la entrada (API-09); la pantalla respondería 403 de todos modos.
+   */
+  permiso?: string;
+  /** Slug de `modulo:` (ModuloActivo) si la pantalla es de un modulo que se puede apagar. */
+  modulo?: string;
 }
 
 export interface NucleoNavGroup {
@@ -52,18 +59,20 @@ export const NUCLEO_NAV_GROUPS: NucleoNavGroup[] = [
     key: 'catalogo',
     label: 'Catálogo',
     items: [
-      { key: 'inventario', label: 'Productos', path: 'inventario/productos', icon: 'pi pi-box' },
-      { key: 'categorias', label: 'Categorías', path: 'inventario/categorias', icon: 'pi pi-sitemap' },
-      { key: 'departamentos', label: 'Departamentos', path: 'inventario/departamentos', icon: 'pi pi-building' },
-      { key: 'unidades-medida', label: 'Unidades de medida', path: 'unidades-medida', icon: 'pi pi-arrows-h' },
-      { key: 'precios', label: 'Precios y promociones', path: 'precios', icon: 'pi pi-tags' },
-      { key: 'crm', label: 'Clientes', path: 'crm/clientes', icon: 'pi pi-users' },
+      { key: 'inventario', label: 'Productos', path: 'inventario/productos', icon: 'pi pi-box', permiso: 'inventario.ver' },
+      { key: 'categorias', label: 'Categorías', path: 'inventario/categorias', icon: 'pi pi-sitemap', permiso: 'inventario.ver' },
+      { key: 'departamentos', label: 'Departamentos', path: 'inventario/departamentos', icon: 'pi pi-building', permiso: 'inventario.ver' },
+      { key: 'unidades-medida', label: 'Unidades de medida', path: 'unidades-medida', icon: 'pi pi-arrows-h', permiso: 'inventario.ver' },
+      { key: 'precios', label: 'Precios y promociones', path: 'precios', icon: 'pi pi-tags', permiso: 'reglas_precio.ver' },
+      { key: 'crm', label: 'Clientes', path: 'crm/clientes', icon: 'pi pi-users', permiso: 'clientes.ver' },
       {
         // Sin lista propia (ver el docblock de CampanaService) -- el link va directo al alta.
         key: 'crm-campanas',
         label: 'Campañas',
         path: 'crm/campanas/nueva',
         icon: 'pi pi-megaphone',
+        permiso: 'crm_campanas.enviar',
+        modulo: 'crm_avanzado',
       },
     ],
   },
@@ -71,19 +80,19 @@ export const NUCLEO_NAV_GROUPS: NucleoNavGroup[] = [
     key: 'transacciones',
     label: 'Transacciones',
     items: [
-      { key: 'tpv-venta', label: 'Venta', path: 'tpv/venta', icon: 'pi pi-shopping-cart' },
-      { key: 'tpv-caja', label: 'Caja', path: 'tpv/caja', icon: 'pi pi-wallet' },
-      { key: 'tpv-ventas', label: 'Ventas', path: 'tpv/ventas', icon: 'pi pi-receipt' },
-      { key: 'cotizaciones', label: 'Cotizaciones', path: 'cotizaciones', icon: 'pi pi-file-edit' },
-      { key: 'cuentas-cobrar', label: 'Cuentas por cobrar', path: 'cuentas-cobrar', icon: 'pi pi-wallet' },
-      { key: 'cuentas-pagar', label: 'Cuentas por pagar', path: 'cuentas-pagar', icon: 'pi pi-arrow-up-right' },
-      { key: 'prestamos', label: 'Préstamos', path: 'prestamos', icon: 'pi pi-percentage' },
-      { key: 'ventas-plazos', label: 'Ventas a plazos', path: 'ventas-plazos', icon: 'pi pi-calendar' },
-      { key: 'pedidos', label: 'Pedidos', path: 'pedidos', icon: 'pi pi-truck' },
-      { key: 'apartados', label: 'Apartados', path: 'apartados', icon: 'pi pi-calendar-clock' },
-      { key: 'devoluciones', label: 'Devoluciones', path: 'devoluciones', icon: 'pi pi-replay' },
-      { key: 'notas-credito', label: 'Notas de crédito', path: 'notas-credito', icon: 'pi pi-ticket' },
-      { key: 'gift-cards', label: 'Gift cards', path: 'gift-cards', icon: 'pi pi-credit-card' },
+      { key: 'tpv-venta', label: 'Venta', path: 'tpv/venta', icon: 'pi pi-shopping-cart', permiso: 'ventas.crear' },
+      { key: 'tpv-caja', label: 'Caja', path: 'tpv/caja', icon: 'pi pi-wallet', permiso: 'caja.ver' },
+      { key: 'tpv-ventas', label: 'Ventas', path: 'tpv/ventas', icon: 'pi pi-receipt', permiso: 'ventas.ver' },
+      { key: 'cotizaciones', label: 'Cotizaciones', path: 'cotizaciones', icon: 'pi pi-file-edit', permiso: 'cotizaciones.ver', modulo: 'cotizaciones' },
+      { key: 'cuentas-cobrar', label: 'Cuentas por cobrar', path: 'cuentas-cobrar', icon: 'pi pi-wallet', permiso: 'cuentas_cobrar.ver', modulo: 'cxc' },
+      { key: 'cuentas-pagar', label: 'Cuentas por pagar', path: 'cuentas-pagar', icon: 'pi pi-arrow-up-right', permiso: 'cuentas_pagar.ver', modulo: 'cxp' },
+      { key: 'prestamos', label: 'Préstamos', path: 'prestamos', icon: 'pi pi-percentage', permiso: 'prestamos.ver', modulo: 'prestamos' },
+      { key: 'ventas-plazos', label: 'Ventas a plazos', path: 'ventas-plazos', icon: 'pi pi-calendar', permiso: 'ventas_plazos.ver', modulo: 'ventas_plazos' },
+      { key: 'pedidos', label: 'Pedidos', path: 'pedidos', icon: 'pi pi-truck', permiso: 'pedidos.ver', modulo: 'delivery' },
+      { key: 'apartados', label: 'Apartados', path: 'apartados', icon: 'pi pi-calendar-clock', permiso: 'apartados.ver' },
+      { key: 'devoluciones', label: 'Devoluciones', path: 'devoluciones', icon: 'pi pi-replay', permiso: 'devoluciones.ver' },
+      { key: 'notas-credito', label: 'Notas de crédito', path: 'notas-credito', icon: 'pi pi-ticket', permiso: 'notas_credito.ver', modulo: 'notas_credito' },
+      { key: 'gift-cards', label: 'Gift cards', path: 'gift-cards', icon: 'pi pi-credit-card', permiso: 'gift_cards.ver', modulo: 'gift_cards' },
       // Sin "Gastos": se registran dentro de Caja, y dos entradas no llevan a la
       // misma pantalla (UI-08). /gastos sigue redirigiendo a Caja.
     ],
@@ -92,18 +101,18 @@ export const NUCLEO_NAV_GROUPS: NucleoNavGroup[] = [
     key: 'nomina',
     label: 'Nómina',
     items: [
-      { key: 'empleados', label: 'Empleados', path: 'payroll/empleados', icon: 'pi pi-id-card' },
-      { key: 'nominas', label: 'Nóminas', path: 'payroll/nominas', icon: 'pi pi-wallet' },
+      { key: 'empleados', label: 'Empleados', path: 'payroll/empleados', icon: 'pi pi-id-card', permiso: 'payroll.ver', modulo: 'payroll' },
+      { key: 'nominas', label: 'Nóminas', path: 'payroll/nominas', icon: 'pi pi-wallet', permiso: 'payroll.ver', modulo: 'payroll' },
     ],
   },
   {
     key: 'produccion',
     label: 'Producción',
     items: [
-      { key: 'insumos', label: 'Insumos', path: 'produccion/insumos', icon: 'pi pi-box' },
-      { key: 'recetas', label: 'Recetas', path: 'produccion/recetas', icon: 'pi pi-book' },
-      { key: 'ordenes-produccion', label: 'Órdenes de producción', path: 'produccion/ordenes', icon: 'pi pi-cog' },
-      { key: 'transformaciones', label: 'Transformaciones', path: 'produccion/transformaciones', icon: 'pi pi-sync' },
+      { key: 'insumos', label: 'Insumos', path: 'produccion/insumos', icon: 'pi pi-box', permiso: 'produccion.ver', modulo: 'produccion' },
+      { key: 'recetas', label: 'Recetas', path: 'produccion/recetas', icon: 'pi pi-book', permiso: 'produccion.ver', modulo: 'produccion' },
+      { key: 'ordenes-produccion', label: 'Órdenes de producción', path: 'produccion/ordenes', icon: 'pi pi-cog', permiso: 'produccion.ver', modulo: 'produccion' },
+      { key: 'transformaciones', label: 'Transformaciones', path: 'produccion/transformaciones', icon: 'pi pi-sync', permiso: 'produccion.ver', modulo: 'produccion' },
     ],
   },
   {
@@ -112,10 +121,10 @@ export const NUCLEO_NAV_GROUPS: NucleoNavGroup[] = [
     key: 'reportes',
     label: 'Reportes',
     items: [
-      { key: 'reporte-cuentas-cobrar', label: 'Antigüedad de CxC', path: 'reportes/cuentas-cobrar', icon: 'pi pi-chart-line' },
-      { key: 'reporte-cuentas-pagar', label: 'Antigüedad de CxP', path: 'reportes/cuentas-pagar', icon: 'pi pi-chart-line' },
-      { key: 'reporte-crm', label: 'CRM', path: 'reportes/crm', icon: 'pi pi-chart-line' },
-      { key: 'reporte-ventas', label: 'Ventas por periodo', path: 'reportes/ventas', icon: 'pi pi-chart-bar' },
+      { key: 'reporte-cuentas-cobrar', label: 'Antigüedad de CxC', path: 'reportes/cuentas-cobrar', icon: 'pi pi-chart-line', permiso: 'reportes_cuentas_cobrar.ver', modulo: 'cxc' },
+      { key: 'reporte-cuentas-pagar', label: 'Antigüedad de CxP', path: 'reportes/cuentas-pagar', icon: 'pi pi-chart-line', permiso: 'reportes_cuentas_pagar.ver', modulo: 'cxp' },
+      { key: 'reporte-crm', label: 'CRM', path: 'reportes/crm', icon: 'pi pi-chart-line', permiso: 'reportes_crm.ver', modulo: 'crm_avanzado' },
+      { key: 'reporte-ventas', label: 'Ventas por periodo', path: 'reportes/ventas', icon: 'pi pi-chart-bar', permiso: 'reportes.ver' },
     ],
   },
   {
@@ -126,13 +135,13 @@ export const NUCLEO_NAV_GROUPS: NucleoNavGroup[] = [
     key: 'configuracion',
     label: 'Configuración',
     items: [
-      { key: 'usuarios', label: 'Usuarios', path: 'usuarios', icon: 'pi pi-user' },
-      { key: 'roles', label: 'Roles', path: 'roles', icon: 'pi pi-key' },
+      { key: 'usuarios', label: 'Usuarios', path: 'usuarios', icon: 'pi pi-user', permiso: 'usuarios.ver' },
+      { key: 'roles', label: 'Roles', path: 'roles', icon: 'pi pi-key', permiso: 'roles.ver' },
       // Ruta 'configuracion': la pantalla en si ahora tiene tabs Empresa/
       // Licencia (RecordTabsComponent) -- ver ConfiguracionComponent.
-      { key: 'empresa', label: 'Empresa', path: 'configuracion', icon: 'pi pi-briefcase' },
-      { key: 'metodos-pago', label: 'Métodos de pago', path: 'metodos-pago', icon: 'pi pi-wallet' },
-      { key: 'auditoria', label: 'Auditoría', path: 'auditoria', icon: 'pi pi-history' },
+      { key: 'empresa', label: 'Empresa', path: 'configuracion', icon: 'pi pi-briefcase', permiso: 'configuracion.editar' },
+      { key: 'metodos-pago', label: 'Métodos de pago', path: 'metodos-pago', icon: 'pi pi-wallet', permiso: 'metodos_pago.ver' },
+      { key: 'auditoria', label: 'Auditoría', path: 'auditoria', icon: 'pi pi-history', permiso: 'auditoria.ver' },
       // Personal (cualquier usuario autenticado, sin permiso especial) --
       // el separador la distingue visualmente del resto del grupo, que es
       // administracion del tenant.
@@ -149,4 +158,11 @@ export const NUCLEO_NAV_GROUPS: NucleoNavGroup[] = [
 export const REGISTRO_NAVEGACION_POS: readonly EntradaNavegacion[] = [
   NUCLEO_ITEM_INICIO,
   ...NUCLEO_NAV_GROUPS.flatMap((grupo) => grupo.items),
-].map((item) => ({ clave: item.key, ruta: item.path, nombre: item.label, icono: item.icon }));
+].map((item) => ({
+  clave: item.key,
+  ruta: item.path,
+  nombre: item.label,
+  icono: item.icon,
+  permiso: item.permiso,
+  feature: item.modulo,
+}));

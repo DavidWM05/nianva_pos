@@ -38,19 +38,30 @@ class ModuloActivo
 
     public function handle(Request $request, Closure $next, string $moduloSlug): Response
     {
-        $tenant = app(TenantContext::class)->get();
-
-        if (! $tenant) {
+        if (! app(TenantContext::class)->get()) {
             return $next($request);
         }
 
-        $configuracion = ConfiguracionTenant::where('tenant_id', $tenant->id)->first();
-        $activos = $configuracion?->modulos_activos ?? self::MODULOS_DEFAULT;
-
-        if (! in_array($moduloSlug, $activos, true)) {
+        if (! in_array($moduloSlug, self::activos(), true)) {
             throw new ModuloNoActivoException($moduloSlug);
         }
 
         return $next($request);
+    }
+
+    /**
+     * Modulos activos del tenant del contexto, con las mismas reglas que handle(): sin
+     * tenant (superadmin) o sin fila de configuracion, todos los de MODULOS_DEFAULT. Lo usa
+     * tambien GET /sesion (API-09), para que el menu y el middleware no difieran.
+     *
+     * @return list<string>
+     */
+    public static function activos(): array
+    {
+        if (! app(TenantContext::class)->get()) {
+            return self::MODULOS_DEFAULT;
+        }
+
+        return array_values(ConfiguracionTenant::actual()?->modulos_activos ?? self::MODULOS_DEFAULT);
     }
 }

@@ -63,6 +63,14 @@ describe('authInterceptor', () => {
     expect(router.navigate).not.toHaveBeenCalled();
   });
 
+  it('el 401 de GET /sesion tampoco navega: es el chequeo de sesion del arranque (API-09)', async () => {
+    const error = await ejecutar(urlApi('/sesion'), 401);
+
+    expect(error.status).toBe(401);
+    expect(authState.clear).not.toHaveBeenCalled();
+    expect(router.navigate).not.toHaveBeenCalled();
+  });
+
   it('un error distinto de 401 no hace nada', async () => {
     const error = await ejecutar(urlApi('/roles'), 500);
 
