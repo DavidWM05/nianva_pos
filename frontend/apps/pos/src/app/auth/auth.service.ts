@@ -1,5 +1,6 @@
 import { HttpClient, HttpContext } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
+import type { RespuestaDe } from '@nianva/api-contrato';
 import { Observable, map, switchMap, tap } from 'rxjs';
 
 import { urlApi, urlSesion } from '../core/api-config';
@@ -50,11 +51,13 @@ export class AuthService {
 
   /** GET /sesion (API-09): usuario, sucursal, permisos, modulos activos y formato regional. */
   obtenerSesion(): Observable<Sesion> {
-    return this.http.get<{ data: Sesion }>(urlApi('/sesion')).pipe(map((respuesta) => respuesta.data));
+    return this.http
+      .get<RespuestaDe<'/sesion', 'get'>>(urlApi('/sesion'))
+      .pipe(map((respuesta) => respuesta.data));
   }
 
   me(): Observable<Usuario> {
-    return this.http.get<Usuario>(urlApi(`/user`));
+    return this.http.get<RespuestaDe<'/user', 'get'>>(urlApi(`/user`)).pipe(map((respuesta) => respuesta.data));
   }
 
   requestPasswordReset(correo: string): Observable<{ status: string }> {
@@ -83,13 +86,13 @@ export class AuthService {
   }
 
   getTwoFactorSetup(): Observable<TwoFactorSetupResponse> {
-    return this.http.get<TwoFactorSetupResponse>(urlApi(`/two-factor/qr-code`), {
+    return this.http.get<RespuestaDe<'/two-factor/qr-code', 'get'>>(urlApi(`/two-factor/qr-code`), {
       context: this.contextoErrorEnPantalla,
     });
   }
 
   confirmTwoFactor(code: string): Observable<TwoFactorConfirmResponse> {
-    return this.http.post<TwoFactorConfirmResponse>(
+    return this.http.post<RespuestaDe<'/two-factor/confirm', 'post'>>(
       urlApi(`/two-factor/confirm`),
       { code },
       { context: this.contextoErrorEnPantalla },

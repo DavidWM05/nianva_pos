@@ -1,5 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
+import type { CuerpoDe, RespuestaDe } from '@nianva/api-contrato';
 import { Observable, map } from 'rxjs';
 
 import { urlApi } from '../../core/api-config';
@@ -17,13 +18,15 @@ export class GastoService {
 
   listar(cajaSesionId: number): Observable<Gasto[]> {
     return this.http
-      .get<{ data: Gasto[] }>(urlApi(`/gastos`), { params: { caja_sesion_id: cajaSesionId } })
+      .get<RespuestaDe<'/gastos', 'get'>>(urlApi(`/gastos`), { params: { caja_sesion_id: cajaSesionId } })
       .pipe(map((r) => r.data));
   }
 
   registrar(descripcion: string, monto: number): Observable<Gasto> {
+    const cuerpo: CuerpoDe<'/gastos', 'post'> = { descripcion, monto };
+
     return this.http
-      .post<{ data: Gasto }>(urlApi(`/gastos`), { descripcion, monto })
+      .post<RespuestaDe<'/gastos', 'post'>>(urlApi(`/gastos`), cuerpo)
       .pipe(map((r) => r.data));
   }
 }

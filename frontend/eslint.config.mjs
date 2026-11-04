@@ -4,6 +4,7 @@ import nx from '@nx/eslint-plugin';
 
 import { RULE_NAME as formatoPorPipeName, rule as formatoPorPipe } from './tools/eslint-rules/formato-por-pipe.mjs';
 import { RULE_NAME as noInnerHtmlName, rule as noInnerHtml } from './tools/eslint-rules/no-inner-html.mjs';
+import { RULE_NAME as respuestaContratoName, rule as respuestaContrato } from './tools/eslint-rules/respuesta-del-contrato.mjs';
 import { RULE_NAME as sinColorName, rule as sinColor } from './tools/eslint-rules/sin-color-en-plantilla.mjs';
 import { RULE_NAME as sinCargandoName, rule as sinCargando } from './tools/eslint-rules/sin-texto-cargando.mjs';
 
@@ -12,6 +13,9 @@ const formatoPendientes = JSON.parse(
 );
 const cargandoPendientes = JSON.parse(
   readFileSync(new URL('./tools/eslint-rules/cargando-pendientes.json', import.meta.url), 'utf8'),
+);
+const contratoPendientes = JSON.parse(
+  readFileSync(new URL('./tools/eslint-rules/contrato-pendientes.json', import.meta.url), 'utf8'),
 );
 
 export default [
@@ -114,6 +118,23 @@ export default [
     },
   },
   {
+    // API-08: las respuestas de urlApi se tipan con el contrato generado. Los servicios que
+    // aun usan interfaces escritas a mano estan en contrato-pendientes.json y salen con la
+    // migracion de pantallas; la lista solo baja.
+    files: ['apps/**/*.ts'],
+    ignores: ['**/*.spec.ts'],
+    plugins: {
+      'nianva-ts': {
+        rules: {
+          [respuestaContratoName]: respuestaContrato,
+        },
+      },
+    },
+    rules: {
+      [`nianva-ts/${respuestaContratoName}`]: 'error',
+    },
+  },
+  {
     files: ['**/*.html'],
     plugins: {
       nianva: {
@@ -155,6 +176,12 @@ export default [
     files: [ruta],
     rules: {
       [`nianva/${sinCargandoName}`]: 'off',
+    },
+  })),
+  ...contratoPendientes.map((ruta) => ({
+    files: [ruta],
+    rules: {
+      [`nianva-ts/${respuestaContratoName}`]: 'off',
     },
   })),
 ];

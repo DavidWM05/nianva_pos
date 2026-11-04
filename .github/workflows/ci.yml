@@ -180,6 +180,11 @@ jobs:
       - name: Verificar tokens generados
         run: node libs/ui/tokens/scripts/generate.mjs --check
 
+      # API-08: el job de backend comprueba que docs/api/openapi.json este al dia con el
+      # codigo; este paso, que los tipos del frontend esten al dia con ese archivo.
+      - name: Verificar tipos del contrato
+        run: node libs/api-contrato/scripts/generar.mjs --check
+
       - name: Revisar avisos de seguridad de produccion
         run: pnpm audit --prod
 

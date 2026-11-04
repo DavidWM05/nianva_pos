@@ -1,0 +1,20 @@
+{
+  "name": "api-contrato",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/api-contrato/src",
+  "projectType": "library",
+  "tags": ["type:core"],
+  "targets": {
+    "test": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "tsc -p libs/api-contrato/tsconfig.json --noEmit",
+          "vitest run libs/api-contrato"
+        ],
+        "parallel": false,
+        "cwd": "{workspaceRoot}"
+      }
+    }
+  }
+}

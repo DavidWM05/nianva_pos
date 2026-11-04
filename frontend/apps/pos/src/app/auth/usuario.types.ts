@@ -1,31 +1,21 @@
-/**
- * Espejo de UsuarioResource del backend
- * (backend/app/Modules/Nucleo/Http/Resources/UsuarioResource.php).
- */
-export interface Usuario {
-  id: number;
-  nombre: string;
-  apellido: string | null;
-  correo: string;
-  tenant_id: number | null;
-  sucursal_id: number | null;
-  es_superadmin: boolean;
-  roles: string[];
-  requiere_dos_factor: boolean;
-  dos_factor_confirmado: boolean;
-}
+import type { RespuestaDe, UsuarioResource } from '@nianva/api-contrato';
 
+/**
+ * UsuarioResource del backend
+ * (backend/app/Modules/Nucleo/Http/Resources/UsuarioResource.php), generado desde
+ * docs/api/openapi.json (API-08).
+ */
+export type Usuario = UsuarioResource;
+
+/*
+ * /login es una ruta de sesion de routes/web.php, fuera de la especificacion: su respuesta
+ * sigue escrita a mano.
+ */
 export interface LoginResponse {
   two_factor_required: boolean;
   user?: Usuario;
 }
 
-export interface TwoFactorSetupResponse {
-  secret: string;
-  otpauth_url: string;
-}
+export type TwoFactorSetupResponse = RespuestaDe<'/two-factor/qr-code', 'get'>;
 
-export interface TwoFactorConfirmResponse {
-  user: Usuario;
-  recovery_codes: string[];
-}
+export type TwoFactorConfirmResponse = RespuestaDe<'/two-factor/confirm', 'post'>;

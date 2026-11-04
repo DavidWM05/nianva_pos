@@ -16,6 +16,7 @@
     "useDefineForClassFields": false,
     "resolveJsonModule": true,
     "paths": {
+      "@nianva/api-contrato": ["./libs/api-contrato/src/index.ts"],
       "@nianva/ui-tokens": ["./libs/ui/tokens/src/index.ts"],
       "@nianva/ui-format": ["./libs/ui/format/src/index.ts"],
       "@nianva/ui-actions": ["./libs/ui/actions/src/index.ts"],

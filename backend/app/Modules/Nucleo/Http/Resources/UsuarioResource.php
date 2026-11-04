@@ -27,6 +27,7 @@ class UsuarioResource extends JsonResource
             'tenant_id' => $this->tenant_id,
             'sucursal_id' => $this->sucursal_id,
             'es_superadmin' => $this->esSuperadmin(),
+            /** @var list<string> */
             'roles' => $this->roles->pluck('nombre')->values(),
             'requiere_dos_factor' => $this->requiereDosFactor(),
             'dos_factor_confirmado' => $this->two_factor_confirmed_at !== null,
