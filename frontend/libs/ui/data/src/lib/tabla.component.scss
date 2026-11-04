@@ -40,3 +40,91 @@
 .ui-tabla__numero--peligro {
   color: var(--nv-peligro-texto);
 }
+
+.ui-tabla__tarjetas,
+.ui-tabla__tarjetas-skeleton {
+  display: grid;
+  gap: var(--nv-spacing-3);
+}
+
+.ui-tabla__tarjeta,
+.ui-tabla__tarjeta-skeleton,
+.ui-tabla__total-tarjeta {
+  display: grid;
+  gap: var(--nv-spacing-3);
+  min-width: 0;
+  padding: var(--nv-spacing-4);
+  border: 1px solid var(--nv-borde);
+  border-radius: var(--nv-radius-lg);
+  background: var(--nv-superficie);
+}
+
+.ui-tabla__tarjeta--inactiva {
+  opacity: 0.9;
+}
+
+.ui-tabla__tarjeta-titulo {
+  min-width: 0;
+}
+
+.ui-tabla__tarjeta-titulo h3,
+.ui-tabla__total-tarjeta h3 {
+  margin: 0;
+  color: var(--nv-texto);
+  font-size: var(--nv-font-size-lg);
+  font-weight: var(--nv-font-weight-semibold);
+  overflow-wrap: anywhere;
+}
+
+.ui-tabla__par {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--nv-spacing-3);
+  min-width: 0;
+}
+
+.ui-tabla__etiqueta {
+  color: var(--nv-texto-suave);
+  font-size: var(--nv-font-size-sm);
+}
+
+.ui-tabla__valor {
+  min-width: 0;
+  color: var(--nv-texto);
+  text-align: right;
+  overflow-wrap: anywhere;
+}
+
+.ui-tabla__tarjeta-acciones {
+  display: flex;
+  justify-content: flex-end;
+  padding-top: var(--nv-spacing-2);
+  border-top: 1px solid var(--nv-borde);
+}
+
+.ui-tabla__orden {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--nv-spacing-2);
+  color: var(--nv-texto);
+  font-size: var(--nv-font-size-sm);
+}
+
+.ui-tabla__orden select,
+.ui-tabla__orden button {
+  min-width: 0;
+  padding: var(--nv-spacing-1) var(--nv-spacing-2);
+  border: 1px solid var(--nv-borde);
+  border-radius: var(--nv-radius-md);
+  background: var(--nv-superficie);
+  color: var(--nv-texto);
+  font: inherit;
+}
+
+.ui-tabla__orden select:focus-visible,
+.ui-tabla__orden button:focus-visible {
+  outline: 2px solid var(--nv-foco);
+  outline-offset: 2px;
+}
