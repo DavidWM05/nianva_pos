@@ -1,0 +1,44 @@
+.ui-kpi {
+  display: grid;
+  gap: var(--nv-spacing-1);
+  padding: var(--nv-spacing-4);
+  border: 1px solid var(--nv-borde);
+  border-radius: var(--nv-radius-lg);
+  background: var(--nv-superficie);
+}
+
+.ui-kpi__etiqueta {
+  color: var(--nv-texto-suave);
+  font-size: var(--nv-font-size-sm);
+}
+
+.ui-kpi__valor {
+  color: var(--nv-texto);
+  font-size: var(--nv-font-size-2xl);
+  font-variant-numeric: tabular-nums;
+}
+
+.ui-kpi__carga {
+  display: grid;
+  gap: var(--nv-spacing-1);
+}
+
+.ui-kpi__variacion {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--nv-spacing-1);
+  font-size: var(--nv-font-size-sm);
+  font-weight: var(--nv-font-weight-medium);
+}
+
+.ui-kpi__variacion--exito {
+  color: var(--nv-exito-texto);
+}
+
+.ui-kpi__variacion--peligro {
+  color: var(--nv-peligro-texto);
+}
+
+.ui-kpi__variacion--neutro {
+  color: var(--nv-texto-suave);
+}

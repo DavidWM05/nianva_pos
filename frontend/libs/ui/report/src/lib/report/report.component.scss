@@ -1,0 +1,28 @@
+:host {
+  display: grid;
+  gap: var(--nv-spacing-4);
+}
+
+.ui-report__filtros,
+.ui-report__kpis,
+.ui-report__grafica,
+.ui-report__detalle {
+  min-width: 0;
+}
+
+.ui-report__kpis {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(var(--nv-spacing-16), 1fr));
+  gap: var(--nv-spacing-3);
+}
+
+.ui-report__grafica {
+  padding: var(--nv-spacing-4);
+  border: 1px solid var(--nv-borde);
+  border-radius: var(--nv-radius-lg);
+  background: var(--nv-superficie);
+}
+
+.ui-report__detalle {
+  display: block;
+}

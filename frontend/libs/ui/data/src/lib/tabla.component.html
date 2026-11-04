@@ -86,5 +86,33 @@
         }
       </tr>
     </ng-template>
+
+    @if (totales() !== null) {
+      <ng-template #footer>
+        <tr class="ui-tabla__totales">
+          @for (columna of columnas(); track columna.campo; let indice = $index) {
+            <td class="ui-tabla__total">
+              @if (indice === 0) {
+                Total
+              } @else if (hayTotal(columna)) {
+                @switch (columna.tipo) {
+                  @case ('dinero') {
+                    <span class="ui-tabla__numero">{{ totalDe(columna) | dinero }}</span>
+                  }
+                  @case ('cantidad') {
+                    <span class="ui-tabla__numero">
+                      {{ totalDe(columna) | cantidad: unidadTotal(columna) }}
+                    </span>
+                  }
+                  @case ('porcentaje') {
+                    <span class="ui-tabla__numero">{{ totalDe(columna) | porcentaje }}</span>
+                  }
+                }
+              }
+            </td>
+          }
+        </tr>
+      </ng-template>
+    }
   </p-table>
 }

@@ -1,0 +1,23 @@
+<ui-page-header [clave]="clave()">
+  <ui-btn-exportar acciones [exportando]="exportando()" (exportar)="exportar.emit()" />
+</ui-page-header>
+
+<ui-page [estado]="estado()" forma="listado" (reintentar)="reintentar.emit()">
+  <section class="ui-report__filtros">
+    <ng-content select="[filtros]" />
+  </section>
+
+  <section class="ui-report__kpis">
+    <ng-content select="[kpis]" />
+  </section>
+
+  @if (hayGrafica()) {
+    <section #graficaSeccion class="ui-report__grafica">
+      <ng-content select="[grafica]" />
+    </section>
+  }
+
+  <section class="ui-report__detalle">
+    <ng-content select="[detalle]" />
+  </section>
+</ui-page>
