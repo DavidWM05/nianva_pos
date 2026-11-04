@@ -958,13 +958,66 @@ repo.
     - con los valores reales pasan los 477 tests y la corrida completa de los 9 proyectos;
   - **no se pudo reproducir a voluntad,** ni con tres corridas de `pos` en simultáneo. El
     margen cubre el peor caso observado (11.3 s).
+- **`GET /api/v1/sesion` y el menú por permisos** (encargo 45a, hecho por Claude en un
+  worktree aparte, en paralelo con el 47 de DS):
+  - **backend, con el test primero** (`Nucleo/SesionTest`, 11 tests):
+    - `GET /sesion` devuelve el usuario (con `UsuarioResource`, la misma forma que `/user`),
+      la sucursal, los permisos, los módulos activos y la configuración regional;
+    - **permisos:** `Usuario::nombresPermisos()` es nuevo y lista los nombres ordenados; el
+      superadmin recibe todos, igual que en `tienePermiso()`;
+    - **módulos:** salen de `configuracion_tenant.modulos_activos` con
+      `ModuloActivo::activos()`, extraído del middleware para que el menú y el `modulo:`
+      apliquen la misma regla. La columna `features` del plan existe pero nada la lee; los
+      planes y sus límites son de la Fase 7;
+    - **regional:** `moneda` y `zona_horaria` de la configuración del tenant, y `locale`
+      derivado de `tenants.pais` (no hay columna de locale);
+    - `terminal` y `perfil_giro` van en `null`: no existen todavía (Fase 4 y Fase 7);
+    - va fuera de `two-factor.confirmed`, como `/user`, y está en `EXENTAS` de
+      `RutasConPermisoTest`;
+    - la lógica está en `Aplicacion/Sesion/ObtenerSesion` y la forma en
+      `Nucleo/Dtos/SesionDto`, para que Scramble infiera el esquema completo;
+      `docs/api/openapi.json` se regeneró;
+    - se agregaron `@property` a `Sucursal`, `Permiso` y `ConfiguracionTenant`, y genéricos a
+      las relaciones de `Usuario`. La línea base de PHPStan bajó de 1384 a 1379;
+  - **frontend:**
+    - `AuthStateService.initialize()` pide `/sesion` en vez de `/user`;
+    - `SesionActualService` guarda la sesión en señales;
+    - `CargaSesionService` la pide tras el login o el 2FA, que solo traen el usuario;
+    - el interceptor de 401 también exime `/sesion`;
+    - `FORMATO_REGIONAL` toma la moneda, la zona horaria y el locale de la sesión, con
+      getters (`provideFormatoRegionalDeSesion`);
+    - el menú oculta las entradas sin permiso o con su módulo apagado, y los grupos que
+      quedan vacíos. Cada entrada declara el `permiso` del GET con el que carga su
+      pantalla, y un test lee el seeder y `ModuloActivo` del backend para que no haya
+      erratas;
+    - verificación por mutación: si se ignora el módulo, fallan dos tests;
+  - **el menú solo oculta:** la autoridad sigue siendo el backend;
+  - backend 691 tests (11 nuevos); pos 496 (19 nuevos).
+- **`ui/report`: plantilla de reporte** (encargo 47, hecho por DS en paralelo con el 45a):
+  - **lib nueva `libs/ui/report`** (`@nianva/ui-report`, `type:ui`):
+    - `ui-report`: encabezado (`ui-page-header`) con `ui-btn-exportar`, estados con
+      `ui-page` y espacios `[filtros]`, `[kpis]`, `[grafica]` (sin hueco si no viene) y
+      `[detalle]`. No calcula cifras: llegan de la capa de métricas (ARQ-09, Fase 6);
+    - `ui-report-filtros`: rango de fechas en `YYYY-MM-DD` sin desfase de zona, y sucursal
+      con selector solo con `puedeElegirSucursal`;
+  - **en `ui/feedback`:** `ui-kpi`, con el formato de `ui/format` y la variación con tono,
+    flecha y texto para lectores de pantalla;
+  - **en `ui/data`:** `ui-tabla` acepta `totales` y pinta una fila de pie. Sin `totales` no
+    cambia nada;
+  - **corregido en la revisión, con su test primero (SEG-02):** sin `sucursales.todas` y sin
+    `sucursalUsuario`, el filtro tomaba la primera sucursal de la lista como la del usuario,
+    y mostraba y enviaba una ajena. Ahora muestra "Tu sucursal" y manda `null`, para que el
+    backend use la del usuario (`SucursalOperacion::paraFiltro`);
+  - **pendiente para la Fase 6:** la librería de gráficas (no hay ninguna instalada), la
+    capa de métricas, el generador `ui-reporte` y migrar los 4 reportes;
+  - DS no tenía la salida en rojo previa;
+  - ui-report 11, ui-feedback 37 y ui-data 25 tests.
 - **Pendientes detectados:**
   - el aviso "Invalid PrimeUI License" aparece en toda la app y viene de la base heredada
     (nucleo-erp-base). Hay que revisar qué componente, tema o paquete de PrimeNG pide
     licencia, y retirarlo o configurarlo;
-  - `FORMATO_REGIONAL` aún no lee la configuración del tenant (`moneda`, `zona_horaria`). Si
-    `moneda` es un código como `USD`, `dinero` da `USD1,250.50`, sin espacio. Se resuelve al
-    conectarlo;
+  - `FORMATO_REGIONAL` ya lee la configuración del tenant (45a), pero si `moneda` es un código
+    como `USD`, `dinero` da `USD1,250.50`, sin espacio;
   - las libs de feature aún no existen. Los patrones `feature/**` de `stylelint.config.mjs` y
     de `ui-baseline.mjs` apuntan a `frontend/feature/`. Al crear la primera, se ajustan a su
     ruta real;
@@ -1068,11 +1121,14 @@ repo.
       - ~~44b: `ui-modal` y `ui-drawer`, `confirm` en tono de peligro, `ui-alert` y
         botones de envío con indicador (UI-13, UI-18)~~, hecho. `allowBindToStyle` se
         retira de las pantallas en la migración;
-   9. contrato generado con **openapi-typescript**: tipos en las libs `domain/*` desde
-      `docs/api/openapi.json`, sin interfaces escritas a mano (API-08 del frontend, API-09);
+   9. contrato y sesión, en dos PRs:
+      - ~~45a: `GET /sesion` con permisos, módulos y formato regional, y el menú filtrado
+        (API-09)~~, hecho;
+      - 45b: tipos generados con **openapi-typescript** desde `docs/api/openapi.json` en las
+        libs `domain/*`, sin interfaces escritas a mano (API-08 del frontend);
    10. catálogo visual `catalogo-ui`, regresión visual con **Playwright** (claro, oscuro y 375,
        768 y 1280 px) y axe (UI-14, UI-03, UI-17);
-   11. `ui/report`, solo el componente (UI-10);
+   11. ~~`ui/report`, solo el componente (UI-10)~~, hecho en el encargo 47;
    12. migración de **las 110 pantallas** a `libs/ui`, en lotes por módulo, que también
        reemplaza los 35 textos "Cargando…" por los estados de carga (UI-18). Los congelados
        van con cambio mínimo. Al terminar se retiran `design-tokens` y `ui-shared` (C10, UI-02
