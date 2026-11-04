@@ -27,7 +27,11 @@ export default defineConfig({
     toHaveScreenshot: {
       animations: 'disabled',
       caret: 'hide',
-      maxDiffPixelRatio: 0.01,
+      // Tolerancia absoluta, no proporcional: las capturas son de pagina completa (hasta ~3
+      // millones de pixeles) y un 1% dejaba pasar un cambio del tamano de un boton. Cambiar el
+      // color del texto de un solo badge da ~125 pixeles distintos. Las referencias salen del
+      // mismo runner de Linux con el Chromium fijado, asi que solo cubre antialias.
+      maxDiffPixels: 20,
     },
   },
   snapshotPathTemplate: '{testDir}/__screenshots__/{platform}/{arg}{ext}',

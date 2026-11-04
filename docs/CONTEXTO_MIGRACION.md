@@ -1046,8 +1046,8 @@ repo.
     propio `TemaService` (misma clave y clase que el de `pos`);
   - **`apps/catalogo-ui-e2e`** (Playwright 1.64.1 y @axe-core/playwright 4.14.0, solo
     Chromium), corre con `nx e2e catalogo-ui-e2e`, fuera de `run-many -t test`:
-    - 54 capturas: 9 rutas × claro y oscuro × 375, 768 y 1280 px, con `maxDiffPixelRatio`
-      0.01;
+    - 54 capturas de página completa: 9 rutas × claro y oscuro × 375, 768 y 1280 px, con
+      `maxDiffPixels: 20`;
     - 21 pruebas de accesibilidad: axe WCAG 2 A y AA por ruta y tema, foco visible con Tab y
       `aria-label` en los botones de solo icono;
     - verificado por mutación: con otro color de fondo falla la captura, y sin el
@@ -1070,13 +1070,27 @@ repo.
       `pos`. Ahora está en `foco.css`, que cargan las dos apps (`foco-compartido.spec.ts`);
     - el `.gitignore` vuelve a excluir todo `__screenshots__/` salvo el del catálogo;
     - el presupuesto inicial del catálogo, una herramienta interna, sube a 1 MB de aviso;
+  - **corregido al revisar las primeras capturas de Linux** (no se versionaron):
+    - medían 900 px: en `ui-shell` se desplaza `<main>`, no la página, y `fullPage` solo
+      tomaba la ventana. El test quita ese scroll antes de capturar;
+    - el menú eran enlaces sueltos que en escritorio salían en una línea y empujaban el
+      contenido a la mitad derecha. Ahora es un `p-menu`;
+    - el aviso de licencia de PrimeNG tapaba contenido; el test lo oculta;
+    - `maxDiffPixelRatio: 0.01` sobre páginas de hasta ~3 millones de píxeles dejaba pasar
+      un cambio del tamaño de un botón. Con `maxDiffPixels: 20`, pintar de rojo el texto de
+      un badge (~125 píxeles) hace fallar la captura; con la tolerancia anterior pasaba;
   - **para revisar en el catálogo:** el badge al 5% casi no se tiñe y la fila inactiva a 0.9
     casi no se distingue. Si no convencen, la salida es oscurecer los tokens `*-texto`;
   - ui-tokens 28, ui-feedback 38 y ui-layout 27 tests; e2e 75.
 - **Pendientes detectados:**
-  - el aviso "Invalid PrimeUI License" aparece en toda la app y viene de la base heredada
-    (nucleo-erp-base). Hay que revisar qué componente, tema o paquete de PrimeNG pide
-    licencia, y retirarlo o configurarlo;
+  - el aviso "Invalid PrimeUI License" aparece en toda la app. **Causa (revisada en el 46):**
+    PrimeNG 22 trae un verificador de licencia offline (`@primeui/license-manager`);
+    `providePrimeNG` llama a `verifyLicense('primeui', { releaseDate })` y, sin una clave en
+    `providePrimeNG({ license })`, responde "No license key configured for PrimeUI" y muestra
+    el aviso (`#p-license-host`). **Decisión del responsable:** comprar la licencia PrimeUI
+    o fijar una versión de PrimeNG que no la pida. Las capturas del catálogo lo ocultan;
+  - a 375 px, `ui-page-header` corta su acción ("Exportar") y `ui-tabla` se desborda, porque no
+    tiene modo tarjeta (UI-04). Se ve en las capturas del catálogo;
   - `FORMATO_REGIONAL` ya lee la configuración del tenant (45a), pero si `moneda` es un código
     como `USD`, `dinero` da `USD1,250.50`, sin espacio;
   - las libs de feature aún no existen. Los patrones `feature/**` de `stylelint.config.mjs` y
