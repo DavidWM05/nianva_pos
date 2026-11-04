@@ -4099,18 +4099,6 @@ parameters:
 			path: app/Modules/Nucleo/Http/Controllers/AuthController.php
 
 		-
-			message: '#^Access to an undefined property App\\Modules\\Nucleo\\Models\\ConfiguracionSeguridad\:\:\$dias_dispositivo_admin\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Modules/Nucleo/Http/Controllers/ConfiguracionSeguridadController.php
-
-		-
-			message: '#^Access to an undefined property App\\Modules\\Nucleo\\Models\\ConfiguracionSeguridad\:\:\$dias_dispositivo_normal\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Modules/Nucleo/Http/Controllers/ConfiguracionSeguridadController.php
-
-		-
 			message: '#^Method App\\Modules\\Nucleo\\Http\\Controllers\\ConfiguracionSeguridadController\:\:show\(\) has no return type specified\.$#'
 			identifier: missingType.return
 			count: 1

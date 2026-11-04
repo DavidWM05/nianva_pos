@@ -58,6 +58,7 @@ export const CODIGOS_ERROR = [
   'puntos_no_generados',
   'servicio_no_disponible',
   'sesion_expirada',
+  'sesion_inactiva',
   'sin_cliente',
   'sin_empleados',
   'sin_permiso',

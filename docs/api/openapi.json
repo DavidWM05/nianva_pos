@@ -1675,23 +1675,11 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "",
+                        "description": "`ConfiguracionSeguridadResource`",
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "dias_dispositivo_normal": {
-                                            "type": "integer"
-                                        },
-                                        "dias_dispositivo_admin": {
-                                            "type": "integer"
-                                        }
-                                    },
-                                    "required": [
-                                        "dias_dispositivo_normal",
-                                        "dias_dispositivo_admin"
-                                    ]
+                                    "$ref": "#/components/schemas/ConfiguracionSeguridadResource"
                                 }
                             }
                         }
@@ -1721,23 +1709,11 @@
                 },
                 "responses": {
                     "200": {
-                        "description": "",
+                        "description": "`ConfiguracionSeguridadResource`",
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "dias_dispositivo_normal": {
-                                            "type": "integer"
-                                        },
-                                        "dias_dispositivo_admin": {
-                                            "type": "integer"
-                                        }
-                                    },
-                                    "required": [
-                                        "dias_dispositivo_normal",
-                                        "dias_dispositivo_admin"
-                                    ]
+                                    "$ref": "#/components/schemas/ConfiguracionSeguridadResource"
                                 }
                             }
                         }
@@ -9822,11 +9798,17 @@
                         "type": "integer",
                         "minimum": 1,
                         "maximum": 90
+                    },
+                    "minutos_inactividad": {
+                        "type": "integer",
+                        "minimum": 5,
+                        "maximum": 480
                     }
                 },
                 "required": [
                     "dias_dispositivo_normal",
-                    "dias_dispositivo_admin"
+                    "dias_dispositivo_admin",
+                    "minutos_inactividad"
                 ],
                 "title": "ActualizarConfiguracionSeguridadRequest"
             },
@@ -10452,6 +10434,26 @@
                     "fecha_registro"
                 ],
                 "title": "ClienteResource"
+            },
+            "ConfiguracionSeguridadResource": {
+                "type": "object",
+                "properties": {
+                    "dias_dispositivo_normal": {
+                        "type": "integer"
+                    },
+                    "dias_dispositivo_admin": {
+                        "type": "integer"
+                    },
+                    "minutos_inactividad": {
+                        "type": "integer"
+                    }
+                },
+                "required": [
+                    "dias_dispositivo_normal",
+                    "dias_dispositivo_admin",
+                    "minutos_inactividad"
+                ],
+                "title": "ConfiguracionSeguridadResource"
             },
             "ConfiguracionTenantResource": {
                 "type": "object",

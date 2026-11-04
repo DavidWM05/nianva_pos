@@ -1354,6 +1354,12 @@
                 "default": null
             },
             {
+                "nombre": "minutos_inactividad",
+                "tipo": "integer",
+                "nullable": false,
+                "default": "'30'"
+            },
+            {
                 "nombre": "tenant_id",
                 "tipo": "integer",
                 "nullable": false,

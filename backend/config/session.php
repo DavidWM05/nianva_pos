@@ -32,7 +32,10 @@ return [
     |
     */
 
-    'lifetime' => (int) env('SESSION_LIFETIME', 120),
+    // SEG-06: el tenant puede elegir hasta 480 minutos; Laravel no debe
+    // cerrar la sesión antes que ese límite. ExpirarSesionInactiva aplica
+    // el valor real de cada tenant.
+    'lifetime' => (int) env('SESSION_LIFETIME', 480),
 
     'expire_on_close' => env('SESSION_EXPIRE_ON_CLOSE', false),
 

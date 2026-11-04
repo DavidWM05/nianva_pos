@@ -61,6 +61,7 @@ Generado con `php artisan errores:catalogo` desde las excepciones de negocio y e
 | `puntos_no_generados` | 422 | `App\Modules\CrmAvanzado\Exceptions\PuntosNoGeneradosException` | CrmAvanzado | — |
 | `servicio_no_disponible` | 503 | `App\Modules\Nucleo\Support\MapaErroresHttp` | Nucleo | - |
 | `sesion_expirada` | 419 | `App\Modules\Nucleo\Support\MapaErroresHttp` | Nucleo | - |
+| `sesion_inactiva` | 401 | `App\Modules\Nucleo\Exceptions\SesionInactivaException` | Nucleo | — |
 | `sin_cliente` | 422 | `App\Modules\Cotizaciones\Exceptions\SinClienteException` | Cotizaciones | — |
 | `sin_empleados` | 422 | `App\Modules\Payroll\Exceptions\SinEmpleadosException` | Payroll | — |
 | `sin_permiso` | 403 | `App\Modules\Nucleo\Support\MapaErroresHttp` | Nucleo | - |
