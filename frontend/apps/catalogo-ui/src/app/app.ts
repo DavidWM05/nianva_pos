@@ -1,6 +1,8 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
-import { RouterLink, RouterOutlet } from '@angular/router';
+import { RouterOutlet } from '@angular/router';
+import { MenuItem } from 'primeng/api';
 import { Button } from 'primeng/button';
+import { Menu } from 'primeng/menu';
 import { ConfirmDialogHostComponent, ToastHostComponent } from '@nianva/ui-feedback';
 import { ShellComponent } from '@nianva/ui-layout';
 
@@ -10,13 +12,11 @@ import { TemaService } from './tema.service';
 @Component({
   selector: 'cat-root',
   standalone: true,
-  imports: [Button, ConfirmDialogHostComponent, RouterLink, RouterOutlet, ShellComponent, ToastHostComponent],
+  imports: [Button, ConfirmDialogHostComponent, Menu, RouterOutlet, ShellComponent, ToastHostComponent],
   template: `
     <ui-shell>
-      <nav menu>
-        @for (enlace of enlaces; track enlace.clave) {
-          <a [routerLink]="enlace.ruta === '' ? '/' : '/' + enlace.ruta">{{ enlace.nombre }}</a>
-        }
+      <nav menu aria-label="Secciones del catálogo">
+        <p-menu [model]="enlaces" />
       </nav>
       <div encabezado>
         <strong>Catálogo UI</strong>
@@ -35,5 +35,11 @@ import { TemaService } from './tema.service';
 })
 export class App {
   protected readonly tema = inject(TemaService);
-  protected readonly enlaces = CATALOGO_NAVEGACION;
+  // p-menu en vez de enlaces sueltos: en el espacio [menu] del shell, unos <a> sin estilo se
+  // pintaban en una sola linea y empujaban el contenido a la mitad derecha.
+  protected readonly enlaces: MenuItem[] = CATALOGO_NAVEGACION.map((enlace) => ({
+    label: enlace.nombre,
+    icon: enlace.icono,
+    routerLink: enlace.ruta === '' ? '/' : `/${enlace.ruta}`,
+  }));
 }
