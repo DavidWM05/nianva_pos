@@ -1082,6 +1082,29 @@ repo.
   - **para revisar en el catálogo:** el badge al 5% casi no se tiñe y la fila inactiva a 0.9
     casi no se distingue. Si no convencen, la salida es oscurecer los tokens `*-texto`;
   - ui-tokens 28, ui-feedback 38 y ui-layout 27 tests; e2e 75.
+- **Responsivo en `libs/ui`** (encargo 48a, hecho por DS; desde aquí, los encargos que
+  quedan de la Fase 2 son de DS, uno a la vez):
+  - **`ui-tabla` en tarjetas** por debajo de `md` (`PantallaService`, sin `@media`): una
+    tarjeta por fila, con la columna principal como título, las demás como pares
+    etiqueta–valor con el mismo pipe y badge, y las acciones al pie. Tiene skeleton de
+    tarjeta, fila inactiva, tarjeta de totales, paginador propio y orden con un selector.
+    Desde `md` no cambia nada, ni la API pública;
+  - **e2e `responsivo.spec.ts`:** las 9 rutas del catálogo, a 375, 768 y 1280 px, no se
+    desbordan. Antes, `/data` medía 518 px a 375. El corte de "Exportar" en
+    `ui-page-header` venía de ese desborde;
+  - **corregido en la revisión, con el test primero:**
+    - el e2e comparaba `<main>` contra la ventana, pero desde `md` el menú ocupa ~200 px:
+      un desborde dentro de `main` pasaba. Ahora lo compara contra su propio ancho;
+      verificado con un `ui-kpi` de 700 px (falla "main 700px > 568px");
+    - en tarjetas, cambiar el orden conservaba la página; ahora vuelve a la 1, como
+      `p-table`;
+    - el selector de orden tenía un `id` fijo, que se repetía con dos tablas en la
+      pantalla; ahora es único por instancia;
+    - DS quitó los acentos y parte del detalle de las filas UI-04 y UI-14 de
+      `SEGUIMIENTO_FASES.md`; se restauraron;
+  - verificado por mutación: sin el modo tarjeta fallan 3 tests unitarios y el e2e de
+    `/data` a 375;
+  - ui-data 31 tests (6 nuevos); e2e 102 (27 nuevos).
 - **Pendientes detectados:**
   - el aviso "Invalid PrimeUI License" aparece en toda la app. **Causa (revisada en el 46):**
     PrimeNG 22 trae un verificador de licencia offline (`@primeui/license-manager`);
@@ -1089,8 +1112,8 @@ repo.
     `providePrimeNG({ license })`, responde "No license key configured for PrimeUI" y muestra
     el aviso (`#p-license-host`). **Decisión del responsable:** comprar la licencia PrimeUI
     o fijar una versión de PrimeNG que no la pida. Las capturas del catálogo lo ocultan;
-  - a 375 px, `ui-page-header` corta su acción ("Exportar") y `ui-tabla` se desborda, porque no
-    tiene modo tarjeta (UI-04). Se ve en las capturas del catálogo;
+  - ~~a 375 px, `ui-page-header` corta su acción ("Exportar") y `ui-tabla` se desborda~~,
+    resuelto en el 48a: el corte venía del desborde de la tabla;
   - `FORMATO_REGIONAL` ya lee la configuración del tenant (45a), pero si `moneda` es un código
     como `USD`, `dinero` da `USD1,250.50`, sin espacio;
   - las libs de feature aún no existen. Los patrones `feature/**` de `stylelint.config.mjs` y
@@ -1104,8 +1127,7 @@ repo.
     timeouts, más arriba;
   - `VentaController` y `CompraController` toman el tenant de `$request->user()` y el resto
     de `TenantContext` (equivalentes); se unifica al migrar a FormRequest (C8);
-  - `ui-tabla` no pasa a tarjetas en pantalla angosta (UI-04): se agrega antes de migrar los
-    listados;
+  - ~~`ui-tabla` no pasa a tarjetas en pantalla angosta (UI-04)~~, hecho en el 48a;
   - el `TemaService` está duplicado en `pos` y en el catálogo. Pasa a una lib cuando `pos`
     tenga interruptor de tema;
   - `openapi-typescript` 7.13.0 declara TypeScript 5 como peer y el repo usa el 6: genera bien,
