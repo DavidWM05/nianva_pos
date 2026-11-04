@@ -141,6 +141,8 @@
     (onPageChange)="onPagina($event)"
   />
 } @else {
+  <!-- UI-04: si las columnas no caben, la tabla se desplaza dentro de su contenedor; la pagina no. -->
+  <div class="ui-tabla__desplazable">
   <p-table
     [value]="filas()"
     [columns]="columnasTabla()"
@@ -245,4 +247,5 @@
       </ng-template>
     }
   </p-table>
+  </div>
 }

@@ -1,5 +1,8 @@
 .ui-section {
   display: grid;
+  // Sin esto, la columna implicita toma el ancho minimo del contenido: una tabla ancha
+  // estiraba la seccion y desbordaba la pagina.
+  grid-template-columns: minmax(0, 1fr);
   gap: var(--nv-spacing-3);
   margin-bottom: var(--nv-spacing-6);
 
