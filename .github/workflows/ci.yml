@@ -276,6 +276,77 @@ jobs:
           if-no-files-found: ignore
           retention-days: 7
 
+  e2e-backend:
+    name: e2e con backend
+    runs-on: ubuntu-latest
+    steps:
+      - name: Obtener el codigo
+        uses: actions/checkout@v4
+
+      - name: Configurar PHP 8.3
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: pdo_sqlite, sqlite3, mbstring, bcmath, intl
+          coverage: none
+
+      - name: Obtener el directorio de cache de Composer
+        id: composer-cache
+        working-directory: backend
+        run: echo "dir=$(composer config cache-files-dir)" >> "$GITHUB_OUTPUT"
+
+      - name: Cachear dependencias de Composer
+        uses: actions/cache@v4
+        with:
+          path: |
+            ${{ steps.composer-cache.outputs.dir }}
+            backend/vendor
+          key: composer-${{ runner.os }}-php-8.3-${{ hashFiles('backend/composer.lock') }}
+          restore-keys: |
+            composer-${{ runner.os }}-php-8.3-
+
+      - name: Instalar dependencias de Composer
+        working-directory: backend
+        run: composer install --no-interaction --prefer-dist --no-progress
+
+      - name: Preparar entorno del backend
+        working-directory: backend
+        run: |
+          cp .env.example .env
+          php artisan key:generate
+
+      - name: Configurar pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          package_json_file: frontend/package.json
+
+      - name: Configurar Node.js 22 y cache de pnpm
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22.20.0'
+          cache: pnpm
+          cache-dependency-path: frontend/pnpm-lock.yaml
+
+      - name: Instalar dependencias del frontend
+        working-directory: frontend
+        run: pnpm install --frozen-lockfile
+
+      - name: Instalar Chromium de Playwright
+        working-directory: frontend
+        run: pnpm exec playwright install --with-deps chromium
+
+      - name: Ejecutar e2e con backend
+        working-directory: frontend
+        run: pnpm nx e2e pos-e2e
+
+      - name: Subir reporte de Playwright si falla
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pos-e2e-playwright-report
+          path: frontend/apps/pos-e2e/playwright-report
+          retention-days: 7
+
   escaneo-skip:
     name: Escaneo de skip sin referencia
     runs-on: ubuntu-latest
