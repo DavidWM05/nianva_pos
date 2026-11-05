@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
-import { ButtonDirective } from 'primeng/button';
+import { MatButton } from '@angular/material/button';
 import { CantidadPipe } from '@nianva/ui-format';
 
 import { MetaListado } from './listado.types';
@@ -7,7 +7,7 @@ import { MetaListado } from './listado.types';
 @Component({
   selector: 'ui-filter-bar',
   standalone: true,
-  imports: [ButtonDirective, CantidadPipe],
+  imports: [CantidadPipe, MatButton],
   template: `
     <div class="ui-filter-bar">
       <div class="ui-filter-bar__filtros">
@@ -18,8 +18,8 @@ import { MetaListado } from './listado.types';
           Mostrando {{ inicio() | cantidad }}–{{ fin() | cantidad }} de {{ total() | cantidad }}
         </span>
         @if (hayFiltros()) {
-          <button pButton type="button" severity="secondary" [text]="true" (click)="limpiar.emit()">
-            <i class="pi pi-filter-slash" aria-hidden="true"></i>
+          <button matButton="text" type="button" (click)="limpiar.emit()">
+            <i class="pi pi-filter-slash ui-filter-bar__icono-limpiar" matButtonIcon aria-hidden="true"></i>
             <span>Limpiar</span>
           </button>
         }

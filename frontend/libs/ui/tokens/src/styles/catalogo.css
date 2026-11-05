@@ -15,3 +15,27 @@ body {
 a {
   color: var(--nv-primario);
 }
+
+/* Navegacion del catalogo. Vive aqui y no en app.ts: la app del catalogo no tiene estilos
+   propios (UI-16), y un bloque styles en un componente no lo cuenta ui-baseline. */
+.cat-nav {
+  min-width: 15rem;
+  height: 100%;
+  background: var(--nv-superficie);
+  border-right: 1px solid var(--nv-borde);
+}
+
+.cat-nav .cat-nav__activo {
+  background: var(--nv-fondo-elevado);
+  color: var(--nv-primario);
+}
+
+.mat-mdc-unelevated-button.cat-boton-peligro {
+  background: var(--nv-peligro) !important;
+  color: var(--nv-texto-invertido) !important;
+}
+
+.mat-mdc-outlined-button.cat-boton-aviso {
+  border-color: var(--nv-advertencia) !important;
+  color: var(--nv-advertencia-texto) !important;
+}

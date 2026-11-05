@@ -22,6 +22,10 @@ export default [
   {
     files: ['**/*.ts'],
     rules: {
+      'no-restricted-imports': [
+        'error',
+        { patterns: ['primeng/button', 'primeng/menu', 'primeng/tooltip'] },
+      ],
       '@angular-eslint/directive-selector': [
         'error',
         {

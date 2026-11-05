@@ -23,7 +23,10 @@
     <div class="ui-page__error" role="alert">
       <i class="pi pi-exclamation-circle" aria-hidden="true"></i>
       <p>{{ mensajeError() }}</p>
-      <p-button label="Reintentar" icon="pi pi-refresh" severity="secondary" (click)="reintentar.emit()" />
+      <button matButton="outlined" type="button" (click)="reintentar.emit()">
+        <i class="pi pi-refresh ui-page__icono-reintentar" matButtonIcon aria-hidden="true"></i>
+        <span>Reintentar</span>
+      </button>
     </div>
   }
   @default {

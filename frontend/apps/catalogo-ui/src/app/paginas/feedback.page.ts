@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
-import { Button } from 'primeng/button';
+import { MatButton } from '@angular/material/button';
 import {
   AlertComponent,
   BadgeComponent,
@@ -14,7 +14,7 @@ import { PageHeaderComponent, SectionComponent } from '@nianva/ui-layout';
 @Component({
   selector: 'cat-feedback-page',
   standalone: true,
-  imports: [AlertComponent, BadgeComponent, Button, KpiComponent, PageHeaderComponent, SectionComponent, SkeletonComponent],
+  imports: [AlertComponent, BadgeComponent, KpiComponent, MatButton, PageHeaderComponent, SectionComponent, SkeletonComponent],
   template: `
     <ui-page-header clave="catalogo-feedback" subtitulo="Estados, alertas, KPI y mensajes" />
 
@@ -34,8 +34,8 @@ import { PageHeaderComponent, SectionComponent } from '@nianva/ui-layout';
     </ui-section>
 
     <ui-section titulo="Indicador con umbral">
-      <p-button label="Simular carga" severity="secondary" (onClick)="simulando.set(!simulando())" />
-      <p-button label="Acción en curso" [loading]="indicador()" [disabled]="simulando()" />
+      <p><button matButton="outlined" type="button" (click)="simulando.set(!simulando())">Simular carga</button>
+      <button matButton="filled" type="button" [showProgress]="indicador()" [disabled]="simulando()">Acción en curso</button></p>
     </ui-section>
 
     <ui-section titulo="Alertas fijas">
@@ -55,13 +55,13 @@ import { PageHeaderComponent, SectionComponent } from '@nianva/ui-layout';
 
     <ui-section titulo="Toasts y confirmaciones">
       <p>
-        <p-button label="Toast éxito" (onClick)="toast.success('Venta registrada.')" />
-        <p-button label="Toast error" severity="danger" (onClick)="toast.error('No se pudo guardar.')" />
-        <p-button label="Toast aviso" severity="warn" (onClick)="toast.warn('Revisa el inventario.')" />
+        <button matButton="filled" type="button" (click)="toast.success('Venta registrada.')">Toast éxito</button>
+        <button matButton="filled" class="cat-boton-peligro" type="button" (click)="toast.error('No se pudo guardar.')">Toast error</button>
+        <button matButton="outlined" class="cat-boton-aviso" type="button" (click)="toast.warn('Revisa el inventario.')">Toast aviso</button>
       </p>
       <p>
-        <p-button label="Confirmar" severity="secondary" (onClick)="confirmar()" />
-        <p-button label="Eliminar venta" severity="danger" (onClick)="eliminar()" />
+        <button matButton="outlined" type="button" (click)="confirmar()">Confirmar</button>
+        <button matButton="filled" class="cat-boton-peligro" type="button" (click)="eliminar()">Eliminar venta</button>
       </p>
       @if (resultado()) {
         <p>Resultado: {{ resultado() }}</p>

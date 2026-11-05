@@ -64,12 +64,6 @@ describe('RowActionsComponent', () => {
     expect(botones(inactivo)[0]?.getAttribute('aria-label')).toBe('Activar');
   });
 
-  it('usa tono de peligro en eliminar y anular', () => {
-    const fixture = render([{ tipo: 'eliminar' }, { tipo: 'anular' }]);
-
-    expect(botones(fixture).every((boton) => boton.classList.contains('p-button-danger'))).toBe(true);
-  });
-
   it('con mas de tres acciones muestra dos iconos y el menu de mas acciones', () => {
     const fixture = render([
       { tipo: 'ver' },

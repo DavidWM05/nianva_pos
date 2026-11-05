@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
-import { Button } from 'primeng/button';
+import { MatButton } from '@angular/material/button';
 import {
   FormActionsComponent,
   PageComponent,
@@ -11,7 +11,7 @@ import {
 @Component({
   selector: 'cat-layout-page',
   standalone: true,
-  imports: [Button, FormActionsComponent, PageComponent, PageHeaderComponent, SectionComponent],
+  imports: [FormActionsComponent, MatButton, PageComponent, PageHeaderComponent, SectionComponent],
   template: `
     <ui-page-header clave="catalogo-layout" subtitulo="Encabezado, estados de página y secciones" />
 
@@ -43,8 +43,8 @@ import {
         <p>Contenido de una sección.</p>
       </ui-section>
       <ui-form-actions>
-        <p-button label="Cancelar" severity="secondary" />
-        <p-button label="Guardar" />
+        <button matButton="outlined" type="button">Cancelar</button>
+        <button matButton="filled" type="button">Guardar</button>
       </ui-form-actions>
     </ui-section>
   `,
