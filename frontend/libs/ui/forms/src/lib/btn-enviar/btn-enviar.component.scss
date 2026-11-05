@@ -15,7 +15,7 @@
 }
 
 .ui-btn-enviar:hover:not(:disabled) {
-  background: var(--nv-color-primary-700);
+  background: color-mix(in srgb, var(--nv-primario) 88%, var(--nv-texto));
 }
 
 .ui-btn-enviar:focus-visible {

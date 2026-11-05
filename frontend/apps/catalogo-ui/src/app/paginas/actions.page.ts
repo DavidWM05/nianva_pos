@@ -1,11 +1,12 @@
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
+import { Button } from 'primeng/button';
 import { BotonCrearComponent, BotonExportarComponent, RowActionsComponent } from '@nianva/ui-actions';
 import { PageHeaderComponent, SectionComponent } from '@nianva/ui-layout';
 
 @Component({
   selector: 'cat-actions-page',
   standalone: true,
-  imports: [BotonCrearComponent, BotonExportarComponent, PageHeaderComponent, RowActionsComponent, SectionComponent],
+  imports: [BotonCrearComponent, BotonExportarComponent, Button, PageHeaderComponent, RowActionsComponent, SectionComponent],
   template: `
     <ui-page-header clave="catalogo-actions" subtitulo="Acciones de página y de fila" />
 
@@ -17,7 +18,7 @@ import { PageHeaderComponent, SectionComponent } from '@nianva/ui-layout';
 
     <ui-section titulo="Exportar">
       <p><ui-btn-exportar [exportando]="exportando()" (exportar)="exportando.set(true)" /></p>
-      <button type="button" (click)="exportando.set(false)">Terminar exportación</button>
+      <p-button label="Terminar exportación" severity="secondary" (onClick)="exportando.set(false)" />
     </ui-section>
 
     <ui-section titulo="Acciones de fila">

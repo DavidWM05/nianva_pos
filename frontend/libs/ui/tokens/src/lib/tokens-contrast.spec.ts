@@ -42,4 +42,13 @@ describe('contraste de tokens semanticos', () => {
       });
     }
   }
+
+  for (const tema of ['light', 'dark'] as Tema[]) {
+    it(`${tema}: deshabilitado-texto/deshabilitado-fondo cumple 4.5:1`, () => {
+      const colores = tokens.semantic[tema] as Record<string, string>;
+      const ratio = contraste(colores['deshabilitado-fondo'], colores['deshabilitado-texto']);
+
+      expect(ratio, `deshabilitado-texto/deshabilitado-fondo en ${tema}: ${ratio.toFixed(2)}`).toBeGreaterThanOrEqual(4.5);
+    });
+  }
 });

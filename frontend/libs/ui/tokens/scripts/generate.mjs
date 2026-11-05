@@ -78,6 +78,7 @@ const aliasCss = alias.map(([viejo, nuevo]) => `  ${viejo}: var(${nuevo});`).joi
 
 const css = `/* Generado por scripts/generate.mjs. No editar a mano. */
 :root {
+  color-scheme: light;
 ${primitivos.map(([nombre, valor]) => `  ${nombre}: ${valor};`).join('\n')}
 
 ${bloques('light')}
@@ -88,6 +89,7 @@ ${aliasCss}
 }
 
 .nv-tema-oscuro {
+  color-scheme: dark;
 ${bloques('dark')}
 }
 `;

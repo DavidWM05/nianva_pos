@@ -1,5 +1,6 @@
 /* Generado por scripts/generate.mjs. No editar a mano. */
 :root {
+  color-scheme: light;
   --nv-color-primary-50: #eff6ff;
   --nv-color-primary-100: #dbeafe;
   --nv-color-primary-200: #bfdbfe;
@@ -73,6 +74,8 @@
   --nv-texto: #0f172a;
   --nv-texto-suave: #475569;
   --nv-texto-invertido: #ffffff;
+  --nv-deshabilitado-fondo: #f1f5f9;
+  --nv-deshabilitado-texto: #475569;
   --nv-primario: #2563eb;
   --nv-primario-texto: #ffffff;
   --nv-peligro: #dc2626;
@@ -141,6 +144,7 @@
 }
 
 .nv-tema-oscuro {
+  color-scheme: dark;
   --nv-fondo: #0f172a;
   --nv-fondo-elevado: #1e293b;
   --nv-superficie: #1e293b;
@@ -148,6 +152,8 @@
   --nv-texto: #f8fafc;
   --nv-texto-suave: #cbd5e1;
   --nv-texto-invertido: #0f172a;
+  --nv-deshabilitado-fondo: #334155;
+  --nv-deshabilitado-texto: #cbd5e1;
   --nv-primario: #60a5fa;
   --nv-primario-texto: #0f172a;
   --nv-peligro: #f87171;

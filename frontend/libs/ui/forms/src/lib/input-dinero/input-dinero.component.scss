@@ -22,6 +22,6 @@
 }
 
 .ui-input-dinero input:disabled {
-  background: var(--nv-color-surface-100);
-  color: var(--nv-texto-suave);
+  background: var(--nv-deshabilitado-fondo);
+  color: var(--nv-deshabilitado-texto);
 }

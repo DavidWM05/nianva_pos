@@ -59,7 +59,7 @@ import { FormActionsComponent, PageHeaderComponent, SectionComponent } from '@ni
       @if (pinCompleto()) {
         <p>PIN completo capturado.</p>
       }
-      <p><button type="button" (click)="simularError()">Mostrar error de servidor</button></p>
+      <p><p-button label="Mostrar error de servidor" severity="secondary" (onClick)="simularError()" /></p>
     </ui-section>
 
     <ui-section titulo="Campo deshabilitado">

@@ -23,8 +23,8 @@
 }
 
 .ui-input-pin__entrada:disabled {
-  background: var(--nv-color-surface-100);
-  color: var(--nv-texto-suave);
+  background: var(--nv-deshabilitado-fondo);
+  color: var(--nv-deshabilitado-texto);
 }
 
 .ui-input-pin__teclado {
