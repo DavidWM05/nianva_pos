@@ -1293,6 +1293,16 @@ repo.
       `aria-modal` y `aria-labelledby` al título;
     - el caso de Escape del spec de DS mandaba el evento al documento, que es lo que estaba
       mal. Ahora lo manda desde el drawer.
+  - **corregido al revisar las capturas de Linux del artifact** (`overlays-forma.spec.ts`,
+    4 casos, y un caso nuevo en `material-sombra.spec.ts`, vistos fallando):
+    - el contenido del modal quedaba pegado al borde y el botón Cerrar salía recortado,
+      porque la superficie de `MatDialog` no tiene padding (lo ponen `mat-dialog-title` y
+      `mat-dialog-content`, que no se usan). `.ui-modal` lleva `--nv-spacing-6`, como el
+      drawer;
+    - el velo del drawer salía gris claro en oscuro. Material solo usa `neutral-variant20`
+      para ese velo, y apuntaba a `texto-suave`; ahora apunta a `--nv-sombra`;
+    - **no es error:** el drawer `lg` ahora sí mide 768 px; con PrimeNG se ignoraba el
+      tamaño.
 - **Posibles mejoras (roadmap):**
   - **capturas de Linux sin pasar por CI (Docker):** hoy cada PR con cambio visual falla una
     vez en "Catálogo visual", se baja el artifact y se versionan las capturas, porque en el

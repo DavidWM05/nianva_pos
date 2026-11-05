@@ -103,4 +103,4 @@ sale al cambiar `.nv-tema-oscuro`.
 | `scrim` | `--nv-sombra` |
 | `shadow` | `--nv-sombra` |
 | `neutral10` | `--nv-sombra` |
-| `neutral-variant20` | `--nv-texto-suave` |
+| `neutral-variant20` | `--nv-sombra` |

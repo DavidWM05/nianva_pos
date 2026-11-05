@@ -3,10 +3,14 @@ ui-modal {
   display: contents;
 }
 
+// La superficie de MatDialog no tiene padding (lo ponen mat-dialog-title/-content, que aqui no
+// se usan): sin este, el contenido queda pegado al borde y el boton Cerrar sale recortado.
 .mat-mdc-dialog-surface .ui-modal {
   display: grid;
   gap: var(--nv-spacing-3);
   min-width: 0;
+  padding: var(--nv-spacing-6);
+  box-sizing: border-box;
 }
 
 .ui-modal__cabecera {

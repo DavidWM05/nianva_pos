@@ -277,7 +277,8 @@ const rolesMaterial = {
   scrim: 'sombra',
   shadow: 'sombra',
   neutral10: 'sombra',
-  'neutral-variant20': 'texto-suave',
+  // Material solo lo usa para el velo del drawer: con 'texto-suave' salia gris claro en oscuro.
+  'neutral-variant20': 'sombra',
 };
 
 const formaMaterial = {
