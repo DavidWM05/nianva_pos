@@ -1251,6 +1251,26 @@ repo.
       defecto), y el blanco en vez de gris cabía en ese margen. El catálogo pasa a
       `threshold: 0.05`. Con el skeleton blanco de vuelta, la captura de `/feedback` falla
       (más de 60 mil píxeles distintos); antes pasaba.
+- **49c · botones, menú y tooltip:**
+  - `p-button`, `p-menu` y `pTooltip` pasan a `matButton`, `matIconButton`, `mat-menu` y
+    `matTooltip` en:
+    - `ui-btn-crear`, `ui-btn-exportar` y `ui-row-actions`;
+    - el "Reintentar" de `ui-page`;
+    - el "Limpiar" de `ui-filter-bar` y de `ui-report-filtros`;
+  - el catálogo pasa su navegación a `mat-nav-list`;
+  - `ui/actions` y `ui/layout` ya no importan `primeng`. `ui/data` y `ui/report` tienen
+    prohibidos `primeng/button`, `primeng/menu` y `primeng/tooltip`; la tabla y el datepicker
+    llegan en el 49f y el 49g;
+  - **retirado (PRO-01):** el caso de `row-actions.component.spec.ts` que buscaba la clase
+    `p-button-danger`. El tono de peligro queda cubierto por `row-actions-behavior.spec.ts`.
+    DS lo retiró sin detenerse a preguntar, como pedía el prompt, así que este PR también
+    necesita la etiqueta `pro-01-autorizado`;
+  - **corregido en la revisión:** DS puso los estilos de la navegación en un bloque `styles`
+    de `app.ts`, que `ui-baseline` no cuenta y que va contra UI-16. Pasaron a `catalogo.css`
+    sin cambiar ninguna captura;
+  - **revisado y sin problema:** el botón de eliminar del catálogo se ve gris porque está
+    deshabilitado, y se aplica `:disabled`. Falta que el catálogo muestre una acción de
+    peligro habilitada; se agrega cuando se toque `/actions`.
 - **Pendientes detectados:**
   - el aviso "Invalid PrimeUI License" aparece en toda la app. **Causa (revisada en el 46):**
     PrimeNG 22 trae un verificador de licencia offline (`@primeui/license-manager`);
