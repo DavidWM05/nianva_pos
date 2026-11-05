@@ -1239,7 +1239,18 @@ repo.
     - `ui-skeleton` conservaba un elemento `p-skeleton` con `CUSTOM_ELEMENTS_SCHEMA`, solo
       para que siguiera pasando un spec viejo. Ese esquema desactivaba la validación de la
       plantilla. Ahora es un `span.ui-skeleton__barra`, y los 3 casos que buscaban
-      `p-skeleton` pasaron a `skeleton-barras.spec.ts`.
+      `p-skeleton` pasaron a `skeleton-barras.spec.ts`;
+    - **el skeleton desaparecía en claro**: usaba `--nv-fondo-elevado`, que en claro es
+      blanco, así que dentro de una tarjeta blanca no se veía. No lo detecté en la revisión.
+      Lo notó el responsable porque ningún check falló, y se corrigió en un PR aparte
+      (`fix/skeleton-carga`) después de fusionar el #70. Ahora usa el semántico nuevo
+      `--nv-carga` (`#cbd5e1` en claro y `#334155` en oscuro), con un contraste de al menos
+      1.3 contra el fondo y la superficie (`skeleton-carga.spec.ts`);
+    - **la regresión visual no detectaba cambios sutiles de color:** además de
+      `maxDiffPixels`, Playwright compara cada píxel con un umbral de color (0.2 por
+      defecto), y el blanco en vez de gris cabía en ese margen. El catálogo pasa a
+      `threshold: 0.05`. Con el skeleton blanco de vuelta, la captura de `/feedback` falla
+      (más de 60 mil píxeles distintos); antes pasaba.
 - **Pendientes detectados:**
   - el aviso "Invalid PrimeUI License" aparece en toda la app. **Causa (revisada en el 46):**
     PrimeNG 22 trae un verificador de licencia offline (`@primeui/license-manager`);
