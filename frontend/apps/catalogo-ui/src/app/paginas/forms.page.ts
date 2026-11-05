@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
-import { Button } from 'primeng/button';
+import { MatButton } from '@angular/material/button';
 import {
   BtnEnviarComponent,
   CampoComponent,
@@ -18,13 +18,13 @@ import { FormActionsComponent, PageHeaderComponent, SectionComponent } from '@ni
   standalone: true,
   imports: [
     BtnEnviarComponent,
-    Button,
     CampoComponent,
     FormActionsComponent,
     InputCantidadComponent,
     InputDineroComponent,
     InputPasswordComponent,
     InputPinComponent,
+    MatButton,
     PageHeaderComponent,
     ReactiveFormsModule,
     SectionComponent,
@@ -52,14 +52,14 @@ import { FormActionsComponent, PageHeaderComponent, SectionComponent } from '@ni
         </ui-campo>
 
         <ui-form-actions>
-          <p-button label="Cancelar" severity="secondary" />
+          <button matButton="outlined" type="button">Cancelar</button>
           <ui-btn-enviar etiqueta="Guardar" [enviando]="enviando()" />
         </ui-form-actions>
       </form>
       @if (pinCompleto()) {
         <p>PIN completo capturado.</p>
       }
-      <p><p-button label="Mostrar error de servidor" severity="secondary" (onClick)="simularError()" /></p>
+      <p><button matButton="outlined" type="button" (click)="simularError()">Mostrar error de servidor</button></p>
     </ui-section>
 
     <ui-section titulo="Campo deshabilitado">
@@ -72,7 +72,7 @@ import { FormActionsComponent, PageHeaderComponent, SectionComponent } from '@ni
 
     <ui-section titulo="Botón de envío">
       <p><ui-btn-enviar [enviando]="enviando()" (click)="enviando.set(!enviando())" /></p>
-      <p-button label="Alternar estado de envío" severity="secondary" (onClick)="enviando.set(!enviando())" />
+      <p><button matButton="outlined" type="button" (click)="enviando.set(!enviando())">Alternar estado de envío</button></p>
     </ui-section>
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,

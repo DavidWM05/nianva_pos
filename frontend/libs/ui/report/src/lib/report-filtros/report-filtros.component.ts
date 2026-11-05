@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, computed, input, output, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { DatePicker } from 'primeng/datepicker';
-import { ButtonDirective } from 'primeng/button';
+import { MatButton } from '@angular/material/button';
 import { SelectFiltroComponent } from '@nianva/ui-forms';
 
 import { CambioReporte, SucursalReporte, fechaComoIso } from '../reporte.types';
@@ -9,7 +9,7 @@ import { CambioReporte, SucursalReporte, fechaComoIso } from '../reporte.types';
 @Component({
   selector: 'ui-report-filtros',
   standalone: true,
-  imports: [ButtonDirective, DatePicker, FormsModule, SelectFiltroComponent],
+  imports: [DatePicker, FormsModule, MatButton, SelectFiltroComponent],
   templateUrl: './report-filtros.component.html',
   styleUrl: './report-filtros.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

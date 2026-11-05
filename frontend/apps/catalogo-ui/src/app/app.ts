@@ -1,8 +1,7 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
-import { MenuItem } from 'primeng/api';
-import { Button } from 'primeng/button';
-import { Menu } from 'primeng/menu';
+import { MatButton } from '@angular/material/button';
+import { MatListModule } from '@angular/material/list';
+import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { ConfirmDialogHostComponent, ToastHostComponent } from '@nianva/ui-feedback';
 import { ShellComponent } from '@nianva/ui-layout';
 
@@ -12,19 +11,38 @@ import { TemaService } from './tema.service';
 @Component({
   selector: 'cat-root',
   standalone: true,
-  imports: [Button, ConfirmDialogHostComponent, Menu, RouterOutlet, ShellComponent, ToastHostComponent],
+  imports: [
+    ConfirmDialogHostComponent,
+    MatButton,
+    MatListModule,
+    RouterLink,
+    RouterLinkActive,
+    RouterOutlet,
+    ShellComponent,
+    ToastHostComponent,
+  ],
   template: `
     <ui-shell>
       <nav menu aria-label="Secciones del catálogo">
-        <p-menu [model]="enlaces" />
+        <mat-nav-list class="cat-nav">
+          @for (enlace of enlaces; track enlace.clave) {
+            <a
+              mat-list-item
+              [routerLink]="enlace.ruta"
+              routerLinkActive="cat-nav__activo"
+              [routerLinkActiveOptions]="{ exact: enlace.ruta === '/' }"
+            >
+              <i matListItemIcon [class]="enlace.icono" aria-hidden="true"></i>
+              <span matListItemTitle>{{ enlace.nombre }}</span>
+            </a>
+          }
+        </mat-nav-list>
       </nav>
       <div encabezado>
         <strong>Catálogo UI</strong>
-        <p-button
-          [label]="tema.oscuro() ? 'Tema claro' : 'Tema oscuro'"
-          severity="secondary"
-          (onClick)="tema.alternar()"
-        />
+        <button matButton="outlined" type="button" (click)="tema.alternar()">
+          {{ tema.oscuro() ? 'Tema claro' : 'Tema oscuro' }}
+        </button>
       </div>
       <router-outlet />
     </ui-shell>
@@ -35,11 +53,8 @@ import { TemaService } from './tema.service';
 })
 export class App {
   protected readonly tema = inject(TemaService);
-  // p-menu en vez de enlaces sueltos: en el espacio [menu] del shell, unos <a> sin estilo se
-  // pintaban en una sola linea y empujaban el contenido a la mitad derecha.
-  protected readonly enlaces: MenuItem[] = CATALOGO_NAVEGACION.map((enlace) => ({
-    label: enlace.nombre,
-    icon: enlace.icono,
-    routerLink: enlace.ruta === '' ? '/' : `/${enlace.ruta}`,
+  protected readonly enlaces = CATALOGO_NAVEGACION.map((enlace) => ({
+    ...enlace,
+    ruta: enlace.ruta === '' ? '/' : `/${enlace.ruta}`,
   }));
 }

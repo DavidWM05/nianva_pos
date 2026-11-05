@@ -1,22 +1,26 @@
 import { ChangeDetectionStrategy, Component, computed, input, output } from '@angular/core';
+import { MatButton } from '@angular/material/button';
 import { RouterLink } from '@angular/router';
-import { ButtonDirective } from 'primeng/button';
 
 @Component({
   selector: 'ui-btn-crear',
   standalone: true,
-  imports: [ButtonDirective, RouterLink],
+  imports: [MatButton, RouterLink],
   template: `
     <button
-      pButton
+      matButton="filled"
       type="button"
-      severity="primary"
       [routerLink]="ruta() ?? null"
       (click)="onClick()"
     >
-      <i class="pi pi-plus" aria-hidden="true"></i>
+      <i class="pi pi-plus ui-btn-crear__icono" matButtonIcon aria-hidden="true"></i>
       <span>{{ etiqueta() }}</span>
     </button>
+  `,
+  styles: `
+    .ui-btn-crear__icono {
+      margin-inline-end: var(--nv-spacing-2);
+    }
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

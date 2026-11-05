@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
 import { SkeletonComponent } from '@nianva/ui-feedback';
-import { Button } from 'primeng/button';
+import { MatButton } from '@angular/material/button';
 
 export type EstadoPagina = 'cargando' | 'error' | 'listo';
 export type FormaPagina = 'listado' | 'detalle' | 'formulario';
@@ -18,7 +18,7 @@ export type FormaPagina = 'listado' | 'detalle' | 'formulario';
 @Component({
   selector: 'ui-page',
   standalone: true,
-  imports: [SkeletonComponent, Button],
+  imports: [MatButton, SkeletonComponent],
   templateUrl: './page.component.html',
   styleUrl: './page.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

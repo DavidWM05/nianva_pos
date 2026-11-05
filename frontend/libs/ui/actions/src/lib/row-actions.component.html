@@ -2,16 +2,15 @@
   @for (accion of visibles(); track accion.tipo + (accion.id ?? accion.indice)) {
     <span
       class="ui-row-actions__envoltura"
-      [pTooltip]="accion.motivoDeshabilitada ?? ''"
-      [tooltipDisabled]="!accion.motivoDeshabilitada"
-      tooltipPosition="top"
+      [matTooltip]="accion.motivoDeshabilitada ?? ''"
+      [matTooltipDisabled]="!accion.motivoDeshabilitada"
+      matTooltipPosition="above"
     >
       <button
-        pButton
+        matIconButton
         type="button"
         class="ui-row-actions__accion"
-        [severity]="accion.tono"
-        [text]="true"
+        [class.ui-row-actions__accion--peligro]="accion.tono === 'danger'"
         [disabled]="!!accion.motivoDeshabilitada"
         [attr.title]="aria(accion)"
         [attr.aria-label]="aria(accion)"
@@ -24,17 +23,28 @@
 
   @if (menuItems().length > 0) {
     <button
-      pButton
+      matIconButton
       type="button"
       class="ui-row-actions__menu"
-      severity="secondary"
-      [text]="true"
+      [matMenuTriggerFor]="menu"
       title="Más acciones"
       aria-label="Más acciones"
-      (click)="abrirMenu($event)"
     >
       <i class="pi pi-ellipsis-v" aria-hidden="true"></i>
     </button>
-    <p-menu #menu [popup]="true" [model]="menuItems()" appendTo="body"></p-menu>
+    <mat-menu #menu="matMenu">
+      @for (item of menuItems(); track item.accion.tipo + (item.accion.id ?? item.accion.indice)) {
+        <button
+          mat-menu-item
+          type="button"
+          [disabled]="item.disabled"
+          [attr.title]="aria(item.accion)"
+          (click)="item.command()"
+        >
+          <i [class]="item.icon" matMenuItemIcon aria-hidden="true"></i>
+          <span>{{ item.label }}</span>
+        </button>
+      }
+    </mat-menu>
   }
 </div>

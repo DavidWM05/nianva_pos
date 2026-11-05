@@ -1,8 +1,7 @@
-import { ChangeDetectionStrategy, Component, computed, input, output, ViewChild } from '@angular/core';
-import { ButtonDirective } from 'primeng/button';
-import { MenuItem } from 'primeng/api';
-import { Menu } from 'primeng/menu';
-import { TooltipModule } from 'primeng/tooltip';
+import { ChangeDetectionStrategy, Component, computed, input, output } from '@angular/core';
+import { MatIconButton } from '@angular/material/button';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatTooltip } from '@angular/material/tooltip';
 
 export type TipoAccion =
   | 'ver'
@@ -33,10 +32,18 @@ interface AccionInterna {
   activo?: boolean;
 }
 
+interface MenuAccion {
+  label: string;
+  icon: string;
+  disabled: boolean;
+  command: () => void;
+  accion: AccionInterna;
+}
+
 @Component({
   selector: 'ui-row-actions',
   standalone: true,
-  imports: [ButtonDirective, Menu, TooltipModule],
+  imports: [MatIconButton, MatMenuModule, MatTooltip],
   templateUrl: './row-actions.component.html',
   styleUrl: './row-actions.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -57,7 +64,7 @@ export class RowActionsComponent {
     return acciones.length > 3 ? acciones.slice(0, 2) : acciones;
   });
 
-  protected readonly menuItems = computed<MenuItem[]>(() => {
+  protected readonly menuItems = computed<MenuAccion[]>(() => {
     const acciones = this.accionesOrdenadas();
 
     return acciones.length > 3
@@ -68,15 +75,10 @@ export class RowActionsComponent {
           icon: accion.icono,
           disabled: Boolean(accion.motivoDeshabilitada),
           command: () => this.ejecutar(accion),
+          accion,
         }))
       : [];
   });
-
-  @ViewChild('menu') private menu?: Menu;
-
-  protected abrirMenu(evento: Event): void {
-    this.menu?.toggle(evento);
-  }
 
   protected ejecutar(accion: AccionInterna): void {
     if (accion.motivoDeshabilitada) {

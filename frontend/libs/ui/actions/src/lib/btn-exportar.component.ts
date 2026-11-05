@@ -1,22 +1,29 @@
 import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
-import { Button } from 'primeng/button';
+import { MatButton } from '@angular/material/button';
 
 import { conUmbral } from '@nianva/ui-feedback';
 
 @Component({
   selector: 'ui-btn-exportar',
   standalone: true,
-  imports: [Button],
+  imports: [MatButton],
   template: `
-    <p-button
-      label="Exportar"
-      icon="pi pi-download"
-      severity="secondary"
-      ariaLabel="Exportar"
+    <button
+      matButton="outlined"
+      type="button"
+      aria-label="Exportar"
       [disabled]="exportando()"
-      [loading]="indicadorVisible()"
-      (onClick)="exportar.emit()"
-    />
+      [showProgress]="indicadorVisible()"
+      (click)="exportar.emit()"
+    >
+      <i class="pi pi-download ui-btn-exportar__icono" matButtonIcon aria-hidden="true"></i>
+      <span>Exportar</span>
+    </button>
+  `,
+  styles: `
+    .ui-btn-exportar__icono {
+      margin-inline-end: var(--nv-spacing-2);
+    }
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

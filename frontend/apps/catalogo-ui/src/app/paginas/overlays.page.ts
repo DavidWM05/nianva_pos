@@ -1,22 +1,24 @@
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
-import { Button } from 'primeng/button';
+import { MatButton } from '@angular/material/button';
 import { PageHeaderComponent, SectionComponent } from '@nianva/ui-layout';
 import { DrawerComponent, ModalComponent, TamanoOverlay } from '@nianva/ui-overlays';
 
 @Component({
   selector: 'cat-overlays-page',
   standalone: true,
-  imports: [Button, DrawerComponent, ModalComponent, PageHeaderComponent, SectionComponent],
+  imports: [DrawerComponent, MatButton, ModalComponent, PageHeaderComponent, SectionComponent],
   template: `
     <ui-page-header clave="catalogo-overlays" subtitulo="Modal y drawer abiertos" />
 
     <ui-section titulo="Abrir overlays">
-      <p-button label="Modal sm" (onClick)="abrirModal('sm')" />
-      <p-button label="Modal md" (onClick)="abrirModal('md')" />
-      <p-button label="Modal lg" (onClick)="abrirModal('lg')" />
-      <p-button label="Drawer sm" severity="secondary" (onClick)="abrirDrawer('sm')" />
-      <p-button label="Drawer md" severity="secondary" (onClick)="abrirDrawer('md')" />
-      <p-button label="Drawer lg" severity="secondary" (onClick)="abrirDrawer('lg')" />
+      <p>
+        <button matButton="filled" type="button" (click)="abrirModal('sm')">Modal sm</button>
+        <button matButton="filled" type="button" (click)="abrirModal('md')">Modal md</button>
+        <button matButton="filled" type="button" (click)="abrirModal('lg')">Modal lg</button>
+        <button matButton="outlined" type="button" (click)="abrirDrawer('sm')">Drawer sm</button>
+        <button matButton="outlined" type="button" (click)="abrirDrawer('md')">Drawer md</button>
+        <button matButton="outlined" type="button" (click)="abrirDrawer('lg')">Drawer lg</button>
+      </p>
     </ui-section>
 
     <ui-modal
@@ -26,7 +28,7 @@ import { DrawerComponent, ModalComponent, TamanoOverlay } from '@nianva/ui-overl
       [tamano]="tamanoModal()"
     >
       <p>Contenido del modal con sus acciones.</p>
-      <p-button acciones label="Guardar" />
+      <button matButton="filled" acciones type="button">Guardar</button>
     </ui-modal>
 
     <ui-drawer
@@ -36,7 +38,7 @@ import { DrawerComponent, ModalComponent, TamanoOverlay } from '@nianva/ui-overl
       [tamano]="tamanoDrawer()"
     >
       <p>Contenido del drawer de detalle.</p>
-      <p-button acciones label="Cerrar detalle" severity="secondary" />
+      <button matButton="outlined" acciones type="button">Cerrar detalle</button>
     </ui-drawer>
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,

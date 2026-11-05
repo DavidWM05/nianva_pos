@@ -25,8 +25,8 @@
 
   <ng-content />
 
-  <button pButton type="button" severity="secondary" [text]="true" (click)="limpiarFiltros()">
-    <i class="pi pi-filter-slash" aria-hidden="true"></i>
+  <button matButton="text" type="button" (click)="limpiarFiltros()">
+    <i class="pi pi-filter-slash ui-report-filtros__icono-limpiar" matButtonIcon aria-hidden="true"></i>
     <span>Limpiar</span>
   </button>
 </div>

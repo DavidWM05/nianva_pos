@@ -7,3 +7,24 @@
 .ui-row-actions__envoltura {
   display: inline-flex;
 }
+
+.ui-row-actions__accion,
+.ui-row-actions__menu {
+  width: 2.5rem;
+  height: 2.5rem;
+  padding: 0;
+  color: var(--nv-texto-suave);
+}
+
+.ui-row-actions__accion:hover,
+.ui-row-actions__menu:hover {
+  color: var(--nv-texto);
+}
+
+.ui-row-actions__accion.ui-row-actions__accion--peligro {
+  color: var(--nv-peligro-texto);
+}
+
+.ui-row-actions__accion:disabled {
+  color: var(--nv-deshabilitado-texto);
+}
