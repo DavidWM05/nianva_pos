@@ -1,20 +1,35 @@
-<p-drawer
-  [visible]="visible()"
-  (visibleChange)="visible.set($event)"
-  (onHide)="cerrado.emit()"
-  [header]="titulo()"
-  position="right"
-  [modal]="true"
-  [fullScreen]="pantalla.angosta()"
-  [closeOnEscape]="true"
-  [ariaCloseLabel]="'Cerrar'"
-  [styleClass]="clase()"
->
-  <ng-content />
+<mat-drawer-container class="ui-drawer__contenedor" [hasBackdrop]="true" (backdropClick)="cerrar()">
+  <!-- disableClose: Escape y el clic en el velo los maneja el componente. Escape se escucha
+       aqui y no en el documento: asi solo responde con el foco dentro, y un modal encima
+       cierra primero. -->
+  <mat-drawer
+    #drawer
+    [class]="clase()"
+    position="end"
+    mode="over"
+    role="dialog"
+    aria-modal="true"
+    [attr.aria-labelledby]="idTitulo"
+    [disableClose]="true"
+    [autoFocus]="'first-tabbable'"
+    (keydown.escape)="cerrar()"
+    (openedChange)="alCambiarAbierto($event)"
+  >
+    <div class="ui-drawer__panel">
+      <div class="ui-drawer__cabecera">
+        <h2 class="ui-drawer__titulo" [id]="idTitulo">{{ titulo() }}</h2>
+        <button matIconButton type="button" class="ui-drawer__cerrar" aria-label="Cerrar" (click)="cerrar()">
+          <i class="pi pi-times" aria-hidden="true"></i>
+        </button>
+      </div>
 
-  <ng-template #footer>
-    <ui-form-actions>
-      <ng-content select="[acciones]" />
-    </ui-form-actions>
-  </ng-template>
-</p-drawer>
+      <div class="ui-drawer__cuerpo">
+        <ng-content />
+      </div>
+
+      <ui-form-actions>
+        <ng-content select="[acciones]" />
+      </ui-form-actions>
+    </div>
+  </mat-drawer>
+</mat-drawer-container>

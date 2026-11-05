@@ -2,3 +2,35 @@
 ui-modal {
   display: contents;
 }
+
+.mat-mdc-dialog-surface .ui-modal {
+  display: grid;
+  gap: var(--nv-spacing-3);
+  min-width: 0;
+}
+
+.ui-modal__cabecera {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--nv-spacing-3);
+  min-width: 0;
+}
+
+.ui-modal__titulo {
+  min-width: 0;
+  margin: 0;
+  color: var(--nv-texto);
+  font-size: var(--nv-font-size-lg);
+  font-weight: var(--nv-font-weight-semibold);
+}
+
+.ui-modal__cerrar {
+  flex: none;
+  color: var(--nv-texto-suave);
+}
+
+.ui-modal__cuerpo {
+  min-width: 0;
+  color: var(--nv-texto);
+}

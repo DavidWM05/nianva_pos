@@ -1,5 +1,18 @@
-import { ChangeDetectionStrategy, Component, ViewEncapsulation, effect, inject, input, model, output, computed } from '@angular/core';
-import { Dialog } from 'primeng/dialog';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  TemplateRef,
+  ViewEncapsulation,
+  computed,
+  effect,
+  inject,
+  input,
+  model,
+  output,
+  viewChild,
+} from '@angular/core';
+import { MatIconButton } from '@angular/material/button';
+import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { FormActionsComponent, PantallaService } from '@nianva/ui-layout';
 
 import { claseOverlay, TamanoOverlay } from '../overlay.types';
@@ -7,12 +20,14 @@ import { claseOverlay, TamanoOverlay } from '../overlay.types';
 @Component({
   selector: 'ui-modal',
   standalone: true,
-  imports: [Dialog, FormActionsComponent],
+  imports: [FormActionsComponent, MatIconButton],
   templateUrl: './modal.component.html',
   styleUrls: ['./modal.component.scss', '../overlays.scss'],
-  // Las clases de overlays.scss deben llegar al contenedor que PrimeNG pinta fuera del componente.
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
+  host: {
+    '(document:keydown.escape)': 'cerrar()',
+  },
 })
 export class ModalComponent {
   readonly visible = model(false);
@@ -22,18 +37,57 @@ export class ModalComponent {
 
   protected readonly pantalla = inject(PantallaService);
   protected readonly clase = computed(() => claseOverlay('ui-modal', this.tamano(), this.pantalla.angosta()));
-  private ultimoFoco: HTMLElement | null = null;
+  private readonly plantilla = viewChild.required<TemplateRef<unknown>>('plantilla');
+  private readonly dialog = inject(MatDialog);
+  private dialogRef: MatDialogRef<unknown> | null = null;
+  private cerrandoPorUsuario = false;
 
   constructor() {
     effect(() => {
       if (this.visible()) {
-        this.ultimoFoco = typeof document === 'undefined' ? null : (document.activeElement as HTMLElement);
-        return;
+        this.abrir();
+      } else {
+        this.dialogRef?.close();
       }
+    });
+  }
 
-      const foco = this.ultimoFoco;
-      this.ultimoFoco = null;
-      foco?.focus();
+  protected cerrar(): void {
+    const ref = this.dialogRef;
+
+    if (!ref) {
+      return;
+    }
+
+    this.cerrandoPorUsuario = true;
+    this.visible.set(false);
+    this.cerrado.emit();
+    ref.close();
+  }
+
+  private abrir(): void {
+    if (this.dialogRef) {
+      return;
+    }
+
+    this.dialogRef = this.dialog.open(this.plantilla(), {
+      ariaLabel: this.titulo() || 'Diálogo',
+      autoFocus: 'first-tabbable',
+      maxWidth: '100vw',
+      panelClass: this.clase().split(' '),
+      restoreFocus: true,
+    });
+
+    this.dialogRef.afterClosed().subscribe(() => {
+      const emitirCerrado = !this.cerrandoPorUsuario;
+      this.dialogRef = null;
+      this.cerrandoPorUsuario = false;
+      if (this.visible()) {
+        this.visible.set(false);
+      }
+      if (emitirCerrado) {
+        this.cerrado.emit();
+      }
     });
   }
 }
