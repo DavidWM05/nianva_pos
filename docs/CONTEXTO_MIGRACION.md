@@ -1271,6 +1271,17 @@ repo.
   - **revisado y sin problema:** el botón de eliminar del catálogo se ve gris porque está
     deshabilitado, y se aplica `:disabled`. Falta que el catálogo muestre una acción de
     peligro habilitada; se agrega cuando se toque `/actions`.
+- **Posibles mejoras (roadmap):**
+  - **capturas de Linux sin pasar por CI (Docker):** hoy cada PR con cambio visual falla una
+    vez en "Catálogo visual", se baja el artifact y se versionan las capturas, porque en el
+    equipo de desarrollo no hay Linux. Si el job corre dentro de la imagen oficial de
+    Playwright (`mcr.microsoft.com/playwright:v<versión>-noble`) y el equipo tiene Docker
+    Desktop, las capturas se generan en local con la misma imagen y van en el mismo commit.
+    Cuesta un PR chico y regenerar todas las capturas una vez. El responsable decidió seguir
+    con el ciclo actual por ahora (2026-11-05);
+  - **forma de los botones:** `ui-btn-enviar` sigue siendo un botón propio rectangular, y los
+    de Material (los de `ui-form-actions` y las acciones) tienen forma de píldora. Se unifica
+    en el 49e (forms).
 - **Pendientes detectados:**
   - el aviso "Invalid PrimeUI License" aparece en toda la app. **Causa (revisada en el 46):**
     PrimeNG 22 trae un verificador de licencia offline (`@primeui/license-manager`);
