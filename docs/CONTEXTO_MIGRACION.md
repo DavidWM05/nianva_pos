@@ -1161,6 +1161,34 @@ repo.
     de desarrollo. Ahora usa el 8100 y nunca se reutiliza. Además, `backend-server.mjs`
     respetaba `DB_DATABASE` del entorno antes de correr `migrate:fresh`; ahora siempre usa
     su propia SQLite.
+- **Revisión del catálogo por el responsable (UI-14, 2026-11-04):** en claro, todo bien. En
+  oscuro hubo tres fallas de contraste, que corrigió el **encargo 48d** (hecho por DS):
+  - **botones nativos de demostración** del catálogo, sin `color-scheme`: pasan a `p-button`
+    y los tokens declaran `color-scheme: light` y `color-scheme: dark`;
+  - **campo deshabilitado:** 5 usos del primitivo `--nv-color-surface-100`, claro en los dos
+    temas, en `ui-input-dinero`, `ui-input-password`, `ui-input-pin` y `ui-btn-enviar`.
+    Ahora usan los semánticos nuevos `--nv-deshabilitado-fondo` y `-texto` (6.92:1 en
+    claro, 6.97:1 en oscuro), igual que `ui-input-cantidad`;
+  - **para que no se repita:** stylelint prohíbe `var(--nv-color-*)` en `libs/ui` salvo en
+    `libs/ui/tokens`, verificado por mutación. axe no lo había detectado porque excluye los
+    controles deshabilitados; un e2e nuevo mide el contraste del campo deshabilitado en los
+    dos temas (antes daba 1.36:1 en oscuro);
+  - API-09 pasa a Hecho: `terminal` va a SEG-12 de la Fase 4, y `perfil_giro` y los límites
+    del plan a una fila API-09 nueva en la Fase 7;
+  - ui-tokens 30 tests; e2e del catálogo 112.
+- **Decisión sobre PrimeNG (2026-11-04):**
+  - PrimeNG 22 exige una licencia PrimeUI. La 21 era MIT, pero solo soporta Angular 21.
+  - El responsable elige cambiar a una librería MIT. Entre Angular Material y Spartan, se
+    recomienda **Angular Material + CDK**:
+    - sale con cada versión de Angular (la 22.2.6 acepta Angular 22 y 23);
+    - su tema se arma con variables CSS desde nuestros tokens, con SCSS;
+    - trae tabla, paginador, autocomplete, datepicker, diálogo y menú.
+
+    Spartan exige Tailwind ≥ 4, y su capa visual es código con clases de Tailwind, lo que
+    choca con UI-01.
+  - El cambio va dentro de `libs/ui` **antes** de migrar las pantallas: encargos 49a (tema
+    desde los tokens) y 49b en adelante (una lib por PR).
+  - PrimeNG se queda en las pantallas viejas hasta que migren.
 - **Pendientes detectados:**
   - el aviso "Invalid PrimeUI License" aparece en toda la app. **Causa (revisada en el 46):**
     PrimeNG 22 trae un verificador de licencia offline (`@primeui/license-manager`);
