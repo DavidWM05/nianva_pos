@@ -1189,6 +1189,25 @@ repo.
   - El cambio va dentro de `libs/ui` **antes** de migrar las pantallas: encargos 49a (tema
     desde los tokens) y 49b en adelante (una lib por PR).
   - PrimeNG se queda en las pantallas viejas hasta que migren.
+- **Angular Material con el tema desde los tokens** (encargo 49a, hecho por DS):
+  - `@angular/material` y `@angular/cdk` 22.2.5, en versión exacta, con peer de Angular 22
+    y 23;
+  - el generador de tokens produce `libs/ui/tokens/src/styles/material.scss`, con su
+    `--check`. Usa M3 para la estructura y asigna cada rol `--mat-sys-*` a un semántico
+    `--nv-*`, así que el oscuro sale solo. El mapa completo está en el README de
+    `libs/ui/tokens`;
+  - lo cargan `pos` y el catálogo desde `project.json`. Convive con PrimeNG sin cambiar sus
+    componentes;
+  - la ruta nueva `/material` del catálogo tiene botones, campo, select, checkbox, tabla con
+    paginador, diálogo, menú y snackbar. Su e2e propio (13 tests) cubre capturas, axe, foco,
+    desborde y contraste del campo deshabilitado;
+  - **corregido en la revisión, con el test primero:** `scrim`, `shadow` y `neutral10`
+    apuntaban a `--nv-texto`, que en oscuro es casi blanco: las sombras de diálogos y menús
+    salían claras. Ahora apuntan al semántico nuevo `--nv-sombra`, casi negro en los dos
+    temas (`material-sombra.spec.ts`);
+  - **pendiente para el 49g:** el paginador de Material está en inglés ("Items per page");
+    hace falta un `MatPaginatorIntl` en español;
+  - ui-tokens 36 tests; e2e del catálogo 125.
 - **Pendientes detectados:**
   - el aviso "Invalid PrimeUI License" aparece en toda la app. **Causa (revisada en el 46):**
     PrimeNG 22 trae un verificador de licencia offline (`@primeui/license-manager`);
