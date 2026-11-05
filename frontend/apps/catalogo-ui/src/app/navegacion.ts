@@ -1,6 +1,7 @@
 export const CATALOGO_NAVEGACION = [
   { clave: 'catalogo', ruta: '', nombre: 'Catálogo UI', icono: 'pi pi-th-large' },
   { clave: 'catalogo-tokens', ruta: 'tokens', nombre: 'Tokens', icono: 'pi pi-palette' },
+  { clave: 'catalogo-material', ruta: 'material', nombre: 'Material', icono: 'pi pi-box' },
   { clave: 'catalogo-format', ruta: 'format', nombre: 'Formato', icono: 'pi pi-percentage' },
   { clave: 'catalogo-feedback', ruta: 'feedback', nombre: 'Feedback', icono: 'pi pi-bell' },
   { clave: 'catalogo-actions', ruta: 'actions', nombre: 'Acciones', icono: 'pi pi-bolt' },

@@ -224,8 +224,132 @@ export const breakpoints = ${formatearTs(datos.breakpoints, 0)} as const;
 export type Breakpoint = keyof typeof breakpoints;
 `;
 
+const rolesMaterial = {
+  background: 'fondo',
+  'on-background': 'texto',
+  surface: 'superficie',
+  'on-surface': 'texto',
+  'surface-variant': 'fondo-elevado',
+  'on-surface-variant': 'texto-suave',
+  'surface-bright': 'superficie',
+  'surface-dim': 'fondo',
+  'surface-tint': 'primario',
+  'surface-container-lowest': 'superficie',
+  'surface-container-low': 'fondo',
+  'surface-container': 'superficie',
+  'surface-container-high': 'fondo-elevado',
+  'surface-container-highest': 'fondo-elevado',
+  primary: 'primario',
+  'on-primary': 'primario-texto',
+  'primary-container': 'fondo-elevado',
+  'on-primary-container': 'primario',
+  'primary-fixed': 'fondo-elevado',
+  'primary-fixed-dim': 'fondo-elevado',
+  'on-primary-fixed': 'primario',
+  'on-primary-fixed-variant': 'primario',
+  secondary: 'texto-suave',
+  'on-secondary': 'superficie',
+  'secondary-container': 'fondo-elevado',
+  'on-secondary-container': 'texto',
+  'secondary-fixed': 'fondo-elevado',
+  'secondary-fixed-dim': 'fondo-elevado',
+  'on-secondary-fixed': 'texto',
+  'on-secondary-fixed-variant': 'texto-suave',
+  tertiary: 'info-texto',
+  'on-tertiary': 'superficie',
+  'tertiary-container': 'fondo-elevado',
+  'on-tertiary-container': 'info-texto',
+  'tertiary-fixed': 'fondo-elevado',
+  'tertiary-fixed-dim': 'fondo-elevado',
+  'on-tertiary-fixed': 'info-texto',
+  'on-tertiary-fixed-variant': 'info-texto',
+  error: 'peligro',
+  'on-error': 'texto-invertido',
+  'error-container': 'fondo-elevado',
+  'on-error-container': 'peligro-texto',
+  outline: 'borde',
+  'outline-variant': 'borde',
+  'inverse-surface': 'texto',
+  'inverse-on-surface': 'superficie',
+  'inverse-primary': 'primario',
+  // Casi negros en los dos temas, como en M3: con 'texto', en oscuro las sombras y el velo
+  // de los dialogos salian claros.
+  scrim: 'sombra',
+  shadow: 'sombra',
+  neutral10: 'sombra',
+  'neutral-variant20': 'texto-suave',
+};
+
+const formaMaterial = {
+  'corner-extra-large': 'var(--nv-radius-xl)',
+  'corner-extra-large-top': 'var(--nv-radius-xl) var(--nv-radius-xl) 0 0',
+  'corner-extra-small': 'var(--nv-radius-sm)',
+  'corner-extra-small-top': 'var(--nv-radius-sm) var(--nv-radius-sm) 0 0',
+  'corner-full': 'var(--nv-radius-full)',
+  'corner-large': 'var(--nv-radius-lg)',
+  'corner-large-end': '0 var(--nv-radius-lg) var(--nv-radius-lg) 0',
+  'corner-large-start': 'var(--nv-radius-lg) 0 0 var(--nv-radius-lg)',
+  'corner-large-top': 'var(--nv-radius-lg) var(--nv-radius-lg) 0 0',
+  'corner-medium': 'var(--nv-radius-md)',
+  'corner-none': '0',
+  'corner-small': 'var(--nv-radius-md)',
+};
+
+const overridesMaterial = {
+  'form-field-outlined-disabled-input-text-color': 'deshabilitado-texto',
+  'form-field-outlined-disabled-label-text-color': 'deshabilitado-texto',
+  'form-field-outlined-disabled-outline-color': 'borde',
+  'form-field-filled-disabled-input-text-color': 'deshabilitado-texto',
+  'form-field-filled-disabled-label-text-color': 'deshabilitado-texto',
+  'form-field-filled-disabled-container-color': 'deshabilitado-fondo',
+  'form-field-disabled-input-text-placeholder-color': 'deshabilitado-texto',
+  'form-field-disabled-leading-icon-color': 'deshabilitado-texto',
+  'form-field-disabled-select-arrow-color': 'deshabilitado-texto',
+  'form-field-disabled-trailing-icon-color': 'deshabilitado-texto',
+};
+
+const rolesMaterialCss = Object.entries(rolesMaterial)
+  .map(([rol, token]) => `  --mat-sys-${rol}: var(--nv-${token});`)
+  .join('\n');
+
+const formaMaterialSass = Object.entries(formaMaterial)
+  .map(([nombre, valor]) => `      ${nombre}: ${valor},`)
+  .join('\n');
+
+const overridesMaterialCss = Object.entries(overridesMaterial)
+  .map(([nombre, token]) => `  --mat-${nombre}: var(--nv-${token});`)
+  .join('\n');
+
+const materialScss = `/* Generado por scripts/generate.mjs. No editar a mano. */
+@use '@angular/material' as mat;
+
+html {
+  @include mat.theme(
+    (
+      typography: (
+        plain-family: var(--nv-font-family),
+        brand-family: var(--nv-font-family),
+        bold-weight: var(--nv-font-weight-bold),
+        medium-weight: var(--nv-font-weight-medium),
+        regular-weight: var(--nv-font-weight-normal),
+      ),
+      density: 0,
+    ),
+    (
+${formaMaterialSass}
+    )
+  );
+}
+
+:root {
+${rolesMaterialCss}
+${overridesMaterialCss}
+}
+`;
+
 const archivos = new Map([
   [join(raiz, 'src/styles/tokens.css'), css],
+  [join(raiz, 'src/styles/material.scss'), materialScss],
   [join(raiz, 'src/lib/primeng-preset.ts'), preset],
   [join(raiz, 'src/lib/breakpoints.ts'), breakpoints],
 ]);

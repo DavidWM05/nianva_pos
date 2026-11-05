@@ -10,6 +10,10 @@ export const appRoutes: Routes = [
     loadComponent: () => import('./paginas/tokens.page').then((m) => m.TokensPage),
   },
   {
+    path: 'material',
+    loadComponent: () => import('./paginas/material.page').then((m) => m.MaterialPage),
+  },
+  {
     path: 'format',
     loadComponent: () => import('./paginas/format.page').then((m) => m.FormatPage),
   },

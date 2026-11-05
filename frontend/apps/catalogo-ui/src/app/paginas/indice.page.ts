@@ -11,6 +11,7 @@ import { PageHeaderComponent, SectionComponent } from '@nianva/ui-layout';
     <ui-section titulo="Librerías">
       <ul>
         <li><a routerLink="/tokens">Tokens</a></li>
+        <li><a routerLink="/material">Material</a></li>
         <li><a routerLink="/format">Formato</a></li>
         <li><a routerLink="/feedback">Feedback</a></li>
         <li><a routerLink="/actions">Acciones</a></li>
