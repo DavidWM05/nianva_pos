@@ -24,8 +24,8 @@
 }
 
 .ui-input-cantidad input:disabled {
-  background: var(--nv-fondo-elevado);
-  color: var(--nv-texto-suave);
+  background: var(--nv-deshabilitado-fondo);
+  color: var(--nv-deshabilitado-texto);
 }
 
 .ui-input-cantidad__unidad {

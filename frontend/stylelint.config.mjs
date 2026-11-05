@@ -19,6 +19,15 @@ export default {
       },
     },
     {
+      files: ['libs/ui/**/*.scss', 'libs/ui/**/*.css'],
+      rules: {
+        'declaration-property-value-disallowed-list': {
+          'font-family': [/^(?!var\(--nv-font-family(?:\)|-))/],
+          '/.*/': [/var\(--nv-color-/],
+        },
+      },
+    },
+    {
       files: ['libs/ui/tokens/**/*.scss', 'libs/ui/tokens/**/*.css'],
       rules: {
         'color-no-hex': null,
