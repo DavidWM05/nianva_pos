@@ -1,0 +1,95 @@
+/* Generado por scripts/generate.mjs. No editar a mano. */
+@use '@angular/material' as mat;
+
+html {
+  @include mat.theme(
+    (
+      typography: (
+        plain-family: var(--nv-font-family),
+        brand-family: var(--nv-font-family),
+        bold-weight: var(--nv-font-weight-bold),
+        medium-weight: var(--nv-font-weight-medium),
+        regular-weight: var(--nv-font-weight-normal),
+      ),
+      density: 0,
+    ),
+    (
+      corner-extra-large: var(--nv-radius-xl),
+      corner-extra-large-top: var(--nv-radius-xl) var(--nv-radius-xl) 0 0,
+      corner-extra-small: var(--nv-radius-sm),
+      corner-extra-small-top: var(--nv-radius-sm) var(--nv-radius-sm) 0 0,
+      corner-full: var(--nv-radius-full),
+      corner-large: var(--nv-radius-lg),
+      corner-large-end: 0 var(--nv-radius-lg) var(--nv-radius-lg) 0,
+      corner-large-start: var(--nv-radius-lg) 0 0 var(--nv-radius-lg),
+      corner-large-top: var(--nv-radius-lg) var(--nv-radius-lg) 0 0,
+      corner-medium: var(--nv-radius-md),
+      corner-none: 0,
+      corner-small: var(--nv-radius-md),
+    )
+  );
+}
+
+:root {
+  --mat-sys-background: var(--nv-fondo);
+  --mat-sys-on-background: var(--nv-texto);
+  --mat-sys-surface: var(--nv-superficie);
+  --mat-sys-on-surface: var(--nv-texto);
+  --mat-sys-surface-variant: var(--nv-fondo-elevado);
+  --mat-sys-on-surface-variant: var(--nv-texto-suave);
+  --mat-sys-surface-bright: var(--nv-superficie);
+  --mat-sys-surface-dim: var(--nv-fondo);
+  --mat-sys-surface-tint: var(--nv-primario);
+  --mat-sys-surface-container-lowest: var(--nv-superficie);
+  --mat-sys-surface-container-low: var(--nv-fondo);
+  --mat-sys-surface-container: var(--nv-superficie);
+  --mat-sys-surface-container-high: var(--nv-fondo-elevado);
+  --mat-sys-surface-container-highest: var(--nv-fondo-elevado);
+  --mat-sys-primary: var(--nv-primario);
+  --mat-sys-on-primary: var(--nv-primario-texto);
+  --mat-sys-primary-container: var(--nv-fondo-elevado);
+  --mat-sys-on-primary-container: var(--nv-primario);
+  --mat-sys-primary-fixed: var(--nv-fondo-elevado);
+  --mat-sys-primary-fixed-dim: var(--nv-fondo-elevado);
+  --mat-sys-on-primary-fixed: var(--nv-primario);
+  --mat-sys-on-primary-fixed-variant: var(--nv-primario);
+  --mat-sys-secondary: var(--nv-texto-suave);
+  --mat-sys-on-secondary: var(--nv-superficie);
+  --mat-sys-secondary-container: var(--nv-fondo-elevado);
+  --mat-sys-on-secondary-container: var(--nv-texto);
+  --mat-sys-secondary-fixed: var(--nv-fondo-elevado);
+  --mat-sys-secondary-fixed-dim: var(--nv-fondo-elevado);
+  --mat-sys-on-secondary-fixed: var(--nv-texto);
+  --mat-sys-on-secondary-fixed-variant: var(--nv-texto-suave);
+  --mat-sys-tertiary: var(--nv-info-texto);
+  --mat-sys-on-tertiary: var(--nv-superficie);
+  --mat-sys-tertiary-container: var(--nv-fondo-elevado);
+  --mat-sys-on-tertiary-container: var(--nv-info-texto);
+  --mat-sys-tertiary-fixed: var(--nv-fondo-elevado);
+  --mat-sys-tertiary-fixed-dim: var(--nv-fondo-elevado);
+  --mat-sys-on-tertiary-fixed: var(--nv-info-texto);
+  --mat-sys-on-tertiary-fixed-variant: var(--nv-info-texto);
+  --mat-sys-error: var(--nv-peligro);
+  --mat-sys-on-error: var(--nv-texto-invertido);
+  --mat-sys-error-container: var(--nv-fondo-elevado);
+  --mat-sys-on-error-container: var(--nv-peligro-texto);
+  --mat-sys-outline: var(--nv-borde);
+  --mat-sys-outline-variant: var(--nv-borde);
+  --mat-sys-inverse-surface: var(--nv-texto);
+  --mat-sys-inverse-on-surface: var(--nv-superficie);
+  --mat-sys-inverse-primary: var(--nv-primario);
+  --mat-sys-scrim: var(--nv-sombra);
+  --mat-sys-shadow: var(--nv-sombra);
+  --mat-sys-neutral10: var(--nv-sombra);
+  --mat-sys-neutral-variant20: var(--nv-texto-suave);
+  --mat-form-field-outlined-disabled-input-text-color: var(--nv-deshabilitado-texto);
+  --mat-form-field-outlined-disabled-label-text-color: var(--nv-deshabilitado-texto);
+  --mat-form-field-outlined-disabled-outline-color: var(--nv-borde);
+  --mat-form-field-filled-disabled-input-text-color: var(--nv-deshabilitado-texto);
+  --mat-form-field-filled-disabled-label-text-color: var(--nv-deshabilitado-texto);
+  --mat-form-field-filled-disabled-container-color: var(--nv-deshabilitado-fondo);
+  --mat-form-field-disabled-input-text-placeholder-color: var(--nv-deshabilitado-texto);
+  --mat-form-field-disabled-leading-icon-color: var(--nv-deshabilitado-texto);
+  --mat-form-field-disabled-select-arrow-color: var(--nv-deshabilitado-texto);
+  --mat-form-field-disabled-trailing-icon-color: var(--nv-deshabilitado-texto);
+}
