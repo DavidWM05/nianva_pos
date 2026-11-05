@@ -1208,6 +1208,38 @@ repo.
   - **pendiente para el 49g:** el paginador de Material está en inglés ("Items per page");
     hace falta un `MatPaginatorIntl` en español;
   - ui-tokens 36 tests; e2e del catálogo 125.
+- **De PrimeNG a Material en `libs/ui`, por etapas** (encargos 49b a 49g, hechos por DS con
+  un solo prompt). DS hace una etapa, la reporta y se detiene. PRO-01 está autorizado por el
+  responsable solo así: primero los specs de comportamiento, que pasan con PrimeNG; luego el
+  cambio; al final se retiran los specs acoplados a PrimeNG, listados, con la etiqueta
+  `pro-01-autorizado`.
+- **49b · `ui/feedback`:**
+  - `ToastService` usa `MatSnackBar` con un contenido propio: `role="alert"` en los errores y
+    `status` en lo demás, con tonos por tokens. `ConfirmDialogService` usa un diálogo de
+    Material propio, con el foco en "Cancelar" y "Eliminar"/"Anular" en tono de peligro.
+    `ui-skeleton` es CSS propio y respeta `prefers-reduced-motion`. Los hosts
+    (`nucleo-toast-host`, `nucleo-confirm-dialog-host`) se conservan vacíos para `pos`;
+  - `ui/feedback` no importa `primeng`, y ESLint se lo prohíbe;
+  - **retirados (PRO-01):** `toast.service.spec.ts`, `confirm-dialog.service.spec.ts` y
+    `apps/pos/.../errores.interceptor.spec.ts`, que observaban `MessageService` y
+    `ConfirmationService`;
+  - **corregido en la revisión:**
+    - DS borró los 3 archivos completos, y con ellos se perdieron casos que no dependían de
+      PrimeNG:
+      - del toast, 6 de 8: la duración por tipo, la ventana de duplicados y la ventana
+        técnica de UI-13;
+      - del interceptor, el status 0, el 403, el 503 y las URLs ajenas.
+
+      Se recuperaron en `toast-reglas.spec.ts` (8) y `errores-interceptor-casos.spec.ts` (4).
+      También se recuperó el tono de peligro del botón de aceptar, en
+      `confirm-dialog-tono.spec.ts` (2).
+      Las mutaciones fallan: sin el descarte de duplicados falla 1 caso, y sin la ventana
+      técnica falla otro. El caso de duplicados que escribió DS contaba texto en el DOM, y
+      `MatSnackBar` muestra un solo aviso a la vez: pasaba aunque se quitara el descarte;
+    - `ui-skeleton` conservaba un elemento `p-skeleton` con `CUSTOM_ELEMENTS_SCHEMA`, solo
+      para que siguiera pasando un spec viejo. Ese esquema desactivaba la validación de la
+      plantilla. Ahora es un `span.ui-skeleton__barra`, y los 3 casos que buscaban
+      `p-skeleton` pasaron a `skeleton-barras.spec.ts`.
 - **Pendientes detectados:**
   - el aviso "Invalid PrimeUI License" aparece en toda la app. **Causa (revisada en el 46):**
     PrimeNG 22 trae un verificador de licencia offline (`@primeui/license-manager`);
