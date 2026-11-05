@@ -38,4 +38,17 @@ describe('tema de Material: sombras y velo', () => {
       expect(luminancia(color), `${rol} -> --nv-${token} (${color}) en ${tema}`).toBeLessThan(0.02);
     }
   });
+
+  // 49d: Material solo usa neutral-variant20 para el velo del drawer. Con texto-suave, en oscuro
+  // salia gris claro.
+  it('neutral-variant20 (velo del drawer) es casi negro en claro y en oscuro', () => {
+    const token = tokenDe('neutral-variant20');
+
+    for (const tema of ['light', 'dark'] as Tema[]) {
+      const color = semanticos[tema][token];
+
+      expect(color, `neutral-variant20 -> --nv-${token} en ${tema}`).toMatch(/^#[0-9a-f]{6}$/i);
+      expect(luminancia(color), `neutral-variant20 -> --nv-${token} (${color}) en ${tema}`).toBeLessThan(0.02);
+    }
+  });
 });
