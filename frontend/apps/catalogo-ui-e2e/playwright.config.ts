@@ -32,6 +32,9 @@ export default defineConfig({
       // color del texto de un solo badge da ~125 pixeles distintos. Las referencias salen del
       // mismo runner de Linux con el Chromium fijado, asi que solo cubre antialias.
       maxDiffPixels: 20,
+      // Umbral de color por pixel (YIQ). El de Playwright (0.2) tomaba como iguales colores
+      // parecidos: un skeleton blanco en vez de gris paso sin fallar en el 49b.
+      threshold: 0.05,
     },
   },
   snapshotPathTemplate: '{testDir}/__screenshots__/{platform}/{arg}{ext}',

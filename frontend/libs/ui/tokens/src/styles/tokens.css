@@ -88,6 +88,7 @@
   --nv-info-texto: #0e7490;
   --nv-foco: #2563eb;
   --nv-sombra: #020617;
+  --nv-carga: #cbd5e1;
 
   /* Compatibilidad temporal: las pantallas aun usan --nucleo-*.
      Se retiran al completar la migracion de pantallas (plan, punto 12). */
@@ -167,4 +168,5 @@
   --nv-info-texto: #67e8f9;
   --nv-foco: #93c5fd;
   --nv-sombra: #020617;
+  --nv-carga: #334155;
 }
