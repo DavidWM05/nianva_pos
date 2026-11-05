@@ -1,17 +1,15 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { ConfirmDialog } from 'primeng/confirmdialog';
 
 /**
- * Montar UNA sola vez en la raiz de la app (ej. app.html). El servicio
- * ConfirmDialogService dispara el contenido; este componente solo aloja el
- * overlay visual de PrimeNG.
+ * Se conserva el selector `nucleo-confirm-dialog-host` porque apps/pos lo
+ * monta en su raiz y ui-shared lo reexporta. El dialogo lo abre MatDialog
+ * desde ConfirmDialogService.
  */
 @Component({
   // eslint-disable-next-line @angular-eslint/component-selector
   selector: 'nucleo-confirm-dialog-host',
   standalone: true,
-  imports: [ConfirmDialog],
-  template: `<p-confirmdialog />`,
+  template: `<ng-container />`,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ConfirmDialogHostComponent {}

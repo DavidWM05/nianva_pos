@@ -1,5 +1,7 @@
 import { Injectable, inject } from '@angular/core';
-import { ConfirmationService } from 'primeng/api';
+import { MatDialog } from '@angular/material/dialog';
+
+import { ConfirmDialogComponent, ConfirmDialogData } from './confirm-dialog.component';
 
 export interface ConfirmDialogOptions {
   message: string;
@@ -42,32 +44,34 @@ const OBJETOS_ANULABLES = [
  *   });
  *   if (!ok) return;
  *
- * Requiere que <nucleo-confirm-dialog-host /> este montado una sola vez en
- * la raiz de la app (ver ConfirmDialogHostComponent) -- de ahi sale el
- * dialogo visual; este servicio solo orquesta la promesa.
+ * El dialogo visual lo abre MatDialog; este servicio solo orquesta la
+ * promesa. ConfirmDialogHostComponent se conserva por compatibilidad.
  */
 @Injectable({ providedIn: 'root' })
 export class ConfirmDialogService {
-  private readonly confirmationService = inject(ConfirmationService);
+  private readonly dialog = inject(MatDialog);
 
   confirm(options: ConfirmDialogOptions): Promise<boolean> {
+    const data: ConfirmDialogData = {
+      message: options.message,
+      header: options.header ?? 'Confirmar',
+      acceptLabel: options.acceptLabel ?? 'Aceptar',
+      rejectLabel: options.rejectLabel ?? 'Cancelar',
+      severity: options.severity === 'danger' ? 'danger' : 'info',
+    };
+
+    const referencia = this.dialog.open(ConfirmDialogComponent, {
+      data,
+      width: '28rem',
+      delayFocusTrap: false,
+    });
+
+    referencia.afterOpened().subscribe(() => {
+      document.querySelector<HTMLButtonElement>('button[data-cancelar]')?.focus();
+    });
+
     return new Promise<boolean>((resolve) => {
-      this.confirmationService.confirm({
-        message: options.message,
-        header: options.header ?? 'Confirmar',
-        icon: options.severity === 'danger' ? 'pi pi-exclamation-triangle' : 'pi pi-question-circle',
-        acceptLabel: options.acceptLabel ?? 'Aceptar',
-        rejectLabel: options.rejectLabel ?? 'Cancelar',
-        acceptButtonProps: {
-          severity: options.severity === 'danger' ? 'danger' : 'primary',
-        },
-        rejectButtonProps: {
-          severity: 'secondary',
-          outlined: true,
-        },
-        accept: () => resolve(true),
-        reject: () => resolve(false),
-      });
+      referencia.afterClosed().subscribe((resultado) => resolve(resultado === true));
     });
   }
 

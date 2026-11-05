@@ -2,3 +2,31 @@
   display: grid;
   gap: var(--nv-spacing-2);
 }
+
+.ui-skeleton__barra {
+  display: block;
+  border-radius: var(--nv-radius-sm);
+  background: var(--nv-fondo-elevado);
+  animation: ui-skeleton-pulso 1.4s ease-in-out infinite;
+}
+
+.ui-skeleton__barra.ui-skeleton__circulo {
+  border-radius: var(--nv-radius-full);
+}
+
+@keyframes ui-skeleton-pulso {
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.45;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ui-skeleton__barra {
+    animation: none;
+  }
+}
