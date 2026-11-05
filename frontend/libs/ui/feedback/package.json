@@ -3,8 +3,9 @@
   "version": "0.0.1",
   "peerDependencies": {
     "@angular/core": "^22.0.0",
+    "@angular/material": "22.2.5",
+    "@angular/platform-browser": "^22.0.0",
     "@nianva/ui-format": "*",
-    "primeng": "^22.0.0",
     "vitest": "^4.0.8"
   },
   "sideEffects": false

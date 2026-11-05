@@ -22,6 +22,7 @@ export default [
   {
     files: ['**/*.ts'],
     rules: {
+      'no-restricted-imports': ['error', { patterns: ['primeng', 'primeng/*'] }],
       '@angular-eslint/directive-selector': [
         'error',
         {

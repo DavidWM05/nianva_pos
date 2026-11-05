@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
-import { Skeleton } from 'primeng/skeleton';
+
+import { SkeletonBarDirective } from './skeleton-bar.directive';
 
 export type FormaSkeleton = 'texto' | 'bloque' | 'circulo';
 
@@ -11,8 +12,8 @@ const ALTO_POR_FORMA: Record<FormaSkeleton, string> = {
 
 /**
  * Marcador con la forma del contenido mientras carga (UI-18), nunca un
- * texto "Cargando..." suelto. Envuelve p-skeleton para que el color y la
- * animacion salgan del preset de ui/tokens.
+ * texto "Cargando..." suelto. Usa CSS propio con tokens para que el color
+ * y la animacion sigan el tema.
  *
  *   <ui-skeleton forma="texto" [lineas]="3" />
  *   <ui-skeleton forma="bloque" ancho="12rem" alto="12rem" />
@@ -20,7 +21,7 @@ const ALTO_POR_FORMA: Record<FormaSkeleton, string> = {
 @Component({
   selector: 'ui-skeleton',
   standalone: true,
-  imports: [Skeleton],
+  imports: [SkeletonBarDirective],
   templateUrl: './skeleton.component.html',
   styleUrl: './skeleton.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

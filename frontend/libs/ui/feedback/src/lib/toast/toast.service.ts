@@ -1,5 +1,7 @@
 import { Injectable, inject } from '@angular/core';
-import { MessageService } from 'primeng/api';
+import { MatSnackBar } from '@angular/material/snack-bar';
+
+import { ToastContentComponent, ToastContentData } from './toast-content.component';
 
 type Severidad = 'success' | 'error' | 'warn' | 'info';
 
@@ -8,12 +10,11 @@ export const VENTANA_DUPLICADOS_MS = 1500;
 
 /**
  * Canal unico para mensajes transitorios de exito/error (UI-13). Envuelve
- * MessageService de PrimeNG -- mismo criterio que ConfirmDialogService
- * envolviendo ConfirmationService: el componente que dispara el mensaje no
- * conoce PrimeNG directamente.
+ * MatSnackBar de Angular Material: el componente que dispara el mensaje no
+ * conoce Material directamente.
  *
- * Requiere <nucleo-toast-host /> montado una sola vez en la raiz de la app
- * (ver ToastHostComponent), igual que ConfirmDialogHostComponent.
+ * <nucleo-toast-host /> se conserva por compatibilidad, pero MatSnackBar no
+ * necesita un host para mostrar el overlay.
  *
  * `life` default de 4000ms para error/warn (dan tiempo a leer un mensaje
  * de negocio) y 3000ms para success/info (mas breves, no bloquean el
@@ -23,7 +24,7 @@ export const VENTANA_DUPLICADOS_MS = 1500;
  */
 @Injectable({ providedIn: 'root' })
 export class ToastService {
-  private readonly messageService = inject(MessageService);
+  private readonly snackBar = inject(MatSnackBar);
   private readonly mostrados = new Map<string, number>();
   private ultimoErrorTecnico = 0;
 
@@ -64,6 +65,14 @@ export class ToastService {
     }
 
     this.mostrados.set(clave, ahora);
-    this.messageService.add({ severity, summary, detail, life });
+
+    const data: ToastContentData = { severity, summary, detail };
+
+    this.snackBar.openFromComponent(ToastContentComponent, {
+      data,
+      duration: life,
+      panelClass: ['nv-toast-panel', `nv-toast-panel--${severity}`],
+      politeness: severity === 'error' ? 'assertive' : 'polite',
+    });
   }
 }
