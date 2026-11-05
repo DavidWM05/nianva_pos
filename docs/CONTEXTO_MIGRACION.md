@@ -1271,6 +1271,28 @@ repo.
   - **revisado y sin problema:** el botón de eliminar del catálogo se ve gris porque está
     deshabilitado, y se aplica `:disabled`. Falta que el catálogo muestre una acción de
     peligro habilitada; se agrega cuando se toque `/actions`.
+- **49d · `ui/overlays`:**
+  - `ui-modal` pasa a `MatDialog`, con el contenido proyectado mediante un `ng-template`;
+  - `ui-drawer` pasa a `MatDrawer`, dentro de un contenedor fijo con `pointer-events: none`,
+    para no tapar la página cuando está cerrado;
+  - se mantienen `sm`, `md` y `lg`, la pantalla completa en pantalla angosta y la API
+    pública;
+  - `ui/overlays` no importa `primeng`, y ESLint se lo prohíbe;
+  - **retirados (PRO-01):** DS volvió a borrar `modal.component.spec.ts` y
+    `drawer.component.spec.ts` completos sin detenerse a preguntar. Sus 8 casos quedaron
+    reescritos con el mismo nombre en `modal-behavior.spec.ts` y `drawer-behavior.spec.ts`
+    (9 casos), así que la cobertura se mantiene. El PR necesita `pro-01-autorizado`;
+  - **corregido en la revisión, con un e2e primero** (`overlays-teclado.spec.ts`, 3 casos
+    que fallaban). Los specs unitarios no veían estos errores porque no corren en un
+    navegador real; se midió con Playwright:
+    - Escape con el foco dentro del drawer no lo cerraba;
+    - un solo Escape cerraba a la vez el modal y el drawer de abajo, porque el drawer
+      escuchaba Escape en todo el documento. Ahora lo escucha en el propio drawer
+      (`disableClose`, `keydown.escape`, y `backdropClick` para el velo);
+    - el drawer no tenía rol ni nombre accesible. Ahora tiene `role="dialog"`,
+      `aria-modal` y `aria-labelledby` al título;
+    - el caso de Escape del spec de DS mandaba el evento al documento, que es lo que estaba
+      mal. Ahora lo manda desde el drawer.
 - **Posibles mejoras (roadmap):**
   - **capturas de Linux sin pasar por CI (Docker):** hoy cada PR con cambio visual falla una
     vez en "Catálogo visual", se baja el artifact y se versionan las capturas, porque en el
