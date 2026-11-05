@@ -1,20 +1,18 @@
-<p-dialog
-  [visible]="visible()"
-  (visibleChange)="visible.set($event)"
-  (onHide)="cerrado.emit()"
-  [header]="titulo()"
-  [modal]="true"
-  [dismissableMask]="true"
-  [closeOnEscape]="true"
-  [focusOnShow]="true"
-  [closeAriaLabel]="'Cerrar'"
-  [styleClass]="clase()"
->
-  <ng-content />
+<ng-template #plantilla>
+  <div class="ui-modal">
+    <div class="ui-modal__cabecera">
+      <h2 class="ui-modal__titulo">{{ titulo() }}</h2>
+      <button matIconButton type="button" class="ui-modal__cerrar" aria-label="Cerrar" (click)="cerrar()">
+        <i class="pi pi-times" aria-hidden="true"></i>
+      </button>
+    </div>
 
-  <ng-template #footer>
+    <div class="ui-modal__cuerpo">
+      <ng-content />
+    </div>
+
     <ui-form-actions>
       <ng-content select="[acciones]" />
     </ui-form-actions>
-  </ng-template>
-</p-dialog>
+  </div>
+</ng-template>

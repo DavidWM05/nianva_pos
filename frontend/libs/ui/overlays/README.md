@@ -1,6 +1,6 @@
 # @nianva/ui-overlays
 
-`ui-modal` y `ui-drawer` encapsulan `p-dialog` y `p-drawer` para que las
+`ui-modal` y `ui-drawer` encapsulan `MatDialog` y `MatDrawer` para que las
 pantallas no fijen anchos ni resuelvan la responsividad con `@media`.
 
 ```html
