@@ -1,13 +1,16 @@
 <div class="ui-report-filtros">
-  <div class="ui-report-filtros__campo">
-    <label for="ui-report-filtros-fechas">Periodo</label>
-    <p-datepicker
-      inputId="ui-report-filtros-fechas"
-      selectionMode="range"
-      [readonlyInput]="true"
-      [ngModel]="rango()"
-      (ngModelChange)="alCambiarFechas($event)"
-    />
+  <!-- La etiqueta va encima, como la de Sucursal y la de ui-campo; un mat-label la pondria
+       flotando dentro del borde y el campo mediria 56 px. -->
+  <div class="ui-report-filtros__campo" role="group" [attr.aria-labelledby]="idEtiquetaPeriodo">
+    <span class="ui-report-filtros__etiqueta" [id]="idEtiquetaPeriodo">Periodo</span>
+    <mat-form-field class="ui-report-filtros__fecha" appearance="outline" subscriptSizing="dynamic">
+      <mat-date-range-input [formGroup]="fechas" [rangePicker]="picker" separator="–">
+        <input matStartDate placeholder="YYYY-MM-DD" aria-label="Desde" />
+        <input matEndDate placeholder="YYYY-MM-DD" aria-label="Hasta" />
+      </mat-date-range-input>
+      <mat-datepicker-toggle matIconSuffix [for]="picker" aria-label="Elegir periodo" />
+      <mat-date-range-picker #picker />
+    </mat-form-field>
   </div>
 
   <div class="ui-report-filtros__campo">

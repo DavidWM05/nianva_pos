@@ -7,7 +7,9 @@ test('el selector de sucursal muestra Todas y mide lo mismo que el input de peri
   await page.waitForLoadState('networkidle');
 
   const selector = page.locator('ui-report-filtros ui-select-filtro').first();
-  const periodo = page.locator('ui-report-filtros input').first();
+  // 49f (autorizado por el responsable, PRO-01): con mat-date-range-input, el primer input es
+  // el texto interno; la caja del campo es el contenedor de Material.
+  const periodo = page.locator('ui-report-filtros .ui-report-filtros__fecha .mat-mdc-text-field-wrapper').first();
 
   await expect(selector.getByRole('combobox')).toHaveText('Todas');
 
