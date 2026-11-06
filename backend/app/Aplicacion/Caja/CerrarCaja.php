@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Aplicacion\Caja;
 
 use App\Modules\CuentasCobrar\Models\AbonoCuenta;
@@ -23,11 +25,14 @@ class CerrarCaja
     ) {}
 
     /**
+     * Si la llama otra Action, su savepoint participa de la transacción exterior.
+     *
      * @return array{sesion: CajaSesion, desglose: array<string, float>}
      */
     public function ejecutar(CajaSesion $cajaSesion, float $montoFisico): array
     {
         return DB::transaction(function () use ($cajaSesion, $montoFisico) {
+            $cajaSesion = CajaSesion::query()->whereKey($cajaSesion->id)->lockForUpdate()->firstOrFail();
             $cajaSesionId = $cajaSesion->id;
 
             $totalGastos = $this->gastoService->totalGastos($cajaSesionId);
@@ -39,7 +44,7 @@ class CerrarCaja
 
             $totalGastosAjustado = $totalGastos + $totalPagosCxp - $totalAbonosCxc - $totalRecargasGc;
 
-            $sesion = $this->cajaService->cerrarCaja($cajaSesion, $montoFisico, $totalGastosAjustado);
+            $sesion = $this->cajaService->cerrarCajaConSesion($cajaSesion, $montoFisico, $totalGastosAjustado);
 
             return [
                 'sesion' => $sesion,

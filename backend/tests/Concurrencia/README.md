@@ -1,4 +1,4 @@
-# Concurrencia real (ARQ-04a)
+# Concurrencia real (ARQ-04a y ARQ-04b)
 
 El grupo `concurrencia` está excluido de `php artisan test`; se activa explícitamente
 con `--group=concurrencia`. Con SQLite falla: no se omite ni simula el bloqueo.
@@ -50,9 +50,23 @@ se exige `SELECT ... FOR UPDATE` dentro de la transacción. Esa aserción detect
 mutación sin sustituir las consultas. No se atribuye al SELECT la espera del upsert.
 
 Para la mutación, retira temporalmente `->lockForUpdate()` de la lectura de stock en
-`InventarioService`, ejecuta el grupo y restaura el archivo: debe fallar con
+`Aplicacion/Inventario/RegistrarMovimiento`, ejecuta el grupo y restaura el archivo: debe fallar con
 «La lectura del saldo debe ejecutar SELECT FOR UPDATE». La guarda de arquitectura se
 prueba agregando temporalmente un bloqueo a un Service fuera de `PENDIENTES`.
 
 Para nuevas etapas, reutiliza el helper y agrega operaciones al script de prueba
 `operacion.php`; verifica cada saldo y rollback con filas propias del caso.
+
+
+## Casos de 04b
+
+Además de la venta de la última unidad, se prueban dos aperturas (bloquean la sucursal,
+porque todavía no hay una sesión abierta), dos cierres, dos salidas de stock, dos compras
+y dos anulaciones. El helper comprueba la espera real, el primer SELECT de la fila
+protegida con FOR UPDATE dentro de la transacción y los resultados finales.
+
+Las mutaciones quitan el bloqueo en AbrirCaja, CerrarCaja y AnularVenta. Al quitar el de
+RegistrarMovimiento fallan movimiento, compra, anulación y la venta de 04a, aunque el
+upsert siga serializando el stock. Las firmas antiguas de los Services siguen como
+envoltorios deprecated para 04c/04e; las Actions de 04b usan los núcleos sin transacciones
+ni bloqueos propios. Ningún método de test existente se adapta en esta etapa.

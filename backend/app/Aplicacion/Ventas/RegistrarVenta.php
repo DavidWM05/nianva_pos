@@ -1,17 +1,23 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Aplicacion\Ventas;
 
+use App\Aplicacion\Inventario\RegistrarMovimiento;
 use App\Modules\GiftCards\Services\GiftCardService;
+use App\Modules\Inventario\Dtos\MovimientoInventarioDto;
 use App\Modules\NotasCredito\Services\NotaCreditoService;
 use App\Modules\Nucleo\Models\MetodoPago;
 use App\Modules\Nucleo\Models\Usuario;
+use App\Modules\Nucleo\Scopes\TenantScopeViaRelacion;
 use App\Modules\Precios\Exceptions\CuponInvalidoException;
 use App\Modules\Precios\Models\Cupon;
 use App\Modules\Precios\Services\PrecioService;
 use App\Modules\Tpv\Dtos\CrearVentaDto;
 use App\Modules\Tpv\Dtos\LineaVentaDto;
 use App\Modules\Tpv\Dtos\PagoDto;
+use App\Modules\Tpv\Models\CajaSesion;
 use App\Modules\Tpv\Models\Venta;
 use App\Modules\Tpv\Services\VentaService;
 use Illuminate\Support\Facades\DB;
@@ -24,11 +30,13 @@ class RegistrarVenta
 {
     public function __construct(
         private readonly VentaService $ventaService,
+        private readonly RegistrarMovimiento $movimiento,
         private readonly GiftCardService $giftCardService,
         private readonly NotaCreditoService $notaCreditoService,
         private readonly PrecioService $precioService,
     ) {}
 
+    /** Cuando la llama otra Action, el savepoint participa de su transacción y de su rollback. */
     public function ejecutar(CrearVentaDto $dto, Usuario $usuario): Venta
     {
         $clienteId = $dto->clienteId;
@@ -107,7 +115,17 @@ class RegistrarVenta
                 $pagosExtra[] = ['metodo_pago_id' => $metodoPagoNotaCredito->id, 'monto' => $montoNC];
             }
 
-            $venta = $this->ventaService->registrarVenta(
+            $caja = CajaSesion::query()->withoutGlobalScope(TenantScopeViaRelacion::class)->where('sucursal_id', (int) $usuario->getAttribute('sucursal_id'))->where('estado', 'abierta')->latest('id')->lockForUpdate()->first();
+            $stocks = [];
+            $variantes = array_values(array_unique(array_column($items, 'variante_id')));
+            sort($variantes);
+            if ($caja !== null) {
+                foreach ($variantes as $varianteId) {
+                    $stocks[$varianteId] = $this->movimiento->bloquearStock(new MovimientoInventarioDto($varianteId, (int) $usuario->getAttribute('sucursal_id'), 'salida', 1, 'venta', $usuario->id));
+                }
+            }
+
+            $venta = $this->ventaService->registrarVentaConBloqueos(
                 [
                     'tenant_id' => $tenantId,
                     'sucursal_id' => $usuario->sucursal_id,
@@ -118,6 +136,8 @@ class RegistrarVenta
                 ],
                 $items,
                 array_merge($pagos, $pagosExtra),
+                $caja,
+                $stocks,
             );
 
             if (! empty($notaCreditoId)) {

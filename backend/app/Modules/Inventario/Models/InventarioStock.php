@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Modules\Inventario\Models;
 
 use App\Modules\Inventario\Database\Factories\InventarioStockFactory;
@@ -16,7 +18,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * consultando sucursal.tenant_id (ver tenantRelacion()).
  *
  * NUNCA escribir stock_actual directamente -- usar siempre
- * InventarioService::registrarMovimiento(), que actualiza esta tabla y
+ * InventarioService::registrarMovimientoConStock(), que actualiza esta tabla y
  * kardex en una sola transaccion atomica.
  */
 #[Fillable(['sucursal_id', 'variante_id', 'stock_actual', 'stock_minimo'])]
