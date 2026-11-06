@@ -42,9 +42,8 @@ export default [
   },
   {
     files: ['**/*.ts'],
-    ignores: ['**/*.spec.ts'],
     rules: {
-      'no-restricted-imports': ['error', { patterns: ['primeng', 'primeng/*'] }],
+      'no-restricted-imports': ['error', { patterns: ['primeng', 'primeng/*', '@primeuix/themes', '@primeuix/themes/*'] }],
     },
   },
   {

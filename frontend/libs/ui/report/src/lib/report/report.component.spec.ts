@@ -1,7 +1,6 @@
 import { Component, signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
-import { providePrimeNG } from 'primeng/config';
 import { REGISTRO_NAVEGACION } from '@nianva/ui-layout';
 import { UMBRAL_INDICADOR_MS } from '@nianva/ui-feedback';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
@@ -43,7 +42,6 @@ describe('ReportComponent', () => {
       imports: [HostReportComponent],
       providers: [
         provideAnimationsAsync(),
-        providePrimeNG(),
         {
           provide: REGISTRO_NAVEGACION,
           useValue: [{ clave: 'reportes', ruta: 'reportes', nombre: 'Reportes', icono: 'pi pi-chart-line' }],

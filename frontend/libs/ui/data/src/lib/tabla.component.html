@@ -52,14 +52,14 @@
                 @if (esInactiva(fila)) {
                   <span class="ui-tabla__inactivo">Inactivo</span>
                 }
-                @if (apoyo(columna, fila); as datoApoyo) {
+                @if (apoyoDe(columna, fila); as datoApoyo) {
                   <small class="ui-tabla__apoyo">{{ datoApoyo }}</small>
                 }
               </div>
             }
             @case ('acciones') {
               <div class="ui-tabla__tarjeta-acciones">
-                <ui-row-actions [acciones]="acciones(columna, fila)" (accion)="onAccion(fila, $event)" />
+                <ui-row-actions [acciones]="accionesDe(columna, fila)" (accion)="onAccion(fila, $event)" />
               </div>
             }
             @default {
@@ -80,7 +80,7 @@
                     }
                     @case ('cantidad') {
                       <span class="ui-tabla__numero">
-                        {{ valor(fila, columna.campo) | cantidad: unidad(columna, fila) }}
+                        {{ valor(fila, columna.campo) | cantidad: unidadDe(columna, fila) }}
                       </span>
                     }
                     @case ('porcentaje') {
@@ -133,119 +133,116 @@
     }
   </div>
 
-  <p-paginator
-    [first]="first()"
-    [rows]="rowsActuales()"
-    [totalRecords]="meta()?.total ?? 0"
-    [rowsPerPageOptions]="[25, 50, 100]"
-    (onPageChange)="onPagina($event)"
+  <mat-paginator
+    [pageIndex]="paginaActual()"
+    [pageSize]="rowsActuales()"
+    [length]="meta()?.total ?? 0"
+    [pageSizeOptions]="[25, 50, 100]"
+    [showFirstLastButtons]="true"
+    (page)="onPagina($event)"
   />
 } @else {
   <!-- UI-04: si las columnas no caben, la tabla se desplaza dentro de su contenedor; la pagina no. -->
   <div class="ui-tabla__desplazable">
-  <p-table
-    [value]="filas()"
-    [columns]="columnasTabla()"
-    [lazy]="true"
-    [paginator]="true"
-    [rows]="rowsActuales()"
-    [first]="first()"
-    [totalRecords]="meta()?.total ?? 0"
-    [rowsPerPageOptions]="[25, 50, 100]"
-    [loading]="indicadorCarga()"
-    (onLazyLoad)="onLazyLoad($event)"
-  >
-    <ng-template #header let-columnasTabla>
-      <tr>
-        @for (columna of columnasTabla; track columna.field) {
-          <th [pSortableColumn]="columna.sortable ? columna.field : undefined">
-            {{ columna.header }}
-            @if (columna.sortable) {
-              <p-sort-icon [field]="columna.field" />
-            }
-          </th>
-        }
-      </tr>
-    </ng-template>
-
-    <ng-template #body let-fila>
-      <tr [class.ui-tabla__fila--inactiva]="esInactiva(fila)">
-        @for (columna of columnas(); track columna.campo) {
-          <td>
-            @switch (columna.tipo) {
+    <table
+      mat-table
+      [dataSource]="filas()"
+      matSort
+      [matSortActive]="ordenCampo() ?? ''"
+      [matSortDirection]="ordenCampo() === null ? '' : ordenDireccion()"
+      (matSortChange)="onSort($event)"
+    >
+      @for (col of columnasTabla(); track col.field) {
+        <ng-container [matColumnDef]="col.field">
+          @if (col.sortable) {
+            <th mat-header-cell *matHeaderCellDef [mat-sort-header]="col.field" [sortActionDescription]="'Ordenar por ' + col.header">{{ col.header }}</th>
+          } @else {
+            <th mat-header-cell *matHeaderCellDef>{{ col.header }}</th>
+          }
+          <td mat-cell *matCellDef="let fila">
+            @switch (col.tipo) {
               @case ('texto') {
-                {{ texto(fila, columna.campo) }}
+                {{ texto(fila, campoDe(col.columna)) }}
               }
               @case ('principal') {
-                <span class="ui-tabla__principal">{{ texto(fila, columna.campo) }}</span>
+                <span class="ui-tabla__principal">{{ texto(fila, campoDe(col.columna)) }}</span>
                 @if (esInactiva(fila)) {
                   <span class="ui-tabla__inactivo">Inactivo</span>
                 }
-                @if (apoyo(columna, fila); as datoApoyo) {
+                @if (apoyoDe(col.columna, fila); as datoApoyo) {
                   <small class="ui-tabla__apoyo">{{ datoApoyo }}</small>
                 }
               }
               @case ('dinero') {
                 <span
                   class="ui-tabla__numero"
-                  [class.ui-tabla__numero--peligro]="esNegativo(fila, columna.campo)"
+                  [class.ui-tabla__numero--peligro]="esNegativo(fila, campoDe(col.columna))"
                 >
-                  {{ valor(fila, columna.campo) | dinero }}
+                  {{ valor(fila, campoDe(col.columna)) | dinero }}
                 </span>
               }
               @case ('cantidad') {
                 <span class="ui-tabla__numero">
-                  {{ valor(fila, columna.campo) | cantidad: unidad(columna, fila) }}
+                  {{ valor(fila, campoDe(col.columna)) | cantidad: unidadDe(col.columna, fila) }}
                 </span>
               }
               @case ('porcentaje') {
-                <span class="ui-tabla__numero">{{ valor(fila, columna.campo) | porcentaje }}</span>
+                <span class="ui-tabla__numero">{{ valor(fila, campoDe(col.columna)) | porcentaje }}</span>
               }
               @case ('fecha') {
-                {{ valor(fila, columna.campo) | fecha }}
+                {{ valor(fila, campoDe(col.columna)) | fecha }}
               }
               @case ('fechaHora') {
-                {{ valor(fila, columna.campo) | fechaHora }}
+                {{ valor(fila, campoDe(col.columna)) | fechaHora }}
               }
               @case ('estado') {
-                <ui-badge [entidad]="columna.entidad" [estado]="valorEstado(fila, columna)" />
+                <ui-badge [entidad]="entidadDe(col.columna)" [estado]="valorEstado(fila, col.columna)" />
               }
               @case ('acciones') {
-                <ui-row-actions [acciones]="acciones(columna, fila)" (accion)="onAccion(fila, $event)" />
+                <ui-row-actions [acciones]="accionesDe(col.columna, fila)" (accion)="onAccion(fila, $event)" />
               }
             }
           </td>
-        }
-      </tr>
-    </ng-template>
-
-    @if (totales() !== null) {
-      <ng-template #footer>
-        <tr class="ui-tabla__totales">
-          @for (columna of columnas(); track columna.campo; let indice = $index) {
-            <td class="ui-tabla__total">
-              @if (indice === 0) {
-                Total
-              } @else if (hayTotal(columna)) {
-                @switch (columna.tipo) {
-                  @case ('dinero') {
-                    <span class="ui-tabla__numero">{{ totalDe(columna) | dinero }}</span>
-                  }
-                  @case ('cantidad') {
-                    <span class="ui-tabla__numero">
-                      {{ totalDe(columna) | cantidad: unidadTotal(columna) }}
-                    </span>
-                  }
-                  @case ('porcentaje') {
-                    <span class="ui-tabla__numero">{{ totalDe(columna) | porcentaje }}</span>
-                  }
+          <td mat-footer-cell *matFooterCellDef class="ui-tabla__total">
+            @if (col.indice === 0) {
+              Total
+            } @else if (hayTotal(col.columna)) {
+              @switch (col.tipo) {
+                @case ('dinero') {
+                  <span class="ui-tabla__numero">{{ totalDe(col.columna) | dinero }}</span>
+                }
+                @case ('cantidad') {
+                  <span class="ui-tabla__numero">
+                    {{ totalDe(col.columna) | cantidad: unidadTotal(col.columna) }}
+                  </span>
+                }
+                @case ('porcentaje') {
+                  <span class="ui-tabla__numero">{{ totalDe(col.columna) | porcentaje }}</span>
                 }
               }
-            </td>
-          }
-        </tr>
-      </ng-template>
-    }
-  </p-table>
+            }
+          </td>
+        </ng-container>
+      }
+
+      <tr mat-header-row *matHeaderRowDef="camposColumnas()"></tr>
+      <tr
+        mat-row
+        *matRowDef="let fila; columns: camposColumnas()"
+        [class.ui-tabla__fila--inactiva]="esInactiva(fila)"
+      ></tr>
+      @if (totales() !== null) {
+        <tr mat-footer-row *matFooterRowDef="camposColumnas()"></tr>
+      }
+    </table>
   </div>
+
+  <mat-paginator
+    [pageIndex]="paginaActual()"
+    [pageSize]="rowsActuales()"
+    [length]="meta()?.total ?? 0"
+    [pageSizeOptions]="[25, 50, 100]"
+    [showFirstLastButtons]="true"
+    (page)="onPagina($event)"
+  />
 }

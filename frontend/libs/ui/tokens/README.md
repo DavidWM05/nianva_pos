@@ -104,3 +104,6 @@ sale al cambiar `.nv-tema-oscuro`.
 | `shadow` | `--nv-sombra` |
 | `neutral10` | `--nv-sombra` |
 | `neutral-variant20` | `--nv-sombra` |
+## Excepcion: preset de PrimeNG
+
+`src/lib/primeng-preset.ts` es la excepcion temporal de `libs/ui`: importa `@primeuix/themes` (no primeng) y lo usa `apps/pos` en `app.config.ts` para las pantallas que aun no migran. No es una dependencia de los componentes de `libs/ui`. Se retira cuando `apps/pos` deje de usar PrimeNG.

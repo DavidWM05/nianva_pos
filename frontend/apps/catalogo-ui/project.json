@@ -21,7 +21,7 @@
             "input": "apps/catalogo-ui/public"
           }
         ],
-        "styles": ["libs/ui/tokens/src/styles/tokens.css", "libs/ui/tokens/src/styles/material.scss", "node_modules/primeicons/primeicons.css", "libs/ui/tokens/src/styles/catalogo.css", "libs/ui/tokens/src/styles/foco.css"],
+        "styles": ["libs/ui/tokens/src/styles/tokens.css", "libs/ui/tokens/src/styles/material.scss", "node_modules/primeicons/primeicons.css", "libs/ui/tokens/src/styles/catalogo.css", "libs/ui/tokens/src/styles/iconos.css", "libs/ui/tokens/src/styles/foco.css"],
         "stylePreprocessorOptions": {
           "includePaths": ["libs/ui/tokens/src/styles"]
         }

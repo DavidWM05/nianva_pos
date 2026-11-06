@@ -1,7 +1,15 @@
-:host {
+// Sin encapsulacion (para alcanzar la flecha de mat-sort-header): el selector del elemento
+// reemplaza a :host, y el resto de las clases llevan el prefijo ui-tabla__.
+ui-tabla {
   display: block;
   min-width: 0;
   max-width: 100%;
+}
+
+// matSort solo muestra la flecha al pasar el mouse o al ordenar. Como con p-table, una
+// columna ordenable la muestra siempre, atenuada mientras no esta ordenada.
+ui-tabla th[aria-sort='none'] .mat-sort-header-arrow {
+  opacity: 0.5;
 }
 
 .ui-tabla__desplazable {
