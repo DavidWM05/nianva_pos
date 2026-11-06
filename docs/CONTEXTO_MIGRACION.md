@@ -1303,6 +1303,29 @@ repo.
       para ese velo, y apuntaba a `texto-suave`; ahora apunta a `--nv-sombra`;
     - **no es error:** el drawer `lg` ahora sí mide 768 px; con PrimeNG se ignoraba el
       tamaño.
+- **49e · `ui/forms`:**
+  - `ui-select-filtro` pasa a `mat-select` dentro de un `mat-form-field` outline;
+  - `ui-btn-enviar` usa `matButton="filled"`, con la misma forma de píldora que los demás
+    botones;
+  - `ui/forms` no importa `primeng`, y ESLint se lo prohíbe;
+  - **retirado (PRO-01):** DS borró `select-filtro.component.spec.ts` aunque el prompt no lo
+    autorizaba en el 49e y solo usaba `providePrimeNG()` como provider. Sus 2 casos quedaron
+    con las mismas aserciones en `select-filtro-behavior.spec.ts` (3 casos). El PR necesita
+    `pro-01-autorizado`;
+  - **corregido en la revisión, con los tests primero** (`select-filtro-campo.spec.ts`, 3
+    casos, y el e2e `select-filtro.spec.ts`, 2 casos, vistos fallando):
+    - "Todas" (`null`) no se mostraba y el selector se veía vacío: MatSelect trata `null`
+      como sin valor si no se activa `canSelectNullableOptions`;
+    - el error de `ui-campo` no se anunciaba: MatSelect pisa `aria-invalid` con su propio
+      estado, y `mat-form-field` reescribe `aria-describedby`. Ahora van por sus entradas
+      (`errorStateMatcher` y `aria-describedby`);
+    - el nombre accesible venía de un `ariaLabel` con "Filtro" por defecto, que pisaba la
+      etiqueta real. `label[for]` no nombra un `div` con `role="combobox"`, así que
+      `ui-campo` expone `etiquetaId` y el selector usa `aria-labelledby`. `ariaLabel`
+      queda opcional, sin valor por defecto, solo para usarlo fuera de `ui-campo`;
+    - medía 56 px y quedaba desalineado de los inputs de al lado en la barra de filtros
+      del reporte. Ahora tiene el mismo alto y tamaño de texto que los inputs nativos; para
+      alcanzar la flecha de MatSelect, el componente va sin encapsulación.
 - **Posibles mejoras (roadmap):**
   - **capturas de Linux sin pasar por CI (Docker):** hoy cada PR con cambio visual falla una
     vez en "Catálogo visual", se baja el artifact y se versionan las capturas, porque en el
