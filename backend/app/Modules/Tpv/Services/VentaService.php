@@ -11,7 +11,6 @@ use App\Modules\Inventario\Models\ProductoVariante;
 use App\Modules\Inventario\Services\InventarioService;
 use App\Modules\Nucleo\Models\Sucursal;
 use App\Modules\Nucleo\Models\Usuario;
-use App\Modules\Nucleo\Scopes\TenantScopeViaRelacion;
 use App\Modules\Precios\Models\Cupon;
 use App\Modules\Precios\Services\PrecioService;
 use App\Modules\Tpv\Exceptions\CajaSesionNoAbiertaException;
@@ -22,8 +21,6 @@ use App\Modules\Tpv\Models\CajaSesion;
 use App\Modules\Tpv\Models\Venta;
 use App\Modules\Tpv\Models\VentaDetalle;
 use App\Modules\Tpv\Models\VentaPago;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use InvalidArgumentException;
 
@@ -48,27 +45,6 @@ class VentaService
      * @param  array{tenant_id:int, sucursal_id:int, usuario_id:int, cliente_id:int, cupon_id?:?int, descuento_manual?:float, abono_previo?:float, es_venta_sombra?:bool}  $datosVenta
      * @param  list<array{variante_id:int, cantidad:int}>  $items
      * @param  list<array{metodo_pago_id:int, monto:float}>  $pagos
-     *
-     * @deprecated Transición ARQ-04: retirar en 04e (Apartados/Devoluciones en 04c; Cotizaciones en 04e).
-     *
-     * @throws CajaSesionNoAbiertaException si la sucursal no tiene una caja abierta.
-     * @throws StockInsuficienteException si alguna linea no tiene stock suficiente.
-     * @throws PagoNoCuadraException si la suma de pagos no coincide con el monto a cobrar.
-     */
-    public function registrarVenta(array $datosVenta, array $items, array $pagos): Venta
-    {
-        return $this->enTransicion(function () use ($datosVenta, $items, $pagos) {
-            $caja = $this->bloquearTransicion(CajaSesion::query()->withoutGlobalScope(TenantScopeViaRelacion::class)->where('sucursal_id', $datosVenta['sucursal_id'])->where('estado', 'abierta')->latest('id'));
-            $stocks = $caja === null ? [] : $this->inventarioService->stocksParaTransicion(array_column($items, 'variante_id'), $datosVenta['sucursal_id']);
-
-            return $this->registrarVentaConBloqueos($datosVenta, $items, $pagos, $caja, $stocks);
-        });
-    }
-
-    /**
-     * @param  array{tenant_id:int, sucursal_id:int, usuario_id:int, cliente_id:int, cupon_id?:?int, descuento_manual?:float, abono_previo?:float, es_venta_sombra?:bool}  $datosVenta
-     * @param  list<array{variante_id:int, cantidad:int}>  $items
-     * @param  list<array{metodo_pago_id:int, monto:float}>  $pagos
      * @param  array<int, InventarioStock>  $stocks
      *
      * @throws CajaSesionNoAbiertaException si la sucursal no tiene una caja abierta.
@@ -84,7 +60,7 @@ class VentaService
 
         // No se rechaza $pagos === [] aqui: es valido cuando abono_previo ya
         // cubre el total completo (liquidacion de un apartado, ver
-        // ApartadoService::liquidar()). verificarPagos() abajo sigue
+        // ApartadoService::liquidarConBloqueos()). verificarPagos() abajo sigue
         // rechazando cualquier venta normal (abono_previo=0) sin pagos que
         // cuadren, solo que con PagoNoCuadraException en vez de un guard
         // generico -- una sola ruta de validacion para el monto a cobrar.
@@ -152,7 +128,7 @@ class VentaService
 
             // StockInsuficienteException aqui revierte TODA la venta (esta
             // linea, las anteriores, sus movimientos de kardex ya escritos):
-            // DB::transaction hace rollback de todo el closure completo.
+            // La Action hace rollback de la operación completa.
             $this->inventarioService->registrarMovimientoConStock(
                 stock: $stocks[$linea['variante_id']],
                 tipo: 'salida',
@@ -213,38 +189,16 @@ class VentaService
         return $venta->refresh();
     }
 
-    /**
-     * @template T
-     *
-     * @param  \Closure(): T  $operacion
-     * @return T
-     */
-    private function enTransicion(\Closure $operacion): mixed
-    {
-        return DB::transaction($operacion);
-    }
-
-    /**
-     * @template TModel of \Illuminate\Database\Eloquent\Model
-     *
-     * @param  Builder<TModel>  $consulta
-     * @return TModel|null
-     */
-    private function bloquearTransicion(Builder $consulta): ?Model
-    {
-        return $consulta->lockForUpdate()->first();
-    }
-
     private function exigirTransaccion(): void
     {
-        if (DB::transactionLevel() === 0) {
+        if (DB::connection()->transactionLevel() === 0) {
             throw new \LogicException('VentaService requiere una transacción abierta por una Action.');
         }
     }
 
     /**
      * Cotiza items via PrecioService sin crear ninguna fila -- expone la
-     * misma autoridad de precios de registrarVenta() para que otros
+     * misma autoridad de precios de registrarVentaConBloqueos() para que otros
      * modulos (ej. Devoluciones, para saber de antemano el total de los
      * items nuevos de un cambio antes de registrar la venta sombra) puedan
      * calcular un total sin duplicar la logica de precios ni el

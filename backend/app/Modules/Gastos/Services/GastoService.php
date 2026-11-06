@@ -21,7 +21,7 @@ class GastoService
 {
     public function registrarGastoConCaja(?CajaSesion $cajaSesion, int $sucursalId, int $usuarioId, string $descripcion, float $monto): Gasto
     {
-        if (DB::transactionLevel() === 0) {
+        if (DB::connection()->transactionLevel() === 0) {
             throw new \LogicException('GastoService requiere una transacción abierta por una Action.');
         }
         if (trim($descripcion) === '') {

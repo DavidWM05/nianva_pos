@@ -95,11 +95,11 @@ class ClienteController extends Controller
         $datos['activo'] = true;
         $datos['es_sistema'] = false;
 
-        $cliente = Cliente::create($datos);
-
         // response()->json($resource) NO aplica el wrap "data" que si aplica
         // devolver el resource directamente -- ->response() si lo respeta,
         // manteniendo el mismo shape que show()/update()/desactivar().
+        $cliente = Cliente::create($datos);
+
         return (new ClienteResource($cliente))->response()->setStatusCode(201);
     }
 

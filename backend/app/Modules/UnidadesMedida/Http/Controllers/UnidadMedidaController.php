@@ -2,11 +2,13 @@
 
 namespace App\Modules\UnidadesMedida\Http\Controllers;
 
+use App\Aplicacion\UnidadesMedida\ActualizarUnidadMedida;
+use App\Aplicacion\UnidadesMedida\CrearUnidadMedida;
+use App\Aplicacion\UnidadesMedida\EliminarUnidadMedida;
 use App\Http\Controllers\Controller;
 use App\Modules\UnidadesMedida\Http\Requests\GuardarUnidadMedidaRequest;
 use App\Modules\UnidadesMedida\Http\Resources\UnidadMedidaResource;
 use App\Modules\UnidadesMedida\Models\UnidadMedida;
-use App\Modules\UnidadesMedida\Services\UnidadMedidaService;
 use Illuminate\Http\Request;
 
 class UnidadMedidaController extends Controller
@@ -36,7 +38,7 @@ class UnidadMedidaController extends Controller
         ]);
     }
 
-    public function store(GuardarUnidadMedidaRequest $request, UnidadMedidaService $service)
+    public function store(GuardarUnidadMedidaRequest $request, CrearUnidadMedida $action)
     {
         $usuario = $request->user();
 
@@ -44,24 +46,21 @@ class UnidadMedidaController extends Controller
             abort(401);
         }
 
-        $datos = $request->toDto()->datosPresentes();
-        $datos['tenant_id'] = (int) $usuario->getAttribute('tenant_id');
-
-        $unidad = $service->crear($datos);
+        $unidad = $action->ejecutar($request->toDto(), (int) $usuario->getAttribute('tenant_id'));
 
         return (new UnidadMedidaResource($unidad))->response()->setStatusCode(201);
     }
 
-    public function update(GuardarUnidadMedidaRequest $request, int $id, UnidadMedidaService $service)
+    public function update(GuardarUnidadMedidaRequest $request, int $id, ActualizarUnidadMedida $action)
     {
-        $unidad = $service->actualizar($id, $request->toDto()->datosPresentes());
+        $unidad = $action->ejecutar($request->toDto(), $id);
 
         return new UnidadMedidaResource($unidad);
     }
 
-    public function destroy(int $id, UnidadMedidaService $service)
+    public function destroy(int $id, EliminarUnidadMedida $action)
     {
-        $service->eliminar($id);
+        $action->ejecutar($id);
 
         return response()->json(['message' => 'Unidad de medida eliminada correctamente.']);
     }

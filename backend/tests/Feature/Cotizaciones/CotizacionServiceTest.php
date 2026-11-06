@@ -20,6 +20,9 @@ use App\Modules\Nucleo\Models\Usuario;
 use App\Modules\Nucleo\Services\TenantContext;
 use App\Modules\Tpv\Services\CajaService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\Support\Bloqueos04c;
+use Tests\Support\Bloqueos04d;
+use Tests\Support\Bloqueos04e;
 use Tests\TestCase;
 
 class CotizacionServiceTest extends TestCase
@@ -68,13 +71,12 @@ class CotizacionServiceTest extends TestCase
 
         $proveedor = Proveedor::create(['tenant_id' => $tenant->id, 'razon_social' => 'Proveedor Test']);
 
-        $this->inventarioService->registrarCompra(
-            ['tenant_id' => $tenant->id, 'proveedor_id' => $proveedor->id, 'sucursal_id' => $sucursal->id, 'usuario_id' => $usuario->id],
-            [
-                ['variante_id' => $varianteA->id, 'cantidad' => 20, 'precio_compra' => 50],
-                ['variante_id' => $varianteB->id, 'cantidad' => 10, 'precio_compra' => 50],
-            ],
-        );
+        $datos04e2 = ['tenant_id' => $tenant->id, 'proveedor_id' => $proveedor->id, 'sucursal_id' => $sucursal->id, 'usuario_id' => $usuario->id];
+        $items04e2 = [
+            ['variante_id' => $varianteA->id, 'cantidad' => 20, 'precio_compra' => 50],
+            ['variante_id' => $varianteB->id, 'cantidad' => 10, 'precio_compra' => 50],
+        ];
+        $this->inventarioService->registrarCompraConStocks($datos04e2, $items04e2, Bloqueos04e::stocks((int) $datos04e2['sucursal_id'], array_column($items04e2, 'variante_id')));
 
         return compact('tenant', 'sucursal', 'usuario', 'cliente', 'varianteA', 'varianteB', 'efectivo');
     }
@@ -136,7 +138,7 @@ class CotizacionServiceTest extends TestCase
             ],
         );
 
-        $this->cotizacionService->anular($cotizacion->id);
+        $this->cotizacionService->anularConCotizacion(Bloqueos04d::modelo($cotizacion));
 
         $this->assertSame('anulada', $cotizacion->fresh()->estado);
     }
@@ -159,12 +161,14 @@ class CotizacionServiceTest extends TestCase
             ],
         );
 
-        $this->cajaService->abrirCaja($ctx['sucursal']->id, $ctx['usuario']->id, 500);
+        $this->cajaService->abrirCajaConSucursal(Bloqueos04e::sucursal($ctx['sucursal']->id), $ctx['usuario']->id, 500);
 
-        $venta = $this->cotizacionService->convertirAVenta($cotizacion->id, [
+        $caja04e6 = Bloqueos04c::caja((int) $cotizacion->getAttribute('sucursal_id'));
+        $cotizacion04e6 = Bloqueos04d::modelo($cotizacion);
+        $venta = $this->cotizacionService->convertirConBloqueos($cotizacion04e6, [
             'usuario_id' => $ctx['usuario']->id,
             'metodo_pago_id' => $ctx['efectivo']->id,
-        ]);
+        ], $caja04e6, Bloqueos04e::stocks((int) $cotizacion04e6->getAttribute('sucursal_id'), $cotizacion04e6->detalles->pluck('variante_id')->all()));
 
         $cotizacionActualizada = $cotizacion->fresh();
 
@@ -197,10 +201,12 @@ class CotizacionServiceTest extends TestCase
         );
 
         $this->expectException(SinClienteException::class);
-        $this->cotizacionService->convertirAVenta($cotizacion->id, [
+        $caja04e5 = Bloqueos04c::caja((int) $cotizacion->getAttribute('sucursal_id'));
+        $cotizacion04e5 = Bloqueos04d::modelo($cotizacion);
+        $this->cotizacionService->convertirConBloqueos($cotizacion04e5, [
             'usuario_id' => $ctx['usuario']->id,
             'metodo_pago_id' => $ctx['efectivo']->id,
-        ]);
+        ], $caja04e5, Bloqueos04e::stocks((int) $cotizacion04e5->getAttribute('sucursal_id'), $cotizacion04e5->detalles->pluck('variante_id')->all()));
     }
 
     public function test_convertir_cotizacion_vencida_lanza_excepcion(): void
@@ -225,10 +231,12 @@ class CotizacionServiceTest extends TestCase
         $cotizacion->update(['fecha_vencimiento' => now()->subDay()->toDateString()]);
 
         $this->expectException(CotizacionVencidaException::class);
-        $this->cotizacionService->convertirAVenta($cotizacion->id, [
+        $caja04e4 = Bloqueos04c::caja((int) $cotizacion->getAttribute('sucursal_id'));
+        $cotizacion04e4 = Bloqueos04d::modelo($cotizacion);
+        $this->cotizacionService->convertirConBloqueos($cotizacion04e4, [
             'usuario_id' => $ctx['usuario']->id,
             'metodo_pago_id' => $ctx['efectivo']->id,
-        ]);
+        ], $caja04e4, Bloqueos04e::stocks((int) $cotizacion04e4->getAttribute('sucursal_id'), $cotizacion04e4->detalles->pluck('variante_id')->all()));
     }
 
     public function test_aislamiento_de_tenant_en_cotizaciones(): void

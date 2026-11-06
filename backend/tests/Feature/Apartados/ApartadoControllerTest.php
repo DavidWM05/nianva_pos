@@ -18,6 +18,7 @@ use App\Modules\Nucleo\Models\Usuario;
 use App\Modules\Nucleo\Services\TenantContext;
 use App\Modules\Tpv\Services\CajaService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\Support\Bloqueos04e;
 use Tests\TestCase;
 
 class ApartadoControllerTest extends TestCase
@@ -62,10 +63,9 @@ class ApartadoControllerTest extends TestCase
         $variante = ProductoVariante::create(['producto_id' => $producto->id, 'talla' => 'L']);
         $proveedor = Proveedor::create(['tenant_id' => $tenant->id, 'razon_social' => 'Textiles del Norte']);
 
-        app(InventarioService::class)->registrarCompra(
-            ['tenant_id' => $tenant->id, 'proveedor_id' => $proveedor->id, 'sucursal_id' => $sucursal->id, 'usuario_id' => $usuario->id],
-            [['variante_id' => $variante->id, 'cantidad' => 10, 'precio_compra' => 100]],
-        );
+        $datos04e2 = ['tenant_id' => $tenant->id, 'proveedor_id' => $proveedor->id, 'sucursal_id' => $sucursal->id, 'usuario_id' => $usuario->id];
+        $items04e2 = [['variante_id' => $variante->id, 'cantidad' => 10, 'precio_compra' => 100]];
+        app(InventarioService::class)->registrarCompraConStocks($datos04e2, $items04e2, Bloqueos04e::stocks((int) $datos04e2['sucursal_id'], array_column($items04e2, 'variante_id')));
 
         $cliente = Cliente::where('tenant_id', $tenant->id)->where('nombre', 'Publico General')->firstOrFail();
 
@@ -160,7 +160,7 @@ class ApartadoControllerTest extends TestCase
     public function test_liquidar_con_saldo_cubierto_completa_el_apartado(): void
     {
         $ctx = $this->prepararTenantConCatalogo();
-        app(CajaService::class)->abrirCaja($ctx['sucursal']->id, $ctx['usuario']->id, 0);
+        app(CajaService::class)->abrirCajaConSucursal(Bloqueos04e::sucursal($ctx['sucursal']->id), $ctx['usuario']->id, 0);
         $this->actingAs($ctx['usuario']);
 
         $apartado = $this->postJson('/api/v1/apartados', [

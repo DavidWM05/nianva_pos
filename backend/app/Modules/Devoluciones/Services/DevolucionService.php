@@ -200,7 +200,7 @@ class DevolucionService
 
     private function exigirTransaccion(): void
     {
-        if (DB::transactionLevel() === 0) {
+        if (DB::connection()->transactionLevel() === 0) {
             throw new \LogicException('DevolucionService requiere una transacción abierta por una Action.');
         }
     }

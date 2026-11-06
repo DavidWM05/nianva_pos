@@ -66,6 +66,7 @@ class DependenciasEntreModulosTest extends TestCase
             }
 
             $esControlador = str_contains($ruta, '/Http/Controllers/');
+            $esComando = str_contains($ruta, '/Console/Commands/');
             $esArchivoServicio = str_contains($ruta, '/Services/');
             $lineas = file($archivo->getPathname());
 
@@ -101,8 +102,8 @@ class DependenciasEntreModulosTest extends TestCase
                     }
                 }
 
-                if (preg_match('/^use App\\\\Aplicacion\\\\/', $linea) && ! $esControlador) {
-                    $infracciones[] = "{$ruta}: solo los controladores pueden importar App\\Aplicacion.";
+                if (preg_match('/^use App\\\\Aplicacion\\\\/', $linea) && ! $esControlador && ! $esComando) {
+                    $infracciones[] = "{$ruta}: solo los controladores y comandos pueden importar App\\Aplicacion.";
                 }
             }
         }

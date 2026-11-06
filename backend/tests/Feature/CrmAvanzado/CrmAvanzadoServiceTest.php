@@ -20,6 +20,8 @@ use App\Modules\Nucleo\Services\TenantContext;
 use App\Modules\Tpv\Services\CajaService;
 use App\Modules\Tpv\Services\VentaService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\Support\Bloqueos04c;
+use Tests\Support\Bloqueos04e;
 use Tests\TestCase;
 
 class CrmAvanzadoServiceTest extends TestCase
@@ -69,12 +71,11 @@ class CrmAvanzadoServiceTest extends TestCase
         $prod = Producto::create(['tenant_id' => $this->tenant->id, 'categoria_id' => $cat->id, 'nombre' => 'Prod', 'precio_compra' => 10, 'precio_venta' => 100]);
         $this->variante = ProductoVariante::create(['producto_id' => $prod->id]);
         $prov = Proveedor::create(['tenant_id' => $this->tenant->id, 'razon_social' => 'P']);
-        $this->inventarioService->registrarCompra(
-            ['tenant_id' => $this->tenant->id, 'proveedor_id' => $prov->id, 'sucursal_id' => $this->sucursal->id, 'usuario_id' => $this->usuario->id],
-            [['variante_id' => $this->variante->id, 'cantidad' => 100, 'precio_compra' => 10]],
-        );
+        $datos04e2 = ['tenant_id' => $this->tenant->id, 'proveedor_id' => $prov->id, 'sucursal_id' => $this->sucursal->id, 'usuario_id' => $this->usuario->id];
+        $items04e2 = [['variante_id' => $this->variante->id, 'cantidad' => 100, 'precio_compra' => 10]];
+        $this->inventarioService->registrarCompraConStocks($datos04e2, $items04e2, Bloqueos04e::stocks((int) $datos04e2['sucursal_id'], array_column($items04e2, 'variante_id')));
 
-        $this->cajaService->abrirCaja($this->sucursal->id, $this->usuario->id, 5000);
+        $this->cajaService->abrirCajaConSucursal(Bloqueos04e::sucursal($this->sucursal->id), $this->usuario->id, 5000);
     }
 
     public function test_registrar_interaccion(): void
@@ -133,11 +134,11 @@ class CrmAvanzadoServiceTest extends TestCase
 
     public function test_registrar_puntos_por_venta(): void
     {
-        $venta = $this->ventaService->registrarVenta(
-            ['tenant_id' => $this->tenant->id, 'sucursal_id' => $this->sucursal->id, 'usuario_id' => $this->usuario->id, 'cliente_id' => $this->cliente->id],
-            [['variante_id' => $this->variante->id, 'cantidad' => 1]],
-            [['metodo_pago_id' => $this->efectivo->id, 'monto' => 100]],
-        );
+        $datos04e4 = ['tenant_id' => $this->tenant->id, 'sucursal_id' => $this->sucursal->id, 'usuario_id' => $this->usuario->id, 'cliente_id' => $this->cliente->id];
+        $items04e4 = [['variante_id' => $this->variante->id, 'cantidad' => 1]];
+        $caja04e4 = Bloqueos04c::caja((int) $datos04e4['sucursal_id']);
+        $stocks04e4 = $caja04e4 === null ? [] : Bloqueos04e::stocks((int) $datos04e4['sucursal_id'], array_column($items04e4, 'variante_id'));
+        $venta = $this->ventaService->registrarVentaConBloqueos($datos04e4, $items04e4, [['metodo_pago_id' => $this->efectivo->id, 'monto' => 100]], $caja04e4, $stocks04e4);
 
         $transaccion = $this->service->registrarPuntosPorVenta($venta, 10);
 
@@ -212,11 +213,11 @@ class CrmAvanzadoServiceTest extends TestCase
     private function crearVentas(int $cantidad): void
     {
         for ($i = 0; $i < $cantidad; $i++) {
-            $this->ventaService->registrarVenta(
-                ['tenant_id' => $this->tenant->id, 'sucursal_id' => $this->sucursal->id, 'usuario_id' => $this->usuario->id, 'cliente_id' => $this->cliente->id],
-                [['variante_id' => $this->variante->id, 'cantidad' => 1]],
-                [['metodo_pago_id' => $this->efectivo->id, 'monto' => 100]],
-            );
+            $datos04e3 = ['tenant_id' => $this->tenant->id, 'sucursal_id' => $this->sucursal->id, 'usuario_id' => $this->usuario->id, 'cliente_id' => $this->cliente->id];
+            $items04e3 = [['variante_id' => $this->variante->id, 'cantidad' => 1]];
+            $caja04e3 = Bloqueos04c::caja((int) $datos04e3['sucursal_id']);
+            $stocks04e3 = $caja04e3 === null ? [] : Bloqueos04e::stocks((int) $datos04e3['sucursal_id'], array_column($items04e3, 'variante_id'));
+            $this->ventaService->registrarVentaConBloqueos($datos04e3, $items04e3, [['metodo_pago_id' => $this->efectivo->id, 'monto' => 100]], $caja04e3, $stocks04e3);
         }
     }
 }

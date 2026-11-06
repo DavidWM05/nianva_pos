@@ -221,11 +221,11 @@ class LicenciaClienteService
      */
     private function aplicarPeriodoDeGracia(LicenciaLocal $licenciaLocal): void
     {
+        // Nunca hubo un contacto exitoso -- no hay "ultimo estado
+        // conocido" del cual sostenerse. No se agrega logica especial
+        // aqui: si esto ocurre es porque el registro se creo por fuera
+        // de activar() (fuera de flujo normal), lo dejamos como esta.
         if ($licenciaLocal->ultima_validacion === null) {
-            // Nunca hubo un contacto exitoso -- no hay "ultimo estado
-            // conocido" del cual sostenerse. No se agrega logica especial
-            // aqui: si esto ocurre es porque el registro se creo por fuera
-            // de activar() (fuera de flujo normal), lo dejamos como esta.
             return;
         }
 

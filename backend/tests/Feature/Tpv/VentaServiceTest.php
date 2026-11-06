@@ -26,7 +26,9 @@ use App\Modules\Tpv\Models\VentaPago;
 use App\Modules\Tpv\Services\CajaService;
 use App\Modules\Tpv\Services\VentaService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\DB;
 use Tests\Support\Bloqueos04c;
+use Tests\Support\Bloqueos04e;
 use Tests\TestCase;
 
 /**
@@ -84,13 +86,12 @@ class VentaServiceTest extends TestCase
         $varianteB = ProductoVariante::create(['producto_id' => $productoB->id, 'talla' => '32']);
         $proveedor = Proveedor::create(['tenant_id' => $tenant->id, 'razon_social' => 'Textiles del Norte']);
 
-        $this->inventarioService->registrarCompra(
-            ['tenant_id' => $tenant->id, 'proveedor_id' => $proveedor->id, 'sucursal_id' => $sucursal->id, 'usuario_id' => $usuario->id],
-            [
-                ['variante_id' => $varianteA->id, 'cantidad' => 20, 'precio_compra' => 50],
-                ['variante_id' => $varianteB->id, 'cantidad' => 10, 'precio_compra' => 25],
-            ],
-        );
+        $datos04e7 = ['tenant_id' => $tenant->id, 'proveedor_id' => $proveedor->id, 'sucursal_id' => $sucursal->id, 'usuario_id' => $usuario->id];
+        $items04e7 = [
+            ['variante_id' => $varianteA->id, 'cantidad' => 20, 'precio_compra' => 50],
+            ['variante_id' => $varianteB->id, 'cantidad' => 10, 'precio_compra' => 25],
+        ];
+        $this->inventarioService->registrarCompraConStocks($datos04e7, $items04e7, Bloqueos04e::stocks((int) $datos04e7['sucursal_id'], array_column($items04e7, 'variante_id')));
 
         $cliente = Cliente::where('tenant_id', $tenant->id)->where('nombre', 'Publico General')->firstOrFail();
 
@@ -106,19 +107,19 @@ class VentaServiceTest extends TestCase
             'valor' => 10, 'aplica_a' => 'variante', 'variante_id' => $ctx['varianteA']->id,
         ]);
 
-        $this->cajaService->abrirCaja($ctx['sucursal']->id, $ctx['usuario']->id, 500);
+        $this->cajaService->abrirCajaConSucursal(Bloqueos04e::sucursal($ctx['sucursal']->id), $ctx['usuario']->id, 500);
 
-        $venta = $this->ventaService->registrarVenta(
-            ['tenant_id' => $ctx['tenant']->id, 'sucursal_id' => $ctx['sucursal']->id, 'usuario_id' => $ctx['usuario']->id, 'cliente_id' => $ctx['cliente']->id],
-            [
-                ['variante_id' => $ctx['varianteA']->id, 'cantidad' => 2],
-                ['variante_id' => $ctx['varianteB']->id, 'cantidad' => 3],
-            ],
-            [
-                ['metodo_pago_id' => $ctx['efectivo']->id, 'monto' => 200],
-                ['metodo_pago_id' => $ctx['tarjeta']->id, 'monto' => 130],
-            ],
-        );
+        $datos04e14 = ['tenant_id' => $ctx['tenant']->id, 'sucursal_id' => $ctx['sucursal']->id, 'usuario_id' => $ctx['usuario']->id, 'cliente_id' => $ctx['cliente']->id];
+        $items04e14 = [
+            ['variante_id' => $ctx['varianteA']->id, 'cantidad' => 2],
+            ['variante_id' => $ctx['varianteB']->id, 'cantidad' => 3],
+        ];
+        $caja04e14 = Bloqueos04c::caja((int) $datos04e14['sucursal_id']);
+        $stocks04e14 = $caja04e14 === null ? [] : Bloqueos04e::stocks((int) $datos04e14['sucursal_id'], array_column($items04e14, 'variante_id'));
+        $venta = $this->ventaService->registrarVentaConBloqueos($datos04e14, $items04e14, [
+            ['metodo_pago_id' => $ctx['efectivo']->id, 'monto' => 200],
+            ['metodo_pago_id' => $ctx['tarjeta']->id, 'monto' => 130],
+        ], $caja04e14, $stocks04e14);
 
         $this->assertSame(330.0, (float) $venta->total);
 
@@ -140,7 +141,7 @@ class VentaServiceTest extends TestCase
     public function test_stock_insuficiente_revierte_toda_la_venta_incluyendo_lineas_previas(): void
     {
         $ctx = $this->prepararTenantConCatalogo();
-        $this->cajaService->abrirCaja($ctx['sucursal']->id, $ctx['usuario']->id, 500);
+        $this->cajaService->abrirCajaConSucursal(Bloqueos04e::sucursal($ctx['sucursal']->id), $ctx['usuario']->id, 500);
 
         $stockAantes = InventarioStock::sinTenant()->where('variante_id', $ctx['varianteA']->id)->first()->stock_actual;
         $stockBantes = InventarioStock::sinTenant()->where('variante_id', $ctx['varianteB']->id)->first()->stock_actual;
@@ -150,14 +151,14 @@ class VentaServiceTest extends TestCase
         $totalLinea2 = $precioService->calcularDescuento($ctx['varianteB']->fresh(), 999)->subtotalConDescuento();
 
         try {
-            $this->ventaService->registrarVenta(
-                ['tenant_id' => $ctx['tenant']->id, 'sucursal_id' => $ctx['sucursal']->id, 'usuario_id' => $ctx['usuario']->id, 'cliente_id' => $ctx['cliente']->id],
-                [
-                    ['variante_id' => $ctx['varianteA']->id, 'cantidad' => 1],
-                    ['variante_id' => $ctx['varianteB']->id, 'cantidad' => 999],
-                ],
-                [['metodo_pago_id' => $ctx['efectivo']->id, 'monto' => $totalLinea1 + $totalLinea2]],
-            );
+            $datos04e13 = ['tenant_id' => $ctx['tenant']->id, 'sucursal_id' => $ctx['sucursal']->id, 'usuario_id' => $ctx['usuario']->id, 'cliente_id' => $ctx['cliente']->id];
+            $items04e13 = [
+                ['variante_id' => $ctx['varianteA']->id, 'cantidad' => 1],
+                ['variante_id' => $ctx['varianteB']->id, 'cantidad' => 999],
+            ];
+            $caja04e13 = Bloqueos04c::caja((int) $datos04e13['sucursal_id']);
+            $stocks04e13 = $caja04e13 === null ? [] : Bloqueos04e::stocks((int) $datos04e13['sucursal_id'], array_column($items04e13, 'variante_id'));
+            DB::transaction(fn () => $this->ventaService->registrarVentaConBloqueos($datos04e13, $items04e13, [['metodo_pago_id' => $ctx['efectivo']->id, 'monto' => $totalLinea1 + $totalLinea2]], $caja04e13, $stocks04e13));
             $this->fail('Se esperaba StockInsuficienteException.');
         } catch (StockInsuficienteException) {
             // esperado
@@ -171,16 +172,16 @@ class VentaServiceTest extends TestCase
     public function test_pagos_que_no_cuadran_son_rechazados_sin_tocar_inventario(): void
     {
         $ctx = $this->prepararTenantConCatalogo();
-        $this->cajaService->abrirCaja($ctx['sucursal']->id, $ctx['usuario']->id, 500);
+        $this->cajaService->abrirCajaConSucursal(Bloqueos04e::sucursal($ctx['sucursal']->id), $ctx['usuario']->id, 500);
 
         $stockAantes = InventarioStock::sinTenant()->where('variante_id', $ctx['varianteA']->id)->first()->stock_actual;
 
         try {
-            $this->ventaService->registrarVenta(
-                ['tenant_id' => $ctx['tenant']->id, 'sucursal_id' => $ctx['sucursal']->id, 'usuario_id' => $ctx['usuario']->id, 'cliente_id' => $ctx['cliente']->id],
-                [['variante_id' => $ctx['varianteA']->id, 'cantidad' => 1]],
-                [['metodo_pago_id' => $ctx['efectivo']->id, 'monto' => 50]],
-            );
+            $datos04e12 = ['tenant_id' => $ctx['tenant']->id, 'sucursal_id' => $ctx['sucursal']->id, 'usuario_id' => $ctx['usuario']->id, 'cliente_id' => $ctx['cliente']->id];
+            $items04e12 = [['variante_id' => $ctx['varianteA']->id, 'cantidad' => 1]];
+            $caja04e12 = Bloqueos04c::caja((int) $datos04e12['sucursal_id']);
+            $stocks04e12 = $caja04e12 === null ? [] : Bloqueos04e::stocks((int) $datos04e12['sucursal_id'], array_column($items04e12, 'variante_id'));
+            $this->ventaService->registrarVentaConBloqueos($datos04e12, $items04e12, [['metodo_pago_id' => $ctx['efectivo']->id, 'monto' => 50]], $caja04e12, $stocks04e12);
             $this->fail('Se esperaba PagoNoCuadraException.');
         } catch (PagoNoCuadraException) {
             // esperado
@@ -193,16 +194,16 @@ class VentaServiceTest extends TestCase
     public function test_anular_venta_revierte_stock_marca_estado_y_no_borra_nada(): void
     {
         $ctx = $this->prepararTenantConCatalogo();
-        $this->cajaService->abrirCaja($ctx['sucursal']->id, $ctx['usuario']->id, 500);
+        $this->cajaService->abrirCajaConSucursal(Bloqueos04e::sucursal($ctx['sucursal']->id), $ctx['usuario']->id, 500);
 
-        $venta = $this->ventaService->registrarVenta(
-            ['tenant_id' => $ctx['tenant']->id, 'sucursal_id' => $ctx['sucursal']->id, 'usuario_id' => $ctx['usuario']->id, 'cliente_id' => $ctx['cliente']->id],
-            [
-                ['variante_id' => $ctx['varianteA']->id, 'cantidad' => 2],
-                ['variante_id' => $ctx['varianteB']->id, 'cantidad' => 3],
-            ],
-            [['metodo_pago_id' => $ctx['efectivo']->id, 'monto' => 350]],
-        );
+        $datos04e11 = ['tenant_id' => $ctx['tenant']->id, 'sucursal_id' => $ctx['sucursal']->id, 'usuario_id' => $ctx['usuario']->id, 'cliente_id' => $ctx['cliente']->id];
+        $items04e11 = [
+            ['variante_id' => $ctx['varianteA']->id, 'cantidad' => 2],
+            ['variante_id' => $ctx['varianteB']->id, 'cantidad' => 3],
+        ];
+        $caja04e11 = Bloqueos04c::caja((int) $datos04e11['sucursal_id']);
+        $stocks04e11 = $caja04e11 === null ? [] : Bloqueos04e::stocks((int) $datos04e11['sucursal_id'], array_column($items04e11, 'variante_id'));
+        $venta = $this->ventaService->registrarVentaConBloqueos($datos04e11, $items04e11, [['metodo_pago_id' => $ctx['efectivo']->id, 'monto' => 350]], $caja04e11, $stocks04e11);
 
         $stockAantes = InventarioStock::sinTenant()->where('variante_id', $ctx['varianteA']->id)->first()->stock_actual;
         $stockBantes = InventarioStock::sinTenant()->where('variante_id', $ctx['varianteB']->id)->first()->stock_actual;
@@ -228,21 +229,21 @@ class VentaServiceTest extends TestCase
     public function test_cerrar_caja_excluye_venta_anulada_y_aplica_formula_apertura_mas_ventas_menos_gastos(): void
     {
         $ctx = $this->prepararTenantConCatalogo();
-        $caja = $this->cajaService->abrirCaja($ctx['sucursal']->id, $ctx['usuario']->id, 500);
+        $caja = $this->cajaService->abrirCajaConSucursal(Bloqueos04e::sucursal($ctx['sucursal']->id), $ctx['usuario']->id, 500);
 
-        $ventaA = $this->ventaService->registrarVenta(
-            ['tenant_id' => $ctx['tenant']->id, 'sucursal_id' => $ctx['sucursal']->id, 'usuario_id' => $ctx['usuario']->id, 'cliente_id' => $ctx['cliente']->id],
-            [
-                ['variante_id' => $ctx['varianteA']->id, 'cantidad' => 2],
-                ['variante_id' => $ctx['varianteB']->id, 'cantidad' => 3],
-            ],
-            [['metodo_pago_id' => $ctx['efectivo']->id, 'monto' => 350]],
-        );
-        $this->ventaService->registrarVenta(
-            ['tenant_id' => $ctx['tenant']->id, 'sucursal_id' => $ctx['sucursal']->id, 'usuario_id' => $ctx['usuario']->id, 'cliente_id' => $ctx['cliente']->id],
-            [['variante_id' => $ctx['varianteB']->id, 'cantidad' => 1]],
-            [['metodo_pago_id' => $ctx['efectivo']->id, 'monto' => 50]],
-        );
+        $datos04e10 = ['tenant_id' => $ctx['tenant']->id, 'sucursal_id' => $ctx['sucursal']->id, 'usuario_id' => $ctx['usuario']->id, 'cliente_id' => $ctx['cliente']->id];
+        $items04e10 = [
+            ['variante_id' => $ctx['varianteA']->id, 'cantidad' => 2],
+            ['variante_id' => $ctx['varianteB']->id, 'cantidad' => 3],
+        ];
+        $caja04e10 = Bloqueos04c::caja((int) $datos04e10['sucursal_id']);
+        $stocks04e10 = $caja04e10 === null ? [] : Bloqueos04e::stocks((int) $datos04e10['sucursal_id'], array_column($items04e10, 'variante_id'));
+        $ventaA = $this->ventaService->registrarVentaConBloqueos($datos04e10, $items04e10, [['metodo_pago_id' => $ctx['efectivo']->id, 'monto' => 350]], $caja04e10, $stocks04e10);
+        $datos04e9 = ['tenant_id' => $ctx['tenant']->id, 'sucursal_id' => $ctx['sucursal']->id, 'usuario_id' => $ctx['usuario']->id, 'cliente_id' => $ctx['cliente']->id];
+        $items04e9 = [['variante_id' => $ctx['varianteB']->id, 'cantidad' => 1]];
+        $caja04e9 = Bloqueos04c::caja((int) $datos04e9['sucursal_id']);
+        $stocks04e9 = $caja04e9 === null ? [] : Bloqueos04e::stocks((int) $datos04e9['sucursal_id'], array_column($items04e9, 'variante_id'));
+        $this->ventaService->registrarVentaConBloqueos($datos04e9, $items04e9, [['metodo_pago_id' => $ctx['efectivo']->id, 'monto' => 50]], $caja04e9, $stocks04e9);
 
         // A queda anulada -- no debe contar en total_ventas_sistema.
         $this->ventaService->anularVentaConStocks(Bloqueos04c::venta($ventaA), 'Cliente se arrepintio', $ctx['usuario'], Bloqueos04c::stocks($ctx['sucursal']->id));
@@ -259,12 +260,12 @@ class VentaServiceTest extends TestCase
     public function test_aislamiento_tenant_en_caja_venta_pagos_y_detalles(): void
     {
         $ctx1 = $this->prepararTenantConCatalogo();
-        $caja1 = $this->cajaService->abrirCaja($ctx1['sucursal']->id, $ctx1['usuario']->id, 500);
-        $venta1 = $this->ventaService->registrarVenta(
-            ['tenant_id' => $ctx1['tenant']->id, 'sucursal_id' => $ctx1['sucursal']->id, 'usuario_id' => $ctx1['usuario']->id, 'cliente_id' => $ctx1['cliente']->id],
-            [['variante_id' => $ctx1['varianteA']->id, 'cantidad' => 1]],
-            [['metodo_pago_id' => $ctx1['efectivo']->id, 'monto' => 100]],
-        );
+        $caja1 = $this->cajaService->abrirCajaConSucursal(Bloqueos04e::sucursal($ctx1['sucursal']->id), $ctx1['usuario']->id, 500);
+        $datos04e8 = ['tenant_id' => $ctx1['tenant']->id, 'sucursal_id' => $ctx1['sucursal']->id, 'usuario_id' => $ctx1['usuario']->id, 'cliente_id' => $ctx1['cliente']->id];
+        $items04e8 = [['variante_id' => $ctx1['varianteA']->id, 'cantidad' => 1]];
+        $caja04e8 = Bloqueos04c::caja((int) $datos04e8['sucursal_id']);
+        $stocks04e8 = $caja04e8 === null ? [] : Bloqueos04e::stocks((int) $datos04e8['sucursal_id'], array_column($items04e8, 'variante_id'));
+        $venta1 = $this->ventaService->registrarVentaConBloqueos($datos04e8, $items04e8, [['metodo_pago_id' => $ctx1['efectivo']->id, 'monto' => 100]], $caja04e8, $stocks04e8);
 
         $tenant2 = Tenant::create(['nombre' => 'Angara Dental', 'pais' => 'MX']);
         $sucursal2 = Sucursal::create(['tenant_id' => $tenant2->id, 'nombre' => 'Matriz']);

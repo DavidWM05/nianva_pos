@@ -2,13 +2,16 @@
 
 namespace App\Modules\Cotizaciones\Http\Controllers;
 
+use App\Aplicacion\Cotizaciones\ActualizarCotizacion;
+use App\Aplicacion\Cotizaciones\AnularCotizacion;
+use App\Aplicacion\Cotizaciones\ConvertirCotizacion;
+use App\Aplicacion\Cotizaciones\CrearCotizacion;
 use App\Http\Controllers\Controller;
 use App\Modules\Cotizaciones\Http\Requests\ActualizarCotizacionRequest;
 use App\Modules\Cotizaciones\Http\Requests\ConvertirCotizacionRequest;
 use App\Modules\Cotizaciones\Http\Requests\CrearCotizacionRequest;
 use App\Modules\Cotizaciones\Http\Resources\CotizacionResource;
 use App\Modules\Cotizaciones\Models\Cotizacion;
-use App\Modules\Cotizaciones\Services\CotizacionService;
 use Illuminate\Http\Request;
 
 /**
@@ -16,7 +19,7 @@ use Illuminate\Http\Request;
  *
  * store()/actualizar() nunca calculan precios — se reciben del frontend
  * (que los obtuvo via GET /api/producto-variantes/{id}/precio o similares).
- * convertirAVenta() orquesta CotizacionService + VentaService.
+ * La conversión se orquesta en la Action ConvertirCotizacion.
  */
 class CotizacionController extends Controller
 {
@@ -70,7 +73,7 @@ class CotizacionController extends Controller
         ]);
     }
 
-    public function store(CrearCotizacionRequest $request, CotizacionService $cotizacionService)
+    public function store(CrearCotizacionRequest $request, CrearCotizacion $action)
     {
         $usuario = $request->user();
 
@@ -80,19 +83,7 @@ class CotizacionController extends Controller
 
         $dto = $request->toDto();
 
-        $cotizacion = $cotizacionService->crear(
-            [
-                'tenant_id' => (int) $usuario->getAttribute('tenant_id'),
-                'sucursal_id' => $dto->sucursalId,
-                'usuario_id' => $usuario->id,
-                'cliente_id' => $dto->clienteId,
-                'validez_dias' => $dto->validezDias,
-                'descuento' => $dto->descuento,
-                'observaciones' => $dto->observaciones,
-                'uso_cfdi' => $dto->usoCfdi,
-            ],
-            $dto->itemsParaServicio(),
-        );
+        $cotizacion = $action->ejecutar($dto, $usuario);
 
         return (new CotizacionResource($cotizacion))->response()->setStatusCode(201);
     }
@@ -113,23 +104,23 @@ class CotizacionController extends Controller
         ]);
     }
 
-    public function update(ActualizarCotizacionRequest $request, int $id, CotizacionService $cotizacionService)
+    public function update(ActualizarCotizacionRequest $request, int $id, ActualizarCotizacion $action)
     {
         $dto = $request->toDto();
 
-        $cotizacion = $cotizacionService->actualizar($id, $dto->datosPresentes(), $dto->itemsParaServicio());
+        $cotizacion = $action->ejecutar($dto, $id);
 
         return new CotizacionResource($cotizacion);
     }
 
-    public function destroy(int $id, CotizacionService $cotizacionService)
+    public function destroy(int $id, AnularCotizacion $action)
     {
-        $cotizacionService->anular($id);
+        $action->ejecutar($id);
 
         return response()->json(['message' => 'Cotización anulada correctamente.']);
     }
 
-    public function convertir(ConvertirCotizacionRequest $request, int $id, CotizacionService $cotizacionService)
+    public function convertir(ConvertirCotizacionRequest $request, int $id, ConvertirCotizacion $action)
     {
         $usuario = $request->user();
 
@@ -137,10 +128,7 @@ class CotizacionController extends Controller
             abort(401);
         }
 
-        $venta = $cotizacionService->convertirAVenta($id, [
-            'usuario_id' => $usuario->id,
-            'metodo_pago_id' => $request->toDto()->metodoPagoId,
-        ]);
+        $venta = $action->ejecutar($request->toDto(), $id, $usuario);
 
         return response()->json([
             'message' => 'Cotización convertida a venta correctamente.',

@@ -45,6 +45,11 @@ app(TenantContext::class)->set(Tenant::findOrFail($datos['tenant']));
 $usuario = Usuario::findOrFail($datos['usuario']);
 $emitir(['conexion' => (int) DB::selectOne('SELECT CONNECTION_ID() AS id')->id]);
 
+if (in_array($argv[1] ?? '', ['cotizacion_convertir', 'cotizacion_crear', 'produccion_completar', 'produccion_insumos', 'transformar', 'insumo_entrada'], true)) {
+    require __DIR__.'/operaciones04e.php';
+    exit;
+}
+
 if (in_array($argv[1] ?? '', ['cxc_abonar', 'l04', 'cxp_pagar', 'gift_cargar', 'gift_recargar', 'nota_aplicar', 'cuota_pagar'], true)) {
     require __DIR__.'/operaciones04d.php';
     exit;

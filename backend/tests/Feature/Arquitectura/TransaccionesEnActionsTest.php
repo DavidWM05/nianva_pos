@@ -10,16 +10,7 @@ use Tests\TestCase;
 class TransaccionesEnActionsTest extends TestCase
 {
     /** @var array<string, int> Deuda inicial: solo se reduce al migrar cada caso de uso. */
-    private const PENDIENTES = [
-        'Modules/Apartados/Services/ApartadoService.php' => 2,
-        'Modules/Cotizaciones/Services/CotizacionService.php' => 5,
-        'Modules/Inventario/Services/InventarioService.php' => 3,
-        'Modules/Nucleo/Console/Commands/ResetearDosFactorCommand.php' => 1,
-        'Modules/Produccion/Services/ProduccionService.php' => 4,
-        'Modules/Tpv/Services/CajaService.php' => 2,
-        'Modules/Tpv/Services/VentaService.php' => 2,
-        'Modules/UnidadesMedida/Services/UnidadMedidaService.php' => 3,
-    ];
+    private const PENDIENTES = [];
 
     /** @var array<string, string> Lista cerrada por ARQ-10; no se agregan módulos. */
     private const EXENTOS = [

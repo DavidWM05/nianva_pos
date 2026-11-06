@@ -97,7 +97,7 @@ class NotaCreditoService
     /** El modelo recibido debe haberse leído con bloqueo en la Action llamadora. */
     private function exigirTransaccion(): void
     {
-        if (DB::transactionLevel() === 0) {
+        if (DB::connection()->transactionLevel() === 0) {
             throw new \LogicException('La escritura de saldos requiere una transacción activa.');
         }
     }

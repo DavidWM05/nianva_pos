@@ -26,6 +26,9 @@ use App\Modules\Nucleo\Services\TenantContext;
 use App\Modules\Tpv\Models\Venta;
 use App\Modules\Tpv\Services\CajaService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\Support\Bloqueos04c;
+use Tests\Support\Bloqueos04d;
+use Tests\Support\Bloqueos04e;
 use Tests\TestCase;
 
 /**
@@ -82,13 +85,12 @@ class ApartadoServiceTest extends TestCase
         $varianteD = ProductoVariante::create(['producto_id' => $productoD->id, 'talla' => 'Unica']);
         $proveedor = Proveedor::create(['tenant_id' => $tenant->id, 'razon_social' => 'Textiles del Norte']);
 
-        $this->inventarioService->registrarCompra(
-            ['tenant_id' => $tenant->id, 'proveedor_id' => $proveedor->id, 'sucursal_id' => $sucursal->id, 'usuario_id' => $usuario->id],
-            [
-                ['variante_id' => $varianteC->id, 'cantidad' => 15, 'precio_compra' => 100],
-                ['variante_id' => $varianteD->id, 'cantidad' => 15, 'precio_compra' => 40],
-            ],
-        );
+        $datos04e2 = ['tenant_id' => $tenant->id, 'proveedor_id' => $proveedor->id, 'sucursal_id' => $sucursal->id, 'usuario_id' => $usuario->id];
+        $items04e2 = [
+            ['variante_id' => $varianteC->id, 'cantidad' => 15, 'precio_compra' => 100],
+            ['variante_id' => $varianteD->id, 'cantidad' => 15, 'precio_compra' => 40],
+        ];
+        $this->inventarioService->registrarCompraConStocks($datos04e2, $items04e2, Bloqueos04e::stocks((int) $datos04e2['sucursal_id'], array_column($items04e2, 'variante_id')));
 
         $cliente = Cliente::where('tenant_id', $tenant->id)->where('nombre', 'Publico General')->firstOrFail();
 
@@ -99,13 +101,12 @@ class ApartadoServiceTest extends TestCase
     {
         $ctx = $this->prepararTenantConCatalogo();
 
-        $apartado = $this->apartadoService->crearApartado(
-            ['tenant_id' => $ctx['tenant']->id, 'sucursal_id' => $ctx['sucursal']->id, 'cliente_id' => $ctx['cliente']->id, 'usuario_id' => $ctx['usuario']->id],
-            [
-                ['variante_id' => $ctx['varianteC']->id, 'cantidad' => 2],
-                ['variante_id' => $ctx['varianteD']->id, 'cantidad' => 1],
-            ],
-        );
+        $datos04e8 = ['tenant_id' => $ctx['tenant']->id, 'sucursal_id' => $ctx['sucursal']->id, 'cliente_id' => $ctx['cliente']->id, 'usuario_id' => $ctx['usuario']->id];
+        $items04e8 = [
+            ['variante_id' => $ctx['varianteC']->id, 'cantidad' => 2],
+            ['variante_id' => $ctx['varianteD']->id, 'cantidad' => 1],
+        ];
+        $apartado = $this->apartadoService->crearApartadoConStocks($datos04e8, $items04e8, Bloqueos04e::stocks((int) $datos04e8['sucursal_id'], array_column($items04e8, 'variante_id')));
 
         $this->assertSame(480.0, (float) $apartado->total);
         $this->assertSame('activo', $apartado->estado);
@@ -123,12 +124,11 @@ class ApartadoServiceTest extends TestCase
     public function test_registrar_abonos_parciales_con_pago_mixto_y_rechaza_abono_que_no_cuadra(): void
     {
         $ctx = $this->prepararTenantConCatalogo();
-        $apartado = $this->apartadoService->crearApartado(
-            ['tenant_id' => $ctx['tenant']->id, 'sucursal_id' => $ctx['sucursal']->id, 'cliente_id' => $ctx['cliente']->id, 'usuario_id' => $ctx['usuario']->id],
-            [['variante_id' => $ctx['varianteC']->id, 'cantidad' => 2], ['variante_id' => $ctx['varianteD']->id, 'cantidad' => 1]],
-        );
+        $datos04e7 = ['tenant_id' => $ctx['tenant']->id, 'sucursal_id' => $ctx['sucursal']->id, 'cliente_id' => $ctx['cliente']->id, 'usuario_id' => $ctx['usuario']->id];
+        $items04e7 = [['variante_id' => $ctx['varianteC']->id, 'cantidad' => 2], ['variante_id' => $ctx['varianteD']->id, 'cantidad' => 1]];
+        $apartado = $this->apartadoService->crearApartadoConStocks($datos04e7, $items04e7, Bloqueos04e::stocks((int) $datos04e7['sucursal_id'], array_column($items04e7, 'variante_id')));
 
-        $abono1 = $this->apartadoService->registrarAbono($apartado, 200, $ctx['usuario']->id, [
+        $abono1 = $this->apartadoService->registrarAbonoConApartado(Bloqueos04d::modelo($apartado), 200, $ctx['usuario']->id, [
             ['metodo_pago_id' => $ctx['efectivo']->id, 'monto' => 150],
             ['metodo_pago_id' => $ctx['tarjeta']->id, 'monto' => 50],
         ]);
@@ -136,32 +136,33 @@ class ApartadoServiceTest extends TestCase
         $this->assertSame(200.0, (float) $apartado->fresh()->total_abonado);
 
         try {
-            $this->apartadoService->registrarAbono($apartado, 100, $ctx['usuario']->id, [['metodo_pago_id' => $ctx['efectivo']->id, 'monto' => 99]]);
+            $this->apartadoService->registrarAbonoConApartado(Bloqueos04d::modelo($apartado), 100, $ctx['usuario']->id, [['metodo_pago_id' => $ctx['efectivo']->id, 'monto' => 99]]);
             $this->fail('Se esperaba AbonoPagoNoCuadraException.');
         } catch (AbonoPagoNoCuadraException) {
             // esperado
         }
         $this->assertSame(200.0, (float) $apartado->fresh()->total_abonado);
 
-        $this->apartadoService->registrarAbono($apartado, 280, $ctx['usuario']->id, [['metodo_pago_id' => $ctx['efectivo']->id, 'monto' => 280]]);
+        $this->apartadoService->registrarAbonoConApartado(Bloqueos04d::modelo($apartado), 280, $ctx['usuario']->id, [['metodo_pago_id' => $ctx['efectivo']->id, 'monto' => 280]]);
         $this->assertSame(480.0, (float) $apartado->fresh()->total_abonado);
     }
 
     public function test_liquidar_apartado_crea_venta_con_abono_previo_sin_descontar_stock_dos_veces(): void
     {
         $ctx = $this->prepararTenantConCatalogo();
-        $apartado = $this->apartadoService->crearApartado(
-            ['tenant_id' => $ctx['tenant']->id, 'sucursal_id' => $ctx['sucursal']->id, 'cliente_id' => $ctx['cliente']->id, 'usuario_id' => $ctx['usuario']->id],
-            [['variante_id' => $ctx['varianteC']->id, 'cantidad' => 2], ['variante_id' => $ctx['varianteD']->id, 'cantidad' => 1]],
-        );
-        $this->apartadoService->registrarAbono($apartado, 480, $ctx['usuario']->id, [['metodo_pago_id' => $ctx['efectivo']->id, 'monto' => 480]]);
+        $datos04e6 = ['tenant_id' => $ctx['tenant']->id, 'sucursal_id' => $ctx['sucursal']->id, 'cliente_id' => $ctx['cliente']->id, 'usuario_id' => $ctx['usuario']->id];
+        $items04e6 = [['variante_id' => $ctx['varianteC']->id, 'cantidad' => 2], ['variante_id' => $ctx['varianteD']->id, 'cantidad' => 1]];
+        $apartado = $this->apartadoService->crearApartadoConStocks($datos04e6, $items04e6, Bloqueos04e::stocks((int) $datos04e6['sucursal_id'], array_column($items04e6, 'variante_id')));
+        $this->apartadoService->registrarAbonoConApartado(Bloqueos04d::modelo($apartado), 480, $ctx['usuario']->id, [['metodo_pago_id' => $ctx['efectivo']->id, 'monto' => 480]]);
 
         $stockCTrasReserva = InventarioStock::sinTenant()->where('variante_id', $ctx['varianteC']->id)->first()->stock_actual;
         $stockDTrasReserva = InventarioStock::sinTenant()->where('variante_id', $ctx['varianteD']->id)->first()->stock_actual;
 
-        $this->cajaService->abrirCaja($ctx['sucursal']->id, $ctx['usuario']->id, 0);
+        $this->cajaService->abrirCajaConSucursal(Bloqueos04e::sucursal($ctx['sucursal']->id), $ctx['usuario']->id, 0);
 
-        $apartadoLiquidado = $this->apartadoService->liquidar($apartado, $ctx['usuario']->id);
+        $caja04e19 = Bloqueos04c::caja((int) $apartado->getAttribute('sucursal_id'));
+        $apartado04e19 = Bloqueos04d::modelo($apartado);
+        $apartadoLiquidado = $this->apartadoService->liquidarConBloqueos($apartado04e19, $ctx['usuario']->id, $caja04e19, Bloqueos04e::stocksApartado($apartado04e19));
 
         $this->assertSame('completado', $apartadoLiquidado->estado);
         $this->assertNotNull($apartadoLiquidado->fecha_completado);
@@ -188,7 +189,9 @@ class ApartadoServiceTest extends TestCase
         );
 
         try {
-            $this->apartadoService->liquidar($apartado, $ctx['usuario']->id);
+            $caja04e18 = Bloqueos04c::caja((int) $apartado->getAttribute('sucursal_id'));
+            $apartado04e18 = Bloqueos04d::modelo($apartado);
+            $this->apartadoService->liquidarConBloqueos($apartado04e18, $ctx['usuario']->id, $caja04e18, Bloqueos04e::stocksApartado($apartado04e18));
             $this->fail('Se esperaba ApartadoEstadoInvalidoException al re-liquidar.');
         } catch (ApartadoEstadoInvalidoException) {
             // esperado
@@ -198,14 +201,15 @@ class ApartadoServiceTest extends TestCase
     public function test_liquidar_con_saldo_insuficiente_es_rechazado(): void
     {
         $ctx = $this->prepararTenantConCatalogo();
-        $apartado = $this->apartadoService->crearApartado(
-            ['tenant_id' => $ctx['tenant']->id, 'sucursal_id' => $ctx['sucursal']->id, 'cliente_id' => $ctx['cliente']->id, 'usuario_id' => $ctx['usuario']->id],
-            [['variante_id' => $ctx['varianteC']->id, 'cantidad' => 1]],
-        );
-        $this->apartadoService->registrarAbono($apartado, 100, $ctx['usuario']->id, [['metodo_pago_id' => $ctx['efectivo']->id, 'monto' => 100]]);
+        $datos04e5 = ['tenant_id' => $ctx['tenant']->id, 'sucursal_id' => $ctx['sucursal']->id, 'cliente_id' => $ctx['cliente']->id, 'usuario_id' => $ctx['usuario']->id];
+        $items04e5 = [['variante_id' => $ctx['varianteC']->id, 'cantidad' => 1]];
+        $apartado = $this->apartadoService->crearApartadoConStocks($datos04e5, $items04e5, Bloqueos04e::stocks((int) $datos04e5['sucursal_id'], array_column($items04e5, 'variante_id')));
+        $this->apartadoService->registrarAbonoConApartado(Bloqueos04d::modelo($apartado), 100, $ctx['usuario']->id, [['metodo_pago_id' => $ctx['efectivo']->id, 'monto' => 100]]);
 
         try {
-            $this->apartadoService->liquidar($apartado, $ctx['usuario']->id);
+            $caja04e17 = Bloqueos04c::caja((int) $apartado->getAttribute('sucursal_id'));
+            $apartado04e17 = Bloqueos04d::modelo($apartado);
+            $this->apartadoService->liquidarConBloqueos($apartado04e17, $ctx['usuario']->id, $caja04e17, Bloqueos04e::stocksApartado($apartado04e17));
             $this->fail('Se esperaba ApartadoSaldoInsuficienteException.');
         } catch (ApartadoSaldoInsuficienteException) {
             // esperado
@@ -217,15 +221,15 @@ class ApartadoServiceTest extends TestCase
     public function test_cancelar_apartado_libera_stock_y_señala_abonos_pendientes(): void
     {
         $ctx = $this->prepararTenantConCatalogo();
-        $apartado = $this->apartadoService->crearApartado(
-            ['tenant_id' => $ctx['tenant']->id, 'sucursal_id' => $ctx['sucursal']->id, 'cliente_id' => $ctx['cliente']->id, 'usuario_id' => $ctx['usuario']->id],
-            [['variante_id' => $ctx['varianteC']->id, 'cantidad' => 1]],
-        );
-        $this->apartadoService->registrarAbono($apartado, 100, $ctx['usuario']->id, [['metodo_pago_id' => $ctx['efectivo']->id, 'monto' => 100]]);
+        $datos04e4 = ['tenant_id' => $ctx['tenant']->id, 'sucursal_id' => $ctx['sucursal']->id, 'cliente_id' => $ctx['cliente']->id, 'usuario_id' => $ctx['usuario']->id];
+        $items04e4 = [['variante_id' => $ctx['varianteC']->id, 'cantidad' => 1]];
+        $apartado = $this->apartadoService->crearApartadoConStocks($datos04e4, $items04e4, Bloqueos04e::stocks((int) $datos04e4['sucursal_id'], array_column($items04e4, 'variante_id')));
+        $this->apartadoService->registrarAbonoConApartado(Bloqueos04d::modelo($apartado), 100, $ctx['usuario']->id, [['metodo_pago_id' => $ctx['efectivo']->id, 'monto' => 100]]);
 
         $stockAntesCancelar = InventarioStock::sinTenant()->where('variante_id', $ctx['varianteC']->id)->first()->stock_actual;
 
-        $resultado = $this->apartadoService->cancelar($apartado, 'Cliente ya no lo quiere', $ctx['usuario']);
+        $apartado04e20 = Bloqueos04d::modelo($apartado);
+        $resultado = $this->apartadoService->cancelarConStocks($apartado04e20, 'Cliente ya no lo quiere', $ctx['usuario'], Bloqueos04e::stocksApartado($apartado04e20));
 
         $this->assertSame('cancelado', $resultado->apartado->estado);
         $this->assertNotNull($resultado->apartado->fecha_cancelado);
@@ -239,7 +243,7 @@ class ApartadoServiceTest extends TestCase
         $this->assertSame(1, ApartadoAbono::sinTenant()->where('apartado_id', $apartado->id)->count());
 
         try {
-            $this->apartadoService->registrarAbono($apartado, 50, $ctx['usuario']->id, [['metodo_pago_id' => $ctx['efectivo']->id, 'monto' => 50]]);
+            $this->apartadoService->registrarAbonoConApartado(Bloqueos04d::modelo($apartado), 50, $ctx['usuario']->id, [['metodo_pago_id' => $ctx['efectivo']->id, 'monto' => 50]]);
             $this->fail('Se esperaba ApartadoEstadoInvalidoException al abonar a un apartado cancelado.');
         } catch (ApartadoEstadoInvalidoException) {
             // esperado
@@ -249,11 +253,10 @@ class ApartadoServiceTest extends TestCase
     public function test_aislamiento_tenant_en_apartado_detalle_abono_y_abono_pago(): void
     {
         $ctx1 = $this->prepararTenantConCatalogo();
-        $apartado1 = $this->apartadoService->crearApartado(
-            ['tenant_id' => $ctx1['tenant']->id, 'sucursal_id' => $ctx1['sucursal']->id, 'cliente_id' => $ctx1['cliente']->id, 'usuario_id' => $ctx1['usuario']->id],
-            [['variante_id' => $ctx1['varianteC']->id, 'cantidad' => 1]],
-        );
-        $abono1 = $this->apartadoService->registrarAbono($apartado1, 50, $ctx1['usuario']->id, [['metodo_pago_id' => $ctx1['efectivo']->id, 'monto' => 50]]);
+        $datos04e3 = ['tenant_id' => $ctx1['tenant']->id, 'sucursal_id' => $ctx1['sucursal']->id, 'cliente_id' => $ctx1['cliente']->id, 'usuario_id' => $ctx1['usuario']->id];
+        $items04e3 = [['variante_id' => $ctx1['varianteC']->id, 'cantidad' => 1]];
+        $apartado1 = $this->apartadoService->crearApartadoConStocks($datos04e3, $items04e3, Bloqueos04e::stocks((int) $datos04e3['sucursal_id'], array_column($items04e3, 'variante_id')));
+        $abono1 = $this->apartadoService->registrarAbonoConApartado(Bloqueos04d::modelo($apartado1), 50, $ctx1['usuario']->id, [['metodo_pago_id' => $ctx1['efectivo']->id, 'monto' => 50]]);
 
         $tenant2 = Tenant::create(['nombre' => 'Angara Dental', 'pais' => 'MX']);
         $sucursal2 = Sucursal::create(['tenant_id' => $tenant2->id, 'nombre' => 'Matriz']);

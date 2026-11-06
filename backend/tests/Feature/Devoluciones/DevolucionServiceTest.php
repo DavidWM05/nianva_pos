@@ -27,6 +27,7 @@ use App\Modules\Tpv\Services\CajaService;
 use App\Modules\Tpv\Services\VentaService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\Support\Bloqueos04c;
+use Tests\Support\Bloqueos04e;
 use Tests\TestCase;
 
 /**
@@ -82,28 +83,27 @@ class DevolucionServiceTest extends TestCase
         $varianteG = ProductoVariante::create(['producto_id' => $productoG->id, 'talla' => 'L']);
         $proveedor = Proveedor::create(['tenant_id' => $tenant->id, 'razon_social' => 'Textiles del Norte']);
 
-        $this->inventarioService->registrarCompra(
-            ['tenant_id' => $tenant->id, 'proveedor_id' => $proveedor->id, 'sucursal_id' => $sucursal->id, 'usuario_id' => $usuario->id],
-            [
-                ['variante_id' => $varianteE->id, 'cantidad' => 10, 'precio_compra' => 60],
-                ['variante_id' => $varianteF->id, 'cantidad' => 10, 'precio_compra' => 30],
-                ['variante_id' => $varianteG->id, 'cantidad' => 10, 'precio_compra' => 200],
-            ],
-        );
+        $datos04e2 = ['tenant_id' => $tenant->id, 'proveedor_id' => $proveedor->id, 'sucursal_id' => $sucursal->id, 'usuario_id' => $usuario->id];
+        $items04e2 = [
+            ['variante_id' => $varianteE->id, 'cantidad' => 10, 'precio_compra' => 60],
+            ['variante_id' => $varianteF->id, 'cantidad' => 10, 'precio_compra' => 30],
+            ['variante_id' => $varianteG->id, 'cantidad' => 10, 'precio_compra' => 200],
+        ];
+        $this->inventarioService->registrarCompraConStocks($datos04e2, $items04e2, Bloqueos04e::stocks((int) $datos04e2['sucursal_id'], array_column($items04e2, 'variante_id')));
 
         $cliente = Cliente::where('tenant_id', $tenant->id)->where('nombre', 'Publico General')->firstOrFail();
 
-        $this->cajaService->abrirCaja($sucursal->id, $usuario->id, 0);
+        $this->cajaService->abrirCajaConSucursal(Bloqueos04e::sucursal($sucursal->id), $usuario->id, 0);
 
         // Venta origen: E x2 (120 c/u) + F x1 (60) = 300.
-        $ventaOrigen = $this->ventaService->registrarVenta(
-            ['tenant_id' => $tenant->id, 'sucursal_id' => $sucursal->id, 'usuario_id' => $usuario->id, 'cliente_id' => $cliente->id],
-            [
-                ['variante_id' => $varianteE->id, 'cantidad' => 2],
-                ['variante_id' => $varianteF->id, 'cantidad' => 1],
-            ],
-            [['metodo_pago_id' => $efectivo->id, 'monto' => 300]],
-        );
+        $datos04e3 = ['tenant_id' => $tenant->id, 'sucursal_id' => $sucursal->id, 'usuario_id' => $usuario->id, 'cliente_id' => $cliente->id];
+        $items04e3 = [
+            ['variante_id' => $varianteE->id, 'cantidad' => 2],
+            ['variante_id' => $varianteF->id, 'cantidad' => 1],
+        ];
+        $caja04e3 = Bloqueos04c::caja((int) $datos04e3['sucursal_id']);
+        $stocks04e3 = $caja04e3 === null ? [] : Bloqueos04e::stocks((int) $datos04e3['sucursal_id'], array_column($items04e3, 'variante_id'));
+        $ventaOrigen = $this->ventaService->registrarVentaConBloqueos($datos04e3, $items04e3, [['metodo_pago_id' => $efectivo->id, 'monto' => 300]], $caja04e3, $stocks04e3);
 
         return compact('tenant', 'sucursal', 'usuario', 'cliente', 'efectivo', 'varianteE', 'varianteF', 'varianteG', 'ventaOrigen');
     }

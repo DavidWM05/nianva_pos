@@ -11,6 +11,7 @@ use App\Modules\UnidadesMedida\Exceptions\UnidadEnUsoException;
 use App\Modules\UnidadesMedida\Services\UnidadMedidaService;
 use Illuminate\Database\QueryException;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\Support\Bloqueos04d;
 use Tests\TestCase;
 
 class UnidadMedidaServiceTest extends TestCase
@@ -106,6 +107,6 @@ class UnidadMedidaServiceTest extends TestCase
         ]);
 
         $this->expectException(UnidadEnUsoException::class);
-        $this->service->eliminar($unidad->id);
+        $this->service->eliminarConUnidad(Bloqueos04d::modelo($unidad));
     }
 }
