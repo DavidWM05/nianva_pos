@@ -72,8 +72,25 @@ final class ProcesosConcurrentes
     /** @return list<array<string, mixed>> */
     public static function eventos(Process $proceso): array
     {
-        $contenido = file_get_contents(self::$archivos[spl_object_id($proceso)]);
-        $lineas = array_map(trim(...), explode("\n", trim($contenido === false ? '' : $contenido)));
+        $canal = fopen(self::$archivos[spl_object_id($proceso)], 'rb');
+        if ($canal === false) {
+            throw new \RuntimeException('No se pudo abrir el canal de eventos.');
+        }
+        try {
+            // El escritor usa LOCK_EX: en Windows una lectura sin LOCK_SH puede fallar
+            // o ver una línea parcial mientras se publica el evento.
+            if (! flock($canal, LOCK_SH)) {
+                throw new \RuntimeException('No se pudo bloquear la lectura de eventos.');
+            }
+            $contenido = stream_get_contents($canal);
+            if ($contenido === false) {
+                throw new \RuntimeException('No se pudo leer el canal de eventos.');
+            }
+        } finally {
+            flock($canal, LOCK_UN);
+            fclose($canal);
+        }
+        $lineas = array_map(trim(...), explode("\n", trim($contenido)));
 
         return array_values(array_map(
             static fn (string $linea): array => json_decode($linea, true, 512, JSON_THROW_ON_ERROR),

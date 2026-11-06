@@ -12,6 +12,7 @@ use App\Modules\GiftCards\Models\GiftCardRecarga;
 use App\Modules\Tpv\Models\CajaSesion;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Mockery\MockInterface;
+use Tests\Support\Bloqueos04c;
 use Tests\Support\PreparaNegocio;
 use Tests\TestCase;
 
@@ -30,7 +31,7 @@ class CerrarCajaTest extends TestCase
     {
         $venta = $this->crearVenta();
 
-        app(GastoService::class)->registrarGasto($this->sucursal->id, $this->usuario->id, 'Luz', 80);
+        app(GastoService::class)->registrarGastoConCaja(Bloqueos04c::caja($this->sucursal->id), $this->sucursal->id, $this->usuario->id, 'Luz', 80);
 
         $cuentaCobrar = CuentaCobrar::create([
             'tenant_id' => $this->tenant->id,

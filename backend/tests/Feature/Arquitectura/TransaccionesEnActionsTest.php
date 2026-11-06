@@ -11,12 +11,10 @@ class TransaccionesEnActionsTest extends TestCase
 {
     /** @var array<string, int> Deuda inicial: solo se reduce al migrar cada caso de uso. */
     private const PENDIENTES = [
-        'Modules/Apartados/Services/ApartadoService.php' => 4,
+        'Modules/Apartados/Services/ApartadoService.php' => 2,
         'Modules/Cotizaciones/Services/CotizacionService.php' => 5,
         'Modules/CuentasCobrar/Services/CuentasCobrarService.php' => 5,
         'Modules/CuentasPagar/Services/CuentasPagarService.php' => 5,
-        'Modules/Devoluciones/Services/DevolucionService.php' => 1,
-        'Modules/Gastos/Services/GastoService.php' => 1,
         'Modules/GiftCards/Services/GiftCardService.php' => 7,
         'Modules/Inventario/Services/InventarioService.php' => 3,
         'Modules/NotasCredito/Services/NotaCreditoService.php' => 3,

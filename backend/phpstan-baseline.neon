@@ -121,12 +121,6 @@ parameters:
 			path: app/Modules/Apartados/Exceptions/ApartadoSaldoInsuficienteException.php
 
 		-
-			message: '#^Cannot access property \$id on App\\Modules\\Nucleo\\Models\\Usuario\|null\.$#'
-			identifier: property.nonObject
-			count: 1
-			path: app/Modules/Apartados/Http/Controllers/ApartadoController.php
-
-		-
 			message: '#^Cannot call method tienePermiso\(\) on App\\Modules\\Nucleo\\Models\\Usuario\|null\.$#'
 			identifier: method.nonObject
 			count: 3
@@ -441,7 +435,7 @@ parameters:
 		-
 			message: '#^Access to an undefined property App\\Modules\\Apartados\\Models\\Apartado\:\:\$sucursal_id\.$#'
 			identifier: property.notFound
-			count: 3
+			count: 1
 			path: app/Modules/Apartados/Services/ApartadoService.php
 
 		-
@@ -460,18 +454,6 @@ parameters:
 			message: '#^Access to an undefined property App\\Modules\\Apartados\\Models\\Apartado\:\:\$total_abonado\.$#'
 			identifier: property.notFound
 			count: 5
-			path: app/Modules/Apartados/Services/ApartadoService.php
-
-		-
-			message: '#^Access to an undefined property App\\Modules\\Apartados\\Models\\ApartadoDetalle\:\:\$cantidad\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Modules/Apartados/Services/ApartadoService.php
-
-		-
-			message: '#^Access to an undefined property App\\Modules\\Apartados\\Models\\ApartadoDetalle\:\:\$variante_id\.$#'
-			identifier: property.notFound
-			count: 1
 			path: app/Modules/Apartados/Services/ApartadoService.php
 
 		-
@@ -505,38 +487,8 @@ parameters:
 			path: app/Modules/Apartados/Services/ApartadoService.php
 
 		-
-			message: '#^Parameter \#1 \$callback of method Illuminate\\Database\\Eloquent\\Collection\<int,Illuminate\\Database\\Eloquent\\Model\>\:\:map\(\) contains unresolvable type\.$#'
-			identifier: argument.unresolvableType
-			count: 1
-			path: app/Modules/Apartados/Services/ApartadoService.php
-
-		-
-			message: '#^Parameter \#1 \$callback of method Illuminate\\Database\\Eloquent\\Collection\<int,Illuminate\\Database\\Eloquent\\Model\>\:\:map\(\) expects callable\(Illuminate\\Database\\Eloquent\\Model, int\)\: array\{variante_id\: mixed, cantidad\: mixed\}, Closure\(App\\Modules\\Apartados\\Models\\ApartadoDetalle\)\: array\{variante_id\: mixed, cantidad\: mixed\} given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Modules/Apartados/Services/ApartadoService.php
-
-		-
 			message: '#^Parameter \#1 \$variante of method App\\Modules\\Precios\\Services\\PrecioService\:\:calcularDescuento\(\) expects App\\Modules\\Inventario\\Models\\ProductoVariante, Illuminate\\Database\\Eloquent\\Model given\.$#'
 			identifier: argument.type
-			count: 1
-			path: app/Modules/Apartados/Services/ApartadoService.php
-
-		-
-			message: '#^Parameter \$items of method App\\Modules\\Tpv\\Services\\VentaService\:\:registrarVenta\(\) expects list\<array\{variante_id\: int, cantidad\: int\}\>, array\<int, array\{variante_id\: mixed, cantidad\: mixed\}\> given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Modules/Apartados/Services/ApartadoService.php
-
-		-
-			message: '#^Return type of call to method Illuminate\\Database\\Eloquent\\Collection\<int,Illuminate\\Database\\Eloquent\\Model\>\:\:map\(\) contains unresolvable type\.$#'
-			identifier: method.unresolvableReturnType
-			count: 1
-			path: app/Modules/Apartados/Services/ApartadoService.php
-
-		-
-			message: '#^Return type of call to method Illuminate\\Support\\Collection\<int,array\<string, mixed\>\>\:\:all\(\) contains unresolvable type\.$#'
-			identifier: method.unresolvableReturnType
 			count: 1
 			path: app/Modules/Apartados/Services/ApartadoService.php
 
@@ -2879,12 +2831,6 @@ parameters:
 			identifier: missingType.generics
 			count: 1
 			path: app/Modules/Gastos/Models/Gasto.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Modules/Gastos/Services/GastoService.php
 
 		-
 			message: '#^Call to an undefined method Illuminate\\Database\\Schema\\ForeignKeyDefinition\:\:comment\(\)\.$#'
@@ -6914,12 +6860,6 @@ parameters:
 
 		-
 			message: '#^Access to an undefined property App\\Modules\\Tpv\\Models\\Venta\:\:\$estado\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Modules/Tpv/Services/VentaService.php
-
-		-
-			message: '#^Access to an undefined property App\\Modules\\Tpv\\Models\\Venta\:\:\$sucursal_id\.$#'
 			identifier: property.notFound
 			count: 1
 			path: app/Modules/Tpv/Services/VentaService.php

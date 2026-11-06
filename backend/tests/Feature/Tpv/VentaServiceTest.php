@@ -26,6 +26,7 @@ use App\Modules\Tpv\Models\VentaPago;
 use App\Modules\Tpv\Services\CajaService;
 use App\Modules\Tpv\Services\VentaService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\Support\Bloqueos04c;
 use Tests\TestCase;
 
 /**
@@ -206,7 +207,7 @@ class VentaServiceTest extends TestCase
         $stockAantes = InventarioStock::sinTenant()->where('variante_id', $ctx['varianteA']->id)->first()->stock_actual;
         $stockBantes = InventarioStock::sinTenant()->where('variante_id', $ctx['varianteB']->id)->first()->stock_actual;
 
-        $ventaAnulada = $this->ventaService->anularVenta($venta, 'Cliente se arrepintio', $ctx['usuario']);
+        $ventaAnulada = $this->ventaService->anularVentaConStocks(Bloqueos04c::venta($venta), 'Cliente se arrepintio', $ctx['usuario'], Bloqueos04c::stocks($ctx['sucursal']->id));
 
         $this->assertSame('anulada', $ventaAnulada->estado);
         $this->assertSame('Cliente se arrepintio', $ventaAnulada->motivo_anulacion);
@@ -244,10 +245,10 @@ class VentaServiceTest extends TestCase
         );
 
         // A queda anulada -- no debe contar en total_ventas_sistema.
-        $this->ventaService->anularVenta($ventaA, 'Cliente se arrepintio', $ctx['usuario']);
+        $this->ventaService->anularVentaConStocks(Bloqueos04c::venta($ventaA), 'Cliente se arrepintio', $ctx['usuario'], Bloqueos04c::stocks($ctx['sucursal']->id));
 
         // total_teorico = apertura(500) + ventas(50, solo B) - gastos(0) = 550.
-        $cajaCerrada = $this->cajaService->cerrarCaja($caja, 545);
+        $cajaCerrada = $this->cajaService->cerrarCajaConSesion(Bloqueos04c::sesion($caja), 545);
 
         $this->assertSame(50.0, (float) $cajaCerrada->total_ventas_sistema);
         $this->assertSame(-5.0, (float) $cajaCerrada->diferencia);

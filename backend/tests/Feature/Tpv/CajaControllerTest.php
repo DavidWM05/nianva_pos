@@ -19,6 +19,7 @@ use App\Modules\Nucleo\Services\TenantContext;
 use App\Modules\Tpv\Services\CajaService;
 use App\Modules\Tpv\Services\VentaService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\Support\Bloqueos04c;
 use Tests\TestCase;
 
 class CajaControllerTest extends TestCase
@@ -140,7 +141,7 @@ class CajaControllerTest extends TestCase
     {
         ['sucursal' => $sucursal, 'usuario' => $usuario] = $this->crearUsuarioConPermisos(['caja.ver', 'caja.abrir']);
         $sesion = app(CajaService::class)->abrirCaja($sucursal->id, $usuario->id, 500);
-        app(GastoService::class)->registrarGasto($sucursal->id, $usuario->id, 'Luz', 80);
+        app(GastoService::class)->registrarGastoConCaja(Bloqueos04c::caja($sucursal->id), $sucursal->id, $usuario->id, 'Luz', 80);
 
         $this->actingAs($usuario);
 
@@ -156,7 +157,7 @@ class CajaControllerTest extends TestCase
     {
         ['sucursal' => $sucursal, 'usuario' => $usuario] = $this->crearUsuarioConPermisos(['caja.abrir', 'caja.cerrar']);
         $sesion = app(CajaService::class)->abrirCaja($sucursal->id, $usuario->id, 500);
-        app(GastoService::class)->registrarGasto($sucursal->id, $usuario->id, 'Luz', 80);
+        app(GastoService::class)->registrarGastoConCaja(Bloqueos04c::caja($sucursal->id), $sucursal->id, $usuario->id, 'Luz', 80);
         $this->actingAs($usuario);
 
         // total_teorico = apertura(500) + ventas(0) - gastos(80) = 420.

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Modules\Apartados\Services;
 
 use App\Modules\Apartados\Exceptions\AbonoPagoNoCuadraException;
@@ -11,12 +13,17 @@ use App\Modules\Apartados\Models\ApartadoAbonoPago;
 use App\Modules\Apartados\Models\ApartadoDetalle;
 use App\Modules\Apartados\Support\ResultadoCancelacion;
 use App\Modules\Crm\Models\Cliente;
+use App\Modules\Inventario\Models\InventarioStock;
 use App\Modules\Inventario\Models\ProductoVariante;
 use App\Modules\Inventario\Services\InventarioService;
 use App\Modules\Nucleo\Models\Sucursal;
 use App\Modules\Nucleo\Models\Usuario;
+use App\Modules\Nucleo\Scopes\TenantScopeViaRelacion;
 use App\Modules\Precios\Services\PrecioService;
+use App\Modules\Tpv\Models\CajaSesion;
 use App\Modules\Tpv\Services\VentaService;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use InvalidArgumentException;
 
@@ -34,7 +41,7 @@ use InvalidArgumentException;
  *      'venta','compra','devolucion','merma','ajuste'), senal fuerte de que
  *      la intencion original ya era tratarlo como un movimiento real de
  *      kardex, no como un contador aparte.
- *   2. InventarioService::registrarMovimiento() es el UNICO punto de
+ *   2. InventarioService::registrarMovimientoConStock() es el UNICO punto de
  *      escritura de inventario_stock en todo el sistema (invariante ya
  *      establecida por Inventario y reforzada por Tpv). Un campo de "stock
  *      reservado" separado crearia una segunda fuente de verdad sobre
@@ -62,9 +69,26 @@ class ApartadoService
     /**
      * @param  array{tenant_id:int, sucursal_id:int, cliente_id:int, usuario_id:int, fecha_vencimiento?:?string, notas?:?string}  $datosApartado
      * @param  list<array{variante_id:int, cantidad:int}>  $items
+     *
+     * @deprecated Transición para tests consumidores; retirar en 04e. Producción usa Actions desde 04c.
      */
     public function crearApartado(array $datosApartado, array $items): Apartado
     {
+        return $this->transicion(function () use ($datosApartado, $items) {
+            $stocks = $this->inventarioService->stocksParaTransicion(array_column($items, 'variante_id'), $datosApartado['sucursal_id']);
+
+            return $this->crearApartadoConStocks($datosApartado, $items, $stocks);
+        });
+    }
+
+    /**
+     * @param  array{tenant_id:int, sucursal_id:int, cliente_id:int, usuario_id:int, fecha_vencimiento?:?string, notas?:?string}  $datosApartado
+     * @param  list<array{variante_id:int, cantidad:int}>  $items
+     * @param  array<int, InventarioStock>  $stocks
+     */
+    public function crearApartadoConStocks(array $datosApartado, array $items, array $stocks): Apartado
+    {
+        $this->exigirTransaccion();
         if ($items === []) {
             throw new InvalidArgumentException('Un apartado necesita al menos una linea.');
         }
@@ -72,45 +96,58 @@ class ApartadoService
         $tenantId = $datosApartado['tenant_id'];
         $sucursalId = $datosApartado['sucursal_id'];
 
-        return DB::transaction(function () use ($datosApartado, $items, $tenantId, $sucursalId) {
-            $this->verificarPertenencia($tenantId, $sucursalId, $datosApartado['cliente_id']);
+        $this->verificarPertenencia($tenantId, $sucursalId, $datosApartado['cliente_id']);
 
-            [$lineas, $total] = $this->resolverLineas($tenantId, $items);
+        [$lineas, $total] = $this->resolverLineas($tenantId, $items);
 
-            $apartado = Apartado::create([
-                'tenant_id' => $tenantId,
-                'sucursal_id' => $sucursalId,
-                'cliente_id' => $datosApartado['cliente_id'],
-                'usuario_id' => $datosApartado['usuario_id'],
-                'total' => $total,
-                'estado' => 'activo',
-                'fecha_vencimiento' => $datosApartado['fecha_vencimiento'] ?? null,
-                'notas' => $datosApartado['notas'] ?? null,
+        $apartado = Apartado::query()->create([
+            'tenant_id' => $tenantId,
+            'sucursal_id' => $sucursalId,
+            'cliente_id' => $datosApartado['cliente_id'],
+            'usuario_id' => $datosApartado['usuario_id'],
+            'total' => $total,
+            'estado' => 'activo',
+            'fecha_vencimiento' => $datosApartado['fecha_vencimiento'] ?? null,
+            'notas' => $datosApartado['notas'] ?? null,
+        ]);
+
+        foreach ($lineas as $linea) {
+            ApartadoDetalle::create([
+                'apartado_id' => $apartado->id,
+                'variante_id' => $linea['variante_id'],
+                'cantidad' => $linea['cantidad'],
+                'precio_unitario' => $linea['precio_unitario'],
+                'subtotal' => $linea['subtotal'],
             ]);
 
-            foreach ($lineas as $linea) {
-                ApartadoDetalle::create([
-                    'apartado_id' => $apartado->id,
-                    'variante_id' => $linea['variante_id'],
-                    'cantidad' => $linea['cantidad'],
-                    'precio_unitario' => $linea['precio_unitario'],
-                    'subtotal' => $linea['subtotal'],
-                ]);
+            // Reserva: descuenta inventario_stock igual que una venta (ver docblock de clase).
+            $this->inventarioService->registrarMovimientoConStock(
+                stock: $stocks[$linea['variante_id']],
+                tipo: 'salida',
+                cantidad: $linea['cantidad'],
+                motivo: 'apartado',
+                usuarioId: $datosApartado['usuario_id'],
+                referenciaTabla: 'apartados',
+                referenciaId: $apartado->id,
+            );
+        }
 
-                // Reserva: descuenta inventario_stock igual que una venta (ver docblock de clase).
-                $this->inventarioService->registrarMovimiento(
-                    varianteId: $linea['variante_id'],
-                    sucursalId: $sucursalId,
-                    tipo: 'salida',
-                    cantidad: $linea['cantidad'],
-                    motivo: 'apartado',
-                    usuarioId: $datosApartado['usuario_id'],
-                    referenciaTabla: 'apartados',
-                    referenciaId: $apartado->id,
-                );
-            }
+        return $apartado->load('detalles');
+    }
 
-            return $apartado->load('detalles');
+    /**
+     * @param  list<array{metodo_pago_id:int, monto:float}>  $pagos
+     *
+     * @throws AbonoPagoNoCuadraException si la suma de pagos no coincide con el monto del abono.
+     *
+     * @deprecated Transición para tests consumidores; retirar en 04e. Producción usa Actions desde 04c.
+     */
+    public function registrarAbono(Apartado $apartado, float $monto, int $usuarioId, array $pagos, ?string $notas = null): ApartadoAbono
+    {
+        return $this->transicion(function () use ($apartado, $monto, $usuarioId, $pagos, $notas) {
+            $bloqueado = $this->bloquear(Apartado::query()->whereKey($apartado->id));
+
+            return $this->registrarAbonoConApartado($bloqueado, $monto, $usuarioId, $pagos, $notas);
         });
     }
 
@@ -119,8 +156,9 @@ class ApartadoService
      *
      * @throws AbonoPagoNoCuadraException si la suma de pagos no coincide con el monto del abono.
      */
-    public function registrarAbono(Apartado $apartado, float $monto, int $usuarioId, array $pagos, ?string $notas = null): ApartadoAbono
+    public function registrarAbonoConApartado(Apartado $apartado, float $monto, int $usuarioId, array $pagos, ?string $notas = null): ApartadoAbono
     {
+        $this->exigirTransaccion();
         if ($apartado->estado !== 'activo') {
             throw new ApartadoEstadoInvalidoException($apartado->id, $apartado->estado, 'abonar');
         }
@@ -137,39 +175,37 @@ class ApartadoService
             throw new AbonoPagoNoCuadraException($monto, $sumaCentavos / 100);
         }
 
-        return DB::transaction(function () use ($apartado, $monto, $usuarioId, $pagos, $notas) {
-            $abono = ApartadoAbono::create([
-                'apartado_id' => $apartado->id,
-                'monto' => $monto,
-                'usuario_id' => $usuarioId,
-                'notas' => $notas,
+        $abono = ApartadoAbono::query()->create([
+            'apartado_id' => $apartado->id,
+            'monto' => $monto,
+            'usuario_id' => $usuarioId,
+            'notas' => $notas,
+        ]);
+
+        foreach ($pagos as $pago) {
+            ApartadoAbonoPago::create([
+                'abono_id' => $abono->id,
+                'metodo_pago_id' => $pago['metodo_pago_id'],
+                'monto' => $pago['monto'],
             ]);
+        }
 
-            foreach ($pagos as $pago) {
-                ApartadoAbonoPago::create([
-                    'abono_id' => $abono->id,
-                    'metodo_pago_id' => $pago['metodo_pago_id'],
-                    'monto' => $pago['monto'],
-                ]);
-            }
+        $apartado->update([
+            'total_abonado' => round((float) $apartado->total_abonado + $monto, 2),
+        ]);
 
-            $apartado->update([
-                'total_abonado' => round((float) $apartado->total_abonado + $monto, 2),
-            ]);
-
-            return $abono->load('pagos');
-        });
+        return $abono->load('pagos');
     }
 
     /**
      * Libera la reserva de stock de cada linea (entrada/ajuste) y delega la
-     * venta real a VentaService::registrarVenta(), que la vuelve a
+     * venta real a VentaService::registrarVentaConBloqueos(), que la vuelve a
      * descontar (salida/venta) -- neto cero en stock, pero con un rastro de
      * kardex legible: reservado por el apartado -> liberado al liquidar ->
      * consumido por la venta.
      *
      * Los items se re-cotizan via PrecioService dentro de
-     * VentaService::registrarVenta() (misma autoridad de precios que
+     * VentaService::registrarVentaConBloqueos() (misma autoridad de precios que
      * cualquier otra venta) -- si una regla de precio cambio entre la
      * creacion del apartado y su liquidacion, el total de la venta
      * resultante puede diferir del total original del apartado. No se
@@ -181,9 +217,46 @@ class ApartadoService
      * residual (normalmente 0 si el apartado ya esta completamente pagado).
      *
      * @throws ApartadoSaldoInsuficienteException si total_abonado < total.
+     *
+     * @deprecated Transición para tests consumidores; retirar en 04e. Producción usa Actions desde 04c.
      */
     public function liquidar(Apartado $apartado, int $usuarioId): Apartado
     {
+        return $this->transicion(function () use ($apartado, $usuarioId) {
+            $caja = $this->bloquear(CajaSesion::query()->withoutGlobalScope(TenantScopeViaRelacion::class)->where('sucursal_id', (int) $apartado->getAttribute('sucursal_id'))->where('estado', 'abierta')->latest('id'), false);
+            $bloqueado = $this->bloquear(Apartado::query()->whereKey($apartado->id));
+            $stocks = $this->inventarioService->stocksParaTransicion(array_values(array_map(static fn ($id): int => (int) $id, $bloqueado->detalles->pluck('variante_id')->all())), (int) $bloqueado->getAttribute('sucursal_id'));
+
+            return $this->liquidarConBloqueos($bloqueado, $usuarioId, $caja, $stocks);
+        });
+    }
+
+    /**
+     * Libera la reserva de stock de cada linea (entrada/ajuste) y delega la
+     * venta real a VentaService::registrarVentaConBloqueos(), que la vuelve a
+     * descontar (salida/venta) -- neto cero en stock, pero con un rastro de
+     * kardex legible: reservado por el apartado -> liberado al liquidar ->
+     * consumido por la venta.
+     *
+     * Los items se re-cotizan via PrecioService dentro de
+     * VentaService::registrarVentaConBloqueos() (misma autoridad de precios que
+     * cualquier otra venta) -- si una regla de precio cambio entre la
+     * creacion del apartado y su liquidacion, el total de la venta
+     * resultante puede diferir del total original del apartado. No se
+     * implementa proteccion de precio ("price lock"): el documento no la
+     * pide y no es un requisito trivial -- se deja como limitacion conocida.
+     *
+     * abono_previo = total_abonado le indica a VentaService cuanto ya se
+     * cobro antes (via abonos), asi que exige pagos nuevos solo por el
+     * residual (normalmente 0 si el apartado ya esta completamente pagado).
+     *
+     * @param  array<int, InventarioStock>  $stocks
+     *
+     * @throws ApartadoSaldoInsuficienteException si total_abonado < total.
+     */
+    public function liquidarConBloqueos(Apartado $apartado, int $usuarioId, ?CajaSesion $caja, array $stocks): Apartado
+    {
+        $this->exigirTransaccion();
         if ($apartado->estado !== 'activo') {
             throw new ApartadoEstadoInvalidoException($apartado->id, $apartado->estado, 'liquidar');
         }
@@ -192,46 +265,64 @@ class ApartadoService
             throw new ApartadoSaldoInsuficienteException($apartado->id, (float) $apartado->total, (float) $apartado->total_abonado);
         }
 
-        return DB::transaction(function () use ($apartado, $usuarioId) {
-            $detalles = $apartado->detalles;
+        $detalles = $apartado->detalles;
 
-            foreach ($detalles as $detalle) {
-                $this->inventarioService->registrarMovimiento(
-                    varianteId: $detalle->variante_id,
-                    sucursalId: $apartado->sucursal_id,
-                    tipo: 'entrada',
-                    cantidad: $detalle->cantidad,
-                    motivo: 'ajuste',
-                    usuarioId: $usuarioId,
-                    referenciaTabla: 'apartados',
-                    referenciaId: $apartado->id,
-                );
-            }
-
-            $items = $detalles->map(fn (ApartadoDetalle $detalle) => [
-                'variante_id' => $detalle->variante_id,
-                'cantidad' => $detalle->cantidad,
-            ])->all();
-
-            $venta = $this->ventaService->registrarVenta(
-                datosVenta: [
-                    'tenant_id' => $apartado->tenant_id,
-                    'sucursal_id' => $apartado->sucursal_id,
-                    'usuario_id' => $usuarioId,
-                    'cliente_id' => $apartado->cliente_id,
-                    'abono_previo' => (float) $apartado->total_abonado,
-                ],
-                items: $items,
-                pagos: [],
+        foreach ($detalles as $detalle) {
+            $this->inventarioService->registrarMovimientoConStock(
+                stock: $stocks[$detalle->variante_id],
+                tipo: 'entrada',
+                cantidad: $detalle->cantidad,
+                motivo: 'ajuste',
+                usuarioId: $usuarioId,
+                referenciaTabla: 'apartados',
+                referenciaId: $apartado->id,
             );
+        }
 
-            $apartado->update([
-                'venta_id' => $venta->id,
-                'estado' => 'completado',
-                'fecha_completado' => now(),
-            ]);
+        $items = array_values($detalles->map(fn ($detalle) => [
+            'variante_id' => (int) $detalle->getAttribute('variante_id'),
+            'cantidad' => (int) $detalle->getAttribute('cantidad'),
+        ])->all());
 
-            return $apartado->refresh()->load('venta');
+        $venta = $this->ventaService->registrarVentaConBloqueos(
+            datosVenta: [
+                'tenant_id' => $apartado->tenant_id,
+                'sucursal_id' => $apartado->sucursal_id,
+                'usuario_id' => $usuarioId,
+                'cliente_id' => $apartado->cliente_id,
+                'abono_previo' => (float) $apartado->total_abonado,
+            ],
+            items: $items,
+            pagos: [],
+            cajaSesion: $caja,
+            stocks: $stocks,
+        );
+
+        $apartado->update([
+            'venta_id' => $venta->id,
+            'estado' => 'completado',
+            'fecha_completado' => now(),
+        ]);
+
+        return $apartado->refresh()->load('venta');
+    }
+
+    /**
+     * Libera la reserva de stock de cada linea (entrada/ajuste) y marca el
+     * apartado como cancelado. Los abonos ya cobrados NO se revierten aqui
+     * -- como se pide, eso es una decision de negocio (reembolso en
+     * efectivo, nota de credito, etc.) fuera del alcance de este modulo. El
+     * resultado solo senala cuanto quedo pendiente de resolver.
+     *
+     * @deprecated Transición para tests consumidores; retirar en 04e. Producción usa Actions desde 04c.
+     */
+    public function cancelar(Apartado $apartado, string $motivo, Usuario $usuario): ResultadoCancelacion
+    {
+        return $this->transicion(function () use ($apartado, $motivo, $usuario) {
+            $bloqueado = $this->bloquear(Apartado::query()->whereKey($apartado->id));
+            $stocks = $this->inventarioService->stocksParaTransicion(array_values(array_map(static fn ($id): int => (int) $id, $bloqueado->detalles->pluck('variante_id')->all())), (int) $bloqueado->getAttribute('sucursal_id'));
+
+            return $this->cancelarConStocks($bloqueado, $motivo, $usuario, $stocks);
         });
     }
 
@@ -241,42 +332,73 @@ class ApartadoService
      * -- como se pide, eso es una decision de negocio (reembolso en
      * efectivo, nota de credito, etc.) fuera del alcance de este modulo. El
      * resultado solo senala cuanto quedo pendiente de resolver.
+     *
+     * @param  array<int, InventarioStock>  $stocks
      */
-    public function cancelar(Apartado $apartado, string $motivo, Usuario $usuario): ResultadoCancelacion
+    public function cancelarConStocks(Apartado $apartado, string $motivo, Usuario $usuario, array $stocks): ResultadoCancelacion
     {
+        $this->exigirTransaccion();
         if ($apartado->estado !== 'activo') {
             throw new ApartadoEstadoInvalidoException($apartado->id, $apartado->estado, 'cancelar');
         }
 
-        return DB::transaction(function () use ($apartado, $motivo, $usuario) {
-            foreach ($apartado->detalles as $detalle) {
-                $this->inventarioService->registrarMovimiento(
-                    varianteId: $detalle->variante_id,
-                    sucursalId: $apartado->sucursal_id,
-                    tipo: 'entrada',
-                    cantidad: $detalle->cantidad,
-                    motivo: 'ajuste',
-                    usuarioId: $usuario->id,
-                    referenciaTabla: 'apartados',
-                    referenciaId: $apartado->id,
-                );
-            }
-
-            $apartado->update([
-                'estado' => 'cancelado',
-                'fecha_cancelado' => now(),
-                'usuario_cancelacion_id' => $usuario->id,
-                'motivo_cancelacion' => $motivo,
-            ]);
-
-            $montoAbonadoPendiente = (float) $apartado->total_abonado;
-
-            return new ResultadoCancelacion(
-                apartado: $apartado->refresh(),
-                tieneAbonosPendientes: $montoAbonadoPendiente > 0.0,
-                montoAbonadoPendiente: $montoAbonadoPendiente,
+        foreach ($apartado->detalles as $detalle) {
+            $this->inventarioService->registrarMovimientoConStock(
+                stock: $stocks[$detalle->variante_id],
+                tipo: 'entrada',
+                cantidad: $detalle->cantidad,
+                motivo: 'ajuste',
+                usuarioId: $usuario->id,
+                referenciaTabla: 'apartados',
+                referenciaId: $apartado->id,
             );
-        });
+        }
+
+        $apartado->update([
+            'estado' => 'cancelado',
+            'fecha_cancelado' => now(),
+            'usuario_cancelacion_id' => $usuario->id,
+            'motivo_cancelacion' => $motivo,
+        ]);
+
+        $montoAbonadoPendiente = (float) $apartado->total_abonado;
+
+        return new ResultadoCancelacion(
+            apartado: $apartado->refresh(),
+            tieneAbonosPendientes: $montoAbonadoPendiente > 0.0,
+            montoAbonadoPendiente: $montoAbonadoPendiente,
+        );
+    }
+
+    /**
+     * @template T
+     *
+     * @param  \Closure(): T  $operacion
+     * @return T
+     */
+    private function transicion(\Closure $operacion): mixed
+    {
+        return DB::transaction($operacion);
+    }
+
+    /**
+     * @template TModel of \Illuminate\Database\Eloquent\Model
+     *
+     * @param  Builder<TModel>  $consulta
+     * @return ($obligatorio is true ? TModel : TModel|null)
+     */
+    private function bloquear(Builder $consulta, bool $obligatorio = true): ?Model
+    {
+        $consulta->lockForUpdate();
+
+        return $obligatorio ? $consulta->firstOrFail() : $consulta->first();
+    }
+
+    private function exigirTransaccion(): void
+    {
+        if (DB::transactionLevel() === 0) {
+            throw new \LogicException('ApartadoService requiere una transacción abierta por una Action.');
+        }
     }
 
     /**

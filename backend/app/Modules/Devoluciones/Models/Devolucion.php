@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Modules\Devoluciones\Models;
 
 use App\Modules\Devoluciones\Database\Factories\DevolucionFactory;
@@ -63,7 +65,7 @@ class Devolucion extends Model
      * Venta generada si tipo=cambio (es_venta_sombra=true). Permite
      * devolucion recursiva: esta misma venta puede ser a su vez el origen
      * (venta_id) de un cambio posterior -- ver
-     * DevolucionService::registrarDevolucion().
+     * DevolucionService::registrarDevolucionConBloqueos().
      */
     public function ventaSombra(): BelongsTo
     {
