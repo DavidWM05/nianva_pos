@@ -1413,6 +1413,26 @@ repo.
       sale de `sin-strict-types.txt`, y la línea base de PHPStan apunta al nombre nuevo.
       Hay más migraciones con el mismo prefijo, sin dependencias entre sí; el job las
       vigila.
+  - **04b, TPV e inventario:**
+    - **Actions:** `AbrirCaja` (bloquea la sucursal), `CerrarCaja` (bloquea y relee la
+      sesión), `RegistrarVenta` (caja y stocks), `AnularVenta` (caja, venta y stocks),
+      `RegistrarMovimiento` (crea la fila de stock si falta y la bloquea) y `RegistrarCompra`.
+      Bloquean siempre en el mismo orden, caja → venta → stocks ordenados por variante, para
+      no provocar interbloqueos;
+    - **núcleos:** cada Service tiene un núcleo que recibe los modelos bloqueados
+      (`registrarVentaConBloqueos`, `anularVentaConStocks`, `abrirCajaConSucursal`,
+      `cerrarCajaConSesion`, `registrarMovimientoConStock`, `registrarCompraConStocks`) y
+      lanza `LogicException` sin transacción abierta. `NucleosRequierenTransaccionTest` no usa
+      `RefreshDatabase`, para que esa guarda se pueda probar;
+    - **métodos de transición (decidido por el responsable):** las 6 firmas viejas siguen
+      como envoltorios `@deprecated`, sin lógica propia, para Apartados, Devoluciones,
+      Cotizaciones, Producción, los seeders de escenarios y los tests existentes. Por eso
+      `PENDIENTES` sigue en 16 archivos y 50 usos. Se retiran en la 04c y la 04e; en esa
+      etapa queda autorizado adaptar solo la llamada de los tests a la firma nueva;
+    - ningún test existente cambió; 13 tests nuevos y 5 de concurrencia, cada uno visto
+      fallando con su mutación. La línea base de PHPStan baja de 1375 a 1365, y 10
+      archivos salen de `sin-strict-types.txt`;
+    - el reporte de Codex (`REPORTE_ARQ04b.md`) no se versiona.
 - **Git:** `master` está protegido (ruleset `proteger-master`): todo entra por PR con los tres
   checks en verde.
 
