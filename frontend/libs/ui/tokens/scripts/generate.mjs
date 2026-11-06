@@ -241,7 +241,9 @@ const rolesMaterial = {
   'surface-container-highest': 'fondo-elevado',
   primary: 'primario',
   'on-primary': 'primario-texto',
-  'primary-container': 'fondo-elevado',
+  // Tono primario suave, como en M3: con 'fondo-elevado' (igual a la superficie) el sombreado
+  // de un rango en el calendario no se veia.
+  'primary-container': 'primario-suave',
   'on-primary-container': 'primario',
   'primary-fixed': 'fondo-elevado',
   'primary-fixed-dim': 'fondo-elevado',

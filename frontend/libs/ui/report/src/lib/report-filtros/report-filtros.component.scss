@@ -30,3 +30,15 @@
 .ui-report-filtros__icono-limpiar {
   margin-inline-end: var(--nv-spacing-2);
 }
+
+// Mismo alto y texto que ui-select-filtro y los inputs de ui-forms (relleno --nv-spacing-2 y
+// borde de 1px); el boton del calendario se achica para no fijar un alto mayor.
+.ui-report-filtros__fecha {
+  width: calc(var(--nv-spacing-16) * 4);
+  max-width: 100%;
+  --mat-form-field-container-height: 0;
+  --mat-form-field-container-vertical-padding: calc(var(--nv-spacing-2) + 1px);
+  --mat-form-field-container-text-size: var(--nv-font-size-base);
+  --mat-form-field-container-text-line-height: normal;
+  --mat-icon-button-state-layer-size: var(--nv-spacing-8);
+}

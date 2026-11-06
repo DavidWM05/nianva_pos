@@ -69,7 +69,7 @@ sale al cambiar `.nv-tema-oscuro`.
 | `surface-container-highest` | `--nv-fondo-elevado` |
 | `primary` | `--nv-primario` |
 | `on-primary` | `--nv-primario-texto` |
-| `primary-container` | `--nv-fondo-elevado` |
+| `primary-container` | `--nv-primario-suave` |
 | `on-primary-container` | `--nv-primario` |
 | `primary-fixed` | `--nv-fondo-elevado` |
 | `primary-fixed-dim` | `--nv-fondo-elevado` |
