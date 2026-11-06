@@ -1399,7 +1399,15 @@ repo.
     fila por cada fila de la página (25 por defecto). En celular son 25 tarjetas y la
     pantalla mide más de 6000 px antes de que lleguen los datos; viene así desde el 43.
     Propuesta: un tope de 5 filas o tarjetas de skeleton, que basta para dar la forma del
-    contenido (UI-18). Anotado por el responsable al revisar el 49g (2026-11-06).
+    contenido (UI-18). Anotado por el responsable al revisar el 49g (2026-11-06);
+  - **CI rápido para PR de solo documentación:** hoy el workflow no excluye rutas, así que
+    un PR que solo toca `docs/**` o un `.md` corre backend, frontend, catálogo visual, e2e
+    con backend y concurrencia en MySQL. Propuesta: `paths-ignore` (`docs/**`, `**/*.md`)
+    en el workflow principal, más un workflow espejo que, para esas mismas rutas, publica los
+    checks requeridos con el mismo nombre y en verde, sin correr nada. Sin el espejo, los
+    checks requeridos de `master` quedan pendientes y bloquean el merge. Ojo: un PR que
+    mezcle código y docs debe correr todo; `paths-ignore` solo omite el workflow cuando
+    *todos* los archivos coinciden. Anotado por el responsable (2026-11-06).
 - **Pendientes detectados:**
   - el aviso "Invalid PrimeUI License" aparece en toda la app. **Causa (revisada en el 46):**
     PrimeNG 22 trae un verificador de licencia offline (`@primeui/license-manager`);
