@@ -109,15 +109,14 @@ class VentasPlazosService
             throw new PagoCuotaInsuficienteException($cuotaId, (float) $cuota->monto, $monto);
         }
 
+        // El plan no tiene un estado de cierre: las cuotas pagadas determinan su liquidación.
         $cuota->update([
             'estado' => 'pagada',
             'fecha_pago' => now(),
             'fecha_pago_real' => now(),
         ]);
 
-        // El plan no tiene un estado de cierre: las cuotas pagadas determinan su liquidación.
         return $cuota->refresh();
-
     }
 
     /** El modelo recibido debe haberse leído con bloqueo en la Action llamadora. */
