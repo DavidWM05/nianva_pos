@@ -1050,17 +1050,7 @@ parameters:
 			count: 1
 			path: app/Modules/Cotizaciones/Services/CotizacionService.php
 
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Collection\<int, Illuminate\\Database\\Eloquent\\Model\>\|Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Modules/Cotizaciones/Services/CotizacionService.php
 
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Collection\<int, Illuminate\\Database\\Eloquent\\Model\>\|Illuminate\\Database\\Eloquent\\Model\:\:\$producto\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Modules/Cotizaciones/Services/CotizacionService.php
 
 		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$cantidad\.$#'
@@ -1068,11 +1058,6 @@ parameters:
 			count: 1
 			path: app/Modules/Cotizaciones/Services/CotizacionService.php
 
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Modules/Cotizaciones/Services/CotizacionService.php
 
 		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$numero_cotizacion\.$#'
@@ -1080,11 +1065,6 @@ parameters:
 			count: 1
 			path: app/Modules/Cotizaciones/Services/CotizacionService.php
 
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$producto\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Modules/Cotizaciones/Services/CotizacionService.php
 
 		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$variante_id\.$#'
@@ -1092,23 +1072,8 @@ parameters:
 			count: 1
 			path: app/Modules/Cotizaciones/Services/CotizacionService.php
 
-		-
-			message: '#^Cannot call method load\(\) on App\\Modules\\Cotizaciones\\Models\\Cotizacion\|null\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: app/Modules/Cotizaciones/Services/CotizacionService.php
 
-		-
-			message: '#^Method App\\Modules\\Cotizaciones\\Services\\CotizacionService\:\:actualizar\(\) has parameter \$data with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Modules/Cotizaciones/Services/CotizacionService.php
 
-		-
-			message: '#^Method App\\Modules\\Cotizaciones\\Services\\CotizacionService\:\:actualizar\(\) has parameter \$items with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Modules/Cotizaciones/Services/CotizacionService.php
 
 		-
 			message: '#^Offset ''descuento'' on array\{tenant_id\: int, sucursal_id\: int, usuario_id\: int, cliente_id\: int\|null, validez_dias\: int, descuento\: float, observaciones\: string\|null, uso_cfdi\: string\|null\} on left side of \?\? always exists and is not nullable\.$#'
@@ -6168,23 +6133,8 @@ parameters:
 			count: 1
 			path: app/Modules/Produccion/Models/TransformacionProducto.php
 
-		-
-			message: '#^Access to an undefined property App\\Modules\\Produccion\\Models\\InsumoStock\:\:\$cantidad\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Modules/Produccion/Services/ProduccionService.php
 
-		-
-			message: '#^Access to an undefined property App\\Modules\\Produccion\\Models\\OrdenProduccion\:\:\$estado\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Modules/Produccion/Services/ProduccionService.php
 
-		-
-			message: '#^Access to an undefined property App\\Modules\\Produccion\\Models\\OrdenProduccion\:\:\$sucursal_id\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Modules/Produccion/Services/ProduccionService.php
 
 		-
 			message: '#^Access to an undefined property App\\Modules\\Produccion\\Models\\Receta\:\:\$rendimiento\.$#'
@@ -6192,77 +6142,27 @@ parameters:
 			count: 1
 			path: app/Modules/Produccion/Services/ProduccionService.php
 
-		-
-			message: '#^Access to an undefined property App\\Modules\\Produccion\\Models\\Receta\|Illuminate\\Database\\Eloquent\\Collection\<int, App\\Modules\\Produccion\\Models\\Receta\>\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Modules/Produccion/Services/ProduccionService.php
 
-		-
-			message: '#^Access to an undefined property App\\Modules\\Produccion\\Models\\Receta\|Illuminate\\Database\\Eloquent\\Collection\<int, App\\Modules\\Produccion\\Models\\Receta\>\:\:\$ingredientes\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Modules/Produccion/Services/ProduccionService.php
 
 		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$cantidad\.$#'
 			identifier: property.notFound
-			count: 2
+			count: 1
 			path: app/Modules/Produccion/Services/ProduccionService.php
 
 		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$insumo\.$#'
 			identifier: property.notFound
-			count: 2
-			path: app/Modules/Produccion/Services/ProduccionService.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$insumo_id\.$#'
-			identifier: property.notFound
 			count: 1
 			path: app/Modules/Produccion/Services/ProduccionService.php
 
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$stock_actual\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Modules/Produccion/Services/ProduccionService.php
 
-		-
-			message: '#^Call to an undefined method App\\Modules\\Inventario\\Services\\InventarioService\:\:ajustarStock\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: app/Modules/Produccion/Services/ProduccionService.php
 
-		-
-			message: '#^Cannot access property \$ingredientes on Illuminate\\Database\\Eloquent\\Model\|null\.$#'
-			identifier: property.nonObject
-			count: 1
-			path: app/Modules/Produccion/Services/ProduccionService.php
 
-		-
-			message: '#^Cannot access property \$rendimiento on Illuminate\\Database\\Eloquent\\Model\|null\.$#'
-			identifier: property.nonObject
-			count: 1
-			path: app/Modules/Produccion/Services/ProduccionService.php
 
-		-
-			message: '#^Cannot access property \$variante_id on Illuminate\\Database\\Eloquent\\Model\|null\.$#'
-			identifier: property.nonObject
-			count: 1
-			path: app/Modules/Produccion/Services/ProduccionService.php
 
-		-
-			message: '#^Method App\\Modules\\Produccion\\Services\\ProduccionService\:\:completarOrden\(\) should return App\\Modules\\Produccion\\Models\\OrdenProduccion but returns App\\Modules\\Produccion\\Models\\OrdenProduccion\|null\.$#'
-			identifier: return.type
-			count: 1
-			path: app/Modules/Produccion/Services/ProduccionService.php
 
-		-
-			message: '#^Method App\\Modules\\Produccion\\Services\\ProduccionService\:\:crearOrdenProduccion\(\) has parameter \$data with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Modules/Produccion/Services/ProduccionService.php
+
 
 		-
 			message: '#^Method App\\Modules\\Produccion\\Services\\ProduccionService\:\:crearReceta\(\) has parameter \$data with no value type specified in iterable type array\.$#'
@@ -6270,17 +6170,7 @@ parameters:
 			count: 1
 			path: app/Modules/Produccion/Services/ProduccionService.php
 
-		-
-			message: '#^Method App\\Modules\\Produccion\\Services\\ProduccionService\:\:registrarTransformacion\(\) has parameter \$data with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Modules/Produccion/Services/ProduccionService.php
 
-		-
-			message: '#^Using nullsafe property access "\?\-\>stock_actual" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
-			identifier: nullsafe.neverNull
-			count: 1
-			path: app/Modules/Produccion/Services/ProduccionService.php
 
 		-
 			message: '#^Method App\\Modules\\Tpv\\Exceptions\\CajaSesionNoAbiertaException\:\:contexto\(\) return type has no value type specified in iterable type array\.$#'
@@ -6990,17 +6880,7 @@ parameters:
 			count: 1
 			path: app/Modules/UnidadesMedida/Services/UnidadMedidaService.php
 
-		-
-			message: '#^Method App\\Modules\\UnidadesMedida\\Services\\UnidadMedidaService\:\:actualizar\(\) has parameter \$data with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Modules/UnidadesMedida/Services/UnidadMedidaService.php
 
-		-
-			message: '#^Method App\\Modules\\UnidadesMedida\\Services\\UnidadMedidaService\:\:actualizar\(\) should return App\\Modules\\UnidadesMedida\\Models\\UnidadMedida but returns App\\Modules\\UnidadesMedida\\Models\\UnidadMedida\|null\.$#'
-			identifier: return.type
-			count: 1
-			path: app/Modules/UnidadesMedida/Services/UnidadMedidaService.php
 
 		-
 			message: '#^Method App\\Modules\\UnidadesMedida\\Services\\UnidadMedidaService\:\:crear\(\) has parameter \$data with no value type specified in iterable type array\.$#'

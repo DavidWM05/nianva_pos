@@ -5,24 +5,16 @@ declare(strict_types=1);
 namespace App\Modules\Tpv\Services;
 
 use App\Modules\Nucleo\Models\Sucursal;
-use App\Modules\Nucleo\Scopes\TenantScope;
 use App\Modules\Nucleo\Scopes\TenantScopeViaRelacion;
 use App\Modules\Tpv\Exceptions\CajaYaAbiertaException;
 use App\Modules\Tpv\Exceptions\CajaYaCerradaException;
 use App\Modules\Tpv\Models\CajaSesion;
 use App\Modules\Tpv\Models\Venta;
 use App\Modules\Tpv\Models\VentaPago;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 
 class CajaService
 {
-    /** @deprecated Transición ARQ-04: retirar en 04e con los seeders y la preparación de tests. */
-    public function abrirCaja(int $sucursalId, int $usuarioId, float $montoApertura): CajaSesion
-    {
-        return $this->conModeloBloqueado(Sucursal::query()->withoutGlobalScope(TenantScope::class)->findOrFail($sucursalId), fn (Sucursal $sucursal) => $this->abrirCajaConSucursal($sucursal, $usuarioId, $montoApertura));
-    }
-
     public function abrirCajaConSucursal(Sucursal $sucursal, int $usuarioId, float $montoApertura): CajaSesion
     {
         $this->exigirTransaccion();
@@ -58,7 +50,7 @@ class CajaService
      * la direccion de dependencia del proyecto va siempre de lo nuevo hacia
      * lo viejo, nunca al reves) -- es el LLAMADOR (GastoService::totalGastos())
      * quien calcula el numero y lo entrega ya resuelto aqui, mismo patron
-     * que abono_previo en VentaService::registrarVenta(). Default 0.0:
+     * que abono_previo en VentaService::registrarVentaConBloqueos(). Default 0.0:
      * cualquier instalacion sin el modulo Gastos sigue funcionando igual.
      *
      * CORRECCION DE FORMULA (cambia el resultado de llamadas previas): antes
@@ -91,26 +83,9 @@ class CajaService
         return $cajaSesion->refresh();
     }
 
-    /**
-     * @template TModel of \Illuminate\Database\Eloquent\Model
-     * @template TResult
-     *
-     * @param  TModel  $modelo
-     * @param  \Closure(TModel): TResult  $operacion
-     * @return TResult
-     */
-    private function conModeloBloqueado(Model $modelo, \Closure $operacion): mixed
-    {
-        return DB::transaction(function () use ($modelo, $operacion) {
-            $bloqueado = $modelo->newQuery()->whereKey($modelo->getKey())->lockForUpdate()->firstOrFail();
-
-            return $operacion($bloqueado);
-        });
-    }
-
     private function exigirTransaccion(): void
     {
-        if (DB::transactionLevel() === 0) {
+        if (DB::connection()->transactionLevel() === 0) {
             throw new \LogicException('CajaService requiere una transacción abierta por una Action.');
         }
     }

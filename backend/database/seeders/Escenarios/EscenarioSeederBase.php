@@ -2,16 +2,19 @@
 
 namespace Database\Seeders\Escenarios;
 
+use App\Aplicacion\Caja\AbrirCaja;
+use App\Aplicacion\Inventario\RegistrarCompra;
 use App\Aplicacion\Ventas\RegistrarVenta;
 use App\Modules\Configuracion\Models\ConfiguracionTenant;
 use App\Modules\Crm\Models\Cliente;
+use App\Modules\Inventario\Dtos\CompraDto;
+use App\Modules\Inventario\Dtos\LineaCompraDto;
 use App\Modules\Inventario\Models\Categoria;
 use App\Modules\Inventario\Models\Compra;
 use App\Modules\Inventario\Models\Departamento;
 use App\Modules\Inventario\Models\Producto;
 use App\Modules\Inventario\Models\ProductoVariante;
 use App\Modules\Inventario\Models\Proveedor;
-use App\Modules\Inventario\Services\InventarioService;
 use App\Modules\Nucleo\Database\Seeders\MetodosPagoSeeder;
 use App\Modules\Nucleo\Database\Seeders\NucleoRolesPermisosSeeder;
 use App\Modules\Nucleo\Models\MetodoPago;
@@ -21,12 +24,12 @@ use App\Modules\Nucleo\Models\Sucursal;
 use App\Modules\Nucleo\Models\Tenant;
 use App\Modules\Nucleo\Models\Usuario;
 use App\Modules\Nucleo\Services\TwoFactorService;
+use App\Modules\Tpv\Dtos\AbrirCajaDto;
 use App\Modules\Tpv\Dtos\CrearVentaDto;
 use App\Modules\Tpv\Dtos\LineaVentaDto;
 use App\Modules\Tpv\Dtos\PagoDto;
 use App\Modules\Tpv\Models\CajaSesion;
 use App\Modules\Tpv\Models\Venta;
-use App\Modules\Tpv\Services\CajaService;
 use App\Modules\Tpv\Services\VentaService;
 use App\Modules\UnidadesMedida\Database\Seeders\UnidadesMedidaSeeder;
 use App\Modules\UnidadesMedida\Models\UnidadMedida;
@@ -251,17 +254,14 @@ abstract class EscenarioSeederBase extends Seeder
             $lineas,
         );
 
-        return app(InventarioService::class)->registrarCompra([
-            'tenant_id' => $tenant->id,
-            'proveedor_id' => $proveedor->id,
-            'sucursal_id' => $sucursal->id,
-            'usuario_id' => $usuario->id,
-        ], $items);
+        $dto = new CompraDto($proveedor->id, null, array_map(static fn (array $item): LineaCompraDto => new LineaCompraDto($item['variante_id'], $item['cantidad'], $item['precio_compra']), $items), $sucursal->id);
+
+        return app(RegistrarCompra::class)->ejecutar($dto, $usuario);
     }
 
     protected function abrirCaja(Sucursal $sucursal, Usuario $usuario): CajaSesion
     {
-        return app(CajaService::class)->abrirCaja($sucursal->id, $usuario->id, 500);
+        return app(AbrirCaja::class)->ejecutar(new AbrirCajaDto(500), $usuario);
     }
 
     /**

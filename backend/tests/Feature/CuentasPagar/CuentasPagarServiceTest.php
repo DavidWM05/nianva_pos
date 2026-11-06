@@ -23,6 +23,7 @@ use App\Modules\Tpv\Services\CajaService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\Support\Bloqueos04c;
 use Tests\Support\Bloqueos04d;
+use Tests\Support\Bloqueos04e;
 use Tests\TestCase;
 
 class CuentasPagarServiceTest extends TestCase
@@ -68,12 +69,11 @@ class CuentasPagarServiceTest extends TestCase
         $variante = ProductoVariante::create(['producto_id' => $prod->id]);
 
         // Hacer una compra para tener deuda
-        $this->compra = $this->inventarioService->registrarCompra(
-            ['tenant_id' => $this->tenant->id, 'proveedor_id' => $this->proveedor->id, 'sucursal_id' => $this->sucursal->id, 'usuario_id' => $this->usuario->id],
-            [['variante_id' => $variante->id, 'cantidad' => 10, 'precio_compra' => 50]],
-        );
+        $datos04e2 = ['tenant_id' => $this->tenant->id, 'proveedor_id' => $this->proveedor->id, 'sucursal_id' => $this->sucursal->id, 'usuario_id' => $this->usuario->id];
+        $items04e2 = [['variante_id' => $variante->id, 'cantidad' => 10, 'precio_compra' => 50]];
+        $this->compra = $this->inventarioService->registrarCompraConStocks($datos04e2, $items04e2, Bloqueos04e::stocks((int) $datos04e2['sucursal_id'], array_column($items04e2, 'variante_id')));
 
-        $this->cajaService->abrirCaja($this->sucursal->id, $this->usuario->id, 5000);
+        $this->cajaService->abrirCajaConSucursal(Bloqueos04e::sucursal($this->sucursal->id), $this->usuario->id, 5000);
     }
 
     private $compra;

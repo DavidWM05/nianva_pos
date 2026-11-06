@@ -10,6 +10,7 @@ use App\Modules\Inventario\Dtos\MovimientoInventarioDto;
 use App\Modules\Inventario\Models\Compra;
 use App\Modules\Inventario\Services\InventarioService;
 use App\Modules\Nucleo\Models\Usuario;
+use App\Modules\Nucleo\Support\SucursalOperacion;
 use Illuminate\Support\Facades\DB;
 
 final class RegistrarCompra
@@ -20,17 +21,18 @@ final class RegistrarCompra
     public function ejecutar(CompraDto $dto, Usuario $usuario): Compra
     {
         $operacion = function () use ($dto, $usuario): Compra {
+            $sucursalId = SucursalOperacion::paraEscritura($usuario, $dto->sucursalId);
             $items = array_map(static fn (LineaCompraDto $linea): array => ['variante_id' => $linea->varianteId, 'cantidad' => $linea->cantidad, 'precio_compra' => $linea->precioCompra], $dto->items);
             $variantes = array_values(array_unique(array_column($items, 'variante_id')));
             sort($variantes);
             $stocks = [];
             foreach ($variantes as $varianteId) {
-                $stocks[$varianteId] = $this->movimiento->bloquearStock(new MovimientoInventarioDto($varianteId, (int) $usuario->getAttribute('sucursal_id'), 'entrada', 1, 'compra', $usuario->id));
+                $stocks[$varianteId] = $this->movimiento->bloquearStock(new MovimientoInventarioDto($varianteId, $sucursalId, 'entrada', 1, 'compra', $usuario->id));
             }
 
             return $this->inventarioService->registrarCompraConStocks([
                 'tenant_id' => (int) $usuario->getAttribute('tenant_id'),
-                'sucursal_id' => (int) $usuario->getAttribute('sucursal_id'),
+                'sucursal_id' => $sucursalId,
                 'usuario_id' => $usuario->id,
                 'proveedor_id' => $dto->proveedorId,
                 'numero_comprobante' => $dto->numeroComprobante,

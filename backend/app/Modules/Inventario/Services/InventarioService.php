@@ -18,11 +18,11 @@ use InvalidArgumentException;
 /**
  * Unico punto de entrada para modificar inventario_stock. Ningun otro lugar
  * del modulo debe escribir esa tabla directamente -- ni siquiera
- * registrarCompra() lo hace: internamente llama a registrarMovimientoConStock()
+ * registrarCompraConStocks() lo hace: internamente llama a registrarMovimientoConStock()
  * como todo lo demas.
  *
  * Cada llamada actualiza inventario_stock y escribe en kardex dentro de la
- * MISMA transaccion (DB::transaction). Esto es exactamente lo que Angara
+ * MISMA transaccion de la Action. Esto es exactamente lo que Angara
  * Dental y POS Ropa no garantizaban -- dos escrituras separadas que podian
  * desincronizarse si la segunda fallaba.
  */
@@ -31,32 +31,6 @@ class InventarioService
     private const TIPOS_VALIDOS = ['entrada', 'salida'];
 
     private const MOTIVOS_VALIDOS = ['venta', 'compra', 'devolucion', 'merma', 'ajuste', 'apartado'];
-
-    /**
-     * @param  'entrada'|'salida'  $tipo
-     * @param  'venta'|'compra'|'devolucion'|'merma'|'ajuste'|'apartado'  $motivo
-     *
-     * @throws StockInsuficienteException si es una salida y no hay stock suficiente.
-     *
-     * @deprecated Transición ARQ-04: retirar en 04e (Apartados/Devoluciones migran en 04c; Producción en 04e).
-     */
-    public function registrarMovimiento(
-        int $varianteId,
-        int $sucursalId,
-        string $tipo,
-        int $cantidad,
-        string $motivo,
-        int $usuarioId,
-        ?string $referenciaTabla = null,
-        ?int $referenciaId = null,
-    ): Kardex {
-        return DB::transaction(function () use ($varianteId, $sucursalId, $tipo, $cantidad, $motivo, $usuarioId, $referenciaTabla, $referenciaId) {
-            $this->validarMovimiento($tipo, $cantidad, $motivo);
-            $stocks = $this->stocksParaTransicion([$varianteId], $sucursalId);
-
-            return $this->registrarMovimientoConStock($stocks[$varianteId], $tipo, $cantidad, $motivo, $usuarioId, $referenciaTabla, $referenciaId);
-        });
-    }
 
     public function registrarMovimientoConStock(
         InventarioStock $stock,
@@ -95,26 +69,6 @@ class InventarioService
             'stock_resultante' => $stockResultante,
             'usuario_id' => $usuarioId,
         ]);
-    }
-
-    /**
-     * Crea una compra con sus detalles y registra la entrada de stock de
-     * cada linea -- todo en una sola transaccion. No escribe
-     * inventario_stock/kardex directamente: delega cada linea a
-     * registrarMovimientoConStock().
-     *
-     * @param  array{tenant_id:int, proveedor_id:int, sucursal_id:int, usuario_id:int, numero_comprobante?:?string, comprobante_url?:?string}  $datosCompra
-     * @param  list<array{variante_id:int, cantidad:int, precio_compra:float|string}>  $items
-     *
-     * @deprecated Transición ARQ-04: retirar en 04e, junto con seeders y preparación de tests consumidores.
-     */
-    public function registrarCompra(array $datosCompra, array $items): Compra
-    {
-        return DB::transaction(function () use ($datosCompra, $items) {
-            $stocks = $this->stocksParaTransicion(array_column($items, 'variante_id'), $datosCompra['sucursal_id']);
-
-            return $this->registrarCompraConStocks($datosCompra, $items, $stocks);
-        });
     }
 
     /**
@@ -193,29 +147,9 @@ class InventarioService
         );
     }
 
-    /**
-     * @param  list<int>  $variantes
-     * @return array<int, InventarioStock>
-     *
-     * @deprecated Soporte exclusivo de envoltorios de transición; retirar en 04e.
-     */
-    public function stocksParaTransicion(array $variantes, int $sucursalId): array
-    {
-        $this->exigirTransaccion();
-        $variantes = array_values(array_unique($variantes));
-        sort($variantes);
-        $stocks = [];
-        foreach ($variantes as $varianteId) {
-            $this->asegurarStock($varianteId, $sucursalId);
-            $stocks[$varianteId] = InventarioStock::query()->withoutGlobalScope(TenantScopeViaRelacion::class)->where('sucursal_id', $sucursalId)->where('variante_id', $varianteId)->lockForUpdate()->firstOrFail();
-        }
-
-        return $stocks;
-    }
-
     private function exigirTransaccion(): void
     {
-        if (DB::transactionLevel() === 0) {
+        if (DB::connection()->transactionLevel() === 0) {
             throw new \LogicException('InventarioService requiere una transacción abierta por una Action.');
         }
     }

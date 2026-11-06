@@ -56,14 +56,14 @@ class PrecioService
             throw new CuponInvalidoException($codigo);
         }
 
-        $descuento = $cupon->tipo === 'porcentaje'
-            ? round($totalCarrito * ((float) $cupon->valor / 100), 2)
-            : min(round((float) $cupon->valor, 2), round($totalCarrito, 2));
-
         // uso_maximo / uso_maximo_por_cliente: el conteo de usos vive en la
         // tabla ventas (modulo TPV, aun no construido) -- ese modulo es el
         // que sabe cuantas veces se aplico un cupon. Aqui solo se valida
         // vigencia (activo + rango de fechas), no consumo.
+        $descuento = $cupon->tipo === 'porcentaje'
+            ? round($totalCarrito * ((float) $cupon->valor / 100), 2)
+            : min(round((float) $cupon->valor, 2), round($totalCarrito, 2));
+
         return new ResultadoCupon($cupon, $totalCarrito, $descuento);
     }
 

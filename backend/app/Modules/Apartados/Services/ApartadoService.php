@@ -18,12 +18,9 @@ use App\Modules\Inventario\Models\ProductoVariante;
 use App\Modules\Inventario\Services\InventarioService;
 use App\Modules\Nucleo\Models\Sucursal;
 use App\Modules\Nucleo\Models\Usuario;
-use App\Modules\Nucleo\Scopes\TenantScopeViaRelacion;
 use App\Modules\Precios\Services\PrecioService;
 use App\Modules\Tpv\Models\CajaSesion;
 use App\Modules\Tpv\Services\VentaService;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use InvalidArgumentException;
 
@@ -65,21 +62,6 @@ class ApartadoService
         private readonly InventarioService $inventarioService,
         private readonly VentaService $ventaService,
     ) {}
-
-    /**
-     * @param  array{tenant_id:int, sucursal_id:int, cliente_id:int, usuario_id:int, fecha_vencimiento?:?string, notas?:?string}  $datosApartado
-     * @param  list<array{variante_id:int, cantidad:int}>  $items
-     *
-     * @deprecated Transición para tests consumidores; retirar en 04e. Producción usa Actions desde 04c.
-     */
-    public function crearApartado(array $datosApartado, array $items): Apartado
-    {
-        return $this->transicion(function () use ($datosApartado, $items) {
-            $stocks = $this->inventarioService->stocksParaTransicion(array_column($items, 'variante_id'), $datosApartado['sucursal_id']);
-
-            return $this->crearApartadoConStocks($datosApartado, $items, $stocks);
-        });
-    }
 
     /**
      * @param  array{tenant_id:int, sucursal_id:int, cliente_id:int, usuario_id:int, fecha_vencimiento?:?string, notas?:?string}  $datosApartado
@@ -139,22 +121,6 @@ class ApartadoService
      * @param  list<array{metodo_pago_id:int, monto:float}>  $pagos
      *
      * @throws AbonoPagoNoCuadraException si la suma de pagos no coincide con el monto del abono.
-     *
-     * @deprecated Transición para tests consumidores; retirar en 04e. Producción usa Actions desde 04c.
-     */
-    public function registrarAbono(Apartado $apartado, float $monto, int $usuarioId, array $pagos, ?string $notas = null): ApartadoAbono
-    {
-        return $this->transicion(function () use ($apartado, $monto, $usuarioId, $pagos, $notas) {
-            $bloqueado = $this->bloquear(Apartado::query()->whereKey($apartado->id));
-
-            return $this->registrarAbonoConApartado($bloqueado, $monto, $usuarioId, $pagos, $notas);
-        });
-    }
-
-    /**
-     * @param  list<array{metodo_pago_id:int, monto:float}>  $pagos
-     *
-     * @throws AbonoPagoNoCuadraException si la suma de pagos no coincide con el monto del abono.
      */
     public function registrarAbonoConApartado(Apartado $apartado, float $monto, int $usuarioId, array $pagos, ?string $notas = null): ApartadoAbono
     {
@@ -195,40 +161,6 @@ class ApartadoService
         ]);
 
         return $abono->load('pagos');
-    }
-
-    /**
-     * Libera la reserva de stock de cada linea (entrada/ajuste) y delega la
-     * venta real a VentaService::registrarVentaConBloqueos(), que la vuelve a
-     * descontar (salida/venta) -- neto cero en stock, pero con un rastro de
-     * kardex legible: reservado por el apartado -> liberado al liquidar ->
-     * consumido por la venta.
-     *
-     * Los items se re-cotizan via PrecioService dentro de
-     * VentaService::registrarVentaConBloqueos() (misma autoridad de precios que
-     * cualquier otra venta) -- si una regla de precio cambio entre la
-     * creacion del apartado y su liquidacion, el total de la venta
-     * resultante puede diferir del total original del apartado. No se
-     * implementa proteccion de precio ("price lock"): el documento no la
-     * pide y no es un requisito trivial -- se deja como limitacion conocida.
-     *
-     * abono_previo = total_abonado le indica a VentaService cuanto ya se
-     * cobro antes (via abonos), asi que exige pagos nuevos solo por el
-     * residual (normalmente 0 si el apartado ya esta completamente pagado).
-     *
-     * @throws ApartadoSaldoInsuficienteException si total_abonado < total.
-     *
-     * @deprecated Transición para tests consumidores; retirar en 04e. Producción usa Actions desde 04c.
-     */
-    public function liquidar(Apartado $apartado, int $usuarioId): Apartado
-    {
-        return $this->transicion(function () use ($apartado, $usuarioId) {
-            $caja = $this->bloquear(CajaSesion::query()->withoutGlobalScope(TenantScopeViaRelacion::class)->where('sucursal_id', (int) $apartado->getAttribute('sucursal_id'))->where('estado', 'abierta')->latest('id'), false);
-            $bloqueado = $this->bloquear(Apartado::query()->whereKey($apartado->id));
-            $stocks = $this->inventarioService->stocksParaTransicion(array_values(array_map(static fn ($id): int => (int) $id, $bloqueado->detalles->pluck('variante_id')->all())), (int) $bloqueado->getAttribute('sucursal_id'));
-
-            return $this->liquidarConBloqueos($bloqueado, $usuarioId, $caja, $stocks);
-        });
     }
 
     /**
@@ -314,25 +246,6 @@ class ApartadoService
      * efectivo, nota de credito, etc.) fuera del alcance de este modulo. El
      * resultado solo senala cuanto quedo pendiente de resolver.
      *
-     * @deprecated Transición para tests consumidores; retirar en 04e. Producción usa Actions desde 04c.
-     */
-    public function cancelar(Apartado $apartado, string $motivo, Usuario $usuario): ResultadoCancelacion
-    {
-        return $this->transicion(function () use ($apartado, $motivo, $usuario) {
-            $bloqueado = $this->bloquear(Apartado::query()->whereKey($apartado->id));
-            $stocks = $this->inventarioService->stocksParaTransicion(array_values(array_map(static fn ($id): int => (int) $id, $bloqueado->detalles->pluck('variante_id')->all())), (int) $bloqueado->getAttribute('sucursal_id'));
-
-            return $this->cancelarConStocks($bloqueado, $motivo, $usuario, $stocks);
-        });
-    }
-
-    /**
-     * Libera la reserva de stock de cada linea (entrada/ajuste) y marca el
-     * apartado como cancelado. Los abonos ya cobrados NO se revierten aqui
-     * -- como se pide, eso es una decision de negocio (reembolso en
-     * efectivo, nota de credito, etc.) fuera del alcance de este modulo. El
-     * resultado solo senala cuanto quedo pendiente de resolver.
-     *
      * @param  array<int, InventarioStock>  $stocks
      */
     public function cancelarConStocks(Apartado $apartado, string $motivo, Usuario $usuario, array $stocks): ResultadoCancelacion
@@ -370,33 +283,9 @@ class ApartadoService
         );
     }
 
-    /**
-     * @template T
-     *
-     * @param  \Closure(): T  $operacion
-     * @return T
-     */
-    private function transicion(\Closure $operacion): mixed
-    {
-        return DB::transaction($operacion);
-    }
-
-    /**
-     * @template TModel of \Illuminate\Database\Eloquent\Model
-     *
-     * @param  Builder<TModel>  $consulta
-     * @return ($obligatorio is true ? TModel : TModel|null)
-     */
-    private function bloquear(Builder $consulta, bool $obligatorio = true): ?Model
-    {
-        $consulta->lockForUpdate();
-
-        return $obligatorio ? $consulta->firstOrFail() : $consulta->first();
-    }
-
     private function exigirTransaccion(): void
     {
-        if (DB::transactionLevel() === 0) {
+        if (DB::connection()->transactionLevel() === 0) {
             throw new \LogicException('ApartadoService requiere una transacción abierta por una Action.');
         }
     }

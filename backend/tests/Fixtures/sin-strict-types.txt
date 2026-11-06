@@ -74,7 +74,6 @@ app/Modules/Cotizaciones/Http/Resources/CotizacionResource.php
 app/Modules/Cotizaciones/Models/Cotizacion.php
 app/Modules/Cotizaciones/Models/CotizacionDetalle.php
 app/Modules/Cotizaciones/Providers/CotizacionesServiceProvider.php
-app/Modules/Cotizaciones/Services/CotizacionService.php
 app/Modules/Cotizaciones/Support/ResolverPreciosCotizacion.php
 app/Modules/Crm/Database/Factories/ClienteFactory.php
 app/Modules/Crm/Database/Migrations/2026_07_23_000001_create_clientes_table.php
@@ -488,7 +487,6 @@ app/Modules/Produccion/Models/Receta.php
 app/Modules/Produccion/Models/RecetaIngrediente.php
 app/Modules/Produccion/Models/TransformacionProducto.php
 app/Modules/Produccion/Providers/ProduccionServiceProvider.php
-app/Modules/Produccion/Services/ProduccionService.php
 app/Modules/Tpv/Database/Factories/CajaSesionFactory.php
 app/Modules/Tpv/Database/Factories/VentaDetalleFactory.php
 app/Modules/Tpv/Database/Factories/VentaFactory.php
@@ -533,7 +531,6 @@ app/Modules/UnidadesMedida/Http/Requests/GuardarUnidadMedidaRequest.php
 app/Modules/UnidadesMedida/Http/Resources/UnidadMedidaResource.php
 app/Modules/UnidadesMedida/Models/UnidadMedida.php
 app/Modules/UnidadesMedida/Providers/UnidadesMedidaServiceProvider.php
-app/Modules/UnidadesMedida/Services/UnidadMedidaService.php
 app/Modules/VentasPlazos/Database/Factories/PlanPagoClienteCuotaFactory.php
 app/Modules/VentasPlazos/Database/Factories/PlanPagoClienteFactory.php
 app/Modules/VentasPlazos/Database/Migrations/2026_07_23_000002_create_planes_pago_cliente_table.php

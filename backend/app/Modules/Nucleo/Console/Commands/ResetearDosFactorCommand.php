@@ -2,10 +2,9 @@
 
 namespace App\Modules\Nucleo\Console\Commands;
 
+use App\Aplicacion\Nucleo\ResetearDosFactor;
 use App\Modules\Nucleo\Models\Usuario;
-use App\Modules\Nucleo\Services\TrustedDeviceService;
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\DB;
 
 /**
  * Reseteo de emergencia para un usuario que perdio el telefono y los codigos
@@ -23,7 +22,7 @@ class ResetearDosFactorCommand extends Command
 
     protected $description = 'Resetea el 2FA de un usuario que perdio el telefono y los codigos de recuperacion.';
 
-    public function handle(TrustedDeviceService $trustedDeviceService): int
+    public function handle(ResetearDosFactor $action): int
     {
         $correo = (string) $this->argument('correo');
         $usuario = Usuario::sinTenant()->where('correo', $correo)->first();
@@ -51,21 +50,7 @@ class ResetearDosFactorCommand extends Command
             return self::SUCCESS;
         }
 
-        DB::transaction(function () use ($usuario, $trustedDeviceService): void {
-            $usuario->forceFill([
-                'two_factor_secret' => null,
-                'two_factor_recovery_codes' => null,
-                'two_factor_confirmed_at' => null,
-            ])->save();
-
-            $trustedDeviceService->revocarTodos($usuario);
-
-            if (config('session.driver') === 'database') {
-                DB::table((string) config('session.table', 'sessions'))
-                    ->where('user_id', $usuario->getKey())
-                    ->delete();
-            }
-        });
+        $action->ejecutar((int) $usuario->getKey());
 
         $this->info("2FA reseteado para {$correoUsuario}.");
 

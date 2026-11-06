@@ -20,6 +20,8 @@ use App\Modules\Tpv\Models\Venta;
 use App\Modules\Tpv\Services\CajaService;
 use App\Modules\Tpv\Services\VentaService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\Support\Bloqueos04c;
+use Tests\Support\Bloqueos04e;
 use Tests\TestCase;
 
 class CuentasCobrarReporteTest extends TestCase
@@ -69,19 +71,18 @@ class CuentasCobrarReporteTest extends TestCase
         $variante = ProductoVariante::create(['producto_id' => $producto->id]);
         $proveedor = Proveedor::create(['tenant_id' => $this->tenant->id, 'razon_social' => 'P']);
         $inventarioService = app(InventarioService::class);
-        $inventarioService->registrarCompra(
-            ['tenant_id' => $this->tenant->id, 'proveedor_id' => $proveedor->id, 'sucursal_id' => $this->sucursal->id, 'usuario_id' => $this->usuario->id],
-            [['variante_id' => $variante->id, 'cantidad' => 100, 'precio_compra' => 10]],
-        );
+        $datos04e2 = ['tenant_id' => $this->tenant->id, 'proveedor_id' => $proveedor->id, 'sucursal_id' => $this->sucursal->id, 'usuario_id' => $this->usuario->id];
+        $items04e2 = [['variante_id' => $variante->id, 'cantidad' => 100, 'precio_compra' => 10]];
+        $inventarioService->registrarCompraConStocks($datos04e2, $items04e2, Bloqueos04e::stocks((int) $datos04e2['sucursal_id'], array_column($items04e2, 'variante_id')));
 
         $cajaService = app(CajaService::class);
-        $cajaService->abrirCaja($this->sucursal->id, $this->usuario->id, 500);
+        $cajaService->abrirCajaConSucursal(Bloqueos04e::sucursal($this->sucursal->id), $this->usuario->id, 500);
         $ventaService = app(VentaService::class);
-        $this->venta = $ventaService->registrarVenta(
-            ['tenant_id' => $this->tenant->id, 'sucursal_id' => $this->sucursal->id, 'usuario_id' => $this->usuario->id, 'cliente_id' => $this->cliente->id],
-            [['variante_id' => $variante->id, 'cantidad' => 1]],
-            [['metodo_pago_id' => $efectivo->id, 'monto' => 100]],
-        );
+        $datos04e3 = ['tenant_id' => $this->tenant->id, 'sucursal_id' => $this->sucursal->id, 'usuario_id' => $this->usuario->id, 'cliente_id' => $this->cliente->id];
+        $items04e3 = [['variante_id' => $variante->id, 'cantidad' => 1]];
+        $caja04e3 = Bloqueos04c::caja((int) $datos04e3['sucursal_id']);
+        $stocks04e3 = $caja04e3 === null ? [] : Bloqueos04e::stocks((int) $datos04e3['sucursal_id'], array_column($items04e3, 'variante_id'));
+        $this->venta = $ventaService->registrarVentaConBloqueos($datos04e3, $items04e3, [['metodo_pago_id' => $efectivo->id, 'monto' => 100]], $caja04e3, $stocks04e3);
     }
 
     private function crearCuentaCobrar(float $monto, string $fechaVencimiento, int $clienteId): CuentaCobrar

@@ -2,6 +2,11 @@
 
 namespace App\Modules\Produccion\Http\Controllers;
 
+use App\Aplicacion\Produccion\CambiarEstadoOrden;
+use App\Aplicacion\Produccion\CrearOrdenProduccion;
+use App\Aplicacion\Produccion\CrearReceta;
+use App\Aplicacion\Produccion\RegistrarEntradaInsumo;
+use App\Aplicacion\Produccion\RegistrarTransformacion;
 use App\Http\Controllers\Controller;
 use App\Modules\Nucleo\Models\Usuario;
 use App\Modules\Nucleo\Services\TenantContext;
@@ -20,13 +25,10 @@ use App\Modules\Produccion\Models\InsumoStock;
 use App\Modules\Produccion\Models\OrdenProduccion;
 use App\Modules\Produccion\Models\Receta;
 use App\Modules\Produccion\Models\TransformacionProducto;
-use App\Modules\Produccion\Services\ProduccionService;
 use Illuminate\Http\Request;
 
 class ProduccionController extends Controller
 {
-    public function __construct(private readonly ProduccionService $produccionService) {}
-
     private const CAMPOS_ORDENABLES = ['id', 'nombre', 'costo', 'created_at'];
 
     public function insumosIndex(Request $request)
@@ -80,24 +82,11 @@ class ProduccionController extends Controller
         return response()->json(['data' => $stocks]);
     }
 
-    public function insumoStocksStore(GuardarInsumoStockRequest $request, Insumo $insumo)
+    public function insumoStocksStore(GuardarInsumoStockRequest $request, Insumo $insumo, RegistrarEntradaInsumo $action)
     {
         $dto = $request->toDto();
 
-        $stock = InsumoStock::firstOrNew([
-            'insumo_id' => $insumo->id,
-            'sucursal_id' => $dto->sucursalId,
-            'lote' => $dto->lote,
-        ]);
-
-        if ($stock->exists) {
-            $stock->increment('cantidad', $dto->cantidad);
-        } else {
-            $stock->fill([
-                'cantidad' => $dto->cantidad,
-                'fecha_vencimiento' => $dto->fechaVencimiento,
-            ])->save();
-        }
+        $stock = $action->ejecutar($dto, $insumo->id);
 
         return response()->json(['data' => $stock->fresh()], 201);
     }
@@ -130,12 +119,11 @@ class ProduccionController extends Controller
         ]);
     }
 
-    public function recetasStore(CrearRecetaRequest $request)
+    public function recetasStore(CrearRecetaRequest $request, CrearReceta $action)
     {
-        $datos = $request->toDto()->datos();
-        $datos['tenant_id'] = app(TenantContext::class)->id();
+        $receta = $action->ejecutar($request->toDto(), (int) app(TenantContext::class)->id());
 
-        return (new RecetaResource($this->produccionService->crearReceta($datos)))->response()->setStatusCode(201);
+        return (new RecetaResource($receta))->response()->setStatusCode(201);
     }
 
     public function ordenesIndex(Request $request)
@@ -162,25 +150,21 @@ class ProduccionController extends Controller
         ]);
     }
 
-    public function ordenesStore(CrearOrdenProduccionRequest $request)
+    public function ordenesStore(CrearOrdenProduccionRequest $request, CrearOrdenProduccion $action)
     {
-        $usuario = $this->usuario($request);
-        $datos = $request->toDto()->datos();
-        $datos['tenant_id'] = app(TenantContext::class)->id();
-        $datos['sucursal_id'] = (int) $usuario->getAttribute('sucursal_id');
-        $datos['usuario_id'] = $usuario->id;
+        $orden = $action->ejecutar($request->toDto(), $this->usuario($request));
 
-        return (new OrdenProduccionResource($this->produccionService->crearOrdenProduccion($datos)))->response()->setStatusCode(201);
+        return (new OrdenProduccionResource($orden))->response()->setStatusCode(201);
     }
 
-    public function ordenesCambiarEstado(CambiarEstadoOrdenRequest $request, int $id)
+    public function ordenesCambiarEstado(CambiarEstadoOrdenRequest $request, int $id, CambiarEstadoOrden $action)
     {
         $dto = $request->toDto();
+        $orden = $action->ejecutar($dto, $id);
 
         if ($dto->estado === 'completada') {
-            return new OrdenProduccionResource($this->produccionService->completarOrden($id, (int) $dto->cantidadProducida));
+            return new OrdenProduccionResource($orden);
         }
-        OrdenProduccion::findOrFail($id)->update(['estado' => $dto->estado]);
 
         return response()->json(['message' => 'Estado actualizado.']);
     }
@@ -209,15 +193,11 @@ class ProduccionController extends Controller
         ]);
     }
 
-    public function transformacionStore(CrearTransformacionRequest $request)
+    public function transformacionStore(CrearTransformacionRequest $request, RegistrarTransformacion $action)
     {
-        $usuario = $this->usuario($request);
-        $datos = $request->toDto()->datos();
-        $datos['tenant_id'] = app(TenantContext::class)->id();
-        $datos['sucursal_id'] = (int) $usuario->getAttribute('sucursal_id');
-        $datos['usuario_id'] = $usuario->id;
+        $transformacion = $action->ejecutar($request->toDto(), $this->usuario($request));
 
-        return (new TransformacionResource($this->produccionService->registrarTransformacion($datos)))->response()->setStatusCode(201);
+        return (new TransformacionResource($transformacion))->response()->setStatusCode(201);
     }
 
     private function usuario(Request $request): Usuario

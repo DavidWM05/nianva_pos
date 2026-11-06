@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Modules\UnidadesMedida\Services;
 
 use App\Modules\Inventario\Models\ProductoVariante;
@@ -23,6 +25,8 @@ class UnidadMedidaService
 
     public function crear(array $data): UnidadMedida
     {
+        $this->exigirTransaccion();
+
         if (trim($data['nombre'] ?? '') === '') {
             throw new InvalidArgumentException('El nombre de la unidad de medida no puede estar vacio.');
         }
@@ -31,47 +35,52 @@ class UnidadMedidaService
             throw new InvalidArgumentException('La abreviatura no puede estar vacia.');
         }
 
-        return DB::transaction(function () use ($data) {
-            return UnidadMedida::create([
-                'tenant_id' => $data['tenant_id'],
-                'nombre' => trim($data['nombre']),
-                'abreviatura' => trim($data['abreviatura']),
-                'tipo' => $data['tipo'] ?? 'entero',
-                'activo' => true,
-            ]);
-        });
+        return UnidadMedida::create([
+            'tenant_id' => $data['tenant_id'],
+            'nombre' => trim($data['nombre']),
+            'abreviatura' => trim($data['abreviatura']),
+            'tipo' => $data['tipo'] ?? 'entero',
+            'activo' => true,
+        ]);
+
     }
 
-    public function actualizar(int $id, array $data): UnidadMedida
+    /** @param array<string, mixed> $data */
+    public function actualizarConUnidad(UnidadMedida $unidad, array $data): UnidadMedida
     {
-        $unidad = UnidadMedida::findOrFail($id);
+        $this->exigirTransaccion();
 
-        return DB::transaction(function () use ($unidad, $data) {
-            $unidad->update([
-                'nombre' => trim($data['nombre'] ?? $unidad->nombre),
-                'abreviatura' => trim($data['abreviatura'] ?? $unidad->abreviatura),
-                'tipo' => $data['tipo'] ?? $unidad->tipo,
-                'activo' => $data['activo'] ?? $unidad->activo,
-            ]);
+        $unidad->update([
+            'nombre' => trim($data['nombre'] ?? $unidad->nombre),
+            'abreviatura' => trim($data['abreviatura'] ?? $unidad->abreviatura),
+            'tipo' => $data['tipo'] ?? $unidad->tipo,
+            'activo' => $data['activo'] ?? $unidad->activo,
+        ]);
 
-            return $unidad->fresh();
-        });
+        return $unidad->refresh();
+
     }
 
-    public function eliminar(int $id): void
+    public function eliminarConUnidad(UnidadMedida $unidad): void
     {
-        $unidad = UnidadMedida::findOrFail($id);
+        $this->exigirTransaccion();
 
-        DB::transaction(function () use ($unidad) {
-            $enUso = ProductoVariante::sinTenant()
-                ->where('unidad_medida_id', $unidad->id)
-                ->exists();
+        $enUso = ProductoVariante::sinTenant()
+            ->where('unidad_medida_id', $unidad->id)
+            ->exists();
 
-            if ($enUso) {
-                throw new UnidadEnUsoException($unidad->id);
-            }
+        if ($enUso) {
+            throw new UnidadEnUsoException($unidad->id);
+        }
 
-            $unidad->delete();
-        });
+        $unidad->delete();
+
+    }
+
+    private function exigirTransaccion(): void
+    {
+        if (DB::connection()->transactionLevel() === 0) {
+            throw new \LogicException('UnidadMedidaService requiere una transacción abierta por una Action.');
+        }
     }
 }

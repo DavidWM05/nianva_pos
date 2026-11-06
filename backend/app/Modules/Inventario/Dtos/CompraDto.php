@@ -11,5 +11,6 @@ final readonly class CompraDto
         public int $proveedorId,
         public ?string $numeroComprobante,
         public array $items,
+        public ?int $sucursalId = null,
     ) {}
 }

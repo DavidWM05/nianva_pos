@@ -20,6 +20,7 @@ use App\Modules\Tpv\Services\CajaService;
 use App\Modules\Tpv\Services\VentaService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\Support\Bloqueos04c;
+use Tests\Support\Bloqueos04e;
 use Tests\TestCase;
 
 class CajaControllerTest extends TestCase
@@ -79,24 +80,23 @@ class CajaControllerTest extends TestCase
     public function test_actual_incluye_el_resumen_en_vivo_de_ventas_de_la_sesion(): void
     {
         ['tenant' => $tenant, 'sucursal' => $sucursal, 'usuario' => $usuario] = $this->crearUsuarioConPermisos(['caja.ver', 'caja.abrir', 'ventas.crear']);
-        $sesion = app(CajaService::class)->abrirCaja($sucursal->id, $usuario->id, 500);
+        $sesion = app(CajaService::class)->abrirCajaConSucursal(Bloqueos04e::sucursal($sucursal->id), $usuario->id, 500);
 
         $efectivo = MetodoPago::create(['tenant_id' => $tenant->id, 'nombre' => 'Efectivo', 'tipo' => 'efectivo']);
         $categoria = Categoria::create(['tenant_id' => $tenant->id, 'nombre' => 'Ropa']);
         $producto = Producto::create(['tenant_id' => $tenant->id, 'categoria_id' => $categoria->id, 'nombre' => 'Playera', 'precio_compra' => 50, 'precio_venta' => 100]);
         $variante = ProductoVariante::create(['producto_id' => $producto->id, 'talla' => 'M']);
         $proveedor = Proveedor::create(['tenant_id' => $tenant->id, 'razon_social' => 'Textiles del Norte']);
-        app(InventarioService::class)->registrarCompra(
-            ['tenant_id' => $tenant->id, 'proveedor_id' => $proveedor->id, 'sucursal_id' => $sucursal->id, 'usuario_id' => $usuario->id],
-            [['variante_id' => $variante->id, 'cantidad' => 5, 'precio_compra' => 50]],
-        );
+        $datos04e6 = ['tenant_id' => $tenant->id, 'proveedor_id' => $proveedor->id, 'sucursal_id' => $sucursal->id, 'usuario_id' => $usuario->id];
+        $items04e6 = [['variante_id' => $variante->id, 'cantidad' => 5, 'precio_compra' => 50]];
+        app(InventarioService::class)->registrarCompraConStocks($datos04e6, $items04e6, Bloqueos04e::stocks((int) $datos04e6['sucursal_id'], array_column($items04e6, 'variante_id')));
         $cliente = Cliente::where('tenant_id', $tenant->id)->where('nombre', 'Publico General')->firstOrFail();
 
-        app(VentaService::class)->registrarVenta(
-            ['tenant_id' => $tenant->id, 'sucursal_id' => $sucursal->id, 'usuario_id' => $usuario->id, 'cliente_id' => $cliente->id],
-            [['variante_id' => $variante->id, 'cantidad' => 1]],
-            [['metodo_pago_id' => $efectivo->id, 'monto' => 100]],
-        );
+        $datos04e7 = ['tenant_id' => $tenant->id, 'sucursal_id' => $sucursal->id, 'usuario_id' => $usuario->id, 'cliente_id' => $cliente->id];
+        $items04e7 = [['variante_id' => $variante->id, 'cantidad' => 1]];
+        $caja04e7 = Bloqueos04c::caja((int) $datos04e7['sucursal_id']);
+        $stocks04e7 = $caja04e7 === null ? [] : Bloqueos04e::stocks((int) $datos04e7['sucursal_id'], array_column($items04e7, 'variante_id'));
+        app(VentaService::class)->registrarVentaConBloqueos($datos04e7, $items04e7, [['metodo_pago_id' => $efectivo->id, 'monto' => 100]], $caja04e7, $stocks04e7);
 
         $this->actingAs($usuario);
 
@@ -108,7 +108,7 @@ class CajaControllerTest extends TestCase
     public function test_abrir_con_caja_ya_abierta_devuelve_422_con_error_code_caja_ya_abierta(): void
     {
         ['sucursal' => $sucursal, 'usuario' => $usuario] = $this->crearUsuarioConPermisos(['caja.abrir']);
-        app(CajaService::class)->abrirCaja($sucursal->id, $usuario->id, 500);
+        app(CajaService::class)->abrirCajaConSucursal(Bloqueos04e::sucursal($sucursal->id), $usuario->id, 500);
         $this->actingAs($usuario);
 
         $this->postJson('/api/v1/caja/abrir', ['monto_apertura' => 300])
@@ -127,7 +127,7 @@ class CajaControllerTest extends TestCase
     public function test_cerrar_calcula_diferencia_y_marca_cerrada(): void
     {
         ['sucursal' => $sucursal, 'usuario' => $usuario] = $this->crearUsuarioConPermisos(['caja.abrir', 'caja.cerrar']);
-        $sesion = app(CajaService::class)->abrirCaja($sucursal->id, $usuario->id, 500);
+        $sesion = app(CajaService::class)->abrirCajaConSucursal(Bloqueos04e::sucursal($sucursal->id), $usuario->id, 500);
         $this->actingAs($usuario);
 
         $respuesta = $this->patchJson("/api/v1/caja/{$sesion->id}/cerrar", ['monto_fisico' => 480]);
@@ -140,7 +140,7 @@ class CajaControllerTest extends TestCase
     public function test_actual_incluye_total_gastos_en_el_resumen_en_vivo(): void
     {
         ['sucursal' => $sucursal, 'usuario' => $usuario] = $this->crearUsuarioConPermisos(['caja.ver', 'caja.abrir']);
-        $sesion = app(CajaService::class)->abrirCaja($sucursal->id, $usuario->id, 500);
+        $sesion = app(CajaService::class)->abrirCajaConSucursal(Bloqueos04e::sucursal($sucursal->id), $usuario->id, 500);
         app(GastoService::class)->registrarGastoConCaja(Bloqueos04c::caja($sucursal->id), $sucursal->id, $usuario->id, 'Luz', 80);
 
         $this->actingAs($usuario);
@@ -156,7 +156,7 @@ class CajaControllerTest extends TestCase
     public function test_cerrar_descuenta_los_gastos_reales_calculados_por_el_backend(): void
     {
         ['sucursal' => $sucursal, 'usuario' => $usuario] = $this->crearUsuarioConPermisos(['caja.abrir', 'caja.cerrar']);
-        $sesion = app(CajaService::class)->abrirCaja($sucursal->id, $usuario->id, 500);
+        $sesion = app(CajaService::class)->abrirCajaConSucursal(Bloqueos04e::sucursal($sucursal->id), $usuario->id, 500);
         app(GastoService::class)->registrarGastoConCaja(Bloqueos04c::caja($sucursal->id), $sucursal->id, $usuario->id, 'Luz', 80);
         $this->actingAs($usuario);
 

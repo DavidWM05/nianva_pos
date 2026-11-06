@@ -14,6 +14,7 @@ use App\Modules\Nucleo\Models\Sucursal;
 use App\Modules\Nucleo\Models\Tenant;
 use App\Modules\Nucleo\Models\Usuario;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\Support\Bloqueos04e;
 use Tests\TestCase;
 
 class ProductoTest extends TestCase
@@ -250,8 +251,8 @@ class ProductoTest extends TestCase
         $variante = ProductoVariante::create(['producto_id' => $producto->id, 'talla' => 'Unica']);
 
         $servicio = app(InventarioService::class);
-        $servicio->registrarMovimiento($variante->id, $sucursal->id, 'entrada', 10, 'compra', $usuario->id);
-        $servicio->registrarMovimiento($variante->id, $sucursal->id, 'salida', 3, 'venta', $usuario->id);
+        $servicio->registrarMovimientoConStock(Bloqueos04e::stock($variante->id, $sucursal->id), 'entrada', 10, 'compra', $usuario->id);
+        $servicio->registrarMovimientoConStock(Bloqueos04e::stock($variante->id, $sucursal->id), 'salida', 3, 'venta', $usuario->id);
 
         $this->actingAs($usuario);
 

@@ -30,8 +30,6 @@ final class RegistrarMovimiento
     /** Para Actions compuestas: asegura la fila y la bloquea sin abrir otra transacción. */
     public function bloquearStock(MovimientoInventarioDto $dto): InventarioStock
     {
-        $this->inventarioService->asegurarStock($dto->varianteId, $dto->sucursalId);
-
         // sinTenant (aquí withoutGlobalScope): esta capa ya recibe ids explicitos y validados
         // (verificarMismoTenant arriba); consultar con el scope normal
         // aqui podria hacer que una fila EXISTENTE mal filtrada parezca
@@ -39,6 +37,8 @@ final class RegistrarMovimiento
         // antes) asi que lockForUpdate ahora si bloquea sobre una fila
         // real y serializa cualquier otro movimiento concurrente sobre
         // la misma variante+sucursal hasta que esta transaccion termine.
+        $this->inventarioService->asegurarStock($dto->varianteId, $dto->sucursalId);
+
         return InventarioStock::query()->withoutGlobalScope(TenantScopeViaRelacion::class)
             ->where('sucursal_id', $dto->sucursalId)
             ->where('variante_id', $dto->varianteId)

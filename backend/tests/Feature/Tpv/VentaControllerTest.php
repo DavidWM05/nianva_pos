@@ -19,6 +19,7 @@ use App\Modules\Precios\Models\ReglaPrecio;
 use App\Modules\Tpv\Models\Venta;
 use App\Modules\Tpv\Services\CajaService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\Support\Bloqueos04e;
 use Tests\TestCase;
 
 class VentaControllerTest extends TestCase
@@ -68,13 +69,12 @@ class VentaControllerTest extends TestCase
         $varianteB = ProductoVariante::create(['producto_id' => $productoB->id, 'talla' => '32']);
         $proveedor = Proveedor::create(['tenant_id' => $tenant->id, 'razon_social' => 'Textiles del Norte']);
 
-        app(InventarioService::class)->registrarCompra(
-            ['tenant_id' => $tenant->id, 'proveedor_id' => $proveedor->id, 'sucursal_id' => $sucursal->id, 'usuario_id' => $usuario->id],
-            [
-                ['variante_id' => $varianteA->id, 'cantidad' => 20, 'precio_compra' => 50],
-                ['variante_id' => $varianteB->id, 'cantidad' => 10, 'precio_compra' => 25],
-            ],
-        );
+        $datos04e10 = ['tenant_id' => $tenant->id, 'proveedor_id' => $proveedor->id, 'sucursal_id' => $sucursal->id, 'usuario_id' => $usuario->id];
+        $items04e10 = [
+            ['variante_id' => $varianteA->id, 'cantidad' => 20, 'precio_compra' => 50],
+            ['variante_id' => $varianteB->id, 'cantidad' => 10, 'precio_compra' => 25],
+        ];
+        app(InventarioService::class)->registrarCompraConStocks($datos04e10, $items04e10, Bloqueos04e::stocks((int) $datos04e10['sucursal_id'], array_column($items04e10, 'variante_id')));
 
         $cliente = Cliente::where('tenant_id', $tenant->id)->where('nombre', 'Publico General')->firstOrFail();
 
@@ -88,7 +88,7 @@ class VentaControllerTest extends TestCase
             'tenant_id' => $ctx['tenant']->id, 'nombre' => '10% variante A', 'tipo' => 'porcentaje',
             'valor' => 10, 'aplica_a' => 'variante', 'variante_id' => $ctx['varianteA']->id,
         ]);
-        app(CajaService::class)->abrirCaja($ctx['sucursal']->id, $ctx['usuario']->id, 500);
+        app(CajaService::class)->abrirCajaConSucursal(Bloqueos04e::sucursal($ctx['sucursal']->id), $ctx['usuario']->id, 500);
 
         $this->actingAs($ctx['usuario']);
 
@@ -129,7 +129,7 @@ class VentaControllerTest extends TestCase
     public function test_store_con_pago_que_no_cuadra_devuelve_422_con_error_code_pago_no_cuadra(): void
     {
         $ctx = $this->prepararTenantConCatalogo();
-        app(CajaService::class)->abrirCaja($ctx['sucursal']->id, $ctx['usuario']->id, 500);
+        app(CajaService::class)->abrirCajaConSucursal(Bloqueos04e::sucursal($ctx['sucursal']->id), $ctx['usuario']->id, 500);
         $this->actingAs($ctx['usuario']);
 
         $respuesta = $this->postJson('/api/v1/ventas', [
@@ -145,7 +145,7 @@ class VentaControllerTest extends TestCase
     public function test_store_con_stock_insuficiente_devuelve_422_con_error_code_stock_insuficiente(): void
     {
         $ctx = $this->prepararTenantConCatalogo();
-        app(CajaService::class)->abrirCaja($ctx['sucursal']->id, $ctx['usuario']->id, 500);
+        app(CajaService::class)->abrirCajaConSucursal(Bloqueos04e::sucursal($ctx['sucursal']->id), $ctx['usuario']->id, 500);
         $this->actingAs($ctx['usuario']);
 
         $respuesta = $this->postJson('/api/v1/ventas', [
@@ -160,7 +160,7 @@ class VentaControllerTest extends TestCase
     public function test_store_con_cupon_codigo_invalido_devuelve_422_con_error_code_cupon_invalido(): void
     {
         $ctx = $this->prepararTenantConCatalogo();
-        app(CajaService::class)->abrirCaja($ctx['sucursal']->id, $ctx['usuario']->id, 500);
+        app(CajaService::class)->abrirCajaConSucursal(Bloqueos04e::sucursal($ctx['sucursal']->id), $ctx['usuario']->id, 500);
         $this->actingAs($ctx['usuario']);
 
         $respuesta = $this->postJson('/api/v1/ventas', [
@@ -177,7 +177,7 @@ class VentaControllerTest extends TestCase
     public function test_store_sin_permiso_ventas_crear_devuelve_403(): void
     {
         $ctx = $this->prepararTenantConCatalogo([]);
-        app(CajaService::class)->abrirCaja($ctx['sucursal']->id, $ctx['usuario']->id, 500);
+        app(CajaService::class)->abrirCajaConSucursal(Bloqueos04e::sucursal($ctx['sucursal']->id), $ctx['usuario']->id, 500);
         $this->actingAs($ctx['usuario']);
 
         $respuesta = $this->postJson('/api/v1/ventas', [
@@ -192,7 +192,7 @@ class VentaControllerTest extends TestCase
     public function test_index_lista_paginado_con_resumen_de_metodos_de_pago_y_oculta_anular_sin_permiso(): void
     {
         $ctx = $this->prepararTenantConCatalogo(['ventas.ver', 'ventas.crear']);
-        app(CajaService::class)->abrirCaja($ctx['sucursal']->id, $ctx['usuario']->id, 500);
+        app(CajaService::class)->abrirCajaConSucursal(Bloqueos04e::sucursal($ctx['sucursal']->id), $ctx['usuario']->id, 500);
         $this->actingAs($ctx['usuario']);
 
         $this->postJson('/api/v1/ventas', [
@@ -216,7 +216,7 @@ class VentaControllerTest extends TestCase
     public function test_show_incluye_detalles_y_metodos_de_pago(): void
     {
         $ctx = $this->prepararTenantConCatalogo();
-        app(CajaService::class)->abrirCaja($ctx['sucursal']->id, $ctx['usuario']->id, 500);
+        app(CajaService::class)->abrirCajaConSucursal(Bloqueos04e::sucursal($ctx['sucursal']->id), $ctx['usuario']->id, 500);
         $this->actingAs($ctx['usuario']);
 
         $creada = $this->postJson('/api/v1/ventas', [
@@ -235,7 +235,7 @@ class VentaControllerTest extends TestCase
     public function test_anular_marca_estado_y_exige_motivo(): void
     {
         $ctx = $this->prepararTenantConCatalogo();
-        app(CajaService::class)->abrirCaja($ctx['sucursal']->id, $ctx['usuario']->id, 500);
+        app(CajaService::class)->abrirCajaConSucursal(Bloqueos04e::sucursal($ctx['sucursal']->id), $ctx['usuario']->id, 500);
         $this->actingAs($ctx['usuario']);
 
         $creada = $this->postJson('/api/v1/ventas', [
@@ -257,7 +257,7 @@ class VentaControllerTest extends TestCase
     public function test_anular_sin_permiso_devuelve_403(): void
     {
         $ctx = $this->prepararTenantConCatalogo(['ventas.ver', 'ventas.crear']);
-        app(CajaService::class)->abrirCaja($ctx['sucursal']->id, $ctx['usuario']->id, 500);
+        app(CajaService::class)->abrirCajaConSucursal(Bloqueos04e::sucursal($ctx['sucursal']->id), $ctx['usuario']->id, 500);
         $this->actingAs($ctx['usuario']);
 
         $creada = $this->postJson('/api/v1/ventas', [

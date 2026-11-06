@@ -10,6 +10,7 @@ use App\Modules\Nucleo\Models\Usuario;
 use App\Modules\Nucleo\Services\TenantContext;
 use App\Modules\Tpv\Services\CajaService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\Support\Bloqueos04e;
 use Tests\TestCase;
 
 class GastoControllerTest extends TestCase
@@ -48,7 +49,7 @@ class GastoControllerTest extends TestCase
     public function test_store_registra_un_gasto_de_la_sesion_abierta(): void
     {
         ['sucursal' => $sucursal, 'usuario' => $usuario] = $this->crearUsuarioConPermisos(['caja.abrir', 'gastos.crear']);
-        app(CajaService::class)->abrirCaja($sucursal->id, $usuario->id, 500);
+        app(CajaService::class)->abrirCajaConSucursal(Bloqueos04e::sucursal($sucursal->id), $usuario->id, 500);
         $this->actingAs($usuario);
 
         $this->postJson('/api/v1/gastos', ['descripcion' => 'Luz', 'monto' => 80])
@@ -70,7 +71,7 @@ class GastoControllerTest extends TestCase
     public function test_store_sin_permiso_devuelve_403(): void
     {
         ['sucursal' => $sucursal, 'usuario' => $usuario] = $this->crearUsuarioConPermisos(['caja.abrir']);
-        app(CajaService::class)->abrirCaja($sucursal->id, $usuario->id, 500);
+        app(CajaService::class)->abrirCajaConSucursal(Bloqueos04e::sucursal($sucursal->id), $usuario->id, 500);
         $this->actingAs($usuario);
 
         $this->postJson('/api/v1/gastos', ['descripcion' => 'Luz', 'monto' => 80])->assertForbidden();
@@ -79,7 +80,7 @@ class GastoControllerTest extends TestCase
     public function test_index_lista_los_gastos_de_la_sesion_indicada(): void
     {
         ['sucursal' => $sucursal, 'usuario' => $usuario] = $this->crearUsuarioConPermisos(['caja.abrir', 'gastos.ver', 'gastos.crear']);
-        $sesion = app(CajaService::class)->abrirCaja($sucursal->id, $usuario->id, 500);
+        $sesion = app(CajaService::class)->abrirCajaConSucursal(Bloqueos04e::sucursal($sucursal->id), $usuario->id, 500);
         $this->actingAs($usuario);
 
         $this->postJson('/api/v1/gastos', ['descripcion' => 'Luz', 'monto' => 80])->assertCreated();
@@ -93,7 +94,7 @@ class GastoControllerTest extends TestCase
     public function test_index_sin_permiso_devuelve_403(): void
     {
         ['sucursal' => $sucursal, 'usuario' => $usuario] = $this->crearUsuarioConPermisos(['caja.abrir']);
-        $sesion = app(CajaService::class)->abrirCaja($sucursal->id, $usuario->id, 500);
+        $sesion = app(CajaService::class)->abrirCajaConSucursal(Bloqueos04e::sucursal($sucursal->id), $usuario->id, 500);
         $this->actingAs($usuario);
 
         $this->getJson("/api/v1/gastos?caja_sesion_id={$sesion->id}")->assertForbidden();
