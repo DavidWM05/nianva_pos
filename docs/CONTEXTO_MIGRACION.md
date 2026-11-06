@@ -1491,6 +1491,26 @@ repo.
     - 13 tests nuevos, 6 de concurrencia (cada uno visto fallando con su mutación) y una
       regresión del canal de eventos del helper (lectura con `LOCK_SH`);
     - `PENDIENTES`: 16 → 14 archivos, 50 → 46 usos. Línea base de PHPStan: 1365 → 1353.
+  - **04d, extensiones que mueven saldo:**
+    - **16 Actions** en cuentas por cobrar y por pagar (abono, pago, anular, crear desde
+      venta o compra), gift cards (emitir, recargar, cargar, cancelar), notas de crédito
+      (crear desde devolución, aplicar) y ventas a plazos (crear plan, generar cuotas,
+      pagar y marcar cuota). Las firmas viejas de esos Services se retiran;
+    - **orden de bloqueo:** caja → cuenta, tarjeta, nota o plan → stocks, en todas.
+      `RegistrarVenta` bloquea la gift card y la nota de crédito antes de leer su saldo y
+      calcular el pago (antes lo leía sin bloqueo);
+    - **L-04 cerrado:** dos abonos simultáneos de 75 sobre un saldo de 100: uno se
+      rechaza, el saldo queda en 25 y nunca es negativo. Es uno de 7 casos de concurrencia
+      nuevos, cada uno visto fallando con su mutación. CxC, CxP y recargas compiten desde
+      sucursales distintas, para que la caja compartida no oculte la carrera;
+    - **bug corregido con su test primero:** al pagar la última cuota, un `update([])`
+      generaba SQL inválido;
+    - **tests existentes adaptados (autorizado):** 33 métodos de `CuentasCobrarServiceTest`,
+      `CuentasPagarServiceTest`, `GiftCardServiceTest` y `NotaCreditoServiceTest`, y el
+      helper `PreparaNegocio::crearPlan`. Solo cambian la llamada y su preparación, con
+      `Bloqueos04d`: ninguna aserción quitada y el mismo número de tests;
+    - `PENDIENTES`: 14 → 8 archivos, 46 → 22 usos. Línea base de PHPStan: 1353 → 1345. Los
+      temporales de Codex quedan fuera del repo (`C:\Desarrollos\tmp-codex`).
 - **Git:** `master` está protegido (ruleset `proteger-master`): todo entra por PR con los tres
   checks en verde.
 
