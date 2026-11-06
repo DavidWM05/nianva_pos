@@ -1,8 +1,9 @@
-import { ChangeDetectionStrategy, Component, computed, inject, input, output, signal } from '@angular/core';
-import { TableLazyLoadEvent, SortableColumn, SortIcon, Table } from 'primeng/table';
-import { Paginator, PaginatorState } from 'primeng/paginator';
+import { ChangeDetectionStrategy, Component, ViewEncapsulation, computed, inject, input, output, signal } from '@angular/core';
+import { MatPaginatorIntl, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
+import { MatSortModule, Sort } from '@angular/material/sort';
+import { MatTableModule } from '@angular/material/table';
 import { PantallaService } from '@nianva/ui-layout';
-import type { AccionEmitida } from '@nianva/ui-actions';
+import type { AccionEmitida, AccionFila } from '@nianva/ui-actions';
 import { BadgeComponent, SkeletonComponent, conUmbral } from '@nianva/ui-feedback';
 import { CantidadPipe, DineroPipe, FechaHoraPipe, FechaPipe, PorcentajePipe } from '@nianva/ui-format';
 import { EmptyComponent } from './empty.component';
@@ -10,10 +11,12 @@ import {
   CambioListado,
   ColumnaAcciones,
   ColumnaCantidad,
+  ColumnaEstado,
   ColumnaListado,
   ColumnaPrincipal,
   MetaListado,
 } from './listado.types';
+import { PaginadorEs } from './paginador-es';
 import { RowActionsComponent } from '@nianva/ui-actions';
 
 let siguienteIdOrden = 0;
@@ -22,10 +25,9 @@ let siguienteIdOrden = 0;
   selector: 'ui-tabla',
   standalone: true,
   imports: [
-    Table,
-    Paginator,
-    SortableColumn,
-    SortIcon,
+    MatPaginatorModule,
+    MatSortModule,
+    MatTableModule,
     BadgeComponent,
     SkeletonComponent,
     EmptyComponent,
@@ -36,8 +38,10 @@ let siguienteIdOrden = 0;
     FechaPipe,
     FechaHoraPipe,
   ],
+  providers: [{ provide: MatPaginatorIntl, useClass: PaginadorEs }],
   templateUrl: './tabla.component.html',
   styleUrl: './tabla.component.scss',
+  encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TablaComponent<T extends object> {
@@ -63,40 +67,42 @@ export class TablaComponent<T extends object> {
       .map((columna) => ({ campo: String(columna.campo), encabezado: columna.encabezado ?? '' })),
   );
   protected readonly columnasTabla = computed(() =>
-    this.columnas().map((columna) => ({
+    this.columnas().map((columna, indice) => ({
       field: columna.campo === undefined ? 'acciones' : String(columna.campo),
       header: columna.encabezado ?? '',
       sortable: columna.ordenable ?? false,
+      tipo: columna.tipo,
+      columna,
+      indice,
     })),
   );
+  protected readonly camposColumnas = computed(() => this.columnasTabla().map((columna) => columna.field));
   protected readonly indicadorCarga = conUmbral(this.cargando);
   protected readonly primeraCarga = computed(() => this.cargando() && this.filas().length === 0);
   protected readonly filasSkeleton = computed(() =>
     Array.from({ length: Math.max(1, Math.min(100, this.meta()?.rows ?? 10)) }, (_, indice) => indice),
   );
   protected readonly rowsActuales = computed(() => Math.max(1, Math.min(100, this.meta()?.rows ?? 25)));
-  protected readonly first = computed(() => (Math.max(1, this.meta()?.page ?? 1) - 1) * this.rowsActuales());
+  protected readonly paginaActual = computed(() => Math.max(0, (Math.max(1, this.meta()?.page ?? 1) - 1)));
 
-  protected onLazyLoad(evento: TableLazyLoadEvent): void {
-    const rows = Math.max(1, Math.min(100, evento.rows ?? this.rowsActuales()));
-    const first = evento.first ?? 0;
-    const orden = evento.sortOrder === 1 ? 'asc' : evento.sortOrder === -1 ? 'desc' : null;
+  protected onSort(evento: Sort): void {
+    const campo = evento.active || null;
+    const direccion = evento.direction || null;
 
-    this.ordenCampo.set((evento.sortField as string | undefined) ?? null);
-    this.ordenDireccion.set(orden ?? 'asc');
-
+    this.ordenCampo.set(campo);
+    this.ordenDireccion.set(direccion ?? 'asc');
     this.cambio.emit({
-      page: Math.floor(first / rows) + 1,
-      rows,
-      sortField: (evento.sortField as string | undefined) ?? null,
-      sortOrder: orden,
+      page: 1,
+      rows: this.rowsActuales(),
+      sortField: campo,
+      sortOrder: direccion,
     });
   }
 
-  protected onPagina(evento: PaginatorState): void {
+  protected onPagina(evento: PageEvent): void {
     this.cambio.emit({
-      page: (evento.page ?? 0) + 1,
-      rows: evento.rows ?? this.rowsActuales(),
+      page: evento.pageIndex + 1,
+      rows: evento.pageSize,
       sortField: this.ordenCampo(),
       sortOrder: this.ordenCampo() === null ? null : this.ordenDireccion(),
     });
@@ -114,7 +120,7 @@ export class TablaComponent<T extends object> {
     this.emitirCambioDeOrden();
   }
 
-  // Igual que p-table al ordenar: un orden nuevo vuelve a la primera pagina.
+  // Un orden nuevo vuelve a la primera pagina.
   private emitirCambioDeOrden(): void {
     this.cambio.emit({
       page: 1,
@@ -128,12 +134,20 @@ export class TablaComponent<T extends object> {
     this.accion.emit({ fila, accion });
   }
 
+  protected campoDe(columna: ColumnaListado<T>): keyof T {
+    return columna.campo as keyof T;
+  }
+
   protected texto(fila: T, campo: keyof T): unknown {
     return fila[campo];
   }
 
-  protected apoyo(columna: ColumnaPrincipal<T>, fila: T): unknown {
-    return columna.apoyo ? fila[columna.apoyo] : null;
+  protected apoyoDe(columna: ColumnaListado<T>, fila: T): unknown {
+    if (columna.tipo !== 'principal' || columna.apoyo === undefined) {
+      return null;
+    }
+
+    return fila[columna.apoyo];
   }
 
   protected valor(fila: T, campo: keyof T): unknown {
@@ -142,6 +156,14 @@ export class TablaComponent<T extends object> {
 
   protected esNegativo(fila: T, campo: keyof T): boolean {
     return Number(fila[campo]) < 0;
+  }
+
+  protected unidadDe(columna: ColumnaListado<T>, fila: T): string {
+    if (columna.tipo !== 'cantidad') {
+      return '';
+    }
+
+    return this.unidad(columna as ColumnaCantidad<T>, fila);
   }
 
   protected unidad(columna: ColumnaCantidad<T>, fila: T): string {
@@ -158,6 +180,10 @@ export class TablaComponent<T extends object> {
     return String(unidad);
   }
 
+  protected accionesDe(columna: ColumnaListado<T>, fila: T): readonly AccionFila[] {
+    return columna.tipo === 'acciones' ? columna.acciones(fila) : [];
+  }
+
   protected esInactiva(fila: T): boolean {
     return this.filaInactiva()?.(fila) ?? false;
   }
@@ -166,8 +192,12 @@ export class TablaComponent<T extends object> {
     return columna.acciones(fila);
   }
 
-  protected valorEstado(fila: T, columna: { campo: keyof T }): string {
-    return String(fila[columna.campo] ?? '');
+  protected entidadDe(columna: ColumnaListado<T>): ColumnaEstado<T>['entidad'] {
+    return (columna as ColumnaEstado<T>).entidad;
+  }
+
+  protected valorEstado(fila: T, columna: ColumnaListado<T>): string {
+    return String(fila[this.campoDe(columna)] ?? '');
   }
 
   protected hayTotal(columna: ColumnaListado<T>): boolean {
@@ -193,5 +223,13 @@ export class TablaComponent<T extends object> {
     }
 
     return typeof columna.unidad === 'string' ? columna.unidad : '';
+  }
+
+  protected esColumnaPrincipal(columna: ColumnaListado<T>): columna is ColumnaPrincipal<T> {
+    return columna.tipo === 'principal';
+  }
+
+  protected esColumnaAcciones(columna: ColumnaListado<T>): columna is ColumnaAcciones<T> {
+    return columna.tipo === 'acciones';
   }
 }

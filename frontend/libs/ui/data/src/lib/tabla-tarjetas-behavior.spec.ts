@@ -1,7 +1,6 @@
 import { signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
-import { providePrimeNG } from 'primeng/config';
 import { PantallaService } from '@nianva/ui-layout';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -36,9 +35,7 @@ describe('TablaComponent en tarjetas', () => {
     await TestBed.configureTestingModule({
       imports: [TablaComponent],
       providers: [
-        provideAnimationsAsync(),
-        providePrimeNG(),
-        { provide: PantallaService, useValue: { angosta: angosta.asReadonly() } },
+        provideAnimationsAsync(),         { provide: PantallaService, useValue: { angosta: angosta.asReadonly() } },
       ],
     }).compileComponents();
   });
@@ -94,6 +91,6 @@ describe('TablaComponent en tarjetas', () => {
     const fixture = render();
 
     expect(fixture.nativeElement.querySelector('.ui-tabla__tarjeta')).toBeNull();
-    expect(fixture.nativeElement.querySelector('p-table')).not.toBeNull();
+    expect(fixture.nativeElement.querySelector('table')).not.toBeNull();
   });
 });

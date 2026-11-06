@@ -1,0 +1,14 @@
+/*
+ * PrimeNG inyectaba `.pi { font-size: var(--p-icon-size) }` y fijaba todos los
+ * primeicons en 14 px. Al retirar PrimeNG del catalogo, Material aplicaba su tamano
+ * por defecto (por ejemplo, 24 px en mat-nav-list). Esta hoja conserva el tamano
+ * base de los tokens para los iconos en las dos apps.
+ */
+.pi {
+  font-size: var(--nv-font-size-base);
+}
+
+/* Los estilos de componente de Material se inyectan después del CSS global. */
+.mat-mdc-list-item-icon.pi {
+  font-size: var(--nv-font-size-base);
+}

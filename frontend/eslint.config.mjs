@@ -118,6 +118,32 @@ export default [
     },
   },
   {
+    files: ['libs/ui/**/*.ts'],
+    ignores: ['libs/ui/tokens/src/lib/primeng-preset.ts'],
+    rules: {
+      'no-restricted-imports': [
+        'error',
+        {
+          paths: [
+            {
+              name: '@angular/common/http',
+              importNames: ['HttpClient'],
+              message:
+                'Un componente no llama a la API: mueve la llamada a un servicio de dominio.',
+            },
+          ],
+          patterns: ['primeng', 'primeng/*', '@primeuix/themes', '@primeuix/themes/*'],
+        },
+      ],
+    },
+  },
+  {
+    files: ['libs/ui/tokens/src/lib/primeng-preset.ts'],
+    rules: {
+      'no-restricted-imports': ['error', { patterns: ['primeng', 'primeng/*'] }],
+    },
+  },
+  {
     // API-08: las respuestas de urlApi se tipan con el contrato generado. Los servicios que
     // aun usan interfaces escritas a mano estan en contrato-pendientes.json y salen con la
     // migracion de pantallas; la lista solo baja.

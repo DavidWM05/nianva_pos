@@ -1,6 +1,5 @@
 import { TestBed } from '@angular/core/testing';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
-import { providePrimeNG } from 'primeng/config';
 import { beforeEach, describe, expect, it } from 'vitest';
 
 import { ColumnaListado, MetaListado } from './listado.types';
@@ -37,7 +36,7 @@ describe('TablaComponent totales', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [TablaComponent],
-      providers: [provideAnimationsAsync(), providePrimeNG()],
+      providers: [provideAnimationsAsync()],
     }).compileComponents();
   });
 
@@ -63,9 +62,10 @@ describe('TablaComponent totales', () => {
     expect(pie?.textContent).toContain('15%');
   });
 
-  it('no pinta pie cuando no recibe totales', () => {
+  it('no pinta fila de pie cuando no recibe totales', () => {
     const fixture = render(null);
+    const pie = fixture.nativeElement.querySelector('tfoot') as HTMLElement | null;
 
-    expect(fixture.nativeElement.querySelector('tfoot')).toBeNull();
+    expect(pie?.querySelector('tr') ?? null).toBeNull();
   });
 });

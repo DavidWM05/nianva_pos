@@ -47,7 +47,7 @@ const query = parametrosListado({ page: 1, rows: 25, sortField: 'folio', sortOrd
 
 ## Componentes
 
-- `ui-tabla`: `p-table` lazy con paginacion 25/50/100, orden server-side,
+- `ui-tabla`: `mat-table` lazy con `mat-paginator` 25/50/100, orden server-side con `matSort`,
   skeleton en la primera carga, `ui-empty` sin resultados y fila inactiva.
   Emite `cambio` (`CambioListado`) y `accion` (`{ fila, accion }`). No abre
   detalle al pulsar la fila: el detalle se declara como accion `ver`.

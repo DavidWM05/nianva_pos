@@ -1,7 +1,5 @@
 import { TestBed } from '@angular/core/testing';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
-import { providePrimeNG } from 'primeng/config';
-import type { TableLazyLoadEvent } from 'primeng/table';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { TablaComponent } from './tabla.component';
@@ -75,7 +73,7 @@ describe('TablaComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [TablaComponent],
-      providers: [provideAnimationsAsync(), providePrimeNG()],
+      providers: [provideAnimationsAsync()],
     }).compileComponents();
   });
 
@@ -171,23 +169,17 @@ describe('TablaComponent', () => {
     expect(fixture.nativeElement.textContent ?? '').toContain('Sin ventas.');
   });
 
-  it('mapea el evento lazy a CambioListado', () => {
+  it('mapea el orden a CambioListado y vuelve a la primera pagina', () => {
     const fixture = render();
-    const emitir = vi.fn();
-    fixture.componentInstance.cambio.subscribe(emitir);
+    const cambios: Array<{ page: number; rows: number; sortField: string | null; sortOrder: string | null }> = [];
+    fixture.componentInstance.cambio.subscribe((cambio) => cambios.push(cambio));
+    const encabezado = [...(fixture.nativeElement as HTMLElement).querySelectorAll('th')].find((th) =>
+      th.textContent?.includes('Nombre'),
+    ) as HTMLTableCellElement;
 
-    (fixture.componentInstance as unknown as { onLazyLoad(evento: TableLazyLoadEvent): void }).onLazyLoad({
-      first: 50,
-      rows: 25,
-      sortField: 'nombre',
-      sortOrder: -1,
-    });
+    encabezado.click();
+    fixture.detectChanges();
 
-    expect(emitir).toHaveBeenCalledWith({
-      page: 3,
-      rows: 25,
-      sortField: 'nombre',
-      sortOrder: 'desc',
-    });
+    expect(cambios.at(-1)).toEqual({ page: 1, rows: 25, sortField: 'nombre', sortOrder: 'asc' });
   });
 });

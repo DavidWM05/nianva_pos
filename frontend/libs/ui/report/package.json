@@ -10,7 +10,6 @@
     "@nianva/ui-feedback": "*",
     "@nianva/ui-forms": "*",
     "@nianva/ui-layout": "*",
-    "primeng": "^22.0.0",
     "vitest": "^4.0.8"
   },
   "sideEffects": false

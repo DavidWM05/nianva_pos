@@ -1,6 +1,5 @@
 import { TestBed } from '@angular/core/testing';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
-import { providePrimeNG } from 'primeng/config';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { CambioReporte, fechaComoIso } from '../reporte.types';
@@ -10,7 +9,7 @@ describe('ReportFiltrosComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [ReportFiltrosComponent],
-      providers: [provideAnimationsAsync(), providePrimeNG()],
+      providers: [provideAnimationsAsync()],
     }).compileComponents();
   });
 

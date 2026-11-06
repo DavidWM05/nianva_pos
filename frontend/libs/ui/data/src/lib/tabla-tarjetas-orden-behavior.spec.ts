@@ -1,7 +1,6 @@
 import { signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
-import { providePrimeNG } from 'primeng/config';
 import { PantallaService } from '@nianva/ui-layout';
 import { beforeEach, describe, expect, it } from 'vitest';
 
@@ -25,9 +24,7 @@ describe('TablaComponent en tarjetas: orden', () => {
     await TestBed.configureTestingModule({
       imports: [TablaComponent],
       providers: [
-        provideAnimationsAsync(),
-        providePrimeNG(),
-        { provide: PantallaService, useValue: { angosta: signal(true).asReadonly() } },
+        provideAnimationsAsync(),         { provide: PantallaService, useValue: { angosta: signal(true).asReadonly() } },
       ],
     }).compileComponents();
   });
