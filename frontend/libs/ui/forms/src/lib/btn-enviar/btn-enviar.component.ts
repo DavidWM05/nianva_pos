@@ -1,11 +1,14 @@
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
+import { MatButton } from '@angular/material/button';
 import { conUmbral } from '@nianva/ui-feedback';
 
 @Component({
   selector: 'ui-btn-enviar',
   standalone: true,
+  imports: [MatButton],
   template: `
     <button
+      matButton="filled"
       type="submit"
       class="ui-btn-enviar"
       [disabled]="enviando()"
@@ -13,7 +16,7 @@ import { conUmbral } from '@nianva/ui-feedback';
       (click)="alClick($event)"
     >
       @if (mostrarIndicador()) {
-        <i class="pi pi-spin pi-spinner ui-btn-enviar__indicador" aria-hidden="true"></i>
+        <i class="pi pi-spin pi-spinner ui-btn-enviar__indicador" matButtonIcon aria-hidden="true"></i>
       }
       <span>{{ etiqueta() }}</span>
     </button>

@@ -14,8 +14,8 @@ validación del servidor. Todos respetan el estado `disabled` del `FormControl`.
   </ui-campo>
 
   <ui-form-actions>
-    <button pButton type="button" label="Cancelar" severity="secondary"></button>
-    <button pButton type="submit" label="Guardar"></button>
+    <button matButton="outlined" type="button">Cancelar</button>
+    <button matButton="filled" type="submit">Guardar</button>
   </ui-form-actions>
 </form>
 ```
@@ -58,5 +58,5 @@ al menos uno. El error de servidor desaparece cuando el usuario edita el campo.
 - `ui-input-pin`: PIN de 4 a 6 dígitos con teclado físico y táctil, sin
   `<input type="password">`, emite `(completo)` al llegar a la longitud y
   expone `limpiar()`. No valida PIN triviales ni los hashea.
-- `ui-select-filtro`: `p-select` con placeholder vacío y la opción "Todas"
+- `ui-select-filtro`: `mat-select` dentro de `mat-form-field`, con la opción "Todas" y `ariaLabel` (por defecto "Filtro")
   equivalente a `null`.

@@ -1,3 +1,23 @@
-:host {
+// Sin encapsulacion (para alcanzar el interior de MatSelect): el selector del elemento
+// reemplaza a :host.
+ui-select-filtro {
   display: block;
+}
+
+// Mismo alto y texto que los inputs nativos de ui-forms (relleno --nv-spacing-2, borde de 1px
+// y --nv-font-size-base): con los 56 px de Material quedaba desalineado en la barra de filtros.
+// El contorno de Material se dibuja encima y no suma alto: el 1px del relleno es ese borde.
+.ui-select-filtro__campo {
+  width: 100%;
+  --mat-form-field-container-height: 0;
+  --mat-form-field-container-vertical-padding: calc(var(--nv-spacing-2) + 1px);
+  --mat-form-field-container-text-size: var(--nv-font-size-base);
+  --mat-form-field-container-text-line-height: normal;
+  --mat-select-trigger-text-size: var(--nv-font-size-base);
+  --mat-select-trigger-text-line-height: normal;
+}
+
+// La flecha de Material mide 24 px de alto y fijaba la altura del contenido.
+.ui-select-filtro__campo .mat-mdc-select-arrow-wrapper {
+  height: auto;
 }

@@ -16,6 +16,7 @@
       <ui-select-filtro
         [opciones]="opcionesSucursales()"
         [ngModel]="sucursalId()"
+        ariaLabel="Sucursal"
         (ngModelChange)="alCambiarSucursal($event)"
       />
     } @else {

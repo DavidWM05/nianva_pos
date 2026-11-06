@@ -1,14 +1,23 @@
-<p-select
-  [id]="idControl() ?? undefined"
-  [options]="opcionesConTodas()"
-  optionLabel="label"
-  optionValue="value"
-  placeholder=""
-  [ngModel]="valor()"
-  [disabled]="deshabilitado()"
-  [attr.aria-required]="ariaRequerido() ? 'true' : null"
-  [attr.aria-invalid]="ariaInvalido() ? 'true' : null"
-  [attr.aria-describedby]="descritoPor()"
-  (ngModelChange)="alCambiar($event)"
-  (onBlur)="tocar()"
-/>
+<mat-form-field class="ui-select-filtro__campo" appearance="outline" subscriptSizing="dynamic">
+  <!-- canSelectNullableOptions: sin el, MatSelect trata null como "sin valor" y "Todas" no se
+       muestra. aria-labelledby, aria-describedby y errorStateMatcher son entradas de MatSelect:
+       con [attr.*] el propio MatSelect los pisaba con su estado, que no ve el control de afuera. -->
+  <mat-select
+    [id]="idControl() ?? ''"
+    [aria-label]="etiquetaId() ? '' : (ariaLabel() ?? '')"
+    [aria-labelledby]="etiquetaId() ?? ''"
+    [aria-describedby]="descritoPor() ?? ''"
+    [errorStateMatcher]="errorCampo"
+    [canSelectNullableOptions]="true"
+    placeholder=""
+    [ngModel]="valor()"
+    [disabled]="deshabilitado()"
+    [required]="ariaRequerido()"
+    (ngModelChange)="alCambiar($event)"
+    (openedChange)="alCerrar($event)"
+  >
+    @for (opcion of opcionesConTodas(); track opcion.value) {
+      <mat-option [value]="opcion.value">{{ opcion.label }}</mat-option>
+    }
+  </mat-select>
+</mat-form-field>

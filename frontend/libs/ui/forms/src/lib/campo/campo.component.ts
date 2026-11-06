@@ -35,6 +35,7 @@ export class CampoComponent implements AfterContentInit, OnDestroy, UiCampoConte
   readonly invalido = signal(false);
   readonly errorId = signal<string | null>(null);
   readonly controlId = signal<string | null>(null);
+  readonly etiquetaId = signal<string | null>(null);
   readonly mensaje = signal<string | null>(null);
 
   @ContentChild(NgControl, { descendants: true }) private controlNg?: NgControl;
@@ -54,6 +55,7 @@ export class CampoComponent implements AfterContentInit, OnDestroy, UiCampoConte
 
     this.controlId.set(`ui-campo-control-${sufijo}`);
     this.errorId.set(`ui-campo-error-${sufijo}`);
+    this.etiquetaId.set(`ui-campo-etiqueta-${sufijo}`);
     this.suscripciones.push(control.events.subscribe(() => this.actualizar(control)));
     this.suscripciones.push(
       control.valueChanges.subscribe(() => {
