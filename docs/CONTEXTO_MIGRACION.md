@@ -1433,6 +1433,25 @@ repo.
       fallando con su mutación. La línea base de PHPStan baja de 1375 a 1365, y 10
       archivos salen de `sin-strict-types.txt`;
     - el reporte de Codex (`REPORTE_ARQ04b.md`) no se versiona.
+  - **04c, apartados, devoluciones y gastos:**
+    - **Actions:** `CrearApartado` (stocks), `RegistrarAbonoApartado` (apartado, que se
+      vuelve a leer), `LiquidarApartado` (caja, apartado y stocks), `CancelarApartado`
+      (apartado y stocks), `RegistrarDevolucion` (caja, venta origen y stocks) y
+      `RegistrarGasto` (caja activa). Los controllers de apartados y gastos llaman a las
+      Actions;
+    - **envoltorios retirados:** `VentaService::anularVenta`, `CajaService::cerrarCaja` y
+      las firmas viejas de devolución y gasto. Los 4 de Apartados quedan `@deprecated`
+      solo para sus tests, y se retiran en la 04e. `registrarVenta` y
+      `registrarMovimiento` quedan para Cotizaciones y Producción;
+    - **tests existentes adaptados (autorizado):** solo la llamada y su preparación, a la
+      firma nueva del Service, con los modelos bloqueados que prepara
+      `tests/Support/Bloqueos04c.php`. Se revisaron `VentaServiceTest` (2),
+      `CajaControllerTest` (2), `CerrarCajaTest` (1), `DevolucionServiceTest` (8) y el
+      helper de `NotaCreditoServiceTest`: ninguna aserción quitada y el mismo número de
+      tests;
+    - 13 tests nuevos, 6 de concurrencia (cada uno visto fallando con su mutación) y una
+      regresión del canal de eventos del helper (lectura con `LOCK_SH`);
+    - `PENDIENTES`: 16 → 14 archivos, 50 → 46 usos. Línea base de PHPStan: 1365 → 1353.
 - **Git:** `master` está protegido (ruleset `proteger-master`): todo entra por PR con los tres
   checks en verde.
 
