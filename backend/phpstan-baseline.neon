@@ -3793,36 +3793,6 @@ parameters:
 			path: app/Modules/Inventario/Services/InventarioService.php
 
 		-
-			message: '#^Call to function in_array\(\) with arguments ''ajuste''\|''apartado''\|''compra''\|''devolucion''\|''merma''\|''venta'', array\{''venta'', ''compra'', ''devolucion'', ''merma'', ''ajuste'', ''apartado''\} and true will always evaluate to true\.$#'
-			identifier: function.alreadyNarrowedType
-			count: 1
-			path: app/Modules/Inventario/Services/InventarioService.php
-
-		-
-			message: '#^Call to function in_array\(\) with arguments ''entrada''\|''salida'', array\{''entrada'', ''salida''\} and true will always evaluate to true\.$#'
-			identifier: function.alreadyNarrowedType
-			count: 1
-			path: app/Modules/Inventario/Services/InventarioService.php
-
-		-
-			message: '#^Cannot access property \$stock_actual on Illuminate\\Database\\Eloquent\\Model\|null\.$#'
-			identifier: property.nonObject
-			count: 4
-			path: app/Modules/Inventario/Services/InventarioService.php
-
-		-
-			message: '#^Cannot call method update\(\) on Illuminate\\Database\\Eloquent\\Model\|null\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: app/Modules/Inventario/Services/InventarioService.php
-
-		-
-			message: '#^Method App\\Modules\\Inventario\\Services\\InventarioService\:\:registrarMovimiento\(\) should return App\\Modules\\Inventario\\Models\\Kardex but returns Illuminate\\Database\\Eloquent\\Model\.$#'
-			identifier: return.type
-			count: 1
-			path: app/Modules/Inventario/Services/InventarioService.php
-
-		-
 			message: '#^Call to an undefined method Illuminate\\Database\\Schema\\ForeignKeyDefinition\:\:comment\(\)\.$#'
 			identifier: method.notFound
 			count: 1
@@ -6943,12 +6913,6 @@ parameters:
 			path: app/Modules/Tpv/Services/CajaService.php
 
 		-
-			message: '#^Method App\\Modules\\Tpv\\Services\\CajaService\:\:abrirCaja\(\) should return App\\Modules\\Tpv\\Models\\CajaSesion but returns Illuminate\\Database\\Eloquent\\Model\.$#'
-			identifier: return.type
-			count: 1
-			path: app/Modules/Tpv/Services/CajaService.php
-
-		-
 			message: '#^Access to an undefined property App\\Modules\\Tpv\\Models\\Venta\:\:\$estado\.$#'
 			identifier: property.notFound
 			count: 1
@@ -6975,7 +6939,7 @@ parameters:
 		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
 			identifier: property.notFound
-			count: 2
+			count: 1
 			path: app/Modules/Tpv/Services/VentaService.php
 
 		-

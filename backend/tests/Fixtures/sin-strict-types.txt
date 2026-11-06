@@ -1,8 +1,6 @@
-app/Aplicacion/Caja/CerrarCaja.php
 app/Aplicacion/Caja/ObtenerCajaActual.php
 app/Aplicacion/Devoluciones/RegistrarDevolucion.php
 app/Aplicacion/Inicio/ObtenerResumenInicio.php
-app/Aplicacion/Ventas/RegistrarVenta.php
 app/Http/Controllers/Controller.php
 app/Modules/Apartados/Database/Factories/ApartadoAbonoFactory.php
 app/Modules/Apartados/Database/Factories/ApartadoAbonoPagoFactory.php
@@ -253,7 +251,6 @@ app/Modules/Inventario/Dtos/ProductoVarianteDto.php
 app/Modules/Inventario/Dtos/ProveedorDto.php
 app/Modules/Inventario/Exceptions/StockInsuficienteException.php
 app/Modules/Inventario/Http/Controllers/CategoriaController.php
-app/Modules/Inventario/Http/Controllers/CompraController.php
 app/Modules/Inventario/Http/Controllers/DepartamentoController.php
 app/Modules/Inventario/Http/Controllers/KardexController.php
 app/Modules/Inventario/Http/Controllers/ProductoController.php
@@ -273,13 +270,10 @@ app/Modules/Inventario/Models/Categoria.php
 app/Modules/Inventario/Models/Compra.php
 app/Modules/Inventario/Models/CompraDetalle.php
 app/Modules/Inventario/Models/Departamento.php
-app/Modules/Inventario/Models/InventarioStock.php
-app/Modules/Inventario/Models/Kardex.php
 app/Modules/Inventario/Models/Producto.php
 app/Modules/Inventario/Models/ProductoVariante.php
 app/Modules/Inventario/Models/Proveedor.php
 app/Modules/Inventario/Providers/InventarioServiceProvider.php
-app/Modules/Inventario/Services/InventarioService.php
 app/Modules/Inventario/Support/ReglasVariante.php
 app/Modules/NotasCredito/Database/Factories/NotaCreditoFactory.php
 app/Modules/NotasCredito/Database/Factories/NotaCreditoUsoFactory.php
@@ -528,8 +522,6 @@ app/Modules/Tpv/Exceptions/CajaYaCerradaException.php
 app/Modules/Tpv/Exceptions/PagoNoCuadraException.php
 app/Modules/Tpv/Exceptions/VentaTotalNegativoException.php
 app/Modules/Tpv/Exceptions/VentaYaAnuladaException.php
-app/Modules/Tpv/Http/Controllers/CajaController.php
-app/Modules/Tpv/Http/Controllers/VentaController.php
 app/Modules/Tpv/Http/Requests/AbrirCajaRequest.php
 app/Modules/Tpv/Http/Requests/AnularVentaRequest.php
 app/Modules/Tpv/Http/Requests/CerrarCajaRequest.php
@@ -542,8 +534,6 @@ app/Modules/Tpv/Models/Venta.php
 app/Modules/Tpv/Models/VentaDetalle.php
 app/Modules/Tpv/Models/VentaPago.php
 app/Modules/Tpv/Providers/TpvServiceProvider.php
-app/Modules/Tpv/Services/CajaService.php
-app/Modules/Tpv/Services/VentaService.php
 app/Modules/Tpv/Support/ReglasCaja.php
 app/Modules/UnidadesMedida/Database/Factories/UnidadMedidaFactory.php
 app/Modules/UnidadesMedida/Database/Seeders/UnidadesMedidaSeeder.php

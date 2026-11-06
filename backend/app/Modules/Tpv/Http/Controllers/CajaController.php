@@ -1,7 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Modules\Tpv\Http\Controllers;
 
+use App\Aplicacion\Caja\AbrirCaja;
 use App\Aplicacion\Caja\CerrarCaja;
 use App\Aplicacion\Caja\ObtenerCajaActual;
 use App\Http\Controllers\Controller;
@@ -10,7 +13,6 @@ use App\Modules\Tpv\Http\Requests\AbrirCajaRequest;
 use App\Modules\Tpv\Http\Requests\CerrarCajaRequest;
 use App\Modules\Tpv\Http\Resources\CajaSesionResource;
 use App\Modules\Tpv\Models\CajaSesion;
-use App\Modules\Tpv\Services\CajaService;
 use Illuminate\Http\Request;
 
 /**
@@ -45,7 +47,7 @@ class CajaController extends Controller
         ]);
     }
 
-    public function abrir(AbrirCajaRequest $request, CajaService $cajaService)
+    public function abrir(AbrirCajaRequest $request, AbrirCaja $abrirCaja)
     {
         $usuario = $request->user();
 
@@ -53,9 +55,7 @@ class CajaController extends Controller
             abort(401);
         }
 
-        $dto = $request->toDto();
-        $sucursalId = (int) $usuario->getAttribute('sucursal_id');
-        $sesion = $cajaService->abrirCaja($sucursalId, $usuario->id, $dto->montoApertura);
+        $sesion = $abrirCaja->ejecutar($request->toDto(), $usuario);
 
         return (new CajaSesionResource($sesion))->response()->setStatusCode(201);
     }

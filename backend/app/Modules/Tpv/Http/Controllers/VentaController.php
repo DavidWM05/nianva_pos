@@ -1,7 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Modules\Tpv\Http\Controllers;
 
+use App\Aplicacion\Ventas\AnularVenta;
 use App\Aplicacion\Ventas\RegistrarVenta;
 use App\Http\Controllers\Controller;
 use App\Modules\Crm\Models\Cliente;
@@ -27,8 +30,8 @@ use Illuminate\Http\Request;
  * que reflejar en que modulo vive el controlador.
  *
  * store() delega la orquestacion entre modulos en
- * App\Aplicacion\Ventas\RegistrarVenta. anular()/cotizar() siguen llamando
- * a VentaService; los errores de negocio se mapean a JSON 422 en
+ * App\Aplicacion\Ventas\RegistrarVenta. anular() usa AnularVenta y cotizar()
+ * sigue llamando a VentaService; los errores de negocio se mapean a JSON 422 en
  * bootstrap/app.php.
  */
 class VentaController extends Controller
@@ -100,7 +103,7 @@ class VentaController extends Controller
         return (new VentaResource($venta))->response()->setStatusCode(201);
     }
 
-    public function anular(AnularVentaRequest $request, Venta $venta, VentaService $ventaService)
+    public function anular(AnularVentaRequest $request, Venta $venta, AnularVenta $anularVenta)
     {
         $usuario = $request->user();
 
@@ -108,7 +111,7 @@ class VentaController extends Controller
             abort(401);
         }
 
-        $venta = $ventaService->anularVenta($venta, $request->toDto()->motivo, $usuario);
+        $venta = $anularVenta->ejecutar($request->toDto(), $venta, $usuario);
         $venta->load(['cliente', 'pagos.metodoPago', 'detalles.variante.producto']);
 
         return new VentaResource($venta);

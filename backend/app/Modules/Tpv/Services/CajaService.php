@@ -1,36 +1,47 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Modules\Tpv\Services;
 
+use App\Modules\Nucleo\Models\Sucursal;
+use App\Modules\Nucleo\Scopes\TenantScope;
+use App\Modules\Nucleo\Scopes\TenantScopeViaRelacion;
 use App\Modules\Tpv\Exceptions\CajaYaAbiertaException;
 use App\Modules\Tpv\Exceptions\CajaYaCerradaException;
 use App\Modules\Tpv\Models\CajaSesion;
 use App\Modules\Tpv\Models\Venta;
 use App\Modules\Tpv\Models\VentaPago;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 
 class CajaService
 {
+    /** @deprecated Transición ARQ-04: retirar en 04e con los seeders y la preparación de tests. */
     public function abrirCaja(int $sucursalId, int $usuarioId, float $montoApertura): CajaSesion
     {
-        return DB::transaction(function () use ($sucursalId, $usuarioId, $montoApertura) {
-            $yaAbierta = CajaSesion::sinTenant()
-                ->where('sucursal_id', $sucursalId)
-                ->where('estado', 'abierta')
-                ->exists();
+        return $this->conModeloBloqueado(Sucursal::query()->withoutGlobalScope(TenantScope::class)->findOrFail($sucursalId), fn (Sucursal $sucursal) => $this->abrirCajaConSucursal($sucursal, $usuarioId, $montoApertura));
+    }
 
-            if ($yaAbierta) {
-                throw new CajaYaAbiertaException($sucursalId);
-            }
+    public function abrirCajaConSucursal(Sucursal $sucursal, int $usuarioId, float $montoApertura): CajaSesion
+    {
+        $this->exigirTransaccion();
+        $yaAbierta = CajaSesion::sinTenant()
+            ->where('sucursal_id', $sucursal->id)
+            ->where('estado', 'abierta')
+            ->exists();
 
-            return CajaSesion::sinTenant()->create([
-                'sucursal_id' => $sucursalId,
-                'usuario_id' => $usuarioId,
-                'monto_apertura' => $montoApertura,
-                'estado' => 'abierta',
-                'fecha_apertura' => now(),
-            ]);
-        });
+        if ($yaAbierta) {
+            throw new CajaYaAbiertaException($sucursal->id);
+        }
+
+        return CajaSesion::query()->withoutGlobalScope(TenantScopeViaRelacion::class)->create([
+            'sucursal_id' => $sucursal->id,
+            'usuario_id' => $usuarioId,
+            'monto_apertura' => $montoApertura,
+            'estado' => 'abierta',
+            'fecha_apertura' => now(),
+        ]);
     }
 
     /**
@@ -56,29 +67,59 @@ class CajaService
      * y vendes $50, el cajon deberia tener ~$550, no $50). Se corrige al
      * total_teorico del documento original de POS Ropa: apertura + ventas -
      * gastos. Ya no es solo "agregar gastos", es la formula completa.
+     *
+     * @deprecated Transición ARQ-04: retirar en 04c al adaptar los tests consumidores.
      */
     public function cerrarCaja(CajaSesion $cajaSesion, float $montoFisico, float $totalGastos = 0.0): CajaSesion
     {
+        return $this->conModeloBloqueado($cajaSesion, fn (CajaSesion $bloqueada) => $this->cerrarCajaConSesion($bloqueada, $montoFisico, $totalGastos));
+    }
+
+    public function cerrarCajaConSesion(CajaSesion $cajaSesion, float $montoFisico, float $totalGastos = 0.0): CajaSesion
+    {
+        $this->exigirTransaccion();
         if ($cajaSesion->estado === 'cerrada') {
             throw new CajaYaCerradaException($cajaSesion->id);
         }
 
-        return DB::transaction(function () use ($cajaSesion, $montoFisico, $totalGastos) {
-            $totalVentasSistema = $this->totalVentasSistema($cajaSesion);
+        $totalVentasSistema = $this->totalVentasSistema($cajaSesion);
 
-            $totalTeorico = round((float) $cajaSesion->monto_apertura + $totalVentasSistema - $totalGastos, 2);
-            $diferencia = round($montoFisico - $totalTeorico, 2);
+        $totalTeorico = round((float) $cajaSesion->monto_apertura + $totalVentasSistema - $totalGastos, 2);
+        $diferencia = round($montoFisico - $totalTeorico, 2);
 
-            $cajaSesion->update([
-                'monto_cierre' => $montoFisico,
-                'total_ventas_sistema' => $totalVentasSistema,
-                'diferencia' => $diferencia,
-                'fecha_cierre' => now(),
-                'estado' => 'cerrada',
-            ]);
+        $cajaSesion->update([
+            'monto_cierre' => $montoFisico,
+            'total_ventas_sistema' => $totalVentasSistema,
+            'diferencia' => $diferencia,
+            'fecha_cierre' => now(),
+            'estado' => 'cerrada',
+        ]);
 
-            return $cajaSesion->refresh();
+        return $cajaSesion->refresh();
+    }
+
+    /**
+     * @template TModel of \Illuminate\Database\Eloquent\Model
+     * @template TResult
+     *
+     * @param  TModel  $modelo
+     * @param  \Closure(TModel): TResult  $operacion
+     * @return TResult
+     */
+    private function conModeloBloqueado(Model $modelo, \Closure $operacion): mixed
+    {
+        return DB::transaction(function () use ($modelo, $operacion) {
+            $bloqueado = $modelo->newQuery()->whereKey($modelo->getKey())->lockForUpdate()->firstOrFail();
+
+            return $operacion($bloqueado);
         });
+    }
+
+    private function exigirTransaccion(): void
+    {
+        if (DB::transactionLevel() === 0) {
+            throw new \LogicException('CajaService requiere una transacción abierta por una Action.');
+        }
     }
 
     /**

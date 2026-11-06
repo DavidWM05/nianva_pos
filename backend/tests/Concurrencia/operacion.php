@@ -46,7 +46,8 @@ $usuario = Usuario::findOrFail($datos['usuario']);
 $emitir(['conexion' => (int) DB::selectOne('SELECT CONNECTION_ID() AS id')->id]);
 
 if (($argv[1] ?? '') !== 'venta') {
-    throw new InvalidArgumentException('Operación de concurrencia desconocida.');
+    require __DIR__.'/operaciones04b.php';
+    exit;
 }
 
 try {

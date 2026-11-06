@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Modules\Inventario\Models;
 
 use App\Modules\Inventario\Database\Factories\KardexFactory;
@@ -17,7 +19,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * tenant_id propio: aislamiento via BelongsToTenantViaRelacion consultando
  * sucursal.tenant_id.
  *
- * Solo se escribe desde InventarioService::registrarMovimiento().
+ * Solo se escribe desde InventarioService::registrarMovimientoConStock().
  */
 #[Fillable([
     'variante_id', 'sucursal_id', 'tipo', 'cantidad', 'motivo',
