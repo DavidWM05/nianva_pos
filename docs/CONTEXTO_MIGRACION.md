@@ -1350,6 +1350,40 @@ repo.
     - **PRO-01, autorizado por el responsable:** en `select-filtro.spec.ts` (49e) solo
       cambió el locator del periodo, del primer `input` a la caja del campo de Material.
       Mismo nombre, mismas aserciones y la misma tolerancia.
+- **49g · `ui/data` y cierre de PrimeNG en `libs/ui`:**
+  - `ui-tabla` pasa de `p-table`/`p-paginator` a `mat-table`, `matSort` y `mat-paginator`.
+    `PaginadorEs` (`MatPaginatorIntl`) está en español;
+  - ningún archivo de `libs/ui` importa `primeng`: ESLint lo prohíbe en todo `libs/ui/**`,
+    specs incluidos. `primeng` sale de los `peerDependencies` de `ui-data` y `ui-report`, y
+    `providePrimeNG()` de los specs de `ui-report`;
+  - **excepción documentada:** `libs/ui/tokens/src/lib/primeng-preset.ts` (importa
+    `@primeuix/themes`, no `primeng`) se queda mientras `apps/pos` use PrimeNG en sus
+    pantallas viejas;
+  - **el catálogo ya no carga PrimeNG** (`providePrimeNG`, `MessageService`,
+    `ConfirmationService`), y su peso inicial baja a 498.50 kB. Desaparece el aviso
+    "Invalid PrimeUI License" del catálogo;
+  - **dependencia escondida encontrada al quitarlo:** PrimeNG inyectaba
+    `.pi { font-size: var(--p-icon-size) }` (14 px) y sin él fallaban 60 capturas por el
+    tamaño de los iconos. `libs/ui/tokens/src/styles/iconos.css` fija `.pi` a
+    `--nv-font-size-base` en las dos apps; lo cubre el e2e `iconos.spec.ts`, visto fallando.
+    Las 60 capturas pasan sin actualizarse;
+  - **retirados (PRO-01, autorizado; etiqueta `pro-01-autorizado`):** los 18 casos
+    acoplados a PrimeNG de `tabla.component.spec`, `tabla.tarjetas.spec`,
+    `tabla.tarjetas-orden.spec` y `tabla.totales.spec`. Quedan con el mismo nombre en los
+    `tabla-*-behavior.spec.ts`, salvo uno;
+  - **corregido en la revisión, con los tests primero:**
+    - "mapea el evento lazy a CambioListado" cubría la conversión de posición a página y
+      el orden descendente, y su reemplazo solo probaba el orden ascendente en la página 1.
+      `tabla-paginacion.spec.ts` (3 casos) prueba la frontera entre MatPaginator, que
+      cuenta desde 0, y `CambioListado`, que cuenta desde 1. Se verificó con dos
+      mutaciones;
+    - el paginador había perdido los botones de primera y última página
+      (`showFirstLastButtons`), y matSort describía cada encabezado como "Sort", en
+      inglés. Ahora dice "Ordenar por <columna>" (`tabla-controles.spec.ts`, 2 casos);
+    - la flecha de las columnas ordenables solo aparecía al pasar el mouse; ahora se ve
+      siempre, atenuada mientras la columna no está ordenada (e2e `tabla-orden.spec.ts`).
+      Para alcanzarla, `ui-tabla` va sin encapsulación; sus clases ya llevaban el prefijo
+      `ui-tabla__`.
 - **Posibles mejoras (roadmap):**
   - **capturas de Linux sin pasar por CI (Docker):** hoy cada PR con cambio visual falla una
     vez en "Catálogo visual", se baja el artifact y se versionan las capturas, porque en el
