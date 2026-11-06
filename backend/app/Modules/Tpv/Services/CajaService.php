@@ -67,14 +67,7 @@ class CajaService
      * y vendes $50, el cajon deberia tener ~$550, no $50). Se corrige al
      * total_teorico del documento original de POS Ropa: apertura + ventas -
      * gastos. Ya no es solo "agregar gastos", es la formula completa.
-     *
-     * @deprecated Transición ARQ-04: retirar en 04c al adaptar los tests consumidores.
      */
-    public function cerrarCaja(CajaSesion $cajaSesion, float $montoFisico, float $totalGastos = 0.0): CajaSesion
-    {
-        return $this->conModeloBloqueado($cajaSesion, fn (CajaSesion $bloqueada) => $this->cerrarCajaConSesion($bloqueada, $montoFisico, $totalGastos));
-    }
-
     public function cerrarCajaConSesion(CajaSesion $cajaSesion, float $montoFisico, float $totalGastos = 0.0): CajaSesion
     {
         $this->exigirTransaccion();
@@ -124,7 +117,7 @@ class CajaService
 
     /**
      * Vista en vivo de "ventas de la sesion, total acumulado" mientras la
-     * caja sigue abierta -- misma formula/exclusiones que cerrarCaja()
+     * caja sigue abierta -- misma formula/exclusiones que cerrarCajaConSesion()
      * (sin venta_sombra, sin anuladas), pero sin escribir nada. La usa la
      * pantalla de caja para mostrar el estado actual antes del corte.
      *

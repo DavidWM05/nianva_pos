@@ -24,7 +24,6 @@ use App\Modules\Tpv\Models\VentaDetalle;
 use App\Modules\Tpv\Models\VentaPago;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\DB;
 use InvalidArgumentException;
 
@@ -183,23 +182,8 @@ class VentaService
      * es una venta nueva) y marca la venta como anulada. No borra la venta
      * ni sus lineas.
      *
-     * @deprecated Transición ARQ-04: retirar en 04c al adaptar los tests consumidores.
+     * @param  array<int, InventarioStock>  $stocks
      */
-    public function anularVenta(Venta $venta, string $motivo, Usuario $usuario): Venta
-    {
-        return $this->enTransicion(function () use ($venta, $motivo, $usuario) {
-            $this->bloquearTransicion(CajaSesion::query()->withoutGlobalScope(TenantScopeViaRelacion::class)->whereKey($venta->getAttribute('caja_sesion_id')));
-            $bloqueada = $this->bloquearTransicion(Venta::query()->whereKey($venta->id));
-            if ($bloqueada === null) {
-                throw (new ModelNotFoundException)->setModel(Venta::class, [$venta->id]);
-            }
-            $stocks = $this->inventarioService->stocksParaTransicion(array_values(array_map(static fn ($id): int => (int) $id, $bloqueada->detalles->pluck('variante_id')->all())), $bloqueada->sucursal_id);
-
-            return $this->anularVentaConStocks($bloqueada, $motivo, $usuario, $stocks);
-        });
-    }
-
-    /** @param array<int, InventarioStock> $stocks */
     public function anularVentaConStocks(Venta $venta, string $motivo, Usuario $usuario, array $stocks): Venta
     {
         $this->exigirTransaccion();

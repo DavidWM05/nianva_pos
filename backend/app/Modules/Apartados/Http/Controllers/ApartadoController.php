@@ -1,16 +1,20 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Modules\Apartados\Http\Controllers;
 
+use App\Aplicacion\Apartados\CancelarApartado;
+use App\Aplicacion\Apartados\CrearApartado;
+use App\Aplicacion\Apartados\LiquidarApartado;
+use App\Aplicacion\Apartados\RegistrarAbonoApartado;
 use App\Http\Controllers\Controller;
-use App\Modules\Apartados\Dtos\LineaApartadoDto;
-use App\Modules\Apartados\Dtos\PagoApartadoDto;
+use App\Modules\Apartados\Dtos\LiquidarApartadoDto;
 use App\Modules\Apartados\Http\Requests\CancelarApartadoRequest;
 use App\Modules\Apartados\Http\Requests\CrearApartadoRequest;
 use App\Modules\Apartados\Http\Requests\RegistrarAbonoRequest;
 use App\Modules\Apartados\Http\Resources\ApartadoResource;
 use App\Modules\Apartados\Models\Apartado;
-use App\Modules\Apartados\Services\ApartadoService;
 use Illuminate\Http\Request;
 
 /**
@@ -71,7 +75,7 @@ class ApartadoController extends Controller
         ]);
     }
 
-    public function store(CrearApartadoRequest $request, ApartadoService $apartadoService)
+    public function store(CrearApartadoRequest $request, CrearApartado $crearApartado)
     {
         $usuario = $request->user();
 
@@ -79,33 +83,14 @@ class ApartadoController extends Controller
             abort(401);
         }
 
-        $dto = $request->toDto();
-        $items = array_map(
-            fn (LineaApartadoDto $item) => [
-                'variante_id' => $item->varianteId,
-                'cantidad' => $item->cantidad,
-            ],
-            $dto->items,
-        );
-
-        $apartado = $apartadoService->crearApartado(
-            [
-                'tenant_id' => (int) $usuario->getAttribute('tenant_id'),
-                'sucursal_id' => (int) $usuario->getAttribute('sucursal_id'),
-                'cliente_id' => $dto->clienteId,
-                'usuario_id' => $usuario->id,
-                'fecha_vencimiento' => $dto->fechaVencimiento,
-                'notas' => $dto->notas,
-            ],
-            $items,
-        );
+        $apartado = $crearApartado->ejecutar($request->toDto(), $usuario);
 
         $apartado->load(['cliente', 'detalles.variante.producto']);
 
         return (new ApartadoResource($apartado))->response()->setStatusCode(201);
     }
 
-    public function registrarAbono(RegistrarAbonoRequest $request, Apartado $apartado, ApartadoService $apartadoService)
+    public function registrarAbono(RegistrarAbonoRequest $request, Apartado $apartado, RegistrarAbonoApartado $registrarAbonoApartado)
     {
         $usuario = $request->user();
 
@@ -113,34 +98,20 @@ class ApartadoController extends Controller
             abort(401);
         }
 
-        $dto = $request->toDto();
-        $pagos = array_map(
-            fn (PagoApartadoDto $pago) => [
-                'metodo_pago_id' => $pago->metodoPagoId,
-                'monto' => $pago->monto,
-            ],
-            $dto->pagos,
-        );
-
-        $apartadoService->registrarAbono(
-            $apartado,
-            $dto->monto,
-            $usuario->id,
-            $pagos,
-            $dto->notas,
-        );
+        $registrarAbonoApartado->ejecutar($request->toDto(), $apartado, $usuario);
 
         return new ApartadoResource($apartado->fresh(['cliente', 'detalles.variante.producto', 'abonos.pagos.metodoPago']));
     }
 
-    public function liquidar(Request $request, Apartado $apartado, ApartadoService $apartadoService)
+    public function liquidar(Request $request, Apartado $apartado, LiquidarApartado $liquidarApartado)
     {
-        $apartadoService->liquidar($apartado, $request->user()->id);
+        // No hay payload que validar: se conserva el Request y el contrato de esta ruta.
+        $liquidarApartado->ejecutar(new LiquidarApartadoDto, $apartado, $request->user());
 
         return new ApartadoResource($apartado->fresh(['cliente', 'detalles.variante.producto', 'abonos.pagos.metodoPago']));
     }
 
-    public function cancelar(CancelarApartadoRequest $request, Apartado $apartado, ApartadoService $apartadoService)
+    public function cancelar(CancelarApartadoRequest $request, Apartado $apartado, CancelarApartado $cancelarApartado)
     {
         $usuario = $request->user();
 
@@ -148,7 +119,7 @@ class ApartadoController extends Controller
             abort(401);
         }
 
-        $resultado = $apartadoService->cancelar($apartado, $request->toDto()->motivo, $usuario);
+        $resultado = $cancelarApartado->ejecutar($request->toDto(), $apartado, $usuario);
 
         return response()->json([
             'data' => new ApartadoResource($resultado->apartado->load(['cliente', 'detalles.variante.producto', 'abonos.pagos.metodoPago'])),

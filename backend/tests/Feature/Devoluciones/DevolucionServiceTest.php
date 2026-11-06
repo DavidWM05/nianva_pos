@@ -26,6 +26,7 @@ use App\Modules\Tpv\Models\Venta;
 use App\Modules\Tpv\Services\CajaService;
 use App\Modules\Tpv\Services\VentaService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\Support\Bloqueos04c;
 use Tests\TestCase;
 
 /**
@@ -111,8 +112,8 @@ class DevolucionServiceTest extends TestCase
     {
         $ctx = $this->prepararTenantConVentaOrigen();
 
-        $devolucion = $this->devolucionService->registrarDevolucion(
-            ventaOrigen: $ctx['ventaOrigen'],
+        $devolucion = $this->devolucionService->registrarDevolucionConBloqueos(
+            ventaOrigen: Bloqueos04c::venta($ctx['ventaOrigen']),
             tipo: 'devolucion',
             itemsDevueltos: [['variante_id' => $ctx['varianteE']->id, 'cantidad' => 1, 'va_a_merma' => false]],
             itemsNuevos: [],
@@ -120,6 +121,8 @@ class DevolucionServiceTest extends TestCase
             usuarioId: $ctx['usuario']->id,
             pagos: [['metodo_pago_id' => $ctx['efectivo']->id, 'monto' => 120]],
             motivo: 'Talla incorrecta',
+            caja: Bloqueos04c::caja($ctx['sucursal']->id),
+            stocks: Bloqueos04c::stocks($ctx['sucursal']->id),
         );
 
         $this->assertSame('devolucion', $devolucion->tipo);
@@ -143,8 +146,8 @@ class DevolucionServiceTest extends TestCase
         $ctx = $this->prepararTenantConVentaOrigen();
         $stockFAntes = InventarioStock::sinTenant()->where('variante_id', $ctx['varianteF']->id)->first()->stock_actual;
 
-        $devolucion = $this->devolucionService->registrarDevolucion(
-            ventaOrigen: $ctx['ventaOrigen'],
+        $devolucion = $this->devolucionService->registrarDevolucionConBloqueos(
+            ventaOrigen: Bloqueos04c::venta($ctx['ventaOrigen']),
             tipo: 'devolucion',
             itemsDevueltos: [['variante_id' => $ctx['varianteF']->id, 'cantidad' => 1, 'va_a_merma' => true]],
             itemsNuevos: [],
@@ -152,6 +155,8 @@ class DevolucionServiceTest extends TestCase
             usuarioId: $ctx['usuario']->id,
             pagos: [['metodo_pago_id' => $ctx['efectivo']->id, 'monto' => 60]],
             motivo: 'Llego danada',
+            caja: Bloqueos04c::caja($ctx['sucursal']->id),
+            stocks: Bloqueos04c::stocks($ctx['sucursal']->id),
         );
 
         $this->assertTrue($devolucion->items->first()->va_a_merma);
@@ -165,8 +170,8 @@ class DevolucionServiceTest extends TestCase
         $stockGAntes = InventarioStock::sinTenant()->where('variante_id', $ctx['varianteG']->id)->first()->stock_actual;
         $stockEAntes = InventarioStock::sinTenant()->where('variante_id', $ctx['varianteE']->id)->first()->stock_actual;
 
-        $devolucion = $this->devolucionService->registrarDevolucion(
-            ventaOrigen: $ctx['ventaOrigen'],
+        $devolucion = $this->devolucionService->registrarDevolucionConBloqueos(
+            ventaOrigen: Bloqueos04c::venta($ctx['ventaOrigen']),
             tipo: 'cambio',
             itemsDevueltos: [['variante_id' => $ctx['varianteE']->id, 'cantidad' => 1, 'va_a_merma' => false]],
             itemsNuevos: [['variante_id' => $ctx['varianteG']->id, 'cantidad' => 1]],
@@ -174,6 +179,8 @@ class DevolucionServiceTest extends TestCase
             usuarioId: $ctx['usuario']->id,
             pagos: [['metodo_pago_id' => $ctx['efectivo']->id, 'monto' => 280]],
             motivo: 'Cliente prefirio el saco',
+            caja: Bloqueos04c::caja($ctx['sucursal']->id),
+            stocks: Bloqueos04c::stocks($ctx['sucursal']->id),
         );
 
         $this->assertSame('cambio', $devolucion->tipo);
@@ -202,14 +209,16 @@ class DevolucionServiceTest extends TestCase
         $ctx = $this->prepararTenantConVentaOrigen();
 
         try {
-            $this->devolucionService->registrarDevolucion(
-                ventaOrigen: $ctx['ventaOrigen'],
+            $this->devolucionService->registrarDevolucionConBloqueos(
+                ventaOrigen: Bloqueos04c::venta($ctx['ventaOrigen']),
                 tipo: 'cambio',
                 itemsDevueltos: [['variante_id' => $ctx['varianteE']->id, 'cantidad' => 100, 'va_a_merma' => false]],
                 itemsNuevos: [['variante_id' => $ctx['varianteG']->id, 'cantidad' => 1]],
                 sucursalId: $ctx['sucursal']->id,
                 usuarioId: $ctx['usuario']->id,
                 pagos: [],
+                caja: Bloqueos04c::caja($ctx['sucursal']->id),
+                stocks: Bloqueos04c::stocks($ctx['sucursal']->id),
             );
             $this->fail('Se esperaba InvalidArgumentException.');
         } catch (DevolucionExcedeCantidadVendidaException $e) {
@@ -222,27 +231,31 @@ class DevolucionServiceTest extends TestCase
     public function test_venta_sombra_no_puede_originar_devolucion_normal(): void
     {
         $ctx = $this->prepararTenantConVentaOrigen();
-        $devolucionCambio = $this->devolucionService->registrarDevolucion(
-            ventaOrigen: $ctx['ventaOrigen'],
+        $devolucionCambio = $this->devolucionService->registrarDevolucionConBloqueos(
+            ventaOrigen: Bloqueos04c::venta($ctx['ventaOrigen']),
             tipo: 'cambio',
             itemsDevueltos: [['variante_id' => $ctx['varianteE']->id, 'cantidad' => 1, 'va_a_merma' => false]],
             itemsNuevos: [['variante_id' => $ctx['varianteG']->id, 'cantidad' => 1]],
             sucursalId: $ctx['sucursal']->id,
             usuarioId: $ctx['usuario']->id,
             pagos: [['metodo_pago_id' => $ctx['efectivo']->id, 'monto' => 280]],
+            caja: Bloqueos04c::caja($ctx['sucursal']->id),
+            stocks: Bloqueos04c::stocks($ctx['sucursal']->id),
         );
         $ventaSombra = Venta::sinTenant()->findOrFail($devolucionCambio->venta_sombra_id);
         $devolucionesAntes = Devolucion::sinTenant()->count();
 
         try {
-            $this->devolucionService->registrarDevolucion(
-                ventaOrigen: $ventaSombra,
+            $this->devolucionService->registrarDevolucionConBloqueos(
+                ventaOrigen: Bloqueos04c::venta($ventaSombra),
                 tipo: 'devolucion',
                 itemsDevueltos: [['variante_id' => $ctx['varianteG']->id, 'cantidad' => 1, 'va_a_merma' => false]],
                 itemsNuevos: [],
                 sucursalId: $ctx['sucursal']->id,
                 usuarioId: $ctx['usuario']->id,
                 pagos: [['metodo_pago_id' => $ctx['efectivo']->id, 'monto' => 400]],
+                caja: Bloqueos04c::caja($ctx['sucursal']->id),
+                stocks: Bloqueos04c::stocks($ctx['sucursal']->id),
             );
             $this->fail('Se esperaba DevolucionSobreVentaSombraException.');
         } catch (DevolucionSobreVentaSombraException $e) {
@@ -255,27 +268,31 @@ class DevolucionServiceTest extends TestCase
     public function test_venta_sombra_si_puede_originar_cambio_recursivo(): void
     {
         $ctx = $this->prepararTenantConVentaOrigen();
-        $devolucionCambio = $this->devolucionService->registrarDevolucion(
-            ventaOrigen: $ctx['ventaOrigen'],
+        $devolucionCambio = $this->devolucionService->registrarDevolucionConBloqueos(
+            ventaOrigen: Bloqueos04c::venta($ctx['ventaOrigen']),
             tipo: 'cambio',
             itemsDevueltos: [['variante_id' => $ctx['varianteE']->id, 'cantidad' => 1, 'va_a_merma' => false]],
             itemsNuevos: [['variante_id' => $ctx['varianteG']->id, 'cantidad' => 1]],
             sucursalId: $ctx['sucursal']->id,
             usuarioId: $ctx['usuario']->id,
             pagos: [['metodo_pago_id' => $ctx['efectivo']->id, 'monto' => 280]],
+            caja: Bloqueos04c::caja($ctx['sucursal']->id),
+            stocks: Bloqueos04c::stocks($ctx['sucursal']->id),
         );
         $ventaSombra = Venta::sinTenant()->findOrFail($devolucionCambio->venta_sombra_id);
         $stockGAntes = InventarioStock::sinTenant()->where('variante_id', $ctx['varianteG']->id)->first()->stock_actual;
 
         // Cambio de un cambio: devuelve G (400) x1, entrega F (60) x1 -> diferencia -340 (reembolso).
-        $devolucionRecursiva = $this->devolucionService->registrarDevolucion(
-            ventaOrigen: $ventaSombra,
+        $devolucionRecursiva = $this->devolucionService->registrarDevolucionConBloqueos(
+            ventaOrigen: Bloqueos04c::venta($ventaSombra),
             tipo: 'cambio',
             itemsDevueltos: [['variante_id' => $ctx['varianteG']->id, 'cantidad' => 1, 'va_a_merma' => false]],
             itemsNuevos: [['variante_id' => $ctx['varianteF']->id, 'cantidad' => 1]],
             sucursalId: $ctx['sucursal']->id,
             usuarioId: $ctx['usuario']->id,
             pagos: [['metodo_pago_id' => $ctx['efectivo']->id, 'monto' => 340]],
+            caja: Bloqueos04c::caja($ctx['sucursal']->id),
+            stocks: Bloqueos04c::stocks($ctx['sucursal']->id),
         );
 
         $this->assertSame($ventaSombra->id, $devolucionRecursiva->venta_id);
@@ -291,14 +308,16 @@ class DevolucionServiceTest extends TestCase
         $devolucionesAntes = Devolucion::sinTenant()->count();
 
         try {
-            $this->devolucionService->registrarDevolucion(
-                ventaOrigen: $ctx['ventaOrigen'],
+            $this->devolucionService->registrarDevolucionConBloqueos(
+                ventaOrigen: Bloqueos04c::venta($ctx['ventaOrigen']),
                 tipo: 'devolucion',
                 itemsDevueltos: [['variante_id' => $ctx['varianteF']->id, 'cantidad' => 1, 'va_a_merma' => false]],
                 itemsNuevos: [],
                 sucursalId: $ctx['sucursal']->id,
                 usuarioId: $ctx['usuario']->id,
                 pagos: [['metodo_pago_id' => $ctx['efectivo']->id, 'monto' => 10]],
+                caja: Bloqueos04c::caja($ctx['sucursal']->id),
+                stocks: Bloqueos04c::stocks($ctx['sucursal']->id),
             );
             $this->fail('Se esperaba DevolucionPagoNoCuadraException.');
         } catch (DevolucionPagoNoCuadraException) {
@@ -311,14 +330,16 @@ class DevolucionServiceTest extends TestCase
     public function test_aislamiento_tenant_en_devolucion_item_y_pago(): void
     {
         $ctx1 = $this->prepararTenantConVentaOrigen();
-        $devolucion1 = $this->devolucionService->registrarDevolucion(
-            ventaOrigen: $ctx1['ventaOrigen'],
+        $devolucion1 = $this->devolucionService->registrarDevolucionConBloqueos(
+            ventaOrigen: Bloqueos04c::venta($ctx1['ventaOrigen']),
             tipo: 'devolucion',
             itemsDevueltos: [['variante_id' => $ctx1['varianteE']->id, 'cantidad' => 1, 'va_a_merma' => false]],
             itemsNuevos: [],
             sucursalId: $ctx1['sucursal']->id,
             usuarioId: $ctx1['usuario']->id,
             pagos: [['metodo_pago_id' => $ctx1['efectivo']->id, 'monto' => 120]],
+            caja: Bloqueos04c::caja($ctx1['sucursal']->id),
+            stocks: Bloqueos04c::stocks($ctx1['sucursal']->id),
         );
 
         $tenant2 = Tenant::create(['nombre' => 'Angara Dental', 'pais' => 'MX']);

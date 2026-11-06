@@ -1,5 +1,4 @@
 app/Aplicacion/Caja/ObtenerCajaActual.php
-app/Aplicacion/Devoluciones/RegistrarDevolucion.php
 app/Aplicacion/Inicio/ObtenerResumenInicio.php
 app/Http/Controllers/Controller.php
 app/Modules/Apartados/Database/Factories/ApartadoAbonoFactory.php
@@ -18,7 +17,6 @@ app/Modules/Apartados/Dtos/RegistrarAbonoApartadoDto.php
 app/Modules/Apartados/Exceptions/AbonoPagoNoCuadraException.php
 app/Modules/Apartados/Exceptions/ApartadoEstadoInvalidoException.php
 app/Modules/Apartados/Exceptions/ApartadoSaldoInsuficienteException.php
-app/Modules/Apartados/Http/Controllers/ApartadoController.php
 app/Modules/Apartados/Http/Requests/CancelarApartadoRequest.php
 app/Modules/Apartados/Http/Requests/CrearApartadoRequest.php
 app/Modules/Apartados/Http/Requests/RegistrarAbonoRequest.php
@@ -28,7 +26,6 @@ app/Modules/Apartados/Models/ApartadoAbono.php
 app/Modules/Apartados/Models/ApartadoAbonoPago.php
 app/Modules/Apartados/Models/ApartadoDetalle.php
 app/Modules/Apartados/Providers/ApartadosServiceProvider.php
-app/Modules/Apartados/Services/ApartadoService.php
 app/Modules/Apartados/Support/ResultadoCancelacion.php
 app/Modules/Auditoria/Database/Factories/AuditoriaFactory.php
 app/Modules/Auditoria/Database/Factories/LogSistemaFactory.php
@@ -186,22 +183,18 @@ app/Modules/Devoluciones/Exceptions/DevolucionVarianteNoVendidaException.php
 app/Modules/Devoluciones/Http/Controllers/DevolucionController.php
 app/Modules/Devoluciones/Http/Requests/CrearDevolucionRequest.php
 app/Modules/Devoluciones/Http/Resources/DevolucionResource.php
-app/Modules/Devoluciones/Models/Devolucion.php
 app/Modules/Devoluciones/Models/DevolucionItem.php
 app/Modules/Devoluciones/Models/DevolucionPago.php
 app/Modules/Devoluciones/Providers/DevolucionesServiceProvider.php
-app/Modules/Devoluciones/Services/DevolucionService.php
 app/Modules/Gastos/Database/Factories/GastoFactory.php
 app/Modules/Gastos/Database/Migrations/2026_07_27_000001_create_gastos_table.php
 app/Modules/Gastos/Dtos/CrearGastoDto.php
 app/Modules/Gastos/Dtos/ListarGastosDto.php
-app/Modules/Gastos/Http/Controllers/GastoController.php
 app/Modules/Gastos/Http/Requests/CrearGastoRequest.php
 app/Modules/Gastos/Http/Requests/ListarGastosRequest.php
 app/Modules/Gastos/Http/Resources/GastoResource.php
 app/Modules/Gastos/Models/Gasto.php
 app/Modules/Gastos/Providers/GastosServiceProvider.php
-app/Modules/Gastos/Services/GastoService.php
 app/Modules/GiftCards/Database/Factories/GiftCardFactory.php
 app/Modules/GiftCards/Database/Factories/GiftCardRecargaFactory.php
 app/Modules/GiftCards/Database/Migrations/2026_08_10_000001_create_gift_cards_table.php

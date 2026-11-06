@@ -21,6 +21,7 @@ use App\Modules\Nucleo\Services\TenantContext;
 use App\Modules\Tpv\Services\CajaService;
 use App\Modules\Tpv\Services\VentaService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\Support\Bloqueos04c;
 use Tests\TestCase;
 
 class NotaCreditoServiceTest extends TestCase
@@ -90,8 +91,8 @@ class NotaCreditoServiceTest extends TestCase
             [['metodo_pago_id' => $this->efectivo->id, 'monto' => 200]],
         );
 
-        $devolucion = $this->devolucionService->registrarDevolucion(
-            $venta,
+        $devolucion = $this->devolucionService->registrarDevolucionConBloqueos(
+            Bloqueos04c::venta($venta),
             'devolucion',
             [
                 ['variante_id' => $this->variante->id, 'cantidad' => 1, 'precio_unitario' => 100],
@@ -101,6 +102,8 @@ class NotaCreditoServiceTest extends TestCase
             $this->usuario->id,
             [['metodo_pago_id' => $this->efectivo->id, 'monto' => 100]],
             null, // motivo
+            caja: Bloqueos04c::caja($this->sucursal->id),
+            stocks: Bloqueos04c::stocks($this->sucursal->id),
         );
 
         return compact('venta', 'devolucion');

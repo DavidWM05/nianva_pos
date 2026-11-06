@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Modules\Devoluciones\Services;
 
 use App\Modules\Devoluciones\Exceptions\DevolucionExcedeCantidadVendidaException;
@@ -9,9 +11,11 @@ use App\Modules\Devoluciones\Exceptions\DevolucionVarianteNoVendidaException;
 use App\Modules\Devoluciones\Models\Devolucion;
 use App\Modules\Devoluciones\Models\DevolucionItem;
 use App\Modules\Devoluciones\Models\DevolucionPago;
+use App\Modules\Inventario\Models\InventarioStock;
 use App\Modules\Inventario\Services\InventarioService;
 use App\Modules\Nucleo\Models\Sucursal;
 use App\Modules\Tpv\Exceptions\CajaSesionNoAbiertaException;
+use App\Modules\Tpv\Models\CajaSesion;
 use App\Modules\Tpv\Models\Venta;
 use App\Modules\Tpv\Services\VentaService;
 use Illuminate\Support\Facades\DB;
@@ -37,12 +41,13 @@ class DevolucionService
      * @param  list<array{variante_id:int, cantidad:int, va_a_merma?:bool}>  $itemsDevueltos
      * @param  list<array{variante_id:int, cantidad:int}>  $itemsNuevos  Solo se usa si $tipo === 'cambio'.
      * @param  list<array{metodo_pago_id:int, monto:float}>  $pagos  Liquida la diferencia (abs(diferencia)), no el total de la devolucion.
+     * @param  array<int, InventarioStock>  $stocks
      *
      * @throws DevolucionSobreVentaSombraException si $ventaOrigen->es_venta_sombra y $tipo === 'devolucion'.
      * @throws DevolucionPagoNoCuadraException si la suma de pagos no coincide con abs(diferencia).
      * @throws CajaSesionNoAbiertaException si $tipo === 'cambio' y la sucursal no tiene caja abierta (la venta sombra la exige, como cualquier venta).
      */
-    public function registrarDevolucion(
+    public function registrarDevolucionConBloqueos(
         Venta $ventaOrigen,
         string $tipo,
         array $itemsDevueltos,
@@ -52,7 +57,10 @@ class DevolucionService
         array $pagos,
         ?string $motivo = null,
         string $tipoReembolso = 'efectivo',
+        ?CajaSesion $caja = null,
+        array $stocks = [],
     ): Devolucion {
+        $this->exigirTransaccion();
         if (! in_array($tipo, ['devolucion', 'cambio'], true)) {
             throw new InvalidArgumentException("Tipo de devolucion invalido: {$tipo}");
         }
@@ -82,113 +90,119 @@ class DevolucionService
 
         $this->verificarSucursal($tenantId, $sucursalId);
 
-        return DB::transaction(function () use ($ventaOrigen, $tipo, $itemsDevueltos, $itemsNuevos, $sucursalId, $usuarioId, $pagos, $motivo, $tenantId, $tipoReembolso) {
-            [$lineasDevueltas, $montoDevolucion] = $this->resolverItemsDevueltos($ventaOrigen, $itemsDevueltos);
+        [$lineasDevueltas, $montoDevolucion] = $this->resolverItemsDevueltos($ventaOrigen, $itemsDevueltos);
 
-            $ventaSombra = null;
-            $montoCambio = 0.0;
+        $ventaSombra = null;
+        $montoCambio = 0.0;
 
-            if ($tipo === 'cambio') {
-                // Cotiza primero (sin escribir nada) para saber el total
-                // exacto que tendra la venta sombra, y pasarlo como
-                // abono_previo -- asi registrarVenta() no exige pagos
-                // propios para ella: su liquidacion real ocurre via
-                // devolucion_pagos (la diferencia), no via venta_pagos.
-                [, $montoCambio] = $this->ventaService->cotizarItems($tenantId, $itemsNuevos);
+        if ($tipo === 'cambio') {
+            // Cotiza primero (sin escribir nada) para saber el total
+            // exacto que tendra la venta sombra, y pasarlo como
+            // abono_previo -- asi registrarVenta() no exige pagos
+            // propios para ella: su liquidacion real ocurre via
+            // devolucion_pagos (la diferencia), no via venta_pagos.
+            [, $montoCambio] = $this->ventaService->cotizarItems($tenantId, $itemsNuevos);
 
-                $ventaSombra = $this->ventaService->registrarVenta(
-                    datosVenta: [
-                        'tenant_id' => $tenantId,
-                        'sucursal_id' => $sucursalId,
-                        'usuario_id' => $usuarioId,
-                        'cliente_id' => $ventaOrigen->cliente_id,
-                        'es_venta_sombra' => true,
-                        'abono_previo' => $montoCambio,
-                    ],
-                    items: $itemsNuevos,
-                    pagos: [],
-                );
+            $ventaSombra = $this->ventaService->registrarVentaConBloqueos(
+                datosVenta: [
+                    'tenant_id' => $tenantId,
+                    'sucursal_id' => $sucursalId,
+                    'usuario_id' => $usuarioId,
+                    'cliente_id' => $ventaOrigen->cliente_id,
+                    'es_venta_sombra' => true,
+                    'abono_previo' => $montoCambio,
+                ],
+                items: $itemsNuevos,
+                pagos: [],
+                cajaSesion: $caja,
+                stocks: $stocks,
+            );
 
-                // El total real (con redondeos ya aplicados linea a linea)
-                // es el de la venta creada, no la cotizacion previa.
-                $montoCambio = (float) $ventaSombra->total;
-            }
+            // El total real (con redondeos ya aplicados linea a linea)
+            // es el de la venta creada, no la cotizacion previa.
+            $montoCambio = (float) $ventaSombra->total;
+        }
 
-            $diferencia = round($montoCambio - $montoDevolucion, 2);
+        $diferencia = round($montoCambio - $montoDevolucion, 2);
 
-            $this->verificarPagosDiferencia($pagos, $diferencia);
+        $this->verificarPagosDiferencia($pagos, $diferencia);
 
-            $devolucion = Devolucion::create([
-                'tenant_id' => $tenantId,
-                'sucursal_id' => $sucursalId,
-                'venta_id' => $ventaOrigen->id,
-                'venta_sombra_id' => $ventaSombra?->id,
-                'usuario_id' => $usuarioId,
-                'tipo' => $tipo,
-                'monto_devolucion' => $montoDevolucion,
-                'monto_cambio' => $montoCambio,
-                'diferencia' => $diferencia,
-                'motivo' => $motivo,
-                'tipo_reembolso' => $tipoReembolso,
+        $devolucion = Devolucion::query()->create([
+            'tenant_id' => $tenantId,
+            'sucursal_id' => $sucursalId,
+            'venta_id' => $ventaOrigen->id,
+            'venta_sombra_id' => $ventaSombra?->id,
+            'usuario_id' => $usuarioId,
+            'tipo' => $tipo,
+            'monto_devolucion' => $montoDevolucion,
+            'monto_cambio' => $montoCambio,
+            'diferencia' => $diferencia,
+            'motivo' => $motivo,
+            'tipo_reembolso' => $tipoReembolso,
+        ]);
+
+        foreach ($lineasDevueltas as $linea) {
+            DevolucionItem::create([
+                'devolucion_id' => $devolucion->id,
+                'variante_id' => $linea['variante_id'],
+                'tipo' => 'devuelto',
+                'cantidad' => $linea['cantidad'],
+                'precio_unitario' => $linea['precio_unitario'],
+                'subtotal' => $linea['subtotal'],
+                'va_a_merma' => $linea['va_a_merma'],
             ]);
 
-            foreach ($lineasDevueltas as $linea) {
+            if ($linea['va_a_merma']) {
+                // Va a merma: NO regresa a inventario_stock -- se
+                // pierde. A proposito no hay ninguna llamada a
+                // InventarioService en esta rama: el "continue" hace
+                // estructuralmente imposible que una linea marcada
+                // va_a_merma=true caiga en el registrarMovimiento() de
+                // abajo por error/descuido futuro.
+                continue;
+            }
+
+            $this->inventarioService->registrarMovimientoConStock(
+                stock: $stocks[$linea['variante_id']],
+                tipo: 'entrada',
+                cantidad: $linea['cantidad'],
+                motivo: 'devolucion',
+                usuarioId: $usuarioId,
+                referenciaTabla: 'devoluciones',
+                referenciaId: $devolucion->id,
+            );
+        }
+
+        if ($ventaSombra !== null) {
+            foreach ($ventaSombra->detalles as $detalle) {
                 DevolucionItem::create([
                     'devolucion_id' => $devolucion->id,
-                    'variante_id' => $linea['variante_id'],
-                    'tipo' => 'devuelto',
-                    'cantidad' => $linea['cantidad'],
-                    'precio_unitario' => $linea['precio_unitario'],
-                    'subtotal' => $linea['subtotal'],
-                    'va_a_merma' => $linea['va_a_merma'],
-                ]);
-
-                if ($linea['va_a_merma']) {
-                    // Va a merma: NO regresa a inventario_stock -- se
-                    // pierde. A proposito no hay ninguna llamada a
-                    // InventarioService en esta rama: el "continue" hace
-                    // estructuralmente imposible que una linea marcada
-                    // va_a_merma=true caiga en el registrarMovimiento() de
-                    // abajo por error/descuido futuro.
-                    continue;
-                }
-
-                $this->inventarioService->registrarMovimiento(
-                    varianteId: $linea['variante_id'],
-                    sucursalId: $sucursalId,
-                    tipo: 'entrada',
-                    cantidad: $linea['cantidad'],
-                    motivo: 'devolucion',
-                    usuarioId: $usuarioId,
-                    referenciaTabla: 'devoluciones',
-                    referenciaId: $devolucion->id,
-                );
-            }
-
-            if ($ventaSombra !== null) {
-                foreach ($ventaSombra->detalles as $detalle) {
-                    DevolucionItem::create([
-                        'devolucion_id' => $devolucion->id,
-                        'variante_id' => $detalle->variante_id,
-                        'tipo' => 'nuevo',
-                        'cantidad' => $detalle->cantidad,
-                        'precio_unitario' => $detalle->precio_unitario,
-                        'subtotal' => $detalle->subtotal,
-                        'va_a_merma' => false,
-                    ]);
-                }
-            }
-
-            foreach ($pagos as $pago) {
-                DevolucionPago::create([
-                    'devolucion_id' => $devolucion->id,
-                    'metodo_pago_id' => $pago['metodo_pago_id'],
-                    'monto' => $pago['monto'],
+                    'variante_id' => $detalle->variante_id,
+                    'tipo' => 'nuevo',
+                    'cantidad' => $detalle->cantidad,
+                    'precio_unitario' => $detalle->precio_unitario,
+                    'subtotal' => $detalle->subtotal,
+                    'va_a_merma' => false,
                 ]);
             }
+        }
 
-            return $devolucion->load('items', 'pagos');
-        });
+        foreach ($pagos as $pago) {
+            DevolucionPago::create([
+                'devolucion_id' => $devolucion->id,
+                'metodo_pago_id' => $pago['metodo_pago_id'],
+                'monto' => $pago['monto'],
+            ]);
+        }
+
+        return $devolucion->load('items', 'pagos');
+    }
+
+    private function exigirTransaccion(): void
+    {
+        if (DB::transactionLevel() === 0) {
+            throw new \LogicException('DevolucionService requiere una transacción abierta por una Action.');
+        }
     }
 
     /**

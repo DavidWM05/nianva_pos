@@ -70,3 +70,23 @@ RegistrarMovimiento fallan movimiento, compra, anulación y la venta de 04a, aun
 upsert siga serializando el stock. Las firmas antiguas de los Services siguen como
 envoltorios deprecated para 04c/04e; las Actions de 04b usan los núcleos sin transacciones
 ni bloqueos propios. Ningún método de test existente se adapta en esta etapa.
+
+
+## Casos de 04c
+
+Se prueban dos abonos sobre el mismo apartado (ambos pagos y el saldo acumulado), dos
+reembolsos válidos de una venta de dos unidades (stock y pagos), la reserva de la última
+unidad, la liquidación y cancelación únicas del apartado, y dos gastos sobre la misma caja.
+Se usa el mismo helper de procesos y una conexión bloqueadora de MySQL; cada caso exige
+espera real y SELECT FOR UPDATE dentro de la transacción de la Action.
+
+Las mutaciones quitan el bloqueo de apartado en RegistrarAbonoApartado, LiquidarApartado
+y CancelarApartado, el de venta en RegistrarDevolucion y el de caja en RegistrarGasto.
+CrearApartado usa el bloqueo compartido de RegistrarMovimiento, donde se hace su mutación.
+El caso de reembolso mantiene la limitación histórica del dominio: no introduce un control
+nuevo de acumulación de devoluciones parciales.
+
+Los envoltorios anularVenta y cerrarCaja ya no existen. Los tests de Services preparan
+modelos bloqueados con Bloqueos04c y llaman directamente al núcleo; no pasan a probar
+la Action en su lugar. Apartados conserva sus envoltorios deprecated para los tests que
+siguen pendientes de transición, sin consumidores productivos desde 04c.

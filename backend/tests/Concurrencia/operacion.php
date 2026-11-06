@@ -45,6 +45,11 @@ app(TenantContext::class)->set(Tenant::findOrFail($datos['tenant']));
 $usuario = Usuario::findOrFail($datos['usuario']);
 $emitir(['conexion' => (int) DB::selectOne('SELECT CONNECTION_ID() AS id')->id]);
 
+if (in_array($argv[1] ?? '', ['apartado_crear', 'apartado_abonar', 'apartado_liquidar', 'apartado_cancelar', 'gasto', 'reembolso'], true)) {
+    require __DIR__.'/operaciones04c.php';
+    exit;
+}
+
 if (($argv[1] ?? '') !== 'venta') {
     require __DIR__.'/operaciones04b.php';
     exit;
