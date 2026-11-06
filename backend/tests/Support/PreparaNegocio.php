@@ -317,7 +317,7 @@ trait PreparaNegocio
 
     private function crearPlan(Venta $venta): PlanPagoCliente
     {
-        return app(VentasPlazosService::class)->crearPlan($venta, [
+        return app(VentasPlazosService::class)->crearPlan(Bloqueos04d::modelo($venta), [
             'numero_cuotas' => 2,
             'periodicidad' => 'mensual',
         ]);

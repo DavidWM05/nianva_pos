@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Modules\VentasPlazos\Services;
 
 use App\Modules\Tpv\Models\Venta;
@@ -24,6 +26,8 @@ class VentasPlazosService
 {
     public function crearPlan(Venta $venta, array $data): PlanPagoCliente
     {
+        $this->exigirTransaccion();
+
         $numeroCuotas = (int) ($data['numero_cuotas'] ?? 0);
         $tasaInteres = (float) ($data['tasa_interes'] ?? 0);
 
@@ -35,95 +39,92 @@ class VentasPlazosService
             throw new InvalidArgumentException('Periodicidad invalida.');
         }
 
-        return DB::transaction(function () use ($venta, $data, $numeroCuotas, $tasaInteres) {
-            // Verificar que la venta no tenga ya un plan activo
-            $planExistente = PlanPagoCliente::where('venta_id', $venta->id)->first();
+        // Verificar que la venta no tenga ya un plan activo
+        $planExistente = PlanPagoCliente::where('venta_id', $venta->id)->first();
 
-            if ($planExistente) {
-                throw new PlanPagoYaActivoException($venta->id, $planExistente->id);
-            }
+        if ($planExistente) {
+            throw new PlanPagoYaActivoException($venta->id, $planExistente->id);
+        }
 
-            $totalVenta = (float) $venta->total;
-            $interesTotal = round($totalVenta * ($tasaInteres / 100), 2);
-            $montoTotal = round($totalVenta + $interesTotal, 2);
-            $montoCapitalPorCuota = round($totalVenta / $numeroCuotas, 2);
-            $montoInteresPorCuota = round($interesTotal / $numeroCuotas, 2);
-            $montoPorCuota = round($montoCapitalPorCuota + $montoInteresPorCuota, 2);
+        $totalVenta = (float) $venta->total;
+        $interesTotal = round($totalVenta * ($tasaInteres / 100), 2);
+        $montoTotal = round($totalVenta + $interesTotal, 2);
+        $montoCapitalPorCuota = round($totalVenta / $numeroCuotas, 2);
+        $montoInteresPorCuota = round($interesTotal / $numeroCuotas, 2);
+        $montoPorCuota = round($montoCapitalPorCuota + $montoInteresPorCuota, 2);
 
-            $fechaInicio = $data['fecha_inicio'] ?? now()->toDateString();
+        $fechaInicio = $data['fecha_inicio'] ?? now()->toDateString();
 
-            $plan = PlanPagoCliente::create([
-                'tenant_id' => $venta->tenant_id,
-                'cliente_id' => $venta->cliente_id,
-                'venta_id' => $venta->id,
-                'concepto' => "Venta #{$venta->id} - Pago a plazos",
-                'monto_total' => $montoTotal,
-                'interes_total' => $interesTotal,
-                'tasa_interes' => $tasaInteres,
-                'numero_cuotas' => $numeroCuotas,
-                'periodicidad' => $data['periodicidad'],
-                'fecha_inicio' => $fechaInicio,
+        $plan = PlanPagoCliente::create([
+            'tenant_id' => $venta->tenant_id,
+            'cliente_id' => $venta->cliente_id,
+            'venta_id' => $venta->id,
+            'concepto' => "Venta #{$venta->id} - Pago a plazos",
+            'monto_total' => $montoTotal,
+            'interes_total' => $interesTotal,
+            'tasa_interes' => $tasaInteres,
+            'numero_cuotas' => $numeroCuotas,
+            'periodicidad' => $data['periodicidad'],
+            'fecha_inicio' => $fechaInicio,
+        ]);
+
+        // Generar cuotas
+        for ($i = 1; $i <= $numeroCuotas; $i++) {
+            $fechaVencimiento = match ($data['periodicidad']) {
+                'semanal' => date('Y-m-d', strtotime($fechaInicio." +{$i} week")),
+                'quincenal' => date('Y-m-d', strtotime($fechaInicio.' +'.($i * 15).' days')),
+                'mensual' => date('Y-m-d', strtotime($fechaInicio." +{$i} month")),
+            };
+
+            PlanPagoClienteCuota::create([
+                'plan_pago_cliente_id' => $plan->id,
+                'numero_cuota' => $i,
+                'monto' => $montoPorCuota,
+                'monto_capital' => $montoCapitalPorCuota,
+                'monto_interes' => $montoInteresPorCuota,
+                'fecha_vencimiento' => $fechaVencimiento,
+                'estado' => 'pendiente',
             ]);
+        }
 
-            // Generar cuotas
-            for ($i = 1; $i <= $numeroCuotas; $i++) {
-                $fechaVencimiento = match ($data['periodicidad']) {
-                    'semanal' => date('Y-m-d', strtotime($fechaInicio." +{$i} week")),
-                    'quincenal' => date('Y-m-d', strtotime($fechaInicio.' +'.($i * 15).' days')),
-                    'mensual' => date('Y-m-d', strtotime($fechaInicio." +{$i} month")),
-                };
+        return $plan->load('cuotas');
 
-                PlanPagoClienteCuota::create([
-                    'plan_pago_cliente_id' => $plan->id,
-                    'numero_cuota' => $i,
-                    'monto' => $montoPorCuota,
-                    'monto_capital' => $montoCapitalPorCuota,
-                    'monto_interes' => $montoInteresPorCuota,
-                    'fecha_vencimiento' => $fechaVencimiento,
-                    'estado' => 'pendiente',
-                ]);
-            }
-
-            return $plan->load('cuotas');
-        });
     }
 
-    public function pagarCuota(int $planId, int $cuotaId, array $dataPago): PlanPagoClienteCuota
+    /** @param array<string, mixed> $dataPago */
+    public function pagarCuotaConCuota(PlanPagoClienteCuota $cuota, array $dataPago): PlanPagoClienteCuota
     {
-        return DB::transaction(function () use ($planId, $cuotaId, $dataPago) {
-            $cuota = PlanPagoClienteCuota::where('id', $cuotaId)
-                ->where('plan_pago_cliente_id', $planId)
-                ->lockForUpdate()
-                ->firstOrFail();
+        $this->exigirTransaccion();
 
-            if ($cuota->estado === 'pagada') {
-                throw new CuotaYaPagadaException($planId, $cuotaId);
-            }
+        $planId = (int) $cuota->getAttribute('plan_pago_cliente_id');
+        $cuotaId = (int) $cuota->getKey();
 
-            $monto = round((float) ($dataPago['monto'] ?? $cuota->monto), 2);
+        if ($cuota->estado === 'pagada') {
+            throw new CuotaYaPagadaException($planId, $cuotaId);
+        }
 
-            if ($monto < (float) $cuota->monto) {
-                throw new PagoCuotaInsuficienteException($cuotaId, (float) $cuota->monto, $monto);
-            }
+        $monto = round((float) ($dataPago['monto'] ?? $cuota->monto), 2);
 
-            $cuota->update([
-                'estado' => 'pagada',
-                'fecha_pago' => now(),
-                'fecha_pago_real' => now(),
-            ]);
+        if ($monto < (float) $cuota->monto) {
+            throw new PagoCuotaInsuficienteException($cuotaId, (float) $cuota->monto, $monto);
+        }
 
-            // Verificar si todas las cuotas estan pagadas para actualizar el plan
-            $pendientes = PlanPagoClienteCuota::where('plan_pago_cliente_id', $planId)
-                ->where('estado', 'pendiente')
-                ->count();
+        $cuota->update([
+            'estado' => 'pagada',
+            'fecha_pago' => now(),
+            'fecha_pago_real' => now(),
+        ]);
 
-            if ($pendientes === 0) {
-                PlanPagoCliente::where('id', $planId)->update([
-                    // Marcamos como completado cambiando la fecha
-                ]);
-            }
+        // El plan no tiene un estado de cierre: las cuotas pagadas determinan su liquidación.
+        return $cuota->refresh();
 
-            return $cuota->fresh();
-        });
+    }
+
+    /** El modelo recibido debe haberse leído con bloqueo en la Action llamadora. */
+    private function exigirTransaccion(): void
+    {
+        if (DB::transactionLevel() === 0) {
+            throw new \LogicException('La escritura de saldos requiere una transacción activa.');
+        }
     }
 }

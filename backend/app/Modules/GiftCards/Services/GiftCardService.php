@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Modules\GiftCards\Services;
 
 use App\Modules\GiftCards\Exceptions\GiftCardCanceladaException;
@@ -16,89 +18,92 @@ class GiftCardService
 {
     public function emitir(array $data): GiftCard
     {
+        $this->exigirTransaccion();
+
         if (round((float) ($data['monto'] ?? 0), 2) <= 0) {
             throw new MontoInvalidoException;
         }
 
-        return DB::transaction(function () use ($data) {
-            $codigo = $this->generarCodigo($data['tenant_id']);
+        $codigo = $this->generarCodigo($data['tenant_id']);
 
-            return GiftCard::create([
-                'tenant_id' => $data['tenant_id'],
-                'cliente_id' => $data['cliente_id'] ?? null,
-                'codigo' => $codigo,
-                'saldo_inicial' => round((float) $data['monto'], 2),
-                'saldo_actual' => round((float) $data['monto'], 2),
-                'fecha_expiracion' => $data['fecha_expiracion'] ?? null,
-                'estado' => 'activa',
-            ]);
-        });
+        return GiftCard::create([
+            'tenant_id' => $data['tenant_id'],
+            'cliente_id' => $data['cliente_id'] ?? null,
+            'codigo' => $codigo,
+            'saldo_inicial' => round((float) $data['monto'], 2),
+            'saldo_actual' => round((float) $data['monto'], 2),
+            'fecha_expiracion' => $data['fecha_expiracion'] ?? null,
+            'estado' => 'activa',
+        ]);
+
     }
 
-    public function recargar(int $id, float $monto, int $usuarioId, ?int $cajaSesionId = null): GiftCard
+    public function recargarConTarjeta(GiftCard $giftCard, float $monto, int $usuarioId, ?int $cajaSesionId = null): GiftCard
     {
+        $this->exigirTransaccion();
+
         if ($monto <= 0) {
             throw new MontoInvalidoException;
         }
 
-        return DB::transaction(function () use ($id, $monto, $usuarioId, $cajaSesionId) {
-            $giftCard = GiftCard::where('id', $id)->lockForUpdate()->firstOrFail();
+        if ($giftCard->estado === 'expirada' || ($giftCard->fecha_expiracion && $giftCard->fecha_expiracion < now()->toDateString())) {
+            throw new GiftCardExpiradaException($giftCard->codigo);
+        }
 
-            if ($giftCard->estado === 'expirada' || ($giftCard->fecha_expiracion && $giftCard->fecha_expiracion < now()->toDateString())) {
-                throw new GiftCardExpiradaException($giftCard->codigo);
-            }
+        if ($giftCard->estado === 'cancelada') {
+            throw new GiftCardCanceladaException($giftCard->codigo);
+        }
 
-            if ($giftCard->estado === 'cancelada') {
-                throw new GiftCardCanceladaException($giftCard->codigo);
-            }
+        GiftCardRecarga::create([
+            'gift_card_id' => $giftCard->id,
+            'caja_sesion_id' => $cajaSesionId,
+            'monto' => $monto,
+            'usuario_id' => $usuarioId,
+        ]);
 
-            GiftCardRecarga::create([
-                'gift_card_id' => $giftCard->id,
-                'caja_sesion_id' => $cajaSesionId,
-                'monto' => $monto,
-                'usuario_id' => $usuarioId,
-            ]);
+        $giftCard->increment('saldo_actual', $monto);
 
-            $giftCard->increment('saldo_actual', $monto);
+        return $giftCard->refresh();
 
-            return $giftCard->fresh();
-        });
     }
 
-    public function cancelar(int $id): void
+    public function cancelarConTarjeta(GiftCard $giftCard): void
     {
-        DB::transaction(function () use ($id) {
-            $giftCard = GiftCard::where('id', $id)->lockForUpdate()->firstOrFail();
+        $this->exigirTransaccion();
 
-            if ($giftCard->estado === 'cancelada') {
-                throw new GiftCardYaCanceladaException($giftCard->codigo);
-            }
+        if ($giftCard->estado === 'cancelada') {
+            throw new GiftCardYaCanceladaException($giftCard->codigo);
+        }
 
-            $giftCard->update(['estado' => 'cancelada']);
-        });
+        $giftCard->update(['estado' => 'cancelada']);
+
     }
 
-    public function descontarSaldo(int $id, float $monto): void
+    public function descontarSaldoConTarjeta(GiftCard $giftCard, float $monto): void
     {
-        DB::transaction(function () use ($id, $monto) {
-            $giftCard = GiftCard::where('id', $id)->lockForUpdate()->firstOrFail();
+        $this->exigirTransaccion();
 
-            $nuevoSaldo = round((float) $giftCard->saldo_actual - $monto, 2);
+        $nuevoSaldo = round((float) $giftCard->saldo_actual - $monto, 2);
 
-            if ($nuevoSaldo < 0) {
-                throw new GiftCardSaldoInsuficienteException($giftCard->codigo);
-            }
+        if ($nuevoSaldo < 0) {
+            throw new GiftCardSaldoInsuficienteException($giftCard->codigo);
+        }
 
-            $giftCard->update([
-                'saldo_actual' => $nuevoSaldo,
-                'estado' => $nuevoSaldo <= 0 ? 'usada' : 'activa',
-            ]);
-        });
+        $giftCard->update([
+            'saldo_actual' => $nuevoSaldo,
+            'estado' => $nuevoSaldo <= 0 ? 'usada' : 'activa',
+        ]);
+
     }
 
     public function validarParaPago(string $codigo): GiftCard
     {
-        $giftCard = GiftCard::where('codigo', $codigo)->firstOrFail();
+        return $this->validarTarjetaParaPago(GiftCard::query()->where('codigo', $codigo)->firstOrFail());
+    }
+
+    public function validarTarjetaParaPago(GiftCard $giftCard): GiftCard
+    {
+        $codigo = (string) $giftCard->getAttribute('codigo');
 
         if ($giftCard->estado === 'expirada' || ($giftCard->fecha_expiracion && $giftCard->fecha_expiracion < now()->toDateString())) {
             throw new GiftCardExpiradaException($codigo);
@@ -120,5 +125,13 @@ class GiftCardService
         $random = substr(str_shuffle('0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ'), 0, 8);
 
         return "GC-{$tenantId}-{$random}";
+    }
+
+    /** El modelo recibido debe haberse leído con bloqueo en la Action llamadora. */
+    private function exigirTransaccion(): void
+    {
+        if (DB::transactionLevel() === 0) {
+            throw new \LogicException('La escritura de saldos requiere una transacción activa.');
+        }
     }
 }

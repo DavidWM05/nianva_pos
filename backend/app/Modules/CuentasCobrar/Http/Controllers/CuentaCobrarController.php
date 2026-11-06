@@ -2,11 +2,12 @@
 
 namespace App\Modules\CuentasCobrar\Http\Controllers;
 
+use App\Aplicacion\CuentasCobrar\AnularCuenta;
+use App\Aplicacion\CuentasCobrar\RegistrarAbono;
 use App\Http\Controllers\Controller;
 use App\Modules\CuentasCobrar\Http\Requests\RegistrarAbonoRequest;
 use App\Modules\CuentasCobrar\Http\Resources\CuentaCobrarResource;
 use App\Modules\CuentasCobrar\Models\CuentaCobrar;
-use App\Modules\CuentasCobrar\Services\CuentasCobrarService;
 use Illuminate\Http\Request;
 
 /**
@@ -67,7 +68,7 @@ class CuentaCobrarController extends Controller
         return new CuentaCobrarResource($cuentaCobrar);
     }
 
-    public function registrarAbono(RegistrarAbonoRequest $request, int $id, CuentasCobrarService $service)
+    public function registrarAbono(RegistrarAbonoRequest $request, int $id, RegistrarAbono $action)
     {
         $usuario = $request->user();
 
@@ -77,13 +78,7 @@ class CuentaCobrarController extends Controller
 
         $dto = $request->toDto();
 
-        $abono = $service->registrarAbono($id, [
-            'sucursal_id' => (int) $usuario->getAttribute('sucursal_id'),
-            'usuario_id' => $usuario->id,
-            'monto' => $dto->monto,
-            'metodo_pago_id' => $dto->metodoPagoId,
-            'referencia' => $dto->referencia,
-        ]);
+        $abono = $action->ejecutar($dto, $id, $usuario);
 
         $cuenta = CuentaCobrar::with('cliente')->findOrFail($id);
 
@@ -100,9 +95,9 @@ class CuentaCobrarController extends Controller
         ]);
     }
 
-    public function anular(int $id, CuentasCobrarService $service)
+    public function anular(int $id, AnularCuenta $action)
     {
-        $service->anular($id);
+        $action->ejecutar($id);
 
         return response()->json(['message' => 'Cuenta por cobrar anulada correctamente.']);
     }

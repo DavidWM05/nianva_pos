@@ -2,19 +2,18 @@
 
 namespace App\Modules\VentasPlazos\Http\Controllers;
 
+use App\Aplicacion\VentasPlazos\CrearPlanPago;
+use App\Aplicacion\VentasPlazos\PagarCuota;
 use App\Http\Controllers\Controller;
 use App\Modules\Tpv\Models\Venta;
 use App\Modules\VentasPlazos\Http\Requests\CrearPlanPagoRequest;
 use App\Modules\VentasPlazos\Http\Requests\PagarCuotaRequest;
 use App\Modules\VentasPlazos\Http\Resources\PlanPagoResource;
 use App\Modules\VentasPlazos\Models\PlanPagoCliente;
-use App\Modules\VentasPlazos\Services\VentasPlazosService;
 use Illuminate\Http\Request;
 
 class PlanPagoController extends Controller
 {
-    public function __construct(private readonly VentasPlazosService $ventasPlazosService) {}
-
     public function index(Request $request)
     {
         $query = PlanPagoCliente::with('cliente:id,nombre');
@@ -50,18 +49,18 @@ class PlanPagoController extends Controller
         return new PlanPagoResource($plan);
     }
 
-    public function crearPlan(CrearPlanPagoRequest $request, Venta $venta)
+    public function crearPlan(CrearPlanPagoRequest $request, Venta $venta, CrearPlanPago $action)
     {
-        $plan = $this->ventasPlazosService->crearPlan($venta, $request->toDto()->datosParaServicio());
+        $plan = $action->ejecutar($request->toDto(), $venta->id);
 
         return response()->json(['data' => $plan], 201);
     }
 
-    public function pagarCuota(PagarCuotaRequest $request, PlanPagoCliente $plan)
+    public function pagarCuota(PagarCuotaRequest $request, PlanPagoCliente $plan, PagarCuota $action)
     {
         $dto = $request->toDto();
 
-        $cuota = $this->ventasPlazosService->pagarCuota($plan->id, $dto->cuotaId, $dto->datosParaServicio());
+        $cuota = $action->ejecutar($dto, $plan->id);
 
         return response()->json(['data' => $cuota]);
     }

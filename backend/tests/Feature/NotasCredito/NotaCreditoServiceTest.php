@@ -22,6 +22,7 @@ use App\Modules\Tpv\Services\CajaService;
 use App\Modules\Tpv\Services\VentaService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\Support\Bloqueos04c;
+use Tests\Support\Bloqueos04d;
 use Tests\TestCase;
 
 class NotaCreditoServiceTest extends TestCase
@@ -113,7 +114,7 @@ class NotaCreditoServiceTest extends TestCase
     {
         $ctx = $this->crearVentaYDevolucion();
 
-        $nc = $this->service->crearDesdeDevolucion($ctx['devolucion']);
+        $nc = $this->service->crearDesdeDevolucion(Bloqueos04d::modelo($ctx['devolucion']));
 
         $this->assertSame($ctx['devolucion']->id, $nc->devolucion_id);
         $this->assertSame(100.0, (float) $nc->monto_original);
@@ -124,7 +125,7 @@ class NotaCreditoServiceTest extends TestCase
     public function test_usar_en_venta_descuenta_saldo(): void
     {
         $ctx = $this->crearVentaYDevolucion();
-        $nc = $this->service->crearDesdeDevolucion($ctx['devolucion']);
+        $nc = $this->service->crearDesdeDevolucion(Bloqueos04d::modelo($ctx['devolucion']));
 
         $venta2 = $this->ventaService->registrarVenta(
             ['tenant_id' => $this->tenant->id, 'sucursal_id' => $this->sucursal->id, 'usuario_id' => $this->usuario->id, 'cliente_id' => $this->cliente->id],
@@ -132,7 +133,7 @@ class NotaCreditoServiceTest extends TestCase
             [['metodo_pago_id' => $this->efectivo->id, 'monto' => 100]],
         );
 
-        $this->service->usarEnVenta($nc->id, $venta2->id, 40);
+        $this->service->usarEnVentaConNota(Bloqueos04d::modelo($nc), $venta2->id, 40);
 
         $nc->refresh();
         $this->assertSame(60.0, (float) $nc->saldo_disponible);
@@ -142,7 +143,7 @@ class NotaCreditoServiceTest extends TestCase
     public function test_usar_saldo_completo_marca_usada_total(): void
     {
         $ctx = $this->crearVentaYDevolucion();
-        $nc = $this->service->crearDesdeDevolucion($ctx['devolucion']);
+        $nc = $this->service->crearDesdeDevolucion(Bloqueos04d::modelo($ctx['devolucion']));
 
         $venta2 = $this->ventaService->registrarVenta(
             ['tenant_id' => $this->tenant->id, 'sucursal_id' => $this->sucursal->id, 'usuario_id' => $this->usuario->id, 'cliente_id' => $this->cliente->id],
@@ -150,7 +151,7 @@ class NotaCreditoServiceTest extends TestCase
             [['metodo_pago_id' => $this->efectivo->id, 'monto' => 100]],
         );
 
-        $this->service->usarEnVenta($nc->id, $venta2->id, 100);
+        $this->service->usarEnVentaConNota(Bloqueos04d::modelo($nc), $venta2->id, 100);
 
         $nc->refresh();
         $this->assertSame(0.0, (float) $nc->saldo_disponible);
@@ -160,7 +161,7 @@ class NotaCreditoServiceTest extends TestCase
     public function test_usar_mas_que_saldo_lanza_excepcion(): void
     {
         $ctx = $this->crearVentaYDevolucion();
-        $nc = $this->service->crearDesdeDevolucion($ctx['devolucion']);
+        $nc = $this->service->crearDesdeDevolucion(Bloqueos04d::modelo($ctx['devolucion']));
 
         $venta2 = $this->ventaService->registrarVenta(
             ['tenant_id' => $this->tenant->id, 'sucursal_id' => $this->sucursal->id, 'usuario_id' => $this->usuario->id, 'cliente_id' => $this->cliente->id],
@@ -169,13 +170,13 @@ class NotaCreditoServiceTest extends TestCase
         );
 
         $this->expectException(NotaCreditoSaldoInsuficienteException::class);
-        $this->service->usarEnVenta($nc->id, $venta2->id, 999);
+        $this->service->usarEnVentaConNota(Bloqueos04d::modelo($nc), $venta2->id, 999);
     }
 
     public function test_obtener_activas_por_cliente(): void
     {
         $ctx = $this->crearVentaYDevolucion();
-        $this->service->crearDesdeDevolucion($ctx['devolucion']);
+        $this->service->crearDesdeDevolucion(Bloqueos04d::modelo($ctx['devolucion']));
 
         $activas = $this->service->obtenerActivasPorCliente($this->cliente->id);
 
@@ -185,7 +186,7 @@ class NotaCreditoServiceTest extends TestCase
     public function test_validar_para_pago_ok(): void
     {
         $ctx = $this->crearVentaYDevolucion();
-        $nc = $this->service->crearDesdeDevolucion($ctx['devolucion']);
+        $nc = $this->service->crearDesdeDevolucion(Bloqueos04d::modelo($ctx['devolucion']));
 
         $validada = $this->service->validarParaPago($nc->id);
 
@@ -195,14 +196,14 @@ class NotaCreditoServiceTest extends TestCase
     public function test_validar_para_pago_sin_saldo_lanza_excepcion(): void
     {
         $ctx = $this->crearVentaYDevolucion();
-        $nc = $this->service->crearDesdeDevolucion($ctx['devolucion']);
+        $nc = $this->service->crearDesdeDevolucion(Bloqueos04d::modelo($ctx['devolucion']));
 
         $venta2 = $this->ventaService->registrarVenta(
             ['tenant_id' => $this->tenant->id, 'sucursal_id' => $this->sucursal->id, 'usuario_id' => $this->usuario->id, 'cliente_id' => $this->cliente->id],
             [['variante_id' => $this->variante->id, 'cantidad' => 1]],
             [['metodo_pago_id' => $this->efectivo->id, 'monto' => 100]],
         );
-        $this->service->usarEnVenta($nc->id, $venta2->id, 100);
+        $this->service->usarEnVentaConNota(Bloqueos04d::modelo($nc), $venta2->id, 100);
 
         $this->expectException(NotaCreditoSinSaldoException::class);
         $this->service->validarParaPago($nc->id);
@@ -211,7 +212,7 @@ class NotaCreditoServiceTest extends TestCase
     public function test_aislamiento_tenant(): void
     {
         $ctx = $this->crearVentaYDevolucion();
-        $this->service->crearDesdeDevolucion($ctx['devolucion']);
+        $this->service->crearDesdeDevolucion(Bloqueos04d::modelo($ctx['devolucion']));
 
         $tenant2 = Tenant::create(['nombre' => 'Otro', 'pais' => 'MX']);
         app(TenantContext::class)->set($tenant2);

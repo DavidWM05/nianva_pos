@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Modules\CuentasPagar\Services;
 
 use App\Modules\CuentasPagar\Exceptions\CuentaPagarAnuladaException;
@@ -20,85 +22,87 @@ class CuentasPagarService
 {
     public function crearDesdeCompra(Compra $compra, int $diasCredito = 30): CuentaPagar
     {
-        return DB::transaction(function () use ($compra, $diasCredito) {
-            $fechaVencimiento = now()->addDays($diasCredito)->toDateString();
+        $this->exigirTransaccion();
 
-            return CuentaPagar::create([
-                'tenant_id' => $compra->tenant_id,
-                'compra_id' => $compra->id,
-                'proveedor_id' => $compra->proveedor_id,
-                'monto_total' => $compra->total,
-                'saldo_pendiente' => $compra->total,
-                'fecha_vencimiento' => $fechaVencimiento,
-                'estado' => 'pendiente',
-            ]);
-        });
+        $fechaVencimiento = now()->addDays($diasCredito)->toDateString();
+
+        return CuentaPagar::create([
+            'tenant_id' => $compra->tenant_id,
+            'compra_id' => $compra->id,
+            'proveedor_id' => $compra->proveedor_id,
+            'monto_total' => $compra->total,
+            'saldo_pendiente' => $compra->total,
+            'fecha_vencimiento' => $fechaVencimiento,
+            'estado' => 'pendiente',
+        ]);
+
     }
 
-    public function registrarPago(int $cuentaId, array $data): AbonoPagar
+    /** @param array<string, mixed> $data */
+    public function registrarPagoConBloqueos(CuentaPagar $cuenta, array $data, ?CajaSesion $cajaSesion): AbonoPagar
     {
-        return DB::transaction(function () use ($cuentaId, $data) {
-            $cuenta = CuentaPagar::where('id', $cuentaId)
-                ->lockForUpdate()
-                ->firstOrFail();
+        $this->exigirTransaccion();
 
-            if ($cuenta->estado === 'pagada') {
-                throw new CuentaPagarYaPagadaException($cuentaId);
-            }
+        $cuentaId = (int) $cuenta->getKey();
 
-            if ($cuenta->estado === 'anulada') {
-                throw new CuentaPagarAnuladaException($cuentaId);
-            }
+        if ($cuenta->estado === 'pagada') {
+            throw new CuentaPagarYaPagadaException($cuentaId);
+        }
 
-            $monto = round((float) ($data['monto']), 2);
+        if ($cuenta->estado === 'anulada') {
+            throw new CuentaPagarAnuladaException($cuentaId);
+        }
 
-            if ($monto > (float) $cuenta->saldo_pendiente) {
-                throw new PagoExcedeSaldoException((float) $cuenta->saldo_pendiente, $monto);
-            }
+        $monto = round((float) ($data['monto']), 2);
 
-            $cajaSesion = CajaSesion::sinTenant()
-                ->where('sucursal_id', $data['sucursal_id'])
-                ->where('estado', 'abierta')
-                ->latest('id')
-                ->first();
+        if ($monto > (float) $cuenta->saldo_pendiente) {
+            throw new PagoExcedeSaldoException((float) $cuenta->saldo_pendiente, $monto);
+        }
 
-            if (! $cajaSesion) {
-                throw new CajaSesionNoAbiertaException($data['sucursal_id']);
-            }
+        if (! $cajaSesion) {
+            throw new CajaSesionNoAbiertaException($data['sucursal_id']);
+        }
 
-            $abono = AbonoPagar::create([
-                'cuenta_pagar_id' => $cuenta->id,
-                'caja_sesion_id' => $cajaSesion->id,
-                'usuario_id' => $data['usuario_id'],
-                'monto' => $monto,
-                'metodo_pago_id' => $data['metodo_pago_id'],
-                'referencia' => $data['referencia'] ?? null,
-            ]);
+        $abono = AbonoPagar::create([
+            'cuenta_pagar_id' => $cuenta->id,
+            'caja_sesion_id' => $cajaSesion->id,
+            'usuario_id' => $data['usuario_id'],
+            'monto' => $monto,
+            'metodo_pago_id' => $data['metodo_pago_id'],
+            'referencia' => $data['referencia'] ?? null,
+        ]);
 
-            $nuevoSaldo = round((float) $cuenta->saldo_pendiente - $monto, 2);
-            $cuenta->update([
-                'saldo_pendiente' => $nuevoSaldo,
-                'estado' => $nuevoSaldo <= 0 ? 'pagada' : 'pendiente',
-            ]);
+        $nuevoSaldo = round((float) $cuenta->saldo_pendiente - $monto, 2);
+        $cuenta->update([
+            'saldo_pendiente' => $nuevoSaldo,
+            'estado' => $nuevoSaldo <= 0 ? 'pagada' : 'pendiente',
+        ]);
 
-            return $abono;
-        });
+        return $abono;
+
     }
 
-    public function anular(int $cuentaId): void
+    public function anularConCuenta(CuentaPagar $cuenta): void
     {
-        DB::transaction(function () use ($cuentaId) {
-            $cuenta = CuentaPagar::where('id', $cuentaId)
-                ->lockForUpdate()
-                ->firstOrFail();
+        $this->exigirTransaccion();
 
-            $tieneAbonos = AbonoPagar::where('cuenta_pagar_id', $cuentaId)->exists();
+        $cuentaId = (int) $cuenta->getKey();
 
-            if ($tieneAbonos) {
-                throw new CuentaPagarConAbonosException($cuentaId);
-            }
+        $tieneAbonos = AbonoPagar::where('cuenta_pagar_id', $cuentaId)->exists();
 
-            $cuenta->update(['estado' => 'anulada']);
-        });
+        if ($tieneAbonos) {
+            throw new CuentaPagarConAbonosException($cuentaId);
+        }
+
+        $cuenta->update(['estado' => 'anulada']);
+
+    }
+
+    /** El modelo recibido debe haberse leído con bloqueo en la Action llamadora. */
+    private function exigirTransaccion(): void
+    {
+        if (DB::transactionLevel() === 0) {
+            throw new \LogicException('La escritura de saldos requiere una transacción activa.');
+        }
     }
 }
