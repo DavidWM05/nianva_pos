@@ -1555,6 +1555,33 @@ repo.
       `Bloqueos04d`: ninguna aserción quitada y el mismo número de tests;
     - `PENDIENTES`: 14 → 8 archivos, 46 → 22 usos. Línea base de PHPStan: 1353 → 1345. Los
       temporales de Codex quedan fuera del repo (`C:\Desarrollos\tmp-codex`).
+  - **04e, el resto; ARQ-04 queda en Hecho:**
+    - **14 Actions** en Cotizaciones (crear, anular y convertir a venta), Producción (entrada
+      de insumos, completar orden y transformación), Unidades de medida, y el comando
+      `ResetearDosFactorCommand`, que ahora llama a una Action;
+    - se retiran los últimos 8 envoltorios (`registrarVenta`, `registrarMovimiento`,
+      `registrarCompra`, `abrirCaja` y los 4 de Apartados) y sus 6 helpers de transición.
+      Los seeders de escenarios usan Actions;
+    - **`PENDIENTES` vacío.** Fuera de `Aplicacion/` solo quedan transacciones en los 4
+      módulos congelados (`EXENTOS`);
+    - **bug corregido con su test primero:** completar una orden de producción llamaba a
+      `InventarioService::ajustarStock()`, que no existe, así que **cualquier** orden
+      terminaba en un error fatal. Ahora registra el producto terminado en inventario y
+      kardex con el núcleo de movimiento;
+    - **cambio de comportamiento, aceptado en la revisión:** al completar una orden, los
+      lotes de insumos se bloquean y se valida que alcancen (`StockInsumosInsuficienteException`,
+      que antes solo se usaba al crear la orden). Antes, dos órdenes podían consumir el
+      mismo último insumo;
+    - **PRO-01, a confirmar por el responsable:** en
+      `Arquitectura/DependenciasEntreModulosTest`, la regla "solo los controllers importan
+      `App\Aplicacion`" ahora acepta también los comandos de consola (`/Console/Commands/`),
+      porque el prompt pedía que el comando de 2FA llamara a una Action. Misma aserción y
+      mismo número de tests;
+    - **tests existentes adaptados (autorizado):** 47 métodos y 15 preparaciones
+      compartidas, solo en la llamada y su preparación. Ninguna aserción quitada y el mismo
+      número de tests. Se agrega una regresión contra comentarios justo encima de un
+      `return`, que en la 04d se colaban en OpenAPI;
+    - 6 casos de concurrencia más: 25 en total. Línea base de PHPStan: 1345 → 1317.
 - **Git:** `master` está protegido (ruleset `proteger-master`): todo entra por PR con los tres
   checks en verde.
 
