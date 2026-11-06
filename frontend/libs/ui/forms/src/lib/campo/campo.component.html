@@ -1,5 +1,5 @@
 <div class="ui-campo">
-  <label [for]="controlId()">
+  <label [id]="etiquetaId()" [for]="controlId()">
     {{ etiqueta() }}
     @if (requerido()) {
       <span class="ui-campo__requerido" aria-hidden="true">*</span>

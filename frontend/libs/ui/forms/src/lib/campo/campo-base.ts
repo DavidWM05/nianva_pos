@@ -36,6 +36,10 @@ export abstract class CampoBase implements ControlValueAccessor {
     return this.campo?.controlId() ?? null;
   }
 
+  protected etiquetaId(): string | null {
+    return this.campo?.etiquetaId() ?? null;
+  }
+
   protected ariaRequerido(): boolean {
     return this.campo?.requerido() ?? false;
   }
