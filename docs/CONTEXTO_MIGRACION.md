@@ -1384,6 +1384,42 @@ repo.
       siempre, atenuada mientras la columna no está ordenada (e2e `tabla-orden.spec.ts`).
       Para alcanzarla, `ui-tabla` va sin encapsulación; sus clases ya llevaban el prefijo
       `ui-tabla__`.
+- **Serie 50 · migración de las pantallas de `apps/pos` (decidida el 2026-11-06):**
+  - son 110 componentes: 97 en 22 módulos y 13 fuera (`auth`, `perfil`, `shell`, `demo`).
+    Hay 216 archivos con PrimeNG y 83 specs que usan `providePrimeNG()`;
+  - **decisiones del responsable:**
+    - al final no queda ninguna dependencia de PrimeNG ni de otra librería de pago;
+    - los módulos congelados (`delivery`, `payroll`, `prestamos`) se migran solo lo
+      necesario para quitar PrimeNG;
+    - `tpv` y `reportes` se rediseñan en la Fase 4 y la Fase 6; en el cierre (50n) solo se
+      les quitan los `p-*`;
+  - **reparto:** DS hace 50b a 50h, módulos de catálogo de hasta unos 8 componentes, hasta
+    que se le acaben los tokens. Claude hace 50a (preparación), 50i (shell y perfil), 50j
+    (`auth`) y 50n (cierre). Codex hace 50k a 50m (inventario 2, apartados y devoluciones,
+    saldos) cuando cierre ARQ-04, y 50g y 50h si a DS no le alcanzan los tokens;
+  - **PRO-01:** en todos los encargos de la serie queda autorizado quitar de un spec
+    `providePrimeNG()` y su import, sin tocar nada más. Cualquier otro cambio a un spec se
+    pregunta;
+  - **50a · preparación:**
+    - `apps/pos-e2e/src/pantallas.spec.ts` abre **cada pantalla del menú** (las 37 de
+      `REGISTRO_NAVEGACION_POS`, leídas del registro, así que una pantalla nueva entra sola)
+      contra el backend real, y falla ante cualquier respuesta 4xx/5xx de la API o error de
+      consola. `API_ESPERADA` lista, con su razón, lo que una pantalla maneja a propósito:
+      hoy solo el 404 de `/licencia-local` en Configuración. Verificado con una mutación (una
+      URL equivocada en `unidades-medida`);
+    - `apps/pos-e2e/src/soporte/humo.ts`: `vigilarErrores`, `abrirPantalla`, `sinErrores`
+      y `sinViolacionesSerias` (axe, solo para pantallas ya migradas), para los specs de
+      flujo de cada módulo;
+    - en la base del e2e, el vendedor del escenario tiene todos los permisos: el admin
+      exige 2FA, y los permisos son la única autoridad (SEG-03);
+    - `MODULOS_POS_SIN_PRIMENG` en `frontend/eslint.config.mjs`: cada encargo agrega su
+      módulo y desde ahí ESLint le prohíbe PrimeNG, specs incluidos. En los componentes se
+      conserva la prohibición de `HttpClient`. Verificado agregando `unidades-medida`;
+    - **bug encontrado por la red y corregido:** el breadcrumb del shell lanzaba
+      `TypeError: Cannot read properties of undefined (reading 'url')` al cargar **cada**
+      pantalla. Con `startWith(null)` leía `child.snapshot` antes de que el router lo
+      asignara. Ahora se detiene si no hay snapshot, y el breadcrumb se arma en el
+      `NavigationEnd` siguiente. La red lo vio fallar en 36 de las 37 pantallas.
 - **Posibles mejoras (roadmap):**
   - **capturas de Linux sin pasar por CI (Docker):** hoy cada PR con cambio visual falla una
     vez en "Catálogo visual", se baja el artifact y se versionan las capturas, porque en el

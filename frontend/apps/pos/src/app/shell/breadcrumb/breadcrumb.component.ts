@@ -39,7 +39,10 @@ export class BreadcrumbComponent {
 
   private buildBreadcrumb(route: ActivatedRoute, url = '', breadcrumbs: MenuItem[] = []): MenuItem[] {
     const [child] = route.children;
-    if (!child) {
+    // Con startWith(null), la primera llamada ocurre antes de que el router asigne el snapshot
+    // de las rutas hijas: leer child.snapshot.url lanzaba un TypeError en cada pantalla (lo
+    // encontro el e2e de pantallas, 50a). El breadcrumb se arma en el NavigationEnd siguiente.
+    if (!child?.snapshot) {
       return breadcrumbs;
     }
 
