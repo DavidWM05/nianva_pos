@@ -1394,7 +1394,12 @@ repo.
     con el ciclo actual por ahora (2026-11-05);
   - **forma de los botones:** `ui-btn-enviar` sigue siendo un botón propio rectangular, y los
     de Material (los de `ui-form-actions` y las acciones) tienen forma de píldora. Se unifica
-    en el 49e (forms).
+    en el 49e (forms). **Hecho en el 49e;**
+  - **skeleton de `ui-tabla` con tope de filas:** en la primera carga, el skeleton dibuja una
+    fila por cada fila de la página (25 por defecto). En celular son 25 tarjetas y la
+    pantalla mide más de 6000 px antes de que lleguen los datos; viene así desde el 43.
+    Propuesta: un tope de 5 filas o tarjetas de skeleton, que basta para dar la forma del
+    contenido (UI-18). Anotado por el responsable al revisar el 49g (2026-11-06).
 - **Pendientes detectados:**
   - el aviso "Invalid PrimeUI License" aparece en toda la app. **Causa (revisada en el 46):**
     PrimeNG 22 trae un verificador de licencia offline (`@primeui/license-manager`);
