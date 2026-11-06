@@ -7006,7 +7006,7 @@ parameters:
 			message: '#^Call to an undefined method Illuminate\\Database\\Schema\\ForeignKeyDefinition\:\:comment\(\)\.$#'
 			identifier: method.notFound
 			count: 1
-			path: app/Modules/UnidadesMedida/Database/Migrations/2026_08_10_000001_create_unidades_medida_table.php
+			path: app/Modules/UnidadesMedida/Database/Migrations/2026_08_09_000001_create_unidades_medida_table.php
 
 		-
 			message: '#^Method App\\Modules\\UnidadesMedida\\Http\\Controllers\\UnidadMedidaController\:\:destroy\(\) has no return type specified\.$#'
