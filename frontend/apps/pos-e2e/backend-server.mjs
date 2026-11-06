@@ -47,7 +47,10 @@ const permisos = `
 $pdo = new PDO('sqlite:'.getenv('DB_DATABASE'));
 $tenant = $pdo->query("select id from tenants where nombre = 'Abarrotes Escenario Granel'")->fetchColumn();
 $rol = $pdo->query("select id from roles where tenant_id is null and nombre = 'vendedor'")->fetchColumn();
-$ids = $pdo->query("select id from permisos where nombre in ('inventario.crear', 'inventario.editar', 'inventario.eliminar')")->fetchAll(PDO::FETCH_COLUMN);
+// Todos los permisos, solo en esta base de e2e: los e2e de pantallas (50a) recorren todo el
+// menu. Se usa el vendedor y no el admin porque el admin exige 2FA; los permisos son la unica
+// autoridad (SEG-03), asi que con ellos se llega a todas las pantallas.
+$ids = $pdo->query("select id from permisos")->fetchAll(PDO::FETCH_COLUMN);
 $stmt = $pdo->prepare('insert or ignore into rol_permisos (rol_id, permiso_id) values (?, ?)');
 foreach ($ids as $id) {
     $stmt->execute([$rol, $id]);
