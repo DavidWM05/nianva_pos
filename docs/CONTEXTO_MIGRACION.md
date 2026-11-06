@@ -1326,6 +1326,30 @@ repo.
     - medía 56 px y quedaba desalineado de los inputs de al lado en la barra de filtros
       del reporte. Ahora tiene el mismo alto y tamaño de texto que los inputs nativos; para
       alcanzar la flecha de MatSelect, el componente va sin encapsulación.
+- **49f · `ui/report`:**
+  - el periodo de `ui-report-filtros` pasa de `p-datepicker` a `mat-date-range-input` con
+    `mat-date-range-picker`;
+  - `FechaISOAdapter` (es-MX, `YYYY-MM-DD`) arma las fechas con componentes locales, así que
+    no hay desfase de zona. Se probó en el navegador con America/Mexico_City y Asia/Tokyo,
+    escribiendo y con el calendario;
+  - ESLint prohíbe `primeng` en el código de `ui-report`, pero no en sus `*.spec.ts`, que aún
+    usan `providePrimeNG()` como provider; se quita en el 49g. `primeng` sigue en sus
+    `peerDependencies` por lo mismo;
+  - DS se detuvo a preguntar antes de tocar specs (eran de `ui-data`, del 49g) y no retiró
+    ninguno;
+  - **corregido en la revisión, con los tests primero** (`material-contenedores.spec.ts`,
+    2 casos, y el e2e `report-periodo.spec.ts`, 2 casos):
+    - el rango no se veía en el calendario: `primary-container` apuntaba a
+      `fondo-elevado`, igual que la superficie. Nuevo token semántico `primario-suave`
+      (claro `#bfdbfe`, oscuro `#1e40af`). Material también lo usa en el FAB, el avatar de
+      lista y el `slide-toggle`, que hoy no se usan;
+    - el periodo medía 56 px, con la etiqueta flotando dentro del borde. Ahora la etiqueta
+      va encima, como Sucursal, y nombra el grupo con un id único por instancia; el campo
+      tiene la misma densidad que `ui-select-filtro`. DS hacía pasar el e2e del 49e
+      agrandando el input interno, que era lo que medía ese test;
+    - **PRO-01, autorizado por el responsable:** en `select-filtro.spec.ts` (49e) solo
+      cambió el locator del periodo, del primer `input` a la caja del campo de Material.
+      Mismo nombre, mismas aserciones y la misma tolerancia.
 - **Posibles mejoras (roadmap):**
   - **capturas de Linux sin pasar por CI (Docker):** hoy cada PR con cambio visual falla una
     vez en "Catálogo visual", se baja el artifact y se versionan las capturas, porque en el
