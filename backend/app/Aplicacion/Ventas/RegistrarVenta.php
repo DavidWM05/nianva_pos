@@ -5,8 +5,10 @@ declare(strict_types=1);
 namespace App\Aplicacion\Ventas;
 
 use App\Aplicacion\Inventario\RegistrarMovimiento;
+use App\Modules\GiftCards\Models\GiftCard;
 use App\Modules\GiftCards\Services\GiftCardService;
 use App\Modules\Inventario\Dtos\MovimientoInventarioDto;
+use App\Modules\NotasCredito\Models\NotaCredito;
 use App\Modules\NotasCredito\Services\NotaCreditoService;
 use App\Modules\Nucleo\Models\MetodoPago;
 use App\Modules\Nucleo\Models\Usuario;
@@ -99,23 +101,26 @@ class RegistrarVenta
             $metodoPagoNotaCredito,
             $subtotal,
         ) {
+            $caja = CajaSesion::query()->withoutGlobalScope(TenantScopeViaRelacion::class)->where('sucursal_id', (int) $usuario->getAttribute('sucursal_id'))->where('estado', 'abierta')->latest('id')->lockForUpdate()->first();
+            $notaCredito = null;
             $totalEstimado = round($subtotal - $descuentoManual - $descuentoCupon, 2);
             $pagosExtra = [];
 
             if (! empty($giftCardCodigo) && $metodoPagoGiftCard) {
-                $giftCard = $this->giftCardService->validarParaPago($giftCardCodigo);
+                $giftCard = GiftCard::query()->where('codigo', $giftCardCodigo)->lockForUpdate()->firstOrFail();
+                $this->giftCardService->validarTarjetaParaPago($giftCard);
                 $montoGiftCard = min((float) $giftCard->saldo_actual, $totalEstimado);
-                $this->giftCardService->descontarSaldo($giftCard->id, $montoGiftCard);
+                $this->giftCardService->descontarSaldoConTarjeta($giftCard, $montoGiftCard);
                 $pagosExtra[] = ['metodo_pago_id' => $metodoPagoGiftCard->id, 'monto' => $montoGiftCard];
             }
 
             if (! empty($notaCreditoId) && $metodoPagoNotaCredito) {
-                $notaCredito = $this->notaCreditoService->validarParaPago($notaCreditoId);
+                $notaCredito = NotaCredito::query()->whereKey($notaCreditoId)->lockForUpdate()->firstOrFail();
+                $this->notaCreditoService->validarNotaParaPago($notaCredito);
                 $montoNC = min((float) $notaCredito->saldo_disponible, $totalEstimado);
                 $pagosExtra[] = ['metodo_pago_id' => $metodoPagoNotaCredito->id, 'monto' => $montoNC];
             }
 
-            $caja = CajaSesion::query()->withoutGlobalScope(TenantScopeViaRelacion::class)->where('sucursal_id', (int) $usuario->getAttribute('sucursal_id'))->where('estado', 'abierta')->latest('id')->lockForUpdate()->first();
             $stocks = [];
             $variantes = array_values(array_unique(array_column($items, 'variante_id')));
             sort($variantes);
@@ -143,8 +148,8 @@ class RegistrarVenta
             if (! empty($notaCreditoId)) {
                 $montoNC = collect($pagosExtra)->where('metodo_pago_id', $metodoPagoNotaCredito?->id)->first()['monto'] ?? 0;
 
-                if ($montoNC > 0) {
-                    $this->notaCreditoService->usarEnVenta($notaCreditoId, $venta->id, $montoNC);
+                if ($montoNC > 0 && $notaCredito !== null) {
+                    $this->notaCreditoService->usarEnVentaConNota($notaCredito, $venta->id, $montoNC);
                 }
             }
 

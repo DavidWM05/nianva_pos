@@ -1836,11 +1836,6 @@ parameters:
 			count: 2
 			path: app/Modules/CuentasCobrar/Services/CuentasCobrarService.php
 
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Modules/CuentasCobrar/Services/CuentasCobrarService.php
 
 		-
 			message: '#^Method App\\Modules\\CuentasCobrar\\Services\\CuentasCobrarService\:\:obtenerResumenPorCliente\(\) return type has no value type specified in iterable type array\.$#'
@@ -1854,11 +1849,6 @@ parameters:
 			count: 1
 			path: app/Modules/CuentasCobrar/Services/CuentasCobrarService.php
 
-		-
-			message: '#^Method App\\Modules\\CuentasCobrar\\Services\\CuentasCobrarService\:\:registrarAbono\(\) has parameter \$data with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Modules/CuentasCobrar/Services/CuentasCobrarService.php
 
 		-
 			message: '#^Call to an undefined method Illuminate\\Database\\Schema\\ForeignKeyDefinition\:\:comment\(\)\.$#'
@@ -2148,17 +2138,7 @@ parameters:
 			count: 2
 			path: app/Modules/CuentasPagar/Services/CuentasPagarService.php
 
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Modules/CuentasPagar/Services/CuentasPagarService.php
 
-		-
-			message: '#^Method App\\Modules\\CuentasPagar\\Services\\CuentasPagarService\:\:registrarPago\(\) has parameter \$data with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Modules/CuentasPagar/Services/CuentasPagarService.php
 
 		-
 			message: '#^Cannot call method tienePermiso\(\) on App\\Modules\\Nucleo\\Models\\Usuario\|null\.$#'
@@ -2844,11 +2824,6 @@ parameters:
 			count: 1
 			path: app/Modules/GiftCards/Database/Migrations/2026_08_10_000003_add_caja_sesion_id_to_gift_card_recargas_table.php
 
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Modules/GiftCards/Http/Controllers/GiftCardController.php
 
 		-
 			message: '#^Cannot call method tienePermiso\(\) on App\\Modules\\Nucleo\\Models\\Usuario\|null\.$#'
@@ -3060,11 +3035,6 @@ parameters:
 			count: 1
 			path: app/Modules/GiftCards/Services/GiftCardService.php
 
-		-
-			message: '#^Method App\\Modules\\GiftCards\\Services\\GiftCardService\:\:recargar\(\) should return App\\Modules\\GiftCards\\Models\\GiftCard but returns App\\Modules\\GiftCards\\Models\\GiftCard\|null\.$#'
-			identifier: return.type
-			count: 1
-			path: app/Modules/GiftCards/Services/GiftCardService.php
 
 		-
 			message: '#^Method App\\Modules\\Inventario\\Exceptions\\StockInsuficienteException\:\:contexto\(\) return type has no value type specified in iterable type array\.$#'
@@ -7266,17 +7236,7 @@ parameters:
 			count: 1
 			path: app/Modules/VentasPlazos/Services/VentasPlazosService.php
 
-		-
-			message: '#^Method App\\Modules\\VentasPlazos\\Services\\VentasPlazosService\:\:pagarCuota\(\) has parameter \$dataPago with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Modules/VentasPlazos/Services/VentasPlazosService.php
 
-		-
-			message: '#^Method App\\Modules\\VentasPlazos\\Services\\VentasPlazosService\:\:pagarCuota\(\) should return App\\Modules\\VentasPlazos\\Models\\PlanPagoClienteCuota but returns App\\Modules\\VentasPlazos\\Models\\PlanPagoClienteCuota\|null\.$#'
-			identifier: return.type
-			count: 1
-			path: app/Modules/VentasPlazos/Services/VentasPlazosService.php
 
 		-
 			message: '#^Parameter \#2 \$timestamp of function date expects int\|null, int\|false given\.$#'

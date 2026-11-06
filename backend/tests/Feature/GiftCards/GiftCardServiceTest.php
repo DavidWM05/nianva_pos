@@ -13,6 +13,7 @@ use App\Modules\Nucleo\Models\Tenant;
 use App\Modules\Nucleo\Models\Usuario;
 use App\Modules\Nucleo\Services\TenantContext;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\Support\Bloqueos04d;
 use Tests\TestCase;
 
 class GiftCardServiceTest extends TestCase
@@ -61,7 +62,7 @@ class GiftCardServiceTest extends TestCase
     {
         $gc = $this->service->emitir(['tenant_id' => $this->tenant->id, 'monto' => 200]);
 
-        $recargada = $this->service->recargar($gc->id, 150, $this->usuario->id);
+        $recargada = $this->service->recargarConTarjeta(Bloqueos04d::modelo($gc), 150, $this->usuario->id);
 
         $this->assertSame(350.0, (float) $recargada->saldo_actual);
         $this->assertSame('activa', $recargada->estado);
@@ -76,23 +77,23 @@ class GiftCardServiceTest extends TestCase
         ]);
 
         $this->expectException(GiftCardExpiradaException::class);
-        $this->service->recargar($gc->id, 50, $this->usuario->id);
+        $this->service->recargarConTarjeta(Bloqueos04d::modelo($gc), 50, $this->usuario->id);
     }
 
     public function test_recargar_gc_cancelada_lanza_excepcion(): void
     {
         $gc = $this->service->emitir(['tenant_id' => $this->tenant->id, 'monto' => 200]);
-        $this->service->cancelar($gc->id);
+        $this->service->cancelarConTarjeta(Bloqueos04d::modelo($gc));
 
         $this->expectException(GiftCardCanceladaException::class);
-        $this->service->recargar($gc->id, 50, $this->usuario->id);
+        $this->service->recargarConTarjeta(Bloqueos04d::modelo($gc), 50, $this->usuario->id);
     }
 
     public function test_descontar_saldo_actualiza_estado_a_usada(): void
     {
         $gc = $this->service->emitir(['tenant_id' => $this->tenant->id, 'monto' => 100]);
 
-        $this->service->descontarSaldo($gc->id, 100);
+        $this->service->descontarSaldoConTarjeta(Bloqueos04d::modelo($gc), 100);
 
         $gc->refresh();
         $this->assertSame(0.0, (float) $gc->saldo_actual);
@@ -104,7 +105,7 @@ class GiftCardServiceTest extends TestCase
         $gc = $this->service->emitir(['tenant_id' => $this->tenant->id, 'monto' => 100]);
 
         $this->expectException(GiftCardSaldoInsuficienteException::class);
-        $this->service->descontarSaldo($gc->id, 200);
+        $this->service->descontarSaldoConTarjeta(Bloqueos04d::modelo($gc), 200);
     }
 
     public function test_validar_para_pago_ok(): void
@@ -131,7 +132,7 @@ class GiftCardServiceTest extends TestCase
     public function test_validar_para_pago_cancelada_lanza_excepcion(): void
     {
         $gc = $this->service->emitir(['tenant_id' => $this->tenant->id, 'monto' => 100]);
-        $this->service->cancelar($gc->id);
+        $this->service->cancelarConTarjeta(Bloqueos04d::modelo($gc));
 
         $this->expectException(GiftCardCanceladaException::class);
         $this->service->validarParaPago($gc->codigo);
@@ -140,10 +141,10 @@ class GiftCardServiceTest extends TestCase
     public function test_cancelar_gc_ya_cancelada_lanza_excepcion(): void
     {
         $gc = $this->service->emitir(['tenant_id' => $this->tenant->id, 'monto' => 100]);
-        $this->service->cancelar($gc->id);
+        $this->service->cancelarConTarjeta(Bloqueos04d::modelo($gc));
 
         $this->expectException(GiftCardYaCanceladaException::class);
-        $this->service->cancelar($gc->id);
+        $this->service->cancelarConTarjeta(Bloqueos04d::modelo($gc));
     }
 
     public function test_aislamiento_tenant(): void

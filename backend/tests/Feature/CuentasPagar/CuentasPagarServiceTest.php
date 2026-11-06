@@ -21,6 +21,8 @@ use App\Modules\Nucleo\Models\Usuario;
 use App\Modules\Nucleo\Services\TenantContext;
 use App\Modules\Tpv\Services\CajaService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\Support\Bloqueos04c;
+use Tests\Support\Bloqueos04d;
 use Tests\TestCase;
 
 class CuentasPagarServiceTest extends TestCase
@@ -78,7 +80,7 @@ class CuentasPagarServiceTest extends TestCase
 
     public function test_crear_desde_compra_crea_cxp_pendiente(): void
     {
-        $cuenta = $this->service->crearDesdeCompra($this->compra);
+        $cuenta = $this->service->crearDesdeCompra(Bloqueos04d::modelo($this->compra));
 
         $this->assertSame($this->compra->id, $cuenta->compra_id);
         $this->assertSame(500.0, (float) $cuenta->monto_total);
@@ -87,15 +89,15 @@ class CuentasPagarServiceTest extends TestCase
 
     public function test_registrar_pago_reduce_saldo(): void
     {
-        $cuenta = $this->service->crearDesdeCompra($this->compra);
+        $cuenta = $this->service->crearDesdeCompra(Bloqueos04d::modelo($this->compra));
 
-        $this->service->registrarPago($cuenta->id, [
+        $this->service->registrarPagoConBloqueos(Bloqueos04d::modelo($cuenta), [
             'sucursal_id' => $this->sucursal->id,
             'usuario_id' => $this->usuario->id,
             'monto' => 200,
             'metodo_pago_id' => $this->transferencia->id,
             'referencia' => 'TRF-001',
-        ]);
+        ], Bloqueos04c::caja($this->sucursal->id));
 
         $cuenta->refresh();
         $this->assertSame(300.0, (float) $cuenta->saldo_pendiente);
@@ -104,14 +106,14 @@ class CuentasPagarServiceTest extends TestCase
 
     public function test_pago_completo_marca_pagada(): void
     {
-        $cuenta = $this->service->crearDesdeCompra($this->compra);
+        $cuenta = $this->service->crearDesdeCompra(Bloqueos04d::modelo($this->compra));
 
-        $this->service->registrarPago($cuenta->id, [
+        $this->service->registrarPagoConBloqueos(Bloqueos04d::modelo($cuenta), [
             'sucursal_id' => $this->sucursal->id,
             'usuario_id' => $this->usuario->id,
             'monto' => 500,
             'metodo_pago_id' => $this->transferencia->id,
-        ]);
+        ], Bloqueos04c::caja($this->sucursal->id));
 
         $cuenta->refresh();
         $this->assertSame(0.0, (float) $cuenta->saldo_pendiente);
@@ -120,73 +122,73 @@ class CuentasPagarServiceTest extends TestCase
 
     public function test_pago_excede_saldo_lanza_excepcion(): void
     {
-        $cuenta = $this->service->crearDesdeCompra($this->compra);
+        $cuenta = $this->service->crearDesdeCompra(Bloqueos04d::modelo($this->compra));
 
         $this->expectException(PagoExcedeSaldoException::class);
-        $this->service->registrarPago($cuenta->id, [
+        $this->service->registrarPagoConBloqueos(Bloqueos04d::modelo($cuenta), [
             'sucursal_id' => $this->sucursal->id,
             'usuario_id' => $this->usuario->id,
             'monto' => 999999,
             'metodo_pago_id' => $this->transferencia->id,
-        ]);
+        ], Bloqueos04c::caja($this->sucursal->id));
     }
 
     public function test_pago_en_cuenta_anulada_lanza_excepcion(): void
     {
-        $cuenta = $this->service->crearDesdeCompra($this->compra);
-        $this->service->anular($cuenta->id);
+        $cuenta = $this->service->crearDesdeCompra(Bloqueos04d::modelo($this->compra));
+        $this->service->anularConCuenta(Bloqueos04d::modelo($cuenta));
 
         $this->expectException(CuentaPagarAnuladaException::class);
-        $this->service->registrarPago($cuenta->id, [
+        $this->service->registrarPagoConBloqueos(Bloqueos04d::modelo($cuenta), [
             'sucursal_id' => $this->sucursal->id,
             'usuario_id' => $this->usuario->id,
             'monto' => 100,
             'metodo_pago_id' => $this->transferencia->id,
-        ]);
+        ], Bloqueos04c::caja($this->sucursal->id));
     }
 
     public function test_anular_con_pagos_lanza_excepcion(): void
     {
-        $cuenta = $this->service->crearDesdeCompra($this->compra);
-        $this->service->registrarPago($cuenta->id, [
+        $cuenta = $this->service->crearDesdeCompra(Bloqueos04d::modelo($this->compra));
+        $this->service->registrarPagoConBloqueos(Bloqueos04d::modelo($cuenta), [
             'sucursal_id' => $this->sucursal->id,
             'usuario_id' => $this->usuario->id,
             'monto' => 100,
             'metodo_pago_id' => $this->transferencia->id,
-        ]);
+        ], Bloqueos04c::caja($this->sucursal->id));
 
         $this->expectException(CuentaPagarConAbonosException::class);
-        $this->service->anular($cuenta->id);
+        $this->service->anularConCuenta(Bloqueos04d::modelo($cuenta));
     }
 
     public function test_pago_en_cuenta_pagada_lanza_excepcion(): void
     {
-        $cuenta = $this->service->crearDesdeCompra($this->compra);
-        $this->service->registrarPago($cuenta->id, [
+        $cuenta = $this->service->crearDesdeCompra(Bloqueos04d::modelo($this->compra));
+        $this->service->registrarPagoConBloqueos(Bloqueos04d::modelo($cuenta), [
             'sucursal_id' => $this->sucursal->id,
             'usuario_id' => $this->usuario->id,
             'monto' => 500,
             'metodo_pago_id' => $this->transferencia->id,
-        ]);
+        ], Bloqueos04c::caja($this->sucursal->id));
 
         $this->expectException(CuentaPagarYaPagadaException::class);
-        $this->service->registrarPago($cuenta->id, [
+        $this->service->registrarPagoConBloqueos(Bloqueos04d::modelo($cuenta), [
             'sucursal_id' => $this->sucursal->id,
             'usuario_id' => $this->usuario->id,
             'monto' => 10,
             'metodo_pago_id' => $this->transferencia->id,
-        ]);
+        ], Bloqueos04c::caja($this->sucursal->id));
     }
 
     public function test_aislamiento_tenant(): void
     {
-        $cuenta = $this->service->crearDesdeCompra($this->compra);
-        $this->service->registrarPago($cuenta->id, [
+        $cuenta = $this->service->crearDesdeCompra(Bloqueos04d::modelo($this->compra));
+        $this->service->registrarPagoConBloqueos(Bloqueos04d::modelo($cuenta), [
             'sucursal_id' => $this->sucursal->id,
             'usuario_id' => $this->usuario->id,
             'monto' => 100,
             'metodo_pago_id' => $this->transferencia->id,
-        ]);
+        ], Bloqueos04c::caja($this->sucursal->id));
 
         $tenant2 = Tenant::create(['nombre' => 'Otro', 'pais' => 'MX']);
         app(TenantContext::class)->set($tenant2);

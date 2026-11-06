@@ -24,6 +24,8 @@ use App\Modules\Tpv\Models\Venta;
 use App\Modules\Tpv\Services\CajaService;
 use App\Modules\Tpv\Services\VentaService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\Support\Bloqueos04c;
+use Tests\Support\Bloqueos04d;
 use Tests\TestCase;
 
 class CuentasCobrarServiceTest extends TestCase
@@ -90,7 +92,7 @@ class CuentasCobrarServiceTest extends TestCase
 
     public function test_crear_desde_venta_crea_cxc_pendiente(): void
     {
-        $cuenta = $this->service->crearDesdeVenta($this->venta);
+        $cuenta = $this->service->crearDesdeVenta(Bloqueos04d::modelo($this->venta));
 
         $this->assertSame($this->venta->id, $cuenta->venta_id);
         $this->assertSame(100.0, (float) $cuenta->monto_total);
@@ -101,14 +103,14 @@ class CuentasCobrarServiceTest extends TestCase
 
     public function test_registrar_abono_reduce_saldo(): void
     {
-        $cuenta = $this->service->crearDesdeVenta($this->venta);
+        $cuenta = $this->service->crearDesdeVenta(Bloqueos04d::modelo($this->venta));
 
-        $this->service->registrarAbono($cuenta->id, [
+        $this->service->registrarAbonoConBloqueos(Bloqueos04d::modelo($cuenta), [
             'sucursal_id' => $this->sucursal->id,
             'usuario_id' => $this->usuario->id,
             'monto' => 30,
             'metodo_pago_id' => $this->efectivo->id,
-        ]);
+        ], Bloqueos04c::caja($this->sucursal->id));
 
         $cuenta->refresh();
         $this->assertSame(70.0, (float) $cuenta->saldo_pendiente);
@@ -117,14 +119,14 @@ class CuentasCobrarServiceTest extends TestCase
 
     public function test_abono_completo_marca_pagada(): void
     {
-        $cuenta = $this->service->crearDesdeVenta($this->venta);
+        $cuenta = $this->service->crearDesdeVenta(Bloqueos04d::modelo($this->venta));
 
-        $this->service->registrarAbono($cuenta->id, [
+        $this->service->registrarAbonoConBloqueos(Bloqueos04d::modelo($cuenta), [
             'sucursal_id' => $this->sucursal->id,
             'usuario_id' => $this->usuario->id,
             'monto' => 100,
             'metodo_pago_id' => $this->efectivo->id,
-        ]);
+        ], Bloqueos04c::caja($this->sucursal->id));
 
         $cuenta->refresh();
         $this->assertSame(0.0, (float) $cuenta->saldo_pendiente);
@@ -133,76 +135,76 @@ class CuentasCobrarServiceTest extends TestCase
 
     public function test_abono_excede_saldo_lanza_excepcion(): void
     {
-        $cuenta = $this->service->crearDesdeVenta($this->venta);
+        $cuenta = $this->service->crearDesdeVenta(Bloqueos04d::modelo($this->venta));
 
         $this->expectException(AbonoExcedeSaldoException::class);
-        $this->service->registrarAbono($cuenta->id, [
+        $this->service->registrarAbonoConBloqueos(Bloqueos04d::modelo($cuenta), [
             'sucursal_id' => $this->sucursal->id,
             'usuario_id' => $this->usuario->id,
             'monto' => 200,
             'metodo_pago_id' => $this->efectivo->id,
-        ]);
+        ], Bloqueos04c::caja($this->sucursal->id));
     }
 
     public function test_abono_en_cuenta_pagada_lanza_excepcion(): void
     {
-        $cuenta = $this->service->crearDesdeVenta($this->venta);
-        $this->service->registrarAbono($cuenta->id, [
+        $cuenta = $this->service->crearDesdeVenta(Bloqueos04d::modelo($this->venta));
+        $this->service->registrarAbonoConBloqueos(Bloqueos04d::modelo($cuenta), [
             'sucursal_id' => $this->sucursal->id,
             'usuario_id' => $this->usuario->id,
             'monto' => 100,
             'metodo_pago_id' => $this->efectivo->id,
-        ]);
+        ], Bloqueos04c::caja($this->sucursal->id));
 
         $this->expectException(CuentaYaPagadaException::class);
-        $this->service->registrarAbono($cuenta->id, [
+        $this->service->registrarAbonoConBloqueos(Bloqueos04d::modelo($cuenta), [
             'sucursal_id' => $this->sucursal->id,
             'usuario_id' => $this->usuario->id,
             'monto' => 10,
             'metodo_pago_id' => $this->efectivo->id,
-        ]);
+        ], Bloqueos04c::caja($this->sucursal->id));
     }
 
     public function test_abono_en_cuenta_anulada_lanza_excepcion(): void
     {
-        $cuenta = $this->service->crearDesdeVenta($this->venta);
-        $this->service->anular($cuenta->id);
+        $cuenta = $this->service->crearDesdeVenta(Bloqueos04d::modelo($this->venta));
+        $this->service->anularConCuenta(Bloqueos04d::modelo($cuenta));
 
         $this->expectException(CuentaAnuladaException::class);
-        $this->service->registrarAbono($cuenta->id, [
+        $this->service->registrarAbonoConBloqueos(Bloqueos04d::modelo($cuenta), [
             'sucursal_id' => $this->sucursal->id,
             'usuario_id' => $this->usuario->id,
             'monto' => 10,
             'metodo_pago_id' => $this->efectivo->id,
-        ]);
+        ], Bloqueos04c::caja($this->sucursal->id));
     }
 
     public function test_anular_sin_abonos_es_valido(): void
     {
-        $cuenta = $this->service->crearDesdeVenta($this->venta);
+        $cuenta = $this->service->crearDesdeVenta(Bloqueos04d::modelo($this->venta));
 
-        $this->service->anular($cuenta->id);
+        $this->service->anularConCuenta(Bloqueos04d::modelo($cuenta));
 
         $this->assertSame('anulada', $cuenta->fresh()->estado);
     }
 
     public function test_anular_con_abonos_lanza_excepcion(): void
     {
-        $cuenta = $this->service->crearDesdeVenta($this->venta);
-        $this->service->registrarAbono($cuenta->id, [
+        $cuenta = $this->service->crearDesdeVenta(Bloqueos04d::modelo($this->venta));
+        $this->service->registrarAbonoConBloqueos(Bloqueos04d::modelo($cuenta), [
             'sucursal_id' => $this->sucursal->id,
             'usuario_id' => $this->usuario->id,
             'monto' => 30,
             'metodo_pago_id' => $this->efectivo->id,
-        ]);
+        ], Bloqueos04c::caja($this->sucursal->id));
 
         $this->expectException(CuentaConAbonosException::class);
-        $this->service->anular($cuenta->id);
+        $this->service->anularConCuenta(Bloqueos04d::modelo($cuenta));
     }
 
     public function test_obtener_vencidas_solo_devuelve_pendientes_vencidas(): void
     {
-        $this->service->crearDesdeVenta($this->venta, diasCredito: -1);
+        $this->service->crearDesdeVenta(Bloqueos04d::modelo($this->venta), diasCredito: -1);
 
         $vencidas = $this->service->obtenerVencidas();
 
@@ -212,13 +214,13 @@ class CuentasCobrarServiceTest extends TestCase
 
     public function test_aislamiento_tenant_cxc_y_abonos(): void
     {
-        $cuenta = $this->service->crearDesdeVenta($this->venta);
-        $this->service->registrarAbono($cuenta->id, [
+        $cuenta = $this->service->crearDesdeVenta(Bloqueos04d::modelo($this->venta));
+        $this->service->registrarAbonoConBloqueos(Bloqueos04d::modelo($cuenta), [
             'sucursal_id' => $this->sucursal->id,
             'usuario_id' => $this->usuario->id,
             'monto' => 30,
             'metodo_pago_id' => $this->efectivo->id,
-        ]);
+        ], Bloqueos04c::caja($this->sucursal->id));
 
         // Cambiar de tenant
         $tenant2 = Tenant::create(['nombre' => 'Otro', 'pais' => 'MX']);

@@ -127,7 +127,6 @@ app/Modules/CuentasCobrar/Http/Resources/CuentaCobrarResource.php
 app/Modules/CuentasCobrar/Models/AbonoCuenta.php
 app/Modules/CuentasCobrar/Models/CuentaCobrar.php
 app/Modules/CuentasCobrar/Providers/CuentasCobrarServiceProvider.php
-app/Modules/CuentasCobrar/Services/CuentasCobrarService.php
 app/Modules/CuentasPagar/Database/Factories/AbonoPagarFactory.php
 app/Modules/CuentasPagar/Database/Factories/CuentaPagarFactory.php
 app/Modules/CuentasPagar/Database/Migrations/2026_08_10_000001_create_cuentas_pagar_table.php
@@ -144,7 +143,6 @@ app/Modules/CuentasPagar/Http/Resources/CuentaPagarResource.php
 app/Modules/CuentasPagar/Models/AbonoPagar.php
 app/Modules/CuentasPagar/Models/CuentaPagar.php
 app/Modules/CuentasPagar/Providers/CuentasPagarServiceProvider.php
-app/Modules/CuentasPagar/Services/CuentasPagarService.php
 app/Modules/Delivery/Database/Factories/PedidoFactory.php
 app/Modules/Delivery/Database/Factories/PedidoItemFactory.php
 app/Modules/Delivery/Database/Migrations/2026_08_10_000001_create_pedidos_table.php
@@ -215,7 +213,6 @@ app/Modules/GiftCards/Http/Resources/GiftCardResource.php
 app/Modules/GiftCards/Models/GiftCard.php
 app/Modules/GiftCards/Models/GiftCardRecarga.php
 app/Modules/GiftCards/Providers/GiftCardsServiceProvider.php
-app/Modules/GiftCards/Services/GiftCardService.php
 app/Modules/Inventario/Database/Factories/CategoriaFactory.php
 app/Modules/Inventario/Database/Factories/CompraDetalleFactory.php
 app/Modules/Inventario/Database/Factories/CompraFactory.php
@@ -280,7 +277,6 @@ app/Modules/NotasCredito/Http/Resources/NotaCreditoResource.php
 app/Modules/NotasCredito/Models/NotaCredito.php
 app/Modules/NotasCredito/Models/NotaCreditoUso.php
 app/Modules/NotasCredito/Providers/NotasCreditoServiceProvider.php
-app/Modules/NotasCredito/Services/NotaCreditoService.php
 app/Modules/Nucleo/Console/Commands/ActivarLicenciaCommand.php
 app/Modules/Nucleo/Console/Commands/ErroresCatalogoCommand.php
 app/Modules/Nucleo/Console/Commands/EsquemaSnapshotCommand.php
@@ -556,8 +552,6 @@ app/Modules/VentasPlazos/Http/Resources/PlanPagoResource.php
 app/Modules/VentasPlazos/Models/PlanPagoCliente.php
 app/Modules/VentasPlazos/Models/PlanPagoClienteCuota.php
 app/Modules/VentasPlazos/Providers/VentasPlazosServiceProvider.php
-app/Modules/VentasPlazos/Services/PlanPagoClienteService.php
-app/Modules/VentasPlazos/Services/VentasPlazosService.php
 app/Modules/VentasPlazos/Support/ReglasCuota.php
 app/Providers/AppServiceProvider.php
 database/migrations/0001_01_01_000000_create_sessions_and_password_resets_tables.php

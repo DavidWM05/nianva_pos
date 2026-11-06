@@ -2,14 +2,15 @@
 
 namespace App\Modules\GiftCards\Http\Controllers;
 
+use App\Aplicacion\GiftCards\CancelarGiftCard;
+use App\Aplicacion\GiftCards\EmitirGiftCard;
+use App\Aplicacion\GiftCards\RecargarGiftCard;
 use App\Http\Controllers\Controller;
 use App\Modules\GiftCards\Http\Requests\EmitirGiftCardRequest;
 use App\Modules\GiftCards\Http\Requests\RecargarGiftCardRequest;
 use App\Modules\GiftCards\Http\Resources\GiftCardResource;
 use App\Modules\GiftCards\Models\GiftCard;
-use App\Modules\GiftCards\Services\GiftCardService;
 use App\Modules\Nucleo\Services\TenantContext;
-use App\Modules\Tpv\Models\CajaSesion;
 use Illuminate\Http\Request;
 
 class GiftCardController extends Controller
@@ -52,16 +53,11 @@ class GiftCardController extends Controller
         ]);
     }
 
-    public function store(EmitirGiftCardRequest $request, GiftCardService $service)
+    public function store(EmitirGiftCardRequest $request, EmitirGiftCard $action)
     {
         $dto = $request->toDto();
 
-        $giftCard = $service->emitir([
-            'tenant_id' => app(TenantContext::class)->id(),
-            'cliente_id' => $dto->clienteId,
-            'monto' => $dto->monto,
-            'fecha_expiracion' => $dto->fechaExpiracion,
-        ]);
+        $giftCard = $action->ejecutar($dto, (int) app(TenantContext::class)->id());
 
         return (new GiftCardResource($giftCard))->response()->setStatusCode(201);
     }
@@ -73,7 +69,7 @@ class GiftCardController extends Controller
         return new GiftCardResource($giftCard);
     }
 
-    public function recargar(RecargarGiftCardRequest $request, int $id, GiftCardService $service)
+    public function recargar(RecargarGiftCardRequest $request, int $id, RecargarGiftCard $action)
     {
         $usuario = $request->user();
 
@@ -81,20 +77,14 @@ class GiftCardController extends Controller
             abort(401);
         }
 
-        $cajaSesion = CajaSesion::sinTenant()
-            ->where('sucursal_id', (int) $usuario->getAttribute('sucursal_id'))
-            ->where('estado', 'abierta')
-            ->latest('id')
-            ->first();
-
-        $giftCard = $service->recargar($id, $request->toDto()->monto, $usuario->id, $cajaSesion?->id);
+        $giftCard = $action->ejecutar($request->toDto(), $id, $usuario);
 
         return new GiftCardResource($giftCard);
     }
 
-    public function cancelar(int $id, GiftCardService $service)
+    public function cancelar(int $id, CancelarGiftCard $action)
     {
-        $service->cancelar($id);
+        $action->ejecutar($id);
 
         return response()->json(['message' => 'Gift Card cancelada correctamente.']);
     }

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Modules\NotasCredito\Services;
 
 use App\Modules\Devoluciones\Models\Devolucion;
@@ -15,50 +17,50 @@ class NotaCreditoService
 {
     public function crearDesdeDevolucion(Devolucion $devolucion): NotaCredito
     {
-        return DB::transaction(function () use ($devolucion) {
-            return NotaCredito::create([
-                'tenant_id' => $devolucion->tenant_id,
-                'cliente_id' => $devolucion->venta->cliente_id,
-                'devolucion_id' => $devolucion->id,
-                'monto_original' => $devolucion->monto_devolucion,
-                'saldo_disponible' => $devolucion->monto_devolucion,
-                'estado' => 'activa',
-            ]);
-        });
+        $this->exigirTransaccion();
+
+        return NotaCredito::create([
+            'tenant_id' => $devolucion->tenant_id,
+            'cliente_id' => $devolucion->venta->cliente_id,
+            'devolucion_id' => $devolucion->id,
+            'monto_original' => $devolucion->monto_devolucion,
+            'saldo_disponible' => $devolucion->monto_devolucion,
+            'estado' => 'activa',
+        ]);
+
     }
 
-    public function usarEnVenta(int $notaCreditoId, int $ventaId, float $monto): void
+    public function usarEnVentaConNota(NotaCredito $notaCredito, int $ventaId, float $monto): void
     {
-        DB::transaction(function () use ($notaCreditoId, $ventaId, $monto) {
-            $notaCredito = NotaCredito::where('id', $notaCreditoId)
-                ->lockForUpdate()
-                ->firstOrFail();
+        $this->exigirTransaccion();
 
-            if ($notaCredito->estado === 'expirada') {
-                throw new NotaCreditoExpiradaException($notaCreditoId);
-            }
+        $notaCreditoId = (int) $notaCredito->getKey();
 
-            if ((float) $notaCredito->saldo_disponible <= 0) {
-                throw new NotaCreditoSinSaldoException($notaCreditoId);
-            }
+        if ($notaCredito->estado === 'expirada') {
+            throw new NotaCreditoExpiradaException($notaCreditoId);
+        }
 
-            if ($monto > (float) $notaCredito->saldo_disponible) {
-                throw new NotaCreditoSaldoInsuficienteException($notaCreditoId);
-            }
+        if ((float) $notaCredito->saldo_disponible <= 0) {
+            throw new NotaCreditoSinSaldoException($notaCreditoId);
+        }
 
-            NotaCreditoUso::create([
-                'nota_credito_id' => $notaCredito->id,
-                'venta_id' => $ventaId,
-                'monto_usado' => $monto,
-            ]);
+        if ($monto > (float) $notaCredito->saldo_disponible) {
+            throw new NotaCreditoSaldoInsuficienteException($notaCreditoId);
+        }
 
-            $nuevoSaldo = round((float) $notaCredito->saldo_disponible - $monto, 2);
+        NotaCreditoUso::create([
+            'nota_credito_id' => $notaCredito->id,
+            'venta_id' => $ventaId,
+            'monto_usado' => $monto,
+        ]);
 
-            $notaCredito->update([
-                'saldo_disponible' => $nuevoSaldo,
-                'estado' => $nuevoSaldo <= 0 ? 'usada_total' : 'usada_parcial',
-            ]);
-        });
+        $nuevoSaldo = round((float) $notaCredito->saldo_disponible - $monto, 2);
+
+        $notaCredito->update([
+            'saldo_disponible' => $nuevoSaldo,
+            'estado' => $nuevoSaldo <= 0 ? 'usada_total' : 'usada_parcial',
+        ]);
+
     }
 
     public function obtenerActivasPorCliente(int $clienteId): Collection
@@ -74,7 +76,12 @@ class NotaCreditoService
 
     public function validarParaPago(int $notaCreditoId): NotaCredito
     {
-        $notaCredito = NotaCredito::findOrFail($notaCreditoId);
+        return $this->validarNotaParaPago(NotaCredito::query()->findOrFail($notaCreditoId));
+    }
+
+    public function validarNotaParaPago(NotaCredito $notaCredito): NotaCredito
+    {
+        $notaCreditoId = (int) $notaCredito->getKey();
 
         if ($notaCredito->estado === 'expirada') {
             throw new NotaCreditoExpiradaException($notaCreditoId);
@@ -85,5 +92,13 @@ class NotaCreditoService
         }
 
         return $notaCredito;
+    }
+
+    /** El modelo recibido debe haberse leído con bloqueo en la Action llamadora. */
+    private function exigirTransaccion(): void
+    {
+        if (DB::transactionLevel() === 0) {
+            throw new \LogicException('La escritura de saldos requiere una transacción activa.');
+        }
     }
 }

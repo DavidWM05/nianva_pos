@@ -2,11 +2,12 @@
 
 namespace App\Modules\CuentasPagar\Http\Controllers;
 
+use App\Aplicacion\CuentasPagar\AnularCuenta;
+use App\Aplicacion\CuentasPagar\RegistrarPago;
 use App\Http\Controllers\Controller;
 use App\Modules\CuentasPagar\Http\Requests\RegistrarPagoRequest;
 use App\Modules\CuentasPagar\Http\Resources\CuentaPagarResource;
 use App\Modules\CuentasPagar\Models\CuentaPagar;
-use App\Modules\CuentasPagar\Services\CuentasPagarService;
 use Illuminate\Http\Request;
 
 class CuentaPagarController extends Controller
@@ -56,7 +57,7 @@ class CuentaPagarController extends Controller
         return new CuentaPagarResource($cuentaPagar);
     }
 
-    public function registrarPago(RegistrarPagoRequest $request, int $id, CuentasPagarService $service)
+    public function registrarPago(RegistrarPagoRequest $request, int $id, RegistrarPago $action)
     {
         $usuario = $request->user();
 
@@ -66,13 +67,7 @@ class CuentaPagarController extends Controller
 
         $dto = $request->toDto();
 
-        $abono = $service->registrarPago($id, [
-            'sucursal_id' => (int) $usuario->getAttribute('sucursal_id'),
-            'usuario_id' => $usuario->id,
-            'monto' => $dto->monto,
-            'metodo_pago_id' => $dto->metodoPagoId,
-            'referencia' => $dto->referencia,
-        ]);
+        $abono = $action->ejecutar($dto, $id, $usuario);
 
         $cuenta = CuentaPagar::with('proveedor')->findOrFail($id);
 
@@ -89,9 +84,9 @@ class CuentaPagarController extends Controller
         ]);
     }
 
-    public function anular(int $id, CuentasPagarService $service)
+    public function anular(int $id, AnularCuenta $action)
     {
-        $service->anular($id);
+        $action->ejecutar($id);
 
         return response()->json(['message' => 'Cuenta por pagar anulada correctamente.']);
     }
