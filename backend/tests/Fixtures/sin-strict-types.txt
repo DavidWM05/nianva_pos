@@ -546,7 +546,6 @@ app/Modules/Tpv/Services/CajaService.php
 app/Modules/Tpv/Services/VentaService.php
 app/Modules/Tpv/Support/ReglasCaja.php
 app/Modules/UnidadesMedida/Database/Factories/UnidadMedidaFactory.php
-app/Modules/UnidadesMedida/Database/Migrations/2026_08_10_000001_create_unidades_medida_table.php
 app/Modules/UnidadesMedida/Database/Seeders/UnidadesMedidaSeeder.php
 app/Modules/UnidadesMedida/Dtos/UnidadMedidaDto.php
 app/Modules/UnidadesMedida/Exceptions/UnidadEnUsoException.php

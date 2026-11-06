@@ -1364,6 +1364,31 @@ repo.
     tenga interruptor de tema;
   - `openapi-typescript` 7.13.0 declara TypeScript 5 como peer y el repo usa el 6: genera bien,
     pero pnpm avisa.
+- **Fase 3 en paralelo (Codex), decidido el 2026-11-05:** mientras DS cierra la Fase 2 en
+  `frontend/`, Codex avanza en el backend las reglas de la Fase 3 que no cambian el contrato
+  con el frontend. API-02, DAT-08 y la parte de DAT-01/DAT-02 que toca respuestas esperan a
+  que termine la migración de pantallas. La Fase 4 no va en paralelo.
+  - **ARQ-04, por etapas** (04a guardas; 04b TPV e inventario; 04c apartados, devoluciones y
+    gastos; 04d extensiones que mueven saldo; 04e el resto). Convención: la Action abre la
+    transacción y bloquea el saldo; el Service recibe el modelo bloqueado y, si escribe un
+    saldo, exige `DB::transactionLevel() > 0`. Los 4 módulos congelados quedan exentos.
+  - **04a:**
+    - `Arquitectura/TransaccionesEnActionsTest` con `PENDIENTES` (16 archivos, 50 usos,
+      sin contar comentarios ni textos);
+    - grupo `concurrencia` en `backend/tests/Concurrencia`, excluido de la corrida normal y
+      que falla con SQLite. Corre en el job "Concurrencia (MySQL)", con `mysql:8.4`. El
+      helper lanza procesos hijos reales y espera el `LOCK WAIT` en
+      `performance_schema.data_lock_waits`. Como el upsert de stock también bloquea, el
+      test exige además `SELECT … FOR UPDATE` dentro de la transacción; así detecta la
+      mutación;
+    - **corregido en la revisión:** en MySQL, la migración completa fallaba porque
+      `insumos` se creaba antes que `unidades_medida` (mismo prefijo `2026_08_10_000001`).
+      Codex lo esquivaba en CI migrando primero esas tablas; ahora la de
+      `unidades_medida` pasa a `2026_08_09_000001` (DAT-11) y el job migra sin pasos
+      especiales, como una instalación nueva. Esa migración ahora declara `strict_types`:
+      sale de `sin-strict-types.txt`, y la línea base de PHPStan apunta al nombre nuevo.
+      Hay más migraciones con el mismo prefijo, sin dependencias entre sí; el job las
+      vigila.
 - **Git:** `master` está protegido (ruleset `proteger-master`): todo entra por PR con los tres
   checks en verde.
 
