@@ -1420,6 +1420,31 @@ repo.
       pantalla. Con `startWith(null)` leía `child.snapshot` antes de que el router lo
       asignara. Ahora se detiene si no hay snapshot, y el breadcrumb se arma en el
       `NavigationEnd` siguiente. La red lo vio fallar en 36 de las 37 pantallas.
+  - **50b · piloto (DS, revisado por Claude):**
+    - `unidades-medida`, `auditoria` y `nucleo` (inicio) sobre `libs/ui`, sin PrimeNG y en
+      `MODULOS_POS_SIN_PRIMENG`. Su e2e de flujo (`apps/pos-e2e/src/modulos/`) pasó antes de
+      migrar y pasa después, con axe y sin errores de consola. Unidades se crea desde el
+      modal;
+    - **autorización para toda la serie (PRO-01):** agregar a un spec existente los providers
+      que piden los componentes de `libs/ui`, sin tocar casos. El helper
+      `apps/pos/src/app/testing/proveedores-pantalla.ts` usa el registro real
+      (`REGISTRO_NAVEGACION_POS`). Además, el responsable autorizó que el caso del diff de
+      auditoría lea el overlay de CDK en vez del fixture: `ui-modal` pinta fuera del
+      componente. DS había duplicado el diff en un `div hidden` para pasar el test, y se
+      quitó;
+    - **bug encontrado por la red y corregido:** todo toast lanzaba `HierarchyRequestError`
+      desde el 49b. `ToastContentComponent` ponía `aria-live` en su host, dentro del
+      contenedor `aria-hidden` de MatSnackBar, que lo tomaba como su región en vivo y
+      intentaba meter al padre dentro del hijo. El anuncio queda en MatSnackBar, con su
+      `politeness` (`toast-anuncio.spec.ts`, visto en rojo);
+    - `accionAuditoria` en `REGISTRO_ESTADOS` (`create`, `update` y `delete`, todos con
+      badge), con un test contra el enum de la migración: así el badge sale de `ui-tabla`,
+      sin celda propia;
+    - en la revisión se corrigieron, con un test visto en rojo cada uno: el filtro de usuario
+      vacío (un `computed` sobre un campo común), la página de `meta` que no avanzaba (el
+      paginador volvía a 1) y el skeleton en cada recarga, que destruía la barra de filtros
+      (UI-18: solo en la primera carga). Las fechas de auditoría quedan como
+      `<input type="date">` dentro de `ui-campo`.
 - **Posibles mejoras (roadmap):**
   - **capturas de Linux sin pasar por CI (Docker):** hoy cada PR con cambio visual falla una
     vez en "Catálogo visual", se baja el artifact y se versionan las capturas, porque en el
