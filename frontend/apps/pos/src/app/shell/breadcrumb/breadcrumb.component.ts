@@ -22,7 +22,7 @@ export class BreadcrumbComponent {
   private readonly router = inject(Router);
   private readonly activatedRoute = inject(ActivatedRoute);
 
-  protected readonly home: MenuItem = { icon: 'pi pi-home', routerLink: '/' };
+  protected readonly home: MenuItem = { label: 'Inicio', icon: 'pi pi-home', routerLink: '/' };
   protected readonly items = signal<MenuItem[]>([]);
 
   constructor() {

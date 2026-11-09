@@ -2,7 +2,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { ConfirmDialogService, ToastService } from '@nianva/ui-shared';
-import { providePrimeNG } from 'primeng/config';
+import { proveedoresDePantalla } from '../../../../testing/proveedores-pantalla';
 import { of, throwError } from 'rxjs';
 import { describe, expect, it, vi } from 'vitest';
 
@@ -39,8 +39,8 @@ describe('UnidadesMedidaListComponent', () => {
     await TestBed.configureTestingModule({
       imports: [UnidadesMedidaListComponent],
       providers: [
+        ...proveedoresDePantalla(),
         provideAnimationsAsync(),
-        providePrimeNG(),
         { provide: UnidadMedidaService, useValue: unidadMedidaService },
         { provide: ConfirmDialogService, useValue: confirmDialog },
         { provide: ToastService, useValue: toast },

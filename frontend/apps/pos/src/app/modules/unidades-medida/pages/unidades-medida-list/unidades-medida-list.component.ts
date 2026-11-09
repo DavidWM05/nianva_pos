@@ -1,11 +1,16 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { ConfirmDialogService, StatusBadgeComponent, ToastService, mensajeError } from '@nianva/ui-shared';
-import { Button } from 'primeng/button';
-import { Dialog } from 'primeng/dialog';
-import { InputText } from 'primeng/inputtext';
-import { Select } from 'primeng/select';
+import { MatButton } from '@angular/material/button';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { BotonCrearComponent } from '@nianva/ui-actions';
+import { EstadoPagina, PageComponent, PageHeaderComponent } from '@nianva/ui-layout';
+import { ToastService } from '@nianva/ui-feedback';
+import { CampoComponent, SelectFiltroComponent } from '@nianva/ui-forms';
+import { BtnEnviarComponent } from '@nianva/ui-forms';
+import { ColumnaListado, TablaComponent } from '@nianva/ui-data';
+import { ConfirmDialogService, mensajeError } from '@nianva/ui-shared';
+import { ModalComponent } from '@nianva/ui-overlays';
 
 import { UnidadMedidaFormPayload, UnidadMedidaService } from '../../unidad-medida.service';
 import { TipoUnidadMedida, UnidadMedida } from '../../unidad-medida.types';
@@ -15,26 +20,35 @@ const TIPOS: { label: string; value: TipoUnidadMedida }[] = [
   { label: 'Fraccionario (acepta decimales)', value: 'fraccionario' },
 ];
 
+interface UnidadVista extends UnidadMedida {
+  tipoEtiqueta: string;
+}
 
 /**
  * Catalogo transversal (ver 04_ESPECIFICACION_FRONTEND_UX.md §9, tipo
- * "Catálogo", una sola ruta) -- a diferencia de Categoria/Departamento no
- * tiene vista dedicada de crear/editar/visualizar: el backend
- * (UnidadMedidaController) no tiene `GET /unidades-medida/{id}`, y
- * `index()` siempre trae la lista completa sin paginar (normalmente
- * <20 filas), asi que un modal de alta/edicion sobre la misma lista ya
- * cargada es mas fiel al contrato real que forzar 2 rutas nuevas contra un
- * endpoint que no existe.
- *
- * Ninguna ruta de este modulo exige permiso (ver el reporte) -- todos los
- * botones se muestran siempre, sin `meta.permisos` que gatee nada.
+ * "Catalogo", una sola ruta): el backend no tiene GET /unidades-medida/{id}
+ * y devuelve la lista completa; el alta/edicion se resuelve sobre la lista.
+ * Ninguna ruta del modulo exige permiso.
  */
 @Component({
   selector: 'nucleo-unidades-medida-list',
   standalone: true,
-  imports: [FormsModule, StatusBadgeComponent, Button, Dialog, InputText, Select],
+  imports: [
+    BotonCrearComponent,
+    BtnEnviarComponent,
+    CampoComponent,
+    FormsModule,
+    MatButton,
+    MatCheckboxModule,
+    ModalComponent,
+    PageComponent,
+    PageHeaderComponent,
+
+    SelectFiltroComponent,
+    TablaComponent,
+
+  ],
   templateUrl: './unidades-medida-list.component.html',
-  styleUrl: './unidades-medida-list.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class UnidadesMedidaListComponent implements OnInit {
@@ -43,9 +57,35 @@ export class UnidadesMedidaListComponent implements OnInit {
   private readonly toast = inject(ToastService);
 
   protected readonly tipos = TIPOS;
-
   protected readonly unidades = signal<UnidadMedida[]>([]);
   protected readonly cargando = signal(true);
+  protected readonly primeraCarga = signal(true);
+  protected readonly error = signal(false);
+  protected readonly estadoPagina = computed<EstadoPagina>(() =>
+    this.primeraCarga() ? 'cargando' : this.error() ? 'error' : 'listo',
+  );
+  protected readonly metaListado = computed(() => ({
+    total: this.filas().length,
+    page: 1,
+    rows: Math.max(1, this.filas().length),
+    filtros_aplicados: {},
+    permisos: {},
+  }));
+  protected readonly esInactiva = (fila: UnidadVista): boolean => !fila.activo;
+  protected readonly filas = computed<UnidadVista[]>(() =>
+    this.unidades().map((unidad) => ({
+      ...unidad,
+      tipoEtiqueta: unidad.tipo === 'entero' ? 'Entero' : 'Fraccionario',
+    })),
+  );
+  protected readonly columnas: ColumnaListado<UnidadVista>[] = [
+    { tipo: 'principal', campo: 'nombre', encabezado: 'Nombre', apoyo: 'abreviatura', ordenable: true },
+    { tipo: 'texto', campo: 'tipoEtiqueta', encabezado: 'Tipo' },
+    {
+      tipo: 'acciones',
+      acciones: () => [{ tipo: 'editar' }, { tipo: 'eliminar' }],
+    },
+  ];
 
   protected readonly mostrarFormulario = signal(false);
   protected readonly unidadEnEdicion = signal<UnidadMedida | null>(null);
@@ -90,7 +130,6 @@ export class UnidadesMedidaListComponent implements OnInit {
     const enEdicion = this.unidadEnEdicion();
 
     this.guardando.set(true);
-
     const operacion = enEdicion
       ? this.unidadMedidaService.actualizar(enEdicion.id, payload)
       : this.unidadMedidaService.crear(payload);
@@ -115,7 +154,6 @@ export class UnidadesMedidaListComponent implements OnInit {
       header: 'Eliminar unidad de medida',
       severity: 'danger',
     });
-
     if (!confirmado) return;
 
     this.unidadMedidaService.eliminar(unidad.id).subscribe({
@@ -129,15 +167,25 @@ export class UnidadesMedidaListComponent implements OnInit {
     });
   }
 
-  private cargar(): void {
+  protected onAccionVista(fila: UnidadVista, accion: { tipo: string }): void {
+    if (accion.tipo === 'editar') this.abrirEditar(fila);
+    if (accion.tipo === 'eliminar') void this.eliminar(fila);
+  }
+
+  protected cargar(): void {
     this.cargando.set(true);
+    this.error.set(false);
     this.unidadMedidaService.listar().subscribe({
       next: (unidades) => {
         this.unidades.set(unidades);
         this.cargando.set(false);
+        this.primeraCarga.set(false);
       },
-      error: () => this.cargando.set(false),
+      error: () => {
+        this.error.set(true);
+        this.cargando.set(false);
+        this.primeraCarga.set(false);
+      },
     });
   }
-
 }

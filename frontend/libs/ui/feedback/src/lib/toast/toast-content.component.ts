@@ -19,8 +19,6 @@ export interface ToastContentData {
   styleUrl: './toast-content.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
-    '[attr.role]': "data.severity === 'error' ? 'alert' : 'status'",
-    '[attr.aria-live]': "data.severity === 'error' ? 'assertive' : 'polite'",
     '[class]': '"ui-toast ui-toast--" + data.severity',
   },
 })
