@@ -83,6 +83,22 @@ describe('REGISTRO_ESTADOS', () => {
     }
   });
 
+  it('accionAuditoria cubre exactamente el enum accion de audit_logs, todo con badge', () => {
+    const migracion = readFileSync(
+      join(process.cwd(), '..', 'backend', 'app', 'Modules', 'Auditoria', 'Database', 'Migrations', '2026_07_20_000001_create_auditoria_table.php'),
+      'utf8',
+    );
+    const columna = /->enum\('accion',\s*\[([^\]]+)\]\)/.exec(migracion);
+    const valores = [...(columna?.[1] ?? '').matchAll(/'(\w+)'/g)].map((valor) => valor[1]);
+    const registro = (REGISTRO_ESTADOS as Record<string, Record<string, unknown>>)['accionAuditoria'];
+
+    expect(valores).toEqual(['create', 'update', 'delete']);
+    expect(Object.keys(registro ?? {}).sort()).toEqual([...valores].sort());
+
+    for (const valor of valores) {
+      expect(estadoVisual('accionAuditoria' as EntidadConEstado, valor), valor).not.toBeNull();
+    }
+  });
   it('un estado desconocido se muestra tal cual en tono neutro', () => {
     expect(estadoVisual('venta', 'reembolsada')).toEqual({
       etiqueta: 'reembolsada',

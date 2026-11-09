@@ -1,62 +1,57 @@
-<div class="inicio">
-  <h1>Inicio</h1>
+<ui-page-header clave="nucleo" subtitulo="Resumen del día" />
 
-  <div class="inicio__tiles">
-    <div class="inicio__tile">
-      <h2>Ventas de hoy</h2>
-      @if (cargandoResumen()) {
-        <p>Cargando...</p>
-      } @else if (resumen(); as resumenActual) {
-        <p class="inicio__tile-valor">{{ resumenActual.ventas_hoy.cantidad }}</p>
-        <p class="inicio__tile-detalle">${{ resumenActual.ventas_hoy.total }} en total</p>
-      }
-    </div>
+<ui-section titulo="Ventas">
+  <ui-kpi
+    etiqueta="Ventas de hoy"
+    [valor]="resumen()?.ventas_hoy?.cantidad ?? 0"
+    formato="cantidad"
+    unidad="venta"
+    [cargando]="cargandoResumen()"
+  />
+  @if (resumen(); as resumenActual) {
+    <p>Total vendido: {{ resumenActual.ventas_hoy.total | dinero }}</p>
+  }
+</ui-section>
 
-    <div class="inicio__tile">
-      <h2>Caja</h2>
-      @if (cargandoCaja()) {
-        <p>Cargando...</p>
-      } @else if (caja(); as cajaActual) {
-        @if (cajaActual.sesion) {
-          <p class="inicio__tile-valor inicio__tile-valor--abierta">Abierta</p>
-          @if (cajaActual.resumen) {
-            <p class="inicio__tile-detalle">
-              {{ cajaActual.resumen.ventas_count }} ventas · ${{ cajaActual.resumen.total_ventas }}
-            </p>
-          }
-        } @else {
-          <p class="inicio__tile-valor inicio__tile-valor--cerrada">Cerrada</p>
-          <p class="inicio__tile-detalle">
-            <a routerLink="/tpv/caja">Abrir caja</a>
-          </p>
-        }
+<ui-section titulo="Caja">
+  <ui-kpi
+    etiqueta="Estado de caja"
+    [valor]="caja()?.sesion ? 'Abierta' : 'Cerrada'"
+    formato="texto"
+    [cargando]="cargandoCaja()"
+  />
+  @if (caja(); as cajaActual) {
+    @if (cajaActual.sesion) {
+      @if (cajaActual.resumen) {
+        <p>{{ cajaActual.resumen.ventas_count }} ventas · {{ cajaActual.resumen.total_ventas | dinero }}</p>
       }
-    </div>
-  </div>
-
-  <section class="inicio__apartados">
-    <h2>Apartados por vencer (próximos 7 días)</h2>
-    @if (cargandoResumen()) {
-      <p>Cargando...</p>
-    } @else if (resumen(); as resumenActual) {
-      @if (resumenActual.apartados_por_vencer.length === 0) {
-        <p class="inicio__aviso">No hay apartados próximos a vencer.</p>
-      } @else {
-        <ul class="inicio__lista-apartados">
-          @for (apartado of resumenActual.apartados_por_vencer; track apartado.id) {
-            <li>
-              <a [routerLink]="['/apartados', apartado.id]">
-                <span>{{ apartado.cliente_nombre ?? '—' }}</span>
-                <span>{{ apartado.fecha_vencimiento | date: 'shortDate' }}</span>
-                <span [class.inicio__apartado--vencido]="diasParaVencer(apartado) < 0">
-                  {{ diasParaVencer(apartado) < 0 ? 'Vencido' : diasParaVencer(apartado) + ' día(s)' }}
-                </span>
-                <span>${{ apartado.total_abonado }} / ${{ apartado.total }}</span>
-              </a>
-            </li>
-          }
-        </ul>
-      }
+    } @else {
+      <a matButton="text" routerLink="/tpv/caja">Abrir caja</a>
     }
-  </section>
-</div>
+  }
+</ui-section>
+
+<ui-section titulo="Apartados por vencer (próximos 7 días)">
+  @if (cargandoResumen()) {
+    <ui-skeleton forma="texto" [lineas]="3" />
+  } @else if (resumen(); as resumenActual) {
+    @if (resumenActual.apartados_por_vencer.length === 0) {
+      <p>No hay apartados próximos a vencer.</p>
+    } @else {
+      <ul class="inicio__lista-apartados">
+        @for (apartado of resumenActual.apartados_por_vencer; track apartado.id) {
+          <li>
+            <a [routerLink]="['/apartados', apartado.id]">
+              <span>{{ apartado.cliente_nombre ?? '—' }}</span>
+              <span>{{ apartado.fecha_vencimiento | fecha }}</span>
+              <span [class.inicio__apartado--vencido]="diasParaVencer(apartado) < 0">
+                {{ diasParaVencer(apartado) < 0 ? 'Vencido' : diasParaVencer(apartado) + ' día(s)' }}
+              </span>
+              <span>{{ apartado.total_abonado | dinero }} / {{ apartado.total | dinero }}</span>
+            </a>
+          </li>
+        }
+      </ul>
+    }
+  }
+</ui-section>

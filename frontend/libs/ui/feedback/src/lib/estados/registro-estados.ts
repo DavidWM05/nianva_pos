@@ -79,6 +79,11 @@ export const REGISTRO_ESTADOS = {
     entregado: { etiqueta: 'Entregado', tono: 'exito', icono: 'pi pi-check' },
     cancelado: { etiqueta: 'Cancelado', tono: 'peligro', icono: 'pi pi-times' },
   },
+  accionAuditoria: {
+    create: { etiqueta: 'Creado', tono: 'exito', icono: 'pi pi-plus' },
+    update: { etiqueta: 'Modificado', tono: 'info', icono: 'pi pi-pencil' },
+    delete: { etiqueta: 'Eliminado', tono: 'peligro', icono: 'pi pi-trash' },
+  },
   prestamo: {
     activo: null,
     pagado: { etiqueta: 'Pagado', tono: 'exito', icono: 'pi pi-check' },

@@ -45,3 +45,7 @@ export function crearProducto(page: Page, nombre: string): Promise<{ id: number 
 export function crearCliente(page: Page, nombre: string): Promise<{ id: number }> {
   return crear(page, '/clientes', { nombre });
 }
+
+export function crearUnidadMedida(page: Page, nombre: string): Promise<{ id: number }> {
+  return crear(page, '/unidades-medida', { nombre, abreviatura: 'e2e', tipo: 'entero', activo: true });
+}

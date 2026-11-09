@@ -1,6 +1,9 @@
-import { DatePipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
+import { MatButton } from '@angular/material/button';
 import { RouterLink } from '@angular/router';
+import { KpiComponent, SkeletonComponent } from '@nianva/ui-feedback';
+import { DineroPipe, FechaPipe } from '@nianva/ui-format';
+import { PageHeaderComponent, SectionComponent } from '@nianva/ui-layout';
 
 import { CajaActual } from '../../../tpv/caja.types';
 import { CajaService } from '../../../tpv/caja.service';
@@ -15,10 +18,15 @@ import { InicioService } from '../../inicio.service';
  * de dependencia entre modulos ya establecida en el frontend, ver
  * ProductoDetalleComponent->ConfiguracionService).
  */
+/**
+ * Portada de Nucleo: junta caja y el resumen de ventas del dia. Inyecta
+ * CajaService de Tpv directamente, una excepcion de dependencia ya
+ * establecida en el frontend.
+ */
 @Component({
   selector: 'nucleo-inicio',
   standalone: true,
-  imports: [DatePipe, RouterLink],
+  imports: [DineroPipe, FechaPipe, KpiComponent, MatButton, PageHeaderComponent, RouterLink, SectionComponent, SkeletonComponent],
   templateUrl: './inicio.component.html',
   styleUrl: './inicio.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

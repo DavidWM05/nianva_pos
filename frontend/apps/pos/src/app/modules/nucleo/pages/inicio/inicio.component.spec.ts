@@ -7,6 +7,7 @@ import { CajaActual } from '../../../tpv/caja.types';
 import { CajaService } from '../../../tpv/caja.service';
 import { InicioResumen } from '../../inicio.types';
 import { InicioService } from '../../inicio.service';
+import { proveedoresDePantalla } from '../../../../testing/proveedores-pantalla';
 import { InicioComponent } from './inicio.component';
 
 describe('InicioComponent', () => {
@@ -23,6 +24,7 @@ describe('InicioComponent', () => {
     await TestBed.configureTestingModule({
       imports: [InicioComponent],
       providers: [
+        ...proveedoresDePantalla(),
         provideRouter([]),
         { provide: InicioService, useValue: { resumen: vi.fn().mockReturnValue(of(resumen)) } },
         { provide: CajaService, useValue: { actual: vi.fn().mockReturnValue(of(caja)) } },
@@ -88,6 +90,7 @@ describe('InicioComponent', () => {
     await TestBed.configureTestingModule({
       imports: [InicioComponent],
       providers: [
+        ...proveedoresDePantalla(),
         provideRouter([]),
         {
           provide: InicioService,

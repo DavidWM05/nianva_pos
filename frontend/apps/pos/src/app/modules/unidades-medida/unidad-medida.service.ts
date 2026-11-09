@@ -1,4 +1,5 @@
 import { HttpClient } from '@angular/common/http';
+import type { RespuestaDe } from '@nianva/api-contrato';
 import { Injectable, inject } from '@angular/core';
 import { Observable, map } from 'rxjs';
 
@@ -28,19 +29,19 @@ export class UnidadMedidaService {
   private readonly http = inject(HttpClient);
 
   listar(): Observable<UnidadMedida[]> {
-    return this.http.get<{ data: UnidadMedida[] }>(urlApi(`/unidades-medida`)).pipe(map((r) => r.data));
+    return this.http.get<RespuestaDe<'/unidades-medida', 'get'>>(urlApi(`/unidades-medida`)).pipe(map((r) => r.data as UnidadMedida[]));
   }
 
   crear(payload: UnidadMedidaFormPayload): Observable<UnidadMedida> {
     return this.http
-      .post<{ data: UnidadMedida }>(urlApi(`/unidades-medida`), payload)
-      .pipe(map((r) => r.data));
+      .post<RespuestaDe<'/unidades-medida', 'post'>>(urlApi(`/unidades-medida`), payload)
+      .pipe(map((r) => r.data as UnidadMedida));
   }
 
   actualizar(id: number, payload: UnidadMedidaFormPayload): Observable<UnidadMedida> {
     return this.http
-      .put<{ data: UnidadMedida }>(urlApi(`/unidades-medida/${id}`), payload)
-      .pipe(map((r) => r.data));
+      .put<RespuestaDe<'/unidades-medida/{id}', 'put'>>(urlApi(`/unidades-medida/${id}`), payload)
+      .pipe(map((r) => r.data as UnidadMedida));
   }
 
   eliminar(id: number): Observable<void> {

@@ -1,4 +1,5 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
+import type { RespuestaDe } from '@nianva/api-contrato';
 import { Injectable, inject } from '@angular/core';
 import { AuditLogEntry, DataTableLazyEvent } from '@nianva/ui-shared';
 import { Observable, map } from 'rxjs';
@@ -44,9 +45,9 @@ export class AuditoriaGlobalService {
     }
 
     return this.http
-      .get<{ data: AuditLogEntry[]; meta: { total: number; tablas: string[] } }>(urlApi(`/auditoria/global`), {
+      .get<RespuestaDe<'/auditoria/global', 'get'>>(urlApi(`/auditoria/global`), {
         params,
       })
-      .pipe(map((r) => ({ data: r.data, total: r.meta.total, tablas: r.meta.tablas })));
+      .pipe(map((r) => ({ data: r.data as AuditLogEntry[], total: r.meta.total, tablas: r.meta.tablas as string[] })));
   }
 }
