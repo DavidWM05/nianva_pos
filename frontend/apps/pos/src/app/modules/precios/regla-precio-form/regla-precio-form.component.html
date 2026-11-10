@@ -1,28 +1,28 @@
-<nucleo-dynamic-form [fields]="fields" [submitLabel]="submitLabel" [readonly]="readonly" (formSubmit)="onSubmit($event)" />
+<nucleo-dynamic-form
+  [fields]="fields"
+  [submitLabel]="submitLabel"
+  [readonly]="readonly"
+  (formSubmit)="onSubmit($event)"
+/>
 
 <div class="regla-precio-form__aplica-a">
-  <label for="regla-precio-aplica-a">Aplica a</label>
-  <p-select
-    inputId="regla-precio-aplica-a"
-    [options]="opcionesAplicaA"
-    optionLabel="label"
-    optionValue="value"
-    [ngModel]="aplicaA()"
-    (ngModelChange)="onCambiarAplicaA($event)"
-    [disabled]="readonly"
-  />
+  <ui-campo etiqueta="Aplica a" [requerido]="true">
+    <ui-select-filtro
+      [todas]="false"
+      [opciones]="opcionesAplicaA"
+      [ngModel]="aplicaA()"
+      (ngModelChange)="onCambiarAplicaA($event)"
+      [disabled]="readonly"
+    />
+  </ui-campo>
 
   @if (aplicaA() === 'categoria') {
-    <label for="regla-precio-categoria">Categoría</label>
-    <p-select
-      inputId="regla-precio-categoria"
-      [options]="categorias"
-      optionLabel="nombre"
-      optionValue="id"
-      [ngModel]="categoriaId()"
-      (ngModelChange)="categoriaId.set($event)"
-      [filter]="true"
-      placeholder="Selecciona una categoría"
+    <nucleo-entidad-selector
+      [buscador]="buscadorCategoria"
+      label="Categoría"
+      placeholder="Buscar categoría por nombre..."
+      [valorInicial]="categoriaId()"
+      (seleccionado)="categoriaId.set($event)"
       [disabled]="readonly"
     />
   }

@@ -1,5 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
+import type { CuerpoDe, RespuestaDe } from '@nianva/api-contrato';
 import { Observable, map } from 'rxjs';
 
 import { urlApi } from '../../core/api-config';
@@ -16,8 +17,13 @@ export class CampanaService {
   private readonly http = inject(HttpClient);
 
   enviar(payload: CampanaEnviarPayload): Observable<Campana> {
+    const cuerpo: CuerpoDe<'/crm/campanas/enviar', 'post'> = payload;
+
     return this.http
-      .post<{ data: Campana }>(urlApi(`/crm/campanas/enviar`), payload)
-      .pipe(map((r) => r.data));
+      .post<RespuestaDe<'/crm/campanas/enviar', 'post'>>(
+        urlApi(`/crm/campanas/enviar`),
+        cuerpo,
+      )
+      .pipe(map((r) => r.data as Campana));
   }
 }

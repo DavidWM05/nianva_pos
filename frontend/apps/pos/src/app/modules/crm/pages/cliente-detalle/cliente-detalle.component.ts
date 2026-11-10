@@ -1,20 +1,56 @@
-import { DatePipe } from '@angular/common';
+import { NgTemplateOutlet } from '@angular/common';
+import { MatButton } from '@angular/material/button';
+import { BotonCrearComponent } from '@nianva/ui-actions';
+import {
+  CambioListado,
+  ColumnaListado,
+  MetaListado,
+  TablaComponent,
+} from '@nianva/ui-data';
+import {
+  AlertComponent,
+  SkeletonComponent,
+  ToastService,
+  conUmbral,
+} from '@nianva/ui-feedback';
+import { CampoComponent, SelectFiltroComponent } from '@nianva/ui-forms';
+import { CantidadPipe, FechaHoraPipe } from '@nianva/ui-format';
+import {
+  DatosComponent,
+  PageComponent,
+  PageHeaderComponent,
+  SectionComponent,
+} from '@nianva/ui-layout';
+import { ModalComponent } from '@nianva/ui-overlays';
 import { HttpErrorResponse } from '@angular/common/http';
-import { ChangeDetectionStrategy, Component, OnInit, ViewChild, inject, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  OnInit,
+  ViewChild,
+  inject,
+  signal,
+} from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
-import { AuditLogViewerComponent, RecordTabConfig, RecordTabsComponent, ToastService, mensajeError } from '@nianva/ui-shared';
-import { Button } from 'primeng/button';
-import { Dialog } from 'primeng/dialog';
-import { InputText } from 'primeng/inputtext';
-import { Select } from 'primeng/select';
-import { Textarea } from 'primeng/textarea';
+import {
+  AuditLogViewerComponent,
+  RecordTabConfig,
+  RecordTabsComponent,
+  mensajeError,
+} from '@nianva/ui-shared';
 
 import { ClienteFormComponent } from '../../cliente-form/cliente-form.component';
 import { ClienteFormPayload, ClienteService } from '../../cliente.service';
 import { Cliente, VentaResumen } from '../../cliente.types';
 import { CrmAvanzadoService } from '../../crm-avanzado.service';
-import { CrmInteraccion, LoyaltyResumen, TipoInteraccion } from '../../crm-avanzado.types';
+import {
+  CrmInteraccion,
+  LoyaltyResumen,
+  LoyaltyTransaccion,
+  TipoInteraccion,
+} from '../../crm-avanzado.types';
 
 const ICONO_POR_TIPO: Record<TipoInteraccion, string> = {
   llamada: '📞',
@@ -54,16 +90,25 @@ const TIPOS_INTERACCION: { label: string; value: TipoInteraccion }[] = [
   selector: 'nucleo-cliente-detalle',
   standalone: true,
   imports: [
-    DatePipe,
+    NgTemplateOutlet,
     FormsModule,
     RecordTabsComponent,
     ClienteFormComponent,
     AuditLogViewerComponent,
-    Button,
-    Dialog,
-    InputText,
-    Select,
-    Textarea,
+    MatButton,
+    BotonCrearComponent,
+    TablaComponent,
+    AlertComponent,
+    SkeletonComponent,
+    CampoComponent,
+    SelectFiltroComponent,
+    CantidadPipe,
+    FechaHoraPipe,
+    DatosComponent,
+    PageComponent,
+    PageHeaderComponent,
+    SectionComponent,
+    ModalComponent,
   ],
   templateUrl: './cliente-detalle.component.html',
   styleUrl: './cliente-detalle.component.scss',
@@ -113,22 +158,91 @@ export class ClienteDetalleComponent implements OnInit {
   protected readonly motivoAjuste = signal('');
   protected readonly ajustandoPuntos = signal(false);
 
+  protected readonly error = signal(false);
+  protected readonly errorVentas = signal(false);
+  protected readonly errorInteracciones = signal(false);
+  protected readonly errorLoyalty = signal(false);
+  protected readonly indicadorInteraccion = conUmbral(
+    this.guardandoInteraccion,
+  );
+  protected readonly indicadorPuntos = conUmbral(this.ajustandoPuntos);
+  protected readonly paginaVentas = signal<CambioListado>({
+    page: 1,
+    rows: 25,
+    sortField: null,
+    sortOrder: null,
+  });
+  protected readonly paginaPuntos = signal<CambioListado>({
+    page: 1,
+    rows: 25,
+    sortField: null,
+    sortOrder: null,
+  });
+  protected readonly columnasVentas: ColumnaListado<VentaResumen>[] = [
+    { tipo: 'fechaHora', campo: 'fecha', encabezado: 'Fecha' },
+    { tipo: 'dinero', campo: 'total', encabezado: 'Total' },
+    { tipo: 'estado', campo: 'estado', encabezado: 'Estado', entidad: 'venta' },
+  ];
+  protected readonly columnasPuntos: ColumnaListado<LoyaltyTransaccion>[] = [
+    { tipo: 'fechaHora', campo: 'created_at', encabezado: 'Fecha' },
+    { tipo: 'texto', campo: 'tipo', encabezado: 'Tipo' },
+    {
+      tipo: 'cantidad',
+      campo: 'puntos',
+      encabezado: 'Puntos',
+      unidad: 'puntos',
+    },
+    { tipo: 'texto', campo: 'referencia_tabla', encabezado: 'Referencia' },
+  ];
+  protected readonly metaVentas = computed<MetaListado>(() => ({
+    total: this.ventas().length,
+    page: this.paginaVentas().page,
+    rows: this.paginaVentas().rows,
+    filtros_aplicados: {},
+    permisos: {},
+  }));
+  protected readonly metaPuntos = computed<MetaListado>(() => ({
+    total: this.loyalty()?.historial.length ?? 0,
+    page: this.paginaPuntos().page,
+    rows: this.paginaPuntos().rows,
+    filtros_aplicados: {},
+    permisos: {},
+  }));
+  protected readonly filasVentas = computed(() =>
+    this.ventas().slice(
+      (this.paginaVentas().page - 1) * this.paginaVentas().rows,
+      this.paginaVentas().page * this.paginaVentas().rows,
+    ),
+  );
+  protected readonly filasPuntos = computed(() =>
+    (this.loyalty()?.historial ?? []).slice(
+      (this.paginaPuntos().page - 1) * this.paginaPuntos().rows,
+      this.paginaPuntos().page * this.paginaPuntos().rows,
+    ),
+  );
+
   ngOnInit(): void {
+    this.cargar();
+  }
+
+  protected cargar(): void {
+    this.cargando.set(true);
+    this.error.set(false);
     const id = Number(this.route.snapshot.paramMap.get('id'));
 
-    this.clienteService.obtener(id).subscribe(({ cliente, permisos }) => {
-      this.cliente.set(cliente);
-      this.puedeEditar.set(permisos.editar);
-      this.cargando.set(false);
+    this.clienteService.obtener(id).subscribe({
+      next: ({ cliente, permisos }) => {
+        this.cliente.set(cliente);
+        this.puedeEditar.set(permisos.editar);
+        this.cargando.set(false);
+      },
+      error: () => {
+        this.cargando.set(false);
+        this.error.set(true);
+      },
     });
 
-    this.clienteService.ventas(id).subscribe({
-      next: (ventas) => {
-        this.ventas.set(ventas);
-        this.cargandoVentas.set(false);
-      },
-      error: () => this.cargandoVentas.set(false),
-    });
+    this.cargarVentas(id);
 
     this.cargarInteracciones(id);
     this.cargarLoyalty(id);
@@ -178,7 +292,10 @@ export class ClienteDetalleComponent implements OnInit {
     this.guardandoInteraccion.set(true);
 
     this.crmAvanzadoService
-      .crearInteraccion(cliente.id, { tipo: this.tipoNuevaInteraccion(), observacion })
+      .crearInteraccion(cliente.id, {
+        tipo: this.tipoNuevaInteraccion(),
+        observacion,
+      })
       .subscribe({
         next: (interaccion) => {
           this.interacciones.update((actuales) => [interaccion, ...actuales]);
@@ -188,7 +305,9 @@ export class ClienteDetalleComponent implements OnInit {
         },
         error: (error: HttpErrorResponse) => {
           this.guardandoInteraccion.set(false);
-          this.toast.error(mensajeError(error, 'No se pudo registrar la interacción.'));
+          this.toast.error(
+            mensajeError(error, 'No se pudo registrar la interacción.'),
+          );
         },
       });
   }
@@ -211,45 +330,71 @@ export class ClienteDetalleComponent implements OnInit {
 
     this.ajustandoPuntos.set(true);
 
-    this.crmAvanzadoService.ajustarPuntos(cliente.id, { puntos, motivo }).subscribe({
-      next: () => {
-        this.ajustandoPuntos.set(false);
-        this.mostrarAjustePuntos.set(false);
-        this.toast.success('Puntos ajustados.');
-        // Vuelve a pedir el resumen completo (saldo + historial) en vez de
-        // aplicar el delta localmente -- puntos_acumulados solo sube en
-        // ajustes positivos (ver CrmAvanzadoService::ajustarPuntos() en el
-        // backend), replicar esa regla aqui duplicaria logica de negocio
-        // que ya vive del lado correcto.
-        this.cargarLoyalty(cliente.id);
+    this.crmAvanzadoService
+      .ajustarPuntos(cliente.id, { puntos, motivo })
+      .subscribe({
+        next: () => {
+          this.ajustandoPuntos.set(false);
+          this.mostrarAjustePuntos.set(false);
+          this.toast.success('Puntos ajustados.');
+          // Vuelve a pedir el resumen completo (saldo + historial) en vez de
+          // aplicar el delta localmente -- puntos_acumulados solo sube en
+          // ajustes positivos (ver CrmAvanzadoService::ajustarPuntos() en el
+          // backend), replicar esa regla aqui duplicaria logica de negocio
+          // que ya vive del lado correcto.
+          this.cargarLoyalty(cliente.id);
+        },
+        error: (error: HttpErrorResponse) => {
+          this.ajustandoPuntos.set(false);
+          this.toast.error(
+            mensajeError(error, 'No se pudo ajustar los puntos.'),
+          );
+        },
+      });
+  }
+
+  protected cargarVentas(id: number): void {
+    this.cargandoVentas.set(true);
+    this.errorVentas.set(false);
+    this.clienteService.ventas(id).subscribe({
+      next: (ventas) => {
+        this.ventas.set(ventas);
+        this.cargandoVentas.set(false);
       },
-      error: (error: HttpErrorResponse) => {
-        this.ajustandoPuntos.set(false);
-        this.toast.error(mensajeError(error, 'No se pudo ajustar los puntos.'));
+      error: () => {
+        this.cargandoVentas.set(false);
+        this.errorVentas.set(true);
       },
     });
   }
 
-  private cargarInteracciones(clienteId: number): void {
+  protected cargarInteracciones(clienteId: number): void {
+    this.errorInteracciones.set(false);
     this.cargandoInteracciones.set(true);
     this.crmAvanzadoService.interacciones(clienteId).subscribe({
       next: (interacciones) => {
         this.interacciones.set(interacciones);
         this.cargandoInteracciones.set(false);
       },
-      error: () => this.cargandoInteracciones.set(false),
+      error: () => {
+        this.cargandoInteracciones.set(false);
+        this.errorInteracciones.set(true);
+      },
     });
   }
 
-  private cargarLoyalty(clienteId: number): void {
+  protected cargarLoyalty(clienteId: number): void {
+    this.errorLoyalty.set(false);
     this.cargandoLoyalty.set(true);
     this.crmAvanzadoService.loyalty(clienteId).subscribe({
       next: (loyalty) => {
         this.loyalty.set(loyalty);
         this.cargandoLoyalty.set(false);
       },
-      error: () => this.cargandoLoyalty.set(false),
+      error: () => {
+        this.cargandoLoyalty.set(false);
+        this.errorLoyalty.set(true);
+      },
     });
   }
-
 }

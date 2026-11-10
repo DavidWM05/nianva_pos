@@ -1,3 +1,4 @@
+import { PageHeaderComponent } from '@nianva/ui-layout';
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { RecordTabConfig, RecordTabsComponent } from '@nianva/ui-shared';
 
@@ -20,7 +21,12 @@ import { ReglasPrecioListComponent } from '../reglas-precio-list/reglas-precio-l
 @Component({
   selector: 'nucleo-precios',
   standalone: true,
-  imports: [RecordTabsComponent, ReglasPrecioListComponent, CuponesListComponent],
+  imports: [
+    PageHeaderComponent,
+    RecordTabsComponent,
+    ReglasPrecioListComponent,
+    CuponesListComponent,
+  ],
   templateUrl: './precios.component.html',
   styleUrl: './precios.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

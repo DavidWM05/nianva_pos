@@ -1,8 +1,8 @@
+import { proveedoresDePantalla } from '../../../../testing/proveedores-pantalla';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
-import { provideRouter } from '@angular/router';
+import { provideRouter, Router } from '@angular/router';
 import { AuditLogSource, ConfirmDialogService, ToastService } from '@nianva/ui-shared';
-import { providePrimeNG } from 'primeng/config';
 import { of } from 'rxjs';
 import { describe, expect, it, vi } from 'vitest';
 
@@ -64,9 +64,9 @@ describe('ReglasPrecioListComponent', () => {
     await TestBed.configureTestingModule({
       imports: [ReglasPrecioListComponent],
       providers: [
+        ...proveedoresDePantalla(),
         provideRouter([]),
         provideAnimationsAsync(),
-        providePrimeNG(),
         { provide: ReglaPrecioService, useValue: reglaPrecioService },
         { provide: BUSCADOR_CATEGORIA, useValue: { buscar: vi.fn().mockReturnValue(of([])), obtener: vi.fn() } },
         { provide: BUSCADOR_PRODUCTO, useValue: { buscar: vi.fn().mockReturnValue(of([])), obtener: vi.fn() } },
@@ -101,8 +101,16 @@ describe('ReglasPrecioListComponent', () => {
   it('"Nueva regla" navega a la vista dedicada, no abre un modal', async () => {
     await crearComponente({ crear: true, editar: false, eliminar: false });
 
-    const enlace = (fixture.nativeElement as HTMLElement).querySelector('a[href="/precios/reglas/nuevo"]');
-    expect(enlace).toBeTruthy();
+    const routerDePrueba = TestBed.inject(Router);
+    routerDePrueba.resetConfig([{ path: 'precios/reglas/nuevo', children: [] }, { path: '**', children: [] }]);
+    const elemento: HTMLElement = fixture.nativeElement;
+    const boton = elemento.querySelector<HTMLButtonElement>('ui-btn-crear button');
+    expect(boton).not.toBeNull();
+    boton?.click();
+    await fixture.whenStable();
+
+    expect(routerDePrueba.url).toBe('/precios/reglas/nuevo');
+    expect(elemento.querySelector('ui-modal')).toBeNull();
   });
 
   it('etiquetaAplicaA devuelve "Todo el catálogo" cuando aplica_a es todo', async () => {

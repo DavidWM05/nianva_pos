@@ -1,3 +1,4 @@
+import { proveedoresDePantalla } from '../../../../testing/proveedores-pantalla';
 import { ComponentFixture, DeferBlockBehavior, DeferBlockState, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { ActivatedRoute, convertToParamMap } from '@angular/router';
@@ -61,7 +62,7 @@ describe('ReglaPrecioDetalleComponent', () => {
     await TestBed.configureTestingModule({
       imports: [ReglaPrecioDetalleComponent],
       deferBlockBehavior: DeferBlockBehavior.Manual,
-      providers: providers({ editar: true, eliminar: true }),
+      providers: [...proveedoresDePantalla(), ...providers({ editar: true, eliminar: true })],
     }).compileComponents();
 
     fixture = TestBed.createComponent(ReglaPrecioDetalleComponent);
@@ -93,7 +94,7 @@ describe('ReglaPrecioDetalleComponent', () => {
     await TestBed.configureTestingModule({
       imports: [ReglaPrecioDetalleComponent],
       deferBlockBehavior: DeferBlockBehavior.Manual,
-      providers: providers({ editar: false, eliminar: false }),
+      providers: [...proveedoresDePantalla(), ...providers({ editar: false, eliminar: false })],
     }).compileComponents();
 
     const otroFixture = TestBed.createComponent(ReglaPrecioDetalleComponent);

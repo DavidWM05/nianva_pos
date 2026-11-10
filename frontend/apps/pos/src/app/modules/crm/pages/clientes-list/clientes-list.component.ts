@@ -1,23 +1,41 @@
-import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { Router, RouterLink } from '@angular/router';
 import {
-  ConfirmDialogService,
-  DataTableCellDirective,
-  DataTableColumn,
-  DataTableComponent,
-  DataTableLazyEvent,
-  StatusBadgeComponent,
-  ToastService,
-} from '@nianva/ui-shared';
-import { Button } from 'primeng/button';
-import { InputText } from 'primeng/inputtext';
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  inject,
+  signal,
+} from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
+import { AccionEmitida, BotonCrearComponent } from '@nianva/ui-actions';
+import {
+  CambioListado,
+  ColumnaListado,
+  FilterBarComponent,
+  MetaListado,
+  TablaComponent,
+} from '@nianva/ui-data';
+import { ConfirmDialogService, ToastService } from '@nianva/ui-feedback';
+import { CampoComponent } from '@nianva/ui-forms';
+import {
+  EstadoPagina,
+  PageComponent,
+  PageHeaderComponent,
+} from '@nianva/ui-layout';
+import { DataTableLazyEvent } from '@nianva/ui-shared';
 import { Subject, debounceTime } from 'rxjs';
 
 import { ClienteService } from '../../cliente.service';
 import { Cliente, ClientesPermisos } from '../../cliente.types';
 
-const PERMISOS_VACIOS: ClientesPermisos = { crear: false, editar: false, eliminar: false };
+type Fila = Cliente;
+
+const PERMISOS_VACIOS: ClientesPermisos = {
+  crear: false,
+  editar: false,
+  eliminar: false,
+};
 
 /**
  * Primera pantalla de un modulo de negocio real -- vista de lista.
@@ -38,7 +56,15 @@ const PERMISOS_VACIOS: ClientesPermisos = { crear: false, editar: false, elimina
 @Component({
   selector: 'nucleo-clientes-list',
   standalone: true,
-  imports: [RouterLink, DataTableComponent, DataTableCellDirective, StatusBadgeComponent, Button, InputText],
+  imports: [
+    BotonCrearComponent,
+    CampoComponent,
+    FilterBarComponent,
+    FormsModule,
+    PageComponent,
+    PageHeaderComponent,
+    TablaComponent,
+  ],
   templateUrl: './clientes-list.component.html',
   styleUrl: './clientes-list.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -49,13 +75,29 @@ export class ClientesListComponent {
   private readonly confirmDialog = inject(ConfirmDialogService);
   private readonly toast = inject(ToastService);
 
-  protected readonly columns: DataTableColumn[] = [
-    { field: 'nombre', header: 'Nombre', sortable: true },
-    { field: 'documento_fiscal', header: 'Documento fiscal' },
-    { field: 'telefono', header: 'Teléfono' },
-    { field: 'correo', header: 'Correo' },
-    { field: 'activo', header: 'Estado' },
-    { field: 'acciones', header: '' },
+  protected readonly columnas: ColumnaListado<Fila>[] = [
+    {
+      tipo: 'principal',
+      campo: 'nombre',
+      encabezado: 'Nombre',
+      ordenable: true,
+    },
+    {
+      tipo: 'texto',
+      campo: 'documento_fiscal',
+      encabezado: 'Documento fiscal',
+    },
+    { tipo: 'texto', campo: 'telefono', encabezado: 'Teléfono' },
+    { tipo: 'texto', campo: 'correo', encabezado: 'Correo' },
+    {
+      tipo: 'acciones',
+      acciones: (fila) => [
+        ...(this.permisos().editar ? [{ tipo: 'editar' as const }] : []),
+        ...(this.permisos().eliminar && !fila.es_sistema
+          ? [{ tipo: 'estado' as const, activo: true }]
+          : []),
+      ],
+    },
   ];
 
   protected readonly clientes = signal<Cliente[]>([]);
@@ -64,14 +106,66 @@ export class ClientesListComponent {
   protected readonly permisos = signal<ClientesPermisos>(PERMISOS_VACIOS);
   protected readonly busqueda = signal('');
 
-  private ultimoEvento: DataTableLazyEvent = { first: 0, rows: 25, sortField: null, sortOrder: null, filters: {} };
+  private readonly ultimoEvento = signal<DataTableLazyEvent>({
+    first: 0,
+    rows: 25,
+    sortField: null,
+    sortOrder: null,
+    filters: {},
+  });
   private readonly busquedaSubject = new Subject<string>();
 
-  constructor() {
-    this.busquedaSubject.pipe(debounceTime(300), takeUntilDestroyed()).subscribe((texto) => {
-      this.busqueda.set(texto);
-      this.cargar({ ...this.ultimoEvento, first: 0 });
+  protected readonly error = signal(false);
+  protected readonly primeraCarga = signal(true);
+  protected readonly filas = computed<Fila[]>(() =>
+    this.clientes().map((fila) => ({ ...fila })),
+  );
+  protected readonly esInactiva = (fila: Fila): boolean => !fila.activo;
+  protected readonly meta = computed<MetaListado>(() => ({
+    total: this.total(),
+    page: Math.floor(this.ultimoEvento().first / this.ultimoEvento().rows) + 1,
+    rows: this.ultimoEvento().rows,
+    filtros_aplicados: { filtro_nombre: this.busqueda() },
+    permisos: { ...this.permisos() },
+  }));
+  protected readonly estadoPagina = computed<EstadoPagina>(() =>
+    this.primeraCarga() ? 'cargando' : this.error() ? 'error' : 'listo',
+  );
+
+  protected onCambio(cambio: CambioListado): void {
+    this.onLazyLoad({
+      first: (cambio.page - 1) * cambio.rows,
+      rows: cambio.rows,
+      sortField: cambio.sortField,
+      sortOrder:
+        cambio.sortOrder === 'desc'
+          ? -1
+          : cambio.sortOrder === 'asc'
+            ? 1
+            : null,
+      filters: {},
     });
+  }
+  protected limpiarFiltros(): void {
+    this.busqueda.set('');
+    this.busquedaSubject.next('');
+  }
+  protected reintentar(): void {
+    this.cargar(this.ultimoEvento());
+  }
+  protected onAccion(fila: Fila, accion: AccionEmitida): void {
+    if (accion.tipo === 'editar') this.irADetalle(fila);
+    if (accion.tipo === 'estado') void this.onDesactivar(fila);
+  }
+
+  constructor() {
+    this.busquedaSubject
+      .pipe(debounceTime(300), takeUntilDestroyed())
+      .subscribe((texto) => {
+        this.busqueda.set(texto);
+        this.cargar({ ...this.ultimoEvento(), first: 0 });
+      });
+    this.cargar(this.ultimoEvento());
   }
 
   onBuscarInput(texto: string): void {
@@ -83,8 +177,9 @@ export class ClientesListComponent {
   }
 
   private cargar(evento: DataTableLazyEvent): void {
-    this.ultimoEvento = evento;
+    this.ultimoEvento.set(evento);
     this.loading.set(true);
+    this.error.set(false);
 
     this.clienteService.listar(evento, this.busqueda()).subscribe({
       next: (respuesta) => {
@@ -92,8 +187,13 @@ export class ClientesListComponent {
         this.total.set(respuesta.total);
         this.permisos.set(respuesta.permisos);
         this.loading.set(false);
+        this.primeraCarga.set(false);
       },
-      error: () => this.loading.set(false),
+      error: () => {
+        this.loading.set(false);
+        this.error.set(true);
+        this.primeraCarga.set(false);
+      },
     });
   }
 
@@ -115,7 +215,7 @@ export class ClientesListComponent {
     this.clienteService.desactivar(cliente.id).subscribe({
       next: () => {
         this.toast.success('Cliente desactivado.');
-        this.cargar(this.ultimoEvento);
+        this.cargar(this.ultimoEvento());
       },
       error: () => this.toast.error('No se pudo desactivar el cliente.'),
     });

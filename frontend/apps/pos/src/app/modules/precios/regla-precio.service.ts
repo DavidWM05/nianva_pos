@@ -1,10 +1,17 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { DataTableLazyEvent } from '@nianva/ui-shared';
+import type { CuerpoDe, RespuestaDe } from '@nianva/api-contrato';
 import { Observable, map } from 'rxjs';
 
 import { urlApi } from '../../core/api-config';
-import { AplicaA, ReglaPrecio, ReglasPrecioPagina, ReglasPrecioPermisos, TipoReglaPrecio } from './regla-precio.types';
+import {
+  AplicaA,
+  ReglaPrecio,
+  ReglasPrecioPagina,
+  ReglasPrecioPermisos,
+  TipoReglaPrecio,
+} from './regla-precio.types';
 
 export interface ReglaPrecioFormPayload {
   nombre: string;
@@ -26,43 +33,83 @@ export class ReglaPrecioService {
   private readonly http = inject(HttpClient);
 
   /** Mismo contrato que ClienteService/ProductoService.listar(). */
-  listar(evento: DataTableLazyEvent, busqueda: string): Observable<ReglasPrecioPagina> {
+  listar(
+    evento: DataTableLazyEvent,
+    busqueda: string,
+  ): Observable<ReglasPrecioPagina> {
     const rows = evento.rows || 25;
     const page = Math.floor(evento.first / rows) + 1;
 
     let params = new HttpParams().set('page', page).set('rows', rows);
     if (evento.sortField) {
-      params = params.set('sort_field', evento.sortField).set('sort_order', evento.sortOrder === -1 ? 'desc' : 'asc');
+      params = params
+        .set('sort_field', evento.sortField)
+        .set('sort_order', evento.sortOrder === -1 ? 'desc' : 'asc');
     }
     if (busqueda.trim()) {
       params = params.set('filtro_nombre', busqueda.trim());
     }
 
     return this.http
-      .get<{ data: ReglaPrecio[]; meta: { total: number; permisos: ReglasPrecioPermisos } }>(urlApi(`/reglas-precio`), {
+      .get<RespuestaDe<'/reglas-precio', 'get'>>(urlApi(`/reglas-precio`), {
         params,
       })
-      .pipe(map((r) => ({ data: r.data, total: r.meta.total, permisos: r.meta.permisos })));
+      .pipe(
+        map((r) => ({
+          data: r.data as ReglaPrecio[],
+          total: r.meta.total,
+          permisos: r.meta.permisos,
+        })),
+      );
   }
 
   /** Mismo contrato que ClienteService/ProductoService.obtener(). */
-  obtener(id: number): Observable<{ regla: ReglaPrecio; permisos: ReglasPrecioPermisos }> {
+  obtener(
+    id: number,
+  ): Observable<{ regla: ReglaPrecio; permisos: ReglasPrecioPermisos }> {
     return this.http
-      .get<{ data: ReglaPrecio; meta: { permisos: ReglasPrecioPermisos } }>(urlApi(`/reglas-precio/${id}`))
-      .pipe(map((r) => ({ regla: r.data, permisos: r.meta.permisos })));
+      .get<RespuestaDe<'/reglas-precio/{regla}', 'get'>>(
+        urlApi(`/reglas-precio/${id}`),
+      )
+      .pipe(
+        map((r) => ({
+          regla: r.data as ReglaPrecio,
+          permisos: r.meta.permisos,
+        })),
+      );
   }
 
   crear(payload: ReglaPrecioFormPayload): Observable<ReglaPrecio> {
-    return this.http.post<{ data: ReglaPrecio }>(urlApi(`/reglas-precio`), payload).pipe(map((r) => r.data));
+    const cuerpo: CuerpoDe<'/reglas-precio', 'post'> = payload;
+
+    return this.http
+      .post<RespuestaDe<'/reglas-precio', 'post'>>(
+        urlApi(`/reglas-precio`),
+        cuerpo,
+      )
+      .pipe(map((r) => r.data as ReglaPrecio));
   }
 
-  actualizar(id: number, payload: ReglaPrecioFormPayload): Observable<ReglaPrecio> {
-    return this.http.put<{ data: ReglaPrecio }>(urlApi(`/reglas-precio/${id}`), payload).pipe(map((r) => r.data));
+  actualizar(
+    id: number,
+    payload: ReglaPrecioFormPayload,
+  ): Observable<ReglaPrecio> {
+    const cuerpo: CuerpoDe<'/reglas-precio/{regla}', 'put'> = payload;
+
+    return this.http
+      .put<RespuestaDe<'/reglas-precio/{regla}', 'put'>>(
+        urlApi(`/reglas-precio/${id}`),
+        cuerpo,
+      )
+      .pipe(map((r) => r.data as ReglaPrecio));
   }
 
   desactivar(id: number): Observable<ReglaPrecio> {
     return this.http
-      .patch<{ data: ReglaPrecio }>(urlApi(`/reglas-precio/${id}/desactivar`), {})
-      .pipe(map((r) => r.data));
+      .patch<RespuestaDe<'/reglas-precio/{regla}/desactivar', 'patch'>>(
+        urlApi(`/reglas-precio/${id}/desactivar`),
+        {},
+      )
+      .pipe(map((r) => r.data as ReglaPrecio));
   }
 }

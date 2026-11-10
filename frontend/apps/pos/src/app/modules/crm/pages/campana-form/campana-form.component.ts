@@ -1,11 +1,24 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  inject,
+  signal,
+} from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { ToastService } from '@nianva/ui-shared';
-import { Button } from 'primeng/button';
-import { InputText } from 'primeng/inputtext';
-import { Select } from 'primeng/select';
-import { Textarea } from 'primeng/textarea';
+import { AlertComponent, ToastService } from '@nianva/ui-feedback';
+import {
+  BtnEnviarComponent,
+  CampoComponent,
+  SelectFiltroComponent,
+} from '@nianva/ui-forms';
+import {
+  FormActionsComponent,
+  PageComponent,
+  PageHeaderComponent,
+  SectionComponent,
+} from '@nianva/ui-layout';
+import { CantidadPipe } from '@nianva/ui-format';
 
 import { CampanaService } from '../../campana.service';
 import { Campana, SegmentoCampana } from '../../campana.types';
@@ -26,7 +39,18 @@ const SEGMENTOS: { label: string; value: SegmentoCampana }[] = [
 @Component({
   selector: 'nucleo-campana-form',
   standalone: true,
-  imports: [FormsModule, Button, InputText, Select, Textarea],
+  imports: [
+    FormsModule,
+    AlertComponent,
+    BtnEnviarComponent,
+    CampoComponent,
+    SelectFiltroComponent,
+    FormActionsComponent,
+    PageComponent,
+    PageHeaderComponent,
+    SectionComponent,
+    CantidadPipe,
+  ],
   templateUrl: './campana-form.component.html',
   styleUrl: './campana-form.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -54,19 +78,23 @@ export class CampanaFormComponent {
 
     this.enviando.set(true);
 
-    this.campanaService.enviar({ segmento: this.segmento(), asunto, mensaje }).subscribe({
-      next: (campana) => {
-        this.enviando.set(false);
-        this.ultimaEnviada.set(campana);
-        this.toast.success(`Campaña enviada a ${campana.destinatarios} cliente(s).`);
-        this.asunto.set('');
-        this.mensaje.set('');
-      },
-      error: (error: HttpErrorResponse) => {
-        this.enviando.set(false);
-        const cuerpo = error.error as { message?: string } | undefined;
-        this.toast.error(cuerpo?.message ?? 'No se pudo enviar la campaña.');
-      },
-    });
+    this.campanaService
+      .enviar({ segmento: this.segmento(), asunto, mensaje })
+      .subscribe({
+        next: (campana) => {
+          this.enviando.set(false);
+          this.ultimaEnviada.set(campana);
+          this.toast.success(
+            `Campaña enviada a ${campana.destinatarios} cliente(s).`,
+          );
+          this.asunto.set('');
+          this.mensaje.set('');
+        },
+        error: (error: HttpErrorResponse) => {
+          this.enviando.set(false);
+          const cuerpo = error.error as { message?: string } | undefined;
+          this.toast.error(cuerpo?.message ?? 'No se pudo enviar la campaña.');
+        },
+      });
   }
 }

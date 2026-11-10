@@ -1,4 +1,12 @@
-import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnChanges, Output, ViewChild } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  EventEmitter,
+  Input,
+  OnChanges,
+  Output,
+  ViewChild,
+} from '@angular/core';
 import { Validators } from '@angular/forms';
 import { DynamicFormComponent, DynamicFormField } from '@nianva/ui-shared';
 
@@ -84,13 +92,17 @@ export class CuponFormComponent implements OnChanges {
         name: 'fecha_inicio',
         label: 'Vigente desde',
         type: 'date',
-        defaultValue: this.valorInicial?.fecha_inicio ? new Date(this.valorInicial.fecha_inicio) : null,
+        defaultValue: this.valorInicial?.fecha_inicio
+          ? new Date(this.valorInicial.fecha_inicio)
+          : null,
       },
       {
         name: 'fecha_fin',
         label: 'Vigente hasta',
         type: 'date',
-        defaultValue: this.valorInicial?.fecha_fin ? new Date(this.valorInicial.fecha_fin) : null,
+        defaultValue: this.valorInicial?.fecha_fin
+          ? new Date(this.valorInicial.fecha_fin)
+          : null,
       },
     ];
   }
@@ -98,11 +110,18 @@ export class CuponFormComponent implements OnChanges {
   onSubmit(value: Record<string, unknown>): void {
     const fecha = (valor: unknown): string | null => {
       if (!valor) return null;
-      return valor instanceof Date ? valor.toISOString().slice(0, 10) : String(valor);
+      return valor instanceof Date
+        ? valor.toISOString().slice(0, 10)
+        : String(valor);
     };
 
     this.guardar.emit({
-      ...(value as unknown as CuponFormPayload),
+      codigo: String(value['codigo'] ?? ''),
+      nombre: String(value['nombre'] ?? ''),
+      tipo: value['tipo'] as CuponFormPayload['tipo'],
+      valor: value['valor'] as number,
+      uso_maximo: value['uso_maximo'] as number | null,
+      uso_maximo_por_cliente: value['uso_maximo_por_cliente'] as number | null,
       fecha_inicio: fecha(value['fecha_inicio']),
       fecha_fin: fecha(value['fecha_fin']),
     });

@@ -1,7 +1,24 @@
+import {
+  AlertComponent,
+  SkeletonComponent,
+  ToastService,
+} from '@nianva/ui-feedback';
+import { PageComponent, PageHeaderComponent } from '@nianva/ui-layout';
 import { HttpErrorResponse } from '@angular/common/http';
-import { ChangeDetectionStrategy, Component, OnInit, ViewChild, inject, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  OnInit,
+  ViewChild,
+  inject,
+  signal,
+} from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { AuditLogViewerComponent, RecordTabConfig, RecordTabsComponent, ToastService } from '@nianva/ui-shared';
+import {
+  AuditLogViewerComponent,
+  RecordTabConfig,
+  RecordTabsComponent,
+} from '@nianva/ui-shared';
 
 import { CuponFormComponent } from '../../cupon-form/cupon-form.component';
 import { CuponFormPayload, CuponService } from '../../cupon.service';
@@ -15,7 +32,15 @@ import { Cupon } from '../../cupon.types';
 @Component({
   selector: 'nucleo-cupon-detalle',
   standalone: true,
-  imports: [RecordTabsComponent, CuponFormComponent, AuditLogViewerComponent],
+  imports: [
+    PageComponent,
+    PageHeaderComponent,
+    AlertComponent,
+    SkeletonComponent,
+    RecordTabsComponent,
+    CuponFormComponent,
+    AuditLogViewerComponent,
+  ],
   templateUrl: './cupon-detalle.component.html',
   styleUrl: './cupon-detalle.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -38,13 +63,27 @@ export class CuponDetalleComponent implements OnInit {
 
   protected readonly guardando = signal(false);
 
+  protected readonly error = signal(false);
+
   ngOnInit(): void {
+    this.cargar();
+  }
+
+  protected cargar(): void {
+    this.cargando.set(true);
+    this.error.set(false);
     const id = Number(this.route.snapshot.paramMap.get('id'));
 
-    this.cuponService.obtener(id).subscribe(({ cupon, permisos }) => {
-      this.cupon.set(cupon);
-      this.puedeEditar.set(permisos.editar);
-      this.cargando.set(false);
+    this.cuponService.obtener(id).subscribe({
+      next: ({ cupon, permisos }) => {
+        this.cupon.set(cupon);
+        this.puedeEditar.set(permisos.editar);
+        this.cargando.set(false);
+      },
+      error: () => {
+        this.cargando.set(false);
+        this.error.set(true);
+      },
     });
   }
 

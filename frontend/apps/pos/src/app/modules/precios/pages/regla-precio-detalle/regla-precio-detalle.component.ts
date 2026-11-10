@@ -1,10 +1,30 @@
+import {
+  AlertComponent,
+  SkeletonComponent,
+  ToastService,
+} from '@nianva/ui-feedback';
+import { PageComponent, PageHeaderComponent } from '@nianva/ui-layout';
 import { HttpErrorResponse } from '@angular/common/http';
-import { ChangeDetectionStrategy, Component, OnInit, ViewChild, inject, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  OnInit,
+  ViewChild,
+  inject,
+  signal,
+} from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { AuditLogViewerComponent, RecordTabConfig, RecordTabsComponent, ToastService } from '@nianva/ui-shared';
+import {
+  AuditLogViewerComponent,
+  RecordTabConfig,
+  RecordTabsComponent,
+} from '@nianva/ui-shared';
 
 import { ReglaPrecioFormComponent } from '../../regla-precio-form/regla-precio-form.component';
-import { ReglaPrecioFormPayload, ReglaPrecioService } from '../../regla-precio.service';
+import {
+  ReglaPrecioFormPayload,
+  ReglaPrecioService,
+} from '../../regla-precio.service';
 import { ReglaPrecio } from '../../regla-precio.types';
 
 /**
@@ -16,7 +36,15 @@ import { ReglaPrecio } from '../../regla-precio.types';
 @Component({
   selector: 'nucleo-regla-precio-detalle',
   standalone: true,
-  imports: [RecordTabsComponent, ReglaPrecioFormComponent, AuditLogViewerComponent],
+  imports: [
+    PageComponent,
+    PageHeaderComponent,
+    AlertComponent,
+    SkeletonComponent,
+    RecordTabsComponent,
+    ReglaPrecioFormComponent,
+    AuditLogViewerComponent,
+  ],
   templateUrl: './regla-precio-detalle.component.html',
   styleUrl: './regla-precio-detalle.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -26,7 +54,8 @@ export class ReglaPrecioDetalleComponent implements OnInit {
   private readonly reglaPrecioService = inject(ReglaPrecioService);
   private readonly toast = inject(ToastService);
 
-  @ViewChild(ReglaPrecioFormComponent) private formulario?: ReglaPrecioFormComponent;
+  @ViewChild(ReglaPrecioFormComponent)
+  private formulario?: ReglaPrecioFormComponent;
 
   protected readonly tabs: RecordTabConfig[] = [
     { label: 'General', icon: 'pi pi-percentage' },
@@ -39,13 +68,27 @@ export class ReglaPrecioDetalleComponent implements OnInit {
 
   protected readonly guardando = signal(false);
 
+  protected readonly error = signal(false);
+
   ngOnInit(): void {
+    this.cargar();
+  }
+
+  protected cargar(): void {
+    this.cargando.set(true);
+    this.error.set(false);
     const id = Number(this.route.snapshot.paramMap.get('id'));
 
-    this.reglaPrecioService.obtener(id).subscribe(({ regla, permisos }) => {
-      this.regla.set(regla);
-      this.puedeEditar.set(permisos.editar);
-      this.cargando.set(false);
+    this.reglaPrecioService.obtener(id).subscribe({
+      next: ({ regla, permisos }) => {
+        this.regla.set(regla);
+        this.puedeEditar.set(permisos.editar);
+        this.cargando.set(false);
+      },
+      error: () => {
+        this.cargando.set(false);
+        this.error.set(true);
+      },
     });
   }
 

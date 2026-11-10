@@ -1,9 +1,17 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
+import type { CuerpoDe, RespuestaDe } from '@nianva/api-contrato';
 import { Observable, map } from 'rxjs';
 
 import { urlApi } from '../../core/api-config';
-import { AjustarPuntosPayload, CrmInteraccion, InteraccionFormPayload, LoyaltyResumen, LoyaltyTransaccion, ReporteCrm } from './crm-avanzado.types';
+import {
+  AjustarPuntosPayload,
+  CrmInteraccion,
+  InteraccionFormPayload,
+  LoyaltyResumen,
+  LoyaltyTransaccion,
+  ReporteCrm,
+} from './crm-avanzado.types';
 
 @Injectable({ providedIn: 'root' })
 export class CrmAvanzadoService {
@@ -12,14 +20,25 @@ export class CrmAvanzadoService {
   /** Sin paginacion: CrmAvanzadoController::interacciones() devuelve la lista completa, no un paginador. */
   interacciones(clienteId: number): Observable<CrmInteraccion[]> {
     return this.http
-      .get<{ data: CrmInteraccion[] }>(urlApi(`/clientes/${clienteId}/interacciones`))
-      .pipe(map((r) => r.data));
+      .get<RespuestaDe<'/clientes/{cliente}/interacciones', 'get'>>(
+        urlApi(`/clientes/${clienteId}/interacciones`),
+      )
+      .pipe(map((r) => r.data as CrmInteraccion[]));
   }
 
-  crearInteraccion(clienteId: number, payload: InteraccionFormPayload): Observable<CrmInteraccion> {
+  crearInteraccion(
+    clienteId: number,
+    payload: InteraccionFormPayload,
+  ): Observable<CrmInteraccion> {
+    const cuerpo: CuerpoDe<'/clientes/{cliente}/interacciones', 'post'> =
+      payload;
+
     return this.http
-      .post<{ data: CrmInteraccion }>(urlApi(`/clientes/${clienteId}/interacciones`), payload)
-      .pipe(map((r) => r.data));
+      .post<RespuestaDe<'/clientes/{cliente}/interacciones', 'post'>>(
+        urlApi(`/clientes/${clienteId}/interacciones`),
+        cuerpo,
+      )
+      .pipe(map((r) => r.data as CrmInteraccion));
   }
 
   loyalty(clienteId: number): Observable<LoyaltyResumen> {
@@ -28,13 +47,24 @@ export class CrmAvanzadoService {
       .pipe(map((r) => r.data));
   }
 
-  ajustarPuntos(clienteId: number, payload: AjustarPuntosPayload): Observable<LoyaltyTransaccion> {
+  ajustarPuntos(
+    clienteId: number,
+    payload: AjustarPuntosPayload,
+  ): Observable<LoyaltyTransaccion> {
+    const cuerpo: CuerpoDe<'/clientes/{cliente}/loyalty/ajustar', 'post'> =
+      payload;
+
     return this.http
-      .post<{ data: LoyaltyTransaccion }>(urlApi(`/clientes/${clienteId}/loyalty/ajustar`), payload)
-      .pipe(map((r) => r.data));
+      .post<RespuestaDe<'/clientes/{cliente}/loyalty/ajustar', 'post'>>(
+        urlApi(`/clientes/${clienteId}/loyalty/ajustar`),
+        cuerpo,
+      )
+      .pipe(map((r) => r.data as LoyaltyTransaccion));
   }
 
   reporte(): Observable<ReporteCrm> {
-    return this.http.get<{ data: ReporteCrm }>(urlApi(`/crm/reporte`)).pipe(map((r) => r.data));
+    return this.http
+      .get<RespuestaDe<'/crm/reporte', 'get'>>(urlApi(`/crm/reporte`))
+      .pipe(map((r) => r.data as ReporteCrm));
   }
 }

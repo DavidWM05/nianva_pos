@@ -1,9 +1,27 @@
-import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnChanges, OnInit, Output, ViewChild, inject, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  EventEmitter,
+  Input,
+  OnChanges,
+  Output,
+  ViewChild,
+  inject,
+  signal,
+} from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { DynamicFormComponent, DynamicFormField, EntidadBuscable, EntidadSelectorComponent } from '@nianva/ui-shared';
-import { Select } from 'primeng/select';
+import {
+  DynamicFormComponent,
+  DynamicFormField,
+  EntidadSelectorComponent,
+} from '@nianva/ui-shared';
+import { CampoComponent, SelectFiltroComponent } from '@nianva/ui-forms';
 
-import { BUSCADOR_CATEGORIA, BUSCADOR_PRODUCTO, BUSCADOR_VARIANTE_DE_PRODUCTO } from '../../../core/buscadores-entidad.tokens';
+import {
+  BUSCADOR_CATEGORIA,
+  BUSCADOR_PRODUCTO,
+  BUSCADOR_VARIANTE_DE_PRODUCTO,
+} from '../../../core/buscadores-entidad.tokens';
 import { ReglaPrecioFormPayload } from '../regla-precio.service';
 import { AplicaA, ReglaPrecio, TipoReglaPrecio } from '../regla-precio.types';
 
@@ -38,15 +56,23 @@ const OPCIONES_APLICA_A: { label: string; value: AplicaA }[] = [
 @Component({
   selector: 'nucleo-regla-precio-form',
   standalone: true,
-  imports: [FormsModule, DynamicFormComponent, EntidadSelectorComponent, Select],
+  imports: [
+    FormsModule,
+    DynamicFormComponent,
+    EntidadSelectorComponent,
+    CampoComponent,
+    SelectFiltroComponent,
+  ],
   templateUrl: './regla-precio-form.component.html',
   styleUrl: './regla-precio-form.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ReglaPrecioFormComponent implements OnInit, OnChanges {
+export class ReglaPrecioFormComponent implements OnChanges {
   protected readonly buscadorProducto = inject(BUSCADOR_PRODUCTO);
-  protected readonly buscadorVarianteDeProducto = inject(BUSCADOR_VARIANTE_DE_PRODUCTO);
-  private readonly buscadorCategoria = inject(BUSCADOR_CATEGORIA);
+  protected readonly buscadorVarianteDeProducto = inject(
+    BUSCADOR_VARIANTE_DE_PRODUCTO,
+  );
+  protected readonly buscadorCategoria = inject(BUSCADOR_CATEGORIA);
 
   @Input() valorInicial: ReglaPrecio | null = null;
   @Input() submitLabel = 'Guardar';
@@ -64,12 +90,6 @@ export class ReglaPrecioFormComponent implements OnInit, OnChanges {
   protected readonly categoriaId = signal<number | null>(null);
   protected readonly productoId = signal<number | null>(null);
   protected readonly varianteId = signal<number | null>(null);
-
-  protected categorias: EntidadBuscable[] = [];
-
-  ngOnInit(): void {
-    this.buscadorCategoria.buscar('').subscribe((categorias) => (this.categorias = categorias));
-  }
 
   ngOnChanges(): void {
     this.aplicaA.set(this.valorInicial?.aplica_a ?? 'todo');
@@ -97,7 +117,8 @@ export class ReglaPrecioFormComponent implements OnInit, OnChanges {
           { label: 'NxM (ej. 3x2)', value: 'nxm' },
           { label: 'Bundle (precio fijo por paquete)', value: 'bundle' },
         ],
-        defaultValue: this.valorInicial?.tipo ?? ('porcentaje' as TipoReglaPrecio),
+        defaultValue:
+          this.valorInicial?.tipo ?? ('porcentaje' as TipoReglaPrecio),
       },
       {
         name: 'valor',
@@ -135,13 +156,17 @@ export class ReglaPrecioFormComponent implements OnInit, OnChanges {
         name: 'fecha_inicio',
         label: 'Vigente desde',
         type: 'date',
-        defaultValue: this.valorInicial?.fecha_inicio ? new Date(this.valorInicial.fecha_inicio) : null,
+        defaultValue: this.valorInicial?.fecha_inicio
+          ? new Date(this.valorInicial.fecha_inicio)
+          : null,
       },
       {
         name: 'fecha_fin',
         label: 'Vigente hasta',
         type: 'date',
-        defaultValue: this.valorInicial?.fecha_fin ? new Date(this.valorInicial.fecha_fin) : null,
+        defaultValue: this.valorInicial?.fecha_fin
+          ? new Date(this.valorInicial.fecha_fin)
+          : null,
       },
     ];
   }
@@ -156,11 +181,18 @@ export class ReglaPrecioFormComponent implements OnInit, OnChanges {
   onSubmit(value: Record<string, unknown>): void {
     const fecha = (valor: unknown): string | null => {
       if (!valor) return null;
-      return valor instanceof Date ? valor.toISOString().slice(0, 10) : String(valor);
+      return valor instanceof Date
+        ? valor.toISOString().slice(0, 10)
+        : String(valor);
     };
 
     this.guardar.emit({
-      ...(value as unknown as ReglaPrecioFormPayload),
+      nombre: String(value['nombre'] ?? ''),
+      tipo: value['tipo'] as TipoReglaPrecio,
+      valor: value['valor'] as number | null,
+      cantidad_compra: value['cantidad_compra'] as number | null,
+      cantidad_paga: value['cantidad_paga'] as number | null,
+      precio_bundle: value['precio_bundle'] as number | null,
       fecha_inicio: fecha(value['fecha_inicio']),
       fecha_fin: fecha(value['fecha_fin']),
       aplica_a: this.aplicaA(),
