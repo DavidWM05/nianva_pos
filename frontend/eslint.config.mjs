@@ -21,7 +21,7 @@ const contratoPendientes = JSON.parse(
 // Serie 50: modulos de apps/pos ya migrados a libs/ui (carpeta bajo src/app/modules). Cada
 // encargo agrega el suyo al cerrar, y desde ahi ESLint prohibe PrimeNG en ese modulo, specs
 // incluidos. La lista solo crece; al final de la serie, PrimeNG sale de todo apps/pos.
-const MODULOS_POS_SIN_PRIMENG = ['unidades-medida', 'auditoria', 'nucleo', 'configuracion'];
+const MODULOS_POS_SIN_PRIMENG = ['unidades-medida', 'auditoria', 'nucleo', 'configuracion', 'precios', 'crm'];
 
 const sinPrimeNg = ['primeng', 'primeng/*', '@primeuix/themes', '@primeuix/themes/*'];
 const sinHttpClientEnComponentes = {

@@ -1,51 +1,34 @@
-<div class="clientes-list">
-  <div class="clientes-list__header">
-    <h1>Clientes</h1>
-    @if (permisos().crear) {
-      <a routerLink="/crm/clientes/nuevo"><p-button label="Nuevo cliente" icon="pi pi-plus" /></a>
-    }
-  </div>
-
-  <input
-    pInputText
-    type="text"
-    placeholder="Buscar por nombre..."
-    class="clientes-list__buscar"
-    (input)="onBuscarInput($any($event.target).value)"
-  />
-
-  <nucleo-data-table
-    [columns]="columns"
-    [value]="clientes()"
-    [totalRecords]="total()"
-    [loading]="loading()"
-    [virtualScroll]="false"
-    emptyMessage="No hay clientes que coincidan con la búsqueda."
-    (lazyLoad)="onLazyLoad($event)"
+<ui-page-header clave="crm">
+  @if (permisos().crear) {
+    <ui-btn-crear acciones objeto="cliente" ruta="/crm/clientes/nuevo" />
+  }
+</ui-page-header>
+<ui-page [estado]="estadoPagina()" forma="listado" (reintentar)="reintentar()">
+  <ui-filter-bar
+    [meta]="meta()"
+    [hayFiltros]="busqueda().trim() !== ''"
+    (limpiar)="limpiarFiltros()"
   >
-    <ng-template nucleoDataTableCell="activo" let-row>
-      <nucleo-status-badge
-        [value]="row.activo ? 'activo' : 'inactivo'"
-        [colorMap]="{ activo: 'success', inactivo: 'neutral' }"
+    <ui-campo #campoBuscar etiqueta="Buscar">
+      <input
+        class="clientes-list__buscar"
+        [id]="campoBuscar.controlId()"
+        #buscar
+        type="search"
+        placeholder="Buscar por nombre..."
+        [ngModel]="busqueda()"
+        (ngModelChange)="onBuscarInput($event)"
       />
-    </ng-template>
-
-    <ng-template nucleoDataTableCell="acciones" let-row>
-      <div class="clientes-list__acciones">
-        @if (permisos().editar) {
-          <p-button icon="pi pi-pencil" [text]="true" size="small" aria-label="Editar" (click)="irADetalle(row)" />
-        }
-        @if (permisos().eliminar && !row.es_sistema) {
-          <p-button
-            icon="pi pi-ban"
-            severity="danger"
-            [text]="true"
-            size="small"
-            aria-label="Desactivar"
-            (click)="onDesactivar(row)"
-          />
-        }
-      </div>
-    </ng-template>
-  </nucleo-data-table>
-</div>
+    </ui-campo>
+  </ui-filter-bar>
+  <ui-tabla
+    [columnas]="columnas"
+    [filas]="filas()"
+    [meta]="meta()"
+    [cargando]="loading()"
+    [filaInactiva]="esInactiva"
+    mensajeVacio="No hay clientes que coincidan con la búsqueda."
+    (cambio)="onCambio($event)"
+    (accion)="onAccion($event.fila, $event.accion)"
+  />
+</ui-page>

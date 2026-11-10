@@ -1,8 +1,6 @@
-<div class="cupon-crear">
-  <div class="cupon-crear__header">
-    <h1>Nuevo cupón</h1>
-    <a routerLink="/precios">Volver a la lista</a>
-  </div>
-
+<ui-page-header clave="precios" subtitulo="Nuevo cupón">
+  <a acciones matButton="outlined" routerLink="/precios">Volver a la lista</a>
+</ui-page-header>
+<ui-page estado="listo" forma="formulario">
   <nucleo-cupon-form submitLabel="Crear cupón" (guardar)="onGuardar($event)" />
-</div>
+</ui-page>

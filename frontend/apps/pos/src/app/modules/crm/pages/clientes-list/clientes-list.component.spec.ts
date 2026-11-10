@@ -1,8 +1,8 @@
+import { proveedoresDePantalla } from '../../../../testing/proveedores-pantalla';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter, Router } from '@angular/router';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { ConfirmDialogService, ToastService } from '@nianva/ui-shared';
-import { providePrimeNG } from 'primeng/config';
 import { of } from 'rxjs';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
@@ -50,9 +50,9 @@ describe('ClientesListComponent', () => {
     await TestBed.configureTestingModule({
       imports: [ClientesListComponent],
       providers: [
+        ...proveedoresDePantalla(),
         provideRouter([]),
         provideAnimationsAsync(),
-        providePrimeNG(),
         { provide: ClienteService, useValue: clienteService },
         { provide: ConfirmDialogService, useValue: { confirm: vi.fn() } },
         { provide: ToastService, useValue: { success: vi.fn(), error: vi.fn() } },
@@ -95,8 +95,16 @@ describe('ClientesListComponent', () => {
   it('"Nuevo cliente" navega a la vista dedicada, no abre un modal', async () => {
     await crearComponente({ crear: true, editar: false, eliminar: false });
 
-    const enlace = (fixture.nativeElement as HTMLElement).querySelector('a[href="/crm/clientes/nuevo"]');
-    expect(enlace).toBeTruthy();
+    const routerDePrueba = TestBed.inject(Router);
+    routerDePrueba.resetConfig([{ path: 'crm/clientes/nuevo', children: [] }, { path: '**', children: [] }]);
+    const elemento: HTMLElement = fixture.nativeElement;
+    const boton = elemento.querySelector<HTMLButtonElement>('ui-btn-crear button');
+    expect(boton).not.toBeNull();
+    boton?.click();
+    await fixture.whenStable();
+
+    expect(routerDePrueba.url).toBe('/crm/clientes/nuevo');
+    expect(elemento.querySelector('ui-modal')).toBeNull();
   });
 
   it('el cliente es_sistema nunca muestra el boton de desactivar, aunque el usuario tenga el permiso', async () => {

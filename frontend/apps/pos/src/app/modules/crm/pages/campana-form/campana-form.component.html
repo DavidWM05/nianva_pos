@@ -1,37 +1,58 @@
-<div class="campana-form">
-  <div class="campana-form__header">
-    <h2>Nueva campaña</h2>
-  </div>
-
+<ui-page-header clave="crm-campanas" subtitulo="Nueva campaña" />
+<ui-page estado="listo" forma="formulario">
   @if (ultimaEnviada(); as campana) {
-    <div class="campana-form__confirmacion">
-      Campaña "{{ campana.asunto }}" enviada a {{ campana.destinatarios }} cliente(s).
-    </div>
+    <ui-alert tono="exito"
+      >Campaña "{{ campana.asunto }}" enviada a
+      {{ campana.destinatarios | cantidad: 'clientes' }}.</ui-alert
+    >
   }
-
-  <div class="campana-form__campo">
-    <label for="campana-segmento">Segmento de clientes</label>
-    <p-select
-      inputId="campana-segmento"
-      [options]="segmentos"
-      optionLabel="label"
-      optionValue="value"
-      [ngModel]="segmento()"
-      (ngModelChange)="segmento.set($event)"
-    />
-  </div>
-
-  <div class="campana-form__campo">
-    <label for="campana-asunto">Asunto</label>
-    <input pInputText type="text" id="campana-asunto" maxlength="200" [ngModel]="asunto()" (ngModelChange)="asunto.set($event)" />
-  </div>
-
-  <div class="campana-form__campo">
-    <label for="campana-mensaje">Mensaje</label>
-    <textarea pTextarea id="campana-mensaje" rows="5" maxlength="5000" [ngModel]="mensaje()" (ngModelChange)="mensaje.set($event)"></textarea>
-  </div>
-
-  <div class="campana-form__acciones">
-    <p-button label="Enviar campaña" icon="pi pi-send" [loading]="enviando()" (click)="enviar()" />
-  </div>
-</div>
+  <ui-section titulo="Nueva campaña">
+    <form (ngSubmit)="enviar()">
+      <ui-campo etiqueta="Segmento de clientes" [requerido]="true">
+        <ui-select-filtro
+          name="segmento"
+          [todas]="false"
+          [opciones]="segmentos"
+          [ngModelOptions]="{ standalone: true }"
+          [ngModel]="segmento()"
+          (ngModelChange)="segmento.set($event)"
+        />
+      </ui-campo>
+      <ui-campo #campoAsunto etiqueta="Asunto" [requerido]="true">
+        <input
+          name="asunto"
+          [id]="campoAsunto.controlId()"
+          [attr.aria-invalid]="campoAsunto.invalido()"
+          [attr.aria-describedby]="
+            campoAsunto.mensaje() ? campoAsunto.errorId() : null
+          "
+          type="text"
+          maxlength="200"
+          required
+          [ngModelOptions]="{ standalone: true }"
+          [ngModel]="asunto()"
+          (ngModelChange)="asunto.set($event)"
+        />
+      </ui-campo>
+      <ui-campo #campoMensaje etiqueta="Mensaje" [requerido]="true">
+        <textarea
+          name="mensaje"
+          [id]="campoMensaje.controlId()"
+          [attr.aria-invalid]="campoMensaje.invalido()"
+          [attr.aria-describedby]="
+            campoMensaje.mensaje() ? campoMensaje.errorId() : null
+          "
+          rows="5"
+          maxlength="5000"
+          required
+          [ngModelOptions]="{ standalone: true }"
+          [ngModel]="mensaje()"
+          (ngModelChange)="mensaje.set($event)"
+        ></textarea>
+      </ui-campo>
+      <ui-form-actions
+        ><ui-btn-enviar etiqueta="Enviar campaña" [enviando]="enviando()"
+      /></ui-form-actions>
+    </form>
+  </ui-section>
+</ui-page>

@@ -1,8 +1,9 @@
-<div class="cliente-crear">
-  <div class="cliente-crear__header">
-    <h1>Nuevo cliente</h1>
-    <a routerLink="/crm">Volver a la lista</a>
-  </div>
-
-  <nucleo-cliente-form submitLabel="Crear cliente" (guardar)="onGuardar($event)" />
-</div>
+<ui-page-header clave="crm" subtitulo="Nuevo cliente">
+  <a acciones matButton="outlined" routerLink="/crm">Volver a la lista</a>
+</ui-page-header>
+<ui-page estado="listo" forma="formulario">
+  <nucleo-cliente-form
+    submitLabel="Crear cliente"
+    (guardar)="onGuardar($event)"
+  />
+</ui-page>

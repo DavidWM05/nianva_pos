@@ -1,7 +1,15 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { ChangeDetectionStrategy, Component, ViewChild, inject, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  ViewChild,
+  inject,
+  signal,
+} from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
-import { ToastService } from '@nianva/ui-shared';
+import { ToastService } from '@nianva/ui-feedback';
+import { PageComponent, PageHeaderComponent } from '@nianva/ui-layout';
+import { MatButton } from '@angular/material/button';
 
 import { CuponFormComponent } from '../../cupon-form/cupon-form.component';
 import { CuponFormPayload, CuponService } from '../../cupon.service';
@@ -13,7 +21,13 @@ import { CuponFormPayload, CuponService } from '../../cupon.service';
 @Component({
   selector: 'nucleo-cupon-crear',
   standalone: true,
-  imports: [RouterLink, CuponFormComponent],
+  imports: [
+    RouterLink,
+    CuponFormComponent,
+    PageComponent,
+    PageHeaderComponent,
+    MatButton,
+  ],
   templateUrl: './cupon-crear.component.html',
   styleUrl: './cupon-crear.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

@@ -1,10 +1,21 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { ChangeDetectionStrategy, Component, ViewChild, inject, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  ViewChild,
+  inject,
+  signal,
+} from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
-import { ToastService } from '@nianva/ui-shared';
+import { ToastService } from '@nianva/ui-feedback';
+import { PageComponent, PageHeaderComponent } from '@nianva/ui-layout';
+import { MatButton } from '@angular/material/button';
 
 import { ReglaPrecioFormComponent } from '../../regla-precio-form/regla-precio-form.component';
-import { ReglaPrecioFormPayload, ReglaPrecioService } from '../../regla-precio.service';
+import {
+  ReglaPrecioFormPayload,
+  ReglaPrecioService,
+} from '../../regla-precio.service';
 
 /**
  * Vista dedicada, no modal (ver el reporte del punto 1): regla de precio
@@ -14,7 +25,13 @@ import { ReglaPrecioFormPayload, ReglaPrecioService } from '../../regla-precio.s
 @Component({
   selector: 'nucleo-regla-precio-crear',
   standalone: true,
-  imports: [RouterLink, ReglaPrecioFormComponent],
+  imports: [
+    RouterLink,
+    ReglaPrecioFormComponent,
+    PageComponent,
+    PageHeaderComponent,
+    MatButton,
+  ],
   templateUrl: './regla-precio-crear.component.html',
   styleUrl: './regla-precio-crear.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -24,7 +41,8 @@ export class ReglaPrecioCrearComponent {
   private readonly router = inject(Router);
   private readonly toast = inject(ToastService);
 
-  @ViewChild(ReglaPrecioFormComponent) private formulario?: ReglaPrecioFormComponent;
+  @ViewChild(ReglaPrecioFormComponent)
+  private formulario?: ReglaPrecioFormComponent;
 
   protected readonly guardando = signal(false);
 

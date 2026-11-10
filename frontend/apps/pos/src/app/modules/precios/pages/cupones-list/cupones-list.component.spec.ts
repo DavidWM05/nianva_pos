@@ -1,8 +1,8 @@
+import { proveedoresDePantalla } from '../../../../testing/proveedores-pantalla';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
-import { provideRouter } from '@angular/router';
+import { provideRouter, Router } from '@angular/router';
 import { AuditLogSource, ConfirmDialogService, ToastService } from '@nianva/ui-shared';
-import { providePrimeNG } from 'primeng/config';
 import { of } from 'rxjs';
 import { describe, expect, it, vi } from 'vitest';
 
@@ -51,9 +51,9 @@ describe('CuponesListComponent', () => {
     await TestBed.configureTestingModule({
       imports: [CuponesListComponent],
       providers: [
+        ...proveedoresDePantalla(),
         provideRouter([]),
         provideAnimationsAsync(),
-        providePrimeNG(),
         { provide: CuponService, useValue: cuponService },
         { provide: ConfirmDialogService, useValue: { confirm: vi.fn() } },
         { provide: AuditLogSource, useValue: { listar: vi.fn().mockReturnValue(of([])) } },
@@ -70,7 +70,7 @@ describe('CuponesListComponent', () => {
 
     const texto = (fixture.nativeElement as HTMLElement).textContent ?? '';
     expect(texto).toContain('VERANO10');
-    expect(texto).toContain('10.00%');
+    expect(texto).toContain('10%');
     expect(texto).toContain('PROMO50');
     expect(texto).toContain('$50.00');
   });
@@ -85,8 +85,16 @@ describe('CuponesListComponent', () => {
   it('"Nuevo cupón" navega a la vista dedicada, no abre un modal', async () => {
     await crearComponente({ crear: true, editar: false, eliminar: false });
 
-    const enlace = (fixture.nativeElement as HTMLElement).querySelector('a[href="/precios/cupones/nuevo"]');
-    expect(enlace).toBeTruthy();
+    const routerDePrueba = TestBed.inject(Router);
+    routerDePrueba.resetConfig([{ path: 'precios/cupones/nuevo', children: [] }, { path: '**', children: [] }]);
+    const elemento: HTMLElement = fixture.nativeElement;
+    const boton = elemento.querySelector<HTMLButtonElement>('ui-btn-crear button');
+    expect(boton).not.toBeNull();
+    boton?.click();
+    await fixture.whenStable();
+
+    expect(routerDePrueba.url).toBe('/precios/cupones/nuevo');
+    expect(elemento.querySelector('ui-modal')).toBeNull();
   });
 
   it('la busqueda filtra por codigo o nombre', async () => {

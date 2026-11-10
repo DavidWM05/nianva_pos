@@ -1,14 +1,20 @@
-<div class="cupon-detalle">
-  @if (cargando()) {
-    <p>Cargando cupón...</p>
-  } @else if (cupon(); as cuponActual) {
-    <h1>{{ cuponActual.codigo }}</h1>
+<ui-page-header clave="precios" subtitulo="Detalle del cupón" />
+<ui-page
+  [estado]="cargando() ? 'cargando' : error() ? 'error' : 'listo'"
+  forma="detalle"
+  (reintentar)="cargar()"
+>
+  @if (cupon(); as cuponActual) {
+    <h2>{{ cuponActual.codigo }}</h2>
 
     <nucleo-record-tabs [tabs]="tabs">
       <ng-template>
         <div class="cupon-detalle__tab">
           @if (!puedeEditar()) {
-            <p class="cupon-detalle__aviso">No tienes permiso para editar cupones -- solo visualizar.</p>
+            <ui-alert tono="info"
+              >No tienes permiso para editar cupones -- solo
+              visualizar.</ui-alert
+            >
           }
           <nucleo-cupon-form
             [valorInicial]="cuponActual"
@@ -21,13 +27,16 @@
 
       <ng-template>
         @defer (on viewport) {
-          <nucleo-audit-log-viewer [tabla]="'cupones'" [registroId]="cuponActual.id" />
+          <nucleo-audit-log-viewer
+            [tabla]="'cupones'"
+            [registroId]="cuponActual.id"
+          />
         } @placeholder {
           <p>Auditoría (se carga al hacer scroll hasta aquí)...</p>
         } @loading (minimum 200ms) {
-          <p>Cargando auditoría...</p>
+          <ui-skeleton forma="texto" />
         }
       </ng-template>
     </nucleo-record-tabs>
   }
-</div>
+</ui-page>

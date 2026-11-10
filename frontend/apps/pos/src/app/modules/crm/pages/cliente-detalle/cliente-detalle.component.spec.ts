@@ -1,3 +1,4 @@
+import { proveedoresDePantalla } from '../../../../testing/proveedores-pantalla';
 import { HttpErrorResponse } from '@angular/common/http';
 import { ComponentFixture, DeferBlockBehavior, DeferBlockState, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
@@ -74,6 +75,7 @@ describe('ClienteDetalleComponent', () => {
       imports: [ClienteDetalleComponent],
       deferBlockBehavior: DeferBlockBehavior.Manual,
       providers: [
+        ...proveedoresDePantalla(),
         { provide: ClienteService, useValue: clienteService },
         { provide: CrmAvanzadoService, useValue: crmAvanzadoService },
         { provide: AuditLogSource, useValue: { listar: vi.fn().mockReturnValue(of([])) } },
@@ -174,6 +176,7 @@ describe('ClienteDetalleComponent', () => {
       imports: [ClienteDetalleComponent],
       deferBlockBehavior: DeferBlockBehavior.Manual,
       providers: [
+        ...proveedoresDePantalla(),
         { provide: ClienteService, useValue: clienteService },
         { provide: CrmAvanzadoService, useValue: crmMock },
         { provide: AuditLogSource, useValue: { listar: vi.fn().mockReturnValue(of([])) } },
@@ -222,6 +225,7 @@ describe('ClienteDetalleComponent', () => {
       imports: [ClienteDetalleComponent],
       deferBlockBehavior: DeferBlockBehavior.Manual,
       providers: [
+        ...proveedoresDePantalla(),
         { provide: ClienteService, useValue: clienteService },
         { provide: CrmAvanzadoService, useValue: crearCrmAvanzadoServiceMock() },
         { provide: AuditLogSource, useValue: { listar: vi.fn().mockReturnValue(of([])) } },
@@ -252,6 +256,7 @@ describe('ClienteDetalleComponent', () => {
       imports: [ClienteDetalleComponent],
       deferBlockBehavior: DeferBlockBehavior.Manual,
       providers: [
+        ...proveedoresDePantalla(),
         { provide: ClienteService, useValue: clienteService },
         { provide: CrmAvanzadoService, useValue: crearCrmAvanzadoServiceMock() },
         { provide: AuditLogSource, useValue: { listar: vi.fn().mockReturnValue(of([])) } },

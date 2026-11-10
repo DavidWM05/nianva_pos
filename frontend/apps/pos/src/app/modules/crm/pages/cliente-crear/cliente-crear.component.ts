@@ -1,7 +1,15 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { ChangeDetectionStrategy, Component, ViewChild, inject, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  ViewChild,
+  inject,
+  signal,
+} from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
-import { ToastService } from '@nianva/ui-shared';
+import { ToastService } from '@nianva/ui-feedback';
+import { PageComponent, PageHeaderComponent } from '@nianva/ui-layout';
+import { MatButton } from '@angular/material/button';
 
 import { ClienteFormComponent } from '../../cliente-form/cliente-form.component';
 import { ClienteFormPayload, ClienteService } from '../../cliente.service';
@@ -14,7 +22,13 @@ import { ClienteFormPayload, ClienteService } from '../../cliente.service';
 @Component({
   selector: 'nucleo-cliente-crear',
   standalone: true,
-  imports: [RouterLink, ClienteFormComponent],
+  imports: [
+    RouterLink,
+    ClienteFormComponent,
+    PageComponent,
+    PageHeaderComponent,
+    MatButton,
+  ],
   templateUrl: './cliente-crear.component.html',
   styleUrl: './cliente-crear.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

@@ -1,4 +1,12 @@
-import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnChanges, Output, ViewChild } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  EventEmitter,
+  Input,
+  OnChanges,
+  Output,
+  ViewChild,
+} from '@angular/core';
 import { Validators } from '@angular/forms';
 import { DynamicFormComponent, DynamicFormField } from '@nianva/ui-shared';
 
@@ -63,12 +71,23 @@ export class ClienteFormComponent implements OnChanges {
         defaultValue: this.valorInicial?.correo ?? '',
         maxLength: 150,
       },
-      { name: 'direccion', label: 'Dirección', type: 'textarea', defaultValue: this.valorInicial?.direccion ?? '' },
+      {
+        name: 'direccion',
+        label: 'Dirección',
+        type: 'textarea',
+        defaultValue: this.valorInicial?.direccion ?? '',
+      },
     ];
   }
 
   onSubmit(value: Record<string, unknown>): void {
-    this.guardar.emit(value as unknown as ClienteFormPayload);
+    this.guardar.emit({
+      nombre: String(value['nombre'] ?? ''),
+      documento_fiscal: value['documento_fiscal'] as string | null,
+      telefono: value['telefono'] as string | null,
+      correo: value['correo'] as string | null,
+      direccion: value['direccion'] as string | null,
+    });
   }
 
   setServerErrors(errors: Record<string, string | string[]>): void {
