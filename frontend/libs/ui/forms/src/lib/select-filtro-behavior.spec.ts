@@ -54,6 +54,21 @@ describe('SelectFiltroComponent comportamiento', () => {
     expect(cambios).toHaveBeenLastCalledWith(null);
   });
 
+  it('con todas en false no antepone Todas: el campo es una eleccion obligatoria de formulario', () => {
+    const fixture = TestBed.createComponent(SelectFiltroComponent);
+    fixture.componentRef.setInput('opciones', [
+      { label: 'Producto', value: 'producto' },
+      { label: 'Categoria', value: 'categoria' },
+    ]);
+    fixture.componentRef.setInput('todas', false);
+    fixture.detectChanges();
+
+    expect((fixture.componentInstance as unknown as Interno).opcionesConTodas()).toEqual([
+      { label: 'Producto', value: 'producto' },
+      { label: 'Categoria', value: 'categoria' },
+    ]);
+  });
+
   it('acepta valores sin opcion y los normaliza a null', () => {
     const fixture = render();
     const componente = fixture.componentInstance as unknown as Interno;

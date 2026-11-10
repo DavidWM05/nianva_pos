@@ -26,13 +26,15 @@ export class SelectFiltroComponent extends CampoBase {
   // Solo fuera de ui-campo (por ejemplo, la barra de filtros del reporte); dentro, el nombre
   // sale de la etiqueta del campo.
   readonly ariaLabel = input<string | null>(null);
+  // En false no se antepone "Todas": el campo es una eleccion obligatoria de formulario
+  // (aplica a, segmento, tipo), no un filtro.
+  readonly todas = input(true);
 
   protected readonly valor = signal<unknown>(null);
   protected readonly errorCampo: ErrorStateMatcher = { isErrorState: () => this.ariaInvalido() };
-  protected readonly opcionesConTodas = computed<SelectFiltroOpcion[]>(() => [
-    { label: 'Todas', value: null },
-    ...this.opciones(),
-  ]);
+  protected readonly opcionesConTodas = computed<SelectFiltroOpcion[]>(() =>
+    this.todas() ? [{ label: 'Todas', value: null }, ...this.opciones()] : [...this.opciones()],
+  );
 
   writeValue(valor: unknown): void {
     this.valor.set(valor ?? null);
