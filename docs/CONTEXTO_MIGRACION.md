@@ -1635,6 +1635,34 @@ repo.
       número de tests. Se agrega una regresión contra comentarios justo encima de un
       `return`, que en la 04d se colaban en OpenAPI;
     - 6 casos de concurrencia más: 25 en total. Línea base de PHPStan: 1345 → 1317.
+  - **ARQ-05, por etapas.** La 05a junta el cálculo en un solo servicio sin cambiar
+    resultados. Las listas de precio llegan en la 05c. Impuestos, precio por variante y
+    reglas combinables (L-26) esperan decisión del responsable;
+  - **05a, un solo `PricingService`:**
+    - `PricingService::cotizar(Carrito, ContextoPrecio): CotizacionPrecio`:
+      - resuelve las reglas por línea, en cascada variante > producto > categoría > todo,
+        y se detiene en el primer nivel con una regla vigente;
+      - resuelve el cupón sobre el total;
+      - evalúa la vigencia con la fecha del contexto y solo toma filas del tenant del
+        contexto o globales;
+    - `PrecioService` queda como envoltura `@deprecated`. Tpv, Apartados, Devoluciones,
+      Cotizaciones y la validación de cupón pasan por `PricingService`.
+      `Arquitectura/PreciosSoloEnPricingTest` impide calcular precios fuera de Precios, sin
+      pendientes;
+    - **SEG-01, corregido en la revisión:** quitar el filtro de tenant en `vigentes()`
+      dejaba pasar los 206 tests de Precios, Tpv, Cotizaciones, Apartados, Devoluciones y
+      Arquitectura. La tabla de `PricingServiceTest` suma tres casos, que fallan con esa
+      mutación:
+      - una regla `todo` de otro tenant no se aplica;
+      - con el mismo código en dos tenants, se usa el cupón del tenant del contexto;
+      - un cupón que solo existe en otro tenant es inválido;
+    - **sucursal del cupón (SEG-02):** `ValidarCuponRequest::toDto()` toma la sucursal del
+      usuario, `null` si no tiene. No usa `SucursalOperacion`, porque el payload no trae
+      `sucursal_id` (solo `codigo` y `total`). `ContextoPrecio::$sucursalId` es `?int`, nunca
+      `0`. `CuponContextoTest`: un usuario sin sucursal, con y sin `sucursales.todas`,
+      recibe 200 con la misma respuesta;
+    - ningún test existente cambió. Ocho archivos salen de `sin-strict-types.txt`. Línea
+      base de PHPStan: 1317 → 1298.
 - **Git:** `master` está protegido (ruleset `proteger-master`): todo entra por PR con los tres
   checks en verde.
 
