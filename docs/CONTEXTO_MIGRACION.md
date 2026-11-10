@@ -1445,6 +1445,34 @@ repo.
       paginador volvía a 1) y el skeleton en cada recarga, que destruía la barra de filtros
       (UI-18: solo en la primera carga). Las fechas de auditoría quedan como
       `<input type="date">` dentro de `ui-campo`.
+  - **50c · configuración y métodos de pago (DS, revisado por Claude):**
+    - `configuracion` sobre `libs/ui` y en `MODULOS_POS_SIN_PRIMENG`. Los métodos de pago
+      (listado, alta y detalle) también se migran, pero `administracion` entra en la lista
+      hasta el 50g, cuando se migren usuarios y roles. E2e de flujo de los dos, verdes antes
+      y después, con axe en el tab Empresa, en el listado y en el detalle;
+    - **bug encontrado y corregido (axe):** `dynamic-form` ponía el `id` en el host de
+      `p-select`, `p-checkbox` y `p-datepicker`, así que el `<label for>` no apuntaba a un
+      control y axe marcaba `label` en todo formulario con esos campos. Ahora usa `inputId`
+      (test en `ui-shared`, visto en rojo). El e2e de Configuración corría axe en el tab
+      Licencia y no lo veía;
+    - **pieza nueva en `libs/ui/layout`:** `dl[uiDatos]`, una lista de definiciones con la
+      cuadrícula `dt`/`dd`, que pasa a una columna con `PantallaService.angosta()` y sin
+      `@media` (UI-04). Sin encapsulación, porque los `dt`/`dd` son contenido proyectado y
+      `:host dt` no los alcanza. DS la creó con `:host dt` y un `@media` de 480 px; Claude lo
+      corrigió con dos tests vistos en rojo.
+      Hay 15 pantallas de detalle con `<dl>` que la usarán en sus etapas;
+    - en la revisión se corrigieron, con un test visto en rojo cada uno:
+      - el listado mostraba "Editar" y "Desactivar" sin mirar `permisos`;
+      - se había perdido el origen global de la fila (ahora es la columna "Origen");
+      - la página de `meta` no avanzaba, como en el 50b;
+    - **deuda:** el contrato y el backend exigen `minutos_inactividad`, pero el tipo local
+      `ConfiguracionSeguridad` lo tiene opcional. Alinearlo obliga a cambiar specs
+      existentes (PRO-01), así que `configuracion.service.ts` sigue en
+      `contrato-pendientes.json`;
+    - **hallazgo:** PrimeNG 22.1.4 verifica una licencia al arrancar y, sin ella, pinta
+      "Invalid PrimeUI License" en todas las pantallas (`primeng/config`, solo un
+      `console.warn`, que la red del e2e no ve). Pasa desde antes de 50c y refuerza la
+      decisión de quitar PrimeNG en la serie 50.
 - **Posibles mejoras (roadmap):**
   - **capturas de Linux sin pasar por CI (Docker):** hoy cada PR con cambio visual falla una
     vez en "Catálogo visual", se baja el artifact y se versionan las capturas, porque en el
