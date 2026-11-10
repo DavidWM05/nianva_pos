@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Modules\Cotizaciones\Http\Requests;
 
 use App\Modules\Cotizaciones\Dtos\ActualizarCotizacionDto;
@@ -8,6 +10,8 @@ use App\Modules\Inventario\Support\ReglasVariante;
 use App\Modules\Nucleo\Http\Requests\SolicitudNegocio;
 use App\Modules\Nucleo\Models\Usuario;
 use App\Modules\Nucleo\Support\ReglasTenant;
+use App\Modules\Precios\Support\ContextoPrecio;
+use Carbon\CarbonImmutable;
 
 class ActualizarCotizacionRequest extends SolicitudNegocio
 {
@@ -37,12 +41,14 @@ class ActualizarCotizacionRequest extends SolicitudNegocio
         $v = $this->validated();
 
         $usuario = $this->user();
+        $sucursalContextoId = $usuario?->getAttribute('sucursal_id');
         $precioManual = $usuario instanceof Usuario
             && $usuario->tienePermiso('cotizaciones.precio_manual');
 
         $items = app(ResolverPreciosCotizacion::class)->resolver(
             (array) ($v['items'] ?? []),
             $precioManual,
+            new ContextoPrecio((int) $this->tenantId(), $sucursalContextoId === null ? null : (int) $sucursalContextoId, isset($v['cliente_id']) ? (int) $v['cliente_id'] : null, CarbonImmutable::now()),
         );
 
         return new ActualizarCotizacionDto(

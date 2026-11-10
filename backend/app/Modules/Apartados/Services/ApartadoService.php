@@ -18,9 +18,14 @@ use App\Modules\Inventario\Models\ProductoVariante;
 use App\Modules\Inventario\Services\InventarioService;
 use App\Modules\Nucleo\Models\Sucursal;
 use App\Modules\Nucleo\Models\Usuario;
-use App\Modules\Precios\Services\PrecioService;
+use App\Modules\Precios\Services\PricingService;
+use App\Modules\Precios\Support\Carrito;
+use App\Modules\Precios\Support\ContextoPrecio;
+use App\Modules\Precios\Support\LineaCarrito;
+use App\Modules\Precios\Support\LineaPrecio;
 use App\Modules\Tpv\Models\CajaSesion;
 use App\Modules\Tpv\Services\VentaService;
+use Carbon\CarbonImmutable;
 use Illuminate\Support\Facades\DB;
 use InvalidArgumentException;
 
@@ -58,7 +63,7 @@ use InvalidArgumentException;
 class ApartadoService
 {
     public function __construct(
-        private readonly PrecioService $precioService,
+        private readonly PricingService $pricingService,
         private readonly InventarioService $inventarioService,
         private readonly VentaService $ventaService,
     ) {}
@@ -80,7 +85,7 @@ class ApartadoService
 
         $this->verificarPertenencia($tenantId, $sucursalId, $datosApartado['cliente_id']);
 
-        [$lineas, $total] = $this->resolverLineas($tenantId, $items);
+        [$lineas, $total] = $this->resolverLineas($tenantId, $items, new ContextoPrecio($tenantId, $sucursalId, $datosApartado['cliente_id'], CarbonImmutable::now()));
 
         $apartado = Apartado::query()->create([
             'tenant_id' => $tenantId,
@@ -170,7 +175,7 @@ class ApartadoService
      * kardex legible: reservado por el apartado -> liberado al liquidar ->
      * consumido por la venta.
      *
-     * Los items se re-cotizan via PrecioService dentro de
+     * Los items se re-cotizan via PricingService dentro de
      * VentaService::registrarVentaConBloqueos() (misma autoridad de precios que
      * cualquier otra venta) -- si una regla de precio cambio entre la
      * creacion del apartado y su liquidacion, el total de la venta
@@ -294,11 +299,8 @@ class ApartadoService
      * @param  list<array{variante_id:int, cantidad:int}>  $items
      * @return array{0: list<array{variante_id:int, cantidad:int, precio_unitario:float, subtotal:float}>, 1: float}
      */
-    private function resolverLineas(int $tenantId, array $items): array
+    private function resolverLineas(int $tenantId, array $items, ContextoPrecio $contexto): array
     {
-        $lineas = [];
-        $total = 0.0;
-
         foreach ($items as $item) {
             if ($item['cantidad'] <= 0) {
                 throw new InvalidArgumentException('La cantidad de cada linea debe ser mayor a cero.');
@@ -310,19 +312,14 @@ class ApartadoService
                 throw new InvalidArgumentException("La variante {$item['variante_id']} no pertenece al tenant {$tenantId}.");
             }
 
-            $resultado = $this->precioService->calcularDescuento($variante, $item['cantidad']);
-
-            $lineas[] = [
-                'variante_id' => $variante->id,
-                'cantidad' => $item['cantidad'],
-                'precio_unitario' => $resultado->precioUnitario,
-                'subtotal' => $resultado->subtotalConDescuento(),
-            ];
-
-            $total += $resultado->subtotalConDescuento();
         }
+        $cotizacion = $this->pricingService->cotizar(new Carrito(array_map(static fn (array $item): LineaCarrito => new LineaCarrito((int) $item['variante_id'], $item['cantidad']), $items)), $contexto);
+        $lineas = array_map(static fn (LineaPrecio $linea): array => [
+            'variante_id' => $linea->varianteId, 'cantidad' => $linea->cantidad,
+            'precio_unitario' => $linea->precioBase, 'subtotal' => $linea->total,
+        ], $cotizacion->lineas);
 
-        return [$lineas, round($total, 2)];
+        return [$lineas, $cotizacion->subtotal];
     }
 
     /**

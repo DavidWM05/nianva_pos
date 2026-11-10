@@ -11,8 +11,12 @@ use App\Modules\Inventario\Models\ProductoVariante;
 use App\Modules\Inventario\Services\InventarioService;
 use App\Modules\Nucleo\Models\Sucursal;
 use App\Modules\Nucleo\Models\Usuario;
+use App\Modules\Nucleo\Scopes\TenantScope;
 use App\Modules\Precios\Models\Cupon;
-use App\Modules\Precios\Services\PrecioService;
+use App\Modules\Precios\Services\PricingService;
+use App\Modules\Precios\Support\Carrito;
+use App\Modules\Precios\Support\ContextoPrecio;
+use App\Modules\Precios\Support\LineaCarrito;
 use App\Modules\Tpv\Exceptions\CajaSesionNoAbiertaException;
 use App\Modules\Tpv\Exceptions\PagoNoCuadraException;
 use App\Modules\Tpv\Exceptions\VentaTotalNegativoException;
@@ -21,13 +25,14 @@ use App\Modules\Tpv\Models\CajaSesion;
 use App\Modules\Tpv\Models\Venta;
 use App\Modules\Tpv\Models\VentaDetalle;
 use App\Modules\Tpv\Models\VentaPago;
+use Carbon\CarbonImmutable;
 use Illuminate\Support\Facades\DB;
 use InvalidArgumentException;
 
 /**
  * Unico punto de entrada para registrar y anular ventas. Nunca acepta un
  * precio de linea calculado afuera -- siempre resuelve via
- * PrecioService::calcularDescuento(). Nunca toca inventario_stock
+ * PricingService::cotizar(). Nunca toca inventario_stock
  * directamente -- siempre via InventarioService::registrarMovimientoConStock().
  * Todo dentro de una sola transaccion: si cualquier linea falla (stock
  * insuficiente, pago que no cuadra, tenant inconsistente), la venta
@@ -37,7 +42,7 @@ use InvalidArgumentException;
 class VentaService
 {
     public function __construct(
-        private readonly PrecioService $precioService,
+        private readonly PricingService $pricingService,
         private readonly InventarioService $inventarioService,
     ) {}
 
@@ -77,14 +82,7 @@ class VentaService
 
         $this->verificarPertenencia($tenantId, $sucursalId, $datosVenta['cliente_id'], $cuponId);
 
-        [$lineas, $subtotalItems] = $this->resolverLineas($tenantId, $items);
-
-        $descuentoCupon = 0.0;
-
-        if ($cuponId !== null) {
-            $cupon = Cupon::sinTenant()->findOrFail($cuponId);
-            $descuentoCupon = $this->precioService->aplicarCupon($cupon->codigo, $subtotalItems)->descuento;
-        }
+        [$lineas, $subtotalItems, $descuentoCupon] = $this->resolverLineas($tenantId, $items, new ContextoPrecio($tenantId, $sucursalId, $datosVenta['cliente_id'], CarbonImmutable::now()), $cuponId);
 
         $descuentoManual = round((float) ($datosVenta['descuento_manual'] ?? 0), 2);
         $total = round($subtotalItems - $descuentoCupon - $descuentoManual, 2);
@@ -197,30 +195,30 @@ class VentaService
     }
 
     /**
-     * Cotiza items via PrecioService sin crear ninguna fila -- expone la
+     * Cotiza items via PricingService sin crear ninguna fila -- expone la
      * misma autoridad de precios de registrarVentaConBloqueos() para que otros
      * modulos (ej. Devoluciones, para saber de antemano el total de los
      * items nuevos de un cambio antes de registrar la venta sombra) puedan
      * calcular un total sin duplicar la logica de precios ni el
      * InvalidArgumentException de tenant/variante inconsistente.
      *
-     * @param  list<array{variante_id:int, cantidad:int}>  $items
+     * @param  array<int|string, array{variante_id:int|string, cantidad:int}>  $items
      * @return array{0: list<array{variante_id:int, regla_precio_id:?int, cantidad:int, precio_unitario:float, descuento_aplicado:float, subtotal:float}>, 1: float}
      */
     public function cotizarItems(int $tenantId, array $items): array
     {
-        return $this->resolverLineas($tenantId, $items);
+        $cotizado = $this->resolverLineas($tenantId, $items);
+
+        return [$cotizado[0], $cotizado[1]];
     }
 
     /**
-     * @param  list<array{variante_id:int, cantidad:int}>  $items
-     * @return array{0: list<array{variante_id:int, regla_precio_id:?int, cantidad:int, precio_unitario:float, descuento_aplicado:float, subtotal:float}>, 1: float}
+     * @param  array<int|string, array{variante_id:int|string, cantidad:int}>  $items
+     * @return array{0: list<array{variante_id:int, regla_precio_id:?int, cantidad:int, precio_unitario:float, descuento_aplicado:float, subtotal:float}>, 1: float, 2: float}
      */
-    private function resolverLineas(int $tenantId, array $items): array
+    private function resolverLineas(int $tenantId, array $items, ?ContextoPrecio $contexto = null, ?int $cuponId = null): array
     {
-        $lineas = [];
-        $subtotal = 0.0;
-
+        $items = array_values($items);
         foreach ($items as $item) {
             if ($item['cantidad'] <= 0) {
                 throw new InvalidArgumentException('La cantidad de cada linea debe ser mayor a cero.');
@@ -232,21 +230,23 @@ class VentaService
                 throw new InvalidArgumentException("La variante {$item['variante_id']} no pertenece al tenant {$tenantId}.");
             }
 
-            $resultado = $this->precioService->calcularDescuento($variante, $item['cantidad']);
-
+        }
+        $codigo = $cuponId === null ? null : (string) Cupon::query()->withoutGlobalScope(TenantScope::class)->findOrFail($cuponId)->getAttribute('codigo');
+        $cotizacion = $this->pricingService->cotizar(new Carrito(array_map(static fn (array $item): LineaCarrito => new LineaCarrito((int) $item['variante_id'], $item['cantidad']), $items), $codigo), $contexto ?? new ContextoPrecio($tenantId, null, null, CarbonImmutable::now()));
+        $lineas = [];
+        foreach ($items as $indice => $item) {
+            $linea = $cotizacion->lineas[$indice];
             $lineas[] = [
-                'variante_id' => $variante->id,
-                'regla_precio_id' => $resultado->regla?->id,
+                'variante_id' => (int) $linea->varianteId,
+                'regla_precio_id' => $linea->reglas[0]->id ?? null,
                 'cantidad' => $item['cantidad'],
-                'precio_unitario' => $resultado->precioUnitario,
-                'descuento_aplicado' => $resultado->descuentoTotal,
-                'subtotal' => $resultado->subtotalConDescuento(),
+                'precio_unitario' => $linea->precioBase,
+                'descuento_aplicado' => $linea->descuento,
+                'subtotal' => $linea->total,
             ];
-
-            $subtotal += $resultado->subtotalConDescuento();
         }
 
-        return [$lineas, round($subtotal, 2)];
+        return [$lineas, $cotizacion->subtotal, $cotizacion->cupon->descuento ?? 0.0];
     }
 
     /**

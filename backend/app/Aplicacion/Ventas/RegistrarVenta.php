@@ -15,13 +15,17 @@ use App\Modules\Nucleo\Models\Usuario;
 use App\Modules\Nucleo\Scopes\TenantScopeViaRelacion;
 use App\Modules\Precios\Exceptions\CuponInvalidoException;
 use App\Modules\Precios\Models\Cupon;
-use App\Modules\Precios\Services\PrecioService;
+use App\Modules\Precios\Services\PricingService;
+use App\Modules\Precios\Support\Carrito;
+use App\Modules\Precios\Support\ContextoPrecio;
+use App\Modules\Precios\Support\LineaCarrito;
 use App\Modules\Tpv\Dtos\CrearVentaDto;
 use App\Modules\Tpv\Dtos\LineaVentaDto;
 use App\Modules\Tpv\Dtos\PagoDto;
 use App\Modules\Tpv\Models\CajaSesion;
 use App\Modules\Tpv\Models\Venta;
 use App\Modules\Tpv\Services\VentaService;
+use Carbon\CarbonImmutable;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -35,7 +39,7 @@ class RegistrarVenta
         private readonly RegistrarMovimiento $movimiento,
         private readonly GiftCardService $giftCardService,
         private readonly NotaCreditoService $notaCreditoService,
-        private readonly PrecioService $precioService,
+        private readonly PricingService $pricingService,
     ) {}
 
     /** Cuando la llama otra Action, el savepoint participa de su transacción y de su rollback. */
@@ -62,6 +66,7 @@ class RegistrarVenta
         $notaCreditoId = $dto->notaCreditoId;
 
         $tenantId = $usuario->tenant_id;
+        $sucursalContextoId = $usuario->getAttribute('sucursal_id');
 
         $cuponId = null;
         $descuentoCupon = 0.0;
@@ -79,12 +84,14 @@ class RegistrarVenta
         $metodoPagoGiftCard = MetodoPago::sinTenant()->where('nombre', 'Gift Card')->first();
         $metodoPagoNotaCredito = MetodoPago::sinTenant()->where('nombre', 'Nota de Crédito')->first();
 
-        [, $subtotal] = $this->ventaService->cotizarItems($tenantId, $items);
-
-        if ($cuponId && ! empty($cuponCodigo)) {
-            $resultadoCupon = $this->precioService->aplicarCupon($cuponCodigo, $subtotal);
-            $descuentoCupon = $resultadoCupon->descuento;
+        foreach ($items as $item) {
+            if ($item['cantidad'] <= 0) {
+                throw new \InvalidArgumentException('La cantidad de cada linea debe ser mayor a cero.');
+            }
         }
+        $cotizacion = $this->pricingService->cotizar(new Carrito(array_map(static fn (array $item): LineaCarrito => new LineaCarrito($item['variante_id'], $item['cantidad']), $items), $cuponId && ! empty($cuponCodigo) ? $cuponCodigo : null), new ContextoPrecio($tenantId, $sucursalContextoId === null ? null : (int) $sucursalContextoId, $clienteId, CarbonImmutable::now()));
+        $subtotal = $cotizacion->subtotal;
+        $descuentoCupon = $cotizacion->cupon->descuento ?? 0.0;
 
         return DB::transaction(function () use (
             $items,

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Modules\Precios\Http\Requests;
 
 use App\Modules\Nucleo\Http\Requests\SolicitudNegocio;
@@ -21,10 +23,12 @@ class ValidarCuponRequest extends SolicitudNegocio
     public function toDto(): ValidarCuponDto
     {
         $v = $this->validated();
+        $sucursalId = $this->user()?->getAttribute('sucursal_id');
 
         return new ValidarCuponDto(
             codigo: (string) $v['codigo'],
             total: (float) $v['total'],
+            sucursalId: $sucursalId === null ? null : (int) $sucursalId,
         );
     }
 }

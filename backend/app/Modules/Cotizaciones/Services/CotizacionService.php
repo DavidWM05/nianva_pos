@@ -15,7 +15,6 @@ use App\Modules\Inventario\Exceptions\StockInsuficienteException;
 use App\Modules\Inventario\Models\InventarioStock;
 use App\Modules\Inventario\Models\ProductoVariante;
 use App\Modules\Nucleo\Scopes\TenantScopeViaRelacion;
-use App\Modules\Precios\Services\PrecioService;
 use App\Modules\Tpv\Models\CajaSesion;
 use App\Modules\Tpv\Models\Venta;
 use App\Modules\Tpv\Services\VentaService;
@@ -29,16 +28,15 @@ use InvalidArgumentException;
  * (que si descuenta stock y registra pagos).
  *
  * Dependencias permitidas (modulos posteriores en el grafo):
- * - PrecioService (modulo Precios, anterior a TPV)
+ * - PricingService (modulo Precios, anterior a TPV)
  * - VentaService (modulo TPV, posterior a Precios)
  *
  * @see VentaService
- * @see PrecioService
+ * @see PricingService
  */
 class CotizacionService
 {
     public function __construct(
-        private readonly PrecioService $precioService,
         private readonly VentaService $ventaService,
     ) {}
 
@@ -64,7 +62,7 @@ class CotizacionService
         $numeroCotizacion = $this->generarNumeroCotizacion($tenantId);
         $fechaVencimiento = now()->addDays($validezDias)->toDateString();
 
-        // Resolver precios via PrecioService para cada item
+        // Resolver precios via PricingService para cada item
         $lineas = [];
         $total = 0.0;
         $descuentoGlobal = round((float) ($data['descuento'] ?? 0), 2);
@@ -275,7 +273,7 @@ class CotizacionService
         }
 
         // El precio autoritativo es el que resuelve VentaService con
-        // PrecioService; una cotizacion con precio manual no debe fijar
+        // PricingService; una cotizacion con precio manual no debe fijar
         // el pago de la venta resultante.
         $tenantId = (int) $cotizacion->getAttribute('tenant_id');
         [, $totalVenta] = $this->ventaService->cotizarItems($tenantId, $items);
