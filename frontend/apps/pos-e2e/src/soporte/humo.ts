@@ -66,6 +66,14 @@ export async function sinViolacionesSerias(page: Page): Promise<void> {
   const serias = resultado.violations
     .filter((violacion) => violacion.impact === 'serious' || violacion.impact === 'critical')
     .map((violacion) => `${violacion.id}: ${violacion.nodes.length} nodo(s)`);
+  // El detalle (selector y resumen de axe) va en el mensaje: sin el, un fallo que solo pasa en
+  // CI no se puede diagnosticar.
+  const detalle = resultado.violations
+    .filter((violacion) => violacion.impact === 'serious' || violacion.impact === 'critical')
+    .flatMap((violacion) =>
+      violacion.nodes.map((nodo) => `${violacion.id} en ${nodo.target.join(' ')}\n${nodo.failureSummary ?? ''}`),
+    )
+    .join('\n\n');
 
-  expect(serias).toEqual([]);
+  expect(serias, detalle).toEqual([]);
 }
