@@ -1,5 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
+import type { CuerpoDe, RespuestaDe } from '@nianva/api-contrato';
 import { Observable, map } from 'rxjs';
 
 import { urlApi } from '../../core/api-config';
@@ -16,14 +17,16 @@ export class ConfiguracionService {
 
   obtener(): Observable<ConfiguracionTenant> {
     return this.http
-      .get<{ data: ConfiguracionTenant }>(urlApi(`/configuracion`))
-      .pipe(map((r) => r.data));
+      .get<RespuestaDe<'/configuracion', 'get'>>(urlApi(`/configuracion`))
+      .pipe(map((r) => r.data as ConfiguracionTenant));
   }
 
   actualizar(payload: ConfiguracionTenantFormPayload): Observable<ConfiguracionTenant> {
+    const cuerpo: CuerpoDe<'/configuracion', 'put'> = payload;
+
     return this.http
-      .put<{ data: ConfiguracionTenant }>(urlApi(`/configuracion`), payload)
-      .pipe(map((r) => r.data));
+      .put<RespuestaDe<'/configuracion', 'put'>>(urlApi(`/configuracion`), cuerpo)
+      .pipe(map((r) => r.data as ConfiguracionTenant));
   }
 
   /**
@@ -32,7 +35,7 @@ export class ConfiguracionService {
    * solo trae codigo_barras_automatico (ver ProductoDetalleComponent).
    */
   publica(): Observable<{ codigo_barras_automatico: boolean }> {
-    return this.http.get<{ codigo_barras_automatico: boolean }>(urlApi(`/configuracion/publica`));
+    return this.http.get<RespuestaDe<'/configuracion/publica', 'get'>>(urlApi(`/configuracion/publica`));
   }
 
   /**
@@ -43,7 +46,7 @@ export class ConfiguracionService {
    * son politica de toda la empresa, no algo personal.
    */
   obtenerSeguridad(): Observable<ConfiguracionSeguridad> {
-    return this.http.get<ConfiguracionSeguridad>(urlApi(`/configuracion-seguridad`));
+    return this.http.get<RespuestaDe<'/configuracion-seguridad', 'get'>>(urlApi(`/configuracion-seguridad`));
   }
 
   actualizarSeguridad(payload: ConfiguracionSeguridad): Observable<ConfiguracionSeguridad> {
@@ -57,7 +60,7 @@ export class ConfiguracionService {
    */
   obtenerLicencia(): Observable<LicenciaLocal> {
     return this.http
-      .get<{ data: LicenciaLocal }>(urlApi(`/licencia-local`))
-      .pipe(map((r) => r.data));
+      .get<RespuestaDe<'/licencia-local', 'get'>>(urlApi(`/licencia-local`))
+      .pipe(map((r) => r.data as LicenciaLocal));
   }
 }

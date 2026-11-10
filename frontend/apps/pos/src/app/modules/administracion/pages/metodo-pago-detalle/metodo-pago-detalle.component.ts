@@ -1,6 +1,8 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { ChangeDetectionStrategy, Component, OnInit, ViewChild, inject, signal } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import { PageComponent, PageHeaderComponent } from '@nianva/ui-layout';
+import { SkeletonComponent } from '@nianva/ui-feedback';
 import { AuditLogViewerComponent, RecordTabConfig, RecordTabsComponent, ToastService } from '@nianva/ui-shared';
 
 import { MetodoPagoFormComponent } from '../../metodo-pago-form/metodo-pago-form.component';
@@ -15,7 +17,7 @@ import { MetodoPagoAdmin } from '../../metodo-pago.types';
 @Component({
   selector: 'nucleo-metodo-pago-detalle',
   standalone: true,
-  imports: [RecordTabsComponent, MetodoPagoFormComponent, AuditLogViewerComponent],
+  imports: [AuditLogViewerComponent, MetodoPagoFormComponent, PageComponent, PageHeaderComponent, RecordTabsComponent, SkeletonComponent],
   templateUrl: './metodo-pago-detalle.component.html',
   styleUrl: './metodo-pago-detalle.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

@@ -1,8 +1,8 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { proveedoresDePantalla } from '../../../../testing/proveedores-pantalla';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { Router, provideRouter } from '@angular/router';
 import { ConfirmDialogService, ToastService } from '@nianva/ui-shared';
-import { providePrimeNG } from 'primeng/config';
 import { of } from 'rxjs';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
@@ -30,9 +30,9 @@ describe('MetodosPagoListComponent', () => {
     await TestBed.configureTestingModule({
       imports: [MetodosPagoListComponent],
       providers: [
+        ...proveedoresDePantalla(),
         provideRouter([]),
         provideAnimationsAsync(),
-        providePrimeNG(),
         { provide: MetodoPagoAdminService, useValue: metodoPagoService },
         { provide: ConfirmDialogService, useValue: { confirm: vi.fn() } },
         { provide: ToastService, useValue: { success: vi.fn(), error: vi.fn() } },
@@ -91,5 +91,28 @@ describe('MetodosPagoListComponent', () => {
 
     expect(metodoPagoService.listar).toHaveBeenCalledTimes(2);
     expect(metodoPagoService.listar).toHaveBeenLastCalledWith(expect.objectContaining({ first: 0 }), 'vale');
+  });
+
+  it('sin permiso de editar no muestra la accion Editar', async () => {
+    await crearComponente({ crear: true, editar: false, eliminar: true });
+    expect((fixture.nativeElement as HTMLElement).querySelectorAll('[aria-label="Editar"]').length).toBe(0);
+  });
+
+  it('sin permiso de eliminar no muestra la accion Desactivar', async () => {
+    await crearComponente({ crear: false, editar: true, eliminar: false });
+    expect((fixture.nativeElement as HTMLElement).querySelectorAll('[aria-label="Desactivar"]').length).toBe(0);
+  });
+
+  it('muestra el origen Global o Propio de cada fila', async () => {
+    await crearComponente({ crear: true, editar: true, eliminar: true });
+    const texto = (fixture.nativeElement as HTMLElement).textContent ?? '';
+    expect(texto).toContain('Global');
+    expect(texto).toContain('Propio');
+  });
+
+  it('meta.page refleja la pagina pedida aunque el total no cambie', async () => {
+    await crearComponente({ crear: true, editar: true, eliminar: true });
+    fixture.componentInstance['onCambio']({ page: 3, rows: 25, sortField: null, sortOrder: null });
+    expect(fixture.componentInstance['meta']().page).toBe(3);
   });
 });

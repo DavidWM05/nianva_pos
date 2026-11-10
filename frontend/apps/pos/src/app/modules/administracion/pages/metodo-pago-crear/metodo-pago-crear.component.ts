@@ -1,6 +1,7 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { ChangeDetectionStrategy, Component, ViewChild, inject, signal } from '@angular/core';
-import { Router, RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
+import { PageComponent, PageHeaderComponent } from '@nianva/ui-layout';
 import { ToastService } from '@nianva/ui-shared';
 
 import { MetodoPagoFormComponent } from '../../metodo-pago-form/metodo-pago-form.component';
@@ -14,7 +15,7 @@ import { MetodoPagoAdminService, MetodoPagoFormPayload } from '../../metodo-pago
 @Component({
   selector: 'nucleo-metodo-pago-crear',
   standalone: true,
-  imports: [RouterLink, MetodoPagoFormComponent],
+  imports: [MetodoPagoFormComponent, PageComponent, PageHeaderComponent],
   templateUrl: './metodo-pago-crear.component.html',
   styleUrl: './metodo-pago-crear.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

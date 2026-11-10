@@ -147,4 +147,18 @@ describe('DynamicFormComponent', () => {
     expect(emitido?.['talla']).toBe('M');
     expect(emitido?.['codigo_barras']).toBe('000111222333');
   });
+
+  it('cada label apunta al id de un control real', () => {
+    const labels = [...(fixture.nativeElement as HTMLElement).querySelectorAll('label[for]')];
+
+    expect(labels.length).toBeGreaterThan(0);
+    for (const label of labels) {
+      const control = document.getElementById(label.getAttribute('for') ?? '');
+
+      expect(
+        control?.matches('input, select, textarea, [role="combobox"]'),
+        label.getAttribute('for') ?? '',
+      ).toBe(true);
+    }
+  });
 });

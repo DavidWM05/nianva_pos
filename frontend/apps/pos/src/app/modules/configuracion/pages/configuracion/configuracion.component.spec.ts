@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { proveedoresDePantalla } from '../../../../testing/proveedores-pantalla';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { ToastService } from '@nianva/ui-shared';
-import { providePrimeNG } from 'primeng/config';
 import { of, throwError } from 'rxjs';
 import { describe, expect, it, vi } from 'vitest';
 
@@ -81,9 +81,8 @@ describe('ConfiguracionComponent', () => {
 
     await TestBed.configureTestingModule({
       imports: [ConfiguracionComponent],
-      providers: [
+      providers: [...proveedoresDePantalla(),
         provideAnimationsAsync(),
-        providePrimeNG(),
         { provide: ConfiguracionService, useValue: configuracionService },
         { provide: ToastService, useValue: toastService },
       ],

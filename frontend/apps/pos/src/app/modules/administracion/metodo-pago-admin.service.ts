@@ -1,5 +1,6 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
+import type { CuerpoDe, RespuestaDe } from '@nianva/api-contrato';
 import { DataTableLazyEvent } from '@nianva/ui-shared';
 import { Observable, map } from 'rxjs';
 
@@ -34,32 +35,38 @@ export class MetodoPagoAdminService {
     }
 
     return this.http
-      .get<{ data: MetodoPagoAdmin[]; meta: { total: number; permisos: MetodosPagoPermisos } }>(
-        urlApi(`/metodos-pago`),
-        { params },
-      )
-      .pipe(map((r) => ({ data: r.data, total: r.meta.total, permisos: r.meta.permisos })));
+      .get<RespuestaDe<'/metodos-pago', 'get'>>(urlApi(`/metodos-pago`), { params })
+      .pipe(
+        map((r) => {
+          const respuesta = r as { data: MetodoPagoAdmin[]; meta: { total: number; permisos: MetodosPagoPermisos } };
+          return { data: respuesta.data, total: respuesta.meta.total, permisos: respuesta.meta.permisos };
+        }),
+      );
   }
 
   obtener(id: number): Observable<{ metodoPago: MetodoPagoAdmin; permisos: MetodosPagoPermisos }> {
     return this.http
-      .get<{ data: MetodoPagoAdmin; meta: { permisos: MetodosPagoPermisos } }>(urlApi(`/metodos-pago/${id}`))
-      .pipe(map((r) => ({ metodoPago: r.data, permisos: r.meta.permisos })));
+      .get<RespuestaDe<'/metodos-pago/{metodoPago}', 'get'>>(urlApi(`/metodos-pago/${id}`))
+      .pipe(map((r) => ({ metodoPago: r.data as MetodoPagoAdmin, permisos: r.meta.permisos as MetodosPagoPermisos })));
   }
 
   crear(payload: MetodoPagoFormPayload): Observable<MetodoPagoAdmin> {
-    return this.http.post<{ data: MetodoPagoAdmin }>(urlApi(`/metodos-pago`), payload).pipe(map((r) => r.data));
+    const cuerpo: CuerpoDe<'/metodos-pago', 'post'> = payload;
+
+    return this.http
+      .post<RespuestaDe<'/metodos-pago', 'post'>>(urlApi(`/metodos-pago`), cuerpo)
+      .pipe(map((r) => r.data as MetodoPagoAdmin));
   }
 
   actualizar(id: number, payload: MetodoPagoFormPayload): Observable<MetodoPagoAdmin> {
     return this.http
-      .put<{ data: MetodoPagoAdmin }>(urlApi(`/metodos-pago/${id}`), payload)
-      .pipe(map((r) => r.data));
+      .put<RespuestaDe<'/metodos-pago/{metodoPago}', 'put'>>(urlApi(`/metodos-pago/${id}`), payload)
+      .pipe(map((r) => r.data as MetodoPagoAdmin));
   }
 
   desactivar(id: number): Observable<MetodoPagoAdmin> {
     return this.http
-      .patch<{ data: MetodoPagoAdmin }>(urlApi(`/metodos-pago/${id}/desactivar`), {})
-      .pipe(map((r) => r.data));
+      .patch<RespuestaDe<'/metodos-pago/{metodoPago}/desactivar', 'patch'>>(urlApi(`/metodos-pago/${id}/desactivar`), {})
+      .pipe(map((r) => r.data as MetodoPagoAdmin));
   }
 }

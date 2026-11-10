@@ -1,10 +1,8 @@
 [
     "apps/pos/src/app/demo/registro-ejemplo.component.html",
-    "apps/pos/src/app/modules/administracion/pages/metodo-pago-detalle/metodo-pago-detalle.component.html",
     "apps/pos/src/app/modules/administracion/pages/rol-detalle/rol-detalle.component.html",
     "apps/pos/src/app/modules/administracion/pages/usuario-detalle/usuario-detalle.component.html",
     "apps/pos/src/app/modules/apartados/pages/apartado-detalle/apartado-detalle.component.html",
-    "apps/pos/src/app/modules/configuracion/pages/configuracion/configuracion.component.html",
     "apps/pos/src/app/modules/cotizaciones/pages/cotizacion-detalle/cotizacion-detalle.component.html",
     "apps/pos/src/app/modules/cotizaciones/pages/cotizacion-form/cotizacion-form.component.html",
     "apps/pos/src/app/modules/crm/pages/cliente-detalle/cliente-detalle.component.html",

@@ -1,66 +1,62 @@
-<div class="configuracion">
-  @if (cargando()) {
-    <p>Cargando configuración...</p>
-  } @else {
-    <h1>Configuración</h1>
+<ui-page-header clave="empresa" subtitulo="Datos de la empresa, seguridad y licencia" />
 
-    <nucleo-record-tabs [tabs]="tabs">
-      <ng-template>
-        <div class="configuracion__tab">
-          @if (visible() && configuracion(); as configuracionActual) {
+<ui-page [estado]="estadoPagina()" forma="detalle">
+  <nucleo-record-tabs [tabs]="tabs">
+    <ng-template>
+      <div class="configuracion__tab">
+        @if (visible() && configuracion(); as configuracionActual) {
+          <ui-section titulo="Datos de la empresa">
             <nucleo-configuracion-form [valorInicial]="configuracionActual" (guardar)="onGuardar($event)" />
-          }
+          </ui-section>
+        }
 
-          @if (seguridadVisible() && seguridadConfiguracion(); as seguridadActual) {
-            <section class="configuracion__seccion">
-              <h2>Dispositivos confiables</h2>
-              <p class="configuracion__descripcion">
-                Días que un dispositivo se recuerda como confiable antes de pedir el código de verificación de nuevo.
-              </p>
-              <nucleo-configuracion-seguridad-form
-                [valorInicial]="seguridadActual"
-                (guardar)="onGuardarSeguridad($event)"
-              />
-            </section>
-          }
+        @if (seguridadVisible() && seguridadConfiguracion(); as seguridadActual) {
+          <ui-section titulo="Dispositivos confiables">
+            <small>
+              Días que un dispositivo se recuerda como confiable antes de pedir el código de verificación de nuevo.
+            </small>
+            <nucleo-configuracion-seguridad-form [valorInicial]="seguridadActual" (guardar)="onGuardarSeguridad($event)" />
+          </ui-section>
+        }
 
-          @if (!visible() && !seguridadVisible()) {
-            <p class="configuracion__aviso">No tienes permiso para ver esta sección.</p>
-          }
-        </div>
-      </ng-template>
+        @if (!visible() && !seguridadVisible()) {
+          <p class="configuracion__aviso">No tienes permiso para ver esta sección.</p>
+        }
+      </div>
+    </ng-template>
 
-      <ng-template>
-        <div class="configuracion__tab">
-          @if (licenciaCargando()) {
-            <p>Cargando licencia...</p>
-          } @else if (licencia(); as licenciaActual) {
-            <div class="configuracion__licencia-estado">
-              <nucleo-status-badge
-                [value]="licenciaActual.estado"
-                [colorMap]="{ activa: 'success', prueba: 'info', vencida: 'warning', revocada: 'danger' }"
-              />
-              @if (licenciaActual.en_periodo_gracia) {
-                <span class="configuracion__licencia-gracia">
-                  Última validación exitosa hace {{ licenciaActual.dias_desde_ultima_validacion }}
-                  día(s), reintentando conexión con el servidor de licencias.
-                </span>
-              }
-            </div>
+    <ng-template>
+      <div class="configuracion__tab">
+        <ui-section titulo="Licencia">
+        @if (licenciaCargando()) {
+          <ui-skeleton forma="bloque" etiqueta="Cargando licencia" />
+        } @else if (licencia(); as licenciaActual) {
+          <div class="configuracion__licencia-estado">
+            <nucleo-status-badge
+              [value]="licenciaActual.estado"
+              [colorMap]="{ activa: 'success', prueba: 'info', vencida: 'warning', revocada: 'danger' }"
+            />
+            @if (licenciaActual.en_periodo_gracia) {
+              <ui-alert tono="advertencia">
+                Última validación exitosa hace {{ licenciaActual.dias_desde_ultima_validacion }} día(s), reintentando
+                conexión con el servidor de licencias.
+              </ui-alert>
+            }
+          </div>
 
-            <dl class="configuracion__licencia-detalle">
-              <dt>Tipo</dt>
-              <dd>{{ licenciaActual.tipo }}</dd>
-              <dt>Vence</dt>
-              <dd>{{ licenciaActual.fecha_expiracion ? (licenciaActual.fecha_expiracion | date: 'mediumDate') : 'Sin vencimiento' }}</dd>
-              <dt>Última validación</dt>
-              <dd>{{ licenciaActual.ultima_validacion ? (licenciaActual.ultima_validacion | date: 'medium') : 'Nunca' }}</dd>
-            </dl>
-          } @else {
-            <p class="configuracion__proximamente">Este tenant todavía no tiene una licencia activada.</p>
-          }
-        </div>
-      </ng-template>
-    </nucleo-record-tabs>
-  }
-</div>
+          <dl uiDatos>
+            <dt>Tipo</dt>
+            <dd>{{ licenciaActual.tipo }}</dd>
+            <dt>Vence</dt>
+            <dd>{{ licenciaActual.fecha_expiracion ? (licenciaActual.fecha_expiracion | fecha) : 'Sin vencimiento' }}</dd>
+            <dt>Última validación</dt>
+            <dd>{{ licenciaActual.ultima_validacion ? (licenciaActual.ultima_validacion | fechaHora) : 'Nunca' }}</dd>
+          </dl>
+        } @else {
+          <p class="configuracion__proximamente">Este tenant todavía no tiene una licencia activada.</p>
+        }
+        </ui-section>
+      </div>
+    </ng-template>
+  </nucleo-record-tabs>
+</ui-page>

@@ -44,7 +44,7 @@
         }
         @case ('select') {
           <p-select
-            [id]="field.name"
+            [inputId]="field.name"
             [formControlName]="field.name"
             [options]="field.options ?? []"
             optionLabel="label"
@@ -53,10 +53,10 @@
           />
         }
         @case ('checkbox') {
-          <p-checkbox [id]="field.name" [formControlName]="field.name" [binary]="true" />
+          <p-checkbox [inputId]="field.name" [formControlName]="field.name" [binary]="true" />
         }
         @case ('date') {
-          <p-datepicker [id]="field.name" [formControlName]="field.name" [placeholder]="field.placeholder ?? ''" />
+          <p-datepicker [inputId]="field.name" [formControlName]="field.name" [placeholder]="field.placeholder ?? ''" />
         }
       }
 

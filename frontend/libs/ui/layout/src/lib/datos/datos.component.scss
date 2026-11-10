@@ -1,0 +1,25 @@
+// Sin encapsulacion: los dt/dd son contenido proyectado y `:host dt` no los alcanza.
+.ui-datos {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: var(--nv-spacing-2) var(--nv-spacing-4);
+  margin: 0;
+
+  > dt {
+    color: var(--nv-texto-suave);
+    font-size: var(--nv-font-size-sm);
+  }
+
+  > dd {
+    margin: 0;
+  }
+}
+
+.ui-datos--angosta {
+  grid-template-columns: 1fr;
+  gap: var(--nv-spacing-1);
+
+  > dt:not(:first-child) {
+    margin-top: var(--nv-spacing-2);
+  }
+}
