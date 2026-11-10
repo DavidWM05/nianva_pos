@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Modules\Cotizaciones\Http\Requests;
 
 use App\Modules\Cotizaciones\Dtos\CrearCotizacionDto;
@@ -8,6 +10,8 @@ use App\Modules\Inventario\Support\ReglasVariante;
 use App\Modules\Nucleo\Http\Requests\SolicitudNegocio;
 use App\Modules\Nucleo\Support\ReglasTenant;
 use App\Modules\Nucleo\Support\SucursalOperacion;
+use App\Modules\Precios\Support\ContextoPrecio;
+use Carbon\CarbonImmutable;
 
 class CrearCotizacionRequest extends SolicitudNegocio
 {
@@ -42,19 +46,18 @@ class CrearCotizacionRequest extends SolicitudNegocio
             abort(401);
         }
 
+        $sucursalId = SucursalOperacion::paraEscritura($usuario, isset($v['sucursal_id']) ? (int) $v['sucursal_id'] : null);
         $precioManual = $usuario->tienePermiso('cotizaciones.precio_manual');
 
         $items = app(ResolverPreciosCotizacion::class)->resolver(
             (array) ($v['items'] ?? []),
             $precioManual,
+            new ContextoPrecio((int) $this->tenantId(), $sucursalId, isset($v['cliente_id']) ? (int) $v['cliente_id'] : null, CarbonImmutable::now()),
         );
 
         return new CrearCotizacionDto(
             clienteId: isset($v['cliente_id']) ? (int) $v['cliente_id'] : null,
-            sucursalId: SucursalOperacion::paraEscritura(
-                $usuario,
-                isset($v['sucursal_id']) ? (int) $v['sucursal_id'] : null,
-            ),
+            sucursalId: $sucursalId,
             validezDias: (int) ($v['validez_dias'] ?? 15),
             descuento: (float) ($v['descuento'] ?? 0),
             usoCfdi: isset($v['uso_cfdi']) ? (string) $v['uso_cfdi'] : null,

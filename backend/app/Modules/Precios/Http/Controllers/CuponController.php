@@ -1,14 +1,20 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Modules\Precios\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Modules\Nucleo\Services\TenantContext;
+use App\Modules\Precios\Exceptions\CuponInvalidoException;
 use App\Modules\Precios\Http\Requests\GuardarCuponRequest;
 use App\Modules\Precios\Http\Requests\ValidarCuponRequest;
 use App\Modules\Precios\Http\Resources\CuponResource;
 use App\Modules\Precios\Models\Cupon;
-use App\Modules\Precios\Services\PrecioService;
+use App\Modules\Precios\Services\PricingService;
+use App\Modules\Precios\Support\Carrito;
+use App\Modules\Precios\Support\ContextoPrecio;
+use Carbon\CarbonImmutable;
 use Illuminate\Http\Request;
 
 /**
@@ -105,22 +111,24 @@ class CuponController extends Controller
      * 422 en bootstrap/app.php) si el codigo no existe/esta inactivo/fuera
      * de rango.
      */
-    public function validar(ValidarCuponRequest $request, PrecioService $precioService)
+    public function validar(ValidarCuponRequest $request, PricingService $pricingService)
     {
         $dto = $request->toDto();
-        $resultado = $precioService->aplicarCupon($dto->codigo, $dto->total);
+        $resultado = $pricingService->cotizar(new Carrito([], $dto->codigo, $dto->total), new ContextoPrecio((int) app(TenantContext::class)->id(), $dto->sucursalId, null, CarbonImmutable::now()));
+        $aplicado = $resultado->cupon ?? throw new CuponInvalidoException($dto->codigo);
+        $cupon = $aplicado->modelo();
 
         return response()->json([
             'data' => [
                 'cupon' => [
-                    'id' => $resultado->cupon->id,
-                    'codigo' => $resultado->cupon->codigo,
-                    'nombre' => $resultado->cupon->nombre,
-                    'tipo' => $resultado->cupon->tipo,
-                    'valor' => $resultado->cupon->valor,
+                    'id' => $cupon->id,
+                    'codigo' => $cupon->codigo,
+                    'nombre' => $cupon->nombre,
+                    'tipo' => $cupon->tipo,
+                    'valor' => $cupon->valor,
                 ],
-                'descuento' => $resultado->descuento,
-                'total_con_descuento' => $resultado->totalConDescuento(),
+                'descuento' => $aplicado->descuento,
+                'total_con_descuento' => $resultado->total,
             ],
         ]);
     }

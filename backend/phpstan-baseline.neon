@@ -462,11 +462,6 @@ parameters:
 			count: 2
 			path: app/Modules/Apartados/Services/ApartadoService.php
 
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Modules/Apartados/Services/ApartadoService.php
 
 		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$producto\.$#'
@@ -486,11 +481,6 @@ parameters:
 			count: 2
 			path: app/Modules/Apartados/Services/ApartadoService.php
 
-		-
-			message: '#^Parameter \#1 \$variante of method App\\Modules\\Precios\\Services\\PrecioService\:\:calcularDescuento\(\) expects App\\Modules\\Inventario\\Models\\ProductoVariante, Illuminate\\Database\\Eloquent\\Model given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Modules/Apartados/Services/ApartadoService.php
 
 		-
 			message: '#^Access to an undefined property App\\Modules\\Auditoria\\Models\\Auditoria\:\:\$accion\.$#'
@@ -1099,11 +1089,6 @@ parameters:
 			count: 1
 			path: app/Modules/Cotizaciones/Services/CotizacionService.php
 
-		-
-			message: '#^Property App\\Modules\\Cotizaciones\\Services\\CotizacionService\:\:\$precioService is never read, only written\.$#'
-			identifier: property.onlyWritten
-			count: 1
-			path: app/Modules/Cotizaciones/Services/CotizacionService.php
 
 		-
 			message: '#^Access to an undefined property App\\Modules\\Crm\\Models\\Cliente\:\:\$es_sistema\.$#'
@@ -5449,65 +5434,15 @@ parameters:
 			count: 1
 			path: app/Modules/Precios/Models/ReglaPrecio.php
 
-		-
-			message: '#^Access to an undefined property App\\Modules\\Inventario\\Models\\Producto\:\:\$categoria_id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Modules/Precios/Services/PrecioService.php
 
-		-
-			message: '#^Access to an undefined property App\\Modules\\Precios\\Models\\Cupon\:\:\$tipo\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Modules/Precios/Services/PrecioService.php
 
-		-
-			message: '#^Access to an undefined property App\\Modules\\Precios\\Models\\Cupon\:\:\$valor\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Modules/Precios/Services/PrecioService.php
 
-		-
-			message: '#^Access to an undefined property App\\Modules\\Precios\\Models\\ReglaPrecio\:\:\$cantidad_compra\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Modules/Precios/Services/PrecioService.php
 
-		-
-			message: '#^Access to an undefined property App\\Modules\\Precios\\Models\\ReglaPrecio\:\:\$cantidad_paga\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Modules/Precios/Services/PrecioService.php
 
-		-
-			message: '#^Access to an undefined property App\\Modules\\Precios\\Models\\ReglaPrecio\:\:\$precio_bundle\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Modules/Precios/Services/PrecioService.php
 
-		-
-			message: '#^Access to an undefined property App\\Modules\\Precios\\Models\\ReglaPrecio\:\:\$tipo\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Modules/Precios/Services/PrecioService.php
 
-		-
-			message: '#^Access to an undefined property App\\Modules\\Precios\\Models\\ReglaPrecio\:\:\$valor\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Modules/Precios/Services/PrecioService.php
 
-		-
-			message: '#^Cannot access property \$precio_venta on Illuminate\\Database\\Eloquent\\Model\|null\.$#'
-			identifier: property.nonObject
-			count: 1
-			path: app/Modules/Precios/Services/PrecioService.php
 
-		-
-			message: '#^Parameter \#2 \$producto of method App\\Modules\\Precios\\Services\\PrecioService\:\:reglaAplicable\(\) expects App\\Modules\\Inventario\\Models\\Producto, Illuminate\\Database\\Eloquent\\Model\|null given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Modules/Precios/Services/PrecioService.php
 
 		-
 			message: '#^Method App\\Modules\\Prestamos\\Exceptions\\PagoExcedeSaldoPrestamoException\:\:contexto\(\) return type has no value type specified in iterable type array\.$#'
@@ -6730,17 +6665,7 @@ parameters:
 			count: 1
 			path: app/Modules/Tpv/Services/VentaService.php
 
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$codigo\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Modules/Tpv/Services/VentaService.php
 
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Modules/Tpv/Services/VentaService.php
 
 		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$producto\.$#'
@@ -6760,11 +6685,6 @@ parameters:
 			count: 1
 			path: app/Modules/Tpv/Services/VentaService.php
 
-		-
-			message: '#^Parameter \#1 \$variante of method App\\Modules\\Precios\\Services\\PrecioService\:\:calcularDescuento\(\) expects App\\Modules\\Inventario\\Models\\ProductoVariante, Illuminate\\Database\\Eloquent\\Model given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Modules/Tpv/Services/VentaService.php
 
 		-
 			message: '#^Call to an undefined method Illuminate\\Database\\Schema\\ForeignKeyDefinition\:\:comment\(\)\.$#'

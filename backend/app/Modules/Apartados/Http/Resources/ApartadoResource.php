@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Modules\Apartados\Http\Resources;
 
 use App\Modules\Apartados\Models\Apartado;
@@ -14,7 +16,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
  * (total - total_abonado) no se manda calculado: es resta simple, el
  * frontend la hace igual que ya hace con el resto de los totales -- no es
  * "logica de precios" que deba resolver el backend (a diferencia del
- * precio de una linea, que si viene siempre de PrecioService).
+ * precio de una linea, que si viene siempre de PricingService).
  */
 class ApartadoResource extends JsonResource
 {

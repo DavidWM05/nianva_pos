@@ -27,7 +27,7 @@ use InvalidArgumentException;
  * se valoran al precio_unitario con el que REALMENTE se vendieron (leido
  * de venta_detalles de la venta origen, no recalculado), y los items
  * 'nuevo' de un cambio se valoran via VentaService (que a su vez usa
- * PrecioService) al crear la venta sombra -- nunca un precio inventado
+ * PricingService) al crear la venta sombra -- nunca un precio inventado
  * aqui.
  */
 class DevolucionService
@@ -208,7 +208,7 @@ class DevolucionService
     /**
      * Valora cada item devuelto al precio_unitario con el que se vendio
      * realmente (venta_detalles de la venta origen) -- nunca una cotizacion
-     * nueva de PrecioService, que podria haber cambiado desde la venta.
+     * nueva de PricingService, que podria haber cambiado desde la venta.
      *
      * Limitacion conocida y deliberada: solo valida que la cantidad
      * devuelta en ESTA transaccion no exceda lo vendido en esa linea. No
