@@ -1,19 +1,20 @@
-<p-tabs value="0">
-  <p-tablist>
-    @for (tab of tabs; track trackByLabel($index, tab); let i = $index) {
-      <p-tab [value]="i.toString()">
-        @if (tab.icon) {
-          <i [class]="tab.icon"></i>
-        }
-        {{ tab.label }}
-      </p-tab>
-    }
-  </p-tablist>
-  <p-tabpanels>
-    @for (tab of tabs; track trackByLabel($index, tab); let i = $index) {
-      <p-tabpanel [value]="i.toString()">
-        <ng-container [ngTemplateOutlet]="templates.get(i) ?? null" />
-      </p-tabpanel>
-    }
-  </p-tabpanels>
-</p-tabs>
+<!-- Barra de navegacion de Material en vez de mat-tab-group: mat-tab-group desmonta las
+     pestanas inactivas, y aqui todas se pintan desde el inicio (ocultas con hidden), como antes.
+     El @defer (on viewport) de cada pantalla sigue esperando a que su pestana se vea. -->
+<nav mat-tab-nav-bar class="record-tabs__barra" [tabPanel]="panel" mat-stretch-tabs="false">
+  @for (tab of tabs; track trackByLabel($index, tab); let i = $index) {
+    <button mat-tab-link type="button" [active]="activa() === i" (click)="seleccionar(i)">
+      @if (tab.icon) {
+        <i [class]="tab.icon" class="record-tabs__icono" aria-hidden="true"></i>
+      }
+      {{ tab.label }}
+    </button>
+  }
+</nav>
+<mat-tab-nav-panel #panel class="record-tabs__panel">
+  @for (tab of tabs; track trackByLabel($index, tab); let i = $index) {
+    <div class="record-tabs__contenido" [hidden]="activa() !== i">
+      <ng-container [ngTemplateOutlet]="templates.get(i) ?? null" />
+    </div>
+  }
+</mat-tab-nav-panel>

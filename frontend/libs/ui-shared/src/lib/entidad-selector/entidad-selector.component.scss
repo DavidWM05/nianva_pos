@@ -1,17 +1,39 @@
+// Sin encapsulacion (para alcanzar el interior de MatFormField): las clases llevan el prefijo
+// del componente.
+nucleo-entidad-selector {
+  display: block;
+}
+
 .entidad-selector {
   display: flex;
   flex-direction: column;
-  gap: var(--nucleo-spacing-2);
-  margin-bottom: var(--nucleo-spacing-4);
+  gap: var(--nv-spacing-2);
+  margin-bottom: var(--nv-spacing-4);
+}
 
-  label {
-    font-size: var(--nucleo-font-size-sm);
-    font-weight: 500;
-  }
+.entidad-selector > label {
+  color: var(--nv-texto);
+  font-size: var(--nv-font-size-sm);
+  font-weight: var(--nv-font-weight-medium);
+}
+
+// Mismo alto y texto que los inputs nativos de ui-forms (como ui-select-filtro).
+.entidad-selector__campo {
+  width: 100%;
+  --mat-form-field-container-height: 0;
+  --mat-form-field-container-vertical-padding: calc(var(--nv-spacing-2) + 1px);
+  --mat-form-field-container-text-size: var(--nv-font-size-base);
+  --mat-form-field-container-text-line-height: normal;
+  --mat-select-trigger-text-size: var(--nv-font-size-base);
+  --mat-select-trigger-text-line-height: normal;
+}
+
+.entidad-selector__campo .mat-mdc-select-arrow-wrapper {
+  height: auto;
 }
 
 .entidad-selector__aviso {
-  color: var(--nucleo-color-surface-500);
-  font-size: var(--nucleo-font-size-sm);
+  color: var(--nv-texto-suave);
+  font-size: var(--nv-font-size-sm);
   margin: 0;
 }

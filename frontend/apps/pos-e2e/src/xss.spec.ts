@@ -37,14 +37,6 @@ test('el nombre con HTML se muestra literal y no ejecuta XSS en las pantallas de
   await expect(tituloProducto).toHaveText(NOMBRE_XSS);
   await comprobarTextoLiteral(page, tituloProducto);
 
-  await page.goto('/tpv/venta');
-  const buscadorProducto = page.locator('input[placeholder="Buscar producto por nombre..."]');
-  await expect(buscadorProducto).toBeVisible();
-  await buscadorProducto.fill('onerror');
-  const resultadoBusqueda = page.locator('.p-autocomplete-panel, .p-autocomplete-overlay').filter({ hasText: NOMBRE_XSS }).first();
-  await expect(resultadoBusqueda).toBeVisible();
-  await comprobarTextoLiteral(page, resultadoBusqueda);
-
   await page.goto('/crm/clientes');
   await page.locator('.clientes-list__buscar').fill('onerror');
   const filaCliente = page.locator('tbody tr').filter({ hasText: NOMBRE_XSS }).first();
@@ -52,4 +44,19 @@ test('el nombre con HTML se muestra literal y no ejecuta XSS en las pantallas de
   await comprobarTextoLiteral(page, filaCliente);
 
   await expect(cliente.id).toBeGreaterThan(0);
+});
+
+// Serie 50d: la sugerencia del buscador se busca por su rol (option), no por las clases de la
+// libreria que dibuja el autocompletado.
+test('la sugerencia del buscador de la venta muestra el nombre literal y no ejecuta XSS', async ({ page }) => {
+  await iniciarSesion(page, 'vendedor@abarrotes.test');
+  await crearProducto(page, NOMBRE_XSS);
+
+  await page.goto('/tpv/venta');
+  const buscadorProducto = page.locator('input[placeholder="Buscar producto por nombre..."]');
+  await expect(buscadorProducto).toBeVisible();
+  await buscadorProducto.fill('onerror');
+  const sugerencia = page.getByRole('option').filter({ hasText: NOMBRE_XSS }).first();
+  await expect(sugerencia).toBeVisible();
+  await comprobarTextoLiteral(page, sugerencia);
 });

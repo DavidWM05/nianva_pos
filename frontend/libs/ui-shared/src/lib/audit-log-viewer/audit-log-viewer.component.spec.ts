@@ -1,6 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
-import { providePrimeNG } from 'primeng/config';
 import { throwError } from 'rxjs';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -20,7 +19,6 @@ describe('AuditLogViewerComponent', () => {
       imports: [AuditLogViewerComponent],
       providers: [
         provideAnimationsAsync(),
-        providePrimeNG(),
         { provide: AuditLogSource, useValue: source },
       ],
     }).compileComponents();

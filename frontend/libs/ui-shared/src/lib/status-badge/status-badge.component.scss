@@ -5,36 +5,38 @@
 .badge {
   display: inline-flex;
   align-items: center;
-  padding: var(--nucleo-spacing-1) var(--nucleo-spacing-3);
-  border-radius: var(--nucleo-radius-full);
-  font-size: var(--nucleo-font-size-xs);
-  font-weight: 600;
+  padding: var(--nv-spacing-1) var(--nv-spacing-3);
+  border-radius: var(--nv-radius-full);
+  font-size: var(--nv-font-size-xs);
+  font-weight: var(--nv-font-weight-semibold);
   line-height: 1.4;
   white-space: nowrap;
   text-transform: capitalize;
 }
 
+// Mismos pares que ui-badge (libs/ui/feedback): el texto usa el token *-texto de su tono, que
+// cumple 4.5:1 sobre un fondo apenas tenido (status-badge-contraste.spec.ts lo mide).
 .badge--success {
-  background: color-mix(in srgb, var(--nucleo-color-success) 15%, var(--nv-color-surface-0));
-  color: var(--nucleo-color-success);
+  background: color-mix(in srgb, var(--nv-exito) 5%, var(--nv-superficie));
+  color: var(--nv-exito-texto);
 }
 
 .badge--warning {
-  background: color-mix(in srgb, var(--nucleo-color-warning) 15%, var(--nv-color-surface-0));
-  color: var(--nucleo-color-warning);
+  background: color-mix(in srgb, var(--nv-advertencia) 5%, var(--nv-superficie));
+  color: var(--nv-advertencia-texto);
 }
 
 .badge--danger {
-  background: color-mix(in srgb, var(--nucleo-color-danger) 15%, var(--nv-color-surface-0));
-  color: var(--nucleo-color-danger);
+  background: color-mix(in srgb, var(--nv-peligro) 5%, var(--nv-superficie));
+  color: var(--nv-peligro-texto);
 }
 
 .badge--info {
-  background: color-mix(in srgb, var(--nucleo-color-info) 15%, var(--nv-color-surface-0));
-  color: var(--nucleo-color-info);
+  background: color-mix(in srgb, var(--nv-info) 5%, var(--nv-superficie));
+  color: var(--nv-info-texto);
 }
 
 .badge--neutral {
-  background: var(--nucleo-color-surface-100);
-  color: var(--nucleo-color-surface-700);
+  background: color-mix(in srgb, var(--nv-borde) 50%, var(--nv-superficie));
+  color: var(--nv-texto-suave);
 }

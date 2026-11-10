@@ -1,3 +1,16 @@
 :host {
   display: block;
 }
+
+.record-tabs__barra {
+  border-bottom: 1px solid var(--nv-borde);
+}
+
+.record-tabs__icono {
+  margin-right: var(--nv-spacing-2);
+}
+
+.record-tabs__panel {
+  display: block;
+  padding-top: var(--nv-spacing-4);
+}

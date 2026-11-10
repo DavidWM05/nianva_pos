@@ -41,6 +41,28 @@ export default [
     },
   },
   {
+    // Serie 50d: ui-shared sin PrimeNG, specs incluidos. data-table/ lo conserva hasta el 50n,
+    // cuando se retira. Repite la regla de HttpClient porque un bloque posterior reemplaza la
+    // regla completa, no la suma.
+    files: ['**/*.ts'],
+    ignores: ['**/data-table/**'],
+    rules: {
+      'no-restricted-imports': [
+        'error',
+        {
+          paths: [
+            {
+              name: '@angular/common/http',
+              importNames: ['HttpClient'],
+              message: 'Un componente no llama a la API: mueve la llamada a un servicio de dominio.',
+            },
+          ],
+          patterns: ['primeng', 'primeng/*', '@primeuix/themes', '@primeuix/themes/*'],
+        },
+      ],
+    },
+  },
+  {
     files: ['**/*.html'],
     // Override or add rules here
     rules: {},

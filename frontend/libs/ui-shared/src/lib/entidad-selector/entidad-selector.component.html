@@ -1,33 +1,45 @@
 <div class="entidad-selector">
   <label for="entidad-selector-principal">{{ label }}</label>
-  <p-autocomplete
-    #autoCompleteHost
-    inputId="entidad-selector-principal"
-    [(ngModel)]="entidadElegida"
-    [suggestions]="sugerencias()"
-    (completeMethod)="buscar($event)"
-    (onSelect)="onSeleccionar($event.value)"
-    optionLabel="nombre"
-    [placeholder]="placeholder"
-    [minQueryLength]="1"
-    [disabled]="disabled"
-  />
+  <mat-form-field #autoCompleteHost class="entidad-selector__campo" appearance="outline" subscriptSizing="dynamic">
+    <input
+      matInput
+      id="entidad-selector-principal"
+      type="text"
+      autocomplete="off"
+      [formControl]="busqueda"
+      [matAutocomplete]="sugerenciasPanel"
+      [placeholder]="placeholder"
+    />
+    <mat-autocomplete
+      #sugerenciasPanel="matAutocomplete"
+      [displayWith]="nombreDe"
+      (optionSelected)="onSeleccionar($event.option.value)"
+    >
+      @for (sugerencia of sugerencias(); track sugerencia.id) {
+        <mat-option [value]="sugerencia">{{ sugerencia.nombre }}</mat-option>
+      }
+    </mat-autocomplete>
+  </mat-form-field>
 
-  @if (buscadorHijos && entidadElegida) {
-    <label for="entidad-selector-hijo">{{ labelHijos }}</label>
+  @if (buscadorHijos && entidadElegida()) {
+    <label id="entidad-selector-hijo-etiqueta" for="entidad-selector-hijo">{{ labelHijos }}</label>
     @if (hijos().length === 0) {
       <p class="entidad-selector__aviso">No hay elementos disponibles.</p>
     } @else {
-      <p-select
-        inputId="entidad-selector-hijo"
-        [options]="hijos()"
-        optionLabel="nombre"
-        optionValue="id"
-        [ngModel]="hijoElegidoId"
-        (ngModelChange)="onSeleccionarHijo($event)"
-        placeholder="Selecciona una opción"
-        [disabled]="disabled"
-      />
+      <mat-form-field class="entidad-selector__campo" appearance="outline" subscriptSizing="dynamic">
+        <mat-select
+          id="entidad-selector-hijo"
+          aria-labelledby="entidad-selector-hijo-etiqueta"
+          placeholder="Selecciona una opción"
+          [value]="hijoElegidoId"
+          [disabled]="disabled"
+          (selectionChange)="onSeleccionarHijo($event.value)"
+        >
+          @for (hijo of hijos(); track hijo.id) {
+            <mat-option [value]="hijo.id">{{ hijo.nombre }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
     }
   }
 </div>
