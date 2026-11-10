@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, Input, OnChanges, inject, signal } from '@angular/core';
-import { Timeline } from 'primeng/timeline';
+import { SkeletonComponent } from '@nianva/ui-feedback';
 
 import { StatusBadgeColorMap, StatusBadgeComponent } from '../status-badge/status-badge.component';
 import { AuditLogEntry, AuditLogSource } from './audit-log-viewer.types';
@@ -22,7 +22,7 @@ const ACCION_COLOR_MAP: StatusBadgeColorMap = {
 @Component({
   selector: 'nucleo-audit-log-viewer',
   standalone: true,
-  imports: [CommonModule, Timeline, StatusBadgeComponent],
+  imports: [CommonModule, SkeletonComponent, StatusBadgeComponent],
   templateUrl: './audit-log-viewer.component.html',
   styleUrl: './audit-log-viewer.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

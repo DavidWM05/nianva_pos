@@ -5,8 +5,10 @@
     "@angular/common": "^22.0.0",
     "@angular/core": "^22.0.0",
     "@angular/forms": "^22.0.0",
+    "@angular/material": "22.2.5",
     "@angular/platform-browser": "^22.0.0",
     "@nianva/ui-feedback": "0.0.1",
+    "@nianva/ui-layout": "0.0.1",
     "primeng": "^22.0.0",
     "rxjs": "^7.8.0",
     "vitest": "^4.0.8"

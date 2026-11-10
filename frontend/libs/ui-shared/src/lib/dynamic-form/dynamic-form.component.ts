@@ -1,19 +1,20 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnChanges, Output, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnChanges, Output, ViewEncapsulation, inject } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, ValidatorFn, Validators } from '@angular/forms';
-import { Button } from 'primeng/button';
-import { Checkbox } from 'primeng/checkbox';
-import { DatePicker } from 'primeng/datepicker';
-import { InputText } from 'primeng/inputtext';
-import { Select } from 'primeng/select';
-import { Textarea } from 'primeng/textarea';
+import { MatButton } from '@angular/material/button';
+import { MatCheckbox } from '@angular/material/checkbox';
+import { provideNativeDateAdapter } from '@angular/material/core';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatSelectModule } from '@angular/material/select';
+import { FormActionsComponent } from '@nianva/ui-layout';
 
 import { DynamicFormField } from './dynamic-form.types';
 
 /**
  * Constructor de formularios con validacion consistente: dado un arreglo
  * de DynamicFormField, arma un FormGroup (Reactive Forms) y renderiza el
- * control de PrimeNG correspondiente a cada `type`. El mensaje de error
+ * control correspondiente a cada `type`. El mensaje de error
  * (errorFor) sigue siempre el mismo patron sin importar el tipo de campo
  * -- ningun modulo futuro necesita reinventar su propio bloque de
  * validacion.
@@ -21,9 +22,21 @@ import { DynamicFormField } from './dynamic-form.types';
 @Component({
   selector: 'nucleo-dynamic-form',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, Button, Checkbox, DatePicker, InputText, Select, Textarea],
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    MatButton,
+    MatCheckbox,
+    MatDatepickerModule,
+    MatFormFieldModule,
+    MatSelectModule,
+    FormActionsComponent,
+  ],
+  // Las fechas entran y salen como Date, igual que antes.
+  providers: [provideNativeDateAdapter()],
   templateUrl: './dynamic-form.component.html',
   styleUrl: './dynamic-form.component.scss',
+  encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DynamicFormComponent implements OnChanges {

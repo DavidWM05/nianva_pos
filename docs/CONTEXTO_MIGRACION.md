@@ -1473,6 +1473,41 @@ repo.
       "Invalid PrimeUI License" en todas las pantallas (`primeng/config`, solo un
       `console.warn`, que la red del e2e no ve). Pasa desde antes de 50c y refuerza la
       decisión de quitar PrimeNG en la serie 50.
+  - **50d · `libs/ui-shared` sin PrimeNG (Claude):**
+    - `nucleo-record-tabs`, `nucleo-dynamic-form`, `nucleo-audit-log-viewer` y
+      `nucleo-entidad-selector` se reescriben por dentro con la misma API (selectores,
+      `@Input`/`@Output`, `form`, `onSubmit()`, `setServerErrors()`, `focus()`, `id =
+      field.name`). Las pantallas no cambian. ESLint prohíbe PrimeNG en `ui-shared` (en su
+      `eslint.config.mjs`), salvo `data-table/`, que se retira en el 50n;
+    - **Material directo, sin `ui-forms`:** `ui-forms` importa `erroresValidacion` de
+      `ui-shared`, y usar `ui-select-filtro` o `ui-campo` desde `ui-shared` forma un ciclo
+      que Nx rechaza (comprobado). `dynamic-form` usa inputs nativos, `mat-select` sin
+      "Todas", `mat-checkbox` y un input nativo con `matDatepicker` (con `matInput`,
+      `aria-invalid` queda vacío en un obligatorio vacío). Conserva su markup, sus mensajes y
+      los atributos de `ui-campo`: `aria-required`, `aria-invalid` y `aria-describedby`
+      hacia el error, con id propio (test visto en rojo);
+    - **pestañas con `mat-tab-nav-bar`, no `mat-tab-group`:** PrimeNG pintaba todas las
+      pestañas desde el inicio, y de eso dependen 10 tests de `@defer` y varios specs de
+      detalle. `mat-tab-group` desmonta las inactivas; con la barra de navegación todas se
+      pintan y las inactivas quedan con `hidden`;
+    - el selector busca tras 300 ms sin teclear (`mat-autocomplete`); la auditoría es una
+      lista propia con `ui-skeleton` en la carga (sale de `cargando-pendientes.json`);
+    - **bug encontrado (axe) y corregido:** `nucleo-status-badge` (36 pantallas) tenía texto
+      a 2.78:1 (`success`) y 3.06:1 (`info`) con `--nucleo-*`. Pasa a `--nv-*` con los pares
+      de `ui-badge` (light: 4.73 a 6.87:1). `status-badge-contraste.spec.ts` mide las 5
+      variantes en los dos temas, y `modulos/auditoria-registro.spec.ts` corre axe sobre la
+      pestaña de auditoría con entradas; los dos se vieron en rojo;
+    - **e2e (PRO-01, tres pasos):** `xss.spec.ts` buscaba la sugerencia con
+      `.p-autocomplete-panel`. Primero se agregó un test por rol (`option`), verde con
+      PrimeNG; tras la migración se retiró el bloque viejo (`pro-01-autorizado`);
+    - **deuda:** sacar `erroresValidacion` de `ui-shared` para romper el ciclo con
+      `ui-forms`; después, `dynamic-form` puede usar `ui-select-filtro` (encargo aparte);
+    - **hallazgos, sin tocar:** `MetodoPago` no está en `config/auditoria.php`, así que su
+      pestaña de auditoría siempre sale vacía; el `matButton` relleno en hover (tema de
+      `libs/ui`) baja el contraste de su texto (axe lo marcó a 1280 y a 390 px, solo con el puntero
+      encima);
+      el input nativo de búsqueda dentro de `ui-campo` no tiene estilo, y a 390 px el
+      contenido de las páginas no tiene margen lateral.
 - **Posibles mejoras (roadmap):**
   - **capturas de Linux sin pasar por CI (Docker):** hoy cada PR con cambio visual falla una
     vez en "Catálogo visual", se baja el artifact y se versionan las capturas, porque en el

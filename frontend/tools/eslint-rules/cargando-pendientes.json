@@ -29,6 +29,5 @@
     "apps/pos/src/app/modules/tpv/pages/venta-detalle/venta-detalle.component.html",
     "apps/pos/src/app/modules/ventas-plazos/pages/plan-pago-detalle/plan-pago-detalle.component.html",
     "apps/pos/src/app/perfil/dispositivos-confiables-list/dispositivos-confiables-list.component.html",
-    "libs/ui-shared/src/lib/audit-log-viewer/audit-log-viewer.component.html",
     "libs/ui-shared/src/lib/data-table/data-table.component.html"
 ]

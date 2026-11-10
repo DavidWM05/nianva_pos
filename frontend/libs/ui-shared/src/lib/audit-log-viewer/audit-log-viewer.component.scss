@@ -2,36 +2,75 @@
   display: block;
 }
 
-.audit-log-viewer__empty {
-  color: var(--nucleo-color-surface-500);
-  font-size: var(--nucleo-font-size-sm);
+.audit-log-viewer__empty,
+.audit-log-viewer__sin-permiso {
+  color: var(--nv-texto-suave);
+  font-size: var(--nv-font-size-sm);
+}
+
+// Linea de tiempo propia: un marcador por entrada y una linea vertical que las une.
+.audit-log-viewer__lista {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.audit-log-viewer__item {
+  position: relative;
+  display: grid;
+  grid-template-columns: var(--nv-spacing-4) 1fr;
+  gap: var(--nv-spacing-3);
+  padding-bottom: var(--nv-spacing-4);
+}
+
+.audit-log-viewer__item:not(:last-child)::before {
+  content: '';
+  position: absolute;
+  top: var(--nv-spacing-4);
+  bottom: 0;
+  left: calc(var(--nv-spacing-2) - 1px);
+  width: 2px;
+  background: var(--nv-borde);
+}
+
+.audit-log-viewer__marcador {
+  width: var(--nv-spacing-4);
+  height: var(--nv-spacing-4);
+  margin-top: var(--nv-spacing-1);
+  border: 2px solid var(--nv-primario);
+  border-radius: var(--nv-radius-full);
+  background: var(--nv-superficie);
 }
 
 .audit-log-viewer__entry {
   display: flex;
   flex-direction: column;
-  gap: var(--nucleo-spacing-1);
+  gap: var(--nv-spacing-1);
+  min-width: 0;
 }
 
 .audit-log-viewer__header {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
-  gap: var(--nucleo-spacing-2);
+  gap: var(--nv-spacing-2);
 }
 
 .audit-log-viewer__usuario {
-  font-weight: 600;
-  font-size: var(--nucleo-font-size-sm);
+  font-weight: var(--nv-font-weight-semibold);
+  font-size: var(--nv-font-size-sm);
+  color: var(--nv-texto);
 }
 
 .audit-log-viewer__fecha {
-  color: var(--nucleo-color-surface-500);
-  font-size: var(--nucleo-font-size-xs);
+  color: var(--nv-texto-suave);
+  font-size: var(--nv-font-size-xs);
 }
 
 .audit-log-viewer__cambios {
   margin: 0;
-  padding-left: var(--nucleo-spacing-4);
-  font-size: var(--nucleo-font-size-sm);
-  color: var(--nucleo-color-surface-700);
+  padding-left: var(--nv-spacing-4);
+  font-size: var(--nv-font-size-sm);
+  color: var(--nv-texto);
+  overflow-wrap: anywhere;
 }

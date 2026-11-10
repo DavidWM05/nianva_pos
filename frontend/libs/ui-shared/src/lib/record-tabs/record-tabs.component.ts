@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, ContentChildren, Input, QueryList, TemplateRef } from '@angular/core';
-import { Tab, TabList, TabPanel, TabPanels, Tabs } from 'primeng/tabs';
+import { ChangeDetectionStrategy, Component, ContentChildren, Input, QueryList, TemplateRef, signal } from '@angular/core';
+import { MatTabLink, MatTabNav, MatTabNavPanel } from '@angular/material/tabs';
 
 export interface RecordTabConfig {
   label: string;
@@ -31,7 +31,7 @@ export interface RecordTabConfig {
 @Component({
   selector: 'nucleo-record-tabs',
   standalone: true,
-  imports: [CommonModule, Tabs, TabList, Tab, TabPanels, TabPanel],
+  imports: [CommonModule, MatTabNav, MatTabLink, MatTabNavPanel],
   templateUrl: './record-tabs.component.html',
   styleUrl: './record-tabs.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -40,6 +40,12 @@ export class RecordTabsComponent {
   @Input({ required: true }) tabs: RecordTabConfig[] = [];
 
   @ContentChildren(TemplateRef) templates!: QueryList<TemplateRef<unknown>>;
+
+  protected readonly activa = signal(0);
+
+  protected seleccionar(indice: number): void {
+    this.activa.set(indice);
+  }
 
   protected trackByLabel(_index: number, tab: RecordTabConfig): string {
     return tab.label;

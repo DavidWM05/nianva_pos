@@ -1,73 +1,124 @@
-<form [formGroup]="form" (ngSubmit)="onSubmit()" class="dynamic-form">
+<form [formGroup]="form" (ngSubmit)="onSubmit()" class="dynamic-form" novalidate>
   @for (field of fields; track field.name) {
     @if (esVisible(field)) {
+      @let error = errorFor(field);
+      @let errorId = error ? field.name + '-error' : null;
       <div class="dynamic-form__field">
-      <label [for]="field.name">
+      <!-- Los mismos atributos que ui-campo (libs/ui/forms): label for al control real,
+           aria-required, aria-invalid y aria-describedby hacia el mensaje de error. -->
+      <label [id]="field.name + '-etiqueta'" [for]="field.type === 'checkbox' ? field.name + '-input' : field.name">
         {{ field.label }}
         @if (field.required) {
-          <span class="dynamic-form__required">*</span>
+          <span class="dynamic-form__required" aria-hidden="true">*</span>
         }
       </label>
 
       @switch (field.type) {
         @case ('text') {
           <input
-            pInputText
+            class="dynamic-form__control"
             [id]="field.name"
             [formControlName]="field.name"
             [placeholder]="field.placeholder ?? ''"
             [attr.maxlength]="field.maxLength ?? null"
+            [attr.aria-required]="field.required ? 'true' : null"
+            [attr.aria-invalid]="error ? 'true' : null"
+            [attr.aria-describedby]="errorId"
           />
         }
         @case ('password') {
           <input
-            pInputText
+            class="dynamic-form__control"
             type="password"
             [id]="field.name"
             [formControlName]="field.name"
             [placeholder]="field.placeholder ?? ''"
             autocomplete="current-password"
+            [attr.aria-required]="field.required ? 'true' : null"
+            [attr.aria-invalid]="error ? 'true' : null"
+            [attr.aria-describedby]="errorId"
           />
         }
         @case ('number') {
-          <input pInputText type="number" [id]="field.name" [formControlName]="field.name" [placeholder]="field.placeholder ?? ''" />
+          <input
+            class="dynamic-form__control"
+            type="number"
+            [id]="field.name"
+            [formControlName]="field.name"
+            [placeholder]="field.placeholder ?? ''"
+            [attr.aria-required]="field.required ? 'true' : null"
+            [attr.aria-invalid]="error ? 'true' : null"
+            [attr.aria-describedby]="errorId"
+          />
         }
         @case ('textarea') {
           <textarea
-            pTextarea
+            class="dynamic-form__control"
             [id]="field.name"
             [formControlName]="field.name"
             [placeholder]="field.placeholder ?? ''"
             [attr.maxlength]="field.maxLength ?? null"
+            [attr.aria-required]="field.required ? 'true' : null"
+            [attr.aria-invalid]="error ? 'true' : null"
+            [attr.aria-describedby]="errorId"
             rows="3"
           ></textarea>
         }
         @case ('select') {
-          <p-select
-            [inputId]="field.name"
-            [formControlName]="field.name"
-            [options]="field.options ?? []"
-            optionLabel="label"
-            optionValue="value"
-            [placeholder]="field.placeholder ?? ''"
-          />
+          <!-- Sin opcion "Todas": en un formulario es una eleccion, no un filtro. -->
+          <mat-form-field class="dynamic-form__material" appearance="outline" subscriptSizing="dynamic">
+            <mat-select
+              [id]="field.name"
+              [formControlName]="field.name"
+              [aria-labelledby]="field.name + '-etiqueta'"
+              [aria-describedby]="errorId ?? ''"
+              [required]="field.required === true"
+              [placeholder]="field.placeholder ?? ''"
+            >
+              @for (opcion of field.options ?? []; track $index) {
+                <mat-option [value]="opcion.value">{{ opcion.label }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
         }
         @case ('checkbox') {
-          <p-checkbox [inputId]="field.name" [formControlName]="field.name" [binary]="true" />
+          <mat-checkbox
+            class="dynamic-form__checkbox"
+            [id]="field.name"
+            [formControlName]="field.name"
+            [aria-describedby]="errorId ?? ''"
+          />
         }
         @case ('date') {
-          <p-datepicker [inputId]="field.name" [formControlName]="field.name" [placeholder]="field.placeholder ?? ''" />
+          <!-- Input nativo con la directiva del datepicker (sin matInput), para que los
+               atributos aria sean los mismos que en los demas campos. -->
+          <div class="dynamic-form__fecha">
+            <input
+              class="dynamic-form__control"
+              [id]="field.name"
+              [formControlName]="field.name"
+              [matDatepicker]="calendario"
+              [placeholder]="field.placeholder ?? ''"
+              [attr.aria-required]="field.required ? 'true' : null"
+              [attr.aria-invalid]="error ? 'true' : null"
+              [attr.aria-describedby]="errorId"
+            />
+            <mat-datepicker-toggle class="dynamic-form__fecha-boton" [for]="calendario" />
+            <mat-datepicker #calendario />
+          </div>
         }
       }
 
-      @if (errorFor(field); as error) {
-        <small class="dynamic-form__error">{{ error }}</small>
+      @if (error) {
+        <small [id]="errorId" class="dynamic-form__error" role="alert">{{ error }}</small>
       }
       </div>
     }
   }
 
   @if (!readonly) {
-    <p-button type="submit" [label]="submitLabel" />
+    <ui-form-actions>
+      <button matButton="filled" type="submit">{{ submitLabel }}</button>
+    </ui-form-actions>
   }
 </form>

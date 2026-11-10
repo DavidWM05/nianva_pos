@@ -1,6 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
-import { providePrimeNG } from 'primeng/config';
 import { of } from 'rxjs';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -25,7 +24,7 @@ describe('EntidadSelectorComponent', () => {
 
     await TestBed.configureTestingModule({
       imports: [EntidadSelectorComponent],
-      providers: [provideAnimationsAsync(), providePrimeNG()],
+      providers: [provideAnimationsAsync()],
     }).compileComponents();
 
     fixture = TestBed.createComponent(EntidadSelectorComponent);

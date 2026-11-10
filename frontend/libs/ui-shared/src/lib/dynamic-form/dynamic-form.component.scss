@@ -1,31 +1,94 @@
-:host {
+// Sin encapsulacion (para alcanzar el interior de MatFormField, MatCheckbox y el toggle del
+// datepicker): las clases llevan el prefijo del componente. La apariencia es la de ui-campo
+// y los inputs nativos de ui-forms (libs/ui/forms).
+nucleo-dynamic-form {
   display: block;
 }
 
 .dynamic-form {
   display: flex;
   flex-direction: column;
-  gap: var(--nucleo-spacing-4);
+  gap: var(--nv-spacing-4);
   max-width: 480px;
 }
 
 .dynamic-form__field {
-  display: flex;
-  flex-direction: column;
-  gap: var(--nucleo-spacing-1);
+  display: grid;
+  gap: var(--nv-spacing-1);
+}
 
-  label {
-    font-size: var(--nucleo-font-size-sm);
-    font-weight: 600;
-    color: var(--nucleo-color-surface-700);
-  }
+.dynamic-form__field > label {
+  color: var(--nv-texto);
+  font-size: var(--nv-font-size-sm);
+  font-weight: var(--nv-font-weight-medium);
 }
 
 .dynamic-form__required {
-  color: var(--nucleo-color-danger);
+  color: var(--nv-peligro);
 }
 
 .dynamic-form__error {
-  color: var(--nucleo-color-danger);
-  font-size: var(--nucleo-font-size-xs);
+  color: var(--nv-peligro-texto);
+  font-size: var(--nv-font-size-xs);
+}
+
+.dynamic-form__control {
+  width: 100%;
+  box-sizing: border-box;
+  padding: var(--nv-spacing-2) var(--nv-spacing-3);
+  border: 1px solid var(--nv-borde);
+  border-radius: var(--nv-radius-md);
+  background: var(--nv-superficie);
+  color: var(--nv-texto);
+  font-family: var(--nv-font-family);
+  font-size: var(--nv-font-size-base);
+}
+
+.dynamic-form__control:focus {
+  border-color: var(--nv-foco);
+  outline: 2px solid var(--nv-foco);
+  outline-offset: 1px;
+}
+
+.dynamic-form__control:disabled {
+  background: var(--nv-deshabilitado-fondo);
+  color: var(--nv-deshabilitado-texto);
+}
+
+.dynamic-form__control[aria-invalid='true'] {
+  border-color: var(--nv-peligro);
+}
+
+textarea.dynamic-form__control {
+  resize: vertical;
+}
+
+// Mismo alto y texto que los inputs nativos (como ui-select-filtro).
+.dynamic-form__material {
+  width: 100%;
+  --mat-form-field-container-height: 0;
+  --mat-form-field-container-vertical-padding: calc(var(--nv-spacing-2) + 1px);
+  --mat-form-field-container-text-size: var(--nv-font-size-base);
+  --mat-form-field-container-text-line-height: normal;
+  --mat-select-trigger-text-size: var(--nv-font-size-base);
+  --mat-select-trigger-text-line-height: normal;
+}
+
+.dynamic-form__material .mat-mdc-select-arrow-wrapper {
+  height: auto;
+}
+
+.dynamic-form__fecha {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.dynamic-form__fecha .dynamic-form__control {
+  padding-right: var(--nv-spacing-12);
+}
+
+.dynamic-form__fecha-boton {
+  position: absolute;
+  right: 0;
 }
