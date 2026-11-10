@@ -59,4 +59,5 @@ al menos uno. El error de servidor desaparece cuando el usuario edita el campo.
   `<input type="password">`, emite `(completo)` al llegar a la longitud y
   expone `limpiar()`. No valida PIN triviales ni los hashea.
 - `ui-select-filtro`: `mat-select` dentro de `mat-form-field`, con la opción "Todas" y `ariaLabel` (por defecto "Filtro")
-  equivalente a `null`.
+  equivalente a `null`. Con `[todas]="false"` no antepone "Todas": es una elección
+  obligatoria de formulario (por ejemplo, "Aplica a" de una regla de precio).
