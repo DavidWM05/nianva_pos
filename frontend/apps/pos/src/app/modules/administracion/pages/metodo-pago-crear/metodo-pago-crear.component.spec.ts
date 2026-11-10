@@ -1,8 +1,8 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { proveedoresDePantalla } from '../../../../testing/proveedores-pantalla';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { Router, provideRouter } from '@angular/router';
 import { ToastService } from '@nianva/ui-shared';
-import { providePrimeNG } from 'primeng/config';
 import { of, throwError } from 'rxjs';
 import { describe, expect, it, vi } from 'vitest';
 
@@ -21,9 +21,8 @@ describe('MetodoPagoCrearComponent', () => {
 
     await TestBed.configureTestingModule({
       imports: [MetodoPagoCrearComponent],
-      providers: [
+      providers: [...proveedoresDePantalla(),
         provideAnimationsAsync(),
-        providePrimeNG(),
         provideRouter([]),
         { provide: MetodoPagoAdminService, useValue: metodoPagoService },
         { provide: ToastService, useValue: toastService },

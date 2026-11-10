@@ -1,4 +1,5 @@
 import { ComponentFixture, DeferBlockBehavior, DeferBlockState, TestBed } from '@angular/core/testing';
+import { proveedoresDePantalla } from '../../../../testing/proveedores-pantalla';
 import { By } from '@angular/platform-browser';
 import { ActivatedRoute, convertToParamMap } from '@angular/router';
 import { AuditLogSource, DynamicFormComponent, ToastService } from '@nianva/ui-shared';
@@ -35,6 +36,7 @@ describe('MetodoPagoDetalleComponent', () => {
 
   function providers(metodoPagoDevuelto: MetodoPagoAdmin, permisos: { editar: boolean; eliminar: boolean }) {
     return [
+      ...proveedoresDePantalla(),
       {
         provide: MetodoPagoAdminService,
         useValue: { obtener: vi.fn().mockReturnValue(of({ metodoPago: metodoPagoDevuelto, permisos })) },

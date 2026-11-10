@@ -1,7 +1,9 @@
-import { DatePipe } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
-import { ChangeDetectionStrategy, Component, OnInit, ViewChild, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, ViewChild, computed, inject, signal } from '@angular/core';
 import { RecordTabConfig, RecordTabsComponent, StatusBadgeComponent, ToastService } from '@nianva/ui-shared';
+import { DatosComponent, EstadoPagina, PageComponent, PageHeaderComponent, SectionComponent } from '@nianva/ui-layout';
+import { AlertComponent, SkeletonComponent } from '@nianva/ui-feedback';
+import { FechaHoraPipe, FechaPipe } from '@nianva/ui-format';
 
 import { ConfiguracionFormComponent } from '../../configuracion-form/configuracion-form.component';
 import { ConfiguracionSeguridadFormComponent } from '../../configuracion-seguridad-form/configuracion-seguridad-form.component';
@@ -31,7 +33,7 @@ import {
 @Component({
   selector: 'nucleo-configuracion',
   standalone: true,
-  imports: [RecordTabsComponent, ConfiguracionFormComponent, ConfiguracionSeguridadFormComponent, StatusBadgeComponent, DatePipe],
+  imports: [AlertComponent, ConfiguracionFormComponent, DatosComponent, ConfiguracionSeguridadFormComponent, FechaHoraPipe, FechaPipe, PageComponent, PageHeaderComponent, RecordTabsComponent, SectionComponent, SkeletonComponent, StatusBadgeComponent],
   templateUrl: './configuracion.component.html',
   styleUrl: './configuracion.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -59,6 +61,7 @@ export class ConfiguracionComponent implements OnInit {
 
   protected readonly licenciaCargando = signal(true);
   protected readonly licencia = signal<LicenciaLocal | null>(null);
+  protected readonly estadoPagina = computed<EstadoPagina>(() => (this.cargando() ? 'cargando' : 'listo'));
 
   ngOnInit(): void {
     this.configuracionService.obtener().subscribe({

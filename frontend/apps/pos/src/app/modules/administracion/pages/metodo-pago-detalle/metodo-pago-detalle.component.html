@@ -1,8 +1,8 @@
-<div class="metodo-pago-detalle">
-  @if (cargando()) {
-    <p>Cargando método de pago...</p>
-  } @else if (metodoPago(); as metodoPagoActual) {
-    <h1>{{ metodoPagoActual.nombre }}</h1>
+<ui-page-header clave="metodos-pago" subtitulo="Detalle del método de pago" />
+
+<ui-page [estado]="cargando() ? 'cargando' : 'listo'" forma="detalle">
+  @if (metodoPago(); as metodoPagoActual) {
+    <h2>{{ metodoPagoActual.nombre }}</h2>
 
     <nucleo-record-tabs [tabs]="tabs">
       <ng-template>
@@ -29,9 +29,9 @@
         } @placeholder {
           <p>Auditoría (se carga al hacer scroll hasta aquí)...</p>
         } @loading (minimum 200ms) {
-          <p>Cargando auditoría...</p>
+          <ui-skeleton forma="texto" etiqueta="Cargando auditoría" />
         }
       </ng-template>
     </nucleo-record-tabs>
   }
-</div>
+</ui-page>

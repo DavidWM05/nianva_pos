@@ -2,7 +2,6 @@
     "apps/pos/src/app/modules/apartados/pages/apartado-detalle/apartado-detalle.component.html",
     "apps/pos/src/app/modules/apartados/pages/apartado-form/apartado-form.component.html",
     "apps/pos/src/app/modules/apartados/pages/apartados-list/apartados-list.component.html",
-    "apps/pos/src/app/modules/configuracion/pages/configuracion/configuracion.component.html",
     "apps/pos/src/app/modules/cotizaciones/lineas-cotizacion/lineas-cotizacion.component.html",
     "apps/pos/src/app/modules/cotizaciones/pages/cotizacion-detalle/cotizacion-detalle.component.html",
     "apps/pos/src/app/modules/cotizaciones/pages/cotizacion-form/cotizacion-form.component.html",

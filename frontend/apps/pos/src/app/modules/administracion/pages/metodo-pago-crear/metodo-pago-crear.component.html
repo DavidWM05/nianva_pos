@@ -1,8 +1,5 @@
-<div class="metodo-pago-crear">
-  <div class="metodo-pago-crear__header">
-    <h1>Nuevo método de pago</h1>
-    <a routerLink="/metodos-pago">Volver a la lista</a>
-  </div>
+<ui-page-header clave="metodos-pago" subtitulo="Nuevo método de pago" />
 
+<ui-page estado="listo" forma="formulario">
   <nucleo-metodo-pago-form submitLabel="Crear método de pago" (guardar)="onGuardar($event)" />
-</div>
+</ui-page>
