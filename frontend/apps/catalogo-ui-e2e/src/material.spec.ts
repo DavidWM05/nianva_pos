@@ -141,6 +141,60 @@ function contraste(fondo: string, texto: string): number {
   return (Math.max(uno, dos) + 0.05) / (Math.min(uno, dos) + 0.05);
 }
 
+// El velo de estado de Material (state layer, un ::before sobre el boton) tomaba el color del
+// texto: con foco aclaraba el primario bajo texto blanco (4.17:1, #ffffff sobre #3f76ed) y axe
+// lo marco en configuracion.spec.ts de pos, en CI. axe no siempre mide un pseudo-elemento, asi
+// que aqui se compone el velo sobre el fondo y se mide el contraste directo.
+test('el boton relleno conserva contraste con foco y con el puntero encima en ambos temas', async ({ page }) => {
+  const fallos: string[] = [];
+
+  for (const tema of temas) {
+    await page.goto(`/material?tema=${tema}`);
+    await page.waitForLoadState('networkidle');
+    await expect(page.locator('cat-root')).toBeVisible();
+    // La pagina abre un dialogo de muestra al cargar.
+    await page.getByRole('button', { name: 'Cerrar' }).click();
+
+    const boton = page.getByRole('button', { name: 'Filled', exact: true });
+    const estados = [
+      { nombre: 'foco', preparar: async () => boton.focus() },
+      { nombre: 'foco y puntero', preparar: async () => boton.hover() },
+      { nombre: 'puntero', preparar: async () => boton.evaluate((b) => b.blur()) },
+    ];
+
+    for (const estado of estados) {
+      await estado.preparar();
+      // Material anima el velo; se mide cuando termina la transicion.
+      await page.waitForTimeout(300);
+
+      const colores = await boton.evaluate((elemento) => {
+        const capa = elemento.querySelector('.mat-mdc-button-persistent-ripple');
+        const velo = capa ? getComputedStyle(capa, '::before') : null;
+        const etiqueta = elemento.querySelector('.mdc-button__label') ?? elemento;
+
+        return {
+          fondo: getComputedStyle(elemento).backgroundColor,
+          velo: velo?.backgroundColor ?? 'rgba(0, 0, 0, 0)',
+          opacidad: Number(velo?.opacity ?? 0),
+          texto: getComputedStyle(etiqueta).color,
+        };
+      });
+
+      const [fr, fg, fb] = parsearRgb(colores.fondo);
+      const [vr, vg, vb] = parsearRgb(colores.velo);
+      const o = colores.opacidad;
+      const compuesto = `rgb(${fr * (1 - o) + vr * o}, ${fg * (1 - o) + vg * o}, ${fb * (1 - o) + vb * o})`;
+      const ratio = contraste(compuesto, colores.texto);
+
+      if (ratio < 4.5) {
+        fallos.push(`${tema}, ${estado.nombre}: ${colores.texto} sobre ${compuesto} = ${ratio.toFixed(2)}:1`);
+      }
+    }
+  }
+
+  expect(fallos).toEqual([]);
+});
+
 test('el input deshabilitado de Material conserva contraste en ambos temas', async ({ page }) => {
   for (const tema of temas) {
     await page.goto(`/material?tema=${tema}`);

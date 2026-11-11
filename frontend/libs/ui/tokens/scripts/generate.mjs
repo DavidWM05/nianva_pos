@@ -309,6 +309,10 @@ const overridesMaterial = {
   'form-field-disabled-leading-icon-color': 'deshabilitado-texto',
   'form-field-disabled-select-arrow-color': 'deshabilitado-texto',
   'form-field-disabled-trailing-icon-color': 'deshabilitado-texto',
+  // El velo de foco y hover del boton relleno toma por defecto el color de su texto: en claro
+  // aclaraba el primario bajo texto blanco (4.18:1 con foco). Con el texto del tema oscurece el
+  // primario en claro y lo aclara en oscuro: sube el contraste en los dos (material.spec.ts).
+  'button-filled-state-layer-color': 'texto',
 };
 
 const rolesMaterialCss = Object.entries(rolesMaterial)
