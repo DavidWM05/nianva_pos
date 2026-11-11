@@ -1507,7 +1507,40 @@ repo.
       `libs/ui`) baja el contraste de su texto (axe lo marcó a 1280 y a 390 px, solo con el puntero
       encima);
       el input nativo de búsqueda dentro de `ui-campo` no tiene estilo, y a 390 px el
-      contenido de las páginas no tiene margen lateral.
+      contenido de las páginas no tiene margen lateral;
+    - **CI tras el 50d:** `tema.service.spec.ts` dejaba un `matchMedia` sin `addListener` que
+      llegaba a otro archivo (los specs de `pos` comparten `window`) y el `BreakpointObserver`
+      de Material fallaba según el orden; `test-setup.ts` lo restaura tras cada test
+      (`test-setup.spec.ts`, visto en rojo). `configuracion.spec.ts` falló una vez en CI con
+      `color-contrast: 1 nodo(s)` que no se reprodujo en local (ni con la CPU 12 veces más
+      lenta, ni con el `matButton` con el puntero encima y con clic); desde entonces
+      `sinViolacionesSerias` imprime el selector y el resumen de axe de cada violación.
+  - **50e · precios y CRM (Codex):**
+    - listados de cupones, reglas de precio y clientes con `ui-tabla`, `ui-filter-bar`,
+      paginación y acciones con permisos; crear y detalle con `ui-page-header`, `ui-page` y
+      auditoría diferida; `cliente-detalle` con tablas de historial, interacciones y ajuste
+      de puntos en `ui-modal`; "Aplica a", segmento y tipo de interacción con
+      `ui-select-filtro [todas]="false"` (input nuevo, `c422d3e`). `precios` y `crm` entran en
+      `MODULOS_POS_SIN_PRIMENG`;
+    - **bugs corregidos (rojo primero):** etiquetas de campaña sin asociar a su control y las
+      cinco pestañas del cliente desalineadas de su contenido;
+    - **PRO-01 (`pro-01-autorizado`):** los tres casos "Nuevo … navega a la vista dedicada"
+      pasan de buscar un `a[href]` a hacer clic en `ui-btn-crear` y comprobar la URL y que no
+      se abre un `ui-modal` (`ui-btn-crear` es un `<button [routerLink]>`), con mutación de
+      la ruta; el valor del cupón pasa de `10.00%` a `10%` (`PorcentajePipe`). El resto de
+      los specs existentes, solo providers;
+    - **contrato (deuda, PR de backend aparte):** el OpenAPI de `GET
+      /clientes/{cliente}/loyalty` declara `string` para `cliente.id`, `puntos_loyalty` y
+      `puntos_acumulados`, que son enteros (el controller arma el arreglo a mano y `Cliente`
+      no los castea). El frontend conserva `number` y `loyalty` queda en
+      `contrato-pendientes`. El mismo PR corrige `meta.permisos` de `GET /cotizaciones`
+      (declarado `unknown[]`, es un objeto de booleanos; aparece en la 50f);
+    - **decisión:** sin tabla editable genérica en `ui-tabla`; las líneas editables de
+      cotizaciones y devoluciones (50f) son un `FormArray` con `ui-campo`. Se evalúa en la
+      Fase 4 con el carrito del TPV;
+    - pendientes: contrato 36 → 32, cargando 31 → 28, formato 50 → 47; línea base 3088 →
+      2756 líneas. 541 tests de `pos`, 49 e2e, axe en 58 análisis (29 vistas a 1280 y 390 px)
+      sin violaciones serias.
 - **Posibles mejoras (roadmap):**
   - **capturas de Linux sin pasar por CI (Docker):** hoy cada PR con cambio visual falla una
     vez en "Catálogo visual", se baja el artifact y se versionan las capturas, porque en el
