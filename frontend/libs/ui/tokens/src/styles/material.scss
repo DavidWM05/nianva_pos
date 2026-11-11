@@ -93,4 +93,5 @@ html {
   --mat-form-field-disabled-select-arrow-color: var(--nv-deshabilitado-texto);
   --mat-form-field-disabled-trailing-icon-color: var(--nv-deshabilitado-texto);
   --mat-button-filled-state-layer-color: var(--nv-texto);
+  --mat-button-filled-ripple-color: color-mix(in srgb, var(--nv-texto) calc(var(--mat-sys-pressed-state-layer-opacity) * 100%), transparent);
 }

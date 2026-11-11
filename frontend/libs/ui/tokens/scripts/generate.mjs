@@ -315,6 +315,14 @@ const overridesMaterial = {
   'button-filled-state-layer-color': 'texto',
 };
 
+// Overrides que no son un token directo. La onda del clic (ripple) del boton relleno usa por
+// defecto el texto del boton al 12%: el mismo problema que el velo, y en CI seguia visible
+// cuando axe media. Usa el texto del tema con la opacidad de "presionado" de Material.
+const overridesMaterialValor = {
+  'button-filled-ripple-color':
+    'color-mix(in srgb, var(--nv-texto) calc(var(--mat-sys-pressed-state-layer-opacity) * 100%), transparent)',
+};
+
 const rolesMaterialCss = Object.entries(rolesMaterial)
   .map(([rol, token]) => `  --mat-sys-${rol}: var(--nv-${token});`)
   .join('\n');
@@ -323,9 +331,10 @@ const formaMaterialSass = Object.entries(formaMaterial)
   .map(([nombre, valor]) => `      ${nombre}: ${valor},`)
   .join('\n');
 
-const overridesMaterialCss = Object.entries(overridesMaterial)
-  .map(([nombre, token]) => `  --mat-${nombre}: var(--nv-${token});`)
-  .join('\n');
+const overridesMaterialCss = [
+  ...Object.entries(overridesMaterial).map(([nombre, token]) => `  --mat-${nombre}: var(--nv-${token});`),
+  ...Object.entries(overridesMaterialValor).map(([nombre, valor]) => `  --mat-${nombre}: ${valor};`),
+].join('\n');
 
 const materialScss = `/* Generado por scripts/generate.mjs. No editar a mano. */
 @use '@angular/material' as mat;

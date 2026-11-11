@@ -195,6 +195,64 @@ test('el boton relleno conserva contraste con foco y con el puntero encima en am
   expect(fallos).toEqual([]);
 });
 
+// La onda del clic (ripple, un elemento real) tambien tomaba el color del texto del boton: blanco
+// al 12% sobre el primario, el mismo #3f76ed (4.17:1). En CI, mas lento, la onda seguia visible
+// cuando axe media configuracion.spec.ts de pos; en local ya se habia desvanecido.
+test('el boton relleno conserva contraste mientras se presiona en ambos temas', async ({ page }) => {
+  const fallos: string[] = [];
+
+  // color-mix() se resuelve como color(srgb r g b / a), con canales de 0 a 1.
+  const aRgba = (color: string): [number, number, number, number] => {
+    if (color.startsWith('color(srgb')) {
+      const [r = 0, g = 0, b = 0, a = 1] = color.match(/[\d.]+/g)?.map(Number) ?? [];
+
+      return [r * 255, g * 255, b * 255, a];
+    }
+
+    return parsearRgb(color);
+  };
+
+  for (const tema of temas) {
+    await page.goto(`/material?tema=${tema}`);
+    await page.waitForLoadState('networkidle');
+    await expect(page.locator('cat-root')).toBeVisible();
+    // La pagina abre un dialogo de muestra al cargar.
+    await page.getByRole('button', { name: 'Cerrar' }).click();
+
+    const boton = page.getByRole('button', { name: 'Filled', exact: true });
+    await boton.hover();
+    // Con el boton presionado la onda se queda visible.
+    await page.mouse.down();
+    await expect(boton.locator('.mat-ripple-element').first()).toBeAttached();
+    await page.waitForTimeout(400);
+
+    const colores = await boton.evaluate((elemento) => {
+      const onda = elemento.querySelector('.mat-ripple-element');
+      const etiqueta = elemento.querySelector('.mdc-button__label') ?? elemento;
+
+      return {
+        fondo: getComputedStyle(elemento).backgroundColor,
+        onda: onda ? getComputedStyle(onda).backgroundColor : 'rgba(0, 0, 0, 0)',
+        opacidadOnda: Number(onda ? getComputedStyle(onda).opacity : 0),
+        texto: getComputedStyle(etiqueta).color,
+      };
+    });
+    await page.mouse.up();
+
+    const [fr, fg, fb] = parsearRgb(colores.fondo);
+    const [or, og, ob, oa] = aRgba(colores.onda);
+    const o = oa * colores.opacidadOnda;
+    const compuesto = `rgb(${fr * (1 - o) + or * o}, ${fg * (1 - o) + og * o}, ${fb * (1 - o) + ob * o})`;
+    const ratio = contraste(compuesto, colores.texto);
+
+    if (ratio < 4.5) {
+      fallos.push(`${tema}: ${colores.texto} sobre ${compuesto} (onda ${colores.onda}) = ${ratio.toFixed(2)}:1`);
+    }
+  }
+
+  expect(fallos).toEqual([]);
+});
+
 test('el input deshabilitado de Material conserva contraste en ambos temas', async ({ page }) => {
   for (const tema of temas) {
     await page.goto(`/material?tema=${tema}`);
