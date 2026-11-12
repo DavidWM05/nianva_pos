@@ -3,7 +3,7 @@ import { By } from '@angular/platform-browser';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { ActivatedRoute, convertToParamMap } from '@angular/router';
 import { AuditLogSource, DynamicFormComponent, ToastService } from '@nianva/ui-shared';
-import { providePrimeNG } from 'primeng/config';
+import { proveedoresDePantalla } from '../../../../testing/proveedores-pantalla';
 import { of, throwError } from 'rxjs';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -77,7 +77,7 @@ describe('UsuarioDetalleComponent', () => {
 
     return [
       provideAnimationsAsync(),
-      providePrimeNG(),
+      ...proveedoresDePantalla(),
       { provide: UsuarioAdminService, useValue: usuarioService },
       { provide: AuditLogSource, useValue: { listar: vi.fn().mockReturnValue(of([])) } },
       { provide: ToastService, useValue: toastService },

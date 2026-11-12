@@ -1,24 +1,22 @@
-<div class="rol-detalle">
-  @if (cargando()) {
-    <p>Cargando rol...</p>
-  } @else if (rol(); as rolActual) {
-    <h1>{{ rolActual.nombre }}</h1>
+<ui-page-header clave="roles" subtitulo="Detalle del rol" />
+
+<ui-page [estado]="cargando() ? 'cargando' : 'listo'" forma="detalle">
+  @if (rol(); as rolActual) {
+    <h2>{{ rolActual.nombre }}</h2>
 
     <nucleo-record-tabs [tabs]="tabs">
       <ng-template>
-        <div class="rol-detalle__tab">
-          @if (rolActual.es_sistema) {
-            <p class="rol-detalle__aviso">Este es un rol de sistema y solo un superadmin puede modificarlo -- solo visualizar.</p>
-          } @else if (!puedeEditar()) {
-            <p class="rol-detalle__aviso">No tienes permiso para editar roles -- solo visualizar.</p>
-          }
-          <nucleo-rol-form
-            [valorInicial]="rolActual"
-            [readonly]="rolActual.es_sistema || !puedeEditar()"
-            submitLabel="Guardar cambios"
-            (guardar)="onGuardar($event)"
-          />
-        </div>
+        @if (rolActual.es_sistema) {
+          <ui-alert tono="info">Este es un rol de sistema y solo un superadmin puede modificarlo -- solo visualizar.</ui-alert>
+        } @else if (!puedeEditar()) {
+          <ui-alert tono="info">No tienes permiso para editar roles -- solo visualizar.</ui-alert>
+        }
+        <nucleo-rol-form
+          [valorInicial]="rolActual"
+          [readonly]="rolActual.es_sistema || !puedeEditar()"
+          submitLabel="Guardar cambios"
+          (guardar)="onGuardar($event)"
+        />
       </ng-template>
 
       <ng-template>
@@ -27,9 +25,9 @@
         } @placeholder {
           <p>Auditoría (se carga al hacer scroll hasta aquí)...</p>
         } @loading (minimum 200ms) {
-          <p>Cargando auditoría...</p>
+          <ui-skeleton forma="texto" etiqueta="Cargando auditoría" />
         }
       </ng-template>
     </nucleo-record-tabs>
   }
-</div>
+</ui-page>

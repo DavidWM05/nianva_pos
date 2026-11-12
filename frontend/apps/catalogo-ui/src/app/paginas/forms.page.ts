@@ -4,6 +4,8 @@ import { MatButton } from '@angular/material/button';
 import {
   BtnEnviarComponent,
   CampoComponent,
+  ChecklistAgrupadoComponent,
+  GrupoChecklist,
   InputCantidadComponent,
   InputDineroComponent,
   InputPasswordComponent,
@@ -19,6 +21,7 @@ import { FormActionsComponent, PageHeaderComponent, SectionComponent } from '@ni
   imports: [
     BtnEnviarComponent,
     CampoComponent,
+    ChecklistAgrupadoComponent,
     FormActionsComponent,
     InputCantidadComponent,
     InputDineroComponent,
@@ -74,6 +77,30 @@ import { FormActionsComponent, PageHeaderComponent, SectionComponent } from '@ni
       <p><ui-btn-enviar [enviando]="enviando()" (click)="enviando.set(!enviando())" /></p>
       <p><button matButton="outlined" type="button" (click)="enviando.set(!enviando())">Alternar estado de envío</button></p>
     </ui-section>
+
+    <ui-section titulo="Checklist agrupado">
+      <ui-checklist-agrupado
+        etiqueta="Permisos"
+        etiquetaFiltro="Filtrar permisos"
+        placeholderFiltro="Módulo o permiso..."
+        [grupos]="gruposChecklist"
+        [formControl]="checklist"
+      />
+    </ui-section>
+
+    <ui-section titulo="Checklist agrupado filtrado">
+      <ui-checklist-agrupado
+        etiqueta="Permisos"
+        etiquetaFiltro="Filtrar permisos del rol"
+        filtro="ver"
+        [grupos]="gruposChecklist"
+        [formControl]="checklistFiltrado"
+      />
+    </ui-section>
+
+    <ui-section titulo="Checklist agrupado deshabilitado">
+      <ui-checklist-agrupado etiqueta="Permisos" [grupos]="gruposChecklist" [formControl]="checklistDeshabilitado" />
+    </ui-section>
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -92,6 +119,37 @@ export class FormsPage {
     { label: 'Centro', value: 1 },
     { label: 'Norte', value: 2 },
   ];
+  protected readonly gruposChecklist: GrupoChecklist[] = [
+    {
+      id: 'ventas',
+      etiqueta: 'Ventas',
+      opciones: [
+        { id: 1, etiqueta: 'Ver' },
+        { id: 2, etiqueta: 'Crear' },
+        { id: 3, etiqueta: 'Anular', descripcion: 'Cancela una venta ya cobrada' },
+      ],
+    },
+    {
+      id: 'caja',
+      etiqueta: 'Caja',
+      opciones: [
+        { id: 10, etiqueta: 'Ver' },
+        { id: 11, etiqueta: 'Abrir' },
+        { id: 12, etiqueta: 'Cerrar' },
+      ],
+    },
+    {
+      id: 'cuentas-cobrar',
+      etiqueta: 'Cuentas por cobrar',
+      opciones: [
+        { id: 20, etiqueta: 'Ver' },
+        { id: 21, etiqueta: 'Registrar abono' },
+      ],
+    },
+  ];
+  protected readonly checklist = new FormControl<readonly (string | number)[]>([1, 10, 11]);
+  protected readonly checklistFiltrado = new FormControl<readonly (string | number)[]>([1, 2, 21]);
+  protected readonly checklistDeshabilitado = new FormControl<readonly (string | number)[]>({ value: [1, 2, 10], disabled: true });
   protected readonly enviando = signal(false);
   protected readonly pinCompleto = signal('');
 

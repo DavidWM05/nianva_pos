@@ -1,8 +1,5 @@
-<div class="rol-crear">
-  <div class="rol-crear__header">
-    <h1>Nuevo rol</h1>
-    <a routerLink="/roles">Volver a la lista</a>
-  </div>
+<ui-page-header clave="roles" subtitulo="Nuevo rol" />
 
+<ui-page estado="listo" forma="formulario">
   <nucleo-rol-form submitLabel="Crear rol" (guardar)="onGuardar($event)" />
-</div>
+</ui-page>

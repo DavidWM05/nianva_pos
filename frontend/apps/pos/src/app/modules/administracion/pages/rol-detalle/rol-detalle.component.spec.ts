@@ -3,7 +3,7 @@ import { By } from '@angular/platform-browser';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { ActivatedRoute, convertToParamMap } from '@angular/router';
 import { AuditLogSource, DynamicFormComponent, ToastService } from '@nianva/ui-shared';
-import { providePrimeNG } from 'primeng/config';
+import { proveedoresDePantalla } from '../../../../testing/proveedores-pantalla';
 import { of } from 'rxjs';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -32,7 +32,7 @@ describe('RolDetalleComponent', () => {
   function providers(rolDevuelto: Rol, permisos: { editar: boolean; eliminar: boolean }) {
     return [
       provideAnimationsAsync(),
-      providePrimeNG(),
+      ...proveedoresDePantalla(),
       { provide: RolService, useValue: { obtener: vi.fn().mockReturnValue(of({ rol: rolDevuelto, permisos })) } },
       { provide: AuditLogSource, useValue: { listar: vi.fn().mockReturnValue(of([])) } },
       { provide: ToastService, useValue: { success: vi.fn(), error: vi.fn() } },

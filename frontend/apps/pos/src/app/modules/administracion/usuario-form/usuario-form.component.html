@@ -1,28 +1,40 @@
-<nucleo-dynamic-form [fields]="fields" [submitLabel]="submitLabel" [readonly]="readonly" (formSubmit)="onSubmit($event)" />
+<nucleo-dynamic-form [fields]="fields" [submitLabel]="submitLabel" [readonly]="readonly" (formSubmit)="onSubmit($event)">
+  <!-- Proyectados: mismas clases y atributos que los campos propios de dynamic-form. -->
+  <div class="dynamic-form__field">
+    <label id="usuario-sucursal-etiqueta" for="usuario-sucursal">Sucursal</label>
+    <mat-form-field class="dynamic-form__material" appearance="outline" subscriptSizing="dynamic">
+      <mat-select
+        id="usuario-sucursal"
+        aria-labelledby="usuario-sucursal-etiqueta"
+        [value]="sucursalId()"
+        [disabled]="readonly"
+        [canSelectNullableOptions]="true"
+        (selectionChange)="sucursalId.set($event.value)"
+      >
+        <mat-option [value]="null">Sin sucursal asignada</mat-option>
+        @for (sucursal of sucursales(); track sucursal.id) {
+          <mat-option [value]="sucursal.id">{{ sucursal.nombre }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+  </div>
 
-<div class="usuario-form__extra">
-  <label for="usuario-sucursal">Sucursal</label>
-  <p-select
-    inputId="usuario-sucursal"
-    [options]="sucursales"
-    optionLabel="nombre"
-    optionValue="id"
-    [ngModel]="sucursalId()"
-    (ngModelChange)="sucursalId.set($event)"
-    [showClear]="true"
-    placeholder="Sin sucursal asignada"
-    [disabled]="readonly"
-  />
-
-  <label for="usuario-roles">Roles</label>
-  <p-multiselect
-    inputId="usuario-roles"
-    [options]="roles"
-    optionLabel="nombre"
-    optionValue="id"
-    [ngModel]="rolesIds()"
-    (ngModelChange)="rolesIds.set($event)"
-    placeholder="Selecciona uno o más roles"
-    [disabled]="readonly"
-  />
-</div>
+  <div class="dynamic-form__field">
+    <label id="usuario-roles-etiqueta" for="usuario-roles">Roles</label>
+    <mat-form-field class="dynamic-form__material" appearance="outline" subscriptSizing="dynamic">
+      <mat-select
+        id="usuario-roles"
+        aria-labelledby="usuario-roles-etiqueta"
+        placeholder="Selecciona uno o más roles"
+        [multiple]="true"
+        [value]="rolesIds()"
+        [disabled]="readonly"
+        (selectionChange)="rolesIds.set($event.value)"
+      >
+        @for (rol of roles(); track rol.id) {
+          <mat-option [value]="rol.id">{{ rol.nombre }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+  </div>
+</nucleo-dynamic-form>

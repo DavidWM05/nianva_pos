@@ -1,0 +1,93 @@
+// Sin encapsulacion (para alcanzar el interior de MatCheckbox): las clases llevan el prefijo
+// ui-checklist; el selector del elemento reemplaza a :host.
+ui-checklist-agrupado {
+  display: block;
+}
+
+.ui-checklist {
+  display: grid;
+  gap: var(--nv-spacing-3);
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.ui-checklist__titulo,
+.ui-checklist__filtro label {
+  padding: 0;
+  color: var(--nv-texto);
+  font-size: var(--nv-font-size-sm);
+  font-weight: var(--nv-font-weight-medium);
+}
+
+.ui-checklist__filtro {
+  display: grid;
+  gap: var(--nv-spacing-1);
+}
+
+// Mismo aspecto que los inputs nativos de ui-forms.
+.ui-checklist__filtro input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: var(--nv-spacing-2) var(--nv-spacing-3);
+  border: 1px solid var(--nv-borde);
+  border-radius: var(--nv-radius-md);
+  background: var(--nv-superficie);
+  color: var(--nv-texto);
+  font-family: var(--nv-font-family);
+  font-size: var(--nv-font-size-base);
+}
+
+.ui-checklist__filtro input:focus {
+  border-color: var(--nv-foco);
+  outline: 2px solid var(--nv-foco);
+  outline-offset: 1px;
+}
+
+.ui-checklist__total,
+.ui-checklist__vacio {
+  margin: 0;
+  color: var(--nv-texto-suave);
+  font-size: var(--nv-font-size-sm);
+}
+
+.ui-checklist__grupo {
+  min-width: 0;
+  margin: 0;
+  padding: var(--nv-spacing-3);
+  border: 1px solid var(--nv-borde);
+  border-radius: var(--nv-radius-md);
+}
+
+.ui-checklist__legend {
+  padding: 0 var(--nv-spacing-1);
+  color: var(--nv-texto);
+  font-size: var(--nv-font-size-sm);
+  font-weight: var(--nv-font-weight-semibold);
+}
+
+.ui-checklist__cabecera {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--nv-spacing-2);
+}
+
+.ui-checklist__contador {
+  color: var(--nv-texto-suave);
+  font-size: var(--nv-font-size-xs);
+}
+
+// Columnas que se acomodan solas al ancho disponible, sin @media (UI-04).
+.ui-checklist__opciones {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 12rem), 1fr));
+}
+
+.ui-checklist__descripcion {
+  display: block;
+  color: var(--nv-texto-suave);
+  font-size: var(--nv-font-size-xs);
+}

@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, ContentChildren, Input, QueryList, TemplateRef, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, ContentChildren, ElementRef, Input, QueryList, TemplateRef, inject, signal } from '@angular/core';
 import { MatTabLink, MatTabNav, MatTabNavPanel } from '@angular/material/tabs';
 
 export interface RecordTabConfig {
@@ -41,7 +41,24 @@ export class RecordTabsComponent {
 
   @ContentChildren(TemplateRef) templates!: QueryList<TemplateRef<unknown>>;
 
+  private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
+
   protected readonly activa = signal(0);
+
+  /**
+   * El ng-template de la pestana `indice`. La consulta de contenido tambien
+   * devuelve los TemplateRef que crea un @if/@for en la raiz de una pestana
+   * ya pintada, y eso corria el indice de las siguientes (50g). Esos viven
+   * dentro de este componente; los ng-template hijos directos no se pintan
+   * en su sitio (no hay <ng-content>), asi que su ancla queda fuera.
+   */
+  protected plantilla(indice: number): TemplateRef<unknown> | null {
+    const propias = this.templates.filter(
+      (plantilla) => !this.host.nativeElement.contains(plantilla.elementRef.nativeElement as Node),
+    );
+
+    return propias[indice] ?? null;
+  }
 
   protected seleccionar(indice: number): void {
     this.activa.set(indice);

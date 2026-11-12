@@ -1541,6 +1541,37 @@ repo.
     - pendientes: contrato 36 → 32, cargando 31 → 28, formato 50 → 47; línea base 3088 →
       2756 líneas. 541 tests de `pos`, 49 e2e, axe en 58 análisis (29 vistas a 1280 y 390 px)
       sin violaciones serias.
+  - **50g · usuarios y roles (Claude):**
+    - las 8 pantallas de `administracion` (listados, alta, detalle y formularios de usuario
+      y rol) sobre `libs/ui`, sin PrimeNG; `administracion` entra en
+      `MODULOS_POS_SIN_PRIMENG`. E2e de flujo (`modulos/usuarios.spec.ts`: crea un usuario
+      con un rol y lo relee del backend; `modulos/roles.spec.ts`: un rol con permisos de dos
+      módulos usando el filtro, y un rol de sistema en solo lectura), con axe;
+    - **slot en `dynamic-form` (`ui-shared`, aditivo):** lo que la pantalla proyecta va
+      dentro del `<form>`, antes del botón. Un control proyectado inválido bloquea el envío;
+      su valor y su `readonly` son de la pantalla (JSDoc de la clase). Antes, Sucursal,
+      Roles y Permisos se pintaban debajo del botón;
+    - **`ui-checklist-agrupado` (`libs/ui/forms`, aditivo):** genérico, como
+      `ControlValueAccessor`; reemplaza al `p-multiselect` agrupado de permisos. Va a
+      `libs/ui` porque UI-16 no admite CSS nuevo en `apps/**`. Está en el catálogo
+      (`/forms`), así que cambian las capturas de Linux de esa ruta: CI falla una vez en
+      "Catálogo visual" y se versionan las del artifact;
+    - **bugs encontrados y corregidos, con su test visto en rojo:**
+      - la lista de roles (y la de sucursales y permisos) salía vacía: se llenaba en campos
+        comunes con OnPush (como en el 50b). La vio el e2e antes de migrar; se corrigió con
+        `signal` sobre el código PrimeNG y el e2e pasó en verde antes de la migración;
+      - `nucleo-record-tabs` (`ui-shared`) corría el índice de las pestañas cuando una
+        empezaba con un `@if`: la consulta de contenido contaba también los `TemplateRef` del
+        control de flujo. Ahora solo cuenta los `ng-template` hijos directos
+        (`record-tabs-plantillas.spec.ts`);
+    - el "solo visualizar" usa `ui-alert`, y la sección de 2FA, `ui-section`. El componente
+      de código TOTP es de `auth` y sigue en PrimeNG hasta el 50j;
+    - **pregunta abierta para el responsable:** ¿un usuario debe tener al menos un rol? El
+      backend acepta roles vacíos y en el 50g no cambia;
+    - **hallazgos, sin tocar:** `mat-select` no abre sin opciones, así que si se pulsa Enter
+      antes de que lleguen los roles no pasa nada (el e2e espera la respuesta de
+      `/roles`); el listado ofrece "Desactivar" también en la fila del propio usuario (ya
+      pasaba con PrimeNG; no se comprobó si el backend lo impide).
 - **Posibles mejoras (roadmap):**
   - **capturas de Linux sin pasar por CI (Docker):** hoy cada PR con cambio visual falla una
     vez en "Catálogo visual", se baja el artifact y se versionan las capturas, porque en el

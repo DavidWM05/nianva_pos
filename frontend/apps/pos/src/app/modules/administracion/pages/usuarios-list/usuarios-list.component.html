@@ -1,59 +1,32 @@
-<div class="usuarios-list">
-  <div class="usuarios-list__header">
-    <h1>Usuarios</h1>
-    @if (permisos().crear) {
-      <a routerLink="/usuarios/nuevo"><p-button label="Nuevo usuario" icon="pi pi-plus" /></a>
-    }
-  </div>
+<ui-page-header clave="usuarios" subtitulo="Personas con acceso al sistema y sus roles">
+  @if (permisos().crear) {
+    <a acciones matButton="filled" routerLink="/usuarios/nuevo">
+      <i class="pi pi-plus" matButtonIcon aria-hidden="true"></i>
+      Nuevo usuario
+    </a>
+  }
+</ui-page-header>
 
-  <input
-    pInputText
-    type="text"
-    placeholder="Buscar por nombre..."
-    class="usuarios-list__buscar"
-    (input)="onBuscarInput($any($event.target).value)"
-  />
-
-  <nucleo-data-table
-    [columns]="columns"
-    [value]="usuarios()"
-    [totalRecords]="total()"
-    [loading]="loading()"
-    [virtualScroll]="false"
-    emptyMessage="No hay usuarios que coincidan con la búsqueda."
-    (lazyLoad)="onLazyLoad($event)"
-  >
-    <ng-template nucleoDataTableCell="sucursal" let-row>
-      {{ row.sucursal?.nombre ?? '—' }}
-    </ng-template>
-
-    <ng-template nucleoDataTableCell="roles" let-row>
-      {{ etiquetaRoles(row) }}
-    </ng-template>
-
-    <ng-template nucleoDataTableCell="activo" let-row>
-      <nucleo-status-badge
-        [value]="row.activo ? 'activo' : 'inactivo'"
-        [colorMap]="{ activo: 'success', inactivo: 'neutral' }"
+<ui-page [estado]="estadoPagina()" forma="listado">
+  <ui-filter-bar [meta]="meta()" [hayFiltros]="hayFiltros()" (limpiar)="limpiarFiltros()">
+    <ui-campo etiqueta="Buscar">
+      <input
+        type="search"
+        aria-label="Buscar por nombre"
+        placeholder="Buscar por nombre..."
+        [ngModel]="busqueda()"
+        (ngModelChange)="onBuscarInput($event)"
       />
-    </ng-template>
+    </ui-campo>
+  </ui-filter-bar>
 
-    <ng-template nucleoDataTableCell="acciones" let-row>
-      <div class="usuarios-list__acciones">
-        @if (permisos().editar) {
-          <p-button icon="pi pi-pencil" [text]="true" size="small" aria-label="Editar" (click)="irADetalle(row)" />
-        }
-        @if (permisos().eliminar) {
-          <p-button
-            icon="pi pi-ban"
-            severity="danger"
-            [text]="true"
-            size="small"
-            aria-label="Desactivar"
-            (click)="onDesactivar(row)"
-          />
-        }
-      </div>
-    </ng-template>
-  </nucleo-data-table>
-</div>
+  <ui-tabla
+    [columnas]="columnas"
+    [filas]="filas()"
+    [meta]="meta()"
+    [cargando]="loading()"
+    mensajeVacio="No hay usuarios que coincidan con la búsqueda."
+    (cambio)="onCambio($event)"
+    (accion)="onAccion($event.fila, $event.accion)"
+  />
+</ui-page>

@@ -1,8 +1,7 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnChanges, OnInit, Output, ViewChild, inject, signal } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatSelectModule } from '@angular/material/select';
 import { DynamicFormComponent, DynamicFormField } from '@nianva/ui-shared';
-import { MultiSelect } from 'primeng/multiselect';
-import { Select } from 'primeng/select';
 
 import { Rol } from '../rol.types';
 import { RolService } from '../rol.service';
@@ -16,14 +15,15 @@ import { UsuarioAdmin } from '../usuario.types';
  * registro. `password` es requerido solo al crear -- en edicion, dejarlo
  * en blanco NO cambia la contrasena actual (ver UsuarioController::update()).
  *
- * sucursal_id/roles viven FUERA de DynamicFormComponent (mismo patron que
- * ReglaPrecioFormComponent con su EntidadSelectorComponent): un select y
- * un multiselect no encajan en el modelo de "un tipo de campo por fila".
+ * sucursal_id/roles no son campos de DynamicFormComponent: un select
+ * opcional y un select multiple no encajan en el modelo de "un tipo de
+ * campo por fila". Se proyectan dentro de su <form>, antes del boton
+ * (50g); su `readonly` lo aplica este formulario.
  */
 @Component({
   selector: 'nucleo-usuario-form',
   standalone: true,
-  imports: [FormsModule, DynamicFormComponent, Select, MultiSelect],
+  imports: [DynamicFormComponent, MatFormFieldModule, MatSelectModule],
   templateUrl: './usuario-form.component.html',
   styleUrl: './usuario-form.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -45,12 +45,12 @@ export class UsuarioFormComponent implements OnInit, OnChanges {
   protected readonly sucursalId = signal<number | null>(null);
   protected readonly rolesIds = signal<number[]>([]);
 
-  protected sucursales: SucursalSimple[] = [];
-  protected roles: Rol[] = [];
+  protected readonly sucursales = signal<SucursalSimple[]>([]);
+  protected readonly roles = signal<Rol[]>([]);
 
   ngOnInit(): void {
-    this.sucursalService.listar().subscribe((sucursales) => (this.sucursales = sucursales));
-    this.rolService.listarTodos().subscribe((roles) => (this.roles = roles));
+    this.sucursalService.listar().subscribe((sucursales) => this.sucursales.set(sucursales));
+    this.rolService.listarTodos().subscribe((roles) => this.roles.set(roles));
   }
 
   ngOnChanges(): void {

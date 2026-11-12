@@ -1,8 +1,5 @@
-<div class="usuario-crear">
-  <div class="usuario-crear__header">
-    <h1>Nuevo usuario</h1>
-    <a routerLink="/usuarios">Volver a la lista</a>
-  </div>
+<ui-page-header clave="usuarios" subtitulo="Nuevo usuario" />
 
+<ui-page estado="listo" forma="formulario">
   <nucleo-usuario-form submitLabel="Crear usuario" (guardar)="onGuardar($event)" />
-</div>
+</ui-page>

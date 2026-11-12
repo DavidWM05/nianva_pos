@@ -1,0 +1,62 @@
+<fieldset class="ui-checklist">
+  @if (etiqueta(); as titulo) {
+    <legend class="ui-checklist__titulo">{{ titulo }}</legend>
+  }
+
+  @if (!deshabilitado()) {
+    <div class="ui-checklist__filtro">
+      <label [for]="idFiltro">{{ etiquetaFiltro() }}</label>
+      <input
+        type="search"
+        autocomplete="off"
+        [id]="idFiltro"
+        [placeholder]="placeholderFiltro()"
+        [value]="filtro()"
+        (input)="alFiltrar($any($event.target).value)"
+      />
+    </div>
+  }
+
+  <!-- Total marcado, incluido lo que el filtro oculta. -->
+  <p class="ui-checklist__total" aria-live="polite">
+    Seleccionados: {{ totalMarcadas() | cantidad }} de {{ totalOpciones() | cantidad }}
+  </p>
+
+  @for (grupo of gruposVisibles(); track grupo.id) {
+    <fieldset class="ui-checklist__grupo">
+      <legend class="ui-checklist__legend">{{ grupo.etiqueta }}</legend>
+
+      <div class="ui-checklist__cabecera">
+        @if (!deshabilitado()) {
+          <mat-checkbox
+            [checked]="grupo.todasVisiblesMarcadas"
+            [indeterminate]="grupo.algunasVisiblesMarcadas"
+            (change)="alMarcarTodas(grupo, $event.checked)"
+          >
+            Seleccionar todos
+          </mat-checkbox>
+        }
+        <span class="ui-checklist__contador">{{ grupo.marcadas | cantidad }} de {{ grupo.total | cantidad }}</span>
+      </div>
+
+      <div class="ui-checklist__opciones">
+        @for (opcion of grupo.visibles; track opcion.id) {
+          <mat-checkbox
+            [checked]="estaMarcada(opcion.id)"
+            [disabled]="deshabilitado()"
+            (change)="alMarcar(opcion.id, $event.checked)"
+          >
+            {{ opcion.etiqueta }}
+            @if (opcion.descripcion) {
+              <span class="ui-checklist__descripcion">{{ opcion.descripcion }}</span>
+            }
+          </mat-checkbox>
+        }
+      </div>
+    </fieldset>
+  } @empty {
+    @if (filtro().trim() !== '') {
+      <p class="ui-checklist__vacio">Ninguna opción coincide con «{{ filtro() }}».</p>
+    }
+  }
+</fieldset>
