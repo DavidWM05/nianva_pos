@@ -1766,8 +1766,10 @@
                                                     "type": "integer"
                                                 },
                                                 "permisos": {
-                                                    "type": "array",
-                                                    "items": {}
+                                                    "type": "object",
+                                                    "additionalProperties": {
+                                                        "type": "boolean"
+                                                    }
                                                 }
                                             },
                                             "required": [
@@ -1886,8 +1888,10 @@
                                             "type": "object",
                                             "properties": {
                                                 "permisos": {
-                                                    "type": "array",
-                                                    "items": {}
+                                                    "type": "object",
+                                                    "additionalProperties": {
+                                                        "type": "boolean"
+                                                    }
                                                 }
                                             },
                                             "required": [
@@ -2224,7 +2228,7 @@
                                                     "type": "object",
                                                     "properties": {
                                                         "id": {
-                                                            "type": "string"
+                                                            "type": "integer"
                                                         },
                                                         "nombre": {
                                                             "type": "string"
@@ -2236,10 +2240,10 @@
                                                     ]
                                                 },
                                                 "puntos_loyalty": {
-                                                    "type": "string"
+                                                    "type": "integer"
                                                 },
                                                 "puntos_acumulados": {
-                                                    "type": "string"
+                                                    "type": "integer"
                                                 },
                                                 "historial": {
                                                     "type": "array",

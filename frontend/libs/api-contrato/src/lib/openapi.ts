@@ -4397,7 +4397,9 @@ export interface operations {
                         data: components["schemas"]["CotizacionResource"][];
                         meta: {
                             total: number;
-                            permisos: unknown[];
+                            permisos: {
+                                [key: string]: boolean;
+                            };
                         };
                     };
                 };
@@ -4453,7 +4455,9 @@ export interface operations {
                     "application/json": {
                         data: components["schemas"]["CotizacionResource"] & Record<string, never>;
                         meta: {
-                            permisos: unknown[];
+                            permisos: {
+                                [key: string]: boolean;
+                            };
                         };
                     };
                 };
@@ -4629,11 +4633,11 @@ export interface operations {
                     "application/json": {
                         data: {
                             cliente: {
-                                id: string;
+                                id: number;
                                 nombre: string;
                             };
-                            puntos_loyalty: string;
-                            puntos_acumulados: string;
+                            puntos_loyalty: number;
+                            puntos_acumulados: number;
                             historial: components["schemas"]["LoyaltyTransaccion"][];
                         };
                     };
