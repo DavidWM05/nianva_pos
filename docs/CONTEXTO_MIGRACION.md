@@ -1572,6 +1572,38 @@ repo.
       antes de que lleguen los roles no pasa nada (el e2e espera la respuesta de
       `/roles`); el listado ofrece "Desactivar" también en la fila del propio usuario (ya
       pasaba con PrimeNG; no se comprobó si el backend lo impide).
+  - **50f · cotizaciones, apartados y devoluciones (Codex):**
+    - listados, formularios y detalles sobre `libs/ui`; los tres módulos entran en
+      `MODULOS_POS_SIN_PRIMENG`. E2e de flujo con backend real (`modulos/cotizaciones`,
+      `apartados` y `devoluciones`: crear, editar, abono y reembolso mixtos, auditoría
+      diferida), verdes antes de migrar;
+    - **líneas editables:** un `FormArray` con `ui-campo`, `ui-input-dinero` y
+      `ui-input-cantidad` por fila, sin tabla editable genérica (se reevalúa en la Fase 4
+      con el carrito del TPV). Sin `precio_manual`, precio y descuento quedan deshabilitados
+      y el payload sale de `getRawValue()` (un control deshabilitado no está en
+      `form.value`), con test del envío al servicio;
+    - `regla-precio-form` usa el slot de `dynamic-form` (50g): "Aplica a" y la categoría
+      quedan dentro del `<form>`, antes de Guardar;
+    - **bugs corregidos (rojo primero):** el error de `items_devueltos` llegaba indexado
+      sobre el payload filtrado y caía en otra fila (ahora se remapea a la fila original);
+      el resumen de pagos de `tpv/lineas-pago` quedaba a 3.14:1 (pasa a `--nv-exito-texto`);
+    - **PRO-01 (`pro-01-autorizado`):** el caso de precio y descuento de solo lectura en
+      `lineas-cotizacion` pasa de `input[type=number][readonly]` a controles deshabilitados,
+      sin perder las aserciones de valores y subtotal; los dos casos de `devoluciones-list`
+      verifican importe con signo, concepto en texto ("Reembolso"/"Cobro") y el tono de
+      peligro de `ui-tabla` en el negativo. Los demás specs existentes, solo providers;
+    - **arnés de e2e:** puertos por variable de entorno (`POS_E2E_BACKEND_PORT` y
+      `POS_E2E_FRONTEND_PORT`; por defecto 8100 y 4301), para correr sin chocar con otra
+      sesión; tiempo por caso de 30 a 60 s (el flujo de roles, con cuatro análisis de axe,
+      superaba los 30 s en una máquina cargada), sin reintentos; el reporte HTML de
+      Playwright va a `frontend/playwright-report`; los helpers de captura esperan a que el
+      toast desaparezca antes de medir con axe (a media animación bajaba a 3.07:1);
+    - **deuda:** `meta.permisos` de `GET /cotizaciones` (va en el PR de contrato con
+      `loyalty`); `lineas-producto` y `lineas-pago` del TPV siguen en PrimeNG hasta el 50n;
+      una variante sin talla ni color se muestra "Agua 1L ()" en la devolución;
+    - pendientes: contrato 32 → 30, cargando 26 → 22, formato 47 → 37; línea base 2622 →
+      2157 líneas. 574 tests de `pos`, 55 e2e, axe en 50 análisis (25 vistas a 1280 y
+      390 px) sin violaciones.
 - **Posibles mejoras (roadmap):**
   - **capturas de Linux sin pasar por CI (Docker):** hoy cada PR con cambio visual falla una
     vez en "Catálogo visual", se baja el artifact y se versionan las capturas, porque en el
