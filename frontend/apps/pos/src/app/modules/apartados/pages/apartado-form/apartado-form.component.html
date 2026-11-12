@@ -31,7 +31,7 @@
     </ui-campo>
   </ui-section>
 
-  <ui-form-actions><fieldset class="acciones-envio" [disabled]="clienteId() === null || itemsActuales().length === 0"><ui-btn-enviar etiqueta="Crear apartado" [enviando]="guardando()" (click)="crearApartado()" /></fieldset></ui-form-actions>
+  <ui-form-actions><ui-btn-enviar [deshabilitado]="clienteId() === null || itemsActuales().length === 0" etiqueta="Crear apartado" [enviando]="guardando()" (click)="crearApartado()" /></ui-form-actions>
 </div>
 
 </ui-page>

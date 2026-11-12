@@ -1,126 +1,115 @@
-<div class="cuenta-cobrar-detalle">
-  @if (cargando()) {
-    <p>Cargando cuenta por cobrar...</p>
-  } @else if (cuenta(); as c) {
-    <div class="cuenta-cobrar-detalle__header">
-      <h1>Cuenta por cobrar #{{ c.id }}</h1>
-      <nucleo-status-badge [value]="c.estado" [colorMap]="{ pendiente: 'info', pagada: 'success', anulada: 'neutral' }" />
-    </div>
+<ui-page-header clave="cuentas-cobrar" />
+<ui-page [estado]="estado()" forma="detalle" (reintentar)="reintentar()">
+  @if (cuenta(); as c) {
+    <h2>Cuenta por cobrar #{{ c.id }}</h2>
+    <ui-badge entidad="cuentaCobrar" [estado]="c.estado" />
 
     <nucleo-record-tabs [tabs]="tabs">
       <ng-template>
-        <div class="cuenta-cobrar-detalle__tab">
-          <dl class="cuenta-cobrar-detalle__resumen">
+        <ui-section titulo="Resumen">
+          <dl uiDatos>
             <dt>Cliente</dt>
             <dd>{{ c.cliente?.nombre ?? 'Sin cliente' }}</dd>
             <dt>Venta origen</dt>
-            <dd><a [routerLink]="['/tpv/ventas', c.venta_id]">Venta #{{ c.venta_id }}</a></dd>
+            <dd>
+              <a [routerLink]="['/tpv/ventas', c.venta_id]"
+                >Venta #{{ c.venta_id }}</a
+              >
+            </dd>
             <dt>Creada</dt>
-            <dd>{{ c.created_at | date: 'short' }}</dd>
+            <dd>{{ c.created_at | fechaHora }}</dd>
             <dt>Vence</dt>
             <dd>
-              {{ c.fecha_vencimiento ? (c.fecha_vencimiento | date: 'shortDate') : 'Sin definir' }}
+              {{
+                c.fecha_vencimiento
+                  ? (c.fecha_vencimiento | fecha)
+                  : 'Sin definir'
+              }}
               @if (c.estado === 'pendiente' && c.dias_vencida > 0) {
-                <span class="cuenta-cobrar-detalle__vencida">(vencida hace {{ c.dias_vencida }}d)</span>
+                <span>(vencida hace {{ c.dias_vencida }}d)</span>
               }
             </dd>
             <dt>Monto total</dt>
-            <dd>${{ c.monto_total }}</dd>
+            <dd>{{ c.monto_total | dinero }}</dd>
             <dt>Saldo pendiente</dt>
-            <dd class="cuenta-cobrar-detalle__saldo">${{ c.saldo_pendiente }}</dd>
+            <dd>{{ c.saldo_pendiente | dinero }}</dd>
           </dl>
 
           <h4>Abonos</h4>
-          @if (c.abonos && c.abonos.length > 0) {
-            <table class="cuenta-cobrar-detalle__tabla">
-              <thead>
-                <tr>
-                  <th>Fecha</th>
-                  <th>Monto</th>
-                  <th>Método de pago</th>
-                  <th>Referencia</th>
-                </tr>
-              </thead>
-              <tbody>
-                @for (abono of c.abonos; track abono.id) {
-                  <tr>
-                    <td>{{ abono.fecha | date: 'short' }}</td>
-                    <td>${{ abono.monto }}</td>
-                    <td>{{ abono.metodo_pago ?? '—' }}</td>
-                    <td>{{ abono.referencia ?? '—' }}</td>
-                  </tr>
-                }
-              </tbody>
-            </table>
-          } @else {
-            <p>Esta cuenta no tiene abonos todavía.</p>
-          }
+          <ui-tabla
+            [columnas]="columnasHistorial"
+            [filas]="filasHistorial()"
+            [meta]="metaHistorial()"
+            mensajeVacio="Esta cuenta no tiene abonos todavía."
+            (cambio)="cambiarPaginaHistorial($event)"
+          />
 
-          <div class="cuenta-cobrar-detalle__acciones">
+          <ui-form-actions>
             @if (puedeAbonar()) {
-              <p-button label="Registrar abono" icon="pi pi-plus-circle" (click)="abrirAbono()" />
+              <button matButton="filled" type="button" (click)="abrirAbono()">
+                Registrar abono
+              </button>
             }
             @if (puedeAnular()) {
-              <p-button label="Anular cuenta" icon="pi pi-ban" severity="danger" [text]="true" (click)="anular()" />
+              <button matButton="text" type="button" (click)="anular()">
+                Anular cuenta
+              </button>
             }
-          </div>
-        </div>
+          </ui-form-actions>
+        </ui-section>
       </ng-template>
 
       <ng-template>
         @defer (on viewport) {
-          <nucleo-audit-log-viewer [tabla]="'cuentas_cobrar'" [registroId]="c.id" />
+          <nucleo-audit-log-viewer
+            [tabla]="'cuentas_cobrar'"
+            [registroId]="c.id"
+          />
         } @placeholder {
-          <p>Auditoría (se carga al hacer scroll hasta aquí)...</p>
+          <ui-skeleton forma="bloque" />
         } @loading (minimum 200ms) {
-          <p>Cargando auditoría...</p>
+          <ui-skeleton forma="bloque" />
         }
       </ng-template>
     </nucleo-record-tabs>
   }
-</div>
+</ui-page>
 
-<p-dialog
-  header="Registrar abono"
+<ui-modal
+  titulo="Registrar abono"
   [visible]="mostrarAbono()"
   (visibleChange)="cerrarAbono()"
-  [modal]="true"
-  [dismissableMask]="true"
-  [style]="{ width: '26rem' }"
+  tamano="sm"
 >
-  <div class="cuenta-cobrar-detalle__campo">
-    <label for="abono-monto">Monto</label>
-    <input
-      pInputText
-      type="number"
-      min="0.01"
-      step="0.01"
-      id="abono-monto"
+  <ui-campo etiqueta="Monto" [requerido]="true"
+    ><ui-input-dinero
+      [min]="0.01"
       [ngModel]="montoAbono()"
       (ngModelChange)="montoAbono.set($event)"
-    />
-  </div>
-  <div class="cuenta-cobrar-detalle__campo">
-    <label for="abono-metodo-pago">Método de pago</label>
-    <p-select
-      inputId="abono-metodo-pago"
-      [options]="metodosPago()"
-      optionLabel="nombre"
-      optionValue="id"
+  /></ui-campo>
+  <ui-campo etiqueta="Método de pago" [requerido]="true"
+    ><ui-select-filtro
+      [opciones]="opcionesPago()"
+      [todas]="false"
+      ariaLabel="Método de pago"
       placeholder="Selecciona un método de pago"
       [ngModel]="metodoPagoElegido()"
       (ngModelChange)="metodoPagoElegido.set($event)"
-    />
-  </div>
-  <div class="cuenta-cobrar-detalle__campo">
-    <label for="abono-referencia">Referencia (opcional)</label>
-    <input pInputText type="text" id="abono-referencia" [ngModel]="referenciaAbono()" (ngModelChange)="referenciaAbono.set($event)" />
-  </div>
-  <p-button
-    label="Confirmar abono"
-    icon="pi pi-check"
-    [loading]="abonando()"
-    [disabled]="!montoAbono() || montoAbono()! <= 0 || metodoPagoElegido() === null"
-    (click)="confirmarAbono()"
-  />
-</p-dialog>
+  /></ui-campo>
+  <ui-campo #referencia etiqueta="Referencia (opcional)"
+    ><input
+      type="text"
+      [id]="referencia.controlId()"
+      [ngModel]="referenciaAbono()"
+      (ngModelChange)="referenciaAbono.set($event)"
+  /></ui-campo>
+  <ui-form-actions acciones
+    ><ui-btn-enviar
+      etiqueta="Confirmar abono"
+      [enviando]="abonando()"
+      [deshabilitado]="
+        !montoAbono() || montoAbono()! <= 0 || metodoPagoElegido() === null
+      "
+      (click)="confirmarAbono()"
+  /></ui-form-actions>
+</ui-modal>

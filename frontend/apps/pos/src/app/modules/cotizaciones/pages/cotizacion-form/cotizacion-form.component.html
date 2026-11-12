@@ -58,7 +58,7 @@
     </ui-section>
 
     <div>
-      <ui-form-actions><fieldset class="acciones-envio" [disabled]="items().length === 0 || lineasInvalidas()"><ui-btn-enviar etiqueta="Guardar cotización" [enviando]="guardando()" (click)="guardar()" /></fieldset></ui-form-actions>
+      <ui-form-actions><ui-btn-enviar [deshabilitado]="items().length === 0 || lineasInvalidas()" etiqueta="Guardar cotización" [enviando]="guardando()" (click)="guardar()" /></ui-form-actions>
       <a matButton="text" routerLink="/cotizaciones">Cancelar</a>
     </div>
   </ui-page>

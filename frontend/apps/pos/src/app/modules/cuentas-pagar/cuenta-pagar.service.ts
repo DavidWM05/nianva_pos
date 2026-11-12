@@ -1,10 +1,16 @@
+import { RespuestaDe, CuerpoDe } from '@nianva/api-contrato';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { DataTableLazyEvent } from '@nianva/ui-shared';
 import { Observable, map } from 'rxjs';
 
 import { urlApi } from '../../core/api-config';
-import { CuentaPagar, EstadoCuentaPagar, RegistrarPagoPayload, ReporteCuentasPagar } from './cuenta-pagar.types';
+import {
+  CuentaPagar,
+  EstadoCuentaPagar,
+  RegistrarPagoPayload,
+  ReporteCuentasPagar,
+} from './cuenta-pagar.types';
 
 export interface CuentasPagarPagina {
   data: CuentaPagar[];
@@ -27,7 +33,10 @@ export class CuentaPagarService {
 
   listar(
     evento: DataTableLazyEvent,
-    filtros: { proveedorNombre?: string; estado?: EstadoCuentaPagar | null } = {},
+    filtros: {
+      proveedorNombre?: string;
+      estado?: EstadoCuentaPagar | null;
+    } = {},
   ): Observable<CuentasPagarPagina> {
     const rows = evento.rows || 25;
     const page = Math.floor(evento.first / rows) + 1;
@@ -35,7 +44,9 @@ export class CuentaPagarService {
     let params = new HttpParams().set('page', page).set('rows', rows);
 
     if (evento.sortField) {
-      params = params.set('sort_field', evento.sortField).set('sort_order', evento.sortOrder === -1 ? 'desc' : 'asc');
+      params = params
+        .set('sort_field', evento.sortField)
+        .set('sort_order', evento.sortOrder === -1 ? 'desc' : 'asc');
     }
     if (filtros.proveedorNombre?.trim()) {
       params = params.set('filtro_proveedor', filtros.proveedorNombre.trim());
@@ -45,25 +56,51 @@ export class CuentaPagarService {
     }
 
     return this.http
-      .get<{ data: CuentaPagar[]; meta: { total: number } }>(urlApi(`/cuentas-pagar`), { params })
-      .pipe(map((r) => ({ data: r.data, total: r.meta.total })));
+      .get<RespuestaDe<'/cuentas-pagar', 'get'>>(urlApi(`/cuentas-pagar`), {
+        params,
+      })
+      .pipe(
+        map((r) => ({ data: r.data as CuentaPagar[], total: r.meta.total })),
+      );
   }
 
   obtener(id: number): Observable<CuentaPagar> {
-    return this.http.get<{ data: CuentaPagar }>(urlApi(`/cuentas-pagar/${id}`)).pipe(map((r) => r.data));
+    return this.http
+      .get<RespuestaDe<'/cuentas-pagar/{cuentaPagar}', 'get'>>(
+        urlApi(`/cuentas-pagar/${id}`),
+      )
+      .pipe(map((r) => r.data as CuentaPagar));
   }
 
-  registrarPago(id: number, payload: RegistrarPagoPayload): Observable<RegistrarPagoRespuesta> {
+  registrarPago(
+    id: number,
+    payload: RegistrarPagoPayload,
+  ): Observable<RegistrarPagoRespuesta> {
+    const cuerpo: CuerpoDe<'/cuentas-pagar/{id}/pagos', 'post'> = payload;
+
     return this.http
-      .post<{ data: { cuenta: { saldo_pendiente: string; estado: EstadoCuentaPagar } } }>(
+      .post<RespuestaDe<'/cuentas-pagar/{id}/pagos', 'post'>>(
         urlApi(`/cuentas-pagar/${id}/pagos`),
-        payload,
+        cuerpo,
       )
-      .pipe(map((r) => ({ saldoPendiente: r.data.cuenta.saldo_pendiente, estado: r.data.cuenta.estado })));
+      .pipe(
+        map((r) => {
+          const cuenta = r.data.cuenta as CuentaPagar;
+          return {
+            saldoPendiente: cuenta.saldo_pendiente,
+            estado: cuenta.estado,
+          };
+        }),
+      );
   }
 
   anular(id: number): Observable<void> {
-    return this.http.post<void>(urlApi(`/cuentas-pagar/${id}/anular`), {});
+    return this.http
+      .post<RespuestaDe<'/cuentas-pagar/{id}/anular', 'post'>>(
+        urlApi(`/cuentas-pagar/${id}/anular`),
+        {},
+      )
+      .pipe(map(() => undefined));
   }
 
   /** limite: top-N proveedores por saldo pendiente en `por_proveedor` (backend acepta 1-50, default 10). */
@@ -71,7 +108,10 @@ export class CuentaPagarService {
     const params = new HttpParams().set('limite', limite);
 
     return this.http
-      .get<{ data: ReporteCuentasPagar }>(urlApi(`/cuentas-pagar/reporte`), { params })
+      .get<RespuestaDe<'/cuentas-pagar/reporte', 'get'>>(
+        urlApi(`/cuentas-pagar/reporte`),
+        { params },
+      )
       .pipe(map((r) => r.data));
   }
 }

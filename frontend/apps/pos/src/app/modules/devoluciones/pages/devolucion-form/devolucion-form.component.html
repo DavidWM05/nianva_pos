@@ -118,7 +118,7 @@
       <ui-campo #motivoCampo etiqueta="Motivo (opcional)"><textarea [id]="motivoCampo.controlId()" rows="2" [ngModel]="motivo()" (ngModelChange)="motivo.set($event)"></textarea></ui-campo>
     </ui-section>
 
-    <ui-form-actions><fieldset class="acciones-envio" [disabled]="!puedeRegistrar()"><ui-btn-enviar etiqueta="Registrar" [enviando]="registrando()" (click)="registrarDevolucion()" /></fieldset></ui-form-actions>
+    <ui-form-actions><ui-btn-enviar [deshabilitado]="!puedeRegistrar()" etiqueta="Registrar" [enviando]="registrando()" (click)="registrarDevolucion()" /></ui-form-actions>
   }
 </div>
 

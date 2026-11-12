@@ -1,12 +1,44 @@
-import { DatePipe } from '@angular/common';
+import {
+  BtnEnviarComponent,
+  CampoComponent,
+  InputDineroComponent,
+} from '@nianva/ui-forms';
+import { ModalComponent } from '@nianva/ui-overlays';
+import { MatButton } from '@angular/material/button';
+import {
+  CambioListado,
+  ColumnaListado,
+  MetaListado,
+  TablaComponent,
+} from '@nianva/ui-data';
+import { BadgeComponent, SkeletonComponent } from '@nianva/ui-feedback';
+import { DineroPipe, FechaPipe, FechaHoraPipe } from '@nianva/ui-format';
+import {
+  DatosComponent,
+  FormActionsComponent,
+  PageComponent,
+  PageHeaderComponent,
+  SectionComponent,
+} from '@nianva/ui-layout';
 import { HttpErrorResponse } from '@angular/common/http';
-import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  OnInit,
+  computed,
+  inject,
+  signal,
+} from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
-import { AuditLogViewerComponent, ConfirmDialogService, RecordTabConfig, RecordTabsComponent, StatusBadgeComponent, ToastService, mensajeError } from '@nianva/ui-shared';
-import { Button } from 'primeng/button';
-import { Dialog } from 'primeng/dialog';
-import { InputText } from 'primeng/inputtext';
+import {
+  AuditLogViewerComponent,
+  ConfirmDialogService,
+  RecordTabConfig,
+  RecordTabsComponent,
+  ToastService,
+  mensajeError,
+} from '@nianva/ui-shared';
 
 import { GiftCardService } from '../../gift-card.service';
 import { GiftCard } from '../../gift-card.types';
@@ -17,7 +49,27 @@ import { GiftCard } from '../../gift-card.types';
 @Component({
   selector: 'nucleo-gift-card-detalle',
   standalone: true,
-  imports: [DatePipe, FormsModule, RecordTabsComponent, AuditLogViewerComponent, StatusBadgeComponent, Button, Dialog, InputText],
+  imports: [
+    BtnEnviarComponent,
+    CampoComponent,
+    InputDineroComponent,
+    ModalComponent,
+    FormsModule,
+    RecordTabsComponent,
+    AuditLogViewerComponent,
+    PageComponent,
+    PageHeaderComponent,
+    SectionComponent,
+    DatosComponent,
+    FormActionsComponent,
+    TablaComponent,
+    BadgeComponent,
+    SkeletonComponent,
+    DineroPipe,
+    FechaPipe,
+    FechaHoraPipe,
+    MatButton,
+  ],
   templateUrl: './gift-card-detalle.component.html',
   styleUrl: './gift-card-detalle.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -43,7 +95,9 @@ export class GiftCardDetalleComponent implements OnInit {
     return gc.estado !== 'cancelada' && !this.estaExpirada(gc);
   });
 
-  protected readonly puedeCancelar = computed(() => this.giftCard()?.estado !== 'cancelada');
+  protected readonly puedeCancelar = computed(
+    () => this.giftCard()?.estado !== 'cancelada',
+  );
 
   // -- Recargar --
   protected readonly mostrarRecargar = signal(false);
@@ -84,7 +138,9 @@ export class GiftCardDetalleComponent implements OnInit {
       },
       error: (error: HttpErrorResponse) => {
         this.recargando.set(false);
-        this.toast.error(mensajeError(error, 'No se pudo recargar la gift card.'));
+        this.toast.error(
+          mensajeError(error, 'No se pudo recargar la gift card.'),
+        );
       },
     });
   }
@@ -107,24 +163,75 @@ export class GiftCardDetalleComponent implements OnInit {
         this.cargar(giftCard.id);
       },
       error: (error: HttpErrorResponse) => {
-        this.toast.error(mensajeError(error, 'No se pudo cancelar la gift card.'));
+        this.toast.error(
+          mensajeError(error, 'No se pudo cancelar la gift card.'),
+        );
       },
     });
   }
 
   private estaExpirada(gc: GiftCard): boolean {
-    return gc.estado === 'expirada' || (!!gc.fecha_expiracion && gc.fecha_expiracion < new Date().toISOString().slice(0, 10));
+    return (
+      gc.estado === 'expirada' ||
+      (!!gc.fecha_expiracion &&
+        gc.fecha_expiracion < new Date().toISOString().slice(0, 10))
+    );
   }
 
   private cargar(id: number): void {
     this.cargando.set(true);
+    this.error.set(false);
     this.giftCardService.obtener(id).subscribe({
       next: (giftCard) => {
         this.giftCard.set(giftCard);
         this.cargando.set(false);
       },
-      error: () => this.cargando.set(false),
+      error: () => {
+        this.cargando.set(false);
+        this.error.set(true);
+      },
     });
   }
 
+  protected readonly error = signal(false);
+  protected readonly estado = computed(() =>
+    this.cargando() ? 'cargando' : this.error() ? 'error' : 'listo',
+  );
+  protected readonly paginaHistorial = signal(1);
+  protected readonly filasPorPagina = signal(25);
+  protected readonly historial = computed(() =>
+    (this.giftCard()?.recargas ?? []).map((fila) => ({
+      ...fila,
+      usuarioTexto: fila.usuario?.nombre ?? '—',
+    })),
+  );
+  protected readonly filasHistorial = computed(() =>
+    this.historial().slice(
+      (this.paginaHistorial() - 1) * this.filasPorPagina(),
+      this.paginaHistorial() * this.filasPorPagina(),
+    ),
+  );
+  protected readonly metaHistorial = computed<MetaListado>(() => ({
+    total: this.historial().length,
+    page: this.paginaHistorial(),
+    rows: this.filasPorPagina(),
+    filtros_aplicados: {},
+    permisos: {},
+  }));
+  protected readonly columnasHistorial: ColumnaListado<
+    NonNullable<GiftCard['recargas']>[number] & { usuarioTexto: string }
+  >[] = [
+    { tipo: 'fechaHora', campo: 'fecha', encabezado: 'Fecha' },
+    { tipo: 'dinero', campo: 'monto', encabezado: 'Monto' },
+    { tipo: 'texto', campo: 'usuarioTexto', encabezado: 'Registrada por' },
+  ];
+
+  reintentar(): void {
+    this.cargar(Number(this.route.snapshot.paramMap.get('id')));
+  }
+
+  cambiarPaginaHistorial(evento: CambioListado): void {
+    this.paginaHistorial.set(evento.page);
+    this.filasPorPagina.set(evento.rows);
+  }
 }

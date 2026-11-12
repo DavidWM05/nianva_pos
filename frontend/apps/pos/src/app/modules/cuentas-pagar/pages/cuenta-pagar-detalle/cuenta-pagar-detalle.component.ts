@@ -1,13 +1,45 @@
-import { DatePipe } from '@angular/common';
+import {
+  BtnEnviarComponent,
+  CampoComponent,
+  InputDineroComponent,
+  SelectFiltroComponent,
+} from '@nianva/ui-forms';
+import { ModalComponent } from '@nianva/ui-overlays';
+import { MatButton } from '@angular/material/button';
+import {
+  CambioListado,
+  ColumnaListado,
+  MetaListado,
+  TablaComponent,
+} from '@nianva/ui-data';
+import { BadgeComponent, SkeletonComponent } from '@nianva/ui-feedback';
+import { DineroPipe, FechaPipe, FechaHoraPipe } from '@nianva/ui-format';
+import {
+  DatosComponent,
+  FormActionsComponent,
+  PageComponent,
+  PageHeaderComponent,
+  SectionComponent,
+} from '@nianva/ui-layout';
 import { HttpErrorResponse } from '@angular/common/http';
-import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  OnInit,
+  computed,
+  inject,
+  signal,
+} from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
-import { AuditLogViewerComponent, ConfirmDialogService, RecordTabConfig, RecordTabsComponent, StatusBadgeComponent, ToastService, mensajeError } from '@nianva/ui-shared';
-import { Button } from 'primeng/button';
-import { Dialog } from 'primeng/dialog';
-import { InputText } from 'primeng/inputtext';
-import { Select } from 'primeng/select';
+import {
+  AuditLogViewerComponent,
+  ConfirmDialogService,
+  RecordTabConfig,
+  RecordTabsComponent,
+  ToastService,
+  mensajeError,
+} from '@nianva/ui-shared';
 
 import { MetodoPago } from '../../../tpv/metodo-pago.types';
 import { MetodoPagoService } from '../../../tpv/metodo-pago.service';
@@ -24,7 +56,28 @@ import { CuentaPagar } from '../../cuenta-pagar.types';
 @Component({
   selector: 'nucleo-cuenta-pagar-detalle',
   standalone: true,
-  imports: [DatePipe, FormsModule, RecordTabsComponent, AuditLogViewerComponent, StatusBadgeComponent, Button, Dialog, InputText, Select],
+  imports: [
+    BtnEnviarComponent,
+    CampoComponent,
+    InputDineroComponent,
+    SelectFiltroComponent,
+    ModalComponent,
+    FormsModule,
+    RecordTabsComponent,
+    AuditLogViewerComponent,
+    PageComponent,
+    PageHeaderComponent,
+    SectionComponent,
+    DatosComponent,
+    FormActionsComponent,
+    TablaComponent,
+    BadgeComponent,
+    SkeletonComponent,
+    DineroPipe,
+    FechaPipe,
+    FechaHoraPipe,
+    MatButton,
+  ],
   templateUrl: './cuenta-pagar-detalle.component.html',
   styleUrl: './cuenta-pagar-detalle.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -44,11 +97,23 @@ export class CuentaPagarDetalleComponent implements OnInit {
   protected readonly cargando = signal(true);
   protected readonly cuenta = signal<CuentaPagar | null>(null);
 
-  protected readonly puedePagar = computed(() => this.cuenta()?.estado === 'pendiente');
-  protected readonly puedeAnular = computed(() => this.cuenta()?.estado === 'pendiente' && (this.cuenta()?.abonos?.length ?? 0) === 0);
+  protected readonly puedePagar = computed(
+    () => this.cuenta()?.estado === 'pendiente',
+  );
+  protected readonly puedeAnular = computed(
+    () =>
+      this.cuenta()?.estado === 'pendiente' &&
+      (this.cuenta()?.abonos?.length ?? 0) === 0,
+  );
 
   // -- Registrar pago --
   protected readonly metodosPago = signal<MetodoPago[]>([]);
+  protected readonly opcionesPago = computed(() =>
+    this.metodosPago().map((metodo) => ({
+      label: metodo.nombre,
+      value: metodo.id,
+    })),
+  );
   protected readonly mostrarPago = signal(false);
   protected readonly montoPago = signal<number | null>(null);
   protected readonly metodoPagoElegido = signal<number | null>(null);
@@ -56,7 +121,9 @@ export class CuentaPagarDetalleComponent implements OnInit {
   protected readonly pagando = signal(false);
 
   ngOnInit(): void {
-    this.metodoPagoService.listar().subscribe((metodos) => this.metodosPago.set(metodos));
+    this.metodoPagoService
+      .listar()
+      .subscribe((metodos) => this.metodosPago.set(metodos));
 
     const id = Number(this.route.snapshot.paramMap.get('id'));
     this.cargar(id);
@@ -82,7 +149,11 @@ export class CuentaPagarDetalleComponent implements OnInit {
     this.pagando.set(true);
 
     this.cuentaPagarService
-      .registrarPago(cuenta.id, { monto, metodo_pago_id: metodoPagoId, referencia: this.referenciaPago() || null })
+      .registrarPago(cuenta.id, {
+        monto,
+        metodo_pago_id: metodoPagoId,
+        referencia: this.referenciaPago() || null,
+      })
       .subscribe({
         next: () => {
           this.pagando.set(false);
@@ -92,7 +163,9 @@ export class CuentaPagarDetalleComponent implements OnInit {
         },
         error: (error: HttpErrorResponse) => {
           this.pagando.set(false);
-          this.toast.error(mensajeError(error, 'No se pudo registrar el pago.'));
+          this.toast.error(
+            mensajeError(error, 'No se pudo registrar el pago.'),
+          );
         },
       });
   }
@@ -122,13 +195,54 @@ export class CuentaPagarDetalleComponent implements OnInit {
 
   private cargar(id: number): void {
     this.cargando.set(true);
+    this.error.set(false);
     this.cuentaPagarService.obtener(id).subscribe({
       next: (cuenta) => {
         this.cuenta.set(cuenta);
         this.cargando.set(false);
       },
-      error: () => this.cargando.set(false),
+      error: () => {
+        this.cargando.set(false);
+        this.error.set(true);
+      },
     });
   }
 
+  protected readonly error = signal(false);
+  protected readonly estado = computed(() =>
+    this.cargando() ? 'cargando' : this.error() ? 'error' : 'listo',
+  );
+  protected readonly paginaHistorial = signal(1);
+  protected readonly filasPorPagina = signal(25);
+  protected readonly historial = computed(() => this.cuenta()?.abonos ?? []);
+  protected readonly filasHistorial = computed(() =>
+    this.historial().slice(
+      (this.paginaHistorial() - 1) * this.filasPorPagina(),
+      this.paginaHistorial() * this.filasPorPagina(),
+    ),
+  );
+  protected readonly metaHistorial = computed<MetaListado>(() => ({
+    total: this.historial().length,
+    page: this.paginaHistorial(),
+    rows: this.filasPorPagina(),
+    filtros_aplicados: {},
+    permisos: {},
+  }));
+  protected readonly columnasHistorial: ColumnaListado<
+    NonNullable<CuentaPagar['abonos']>[number]
+  >[] = [
+    { tipo: 'fechaHora', campo: 'fecha', encabezado: 'Fecha' },
+    { tipo: 'dinero', campo: 'monto', encabezado: 'Monto' },
+    { tipo: 'texto', campo: 'metodo_pago', encabezado: 'Método de pago' },
+    { tipo: 'texto', campo: 'referencia', encabezado: 'Referencia' },
+  ];
+
+  reintentar(): void {
+    this.cargar(Number(this.route.snapshot.paramMap.get('id')));
+  }
+
+  cambiarPaginaHistorial(evento: CambioListado): void {
+    this.paginaHistorial.set(evento.page);
+    this.filasPorPagina.set(evento.rows);
+  }
 }

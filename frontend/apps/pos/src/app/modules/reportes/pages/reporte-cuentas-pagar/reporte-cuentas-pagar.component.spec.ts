@@ -13,7 +13,7 @@ describe('ReporteCuentasPagarComponent', () => {
   const reporte: ReporteCuentasPagar = {
     total_pendiente: 8000,
     total_vencido: 3000,
-    por_antiguedad: { al_dia: 5000, vencido_1_30: 0, vencido_31_60: 3000, vencido_61_90: 0, vencido_90_mas: 0 },
+    por_antiguedad: { al_dia: '5000.00', vencido_1_30: '0.00', vencido_31_60: '3000.00', vencido_61_90: '0.00', vencido_90_mas: '0.00' },
     por_proveedor: [{ proveedor_id: 4, proveedor_nombre: 'Distribuidora X', saldo_pendiente: 3000, cuentas_pendientes: 1 }],
   };
 

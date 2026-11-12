@@ -32,11 +32,11 @@ export interface RegistrarPagoPayload {
 }
 
 export interface ReporteAntiguedad {
-  al_dia: number;
-  vencido_1_30: number;
-  vencido_31_60: number;
-  vencido_61_90: number;
-  vencido_90_mas: number;
+  al_dia: string;
+  vencido_1_30: string;
+  vencido_31_60: string;
+  vencido_61_90: string;
+  vencido_90_mas: string;
 }
 
 export interface ReporteCuentasPagarProveedor {

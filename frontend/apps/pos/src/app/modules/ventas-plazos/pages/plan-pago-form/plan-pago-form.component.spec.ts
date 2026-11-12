@@ -1,9 +1,9 @@
+import { proveedoresDePantalla } from '../../../../testing/proveedores-pantalla';
 import { HttpErrorResponse } from '@angular/common/http';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { Router, provideRouter } from '@angular/router';
 import { ToastService } from '@nianva/ui-shared';
-import { providePrimeNG } from 'primeng/config';
 import { of, throwError } from 'rxjs';
 import { describe, expect, it, vi } from 'vitest';
 
@@ -36,8 +36,8 @@ describe('PlanPagoFormComponent', () => {
     await TestBed.configureTestingModule({
       imports: [PlanPagoFormComponent],
       providers: [
+        ...proveedoresDePantalla(),
         provideAnimationsAsync(),
-        providePrimeNG(),
         provideRouter([]),
         { provide: PlanPagoService, useValue: planPagoService },
         { provide: ToastService, useValue: { success: vi.fn(), error: vi.fn(), warn: vi.fn() } },
