@@ -1,19 +1,54 @@
+import { BotonCrearComponent } from '@nianva/ui-actions';
+import { CampoComponent, SelectFiltroComponent } from '@nianva/ui-forms';
+import {
+  PageComponent,
+  PageHeaderComponent,
+  SectionComponent,
+} from '@nianva/ui-layout';
+import { AlertComponent, SkeletonComponent } from '@nianva/ui-feedback';
+import { ModalComponent } from '@nianva/ui-overlays';
 import { HttpErrorResponse } from '@angular/common/http';
-import { ChangeDetectionStrategy, Component, OnInit, ViewChild, inject, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  OnInit,
+  ViewChild,
+  computed,
+  inject,
+  signal,
+} from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { AuditLogViewerComponent, RecordTabConfig, RecordTabsComponent, ToastService } from '@nianva/ui-shared';
-import { Button } from 'primeng/button';
-import { Dialog } from 'primeng/dialog';
-import { Select } from 'primeng/select';
+import {
+  AuditLogViewerComponent,
+  RecordTabConfig,
+  RecordTabsComponent,
+  ToastService,
+} from '@nianva/ui-shared';
 import { FormsModule } from '@angular/forms';
 
-import { CompraFormComponent, CompraFormValue } from '../../compra-form/compra-form.component';
-import { CompraFormPayload, CompraService, ProveedorFormPayload } from '../../compra.service';
+import {
+  CompraFormComponent,
+  CompraFormValue,
+} from '../../compra-form/compra-form.component';
+import {
+  CompraFormPayload,
+  CompraService,
+  ProveedorFormPayload,
+} from '../../compra.service';
 import { ConfiguracionService } from '../../../configuracion/configuracion.service';
 import { KardexListComponent } from '../../kardex-list/kardex-list.component';
 import { ProductoFormComponent } from '../../producto-form/producto-form.component';
-import { ProductoFormPayload, ProductoService, VarianteFormPayload } from '../../producto.service';
-import { MovimientoKardex, Producto, ProductoVariante, ProveedorSimple } from '../../producto.types';
+import {
+  ProductoFormPayload,
+  ProductoService,
+  VarianteFormPayload,
+} from '../../producto.service';
+import {
+  MovimientoKardex,
+  Producto,
+  ProductoVariante,
+  ProveedorSimple,
+} from '../../producto.types';
 import { ProveedorFormComponent } from '../../proveedor-form/proveedor-form.component';
 import { VarianteFormComponent } from '../../variante-form/variante-form.component';
 import { VariantesListComponent } from '../../variantes-list/variantes-list.component';
@@ -44,9 +79,15 @@ import { VariantesListComponent } from '../../variantes-list/variantes-list.comp
     AuditLogViewerComponent,
     CompraFormComponent,
     ProveedorFormComponent,
-    Button,
-    Dialog,
-    Select,
+    BotonCrearComponent,
+    CampoComponent,
+    SelectFiltroComponent,
+    PageComponent,
+    PageHeaderComponent,
+    SectionComponent,
+    AlertComponent,
+    SkeletonComponent,
+    ModalComponent,
   ],
   templateUrl: './producto-detalle.component.html',
   styleUrl: './producto-detalle.component.scss',
@@ -63,10 +104,14 @@ export class ProductoDetalleComponent implements OnInit {
   // en si mismo no conoce Configuracion, solo recibe un boolean por @Input.
   private readonly configuracionService = inject(ConfiguracionService);
 
-  @ViewChild(ProductoFormComponent) private formularioProducto?: ProductoFormComponent;
-  @ViewChild(VarianteFormComponent) private formularioVariante?: VarianteFormComponent;
-  @ViewChild(CompraFormComponent) private formularioCompra?: CompraFormComponent;
-  @ViewChild(ProveedorFormComponent) private formularioProveedor?: ProveedorFormComponent;
+  @ViewChild(ProductoFormComponent)
+  private formularioProducto?: ProductoFormComponent;
+  @ViewChild(VarianteFormComponent)
+  private formularioVariante?: VarianteFormComponent;
+  @ViewChild(CompraFormComponent)
+  private formularioCompra?: CompraFormComponent;
+  @ViewChild(ProveedorFormComponent)
+  private formularioProveedor?: ProveedorFormComponent;
 
   protected readonly tabs: RecordTabConfig[] = [
     { label: 'General', icon: 'pi pi-box' },
@@ -81,6 +126,15 @@ export class ProductoDetalleComponent implements OnInit {
   protected readonly cargando = signal(true);
 
   protected readonly guardando = signal(false);
+  protected readonly guardandoVariante = signal(false);
+  protected readonly error = signal(false);
+  protected readonly errorKardex = signal(false);
+  protected readonly opcionesVariantes = computed(() =>
+    (this.producto()?.variantes ?? []).map((v) => ({
+      label: v.talla ?? 'Variante #' + v.id,
+      value: v.id,
+    })),
+  );
 
   protected readonly mostrarFormularioVariante = signal(false);
   protected readonly varianteEnEdicion = signal<ProductoVariante | null>(null);
@@ -106,22 +160,35 @@ export class ProductoDetalleComponent implements OnInit {
 
     this.configuracionService
       .publica()
-      .subscribe((config) => this.codigoBarrasAutomatico.set(config.codigo_barras_automatico));
+      .subscribe((config) =>
+        this.codigoBarrasAutomatico.set(config.codigo_barras_automatico),
+      );
+  }
+
+  reintentar(): void {
+    this.cargarProducto();
   }
 
   private cargarProducto(): void {
+    this.error.set(false);
     this.cargando.set(true);
-    this.productoService.obtener(this.productoId).subscribe(({ producto, permisos }) => {
-      this.producto.set(producto);
-      this.puedeEditar.set(permisos.editar);
-      this.puedeEliminar.set(permisos.eliminar);
-      this.puedeRegistrarCompra.set(permisos.compras_crear ?? false);
-      this.cargando.set(false);
+    this.productoService.obtener(this.productoId).subscribe({
+      next: ({ producto, permisos }) => {
+        this.producto.set(producto);
+        this.puedeEditar.set(permisos.editar);
+        this.puedeEliminar.set(permisos.eliminar);
+        this.puedeRegistrarCompra.set(permisos.compras_crear ?? false);
+        this.cargando.set(false);
 
-      const variantes = producto.variantes ?? [];
-      if (variantes.length > 0 && this.varianteSeleccionadaId() === null) {
-        this.seleccionarVariante(variantes[0].id);
-      }
+        const variantes = producto.variantes ?? [];
+        if (variantes.length > 0 && this.varianteSeleccionadaId() === null) {
+          this.seleccionarVariante(variantes[0].id);
+        }
+      },
+      error: () => {
+        this.cargando.set(false);
+        this.error.set(true);
+      },
     });
   }
 
@@ -166,6 +233,7 @@ export class ProductoDetalleComponent implements OnInit {
   }
 
   onGuardarVariante(payload: VarianteFormPayload): void {
+    this.guardandoVariante.set(true);
     const enEdicion = this.varianteEnEdicion();
     const observable = enEdicion
       ? this.productoService.actualizarVariante(enEdicion.id, payload)
@@ -173,11 +241,15 @@ export class ProductoDetalleComponent implements OnInit {
 
     observable.subscribe({
       next: () => {
+        this.guardandoVariante.set(false);
         this.mostrarFormularioVariante.set(false);
-        this.toast.success(enEdicion ? 'Variante actualizada.' : 'Variante creada.');
+        this.toast.success(
+          enEdicion ? 'Variante actualizada.' : 'Variante creada.',
+        );
         this.cargarProducto();
       },
       error: (error: HttpErrorResponse) => {
+        this.guardandoVariante.set(false);
         if (error.status === 422 && error.error?.errors) {
           this.formularioVariante?.setServerErrors(error.error.errors);
         } else {
@@ -188,19 +260,25 @@ export class ProductoDetalleComponent implements OnInit {
   }
 
   onDesactivarVariante(variante: ProductoVariante): void {
-    this.productoService.desactivarVariante(variante.id).subscribe(() => this.cargarProducto());
+    this.productoService
+      .desactivarVariante(variante.id)
+      .subscribe(() => this.cargarProducto());
   }
 
   seleccionarVariante(varianteId: number): void {
     this.varianteSeleccionadaId.set(varianteId);
     this.cargandoKardex.set(true);
+    this.errorKardex.set(false);
 
     this.productoService.kardex(varianteId).subscribe({
       next: (movimientos) => {
         this.kardex.set(movimientos);
         this.cargandoKardex.set(false);
       },
-      error: () => this.cargandoKardex.set(false),
+      error: () => {
+        this.cargandoKardex.set(false);
+        this.errorKardex.set(true);
+      },
     });
   }
 
@@ -215,7 +293,9 @@ export class ProductoDetalleComponent implements OnInit {
   }
 
   private cargarProveedores(): void {
-    this.compraService.proveedores().subscribe((proveedores) => this.proveedores.set(proveedores));
+    this.compraService
+      .proveedores()
+      .subscribe((proveedores) => this.proveedores.set(proveedores));
   }
 
   onGuardarCompra(valor: CompraFormValue): void {
@@ -227,7 +307,13 @@ export class ProductoDetalleComponent implements OnInit {
     const payload: CompraFormPayload = {
       proveedor_id: valor.proveedor_id,
       numero_comprobante: valor.numero_comprobante,
-      items: [{ variante_id: variante.id, cantidad: valor.cantidad, precio_compra: valor.precio_compra }],
+      items: [
+        {
+          variante_id: variante.id,
+          cantidad: valor.cantidad,
+          precio_compra: valor.precio_compra,
+        },
+      ],
     };
 
     this.registrandoCompra.set(true);
@@ -247,7 +333,9 @@ export class ProductoDetalleComponent implements OnInit {
         this.registrandoCompra.set(false);
 
         if (error.status === 422 && error.error?.errors) {
-          this.formularioCompra?.setServerErrors(this.remapearErroresDeItems(error.error.errors));
+          this.formularioCompra?.setServerErrors(
+            this.remapearErroresDeItems(error.error.errors),
+          );
         } else {
           this.toast.error('No se pudo registrar la compra.');
         }
@@ -256,7 +344,9 @@ export class ProductoDetalleComponent implements OnInit {
   }
 
   /** `items.0.cantidad` (validacion del backend) -> `cantidad` (nombre del campo en el form). */
-  private remapearErroresDeItems(errores: Record<string, string | string[]>): Record<string, string | string[]> {
+  private remapearErroresDeItems(
+    errores: Record<string, string | string[]>,
+  ): Record<string, string | string[]> {
     const remapeado: Record<string, string | string[]> = {};
 
     for (const [clave, mensaje] of Object.entries(errores)) {

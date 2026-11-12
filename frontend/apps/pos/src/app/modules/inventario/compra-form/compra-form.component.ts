@@ -1,5 +1,25 @@
-import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnChanges, Output, ViewChild } from '@angular/core';
-import { Validators } from '@angular/forms';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  EventEmitter,
+  Input,
+  OnChanges,
+  SimpleChanges,
+  Output,
+  ViewChild,
+} from '@angular/core';
+import {
+  FormControl,
+  FormGroup,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
+import {
+  CampoComponent,
+  InputDineroComponent,
+  InputCantidadComponent,
+  aplicarErroresServidor,
+} from '@nianva/ui-forms';
 import { DynamicFormComponent, DynamicFormField } from '@nianva/ui-shared';
 
 import { ProveedorSimple } from '../producto.types';
@@ -23,7 +43,13 @@ export interface CompraFormValue {
 @Component({
   selector: 'nucleo-compra-form',
   standalone: true,
-  imports: [DynamicFormComponent],
+  imports: [
+    DynamicFormComponent,
+    ReactiveFormsModule,
+    CampoComponent,
+    InputDineroComponent,
+    InputCantidadComponent,
+  ],
   templateUrl: './compra-form.component.html',
   styleUrl: './compra-form.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -32,35 +58,55 @@ export class CompraFormComponent implements OnChanges {
   @Input() submitLabel = 'Registrar compra';
   @Input({ required: true }) proveedores!: ProveedorSimple[];
 
+  @Input() enviando = false;
+
   @Output() guardar = new EventEmitter<CompraFormValue>();
 
   @ViewChild(DynamicFormComponent) private formComponent!: DynamicFormComponent;
 
+  protected readonly numericos = new FormGroup({
+    cantidad: new FormControl<number | null>(null, [
+      Validators.required,
+      Validators.min(1),
+    ]),
+    precio_compra: new FormControl<number | null>(null, [
+      Validators.required,
+      Validators.min(0),
+    ]),
+  });
+
   protected fields: DynamicFormField[] = [];
 
-  ngOnChanges(): void {
+  ngOnChanges(cambios?: SimpleChanges): void {
+    if (cambios && this.fields.length > 0 && !cambios['proveedores']) return;
     this.fields = [
       {
         name: 'proveedor_id',
         label: 'Proveedor',
         type: 'select',
         required: true,
-        options: this.proveedores.map((p) => ({ label: p.razon_social, value: p.id })),
+        options: this.proveedores.map((p) => ({
+          label: p.razon_social,
+          value: p.id,
+        })),
       },
-      { name: 'cantidad', label: 'Cantidad', type: 'number', required: true, validators: [Validators.min(1)] },
       {
-        name: 'precio_compra',
-        label: 'Precio de compra (unitario)',
-        type: 'number',
-        required: true,
-        validators: [Validators.min(0)],
+        name: 'numero_comprobante',
+        label: 'N° de comprobante (opcional)',
+        type: 'text',
+        maxLength: 60,
       },
-      { name: 'numero_comprobante', label: 'N° de comprobante (opcional)', type: 'text', maxLength: 60 },
     ];
   }
 
   onSubmit(value: Record<string, unknown>): void {
-    this.guardar.emit(value as unknown as CompraFormValue);
+    const valores = this.numericos.getRawValue();
+    this.guardar.emit({
+      ...value,
+      proveedor_id: value['proveedor_id'] as number,
+      cantidad: valores.cantidad as number,
+      precio_compra: valores.precio_compra as number,
+    });
   }
 
   /**
@@ -71,5 +117,6 @@ export class CompraFormComponent implements OnChanges {
    */
   setServerErrors(errors: Record<string, string | string[]>): void {
     this.formComponent.setServerErrors(errors);
+    aplicarErroresServidor(this.numericos, { error: { errors } });
   }
 }

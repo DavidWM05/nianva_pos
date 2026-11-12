@@ -1,3 +1,4 @@
+import { proveedoresDePantalla } from '../../../testing/proveedores-pantalla';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ConfirmDialogService } from '@nianva/ui-shared';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
@@ -35,7 +36,7 @@ describe('VariantesListComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [VariantesListComponent],
-      providers: [{ provide: ConfirmDialogService, useValue: { confirm: vi.fn() } }],
+      providers: [...proveedoresDePantalla(), { provide: ConfirmDialogService, useValue: { confirm: vi.fn() } }],
     }).compileComponents();
 
     fixture = TestBed.createComponent(VariantesListComponent);
@@ -61,8 +62,13 @@ describe('VariantesListComponent', () => {
   });
 
   it('marca en rojo las filas de stock en o por debajo del minimo', () => {
-    const filaBaja = (fixture.nativeElement as HTMLElement).querySelector('.variantes-list__stock-bajo');
-    expect(filaBaja?.textContent).toContain('Norte');
+    const elemento = fixture.nativeElement as HTMLElement;
+    const aviso = elemento.querySelector('ui-alert.ui-alert--peligro');
+    expect(aviso?.textContent).toContain('Norte');
+    expect(aviso?.textContent).toContain('0 de 3');
+    fixture.componentRef.setInput('variantes', variantes.map(v => ({ ...v, stock: (v.stock ?? []).map(f => ({ ...f, stock_actual: f.stock_minimo + 1 })) })));
+    fixture.detectChanges();
+    expect(elemento.querySelector('ui-alert.ui-alert--peligro')).toBeNull();
   });
 
   it('emite verKardex al presionar el boton Kardex de una variante', () => {
@@ -90,7 +96,7 @@ describe('VariantesListComponent', () => {
     TestBed.resetTestingModule();
     await TestBed.configureTestingModule({
       imports: [VariantesListComponent],
-      providers: [{ provide: ConfirmDialogService, useValue: { confirm: vi.fn() } }],
+      providers: [...proveedoresDePantalla(), { provide: ConfirmDialogService, useValue: { confirm: vi.fn() } }],
     }).compileComponents();
 
     const otroFixture = TestBed.createComponent(VariantesListComponent);

@@ -1,5 +1,29 @@
-import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnChanges, OnInit, Output, ViewChild, inject } from '@angular/core';
-import { Validators } from '@angular/forms';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  EventEmitter,
+  Input,
+  OnChanges,
+  SimpleChanges,
+  OnInit,
+  Output,
+  ViewChild,
+  inject,
+  signal,
+} from '@angular/core';
+import {
+  FormControl,
+  FormGroup,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
+import {
+  CampoComponent,
+  InputDineroComponent,
+  aplicarErroresServidor,
+} from '@nianva/ui-forms';
+import { PageComponent } from '@nianva/ui-layout';
+import { forkJoin } from 'rxjs';
 import { DynamicFormComponent, DynamicFormField } from '@nianva/ui-shared';
 
 import { ProductoFormPayload, ProductoService } from '../producto.service';
@@ -18,7 +42,13 @@ import { CatalogoSimple, Producto } from '../producto.types';
 @Component({
   selector: 'nucleo-producto-form',
   standalone: true,
-  imports: [DynamicFormComponent],
+  imports: [
+    DynamicFormComponent,
+    PageComponent,
+    ReactiveFormsModule,
+    CampoComponent,
+    InputDineroComponent,
+  ],
   templateUrl: './producto-form.component.html',
   styleUrl: './producto-form.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -31,9 +61,20 @@ export class ProductoFormComponent implements OnInit, OnChanges {
   /** Modo visualizar (ver el reporte del punto 1): mismo formulario, deshabilitado, sin boton de guardar. */
   @Input() readonly = false;
 
+  @Input() enviando = false;
+
   @Output() guardar = new EventEmitter<ProductoFormPayload>();
 
   @ViewChild(DynamicFormComponent) private formComponent!: DynamicFormComponent;
+
+  protected readonly numericos = new FormGroup({
+    precio_compra: new FormControl<number | null>(null, [Validators.min(0)]),
+    precio_venta: new FormControl<number | null>(null, [Validators.min(0)]),
+  });
+
+  protected readonly estadoCatalogos = signal<'cargando' | 'listo' | 'error'>(
+    'cargando',
+  );
 
   protected fields: DynamicFormField[] = [];
 
@@ -41,17 +82,39 @@ export class ProductoFormComponent implements OnInit, OnChanges {
   private departamentos: CatalogoSimple[] = [];
 
   ngOnInit(): void {
-    this.productoService.categorias().subscribe((categorias) => {
-      this.categorias = categorias;
-      this.construirCampos();
-    });
-    this.productoService.departamentos().subscribe((departamentos) => {
-      this.departamentos = departamentos;
-      this.construirCampos();
+    this.cargarCatalogos();
+  }
+
+  protected cargarCatalogos(): void {
+    this.estadoCatalogos.set('cargando');
+    forkJoin({
+      categorias: this.productoService.categorias(),
+      departamentos: this.productoService.departamentos(),
+    }).subscribe({
+      next: ({ categorias, departamentos }) => {
+        this.categorias = categorias;
+        this.departamentos = departamentos;
+        this.construirCampos();
+        this.estadoCatalogos.set('listo');
+      },
+      error: () => this.estadoCatalogos.set('error'),
     });
   }
 
-  ngOnChanges(): void {
+  ngOnChanges(cambios?: SimpleChanges): void {
+    if (!cambios || cambios['readonly']) {
+      if (this.readonly) this.numericos.disable({ emitEvent: false });
+      else this.numericos.enable({ emitEvent: false });
+    }
+    if (cambios && this.fields.length > 0 && !cambios['valorInicial']) return;
+    this.numericos.reset({
+      precio_compra: this.valorInicial
+        ? Number(this.valorInicial.precio_compra)
+        : null,
+      precio_venta: this.valorInicial
+        ? Number(this.valorInicial.precio_venta)
+        : null,
+    });
     this.construirCampos();
   }
 
@@ -76,22 +139,11 @@ export class ProductoFormComponent implements OnInit, OnChanges {
         name: 'departamento_id',
         label: 'Departamento',
         type: 'select',
-        options: this.departamentos.map((d) => ({ label: d.nombre, value: d.id })),
+        options: this.departamentos.map((d) => ({
+          label: d.nombre,
+          value: d.id,
+        })),
         defaultValue: this.valorInicial?.departamento?.id ?? null,
-      },
-      {
-        name: 'precio_compra',
-        label: 'Precio de compra',
-        type: 'number',
-        validators: [Validators.min(0)],
-        defaultValue: this.valorInicial?.precio_compra ?? null,
-      },
-      {
-        name: 'precio_venta',
-        label: 'Precio de venta',
-        type: 'number',
-        validators: [Validators.min(0)],
-        defaultValue: this.valorInicial?.precio_venta ?? null,
       },
       {
         name: 'no_resurtible',
@@ -115,10 +167,15 @@ export class ProductoFormComponent implements OnInit, OnChanges {
   }
 
   onSubmit(value: Record<string, unknown>): void {
-    this.guardar.emit(value as unknown as ProductoFormPayload);
+    this.guardar.emit({
+      ...value,
+      nombre: value['nombre'] as string,
+      ...this.numericos.getRawValue(),
+    });
   }
 
   setServerErrors(errors: Record<string, string | string[]>): void {
     this.formComponent.setServerErrors(errors);
+    aplicarErroresServidor(this.numericos, { error: { errors } });
   }
 }

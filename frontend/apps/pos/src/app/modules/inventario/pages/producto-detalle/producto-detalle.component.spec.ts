@@ -1,8 +1,8 @@
+import { proveedoresDePantalla } from '../../../../testing/proveedores-pantalla';
 import { ComponentFixture, DeferBlockBehavior, DeferBlockState, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { ActivatedRoute, convertToParamMap } from '@angular/router';
 import { AuditLogSource, DynamicFormComponent, ToastService } from '@nianva/ui-shared';
-import { ConfirmationService } from 'primeng/api';
 import { of, throwError } from 'rxjs';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -98,7 +98,7 @@ describe('ProductoDetalleComponent', () => {
       imports: [ProductoDetalleComponent],
       deferBlockBehavior: DeferBlockBehavior.Manual,
       providers: [
-        ConfirmationService,
+        ...proveedoresDePantalla(),
         { provide: ProductoService, useValue: productoService },
         { provide: CompraService, useValue: compraService },
         { provide: ToastService, useValue: toastService },
@@ -193,7 +193,7 @@ describe('ProductoDetalleComponent', () => {
       imports: [ProductoDetalleComponent],
       deferBlockBehavior: DeferBlockBehavior.Manual,
       providers: [
-        ConfirmationService,
+        ...proveedoresDePantalla(),
         { provide: ProductoService, useValue: soloLecturaProductoService },
         { provide: CompraService, useValue: compraService },
         { provide: ToastService, useValue: toastService },
@@ -220,7 +220,7 @@ describe('ProductoDetalleComponent', () => {
       imports: [ProductoDetalleComponent],
       deferBlockBehavior: DeferBlockBehavior.Manual,
       providers: [
-        ConfirmationService,
+        ...proveedoresDePantalla(),
         { provide: ProductoService, useValue: productoService },
         { provide: CompraService, useValue: compraService },
         { provide: ToastService, useValue: toastService },

@@ -1,8 +1,8 @@
+import { proveedoresDePantalla } from '../../../../testing/proveedores-pantalla';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter, Router } from '@angular/router';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { ConfirmDialogService, ToastService } from '@nianva/ui-shared';
-import { providePrimeNG } from 'primeng/config';
 import { of } from 'rxjs';
 import { describe, expect, it, vi } from 'vitest';
 
@@ -61,7 +61,7 @@ describe('ProductosListComponent', () => {
       providers: [
         provideRouter([]),
         provideAnimationsAsync(),
-        providePrimeNG(),
+        ...proveedoresDePantalla(),
         { provide: ProductoService, useValue: productoService },
         { provide: ConfirmDialogService, useValue: { confirm: vi.fn() } },
         { provide: ToastService, useValue: { success: vi.fn(), error: vi.fn() } },
@@ -88,8 +88,15 @@ describe('ProductosListComponent', () => {
   it('"Nuevo producto" navega a la vista dedicada, no abre un modal', async () => {
     await crearComponente({ crear: true, editar: true, eliminar: true });
 
-    const enlace = (fixture.nativeElement as HTMLElement).querySelector('a[href="/inventario/productos/nuevo"]');
-    expect(enlace).not.toBeNull();
+    const router = TestBed.inject(Router);
+    router.resetConfig([{ path: 'inventario/productos/nuevo', children: [] }, { path: '**', children: [] }]);
+    const elemento: HTMLElement = fixture.nativeElement;
+    const boton = elemento.querySelector<HTMLButtonElement>('ui-btn-crear button');
+    expect(boton).not.toBeNull();
+    boton?.click();
+    await fixture.whenStable();
+    expect(router.url).toBe('/inventario/productos/nuevo');
+    expect(elemento.querySelector('ui-modal')).toBeNull();
   });
 
   it('oculta "Nuevo producto" sin el permiso inventario.crear', async () => {

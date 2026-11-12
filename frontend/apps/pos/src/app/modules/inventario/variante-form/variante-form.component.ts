@@ -1,4 +1,13 @@
-import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnChanges, Output, ViewChild } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  EventEmitter,
+  Input,
+  OnChanges,
+  SimpleChanges,
+  Output,
+  ViewChild,
+} from '@angular/core';
 import { DynamicFormComponent, DynamicFormField } from '@nianva/ui-shared';
 
 import { VarianteFormPayload } from '../producto.service';
@@ -31,21 +40,45 @@ export class VarianteFormComponent implements OnChanges {
    */
   @Input() codigoBarrasAutomatico = false;
 
+  @Input() enviando = false;
+
   @Output() guardar = new EventEmitter<VarianteFormPayload>();
 
   @ViewChild(DynamicFormComponent) private formComponent!: DynamicFormComponent;
 
   protected fields: DynamicFormField[] = [];
 
-  ngOnChanges(): void {
+  ngOnChanges(cambios?: SimpleChanges): void {
+    if (
+      cambios &&
+      this.fields.length > 0 &&
+      !cambios['valorInicial'] &&
+      !cambios['codigoBarrasAutomatico']
+    )
+      return;
     this.fields = [
-      { name: 'talla', label: 'Talla', type: 'text', defaultValue: this.valorInicial?.talla ?? '', maxLength: 30 },
-      { name: 'color', label: 'Color', type: 'text', defaultValue: this.valorInicial?.color ?? '', maxLength: 30 },
+      {
+        name: 'talla',
+        label: 'Talla',
+        type: 'text',
+        defaultValue: this.valorInicial?.talla ?? '',
+        maxLength: 30,
+      },
+      {
+        name: 'color',
+        label: 'Color',
+        type: 'text',
+        defaultValue: this.valorInicial?.color ?? '',
+        maxLength: 30,
+      },
       {
         name: 'codigo_barras',
         label: 'Código de barras',
         type: 'text',
-        placeholder: this.codigoBarrasAutomatico && !this.valorInicial?.codigo_barras ? 'Se genera al guardar' : undefined,
+        placeholder:
+          this.codigoBarrasAutomatico && !this.valorInicial?.codigo_barras
+            ? 'Se genera al guardar'
+            : undefined,
         defaultValue: this.valorInicial?.codigo_barras ?? '',
         maxLength: 50,
         readonly: this.codigoBarrasAutomatico,
@@ -54,7 +87,11 @@ export class VarianteFormComponent implements OnChanges {
   }
 
   onSubmit(value: Record<string, unknown>): void {
-    this.guardar.emit(value as unknown as VarianteFormPayload);
+    this.guardar.emit({
+      talla: value['talla'] as string | null,
+      color: value['color'] as string | null,
+      codigo_barras: value['codigo_barras'] as string | null,
+    });
   }
 
   setServerErrors(errors: Record<string, string | string[]>): void {
