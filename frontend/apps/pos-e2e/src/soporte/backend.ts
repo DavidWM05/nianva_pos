@@ -21,6 +21,10 @@ const entorno = {
   DB_DATABASE: path.join(backendRoot, 'storage/framework/testing/pos-e2e.sqlite'),
   CACHE_STORE: 'array',
   QUEUE_CONNECTION: 'sync',
+  // El mismo hash que el backend del e2e (playwright.config.ts): un usuario creado aquí con
+  // otro driver no podría entrar.
+  HASH_DRIVER: 'bcrypt',
+  BCRYPT_ROUNDS: '4',
 };
 
 /** Ejecuta `codigo` con Laravel ya arrancado y devuelve lo que imprime. */

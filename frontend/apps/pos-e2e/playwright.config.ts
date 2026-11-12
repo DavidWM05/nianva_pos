@@ -27,6 +27,11 @@ const backendEnv = {
   CORS_ALLOWED_ORIGINS: frontendUrl,
   CACHE_STORE: 'array',
   QUEUE_CONNECTION: 'sync',
+  // Hash rápido, como backend/phpunit.xml: con el Argon2id de .env, cada login tardaba lo
+  // bastante para vencer esperas de 5 s en una máquina cargada (timeouts intermitentes de
+  // la serie 50). Solo afecta a la SQLite del e2e; producción sigue con Argon2id.
+  HASH_DRIVER: 'bcrypt',
+  BCRYPT_ROUNDS: '4',
 };
 
 export default defineConfig({
