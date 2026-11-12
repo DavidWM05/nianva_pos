@@ -11,7 +11,7 @@ import { conUmbral } from '@nianva/ui-feedback';
       matButton="filled"
       type="submit"
       class="ui-btn-enviar"
-      [disabled]="enviando()"
+      [disabled]="enviando() || deshabilitado()"
       [attr.aria-busy]="enviando()"
       (click)="alClick($event)"
     >
@@ -27,6 +27,9 @@ import { conUmbral } from '@nianva/ui-feedback';
 export class BtnEnviarComponent {
   readonly etiqueta = input('Guardar');
   readonly enviando = input(false);
+  // Deshabilitado por una condicion del formulario (por ejemplo, un abono sin monto), sin estar
+  // enviando: no muestra indicador ni aria-busy.
+  readonly deshabilitado = input(false);
   protected readonly mostrarIndicador = conUmbral(this.enviando);
 
   protected alClick(evento: MouseEvent): void {

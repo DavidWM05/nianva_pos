@@ -1,5 +1,6 @@
 import { Component, signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
+import { FormsModule } from '@angular/forms';
 import { UMBRAL_INDICADOR_MS } from '@nianva/ui-feedback';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -16,6 +17,21 @@ import { BtnEnviarComponent } from './btn-enviar.component';
 })
 class HostEnviarComponent {
   readonly enviando = signal(true);
+  readonly enviado = signal(false);
+}
+
+// Con FormsModule, para que ngSubmit se emita de verdad y el caso del clic mida el envio.
+@Component({
+  standalone: true,
+  imports: [BtnEnviarComponent, FormsModule],
+  template: `
+    <form (ngSubmit)="enviado.set(true)">
+      <ui-btn-enviar [deshabilitado]="deshabilitado()" etiqueta="Confirmar abono" />
+    </form>
+  `,
+})
+class HostDeshabilitadoComponent {
+  readonly deshabilitado = signal(true);
   readonly enviado = signal(false);
 }
 
@@ -76,5 +92,38 @@ describe('BtnEnviarComponent', () => {
     fixture.detectChanges();
 
     expect(fixture.componentInstance.enviado()).toBe(false);
+  });
+
+  // Una condicion del formulario (por ejemplo, un abono sin monto) deshabilita el boton sin
+  // que este enviando: sin indicador ni aria-busy, y el clic no envia.
+  it('con deshabilitado queda deshabilitado sin indicador ni aria-busy, y el clic no envia', () => {
+    const fixture = TestBed.createComponent(HostDeshabilitadoComponent);
+    fixture.detectChanges();
+    const boton = fixture.nativeElement.querySelector('button') as HTMLButtonElement;
+
+    expect(boton.disabled).toBe(true);
+    expect(boton.getAttribute('aria-busy')).not.toBe('true');
+
+    vi.advanceTimersByTime(UMBRAL_INDICADOR_MS);
+    fixture.detectChanges();
+    expect(fixture.nativeElement.querySelector('.ui-btn-enviar__indicador')).toBeNull();
+
+    boton.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true }));
+    fixture.detectChanges();
+    expect(fixture.componentInstance.enviado()).toBe(false);
+  });
+
+  it('al quitar deshabilitado se habilita y el clic envia', () => {
+    const fixture = TestBed.createComponent(HostDeshabilitadoComponent);
+    fixture.detectChanges();
+
+    fixture.componentInstance.deshabilitado.set(false);
+    fixture.detectChanges();
+    const boton = fixture.nativeElement.querySelector('button') as HTMLButtonElement;
+
+    expect(boton.disabled).toBe(false);
+    boton.click();
+    fixture.detectChanges();
+    expect(fixture.componentInstance.enviado()).toBe(true);
   });
 });
