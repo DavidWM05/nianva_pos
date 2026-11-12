@@ -1,9 +1,10 @@
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpContext, HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { DataTableLazyEvent } from '@nianva/ui-shared';
 import { Observable, map } from 'rxjs';
 
 import { urlApi } from '../../core/api-config';
+import { CODIGOS_EN_PANTALLA } from '../../core/errores.interceptor';
 import { GenerarNominaPayload, Nomina } from './nomina.types';
 
 export interface NominasPermisos {
@@ -19,6 +20,8 @@ export interface NominasPagina {
 @Injectable({ providedIn: 'root' })
 export class NominaService {
   private readonly http = inject(HttpClient);
+  // La pantalla muestra su propio mensaje para `sucursal_requerida` (ARQ-12); el resto, el interceptor.
+  private readonly sucursalEnPantalla = new HttpContext().set(CODIGOS_EN_PANTALLA, ['sucursal_requerida']);
 
   listar(evento: DataTableLazyEvent): Observable<NominasPagina> {
     const rows = evento.rows || 25;
@@ -40,7 +43,7 @@ export class NominaService {
   }
 
   generar(payload: GenerarNominaPayload): Observable<Nomina> {
-    return this.http.post<{ data: Nomina }>(urlApi(`/nominas/generar`), payload).pipe(map((r) => r.data));
+    return this.http.post<{ data: Nomina }>(urlApi(`/nominas/generar`), payload, { context: this.sucursalEnPantalla }).pipe(map((r) => r.data));
   }
 
   pagar(id: number): Observable<Nomina> {

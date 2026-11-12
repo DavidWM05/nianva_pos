@@ -1,9 +1,10 @@
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpContext, HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { DataTableLazyEvent } from '@nianva/ui-shared';
 import { Observable, map } from 'rxjs';
 
 import { urlApi } from '../../core/api-config';
+import { CODIGOS_EN_PANTALLA } from '../../core/errores.interceptor';
 import { EstadoPedido, Pedido, PedidoCrearPayload } from './pedido.types';
 
 export interface PedidosPermisos {
@@ -19,6 +20,8 @@ export interface PedidosPagina {
 @Injectable({ providedIn: 'root' })
 export class PedidoService {
   private readonly http = inject(HttpClient);
+  // La pantalla muestra su propio mensaje para `sucursal_requerida` (ARQ-12); el resto, el interceptor.
+  private readonly sucursalEnPantalla = new HttpContext().set(CODIGOS_EN_PANTALLA, ['sucursal_requerida']);
 
   listar(
     evento: DataTableLazyEvent,
@@ -55,7 +58,7 @@ export class PedidoService {
   }
 
   crear(payload: PedidoCrearPayload): Observable<Pedido> {
-    return this.http.post<{ data: Pedido }>(urlApi(`/pedidos`), payload).pipe(map((r) => r.data));
+    return this.http.post<{ data: Pedido }>(urlApi(`/pedidos`), payload, { context: this.sucursalEnPantalla }).pipe(map((r) => r.data));
   }
 
   cambiarEstado(id: number, estado: EstadoPedido): Observable<Pedido> {
