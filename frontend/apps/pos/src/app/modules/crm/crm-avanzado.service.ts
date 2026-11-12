@@ -43,8 +43,8 @@ export class CrmAvanzadoService {
 
   loyalty(clienteId: number): Observable<LoyaltyResumen> {
     return this.http
-      .get<{ data: LoyaltyResumen }>(urlApi(`/clientes/${clienteId}/loyalty`))
-      .pipe(map((r) => r.data));
+      .get<RespuestaDe<'/clientes/{cliente}/loyalty', 'get'>>(urlApi(`/clientes/${clienteId}/loyalty`))
+      .pipe(map((r) => r.data as LoyaltyResumen));
   }
 
   ajustarPuntos(

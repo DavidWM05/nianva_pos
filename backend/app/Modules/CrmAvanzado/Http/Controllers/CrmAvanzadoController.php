@@ -64,11 +64,13 @@ class CrmAvanzadoController extends Controller
             ->limit(50)
             ->get();
 
+        // Casts explícitos: sin ellos, el OpenAPI generado declaraba estos tres campos como
+        // string, aunque son enteros (columnas integer).
         return response()->json([
             'data' => [
-                'cliente' => ['id' => $cliente->id, 'nombre' => $cliente->nombre],
-                'puntos_loyalty' => $cliente->puntos_loyalty,
-                'puntos_acumulados' => $cliente->puntos_acumulados,
+                'cliente' => ['id' => (int) $cliente->id, 'nombre' => $cliente->nombre],
+                'puntos_loyalty' => (int) $cliente->puntos_loyalty,
+                'puntos_acumulados' => (int) $cliente->puntos_acumulados,
                 'historial' => $historial,
             ],
         ]);

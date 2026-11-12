@@ -4,8 +4,6 @@
     "apps/pos/src/app/modules/administracion/rol.service.ts",
     "apps/pos/src/app/modules/administracion/sucursal.service.ts",
     "apps/pos/src/app/modules/administracion/usuario-admin.service.ts",
-    "apps/pos/src/app/modules/cotizaciones/cotizacion.service.ts",
-    "apps/pos/src/app/modules/crm/crm-avanzado.service.ts",
     "apps/pos/src/app/modules/configuracion/configuracion.service.ts",
     "apps/pos/src/app/modules/delivery/pedido.service.ts",
     "apps/pos/src/app/modules/inventario/categoria.service.ts",

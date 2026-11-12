@@ -759,18 +759,6 @@ parameters:
 			path: app/Modules/Cotizaciones/Http/Controllers/CotizacionController.php
 
 		-
-			message: '#^Method App\\Modules\\Cotizaciones\\Http\\Controllers\\CotizacionController\:\:permisosDe\(\) has parameter \$acciones with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Modules/Cotizaciones/Http/Controllers/CotizacionController.php
-
-		-
-			message: '#^Method App\\Modules\\Cotizaciones\\Http\\Controllers\\CotizacionController\:\:permisosDe\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Modules/Cotizaciones/Http/Controllers/CotizacionController.php
-
-		-
 			message: '#^Method App\\Modules\\Cotizaciones\\Http\\Controllers\\CotizacionController\:\:show\(\) has no return type specified\.$#'
 			identifier: missingType.return
 			count: 1

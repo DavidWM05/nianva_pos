@@ -20,6 +20,17 @@ export interface CotizacionesPagina {
   permisos: CotizacionesPermisos;
 }
 
+// El contrato declara meta.permisos como un booleano por acción; una acción que no llega
+// cuenta como no permitida.
+function permisosDesde(permisos: Record<string, boolean>): CotizacionesPermisos {
+  return {
+    crear: permisos['crear'] === true,
+    editar: permisos['editar'] === true,
+    eliminar: permisos['eliminar'] === true,
+    precio_manual: permisos['precio_manual'] === true,
+  };
+}
+
 @Injectable({ providedIn: 'root' })
 export class CotizacionService {
   private readonly http = inject(HttpClient);
@@ -44,18 +55,18 @@ export class CotizacionService {
     }
 
     return this.http
-      .get<{ data: Cotizacion[]; meta: { total: number; permisos: CotizacionesPermisos } }>(urlApi(`/cotizaciones`), {
+      .get<RespuestaDe<'/cotizaciones', 'get'>>(urlApi(`/cotizaciones`), {
         params,
       })
-      .pipe(map((r) => ({ data: r.data, total: r.meta.total, permisos: r.meta.permisos })));
+      .pipe(map((r) => ({ data: r.data as Cotizacion[], total: r.meta.total, permisos: permisosDesde(r.meta.permisos) })));
   }
 
   permisos(): Observable<CotizacionesPermisos> {
     return this.http
-      .get<{ meta: { permisos: CotizacionesPermisos } }>(urlApi('/cotizaciones'), {
+      .get<RespuestaDe<'/cotizaciones', 'get'>>(urlApi('/cotizaciones'), {
         params: new HttpParams().set('rows', 1),
       })
-      .pipe(map((r) => r.meta.permisos));
+      .pipe(map((r) => permisosDesde(r.meta.permisos)));
   }
   obtener(id: number): Observable<Cotizacion> {
     return this.http.get<RespuestaDe<'/cotizaciones/{cotizacion}', 'get'>>(urlApi(`/cotizaciones/${id}`)).pipe(map((r) => r.data as Cotizacion));
