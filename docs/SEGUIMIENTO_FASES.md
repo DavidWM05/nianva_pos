@@ -56,7 +56,7 @@ línea base de PHPStan; se paga al tocar cada módulo.
 | SEG-03 | Permisos conectados | Hecho | `Arquitectura/RutasConPermisoTest`, `Permisos/MatrizPermisosTest` (incluye rutas con binding) | C2, 27 |
 | SEG-07 | Secretos | Hecho | Pasos de CI de gitleaks y de llaves privadas | 28 |
 | SEG-08 | Archivos fuera del docroot: sin `/storage` público | Hecho | `Seguridad/StorageFueraDelDocrootTest` (404, `filesystems.links` vacío, sin disco `public` ni `Storage::url` en `app/`) | 29 |
-| SEG-10 | Auditoría | Hecho | `Auditoria/OperacionesSensiblesTest` (éxito deja fila, fallo no; permisos y roles por pivote); `Nucleo/ResetearDosFactorCommandTest`; inventario por Kardex | 31, 32 |
+| SEG-10 | Auditoría | Hecho | `Auditoria/OperacionesSensiblesTest` (éxito deja fila, fallo no; permisos y roles por pivote); `Nucleo/ResetearDosFactorCommandTest`; inventario por Kardex. `MetodoPago` entra en `config/auditoria.php` (`Auditoria/MetodoPagoAuditoriaTest`: crear, editar y desactivar dejan fila; su pestaña de auditoría salía vacía) | 31, 32, 50c |
 | SEG-11 | Errores sin detalles internos | Hecho | `Arquitectura/ErroresSinDetallesInternosTest` (500 con `APP_DEBUG=false`, `RuntimeException` y `QueryException`; `correlation_id` en la respuesta, en la cabecera y en el log) | 29 |
 | PRO-01 | Tests existentes no se reescriben | Hecho | Paso de CI "Verificar que no bajen los metodos de test"; CODEOWNERS | 23 |
 | PRO-02 | Suite siempre en verde | Hecho | Jobs Backend y Frontend; paso "Buscar skip u only sin issue enlazada" | C9 |
