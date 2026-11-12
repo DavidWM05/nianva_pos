@@ -1,8 +1,40 @@
 <div class="auth-page">
   <div class="auth-card">
     <h1>Verificación en dos pasos</h1>
-    <p class="auth-card__subtitle">Ingresa el código de 6 dígitos de tu app de autenticación.</p>
+    @if (modo() === 'totp') {
+      <p class="auth-card__subtitle">Ingresa el código de 6 dígitos de tu app de autenticación.</p>
 
-    <nucleo-two-factor-code-input [enviando]="enviando()" [error]="error()" (codeSubmit)="onCodeSubmit($event)" />
+      <nucleo-two-factor-code-input [enviando]="enviando()" [error]="error()" (codeSubmit)="onCodeSubmit($event)" />
+
+      <button matButton type="button" class="auth-card__link" (click)="cambiarModo('recuperacion')">
+        ¿No tienes acceso a tu app? Usar un código de recuperación
+      </button>
+    } @else {
+      <p class="auth-card__subtitle">Ingresa uno de los códigos de recuperación que guardaste al activar la verificación en dos pasos.</p>
+
+      <form (submit)="onRecuperacionSubmit($event)" novalidate>
+        <ui-campo #campo etiqueta="Código de recuperación" ayuda="Cada código sirve una sola vez">
+          <mat-form-field appearance="outline" subscriptSizing="dynamic">
+            <input
+              matInput
+              type="text"
+              [id]="campo.controlId() ?? 'two-factor-recuperacion'"
+              [formControl]="recuperacion"
+              autocomplete="off"
+              autocapitalize="characters"
+              spellcheck="false"
+              [aria-describedby]="campo.invalido() ? (campo.errorId() ?? '') : ''"
+            />
+          </mat-form-field>
+        </ui-campo>
+        <ui-form-actions>
+          <ui-btn-enviar etiqueta="Verificar" [enviando]="enviando()" />
+        </ui-form-actions>
+      </form>
+
+      <button matButton type="button" class="auth-card__link" (click)="cambiarModo('totp')">
+        Usar el código de 6 dígitos de mi app
+      </button>
+    }
   </div>
 </div>
