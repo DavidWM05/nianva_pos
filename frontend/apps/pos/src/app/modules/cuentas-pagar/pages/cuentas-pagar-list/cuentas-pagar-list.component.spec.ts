@@ -1,7 +1,7 @@
+import { proveedoresDePantalla } from '../../../../testing/proveedores-pantalla';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { Router, provideRouter } from '@angular/router';
-import { providePrimeNG } from 'primeng/config';
 import { of } from 'rxjs';
 import { describe, expect, it, vi } from 'vitest';
 
@@ -37,7 +37,7 @@ describe('CuentasPagarListComponent', () => {
       imports: [CuentasPagarListComponent],
       providers: [
         provideAnimationsAsync(),
-        providePrimeNG(),
+        ...proveedoresDePantalla(),
         provideRouter([]),
         { provide: CuentaPagarService, useValue: cuentaPagarService },
       ],

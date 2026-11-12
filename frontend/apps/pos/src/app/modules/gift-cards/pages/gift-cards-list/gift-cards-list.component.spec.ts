@@ -1,7 +1,7 @@
+import { proveedoresDePantalla } from '../../../../testing/proveedores-pantalla';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { Router, provideRouter } from '@angular/router';
-import { providePrimeNG } from 'primeng/config';
 import { of } from 'rxjs';
 import { describe, expect, it, vi } from 'vitest';
 
@@ -38,7 +38,7 @@ describe('GiftCardsListComponent', () => {
       imports: [GiftCardsListComponent],
       providers: [
         provideAnimationsAsync(),
-        providePrimeNG(),
+        ...proveedoresDePantalla(),
         provideRouter([]),
         { provide: GiftCardService, useValue: giftCardService },
         { provide: BUSCADOR_CLIENTE, useValue: { buscar: vi.fn().mockReturnValue(of([])), obtener: vi.fn() } },

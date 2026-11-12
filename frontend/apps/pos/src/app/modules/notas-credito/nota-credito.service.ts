@@ -1,3 +1,4 @@
+import { RespuestaDe } from '@nianva/api-contrato';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { DataTableLazyEvent } from '@nianva/ui-shared';
@@ -23,31 +24,46 @@ export interface NotasCreditoPagina {
 export class NotaCreditoService {
   private readonly http = inject(HttpClient);
 
-  listar(evento: DataTableLazyEvent, filtros: { clienteId?: number | null } = {}): Observable<NotasCreditoPagina> {
+  listar(
+    evento: DataTableLazyEvent,
+    filtros: { clienteId?: number | null } = {},
+  ): Observable<NotasCreditoPagina> {
     const rows = evento.rows || 25;
     const page = Math.floor(evento.first / rows) + 1;
 
     let params = new HttpParams().set('page', page).set('rows', rows);
 
     if (evento.sortField) {
-      params = params.set('sort_field', evento.sortField).set('sort_order', evento.sortOrder === -1 ? 'desc' : 'asc');
+      params = params
+        .set('sort_field', evento.sortField)
+        .set('sort_order', evento.sortOrder === -1 ? 'desc' : 'asc');
     }
     if (filtros.clienteId) {
       params = params.set('filtro_cliente_id', filtros.clienteId);
     }
 
     return this.http
-      .get<{ data: NotaCredito[]; meta: { total: number } }>(urlApi(`/notas-credito`), { params })
-      .pipe(map((r) => ({ data: r.data, total: r.meta.total })));
+      .get<RespuestaDe<'/notas-credito', 'get'>>(urlApi(`/notas-credito`), {
+        params,
+      })
+      .pipe(
+        map((r) => ({ data: r.data as NotaCredito[], total: r.meta.total })),
+      );
   }
 
   obtener(id: number): Observable<NotaCredito> {
-    return this.http.get<{ data: NotaCredito }>(urlApi(`/notas-credito/${id}`)).pipe(map((r) => r.data));
+    return this.http
+      .get<RespuestaDe<'/notas-credito/{notaCredito}', 'get'>>(
+        urlApi(`/notas-credito/${id}`),
+      )
+      .pipe(map((r) => r.data as NotaCredito));
   }
 
   activasPorCliente(clienteId: number): Observable<NotaCredito[]> {
     return this.http
-      .get<{ data: NotaCredito[] }>(urlApi(`/clientes/${clienteId}/notas-credito`))
-      .pipe(map((r) => r.data));
+      .get<RespuestaDe<'/clientes/{cliente}/notas-credito', 'get'>>(
+        urlApi(`/clientes/${clienteId}/notas-credito`),
+      )
+      .pipe(map((r) => r.data as NotaCredito[]));
   }
 }

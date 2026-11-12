@@ -1,12 +1,48 @@
-import { DatePipe } from '@angular/common';
+import { FormActionsComponent } from '@nianva/ui-layout';
+import {
+  BtnEnviarComponent,
+  CampoComponent,
+  InputDineroComponent,
+} from '@nianva/ui-forms';
+import { ModalComponent } from '@nianva/ui-overlays';
+import {
+  CambioListado,
+  ColumnaListado,
+  MetaListado,
+  TablaComponent,
+} from '@nianva/ui-data';
+import { SkeletonComponent } from '@nianva/ui-feedback';
+import {
+  DineroPipe,
+  FechaPipe,
+  CantidadPipe,
+  PorcentajePipe,
+} from '@nianva/ui-format';
+import {
+  DatosComponent,
+  PageComponent,
+  PageHeaderComponent,
+  SectionComponent,
+} from '@nianva/ui-layout';
 import { HttpErrorResponse } from '@angular/common/http';
-import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  OnInit,
+  computed,
+  inject,
+  signal,
+} from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
-import { AuditLogViewerComponent, RecordTabConfig, RecordTabsComponent, StatusBadgeComponent, ToastService, esErrorNegocio, mensajeError } from '@nianva/ui-shared';
-import { Button } from 'primeng/button';
-import { Dialog } from 'primeng/dialog';
-import { InputText } from 'primeng/inputtext';
+import {
+  AuditLogViewerComponent,
+  RecordTabConfig,
+  RecordTabsComponent,
+  ToastService,
+  esErrorNegocio,
+  mensajeError,
+} from '@nianva/ui-shared';
 
 import { PlanPagoService } from '../../plan-pago.service';
 import { PlanPago, PlanPagoCuota } from '../../plan-pago.types';
@@ -19,7 +55,26 @@ import { PlanPago, PlanPagoCuota } from '../../plan-pago.types';
 @Component({
   selector: 'nucleo-plan-pago-detalle',
   standalone: true,
-  imports: [DatePipe, FormsModule, RecordTabsComponent, AuditLogViewerComponent, StatusBadgeComponent, Button, Dialog, InputText],
+  imports: [
+    BtnEnviarComponent,
+    CampoComponent,
+    InputDineroComponent,
+    ModalComponent,
+    FormActionsComponent,
+    FormsModule,
+    RecordTabsComponent,
+    AuditLogViewerComponent,
+    PageComponent,
+    PageHeaderComponent,
+    SectionComponent,
+    DatosComponent,
+    TablaComponent,
+    SkeletonComponent,
+    DineroPipe,
+    FechaPipe,
+    CantidadPipe,
+    PorcentajePipe,
+  ],
   templateUrl: './plan-pago-detalle.component.html',
   styleUrl: './plan-pago-detalle.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -64,32 +119,94 @@ export class PlanPagoDetalleComponent implements OnInit {
 
     this.pagando.set(true);
 
-    this.planPagoService.pagarCuota(plan.id, { cuota_id: cuota.id, monto }).subscribe({
-      next: () => {
-        this.pagando.set(false);
-        this.cuotaAPagar.set(null);
-        this.toast.success('Cuota pagada.');
-        this.cargar(plan.id);
-      },
-      error: (error: HttpErrorResponse) => {
-        this.pagando.set(false);
-        this.toast.error(mensajeError(error, 'No se pudo registrar el pago de la cuota.'));
-
-        if (esErrorNegocio(error, 'cuota_ya_pagada')) {
+    this.planPagoService
+      .pagarCuota(plan.id, { cuota_id: cuota.id, monto })
+      .subscribe({
+        next: () => {
+          this.pagando.set(false);
+          this.cuotaAPagar.set(null);
+          this.toast.success('Cuota pagada.');
           this.cargar(plan.id);
-        }
-      },
-    });
+        },
+        error: (error: HttpErrorResponse) => {
+          this.pagando.set(false);
+          this.toast.error(
+            mensajeError(error, 'No se pudo registrar el pago de la cuota.'),
+          );
+
+          if (esErrorNegocio(error, 'cuota_ya_pagada')) {
+            this.cargar(plan.id);
+          }
+        },
+      });
   }
 
   private cargar(id: number): void {
     this.cargando.set(true);
+    this.error.set(false);
     this.planPagoService.obtener(id).subscribe({
       next: (plan) => {
         this.plan.set(plan);
         this.cargando.set(false);
       },
-      error: () => this.cargando.set(false),
+      error: () => {
+        this.cargando.set(false);
+        this.error.set(true);
+      },
     });
+  }
+
+  protected readonly error = signal(false);
+  protected readonly estado = computed(() =>
+    this.cargando() ? 'cargando' : this.error() ? 'error' : 'listo',
+  );
+  protected readonly paginaHistorial = signal(1);
+  protected readonly filasPorPagina = signal(25);
+  protected readonly historial = computed(() => this.plan()?.cuotas ?? []);
+  protected readonly filasHistorial = computed(() =>
+    this.historial().slice(
+      (this.paginaHistorial() - 1) * this.filasPorPagina(),
+      this.paginaHistorial() * this.filasPorPagina(),
+    ),
+  );
+  protected readonly metaHistorial = computed<MetaListado>(() => ({
+    total: this.historial().length,
+    page: this.paginaHistorial(),
+    rows: this.filasPorPagina(),
+    filtros_aplicados: {},
+    permisos: {},
+  }));
+  protected readonly columnasHistorial: ColumnaListado<
+    NonNullable<PlanPago['cuotas']>[number]
+  >[] = [
+    { tipo: 'cantidad', campo: 'numero_cuota', encabezado: '#' },
+    { tipo: 'dinero', campo: 'monto', encabezado: 'Monto' },
+    { tipo: 'dinero', campo: 'monto_capital', encabezado: 'Capital' },
+    { tipo: 'dinero', campo: 'monto_interes', encabezado: 'Interés' },
+    { tipo: 'fecha', campo: 'fecha_vencimiento', encabezado: 'Vence' },
+    { tipo: 'estado', campo: 'estado', encabezado: 'Estado', entidad: 'cuota' },
+    {
+      tipo: 'acciones',
+      acciones: (fila) =>
+        fila.estado !== 'pagada'
+          ? [
+              {
+                tipo: 'custom',
+                id: 'pagar',
+                descripcion: 'Pagar',
+                icono: 'pi pi-dollar',
+              },
+            ]
+          : [],
+    },
+  ];
+
+  reintentar(): void {
+    this.cargar(Number(this.route.snapshot.paramMap.get('id')));
+  }
+
+  cambiarPaginaHistorial(evento: CambioListado): void {
+    this.paginaHistorial.set(evento.page);
+    this.filasPorPagina.set(evento.rows);
   }
 }

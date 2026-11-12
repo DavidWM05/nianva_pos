@@ -6,16 +6,12 @@
     "apps/pos/src/app/modules/administracion/usuario-admin.service.ts",
     "apps/pos/src/app/modules/cotizaciones/cotizacion.service.ts",
     "apps/pos/src/app/modules/crm/crm-avanzado.service.ts",
-    "apps/pos/src/app/modules/cuentas-cobrar/cuenta-cobrar.service.ts",
-    "apps/pos/src/app/modules/cuentas-pagar/cuenta-pagar.service.ts",
     "apps/pos/src/app/modules/configuracion/configuracion.service.ts",
     "apps/pos/src/app/modules/delivery/pedido.service.ts",
-    "apps/pos/src/app/modules/gift-cards/gift-card.service.ts",
     "apps/pos/src/app/modules/inventario/categoria.service.ts",
     "apps/pos/src/app/modules/inventario/compra.service.ts",
     "apps/pos/src/app/modules/inventario/departamento.service.ts",
     "apps/pos/src/app/modules/inventario/producto.service.ts",
-    "apps/pos/src/app/modules/notas-credito/nota-credito.service.ts",
     "apps/pos/src/app/modules/payroll/empleado.service.ts",
     "apps/pos/src/app/modules/payroll/nomina.service.ts",
     "apps/pos/src/app/modules/prestamos/prestamo.service.ts",
@@ -27,6 +23,5 @@
     "apps/pos/src/app/modules/tpv/cupon-validacion.service.ts",
     "apps/pos/src/app/modules/tpv/metodo-pago.service.ts",
     "apps/pos/src/app/modules/tpv/venta.service.ts",
-    "apps/pos/src/app/modules/ventas-plazos/plan-pago.service.ts",
     "apps/pos/src/app/perfil/seguridad.service.ts"
 ]

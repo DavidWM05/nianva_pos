@@ -1,11 +1,31 @@
+import { MatButton } from '@angular/material/button';
+import {
+  BtnEnviarComponent,
+  CampoComponent,
+  SelectFiltroComponent,
+} from '@nianva/ui-forms';
+import {
+  FormActionsComponent,
+  PageComponent,
+  PageHeaderComponent,
+  SectionComponent,
+} from '@nianva/ui-layout';
 import { HttpErrorResponse } from '@angular/common/http';
-import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  inject,
+  signal,
+} from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
-import { EntidadSelectorComponent, ToastService, esErrorNegocio, leerErrorNegocio, mensajeError } from '@nianva/ui-shared';
-import { Button } from 'primeng/button';
-import { InputText } from 'primeng/inputtext';
-import { Select } from 'primeng/select';
+import {
+  EntidadSelectorComponent,
+  ToastService,
+  esErrorNegocio,
+  leerErrorNegocio,
+  mensajeError,
+} from '@nianva/ui-shared';
 
 import { BUSCADOR_VENTA } from '../../../../core/buscadores-entidad.tokens';
 import { PlanPagoService } from '../../plan-pago.service';
@@ -21,7 +41,19 @@ const PERIODICIDADES: { label: string; value: Periodicidad }[] = [
 @Component({
   selector: 'nucleo-plan-pago-form',
   standalone: true,
-  imports: [FormsModule, RouterLink, EntidadSelectorComponent, Button, InputText, Select],
+  imports: [
+    FormsModule,
+    RouterLink,
+    EntidadSelectorComponent,
+    MatButton,
+    BtnEnviarComponent,
+    CampoComponent,
+    SelectFiltroComponent,
+    FormActionsComponent,
+    PageComponent,
+    PageHeaderComponent,
+    SectionComponent,
+  ],
   templateUrl: './plan-pago-form.component.html',
   styleUrl: './plan-pago-form.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -45,7 +77,9 @@ export class PlanPagoFormComponent {
     const ventaId = this.ventaId();
     const numeroCuotas = this.numeroCuotas();
     if (ventaId === null || !numeroCuotas || numeroCuotas < 2) {
-      this.toast.warn('Selecciona una venta y un número de cuotas válido (mínimo 2).');
+      this.toast.warn(
+        'Selecciona una venta y un número de cuotas válido (mínimo 2).',
+      );
 
       return;
     }
@@ -67,10 +101,13 @@ export class PlanPagoFormComponent {
         },
         error: (error: HttpErrorResponse) => {
           this.guardando.set(false);
-          this.toast.error(mensajeError(error, 'No se pudo crear el plan de pago.'));
+          this.toast.error(
+            mensajeError(error, 'No se pudo crear el plan de pago.'),
+          );
 
           if (esErrorNegocio(error, 'plan_pago_ya_activo')) {
-            const planPagoId = leerErrorNegocio(error)?.contexto['plan_pago_id'];
+            const planPagoId =
+              leerErrorNegocio(error)?.contexto['plan_pago_id'];
 
             if (typeof planPagoId === 'number') {
               this.router.navigate(['/ventas-plazos', planPagoId]);

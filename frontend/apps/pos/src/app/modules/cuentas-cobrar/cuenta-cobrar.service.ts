@@ -1,10 +1,16 @@
+import { RespuestaDe, CuerpoDe } from '@nianva/api-contrato';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { DataTableLazyEvent } from '@nianva/ui-shared';
 import { Observable, map } from 'rxjs';
 
 import { urlApi } from '../../core/api-config';
-import { CuentaCobrar, EstadoCuentaCobrar, RegistrarAbonoPayload, ReporteCuentasCobrar } from './cuenta-cobrar.types';
+import {
+  CuentaCobrar,
+  EstadoCuentaCobrar,
+  RegistrarAbonoPayload,
+  ReporteCuentasCobrar,
+} from './cuenta-cobrar.types';
 
 export interface CuentasCobrarPagina {
   data: CuentaCobrar[];
@@ -28,7 +34,11 @@ export class CuentaCobrarService {
 
   listar(
     evento: DataTableLazyEvent,
-    filtros: { clienteNombre?: string; estado?: EstadoCuentaCobrar | null; vencidas?: boolean } = {},
+    filtros: {
+      clienteNombre?: string;
+      estado?: EstadoCuentaCobrar | null;
+      vencidas?: boolean;
+    } = {},
   ): Observable<CuentasCobrarPagina> {
     const rows = evento.rows || 25;
     const page = Math.floor(evento.first / rows) + 1;
@@ -36,7 +46,9 @@ export class CuentaCobrarService {
     let params = new HttpParams().set('page', page).set('rows', rows);
 
     if (evento.sortField) {
-      params = params.set('sort_field', evento.sortField).set('sort_order', evento.sortOrder === -1 ? 'desc' : 'asc');
+      params = params
+        .set('sort_field', evento.sortField)
+        .set('sort_order', evento.sortOrder === -1 ? 'desc' : 'asc');
     }
     if (filtros.clienteNombre?.trim()) {
       params = params.set('filtro_cliente', filtros.clienteNombre.trim());
@@ -49,25 +61,51 @@ export class CuentaCobrarService {
     }
 
     return this.http
-      .get<{ data: CuentaCobrar[]; meta: { total: number } }>(urlApi(`/cuentas-cobrar`), { params })
-      .pipe(map((r) => ({ data: r.data, total: r.meta.total })));
+      .get<RespuestaDe<'/cuentas-cobrar', 'get'>>(urlApi(`/cuentas-cobrar`), {
+        params,
+      })
+      .pipe(
+        map((r) => ({ data: r.data as CuentaCobrar[], total: r.meta.total })),
+      );
   }
 
   obtener(id: number): Observable<CuentaCobrar> {
-    return this.http.get<{ data: CuentaCobrar }>(urlApi(`/cuentas-cobrar/${id}`)).pipe(map((r) => r.data));
+    return this.http
+      .get<RespuestaDe<'/cuentas-cobrar/{cuentaCobrar}', 'get'>>(
+        urlApi(`/cuentas-cobrar/${id}`),
+      )
+      .pipe(map((r) => r.data as CuentaCobrar));
   }
 
-  registrarAbono(id: number, payload: RegistrarAbonoPayload): Observable<RegistrarAbonoRespuesta> {
+  registrarAbono(
+    id: number,
+    payload: RegistrarAbonoPayload,
+  ): Observable<RegistrarAbonoRespuesta> {
+    const cuerpo: CuerpoDe<'/cuentas-cobrar/{id}/abonos', 'post'> = payload;
+
     return this.http
-      .post<{ data: { cuenta: { saldo_pendiente: string; estado: EstadoCuentaCobrar } } }>(
+      .post<RespuestaDe<'/cuentas-cobrar/{id}/abonos', 'post'>>(
         urlApi(`/cuentas-cobrar/${id}/abonos`),
-        payload,
+        cuerpo,
       )
-      .pipe(map((r) => ({ saldoPendiente: r.data.cuenta.saldo_pendiente, estado: r.data.cuenta.estado })));
+      .pipe(
+        map((r) => {
+          const cuenta = r.data.cuenta as CuentaCobrar;
+          return {
+            saldoPendiente: cuenta.saldo_pendiente,
+            estado: cuenta.estado,
+          };
+        }),
+      );
   }
 
   anular(id: number): Observable<void> {
-    return this.http.post<void>(urlApi(`/cuentas-cobrar/${id}/anular`), {});
+    return this.http
+      .post<RespuestaDe<'/cuentas-cobrar/{id}/anular', 'post'>>(
+        urlApi(`/cuentas-cobrar/${id}/anular`),
+        {},
+      )
+      .pipe(map(() => undefined));
   }
 
   /** limite: top-N clientes por saldo pendiente en `por_cliente` (backend acepta 1-50, default 10). */
@@ -75,7 +113,10 @@ export class CuentaCobrarService {
     const params = new HttpParams().set('limite', limite);
 
     return this.http
-      .get<{ data: ReporteCuentasCobrar }>(urlApi(`/cuentas-cobrar/reporte`), { params })
+      .get<RespuestaDe<'/cuentas-cobrar/reporte', 'get'>>(
+        urlApi(`/cuentas-cobrar/reporte`),
+        { params },
+      )
       .pipe(map((r) => r.data));
   }
 }

@@ -61,7 +61,7 @@
 
             <nucleo-lineas-pago [montoObjetivo]="montoAbono() ?? 0" (cambio)="onPagosAbonoCambio($event)" />
 
-            <ui-form-actions><fieldset class="acciones-envio" [disabled]="montoAbono() === null || montoAbono()! <= 0 || !pagoAbonoCuadra()"><ui-btn-enviar etiqueta="Registrar abono" [enviando]="registrandoAbono()" (click)="registrarAbono()" /></fieldset></ui-form-actions>
+            <ui-form-actions><ui-btn-enviar [deshabilitado]="montoAbono() === null || montoAbono()! <= 0 || !pagoAbonoCuadra()" etiqueta="Registrar abono" [enviando]="registrandoAbono()" (click)="registrarAbono()" /></ui-form-actions>
           }
         </div>
       </ng-template>
@@ -86,7 +86,7 @@
     [ngModel]="motivoCancelacion()"
     (ngModelChange)="motivoCancelacion.set($event)"
   ></textarea></ui-campo>
-  <ui-form-actions acciones><fieldset class="acciones-envio" [disabled]="!motivoCancelacion().trim()"><ui-btn-enviar etiqueta="Confirmar cancelación" [enviando]="cancelando()" (click)="confirmarCancelacion()" /></fieldset></ui-form-actions>
+  <ui-form-actions acciones><ui-btn-enviar [deshabilitado]="!motivoCancelacion().trim()" etiqueta="Confirmar cancelación" [enviando]="cancelando()" (click)="confirmarCancelacion()" /></ui-form-actions>
 </ui-modal>
 
 <ui-modal titulo="Apartado cancelado" [visible]="resultadoCancelacion() !== null" (visibleChange)="cerrarResultadoCancelacion()">

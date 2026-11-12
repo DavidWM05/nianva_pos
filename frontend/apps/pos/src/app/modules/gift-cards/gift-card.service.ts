@@ -1,10 +1,15 @@
+import { RespuestaDe, CuerpoDe } from '@nianva/api-contrato';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { DataTableLazyEvent } from '@nianva/ui-shared';
 import { Observable, map } from 'rxjs';
 
 import { urlApi } from '../../core/api-config';
-import { EstadoGiftCard, GiftCard, GiftCardEmitirPayload } from './gift-card.types';
+import {
+  EstadoGiftCard,
+  GiftCard,
+  GiftCardEmitirPayload,
+} from './gift-card.types';
 
 export interface GiftCardsPagina {
   data: GiftCard[];
@@ -27,7 +32,11 @@ export class GiftCardService {
 
   listar(
     evento: DataTableLazyEvent,
-    filtros: { clienteId?: number | null; estado?: EstadoGiftCard | null; codigo?: string } = {},
+    filtros: {
+      clienteId?: number | null;
+      estado?: EstadoGiftCard | null;
+      codigo?: string;
+    } = {},
   ): Observable<GiftCardsPagina> {
     const rows = evento.rows || 25;
     const page = Math.floor(evento.first / rows) + 1;
@@ -35,7 +44,9 @@ export class GiftCardService {
     let params = new HttpParams().set('page', page).set('rows', rows);
 
     if (evento.sortField) {
-      params = params.set('sort_field', evento.sortField).set('sort_order', evento.sortOrder === -1 ? 'desc' : 'asc');
+      params = params
+        .set('sort_field', evento.sortField)
+        .set('sort_order', evento.sortOrder === -1 ? 'desc' : 'asc');
     }
     if (filtros.clienteId) {
       params = params.set('filtro_cliente_id', filtros.clienteId);
@@ -48,25 +59,43 @@ export class GiftCardService {
     }
 
     return this.http
-      .get<{ data: GiftCard[]; meta: { total: number } }>(urlApi(`/gift-cards`), { params })
-      .pipe(map((r) => ({ data: r.data, total: r.meta.total })));
+      .get<RespuestaDe<'/gift-cards', 'get'>>(urlApi(`/gift-cards`), { params })
+      .pipe(map((r) => ({ data: r.data as GiftCard[], total: r.meta.total })));
   }
 
   obtener(id: number): Observable<GiftCard> {
-    return this.http.get<{ data: GiftCard }>(urlApi(`/gift-cards/${id}`)).pipe(map((r) => r.data));
+    return this.http
+      .get<RespuestaDe<'/gift-cards/{giftCard}', 'get'>>(
+        urlApi(`/gift-cards/${id}`),
+      )
+      .pipe(map((r) => r.data as GiftCard));
   }
 
   emitir(payload: GiftCardEmitirPayload): Observable<GiftCard> {
-    return this.http.post<{ data: GiftCard }>(urlApi(`/gift-cards`), payload).pipe(map((r) => r.data));
+    const cuerpo: CuerpoDe<'/gift-cards', 'post'> = payload;
+
+    return this.http
+      .post<RespuestaDe<'/gift-cards', 'post'>>(urlApi(`/gift-cards`), cuerpo)
+      .pipe(map((r) => r.data as GiftCard));
   }
 
   recargar(id: number, monto: number): Observable<GiftCard> {
+    const cuerpo: CuerpoDe<'/gift-cards/{id}/recargar', 'post'> = { monto };
+
     return this.http
-      .post<{ data: GiftCard }>(urlApi(`/gift-cards/${id}/recargar`), { monto })
-      .pipe(map((r) => r.data));
+      .post<RespuestaDe<'/gift-cards/{id}/recargar', 'post'>>(
+        urlApi(`/gift-cards/${id}/recargar`),
+        cuerpo,
+      )
+      .pipe(map((r) => r.data as GiftCard));
   }
 
   cancelar(id: number): Observable<void> {
-    return this.http.post<void>(urlApi(`/gift-cards/${id}/cancelar`), {});
+    return this.http
+      .post<RespuestaDe<'/gift-cards/{id}/cancelar', 'post'>>(
+        urlApi(`/gift-cards/${id}/cancelar`),
+        {},
+      )
+      .pipe(map(() => undefined));
   }
 }

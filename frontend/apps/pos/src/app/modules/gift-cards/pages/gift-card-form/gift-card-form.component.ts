@@ -1,11 +1,27 @@
-import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import { MatButton } from '@angular/material/button';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { provideNativeDateAdapter } from '@angular/material/core';
+import {
+  BtnEnviarComponent,
+  CampoComponent,
+  InputDineroComponent,
+} from '@nianva/ui-forms';
+import {
+  FormActionsComponent,
+  PageComponent,
+  PageHeaderComponent,
+  SectionComponent,
+} from '@nianva/ui-layout';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  inject,
+  signal,
+} from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { EntidadSelectorComponent, ToastService } from '@nianva/ui-shared';
-import { Button } from 'primeng/button';
-import { DatePicker } from 'primeng/datepicker';
-import { InputText } from 'primeng/inputtext';
 
 import { BUSCADOR_CLIENTE } from '../../../../core/buscadores-entidad.tokens';
 import { GiftCardService } from '../../gift-card.service';
@@ -17,7 +33,21 @@ import { GiftCardService } from '../../gift-card.service';
 @Component({
   selector: 'nucleo-gift-card-form',
   standalone: true,
-  imports: [FormsModule, RouterLink, EntidadSelectorComponent, Button, DatePicker, InputText],
+  imports: [
+    FormsModule,
+    RouterLink,
+    EntidadSelectorComponent,
+    MatButton,
+    MatDatepickerModule,
+    BtnEnviarComponent,
+    CampoComponent,
+    InputDineroComponent,
+    FormActionsComponent,
+    PageComponent,
+    PageHeaderComponent,
+    SectionComponent,
+  ],
+  providers: [provideNativeDateAdapter()],
   templateUrl: './gift-card-form.component.html',
   styleUrl: './gift-card-form.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -46,7 +76,9 @@ export class GiftCardFormComponent {
       .emitir({
         cliente_id: this.clienteId(),
         monto,
-        fecha_expiracion: fechaExpiracion ? fechaExpiracion.toISOString().slice(0, 10) : null,
+        fecha_expiracion: fechaExpiracion
+          ? fechaExpiracion.toISOString().slice(0, 10)
+          : null,
       })
       .subscribe({
         next: (giftCard) => {
@@ -57,7 +89,9 @@ export class GiftCardFormComponent {
         error: (error: HttpErrorResponse) => {
           this.guardando.set(false);
           const cuerpo = error.error as { message?: string } | undefined;
-          this.toast.error(cuerpo?.message ?? 'No se pudo emitir la gift card.');
+          this.toast.error(
+            cuerpo?.message ?? 'No se pudo emitir la gift card.',
+          );
         },
       });
   }

@@ -1,8 +1,8 @@
+import { proveedoresDePantalla } from '../../../../testing/proveedores-pantalla';
 import { ComponentFixture, DeferBlockBehavior, TestBed } from '@angular/core/testing';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { ActivatedRoute, convertToParamMap, provideRouter } from '@angular/router';
 import { AuditLogSource } from '@nianva/ui-shared';
-import { providePrimeNG } from 'primeng/config';
 import { of } from 'rxjs';
 import { describe, expect, it, vi } from 'vitest';
 
@@ -50,7 +50,7 @@ describe('NotaCreditoDetalleComponent', () => {
       deferBlockBehavior: DeferBlockBehavior.Manual,
       providers: [
         provideAnimationsAsync(),
-        providePrimeNG(),
+        ...proveedoresDePantalla(),
         provideRouter([]),
         { provide: NotaCreditoService, useValue: notaCreditoService },
         { provide: AuditLogSource, useValue: { listar: vi.fn().mockReturnValue(of([])) } },
