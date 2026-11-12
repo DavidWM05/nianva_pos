@@ -133,7 +133,7 @@ describe('ChecklistAgrupadoComponent', () => {
     await crear([]);
 
     filtrar('abono');
-    casilla('Cobranza', 'Seleccionar todos')?.click();
+    casilla('Cobranza', 'Seleccionar visibles')?.click();
 
     expect(ordenado(control().value)).toEqual([11]);
   });
@@ -178,5 +178,45 @@ describe('ChecklistAgrupadoComponent', () => {
 
     expect(raiz().querySelector('.ui-checklist__filtro')).not.toBeNull();
     expect(raiz().textContent).toContain('Seleccionar todos');
+  });
+
+  it('con filtro, la casilla del grupo dice "Seleccionar visibles"; sin filtro, "Seleccionar todos"', async () => {
+    await crear();
+
+    expect(casilla('Usuarios', 'Seleccionar todos')).not.toBeNull();
+
+    filtrar('ver');
+
+    expect(casilla('Usuarios', 'Seleccionar visibles')).not.toBeNull();
+    expect(casilla('Usuarios', 'Seleccionar todos')).toBeNull();
+
+    filtrar('');
+
+    expect(casilla('Usuarios', 'Seleccionar todos')).not.toBeNull();
+  });
+
+  it('con filtro, marcar y desmarcar los visibles no toca las opciones ocultas', async () => {
+    await crear([2]);
+
+    filtrar('ver');
+    casilla('Usuarios', 'Seleccionar visibles')?.click();
+    expect(ordenado(control().value)).toEqual([1, 2]);
+
+    fixture.detectChanges();
+    casilla('Usuarios', 'Seleccionar visibles')?.click();
+    expect(ordenado(control().value)).toEqual([2]);
+  });
+
+  it('con filtro y opciones ocultas sin marcar, ninguna casilla dice "todo marcado" aunque las visibles lo esten', async () => {
+    await crear([1]);
+
+    filtrar('ver');
+    const visibles = casilla('Usuarios', 'Seleccionar visibles');
+
+    // Refleja solo las visibles (Ver), pero no se presenta como "Seleccionar todos".
+    expect(visibles?.checked).toBe(true);
+    expect(casilla('Usuarios', 'Seleccionar todos')).toBeNull();
+    // El contador del grupo sigue contando el grupo completo.
+    expect(grupo('Usuarios')?.textContent).toContain('1 de 3');
   });
 });
