@@ -1,99 +1,20 @@
-<div class="lineas-cotizacion">
-  <section class="lineas-cotizacion__seccion">
-    <h3>Agregar producto</h3>
-    <nucleo-entidad-selector
-      [buscador]="buscadorProducto"
-      [buscadorHijos]="buscadorVarianteDeProducto"
-      label="Producto"
-      labelHijos="Variante"
-      placeholder="Buscar producto por nombre..."
-      [valorInicial]="productoSeleccionadoId()"
-      (seleccionado)="onProductoSeleccionado($event)"
-      (hijoSeleccionado)="onVarianteSeleccionada($event)"
-    />
-
-    <div class="lineas-cotizacion__alta-linea">
-      <label for="lineas-cotizacion-cantidad">Cantidad</label>
-      <input
-        pInputText
-        type="number"
-        id="lineas-cotizacion-cantidad"
-        min="1"
-        [ngModel]="cantidadNueva()"
-        (ngModelChange)="cantidadNueva.set($event)"
-      />
-      <p-button
-        label="Agregar línea"
-        icon="pi pi-plus"
-        [loading]="sugiriendoPrecio()"
-        [disabled]="varianteSeleccionadaId() === null"
-        (click)="agregarLinea()"
-      />
-    </div>
-  </section>
-
-  <section class="lineas-cotizacion__seccion">
-    <h3>Líneas</h3>
-    @if (lineas().length === 0) {
-      <p>Todavía no hay líneas.</p>
-    } @else {
-      <table class="lineas-cotizacion__tabla">
-        <thead>
-          <tr>
-            <th>Producto</th>
-            <th>Cantidad</th>
-            <th>Precio unitario</th>
-            <th>Descuento</th>
-            <th>Subtotal</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody>
-          @for (linea of lineas(); track $index) {
-            <tr>
-              <td>{{ linea.etiqueta }}</td>
-              <td>
-                <input
-                  pInputText
-                  type="number"
-                  min="1"
-                  class="lineas-cotizacion__input-numero"
-                  [ngModel]="linea.cantidad"
-                  (ngModelChange)="actualizarCantidad($index, $event)"
-                />
-              </td>
-              <td>
-                <input
-                  pInputText
-                  type="number"
-                  min="0"
-                  step="0.01"
-                  class="lineas-cotizacion__input-numero"
-                  [readonly]="!precioManual"
-                  [ngModel]="linea.precio_unitario"
-                  (ngModelChange)="actualizarPrecio($index, $event)"
-                />
-              </td>
-              <td>
-                <input
-                  pInputText
-                  type="number"
-                  min="0"
-                  step="0.01"
-                  class="lineas-cotizacion__input-numero"
-                  [readonly]="!precioManual"
-                  [ngModel]="linea.descuento"
-                  (ngModelChange)="actualizarDescuento($index, $event)"
-                />
-              </td>
-              <td>${{ linea.cantidad * linea.precio_unitario - linea.descuento }}</td>
-              <td>
-                <p-button icon="pi pi-trash" [text]="true" severity="danger" size="small" aria-label="Quitar" (click)="quitarLinea($index)" />
-              </td>
-            </tr>
-          }
-        </tbody>
-      </table>
-    }
-  </section>
-</div>
+<ui-section titulo="Agregar producto">
+  <nucleo-entidad-selector [buscador]="buscadorProducto" [buscadorHijos]="buscadorVarianteDeProducto" label="Producto" labelHijos="Variante" placeholder="Buscar producto por nombre..." [valorInicial]="productoSeleccionadoId()" (seleccionado)="onProductoSeleccionado($event)" (hijoSeleccionado)="onVarianteSeleccionada($event)" />
+  <ui-campo etiqueta="Cantidad a agregar"><ui-input-cantidad [decimales]="0" [ngModel]="cantidadNueva()" (ngModelChange)="cantidadNueva.set($event)" /></ui-campo>
+  <ui-form-actions><button matButton="filled" type="button" [disabled]="varianteSeleccionadaId() === null || sugiriendoPrecio()" [attr.aria-busy]="sugiriendoPrecio()" (click)="agregarLinea()">@if (indicadorPrecio()) { <mat-spinner diameter="18" /> } Agregar línea</button></ui-form-actions>
+</ui-section>
+<ui-section titulo="Líneas">
+  @if (lineas().length === 0) { <ui-empty mensaje="Todavía no hay líneas." /> }
+  @for (grupo of gruposLineas.controls; track grupo; let indice = $index) {
+    @let linea = lineas()[indice];
+    <ui-section [titulo]="'Línea ' + (indice + 1) + ': ' + linea.etiqueta">
+      <div class="campos-linea" [class.campos-linea--angosta]="pantalla.angosta()">
+        <ui-campo [etiqueta]="'Cantidad, línea ' + (indice + 1) + ': ' + linea.etiqueta" [requerido]="true"><ui-input-cantidad [formControl]="grupo.controls.cantidad" [decimales]="0" /></ui-campo>
+        <ui-campo [etiqueta]="'Precio unitario, línea ' + (indice + 1) + ': ' + linea.etiqueta" [requerido]="true"><ui-input-dinero [formControl]="grupo.controls.precio_unitario" [min]="0" /></ui-campo>
+        <ui-campo [etiqueta]="'Descuento, línea ' + (indice + 1) + ': ' + linea.etiqueta" [requerido]="true"><ui-input-dinero [formControl]="grupo.controls.descuento" [min]="0" /></ui-campo>
+      </div>
+      <p>Subtotal: {{ linea.cantidad * linea.precio_unitario - linea.descuento | dinero }}</p>
+      <ui-form-actions><button matButton="text" type="button" [attr.aria-label]="'Quitar línea ' + (indice + 1) + ': ' + linea.etiqueta" (click)="quitarLinea(indice)">Quitar</button></ui-form-actions>
+    </ui-section>
+  }
+</ui-section>

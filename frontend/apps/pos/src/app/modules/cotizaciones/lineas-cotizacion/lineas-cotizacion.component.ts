@@ -1,8 +1,13 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnChanges, Output, computed, inject, signal } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { FormArray, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import { MatButton } from '@angular/material/button';
+import { CampoComponent, InputCantidadComponent, InputDineroComponent } from '@nianva/ui-forms';
+import { DineroPipe } from '@nianva/ui-format';
+import { EmptyComponent } from '@nianva/ui-data';
+import { FormActionsComponent, PantallaService, SectionComponent } from '@nianva/ui-layout';
+import { conUmbral } from '@nianva/ui-feedback';
+import { MatProgressSpinner } from '@angular/material/progress-spinner';
 import { EntidadBuscable, EntidadSelectorComponent } from '@nianva/ui-shared';
-import { Button } from 'primeng/button';
-import { InputText } from 'primeng/inputtext';
 
 import { BUSCADOR_PRODUCTO, BUSCADOR_VARIANTE_DE_PRODUCTO } from '../../../core/buscadores-entidad.tokens';
 import { CotizacionDetalle, CotizacionItemPayload } from '../cotizacion.types';
@@ -43,13 +48,19 @@ function redondear(monto: number): number {
 @Component({
   selector: 'nucleo-lineas-cotizacion',
   standalone: true,
-  imports: [FormsModule, EntidadSelectorComponent, Button, InputText],
+  imports: [FormsModule, ReactiveFormsModule, EntidadSelectorComponent, MatButton, CampoComponent, InputCantidadComponent, InputDineroComponent, DineroPipe, EmptyComponent, FormActionsComponent, SectionComponent, MatProgressSpinner],
   templateUrl: './lineas-cotizacion.component.html',
   styleUrl: './lineas-cotizacion.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LineasCotizacionComponent implements OnChanges {
   private readonly ventaService = inject(VentaService);
+  protected readonly pantalla = inject(PantallaService);
+  readonly formularioLineas = new FormGroup({ items: new FormArray<FormGroup<{
+    cantidad: FormControl<number>; precio_unitario: FormControl<number>; descuento: FormControl<number>;
+  }>>([]) });
+  protected readonly gruposLineas = this.formularioLineas.controls.items;
+
 
   protected readonly buscadorProducto = inject(BUSCADOR_PRODUCTO);
   protected readonly buscadorVarianteDeProducto = inject(BUSCADOR_VARIANTE_DE_PRODUCTO);
@@ -71,6 +82,7 @@ export class LineasCotizacionComponent implements OnChanges {
   protected readonly variantesDelProductoSeleccionado = signal<EntidadBuscable[]>([]);
   protected readonly cantidadNueva = signal(1);
   protected readonly sugiriendoPrecio = signal(false);
+  protected readonly indicadorPrecio = conUmbral(this.sugiriendoPrecio);
 
   protected readonly lineas = signal<LineaCotizacion[]>([]);
 
@@ -90,6 +102,12 @@ export class LineasCotizacionComponent implements OnChanges {
         })),
       );
       this.emitirCambio();
+    }
+    for (const grupo of this.gruposLineas.controls) {
+      for (const campo of ['precio_unitario', 'descuento'] as const) {
+        if (this.precioManual) grupo.controls[campo].enable({ emitEvent: false });
+        else grupo.controls[campo].disable({ emitEvent: false });
+      }
     }
   }
 
@@ -156,6 +174,7 @@ export class LineasCotizacionComponent implements OnChanges {
   }
 
   quitarLinea(indice: number): void {
+    this.gruposLineas.removeAt(indice, { emitEvent: false });
     this.lineas.update((actuales) => actuales.filter((_, i) => i !== indice));
     this.emitirCambio();
   }
@@ -163,25 +182,46 @@ export class LineasCotizacionComponent implements OnChanges {
   actualizarCantidad(indice: number, cantidad: number): void {
     if (cantidad <= 0) return;
     this.lineas.update((actuales) => actuales.map((l, i) => (i === indice ? { ...l, cantidad } : l)));
+    this.gruposLineas.at(indice)?.controls.cantidad.setValue(cantidad, { emitEvent: false });
     this.emitirCambio();
   }
 
   actualizarPrecio(indice: number, precio: number): void {
     if (!this.precioManual || precio < 0) return;
     this.lineas.update((actuales) => actuales.map((l, i) => (i === indice ? { ...l, precio_unitario: precio } : l)));
+    this.gruposLineas.at(indice)?.controls.precio_unitario.setValue(precio, { emitEvent: false });
     this.emitirCambio();
   }
 
   actualizarDescuento(indice: number, descuento: number): void {
     if (!this.precioManual || descuento < 0) return;
     this.lineas.update((actuales) => actuales.map((l, i) => (i === indice ? { ...l, descuento } : l)));
+    this.gruposLineas.at(indice)?.controls.descuento.setValue(descuento, { emitEvent: false });
     this.emitirCambio();
   }
 
   private emitirCambio(): void {
+    while (this.gruposLineas.length < this.lineas().length) {
+      const linea = this.lineas()[this.gruposLineas.length];
+      const grupo = new FormGroup({
+        cantidad: new FormControl(linea.cantidad, { nonNullable: true, validators: [Validators.required, Validators.min(1)] }),
+        precio_unitario: new FormControl({ value: linea.precio_unitario, disabled: !this.precioManual }, { nonNullable: true, validators: [Validators.required, Validators.min(0)] }),
+        descuento: new FormControl({ value: linea.descuento, disabled: !this.precioManual }, { nonNullable: true, validators: [Validators.required, Validators.min(0)] }),
+      });
+      this.gruposLineas.push(grupo, { emitEvent: false });
+      grupo.controls.cantidad.valueChanges.subscribe(valor => {
+        if (grupo.controls.cantidad.valid) this.actualizarCantidad(this.gruposLineas.controls.indexOf(grupo), valor);
+      });
+      grupo.controls.precio_unitario.valueChanges.subscribe(valor => {
+        if (grupo.controls.precio_unitario.valid) this.actualizarPrecio(this.gruposLineas.controls.indexOf(grupo), valor);
+      });
+      grupo.controls.descuento.valueChanges.subscribe(valor => {
+        if (grupo.controls.descuento.valid) this.actualizarDescuento(this.gruposLineas.controls.indexOf(grupo), valor);
+      });
+    }
     this.cambio.emit({
-      items: this.lineas().map((l) => ({
-        variante_id: l.variante_id,
+      items: this.gruposLineas.getRawValue().map((l, indice) => ({
+        variante_id: this.lineas()[indice].variante_id,
         cantidad: l.cantidad,
         precio_unitario: l.precio_unitario,
         descuento: l.descuento,

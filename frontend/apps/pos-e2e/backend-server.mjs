@@ -12,6 +12,9 @@ mkdirSync(dirname(sqlite), { recursive: true });
 rmSync(sqlite, { force: true });
 writeFileSync(sqlite, '');
 
+const backendPort = process.env.POS_E2E_BACKEND_PORT ?? '8100';
+const frontendPort = process.env.POS_E2E_FRONTEND_PORT ?? '4301';
+
 const env = {
   ...process.env,
   DB_CONNECTION: 'sqlite',
@@ -24,10 +27,10 @@ const env = {
   APP_ENV: 'local',
   APP_DEBUG: 'false',
   APP_KEY: process.env.APP_KEY ?? `base64:${Buffer.alloc(32, 7).toString('base64')}`,
-  APP_URL: 'http://127.0.0.1:8100',
-  FRONTEND_URL: 'http://127.0.0.1:4301',
-  SANCTUM_STATEFUL_DOMAINS: '127.0.0.1:4301,127.0.0.1:8100',
-  CORS_ALLOWED_ORIGINS: 'http://127.0.0.1:4301',
+  APP_URL: 'http://127.0.0.1:' + backendPort,
+  FRONTEND_URL: 'http://127.0.0.1:' + frontendPort,
+  SANCTUM_STATEFUL_DOMAINS: '127.0.0.1:' + frontendPort + ',127.0.0.1:' + backendPort,
+  CORS_ALLOWED_ORIGINS: 'http://127.0.0.1:' + frontendPort,
   CACHE_STORE: 'array',
   QUEUE_CONNECTION: 'sync',
 };
@@ -63,7 +66,7 @@ execFileSync('php', ['-r', permisos], {
   stdio: 'inherit',
 });
 
-const servidor = spawn('php', ['artisan', 'serve', '--host=127.0.0.1', '--port=8100', '--no-reload'], {
+const servidor = spawn('php', ['artisan', 'serve', '--host=127.0.0.1', '--port=' + backendPort, '--no-reload'], {
   cwd: backendRoot,
   env,
   stdio: 'inherit',

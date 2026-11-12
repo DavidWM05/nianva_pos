@@ -1,8 +1,8 @@
-<div class="devolucion-detalle">
-  @if (cargando()) {
-    <p>Cargando devolución...</p>
-  } @else if (devolucion(); as devolucionActual) {
-    <div class="devolucion-detalle__header">
+<ui-page-header clave="devoluciones" subtitulo="Detalle del registro" />
+<div>
+  <ui-page [estado]="cargando() ? 'cargando' : error() ? 'error' : 'listo'" forma="detalle" (reintentar)="cargar()">
+  @if (devolucion(); as devolucionActual) {
+    <div>
       <h2>
         {{ devolucionActual.tipo === 'cambio' ? 'Cambio' : 'Devolución' }} #{{ devolucionActual.id }} — Venta #{{
           devolucionActual.venta?.id
@@ -10,29 +10,28 @@
       </h2>
     </div>
 
-    <nucleo-record-tabs [tabs]="tabs">
-      <ng-template>
-        <div class="devolucion-detalle__tab">
-          <dl class="devolucion-detalle__resumen">
+<nucleo-record-tabs [tabs]="tabs"><ng-template><ng-container [ngTemplateOutlet]="tab0" /></ng-template>
+<ng-template><ng-container [ngTemplateOutlet]="tab1" /></ng-template></nucleo-record-tabs>
+<ng-template #tab0>
+        <div>
+          <dl uiDatos>
             <dt>Cliente</dt>
             <dd>{{ devolucionActual.venta?.cliente_nombre ?? '—' }}</dd>
             <dt>Fecha</dt>
-            <dd>{{ devolucionActual.fecha | date: 'short' }}</dd>
+            <dd>{{ devolucionActual.fecha | fechaHora }}</dd>
             <dt>Monto devuelto</dt>
-            <dd>${{ devolucionActual.monto_devolucion }}</dd>
+            <dd>{{ devolucionActual.monto_devolucion | dinero }}</dd>
             @if (devolucionActual.tipo === 'cambio') {
               <dt>Monto del cambio</dt>
-              <dd>${{ devolucionActual.monto_cambio }}</dd>
+              <dd>{{ devolucionActual.monto_cambio | dinero }}</dd>
             }
             <dt>Diferencia</dt>
             <dd
-              [class.devolucion-detalle__diferencia--reembolso]="+devolucionActual.diferencia < 0"
-              [class.devolucion-detalle__diferencia--cobro]="+devolucionActual.diferencia > 0"
             >
               @if (+devolucionActual.diferencia < 0) {
-                -${{ montoAbsoluto(devolucionActual.diferencia) }} (reembolso)
+                -{{ montoAbsoluto(devolucionActual.diferencia) | dinero }} (reembolso)
               } @else if (+devolucionActual.diferencia > 0) {
-                +${{ devolucionActual.diferencia }} (cobro adicional)
+                +{{ devolucionActual.diferencia | dinero }} (cobro adicional)
               } @else {
                 Sin diferencia
               }
@@ -61,39 +60,7 @@
           </dl>
 
           <h4>Items</h4>
-          <table class="devolucion-detalle__tabla">
-            <thead>
-              <tr>
-                <th>Tipo</th>
-                <th>Producto</th>
-                <th>Cantidad</th>
-                <th>Precio</th>
-                <th>Subtotal</th>
-                <th></th>
-              </tr>
-            </thead>
-            <tbody>
-              @for (item of devolucionActual.items; track item.id) {
-                <tr>
-                  <td>{{ item.tipo === 'nuevo' ? 'Nuevo' : 'Devuelto' }}</td>
-                  <td>
-                    {{ item.variante?.producto_nombre }}
-                    @if (item.variante?.talla || item.variante?.color) {
-                      ({{ item.variante.talla }} / {{ item.variante.color }})
-                    }
-                  </td>
-                  <td>{{ item.cantidad }}</td>
-                  <td>${{ item.precio_unitario }}</td>
-                  <td>${{ item.subtotal }}</td>
-                  <td>
-                    @if (item.va_a_merma) {
-                      <span class="devolucion-detalle__merma">Merma</span>
-                    }
-                  </td>
-                </tr>
-              }
-            </tbody>
-          </table>
+          <ui-tabla [columnas]="columnasLineas" [filas]="filasLineas()" [meta]="metaLineas()" (cambio)="paginaLineas.set($event)" />
 
           @if (devolucionActual.pagos && devolucionActual.pagos.length > 0) {
             <h4>Pago de la diferencia</h4>
@@ -101,16 +68,15 @@
           }
         </div>
       </ng-template>
-
-      <ng-template>
+<ng-template #tab1>
         @defer (on viewport) {
           <nucleo-audit-log-viewer [tabla]="'devoluciones'" [registroId]="devolucionActual.id" />
         } @placeholder {
-          <p>Auditoría (se carga al hacer scroll hasta aquí)...</p>
+          <ui-skeleton forma="bloque" />
         } @loading (minimum 200ms) {
-          <p>Cargando auditoría...</p>
+          <ui-skeleton forma="bloque" />
         }
       </ng-template>
-    </nucleo-record-tabs>
   }
+</ui-page>
 </div>

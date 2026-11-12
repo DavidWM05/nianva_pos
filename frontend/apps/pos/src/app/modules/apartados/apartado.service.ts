@@ -1,3 +1,4 @@
+import { CuerpoDe, RespuestaDe } from '@nianva/api-contrato';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { DataTableLazyEvent } from '@nianva/ui-shared';
@@ -32,41 +33,44 @@ export class ApartadoService {
     }
 
     return this.http
-      .get<{ data: Apartado[]; meta: { total: number; permisos: ApartadosPagina['permisos'] } }>(urlApi(`/apartados`), {
+      .get<RespuestaDe<'/apartados', 'get'>>(urlApi(`/apartados`), {
         params,
       })
-      .pipe(map((r) => ({ data: r.data, total: r.meta.total, permisos: r.meta.permisos })));
+      .pipe(map((r) => ({ data: r.data as Apartado[], total: r.meta.total, permisos: r.meta.permisos })));
   }
 
   obtener(id: number): Observable<{ apartado: Apartado; permisos: ApartadoDetallePermisos }> {
     return this.http
-      .get<{ data: Apartado; meta: { permisos: ApartadoDetallePermisos } }>(urlApi(`/apartados/${id}`))
-      .pipe(map((r) => ({ apartado: r.data, permisos: r.meta.permisos })));
+      .get<RespuestaDe<'/apartados/{apartado}', 'get'>>(urlApi(`/apartados/${id}`))
+      .pipe(map((r) => ({ apartado: r.data as Apartado, permisos: r.meta.permisos })));
   }
 
   crear(payload: ApartadoFormPayload): Observable<Apartado> {
-    return this.http.post<{ data: Apartado }>(urlApi(`/apartados`), payload).pipe(map((r) => r.data));
+    const cuerpo: CuerpoDe<'/apartados', 'post'> = payload;
+    return this.http.post<RespuestaDe<'/apartados', 'post'>>(urlApi(`/apartados`), cuerpo).pipe(map((r) => r.data as Apartado));
   }
 
   registrarAbono(id: number, payload: AbonoFormPayload): Observable<Apartado> {
+    const cuerpo: CuerpoDe<'/apartados/{apartado}/abonos', 'post'> = payload;
     return this.http
-      .post<{ data: Apartado }>(urlApi(`/apartados/${id}/abonos`), payload)
-      .pipe(map((r) => r.data));
+      .post<RespuestaDe<'/apartados/{apartado}/abonos', 'post'>>(urlApi(`/apartados/${id}/abonos`), cuerpo)
+      .pipe(map((r) => r.data as Apartado));
   }
 
   liquidar(id: number): Observable<Apartado> {
-    return this.http.patch<{ data: Apartado }>(urlApi(`/apartados/${id}/liquidar`), {}).pipe(map((r) => r.data));
+    return this.http.patch<RespuestaDe<'/apartados/{apartado}/liquidar', 'patch'>>(urlApi(`/apartados/${id}/liquidar`), {}).pipe(map((r) => r.data as Apartado));
   }
 
   cancelar(id: number, motivo: string): Observable<ResultadoCancelacion> {
+    const cuerpo: CuerpoDe<'/apartados/{apartado}/cancelar', 'patch'> = { motivo };
     return this.http
-      .patch<{ data: Apartado; meta: { tiene_abonos_pendientes: boolean; monto_abonado_pendiente: number } }>(
+      .patch<RespuestaDe<'/apartados/{apartado}/cancelar', 'patch'>>(
         urlApi(`/apartados/${id}/cancelar`),
-        { motivo },
+        cuerpo,
       )
       .pipe(
         map((r) => ({
-          apartado: r.data,
+          apartado: r.data as Apartado,
           tieneAbonosPendientes: r.meta.tiene_abonos_pendientes,
           montoAbonadoPendiente: r.meta.monto_abonado_pendiente,
         })),

@@ -1,10 +1,14 @@
-import { DatePipe } from '@angular/common';
-import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
+import { CambioListado, ColumnaListado, MetaListado, TablaComponent } from '@nianva/ui-data';
+import { DineroPipe, FechaHoraPipe } from '@nianva/ui-format';
+import { SkeletonComponent, } from '@nianva/ui-feedback';
+import { DatosComponent, PageComponent, PageHeaderComponent, } from '@nianva/ui-layout';
+import { NgTemplateOutlet } from '@angular/common';
+import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { AuditLogViewerComponent, RecordTabConfig, RecordTabsComponent } from '@nianva/ui-shared';
-
 import { DevolucionService } from '../../devolucion.service';
 import { Devolucion } from '../../devolucion.types';
+
 
 /**
  * Vista de registro de una devolucion/cambio -- General (venta origen,
@@ -17,7 +21,7 @@ import { Devolucion } from '../../devolucion.types';
 @Component({
   selector: 'nucleo-devolucion-detalle',
   standalone: true,
-  imports: [DatePipe, RouterLink, RecordTabsComponent, AuditLogViewerComponent],
+  imports: [RouterLink, NgTemplateOutlet, RecordTabsComponent, AuditLogViewerComponent, TablaComponent, DineroPipe, FechaHoraPipe, SkeletonComponent, DatosComponent, PageComponent, PageHeaderComponent, ],
   templateUrl: './devolucion-detalle.component.html',
   styleUrl: './devolucion-detalle.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -33,16 +37,23 @@ export class DevolucionDetalleComponent implements OnInit {
 
   protected readonly devolucion = signal<Devolucion | null>(null);
   protected readonly cargando = signal(true);
+  protected readonly error = signal(false);
 
   ngOnInit(): void {
+    this.cargar();
+  }
+
+  protected cargar(): void {
     const id = Number(this.route.snapshot.paramMap.get('id'));
+    this.cargando.set(true);
+    this.error.set(false);
 
     this.devolucionService.obtener(id).subscribe({
       next: (devolucion) => {
         this.devolucion.set(devolucion);
         this.cargando.set(false);
       },
-      error: () => this.cargando.set(false),
+      error: () => { this.cargando.set(false); this.error.set(true); },
     });
   }
 
@@ -56,4 +67,10 @@ export class DevolucionDetalleComponent implements OnInit {
   protected montoAbsoluto(diferencia: string): string {
     return diferencia.startsWith('-') ? diferencia.slice(1) : diferencia;
   }
+  protected readonly paginaLineas = signal<CambioListado>({ page: 1, rows: 25, sortField: null, sortOrder: null });
+  protected readonly todasLineas = computed(() => (this.devolucion()?.items ?? []).map(d => ({ ...d, productoTexto: (d.variante?.producto_nombre ?? '') + (d.variante?.talla || d.variante?.color ? ' (' + (d.variante?.talla ?? '') + ' / ' + (d.variante?.color ?? '') + ')' : ''), tipoTexto: d.tipo === 'nuevo' ? 'Nuevo' : 'Devuelto', mermaTexto: d.va_a_merma ? 'Merma' : '' })));
+  protected readonly filasLineas = computed(() => this.todasLineas().slice((this.paginaLineas().page - 1) * this.paginaLineas().rows, this.paginaLineas().page * this.paginaLineas().rows));
+  protected readonly metaLineas = computed<MetaListado>(() => ({ total: this.todasLineas().length, page: this.paginaLineas().page, rows: this.paginaLineas().rows, filtros_aplicados: {}, permisos: {} }));
+  protected readonly columnasLineas: ColumnaListado<ReturnType<typeof this.todasLineas>[number]>[] = [{ tipo: 'principal', campo: 'productoTexto', encabezado: 'Producto' },{ tipo: 'cantidad', campo: 'cantidad', encabezado: 'Cantidad', unidad: 'unidad(es)' },{ tipo: 'dinero', campo: 'precio_unitario', encabezado: 'Precio' },{ tipo: 'dinero', campo: 'subtotal', encabezado: 'Subtotal' },{ tipo: 'texto', campo: 'tipoTexto', encabezado: 'Tipo' },{ tipo: 'texto', campo: 'mermaTexto', encabezado: 'Destino' }];
+
 }

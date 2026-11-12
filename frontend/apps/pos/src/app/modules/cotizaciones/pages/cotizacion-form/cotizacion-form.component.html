@@ -1,11 +1,9 @@
-<div class="cotizacion-form">
-  <h1>{{ editando() ? 'Editar cotización' : 'Nueva cotización' }}</h1>
+<ui-page-header clave="cotizaciones" subtitulo="Crear o editar cotización" />
+<div>
+  <h2>{{ editando() ? 'Editar cotización' : 'Nueva cotización' }}</h2>
 
-  @if (cargando()) {
-    <p>Cargando cotización...</p>
-  } @else {
-    <section class="cotizacion-form__seccion">
-      <h3>Cliente</h3>
+  <ui-page [estado]="cargando() ? 'cargando' : errorCarga() ? 'error' : 'listo'" forma="formulario" (reintentar)="ngOnInit()">
+    <ui-section titulo="Cliente">
       <nucleo-entidad-selector
         [buscador]="buscadorCliente"
         label="Cliente (opcional)"
@@ -13,79 +11,55 @@
         [valorInicial]="clienteId()"
         (seleccionado)="clienteId.set($event)"
       />
-    </section>
+    </ui-section>
 
-    <section class="cotizacion-form__seccion">
+    <ui-section titulo="Resumen">
       <nucleo-lineas-cotizacion
         [valorInicial]="cotizacionActual()?.detalles ?? null"
         [precioManual]="precioManual()"
         (cambio)="onLineasCambio($event)"
       />
-    </section>
+    </ui-section>
 
-    <section class="cotizacion-form__seccion cotizacion-form__totales">
-      <p>Subtotal: ${{ subtotal() }}</p>
-      <div class="cotizacion-form__campo cotizacion-form__campo--inline">
-        <label for="cotizacion-descuento">Descuento global</label>
-        <input
-          pInputText
-          type="number"
-          id="cotizacion-descuento"
-          min="0"
-          step="0.01"
-          [ngModel]="descuentoGlobal()"
-          (ngModelChange)="descuentoGlobal.set($event)"
-        />
-      </div>
-      <p class="cotizacion-form__total">Total: ${{ total() }}</p>
-    </section>
+    <ui-section titulo="Resumen">
+      <p>Subtotal: {{ subtotal() | dinero }}</p>
+      <ui-campo #campo1 etiqueta="Descuento global"><ui-input-dinero [min]="0" [ngModel]="descuentoGlobal()" (ngModelChange)="descuentoGlobal.set($event)" /></ui-campo>
+      <p>Total: {{ total() | dinero }}</p>
+    </ui-section>
 
-    <section class="cotizacion-form__seccion">
-      <h3>Configuración</h3>
-      <div class="cotizacion-form__campo">
-        <label for="cotizacion-validez">Días de validez</label>
+    <ui-section titulo="Configuración">
+      <ui-campo #campo2 etiqueta="Días de validez">
         <input
-          pInputText
           type="number"
-          id="cotizacion-validez"
+          [id]="campo2.controlId()"
           min="1"
           max="365"
           [ngModel]="validezDias()"
           (ngModelChange)="validezDias.set($event)"
         />
-      </div>
-      <div class="cotizacion-form__campo">
-        <label for="cotizacion-uso-cfdi">Uso CFDI (opcional)</label>
+      </ui-campo>
+      <ui-campo #campo3 etiqueta="Uso CFDI (opcional)">
         <input
-          pInputText
           type="text"
-          id="cotizacion-uso-cfdi"
+          [id]="campo3.controlId()"
           maxlength="10"
           [ngModel]="usoCfdi()"
           (ngModelChange)="usoCfdi.set($event)"
         />
-      </div>
-      <div class="cotizacion-form__campo">
-        <label for="cotizacion-observaciones">Observaciones</label>
+      </ui-campo>
+      <ui-campo #campo4 etiqueta="Observaciones">
         <textarea
-          pTextarea
-          id="cotizacion-observaciones"
+          [id]="campo4.controlId()"
           rows="3"
           [ngModel]="observaciones()"
           (ngModelChange)="observaciones.set($event)"
         ></textarea>
-      </div>
-    </section>
+      </ui-campo>
+    </ui-section>
 
-    <div class="cotizacion-form__acciones">
-      <p-button
-        label="Guardar cotización"
-        icon="pi pi-check"
-        [loading]="guardando()"
-        [disabled]="items().length === 0"
-        (click)="guardar()"
-      />
-      <a routerLink="/cotizaciones"><p-button label="Cancelar" [text]="true" /></a>
+    <div>
+      <ui-form-actions><fieldset class="acciones-envio" [disabled]="items().length === 0 || lineasInvalidas()"><ui-btn-enviar etiqueta="Guardar cotización" [enviando]="guardando()" (click)="guardar()" /></fieldset></ui-form-actions>
+      <a matButton="text" routerLink="/cotizaciones">Cancelar</a>
     </div>
-  }
+  </ui-page>
 </div>

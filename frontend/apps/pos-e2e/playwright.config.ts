@@ -5,12 +5,17 @@ const frontendRoot = path.resolve(__dirname, '../..');
 const backendRoot = path.resolve(frontendRoot, '../backend');
 const sqlite = path.join(backendRoot, 'storage/framework/testing/pos-e2e.sqlite');
 
+const backendPort = process.env['POS_E2E_BACKEND_PORT'] ?? '8100';
+const frontendPort = process.env['POS_E2E_FRONTEND_PORT'] ?? '4301';
+const backendUrl = 'http://127.0.0.1:' + backendPort;
+const frontendUrl = 'http://127.0.0.1:' + frontendPort;
+
 const backendEnv = {
   APP_ENV: 'local',
   APP_DEBUG: 'false',
   APP_KEY: `base64:${Buffer.alloc(32, 7).toString('base64')}`,
-  APP_URL: 'http://127.0.0.1:8100',
-  FRONTEND_URL: 'http://127.0.0.1:4301',
+  APP_URL: backendUrl,
+  FRONTEND_URL: frontendUrl,
   DB_CONNECTION: 'sqlite',
   DB_DATABASE: sqlite,
   SESSION_DRIVER: 'database',
@@ -18,8 +23,8 @@ const backendEnv = {
   SESSION_SECURE_COOKIE: 'false',
   SESSION_DOMAIN: '127.0.0.1',
   SESSION_SAME_SITE: 'lax',
-  SANCTUM_STATEFUL_DOMAINS: '127.0.0.1:4301,127.0.0.1:8100',
-  CORS_ALLOWED_ORIGINS: 'http://127.0.0.1:4301',
+  SANCTUM_STATEFUL_DOMAINS: '127.0.0.1:' + frontendPort + ',127.0.0.1:' + backendPort,
+  CORS_ALLOWED_ORIGINS: frontendUrl,
   CACHE_STORE: 'array',
   QUEUE_CONNECTION: 'sync',
 };
@@ -27,12 +32,14 @@ const backendEnv = {
 export default defineConfig({
   testDir: './src',
   fullyParallel: false,
+  // Los flujos con varias auditorias axe requieren margen en hosts compartidos.
+  timeout: 60000,
   workers: 1,
   forbidOnly: !!process.env['CI'],
   retries: 0,
-  reporter: [['list'], ['html', { outputFolder: 'playwright-report', open: 'never' }]],
+  reporter: [['list'], ['html', { outputFolder: path.join(frontendRoot, 'playwright-report'), open: 'never' }]],
   use: {
-    baseURL: 'http://127.0.0.1:4301',
+    baseURL: frontendUrl,
     locale: 'es-MX',
     timezoneId: 'America/Mexico_City',
     colorScheme: 'light',
@@ -44,7 +51,7 @@ export default defineConfig({
       command: 'node apps/pos-e2e/backend-server.mjs',
       cwd: frontendRoot,
       env: backendEnv,
-      url: 'http://127.0.0.1:8100/up',
+      url: backendUrl + '/up',
       // Nunca se reutiliza, y usa 8100 en vez del 8000 de desarrollo: un backend ya levantado
       // tendria otra base y otra configuracion de Sanctum, y el e2e escribiria datos en ella.
       reuseExistingServer: false,
@@ -53,7 +60,7 @@ export default defineConfig({
     {
       command: 'node apps/pos-e2e/frontend-server.mjs',
       cwd: frontendRoot,
-      url: 'http://127.0.0.1:4301',
+      url: frontendUrl,
       reuseExistingServer: !process.env['CI'],
       timeout: 120000,
     },

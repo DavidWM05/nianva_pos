@@ -6,6 +6,8 @@ export async function capturarPantalla50e(
   nombre: string,
 ): Promise<void> {
   await page.waitForLoadState('networkidle');
+  // Auditar el estado estable de la vista, despues de los avisos transitorios.
+  await expect(page.locator('ui-toast-content')).toHaveCount(0, { timeout: 6000 });
   if (nombre.endsWith('-auditoria')) {
     await expect(
       page.locator('nucleo-audit-log-viewer .badge').first(),

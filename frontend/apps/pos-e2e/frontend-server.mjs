@@ -5,7 +5,8 @@ import { fileURLToPath } from 'node:url';
 
 const frontendRoot = resolve(dirname(fileURLToPath(import.meta.url)), '../..');
 const root = normalize(join(frontendRoot, 'dist/apps/pos/browser'));
-const port = 4301;
+const port = Number(process.env.POS_E2E_FRONTEND_PORT ?? '4301');
+const backendPort = process.env.POS_E2E_BACKEND_PORT ?? '8100';
 
 const mime = {
   '.css': 'text/css',
@@ -24,7 +25,7 @@ createServer((request, response) => {
   if (url.pathname === '/config.json') {
     response.setHeader('Content-Type', 'application/json');
     response.setHeader('Cache-Control', 'no-store');
-    response.end(JSON.stringify({ apiBaseUrl: 'http://127.0.0.1:8100' }));
+    response.end(JSON.stringify({ apiBaseUrl: 'http://127.0.0.1:' + backendPort }));
 
     return;
   }

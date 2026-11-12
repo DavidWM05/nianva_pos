@@ -1,10 +1,10 @@
+import { proveedoresDePantalla } from '../../../../testing/proveedores-pantalla';
 import { HttpErrorResponse } from '@angular/common/http';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { Router, convertToParamMap, provideRouter } from '@angular/router';
 import { ActivatedRoute } from '@angular/router';
 import { ToastService } from '@nianva/ui-shared';
-import { providePrimeNG } from 'primeng/config';
 import { of, throwError } from 'rxjs';
 import { describe, expect, it, vi } from 'vitest';
 
@@ -61,8 +61,8 @@ describe('CotizacionFormComponent', () => {
     await TestBed.configureTestingModule({
       imports: [CotizacionFormComponent],
       providers: [
+        ...proveedoresDePantalla(),
         provideAnimationsAsync(),
-        providePrimeNG(),
         provideRouter([]),
         { provide: CotizacionService, useValue: cotizacionService },
         { provide: AuthStateService, useValue: { usuario: () => usuario } },

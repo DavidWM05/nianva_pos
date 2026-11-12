@@ -1,17 +1,20 @@
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { provideNativeDateAdapter } from '@angular/material/core';
+import { MatInput } from '@angular/material/input';
+import { BtnEnviarComponent, CampoComponent, } from '@nianva/ui-forms';
+import { DineroPipe, } from '@nianva/ui-format';
+import { FormActionsComponent, PageComponent, PageHeaderComponent, SectionComponent } from '@nianva/ui-layout';
 import { HttpErrorResponse } from '@angular/common/http';
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { EntidadSelectorComponent, ToastService } from '@nianva/ui-shared';
-import { Button } from 'primeng/button';
-import { DatePicker } from 'primeng/datepicker';
-import { Textarea } from 'primeng/textarea';
-
 import { BUSCADOR_CLIENTE } from '../../../../core/buscadores-entidad.tokens';
 import { ErrorNegocioTpv } from '../../../tpv/tpv-error.types';
 import { LineasProductoCambio, LineasProductoComponent } from '../../../tpv/lineas-producto/lineas-producto.component';
 import { ApartadoService } from '../../apartado.service';
 import { ApartadoItemPayload } from '../../apartado.types';
+
 
 /**
  * Creacion de apartado -- mismo tratamiento de pantalla completa que la
@@ -24,7 +27,8 @@ import { ApartadoItemPayload } from '../../apartado.types';
 @Component({
   selector: 'nucleo-apartado-form',
   standalone: true,
-  imports: [FormsModule, RouterLink, EntidadSelectorComponent, LineasProductoComponent, Button, DatePicker, Textarea],
+  providers: [provideNativeDateAdapter()],
+  imports: [FormsModule,RouterLink,EntidadSelectorComponent,LineasProductoComponent,MatDatepickerModule,MatInput,BtnEnviarComponent,CampoComponent,DineroPipe,FormActionsComponent,PageComponent,PageHeaderComponent,SectionComponent,],
   templateUrl: './apartado-form.component.html',
   styleUrl: './apartado-form.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

@@ -1,11 +1,12 @@
-<div class="apartado-form">
-  <div class="apartado-form__header">
+<ui-page-header clave="apartados" subtitulo="Nuevo apartado" />
+<ui-page estado="listo" forma="formulario">
+<div>
+  <div>
     <h2>Nuevo apartado</h2>
     <a routerLink="/apartados">Volver a la lista</a>
   </div>
 
-  <section class="apartado-form__seccion">
-    <h3>Cliente</h3>
+  <ui-section titulo="Cliente">
     <nucleo-entidad-selector
       [buscador]="buscadorCliente"
       label="Cliente"
@@ -13,38 +14,24 @@
       [valorInicial]="clienteId()"
       (seleccionado)="clienteId.set($event)"
     />
-  </section>
+  </ui-section>
 
-  <section class="apartado-form__seccion">
+  <ui-section titulo="Resumen">
     <nucleo-lineas-producto (cambio)="onLineasCambio($event)" />
-  </section>
+  </ui-section>
 
-  <section class="apartado-form__seccion apartado-form__totales">
-    <p class="apartado-form__total">Total: ${{ subtotal() }}</p>
-  </section>
+  <ui-section titulo="Resumen">
+    <p>Total: {{ subtotal() | dinero }}</p>
+  </ui-section>
 
-  <section class="apartado-form__seccion">
-    <h3>Detalles</h3>
-    <div class="apartado-form__campo">
-      <label for="apartado-fecha-vencimiento">Fecha de vencimiento (opcional)</label>
-      <p-datepicker
-        inputId="apartado-fecha-vencimiento"
-        dateFormat="yy-mm-dd"
-        [ngModel]="fechaVencimiento()"
-        (ngModelChange)="fechaVencimiento.set($event)"
-      />
-    </div>
-    <div class="apartado-form__campo">
-      <label for="apartado-notas">Notas (opcional)</label>
-      <textarea pTextarea id="apartado-notas" rows="2" [ngModel]="notas()" (ngModelChange)="notas.set($event)"></textarea>
-    </div>
-  </section>
+  <ui-section titulo="Detalles">
+    <ui-campo #campo1 etiqueta="Fecha de vencimiento (opcional)"><input matInput [matDatepicker]="vencimiento" [id]="campo1.controlId() ?? 'apartado-fecha-vencimiento'" [ngModel]="fechaVencimiento()" (ngModelChange)="fechaVencimiento.set($event)" /><mat-datepicker-toggle [for]="vencimiento" /><mat-datepicker #vencimiento /></ui-campo>
+    <ui-campo #campo2 etiqueta="Notas (opcional)">
+      <textarea [id]="campo2.controlId()" rows="2" [ngModel]="notas()" (ngModelChange)="notas.set($event)"></textarea>
+    </ui-campo>
+  </ui-section>
 
-  <p-button
-    label="Crear apartado"
-    icon="pi pi-check"
-    [loading]="guardando()"
-    [disabled]="clienteId() === null || itemsActuales().length === 0"
-    (click)="crearApartado()"
-  />
+  <ui-form-actions><fieldset class="acciones-envio" [disabled]="clienteId() === null || itemsActuales().length === 0"><ui-btn-enviar etiqueta="Crear apartado" [enviando]="guardando()" (click)="crearApartado()" /></fieldset></ui-form-actions>
 </div>
+
+</ui-page>
