@@ -1,8 +1,11 @@
-<div class="departamento-crear">
-  <div class="departamento-crear__header">
-    <h1>Nuevo departamento</h1>
-    <a routerLink="/inventario/departamentos">Volver a la lista</a>
-  </div>
-
-  <nucleo-departamento-form submitLabel="Crear departamento" (guardar)="onGuardar($event)" />
-</div>
+<ui-page-header clave="departamentos" subtitulo="Nuevo departamento"
+  ><a acciones matButton="outlined" routerLink="/inventario/departamentos"
+    >Volver a la lista</a
+  ></ui-page-header
+>
+<ui-page estado="listo" forma="formulario"
+  ><nucleo-departamento-form
+    [enviando]="guardando()"
+    submitLabel="Crear departamento"
+    (guardar)="onGuardar($event)"
+/></ui-page>

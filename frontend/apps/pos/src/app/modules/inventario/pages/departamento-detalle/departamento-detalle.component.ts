@@ -1,10 +1,27 @@
+import { PageComponent, PageHeaderComponent } from '@nianva/ui-layout';
+import { AlertComponent, SkeletonComponent } from '@nianva/ui-feedback';
 import { HttpErrorResponse } from '@angular/common/http';
-import { ChangeDetectionStrategy, Component, OnInit, ViewChild, inject, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  OnInit,
+  ViewChild,
+  inject,
+  signal,
+} from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { AuditLogViewerComponent, RecordTabConfig, RecordTabsComponent, ToastService } from '@nianva/ui-shared';
+import {
+  AuditLogViewerComponent,
+  RecordTabConfig,
+  RecordTabsComponent,
+  ToastService,
+} from '@nianva/ui-shared';
 
 import { DepartamentoFormComponent } from '../../departamento-form/departamento-form.component';
-import { DepartamentoFormPayload, DepartamentoService } from '../../departamento.service';
+import {
+  DepartamentoFormPayload,
+  DepartamentoService,
+} from '../../departamento.service';
 import { Departamento } from '../../departamento.types';
 
 /**
@@ -15,7 +32,15 @@ import { Departamento } from '../../departamento.types';
 @Component({
   selector: 'nucleo-departamento-detalle',
   standalone: true,
-  imports: [RecordTabsComponent, DepartamentoFormComponent, AuditLogViewerComponent],
+  imports: [
+    PageComponent,
+    PageHeaderComponent,
+    AlertComponent,
+    SkeletonComponent,
+    RecordTabsComponent,
+    DepartamentoFormComponent,
+    AuditLogViewerComponent,
+  ],
   templateUrl: './departamento-detalle.component.html',
   styleUrl: './departamento-detalle.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -25,7 +50,8 @@ export class DepartamentoDetalleComponent implements OnInit {
   private readonly departamentoService = inject(DepartamentoService);
   private readonly toast = inject(ToastService);
 
-  @ViewChild(DepartamentoFormComponent) private formulario?: DepartamentoFormComponent;
+  @ViewChild(DepartamentoFormComponent)
+  private formulario?: DepartamentoFormComponent;
 
   protected readonly tabs: RecordTabConfig[] = [
     { label: 'General', icon: 'pi pi-building' },
@@ -35,16 +61,33 @@ export class DepartamentoDetalleComponent implements OnInit {
   protected readonly departamento = signal<Departamento | null>(null);
   protected readonly puedeEditar = signal(false);
   protected readonly cargando = signal(true);
+  protected readonly error = signal(false);
 
   protected readonly guardando = signal(false);
 
   ngOnInit(): void {
     const id = Number(this.route.snapshot.paramMap.get('id'));
 
-    this.departamentoService.obtener(id).subscribe(({ departamento, permisos }) => {
-      this.departamento.set(departamento);
-      this.puedeEditar.set(permisos.editar);
-      this.cargando.set(false);
+    this.cargar(id);
+  }
+
+  reintentar(): void {
+    this.cargar(Number(this.route.snapshot.paramMap.get('id')));
+  }
+
+  private cargar(id: number): void {
+    this.cargando.set(true);
+    this.error.set(false);
+    this.departamentoService.obtener(id).subscribe({
+      next: ({ departamento, permisos }) => {
+        this.departamento.set(departamento);
+        this.puedeEditar.set(permisos.editar);
+        this.cargando.set(false);
+      },
+      error: () => {
+        this.cargando.set(false);
+        this.error.set(true);
+      },
     });
   }
 
