@@ -1,3 +1,4 @@
+import { proveedoresDePantalla } from '../../../../testing/proveedores-pantalla';
 import { ComponentFixture, DeferBlockBehavior, DeferBlockState, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { ActivatedRoute, convertToParamMap } from '@angular/router';
@@ -28,6 +29,7 @@ describe('CategoriaDetalleComponent', () => {
 
   function providers(permisos: { editar: boolean; eliminar: boolean }) {
     return [
+      ...proveedoresDePantalla(),
       { provide: CategoriaService, useValue: { obtener: vi.fn().mockReturnValue(of({ categoria, permisos })) } },
       { provide: AuditLogSource, useValue: { listar: vi.fn().mockReturnValue(of([])) } },
       { provide: ToastService, useValue: { success: vi.fn(), error: vi.fn() } },

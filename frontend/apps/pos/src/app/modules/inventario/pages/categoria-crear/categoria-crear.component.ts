@@ -1,10 +1,21 @@
+import { MatButton } from '@angular/material/button';
+import { PageComponent, PageHeaderComponent } from '@nianva/ui-layout';
 import { HttpErrorResponse } from '@angular/common/http';
-import { ChangeDetectionStrategy, Component, ViewChild, inject, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  ViewChild,
+  inject,
+  signal,
+} from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { ToastService } from '@nianva/ui-shared';
 
 import { CategoriaFormComponent } from '../../categoria-form/categoria-form.component';
-import { CategoriaFormPayload, CategoriaService } from '../../categoria.service';
+import {
+  CategoriaFormPayload,
+  CategoriaService,
+} from '../../categoria.service';
 
 /**
  * Vista dedicada, no modal (ver el reporte del punto 1 de Fase B):
@@ -14,7 +25,13 @@ import { CategoriaFormPayload, CategoriaService } from '../../categoria.service'
 @Component({
   selector: 'nucleo-categoria-crear',
   standalone: true,
-  imports: [RouterLink, CategoriaFormComponent],
+  imports: [
+    MatButton,
+    PageComponent,
+    PageHeaderComponent,
+    RouterLink,
+    CategoriaFormComponent,
+  ],
   templateUrl: './categoria-crear.component.html',
   styleUrl: './categoria-crear.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -24,7 +41,8 @@ export class CategoriaCrearComponent {
   private readonly router = inject(Router);
   private readonly toast = inject(ToastService);
 
-  @ViewChild(CategoriaFormComponent) private formulario?: CategoriaFormComponent;
+  @ViewChild(CategoriaFormComponent)
+  private formulario?: CategoriaFormComponent;
 
   protected readonly guardando = signal(false);
 

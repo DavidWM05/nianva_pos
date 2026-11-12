@@ -1,8 +1,11 @@
-<div class="categoria-crear">
-  <div class="categoria-crear__header">
-    <h1>Nueva categoría</h1>
-    <a routerLink="/inventario/categorias">Volver a la lista</a>
-  </div>
-
-  <nucleo-categoria-form submitLabel="Crear categoría" (guardar)="onGuardar($event)" />
-</div>
+<ui-page-header clave="categorias" subtitulo="Nueva categoría"
+  ><a acciones matButton="outlined" routerLink="/inventario/categorias"
+    >Volver a la lista</a
+  ></ui-page-header
+>
+<ui-page estado="listo" forma="formulario"
+  ><nucleo-categoria-form
+    [enviando]="guardando()"
+    submitLabel="Crear categoría"
+    (guardar)="onGuardar($event)"
+/></ui-page>

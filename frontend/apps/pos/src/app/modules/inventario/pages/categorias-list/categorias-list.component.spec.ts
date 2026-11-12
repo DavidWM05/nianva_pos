@@ -1,8 +1,8 @@
+import { proveedoresDePantalla } from '../../../../testing/proveedores-pantalla';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { Router, provideRouter } from '@angular/router';
 import { ConfirmDialogService, ToastService } from '@nianva/ui-shared';
-import { providePrimeNG } from 'primeng/config';
 import { of } from 'rxjs';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
@@ -32,7 +32,7 @@ describe('CategoriasListComponent', () => {
       providers: [
         provideRouter([]),
         provideAnimationsAsync(),
-        providePrimeNG(),
+        ...proveedoresDePantalla(),
         { provide: CategoriaService, useValue: categoriaService },
         { provide: ConfirmDialogService, useValue: { confirm: vi.fn() } },
         { provide: ToastService, useValue: { success: vi.fn(), error: vi.fn() } },
@@ -68,8 +68,15 @@ describe('CategoriasListComponent', () => {
   it('"Nueva categoría" navega a la vista dedicada, no abre un modal', async () => {
     await crearComponente({ crear: true, editar: false, eliminar: false });
 
-    const enlace = (fixture.nativeElement as HTMLElement).querySelector('a[href="/inventario/categorias/nuevo"]');
-    expect(enlace).toBeTruthy();
+    router.resetConfig([{ path: 'inventario/categorias/nuevo', children: [] }, { path: '**', children: [] }]);
+    const elemento: HTMLElement = fixture.nativeElement;
+    const boton = elemento.querySelector<HTMLButtonElement>('ui-btn-crear button');
+    expect(boton).not.toBeNull();
+    boton?.click();
+    await fixture.whenStable();
+
+    expect(router.url).toBe('/inventario/categorias/nuevo');
+    expect(elemento.querySelector('ui-modal')).toBeNull();
   });
 
   it('sin el permiso inventario.eliminar, ninguna fila muestra el boton de desactivar', async () => {

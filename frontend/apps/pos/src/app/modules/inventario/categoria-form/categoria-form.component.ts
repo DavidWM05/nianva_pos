@@ -1,4 +1,13 @@
-import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnChanges, Output, ViewChild } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  EventEmitter,
+  Input,
+  OnChanges,
+  SimpleChanges,
+  Output,
+  ViewChild,
+} from '@angular/core';
 import { DynamicFormComponent, DynamicFormField } from '@nianva/ui-shared';
 
 import { CategoriaFormPayload } from '../categoria.service';
@@ -22,6 +31,7 @@ export class CategoriaFormComponent implements OnChanges {
   @Input() valorInicial: Categoria | null = null;
   @Input() submitLabel = 'Guardar';
   @Input() readonly = false;
+  @Input() enviando = false;
 
   @Output() guardar = new EventEmitter<CategoriaFormPayload>();
 
@@ -29,7 +39,8 @@ export class CategoriaFormComponent implements OnChanges {
 
   protected fields: DynamicFormField[] = [];
 
-  ngOnChanges(): void {
+  ngOnChanges(cambios?: SimpleChanges): void {
+    if (cambios && this.fields.length > 0 && !cambios['valorInicial']) return;
     this.fields = [
       {
         name: 'nombre',
@@ -49,7 +60,10 @@ export class CategoriaFormComponent implements OnChanges {
   }
 
   onSubmit(value: Record<string, unknown>): void {
-    this.guardar.emit(value as unknown as CategoriaFormPayload);
+    this.guardar.emit({
+      nombre: value['nombre'] as string,
+      descripcion: value['descripcion'] as string | null,
+    });
   }
 
   setServerErrors(errors: Record<string, string | string[]>): void {

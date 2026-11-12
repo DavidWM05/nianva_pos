@@ -1,10 +1,21 @@
+import { MatButton } from '@angular/material/button';
+import { PageComponent, PageHeaderComponent } from '@nianva/ui-layout';
 import { HttpErrorResponse } from '@angular/common/http';
-import { ChangeDetectionStrategy, Component, ViewChild, inject, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  ViewChild,
+  inject,
+  signal,
+} from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { ToastService } from '@nianva/ui-shared';
 
 import { DepartamentoFormComponent } from '../../departamento-form/departamento-form.component';
-import { DepartamentoFormPayload, DepartamentoService } from '../../departamento.service';
+import {
+  DepartamentoFormPayload,
+  DepartamentoService,
+} from '../../departamento.service';
 
 /**
  * Vista dedicada, no modal (ver el reporte del punto 1 de Fase B):
@@ -13,7 +24,13 @@ import { DepartamentoFormPayload, DepartamentoService } from '../../departamento
 @Component({
   selector: 'nucleo-departamento-crear',
   standalone: true,
-  imports: [RouterLink, DepartamentoFormComponent],
+  imports: [
+    MatButton,
+    PageComponent,
+    PageHeaderComponent,
+    RouterLink,
+    DepartamentoFormComponent,
+  ],
   templateUrl: './departamento-crear.component.html',
   styleUrl: './departamento-crear.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -23,7 +40,8 @@ export class DepartamentoCrearComponent {
   private readonly router = inject(Router);
   private readonly toast = inject(ToastService);
 
-  @ViewChild(DepartamentoFormComponent) private formulario?: DepartamentoFormComponent;
+  @ViewChild(DepartamentoFormComponent)
+  private formulario?: DepartamentoFormComponent;
 
   protected readonly guardando = signal(false);
 
