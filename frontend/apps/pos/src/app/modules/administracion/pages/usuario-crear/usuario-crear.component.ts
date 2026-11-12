@@ -1,6 +1,7 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { ChangeDetectionStrategy, Component, ViewChild, inject, signal } from '@angular/core';
-import { Router, RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
+import { PageComponent, PageHeaderComponent } from '@nianva/ui-layout';
 import { ToastService } from '@nianva/ui-shared';
 
 import { UsuarioFormComponent } from '../../usuario-form/usuario-form.component';
@@ -13,9 +14,8 @@ import { UsuarioAdminService, UsuarioFormPayload } from '../../usuario-admin.ser
 @Component({
   selector: 'nucleo-usuario-crear',
   standalone: true,
-  imports: [RouterLink, UsuarioFormComponent],
+  imports: [PageComponent, PageHeaderComponent, UsuarioFormComponent],
   templateUrl: './usuario-crear.component.html',
-  styleUrl: './usuario-crear.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class UsuarioCrearComponent {

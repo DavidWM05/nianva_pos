@@ -1,6 +1,7 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { ChangeDetectionStrategy, Component, ViewChild, inject, signal } from '@angular/core';
-import { Router, RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
+import { PageComponent, PageHeaderComponent } from '@nianva/ui-layout';
 import { ToastService } from '@nianva/ui-shared';
 
 import { RolFormComponent } from '../../rol-form/rol-form.component';
@@ -14,9 +15,8 @@ import { RolFormPayload, RolService } from '../../rol.service';
 @Component({
   selector: 'nucleo-rol-crear',
   standalone: true,
-  imports: [RouterLink, RolFormComponent],
+  imports: [PageComponent, PageHeaderComponent, RolFormComponent],
   templateUrl: './rol-crear.component.html',
-  styleUrl: './rol-crear.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class RolCrearComponent {

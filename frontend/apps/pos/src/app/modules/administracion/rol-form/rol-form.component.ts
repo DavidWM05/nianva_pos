@@ -1,29 +1,33 @@
-import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnChanges, OnInit, Output, ViewChild, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnChanges, OnInit, Output, ViewChild, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { ChecklistAgrupadoComponent, GrupoChecklist, IdOpcionChecklist } from '@nianva/ui-forms';
 import { DynamicFormComponent, DynamicFormField } from '@nianva/ui-shared';
-import { MultiSelect } from 'primeng/multiselect';
 
 import { GrupoPermisos } from '../permiso.types';
 import { PermisoService } from '../permiso.service';
 import { RolFormPayload } from '../rol.service';
 import { Rol } from '../rol.types';
 
+/** 'cuentas_cobrar' -> 'Cuentas cobrar'. */
+function legible(texto: string): string {
+  const conEspacios = texto.replace(/_/g, ' ');
+
+  return conEspacios.charAt(0).toUpperCase() + conEspacios.slice(1);
+}
+
 /**
  * Reutilizado por la vista de creacion (sin valorInicial, ver
  * RolCrearComponent) y por la pestana General de la vista de registro.
- * El checklist de permisos vive FUERA de DynamicFormComponent (mismo
- * patron que ReglaPrecioFormComponent/UsuarioFormComponent) -- un
- * multiselect AGRUPADO por modulo (p-multiselect con [group]="true", ver
- * el reporte: no existia un componente de checklist de permisos en
- * ui-shared, y armar uno nuevo para un solo consumidor no valia la pena
- * cuando PrimeNG ya trae agrupacion nativa).
+ * El checklist de permisos no es un campo de DynamicFormComponent: se
+ * proyecta dentro de su <form>, antes del boton (50g), agrupado por
+ * modulo (ui-checklist-agrupado). Su `readonly` lo aplica este
+ * formulario, no DynamicFormComponent.
  */
 @Component({
   selector: 'nucleo-rol-form',
   standalone: true,
-  imports: [FormsModule, DynamicFormComponent, MultiSelect],
+  imports: [ChecklistAgrupadoComponent, DynamicFormComponent, FormsModule],
   templateUrl: './rol-form.component.html',
-  styleUrl: './rol-form.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class RolFormComponent implements OnInit, OnChanges {
@@ -39,10 +43,18 @@ export class RolFormComponent implements OnInit, OnChanges {
 
   protected fields: DynamicFormField[] = [];
   protected readonly permisosIds = signal<number[]>([]);
-  protected grupos: GrupoPermisos[] = [];
+  protected readonly grupos = signal<GrupoPermisos[]>([]);
+  /** Los permisos como grupos del checklist: un grupo por modulo. */
+  protected readonly gruposChecklist = computed<GrupoChecklist[]>(() =>
+    this.grupos().map((grupo) => ({
+      id: grupo.modulo,
+      etiqueta: legible(grupo.modulo),
+      opciones: grupo.permisos.map((permiso) => ({ id: permiso.id, etiqueta: permiso.descripcion ?? legible(permiso.accion) })),
+    })),
+  );
 
   ngOnInit(): void {
-    this.permisoService.agrupadosPorModulo().subscribe((grupos) => (this.grupos = grupos));
+    this.permisoService.agrupadosPorModulo().subscribe((grupos) => this.grupos.set(grupos));
   }
 
   ngOnChanges(): void {
@@ -64,6 +76,10 @@ export class RolFormComponent implements OnInit, OnChanges {
         defaultValue: this.valorInicial?.descripcion ?? '',
       },
     ];
+  }
+
+  protected alCambiarPermisos(ids: readonly IdOpcionChecklist[]): void {
+    this.permisosIds.set(ids.map(Number));
   }
 
   onSubmit(value: Record<string, unknown>): void {

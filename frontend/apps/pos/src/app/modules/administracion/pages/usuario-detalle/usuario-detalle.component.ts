@@ -1,8 +1,10 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { ChangeDetectionStrategy, Component, OnInit, ViewChild, inject, signal } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import { MatButton } from '@angular/material/button';
+import { AlertComponent, SkeletonComponent } from '@nianva/ui-feedback';
+import { PageComponent, PageHeaderComponent, SectionComponent } from '@nianva/ui-layout';
 import { AuditLogViewerComponent, RecordTabConfig, RecordTabsComponent, ToastService } from '@nianva/ui-shared';
-import { Button } from 'primeng/button';
 
 import { AuthStateService } from '../../../../auth/auth-state.service';
 import { TwoFactorCodeInputComponent } from '../../../../auth/two-factor-code-input/two-factor-code-input.component';
@@ -25,9 +27,20 @@ import { UsuarioAdmin } from '../../usuario.types';
 @Component({
   selector: 'nucleo-usuario-detalle',
   standalone: true,
-  imports: [RecordTabsComponent, UsuarioFormComponent, AuditLogViewerComponent, TwoFactorCodeInputComponent, Button],
-  templateUrl: './usuario-detalle.component.html',
+  imports: [
+    AlertComponent,
+    AuditLogViewerComponent,
+    MatButton,
+    PageComponent,
+    PageHeaderComponent,
+    RecordTabsComponent,
+    SectionComponent,
+    SkeletonComponent,
+    TwoFactorCodeInputComponent,
+    UsuarioFormComponent,
+  ],
   styleUrl: './usuario-detalle.component.scss',
+  templateUrl: './usuario-detalle.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class UsuarioDetalleComponent implements OnInit {

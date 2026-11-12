@@ -1,6 +1,17 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnChanges, Output, ViewEncapsulation, inject } from '@angular/core';
-import { FormBuilder, FormGroup, ReactiveFormsModule, ValidatorFn, Validators } from '@angular/forms';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  ContentChildren,
+  EventEmitter,
+  Input,
+  OnChanges,
+  Output,
+  QueryList,
+  ViewEncapsulation,
+  inject,
+} from '@angular/core';
+import { FormBuilder, FormGroup, NgControl, ReactiveFormsModule, ValidatorFn, Validators } from '@angular/forms';
 import { MatButton } from '@angular/material/button';
 import { MatCheckbox } from '@angular/material/checkbox';
 import { provideNativeDateAdapter } from '@angular/material/core';
@@ -18,6 +29,18 @@ import { DynamicFormField } from './dynamic-form.types';
  * (errorFor) sigue siempre el mismo patron sin importar el tipo de campo
  * -- ningun modulo futuro necesita reinventar su propio bloque de
  * validacion.
+ *
+ * Campos proyectados (50g): lo que la pantalla pone entre las etiquetas
+ * (`<nucleo-dynamic-form>...</nucleo-dynamic-form>`) se pinta dentro del
+ * `<form>`, despues de los campos y antes del boton -- para controles que
+ * no encajan en `fields` (un select multiple, un checklist). Reglas:
+ *   - si un control proyectado (`ngModel`/`formControl`) es invalido, el
+ *     formulario NO se envia; se marca como tocado igual que los propios;
+ *   - su valor no viaja en `formSubmit`: la pantalla lo agrega al payload;
+ *   - `readonly` NO lo deshabilita: lo hace la pantalla;
+ *   - para verse igual que los campos propios, puede usar las clases
+ *     `dynamic-form__field` (contenedor), `dynamic-form__material`
+ *     (mat-form-field) y `dynamic-form__control` (input nativo).
  */
 @Component({
   selector: 'nucleo-dynamic-form',
@@ -53,6 +76,9 @@ export class DynamicFormComponent implements OnChanges {
   @Input() readonly = false;
 
   @Output() formSubmit = new EventEmitter<Record<string, unknown>>();
+
+  /** Controles que la pantalla proyecta (ver la nota de la clase); no son parte de `form`. */
+  @ContentChildren(NgControl, { descendants: true }) private controlesProyectados?: QueryList<NgControl>;
 
   private readonly fb = inject(FormBuilder);
 
@@ -160,7 +186,11 @@ export class DynamicFormComponent implements OnChanges {
 
   onSubmit(): void {
     this.form.markAllAsTouched();
-    if (this.form.valid) {
+    const proyectados = this.controlesProyectados?.toArray() ?? [];
+    proyectados.forEach((proyectado) => proyectado.control?.markAsTouched());
+    const proyectadosValidos = proyectados.every((proyectado) => proyectado.control?.invalid !== true);
+
+    if (this.form.valid && proyectadosValidos) {
       // getRawValue() (no .value): un campo deshabilitado -- por
       // `readonly` global o `field.readonly` puntual -- NO aparece en
       // .value, pero su valor (ej. un codigo_barras autogenerado que el

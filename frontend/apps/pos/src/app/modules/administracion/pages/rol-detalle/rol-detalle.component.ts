@@ -1,6 +1,8 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { ChangeDetectionStrategy, Component, OnInit, ViewChild, inject, signal } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import { AlertComponent, SkeletonComponent } from '@nianva/ui-feedback';
+import { PageComponent, PageHeaderComponent } from '@nianva/ui-layout';
 import { AuditLogViewerComponent, RecordTabConfig, RecordTabsComponent, ToastService } from '@nianva/ui-shared';
 
 import { RolFormComponent } from '../../rol-form/rol-form.component';
@@ -16,9 +18,8 @@ import { Rol } from '../../rol.types';
 @Component({
   selector: 'nucleo-rol-detalle',
   standalone: true,
-  imports: [RecordTabsComponent, RolFormComponent, AuditLogViewerComponent],
+  imports: [AlertComponent, AuditLogViewerComponent, PageComponent, PageHeaderComponent, RecordTabsComponent, RolFormComponent, SkeletonComponent],
   templateUrl: './rol-detalle.component.html',
-  styleUrl: './rol-detalle.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class RolDetalleComponent implements OnInit {

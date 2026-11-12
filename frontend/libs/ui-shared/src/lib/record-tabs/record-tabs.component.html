@@ -14,7 +14,7 @@
 <mat-tab-nav-panel #panel class="record-tabs__panel">
   @for (tab of tabs; track trackByLabel($index, tab); let i = $index) {
     <div class="record-tabs__contenido" [hidden]="activa() !== i">
-      <ng-container [ngTemplateOutlet]="templates.get(i) ?? null" />
+      <ng-container [ngTemplateOutlet]="plantilla(i)" />
     </div>
   }
 </mat-tab-nav-panel>

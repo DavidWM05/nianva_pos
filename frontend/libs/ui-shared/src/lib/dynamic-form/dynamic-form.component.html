@@ -116,6 +116,10 @@
     }
   }
 
+  <!-- Campos que la pantalla proyecta (ver la nota de la clase): dentro del <form> y antes
+       del boton, asi Enter los envia y quedan en orden. -->
+  <ng-content />
+
   @if (!readonly) {
     <ui-form-actions>
       <button matButton="filled" type="submit">{{ submitLabel }}</button>
