@@ -68,8 +68,9 @@ al menos uno. El error de servidor desaparece cuando el usuario edita el campo.
   tiene "Seleccionar todos" (con estado intermedio) y su contador ("3 de 8"), y
   hay un contador total. El filtro (`etiquetaFiltro`, `placeholderFiltro`,
   `[(filtro)]`) oculta opciones sin desmarcarlas: lo oculto que estaba marcado se
-  sigue guardando, y "Seleccionar todos" solo toca lo visible. Deshabilitado, no
-  hay filtro ni "Seleccionar todos". `etiqueta` pinta el `legend` del conjunto.
+  sigue guardando. Con filtro, la casilla del grupo pasa a "Seleccionar visibles":
+  marca, desmarca y refleja solo lo visible, y el contador del grupo sigue
+  contando el total. Deshabilitado, no hay filtro ni casilla de grupo. `etiqueta` pinta el `legend` del conjunto.
 
   ```html
   <ui-checklist-agrupado etiqueta="Permisos" etiquetaFiltro="Filtrar permisos"

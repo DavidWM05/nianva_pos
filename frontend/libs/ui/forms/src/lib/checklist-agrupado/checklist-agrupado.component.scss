@@ -75,7 +75,9 @@ ui-checklist-agrupado {
   gap: var(--nv-spacing-2);
 }
 
+// margin-left: auto lo deja a la derecha aunque no haya casilla de grupo (deshabilitado).
 .ui-checklist__contador {
+  margin-left: auto;
   color: var(--nv-texto-suave);
   font-size: var(--nv-font-size-xs);
 }
@@ -90,4 +92,9 @@ ui-checklist-agrupado {
   display: block;
   color: var(--nv-texto-suave);
   font-size: var(--nv-font-size-xs);
+}
+
+// Deshabilitada, la descripcion toma el mismo color atenuado que la etiqueta.
+.mat-mdc-checkbox-disabled .ui-checklist__descripcion {
+  color: inherit;
 }

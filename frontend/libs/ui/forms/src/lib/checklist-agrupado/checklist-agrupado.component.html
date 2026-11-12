@@ -33,7 +33,7 @@
             [indeterminate]="grupo.algunasVisiblesMarcadas"
             (change)="alMarcarTodas(grupo, $event.checked)"
           >
-            Seleccionar todos
+            {{ etiquetaSeleccionGrupo() }}
           </mat-checkbox>
         }
         <span class="ui-checklist__contador">{{ grupo.marcadas | cantidad }} de {{ grupo.total | cantidad }}</span>

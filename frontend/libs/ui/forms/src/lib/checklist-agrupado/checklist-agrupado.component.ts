@@ -46,7 +46,8 @@ let siguienteChecklist = 0;
  * marcados (`readonly id[]`), con el `disabled` del FormControl.
  *
  * El filtro solo OCULTA: lo marcado que queda oculto se sigue guardando.
- * "Seleccionar todos" actua sobre las opciones visibles del grupo; los
+ * Con filtro, la casilla del grupo dice "Seleccionar visibles" y actua
+ * (y se marca) solo segun las opciones visibles del grupo; los
  * contadores cuentan el grupo completo. Deshabilitado, no hay filtro ni
  * "Seleccionar todos".
  */
@@ -73,6 +74,12 @@ export class ChecklistAgrupadoComponent extends CampoBase {
   protected readonly seleccion = signal<readonly IdOpcionChecklist[]>([]);
 
   private readonly marcadas = computed(() => new Set(this.seleccion()));
+
+  protected readonly filtrando = computed(() => this.filtro().trim() !== '');
+  /** Con filtro, la casilla del grupo solo toca (y solo refleja) lo visible, y lo dice. */
+  protected readonly etiquetaSeleccionGrupo = computed(() =>
+    this.filtrando() ? 'Seleccionar visibles' : 'Seleccionar todos',
+  );
 
   protected readonly totalOpciones = computed(() =>
     this.grupos().reduce((suma, grupo) => suma + grupo.opciones.length, 0),

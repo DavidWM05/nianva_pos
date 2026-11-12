@@ -63,3 +63,31 @@ test('ui-checklist-agrupado: estados normal, filtrado y deshabilitado', async ({
     await expect(casilla).toBeDisabled();
   }
 });
+
+test('ui-checklist-agrupado deshabilitado: la descripcion se atenua como la etiqueta y el contador queda a la derecha', async ({ page }) => {
+  await page.goto('/forms?tema=claro');
+  await page.waitForLoadState('networkidle');
+
+  const deshabilitado = page.locator('ui-checklist-agrupado').last();
+  const normal = page.locator('ui-checklist-agrupado').first();
+
+  // La opcion "Anular" (Ventas) trae descripcion: en deshabilitado, mismo color que su etiqueta.
+  const colores = await deshabilitado
+    .locator('mat-checkbox', { hasText: 'Anular' })
+    .evaluate((casilla) => ({
+      etiqueta: getComputedStyle(casilla.querySelector('.mdc-label') as Element).color,
+      descripcion: getComputedStyle(casilla.querySelector('.ui-checklist__descripcion') as Element).color,
+    }));
+  expect(colores.descripcion).toBe(colores.etiqueta);
+
+  // El contador, pegado al borde derecho de la cabecera del grupo, como en el estado normal.
+  const separacionDerecha = (checklist: typeof normal) =>
+    checklist
+      .getByRole('group', { name: 'Ventas' })
+      .locator('.ui-checklist__cabecera')
+      .evaluate((cabecera) => {
+        const contador = cabecera.querySelector('.ui-checklist__contador') as Element;
+        return Math.round(cabecera.getBoundingClientRect().right - contador.getBoundingClientRect().right);
+      });
+  expect(await separacionDerecha(deshabilitado)).toBe(await separacionDerecha(normal));
+});
