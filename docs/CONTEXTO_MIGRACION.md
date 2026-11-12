@@ -1692,6 +1692,27 @@ repo.
     - **pendiente para el responsable:** el backend acepta un código de recuperación en
       lugar del TOTP (`TwoFactorController::verifyLogin`), pero la pantalla solo admite 6
       dígitos: quien perdió su app no tiene cómo usarlo desde la UI. No entra en el 50j.
+  - **`ui-btn-enviar` con `deshabilitado` (Claude, `3053091`):** entrada aditiva para
+    deshabilitar el botón por una condición del formulario, sin indicador ni `aria-busy`.
+    Reemplaza el `fieldset` deshabilitado que la 50f usaba para eso. El caso existente "un
+    clic mientras envia no dispara el submit" no comprueba nada (su host usa `(ngSubmit)`
+    sin `FormsModule`); no se tocó (PRO-01) y los casos nuevos sí importan `FormsModule`.
+  - **50h · saldos (Codex):**
+    - cuentas por cobrar, cuentas por pagar, gift cards, notas de crédito y ventas a plazos
+      sobre `libs/ui`; los cinco entran en `MODULOS_POS_SIN_PRIMENG`. E2e de flujo
+      (`modulos/saldos.spec.ts`: abono, pago, recarga y plan con backend real), con axe;
+    - los botones de confirmar abono, pago y recarga y los de crear usan
+      `ui-btn-enviar [deshabilitado]`; los seis `fieldset` deshabilitados de la 50f se
+      reemplazan igual, con su CSS;
+    - **contrato:** `por_antiguedad` de los reportes de cuentas por cobrar y por pagar es
+      cadena decimal en el backend y en el OpenAPI (API-02). El tipo local `number` era el
+      que estaba mal: pasa a `string` y los cinco servicios salen de `contrato-pendientes`.
+      **PRO-01:** en los specs de `reporte-cuentas-cobrar` y `reporte-cuentas-pagar` solo
+      cambian los cinco valores del fixture, a cadenas con dos decimales; nombres, casos y
+      aserciones iguales. Los demás specs existentes, solo providers;
+    - pendientes: contrato 30 → 25, cargando 20 → 15, formato 37 → 27; línea base 2121 →
+      1637 líneas. 642 tests de `pos`, 75 e2e, axe en 70 análisis (1280 y 390 px) sin
+      violaciones.
 - **Posibles mejoras (roadmap):**
   - **capturas de Linux sin pasar por CI (Docker):** hoy cada PR con cambio visual falla una
     vez en "Catálogo visual", se baja el artifact y se versionan las capturas, porque en el
