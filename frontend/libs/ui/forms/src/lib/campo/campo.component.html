@@ -9,7 +9,7 @@
   <ng-content />
 
   @if (ayuda(); as textoAyuda) {
-    <small class="ui-campo__ayuda">{{ textoAyuda }}</small>
+    <small [id]="ayudaId()" class="ui-campo__ayuda">{{ textoAyuda }}</small>
   }
 
   @if (mensaje(); as error) {

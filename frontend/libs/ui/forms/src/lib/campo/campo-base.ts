@@ -49,6 +49,9 @@ export abstract class CampoBase implements ControlValueAccessor {
   }
 
   protected descritoPor(): string | null {
-    return this.ariaInvalido() ? this.campo?.errorId() ?? null : null;
+    const ids = [this.campo?.ayudaId() ?? null, this.ariaInvalido() ? this.campo?.errorId() ?? null : null]
+      .filter((id): id is string => id !== null);
+
+    return ids.length > 0 ? ids.join(' ') : null;
   }
 }

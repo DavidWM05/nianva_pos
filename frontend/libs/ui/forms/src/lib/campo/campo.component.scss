@@ -22,3 +22,31 @@
   color: var(--nv-peligro-texto);
   font-size: var(--nv-font-size-xs);
 }
+
+// UI-11. Sin encapsulacion (ver campo.component.ts): un input nativo proyectado (la busqueda de
+// los listados) no lleva el atributo de ui-campo. Toma la caja, el borde, el foco y el alto de
+// los inputs de ui-forms (como ui-checklist-agrupado), los mismos que ui-select-filtro. Solo
+// los hijos directos: matInput y los ui-* tienen su propia caja. :where() deja la especificidad
+// en la de .ui-campo, asi el estilo propio de una pantalla sigue ganando.
+.ui-campo > :where(input:not([type='checkbox'], [type='radio']), textarea, select) {
+  width: 100%;
+  box-sizing: border-box;
+  padding: var(--nv-spacing-2) var(--nv-spacing-3);
+  border: 1px solid var(--nv-borde);
+  border-radius: var(--nv-radius-md);
+  background: var(--nv-superficie);
+  color: var(--nv-texto);
+  font-family: var(--nv-font-family);
+  font-size: var(--nv-font-size-base);
+}
+
+.ui-campo > :where(input:not([type='checkbox'], [type='radio']), textarea, select):focus {
+  border-color: var(--nv-foco);
+  outline: 2px solid var(--nv-foco);
+  outline-offset: 1px;
+}
+
+.ui-campo > :where(input:not([type='checkbox'], [type='radio']), textarea, select):disabled {
+  background: var(--nv-deshabilitado-fondo);
+  color: var(--nv-deshabilitado-texto);
+}
