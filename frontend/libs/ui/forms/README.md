@@ -81,3 +81,14 @@ al menos uno. El error de servidor desaparece cuando el usuario edita el campo.
   <ui-checklist-agrupado etiqueta="Permisos" etiquetaFiltro="Filtrar permisos"
     [grupos]="grupos" formControlName="permisos" />
   ```
+- `ui-btn-enviar`: `matButton` relleno con `type="submit"` y `etiqueta` (por
+  defecto "Guardar"). Con `[enviando]` se deshabilita en el acto, anuncia
+  `aria-busy` y muestra su indicador pasado el umbral. Con `[deshabilitado]` se
+  deshabilita por una condición del formulario (por ejemplo, un abono sin monto),
+  sin indicador ni `aria-busy`. Para deshabilitarlo no se envuelve en un
+  `fieldset` deshabilitado.
+
+  ```html
+  <ui-btn-enviar etiqueta="Confirmar abono" [enviando]="enviando()"
+    [deshabilitado]="!montoValido()" />
+  ```
