@@ -1,8 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { ToastService } from '@nianva/ui-shared';
-import { ConfirmationService } from 'primeng/api';
-import { providePrimeNG } from 'primeng/config';
 import { of, throwError } from 'rxjs';
 import { describe, expect, it, vi } from 'vitest';
 
@@ -10,6 +8,7 @@ import { AuthStateService } from '../../../auth/auth-state.service';
 import { Usuario } from '../../../auth/usuario.types';
 import { SeguridadService } from '../../seguridad.service';
 import { PreferenciasComponent } from './preferencias.component';
+import { proveedoresDePantalla } from '../../../testing/proveedores-pantalla';
 
 describe('PreferenciasComponent', () => {
   let fixture: ComponentFixture<PreferenciasComponent>;
@@ -48,9 +47,8 @@ describe('PreferenciasComponent', () => {
     await TestBed.configureTestingModule({
       imports: [PreferenciasComponent],
       providers: [
+        ...proveedoresDePantalla(),
         provideAnimationsAsync(),
-        providePrimeNG(),
-        ConfirmationService,
         { provide: SeguridadService, useValue: seguridadService },
         { provide: ToastService, useValue: toastService },
         { provide: AuthStateService, useValue: authStateService },

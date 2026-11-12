@@ -14,6 +14,7 @@ import { PantallaService } from './pantalla.service';
  *   <ui-shell>
  *     <nav menu>...</nav>
  *     <app-breadcrumb encabezado />
+ *     <app-menu-usuario acciones />
  *     <router-outlet />
  *   </ui-shell>
  */

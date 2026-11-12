@@ -1,6 +1,6 @@
-<div class="preferencias">
-  <h1>Preferencias</h1>
+<ui-page-header clave="preferencias" />
 
+<div class="preferencias">
   <section class="preferencias__seccion">
     <nucleo-dispositivos-confiables-list
       [dispositivos]="dispositivos()"
@@ -25,7 +25,7 @@
         submitLabel="Confirmar cambio"
         (codeSubmit)="onCodigoPassword($event)"
       />
-      <button type="button" class="preferencias__cancelar" (click)="cancelarCodigo()">Cancelar</button>
+      <button matButton type="button" (click)="cancelarCodigo()">Cancelar</button>
     }
   </section>
 </div>

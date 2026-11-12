@@ -1,12 +1,6 @@
 .registro-ejemplo {
-  padding: var(--nucleo-spacing-6);
+  display: grid;
+  gap: var(--nv-spacing-4);
+  padding: var(--nv-spacing-6);
 }
 
-.registro-ejemplo__nota {
-  background: var(--nucleo-color-primary-50);
-  color: var(--nucleo-color-primary-700);
-  padding: var(--nucleo-spacing-3) var(--nucleo-spacing-4);
-  border-radius: var(--nucleo-radius-md);
-  font-size: var(--nucleo-font-size-sm);
-  margin-bottom: var(--nucleo-spacing-4);
-}

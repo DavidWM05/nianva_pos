@@ -321,6 +321,23 @@ const overridesMaterial = {
 const overridesMaterialValor = {
   'button-filled-ripple-color':
     'color-mix(in srgb, var(--nv-texto) calc(var(--mat-sys-pressed-state-layer-opacity) * 100%), transparent)',
+  // 50i: botones de texto y outlined; el porque esta en comentariosMaterialValor.
+  'button-text-focus-state-layer-opacity': '0.08',
+  'button-text-pressed-state-layer-opacity': '0.08',
+  'button-outlined-focus-state-layer-opacity': '0.08',
+  'button-outlined-pressed-state-layer-opacity': '0.08',
+  'button-text-ripple-color': 'color-mix(in srgb, var(--nv-primario) 8%, transparent)',
+  'button-outlined-ripple-color': 'color-mix(in srgb, var(--nv-primario) 8%, transparent)',
+};
+
+// Los comentarios de overridesMaterialValor que tambien van a material.scss, antes de su linea.
+const comentariosMaterialValor = {
+  'button-text-focus-state-layer-opacity': [
+    '50i: con el 12% de M3, el texto primario de un boton de texto u outlined con foco (o con su',
+    'menu abierto) quedaba en 4.37:1 sobre la capa de estado en claro. Al 8% (el de hover en M3)',
+    'queda en 4.65:1 en claro y 5.03:1 en oscuro (material-botones-estado.spec.ts).',
+  ],
+  'button-text-ripple-color': ['El ripple del clic es otra capa, con su propio color (12% de primario en M3).'],
 };
 
 const rolesMaterialCss = Object.entries(rolesMaterial)
@@ -333,7 +350,10 @@ const formaMaterialSass = Object.entries(formaMaterial)
 
 const overridesMaterialCss = [
   ...Object.entries(overridesMaterial).map(([nombre, token]) => `  --mat-${nombre}: var(--nv-${token});`),
-  ...Object.entries(overridesMaterialValor).map(([nombre, valor]) => `  --mat-${nombre}: ${valor};`),
+  ...Object.entries(overridesMaterialValor).flatMap(([nombre, valor]) => [
+    ...(comentariosMaterialValor[nombre] ?? []).map((linea) => `  // ${linea}`),
+    `  --mat-${nombre}: ${valor};`,
+  ]),
 ].join('\n');
 
 const materialScss = `/* Generado por scripts/generate.mjs. No editar a mano. */

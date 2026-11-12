@@ -1,8 +1,7 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
-import { MenuItem } from 'primeng/api';
-import { Breadcrumb } from 'primeng/breadcrumb';
+import { Miga, MigasComponent } from '@nianva/ui-layout';
 import { filter, startWith } from 'rxjs';
 
 /**
@@ -14,16 +13,16 @@ import { filter, startWith } from 'rxjs';
 @Component({
   selector: 'nucleo-breadcrumb',
   standalone: true,
-  imports: [Breadcrumb],
-  template: `<p-breadcrumb [model]="items()" [home]="home" />`,
+  imports: [MigasComponent],
+  template: `<ui-migas [migas]="migas()" />`,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BreadcrumbComponent {
   private readonly router = inject(Router);
   private readonly activatedRoute = inject(ActivatedRoute);
 
-  protected readonly home: MenuItem = { label: 'Inicio', icon: 'pi pi-home', routerLink: '/' };
-  protected readonly items = signal<MenuItem[]>([]);
+  private readonly inicio: Miga = { etiqueta: 'Inicio', ruta: '/', icono: 'pi pi-home' };
+  protected readonly migas = signal<Miga[]>([this.inicio]);
 
   constructor() {
     this.router.events
@@ -33,11 +32,11 @@ export class BreadcrumbComponent {
         takeUntilDestroyed(),
       )
       .subscribe(() => {
-        this.items.set(this.buildBreadcrumb(this.activatedRoute.root));
+        this.migas.set([this.inicio, ...this.buildBreadcrumb(this.activatedRoute.root)]);
       });
   }
 
-  private buildBreadcrumb(route: ActivatedRoute, url = '', breadcrumbs: MenuItem[] = []): MenuItem[] {
+  private buildBreadcrumb(route: ActivatedRoute, url = '', breadcrumbs: Miga[] = []): Miga[] {
     const [child] = route.children;
     // Con startWith(null), la primera llamada ocurre antes de que el router asigne el snapshot
     // de las rutas hijas: leer child.snapshot.url lanzaba un TypeError en cada pantalla (lo
@@ -51,7 +50,7 @@ export class BreadcrumbComponent {
     const label = child.snapshot.data['breadcrumb'] as string | undefined;
 
     if (label) {
-      breadcrumbs.push({ label, routerLink: nextUrl });
+      breadcrumbs.push({ etiqueta: label, ruta: nextUrl || '/' });
     }
 
     return this.buildBreadcrumb(child, nextUrl, breadcrumbs);

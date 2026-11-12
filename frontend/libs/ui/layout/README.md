@@ -10,6 +10,8 @@ Estructura de las páginas: encabezado, cuerpo con sus estados de carga y seccio
 | `<ui-page [estado]="estado()" forma="listado" (reintentar)="cargar()">` | `cargando` muestra un skeleton con la forma (`listado`, `detalle`, `formulario`), `error` muestra el mensaje con "Reintentar" y `listo` muestra el contenido |
 | `<ui-section titulo="Datos generales">` | Bloque con título dentro de una página |
 | `<ui-form-actions>` | Botones al pie de un formulario, alineados a la derecha |
+| `<ui-shell>` | Marco de la app autenticada: `menu` (fijo en ancha, panel en angosta), `encabezado` y, a la derecha del encabezado, `acciones` (por ejemplo, el menú de usuario de la app). No conoce usuario ni tema |
+| `<ui-migas [migas]="migas">` | Ruta de navegación: `nav` con nombre accesible y lista ordenada; cada `Miga` (`etiqueta`, `ruta`, `icono` opcional) es un enlace menos la última, que lleva `aria-current="page"`. La app arma las migas |
 
 Ejemplo:
 

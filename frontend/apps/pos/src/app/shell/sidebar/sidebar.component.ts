@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
+import { MatIconButton } from '@angular/material/button';
 import { PantallaService } from '@nianva/ui-layout';
-import { Button } from 'primeng/button';
 
 import { SesionActualService } from '../../auth/sesion-actual.service';
 import { NUCLEO_ITEM_INICIO, NUCLEO_NAV_GROUPS } from '../../modules/modules.config';
@@ -15,7 +15,7 @@ import { NUCLEO_ITEM_INICIO, NUCLEO_NAV_GROUPS } from '../../modules/modules.con
 @Component({
   selector: 'nucleo-sidebar',
   standalone: true,
-  imports: [RouterLink, RouterLinkActive, Button],
+  imports: [RouterLink, RouterLinkActive, MatIconButton],
   templateUrl: './sidebar.component.html',
   styleUrl: './sidebar.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

@@ -2,6 +2,8 @@ import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/cor
 import { MatButton } from '@angular/material/button';
 import {
   FormActionsComponent,
+  Miga,
+  MigasComponent,
   PageComponent,
   PageHeaderComponent,
   PantallaService,
@@ -11,12 +13,16 @@ import {
 @Component({
   selector: 'cat-layout-page',
   standalone: true,
-  imports: [FormActionsComponent, MatButton, PageComponent, PageHeaderComponent, SectionComponent],
+  imports: [FormActionsComponent, MatButton, MigasComponent, PageComponent, PageHeaderComponent, SectionComponent],
   template: `
     <ui-page-header clave="catalogo-layout" subtitulo="Encabezado, estados de página y secciones" />
 
     <ui-section titulo="PantallaService">
       <p>La señal <code>angosta</code> está {{ pantalla.angosta() ? 'activa' : 'inactiva' }}.</p>
+    </ui-section>
+
+    <ui-section titulo="Migas">
+      <ui-migas [migas]="migas" />
     </ui-section>
 
     <ui-section titulo="Page listo">
@@ -53,4 +59,9 @@ import {
 export class LayoutPage {
   protected readonly pantalla = inject(PantallaService);
   protected readonly reintentos = signal(0);
+  protected readonly migas: Miga[] = [
+    { etiqueta: 'Inicio', ruta: '/', icono: 'pi pi-home' },
+    { etiqueta: 'Clientes', ruta: '/layout' },
+    { etiqueta: 'Nuevo cliente', ruta: '/layout' },
+  ];
 }

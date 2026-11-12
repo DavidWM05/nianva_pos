@@ -22,6 +22,8 @@ const contratoPendientes = JSON.parse(
 // encargo agrega el suyo al cerrar, y desde ahi ESLint prohibe PrimeNG en ese modulo, specs
 // incluidos. La lista solo crece; al final de la serie, PrimeNG sale de todo apps/pos.
 const MODULOS_POS_SIN_PRIMENG = ['unidades-medida', 'auditoria', 'nucleo', 'configuracion', 'precios', 'crm', 'administracion', 'cotizaciones', 'apartados', 'devoluciones'];
+// Carpetas de pos fuera de modules/ que ya no usan PrimeNG (50i: shell, perfil y demo).
+const CARPETAS_POS_SIN_PRIMENG = ['shell', 'perfil', 'demo'];
 
 const sinPrimeNg = ['primeng', 'primeng/*', '@primeuix/themes', '@primeuix/themes/*'];
 const sinHttpClientEnComponentes = {
@@ -29,8 +31,10 @@ const sinHttpClientEnComponentes = {
   importNames: ['HttpClient'],
   message: 'Un componente no llama a la API: mueve la llamada a un servicio de dominio.',
 };
-const archivosDeModulos = (sufijo) =>
-  MODULOS_POS_SIN_PRIMENG.map((modulo) => `apps/pos/src/app/modules/${modulo}/**/${sufijo}`);
+const archivosDeModulos = (sufijo) => [
+  ...MODULOS_POS_SIN_PRIMENG.map((modulo) => `apps/pos/src/app/modules/${modulo}/**/${sufijo}`),
+  ...CARPETAS_POS_SIN_PRIMENG.map((carpeta) => `apps/pos/src/app/${carpeta}/**/${sufijo}`),
+];
 // Sin modulos no se agrega nada: `files: []` aplicaria el bloque a todos los archivos. El bloque
 // de componentes repite la regla de HttpClient porque un bloque posterior reemplaza la regla
 // completa, no la suma.

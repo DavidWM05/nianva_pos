@@ -2,7 +2,6 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { DynamicFormComponent } from '@nianva/ui-shared';
-import { providePrimeNG } from 'primeng/config';
 import { beforeEach, describe, expect, it } from 'vitest';
 
 import { CambiarPasswordFormComponent } from './cambiar-password-form.component';
@@ -14,7 +13,7 @@ describe('CambiarPasswordFormComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [CambiarPasswordFormComponent],
-      providers: [provideAnimationsAsync(), providePrimeNG()],
+      providers: [provideAnimationsAsync()],
     }).compileComponents();
 
     fixture = TestBed.createComponent(CambiarPasswordFormComponent);

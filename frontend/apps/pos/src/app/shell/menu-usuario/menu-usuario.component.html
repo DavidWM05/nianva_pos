@@ -1,0 +1,33 @@
+<button
+  matButton
+  type="button"
+  [matMenuTriggerFor]="menu"
+  [attr.aria-label]="'Menú de usuario: ' + nombre()"
+>
+  <i class="pi pi-user" matButtonIcon aria-hidden="true"></i>
+  {{ nombre() }}
+</button>
+
+<mat-menu #menu="matMenu" xPosition="before">
+  <div role="group" aria-label="Tema">
+    @for (opcion of opcionesTema; track opcion.valor) {
+      <button
+        mat-menu-item
+        type="button"
+        role="menuitemradio"
+        [attr.aria-checked]="tema.preferenciaActual() === opcion.valor"
+        (click)="elegirTema(opcion.valor)"
+      >
+        <i
+          aria-hidden="true"
+          class="pi pi-check"
+          [style.visibility]="tema.preferenciaActual() === opcion.valor ? 'visible' : 'hidden'"
+        ></i>
+        {{ opcion.etiqueta }}
+      </button>
+    }
+  </div>
+  <mat-divider />
+  <a mat-menu-item routerLink="/perfil/preferencias">Preferencias</a>
+  <button mat-menu-item type="button" (click)="cerrarSesion()">Cerrar sesión</button>
+</mat-menu>

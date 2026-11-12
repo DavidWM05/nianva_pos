@@ -94,4 +94,14 @@ html {
   --mat-form-field-disabled-trailing-icon-color: var(--nv-deshabilitado-texto);
   --mat-button-filled-state-layer-color: var(--nv-texto);
   --mat-button-filled-ripple-color: color-mix(in srgb, var(--nv-texto) calc(var(--mat-sys-pressed-state-layer-opacity) * 100%), transparent);
+  // 50i: con el 12% de M3, el texto primario de un boton de texto u outlined con foco (o con su
+  // menu abierto) quedaba en 4.37:1 sobre la capa de estado en claro. Al 8% (el de hover en M3)
+  // queda en 4.65:1 en claro y 5.03:1 en oscuro (material-botones-estado.spec.ts).
+  --mat-button-text-focus-state-layer-opacity: 0.08;
+  --mat-button-text-pressed-state-layer-opacity: 0.08;
+  --mat-button-outlined-focus-state-layer-opacity: 0.08;
+  --mat-button-outlined-pressed-state-layer-opacity: 0.08;
+  // El ripple del clic es otra capa, con su propio color (12% de primario en M3).
+  --mat-button-text-ripple-color: color-mix(in srgb, var(--nv-primario) 8%, transparent);
+  --mat-button-outlined-ripple-color: color-mix(in srgb, var(--nv-primario) 8%, transparent);
 }
