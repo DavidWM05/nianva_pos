@@ -14,6 +14,7 @@ use App\Modules\Inventario\Models\Compra;
 use App\Modules\Inventario\Models\Producto;
 use App\Modules\Inventario\Models\ProductoVariante;
 use App\Modules\NotasCredito\Models\NotaCredito;
+use App\Modules\Nucleo\Models\MetodoPago;
 use App\Modules\Nucleo\Models\Rol;
 use App\Modules\Nucleo\Models\RolPermiso;
 use App\Modules\Nucleo\Models\Usuario;
@@ -152,5 +153,6 @@ return [
         Devolucion::class,
         Gasto::class,
         UnidadMedida::class,
+        MetodoPago::class,
     ],
 ];
