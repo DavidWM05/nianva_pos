@@ -1,1 +1,13 @@
-<nucleo-dynamic-form [fields]="fields" [submitLabel]="submitLabel" (formSubmit)="onSubmit($event)" />
+<nucleo-dynamic-form
+  [fields]="fields"
+  [submitLabel]="submitLabel"
+  [enviando]="enviando"
+  (formSubmit)="onSubmit($event)"
+  ><ui-campo etiqueta="Cantidad" [requerido]="true"
+    ><ui-input-cantidad [formControl]="numericos.controls.cantidad"
+  /></ui-campo>
+  <ui-campo etiqueta="Precio de compra (unitario)" [requerido]="true"
+    ><ui-input-dinero
+      [min]="0"
+      [formControl]="numericos.controls.precio_compra" /></ui-campo
+></nucleo-dynamic-form>

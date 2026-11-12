@@ -6,8 +6,6 @@
     "apps/pos/src/app/modules/administracion/usuario-admin.service.ts",
     "apps/pos/src/app/modules/configuracion/configuracion.service.ts",
     "apps/pos/src/app/modules/delivery/pedido.service.ts",
-    "apps/pos/src/app/modules/inventario/compra.service.ts",
-    "apps/pos/src/app/modules/inventario/producto.service.ts",
     "apps/pos/src/app/modules/payroll/empleado.service.ts",
     "apps/pos/src/app/modules/payroll/nomina.service.ts",
     "apps/pos/src/app/modules/prestamos/prestamo.service.ts",

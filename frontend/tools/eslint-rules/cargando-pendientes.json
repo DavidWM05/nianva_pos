@@ -1,7 +1,5 @@
 [
     "apps/pos/src/app/modules/delivery/pages/pedido-detalle/pedido-detalle.component.html",
-    "apps/pos/src/app/modules/inventario/kardex-list/kardex-list.component.html",
-    "apps/pos/src/app/modules/inventario/pages/producto-detalle/producto-detalle.component.html",
     "apps/pos/src/app/modules/payroll/pages/empleado-detalle/empleado-detalle.component.html",
     "apps/pos/src/app/modules/payroll/pages/nomina-detalle/nomina-detalle.component.html",
     "apps/pos/src/app/modules/prestamos/pages/prestamo-detalle/prestamo-detalle.component.html",

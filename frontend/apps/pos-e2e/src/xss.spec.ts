@@ -33,7 +33,7 @@ test('el nombre con HTML se muestra literal y no ejecuta XSS en las pantallas de
   await comprobarTextoLiteral(page, filaProducto);
 
   await page.goto(`/inventario/productos/${producto.id}`);
-  const tituloProducto = page.locator('h1').first();
+  const tituloProducto = page.getByTestId('producto-detalle-encabezado').getByRole('heading', { level: 2 });
   await expect(tituloProducto).toHaveText(NOMBRE_XSS);
   await comprobarTextoLiteral(page, tituloProducto);
 

@@ -1,1 +1,22 @@
-<nucleo-dynamic-form [fields]="fields" [submitLabel]="submitLabel" [readonly]="readonly" (formSubmit)="onSubmit($event)" />
+<ui-page
+  [estado]="estadoCatalogos()"
+  forma="formulario"
+  (reintentar)="cargarCatalogos()"
+>
+  <nucleo-dynamic-form
+    [fields]="fields"
+    [submitLabel]="submitLabel"
+    [readonly]="readonly"
+    [enviando]="enviando"
+    (formSubmit)="onSubmit($event)"
+    ><ui-campo etiqueta="Precio de compra"
+      ><ui-input-dinero
+        [min]="0"
+        [formControl]="numericos.controls.precio_compra"
+    /></ui-campo>
+    <ui-campo etiqueta="Precio de venta"
+      ><ui-input-dinero
+        [min]="0"
+        [formControl]="numericos.controls.precio_venta" /></ui-campo
+  ></nucleo-dynamic-form>
+</ui-page>

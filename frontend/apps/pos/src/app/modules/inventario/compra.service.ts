@@ -1,3 +1,4 @@
+import { RespuestaDe, CuerpoDe } from '@nianva/api-contrato';
 import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable, map } from 'rxjs';
@@ -31,16 +32,22 @@ export class CompraService {
   private readonly http = inject(HttpClient);
 
   proveedores(): Observable<ProveedorSimple[]> {
-    return this.http.get<{ data: ProveedorSimple[] }>(urlApi(`/proveedores`)).pipe(map((r) => r.data));
+    return this.http
+      .get<RespuestaDe<'/proveedores', 'get'>>(urlApi(`/proveedores`))
+      .pipe(map((r) => r.data));
   }
 
   crearProveedor(payload: ProveedorFormPayload): Observable<ProveedorSimple> {
+    const cuerpo: CuerpoDe<'/proveedores', 'post'> = payload;
     return this.http
-      .post<{ data: ProveedorSimple }>(urlApi(`/proveedores`), payload)
+      .post<RespuestaDe<'/proveedores', 'post'>>(urlApi(`/proveedores`), cuerpo)
       .pipe(map((r) => r.data));
   }
 
   registrar(payload: CompraFormPayload): Observable<void> {
-    return this.http.post<{ data: unknown }>(urlApi(`/compras`), payload).pipe(map(() => undefined));
+    const cuerpo: CuerpoDe<'/compras', 'post'> = payload;
+    return this.http
+      .post<RespuestaDe<'/compras', 'post'>>(urlApi(`/compras`), cuerpo)
+      .pipe(map(() => undefined));
   }
 }
