@@ -7,6 +7,7 @@ import {
   ChecklistAgrupadoComponent,
   GrupoChecklist,
   InputCantidadComponent,
+  InputCodigoComponent,
   InputDineroComponent,
   InputPasswordComponent,
   InputPinComponent,
@@ -24,6 +25,7 @@ import { FormActionsComponent, PageHeaderComponent, SectionComponent } from '@ni
     ChecklistAgrupadoComponent,
     FormActionsComponent,
     InputCantidadComponent,
+    InputCodigoComponent,
     InputDineroComponent,
     InputPasswordComponent,
     InputPinComponent,
@@ -34,7 +36,7 @@ import { FormActionsComponent, PageHeaderComponent, SectionComponent } from '@ni
     SelectFiltroComponent,
   ],
   template: `
-    <ui-page-header clave="catalogo-forms" subtitulo="Campos, contraseña, PIN y botón de envío" />
+    <ui-page-header clave="catalogo-forms" subtitulo="Campos, contraseña, PIN, código de verificación y botón de envío" />
 
     <ui-section titulo="Formulario completo">
       <form [formGroup]="form" (ngSubmit)="guardar()">
@@ -49,6 +51,9 @@ import { FormActionsComponent, PageHeaderComponent, SectionComponent } from '@ni
         </ui-campo>
         <ui-campo etiqueta="PIN" [requerido]="true">
           <ui-input-pin formControlName="pin" [longitud]="4" (completo)="pinCompleto.set($event)" />
+        </ui-campo>
+        <ui-campo etiqueta="Código de verificación">
+          <ui-input-codigo formControlName="codigo" />
         </ui-campo>
         <ui-campo etiqueta="Sucursal">
           <ui-select-filtro formControlName="sucursal" [opciones]="opciones" />
@@ -110,6 +115,7 @@ export class FormsPage {
     cantidad: new FormControl<number | null>(2),
     password: new FormControl(''),
     pin: new FormControl(''),
+    codigo: new FormControl(''),
     sucursal: new FormControl<number | null>(null),
   });
   protected readonly formDeshabilitado = new FormGroup({

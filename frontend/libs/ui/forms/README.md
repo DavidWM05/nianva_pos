@@ -58,6 +58,11 @@ al menos uno. El error de servidor desaparece cuando el usuario edita el campo.
 - `ui-input-pin`: PIN de 4 a 6 dígitos con teclado físico y táctil, sin
   `<input type="password">`, emite `(completo)` al llegar a la longitud y
   expone `limpiar()`. No valida PIN triviales ni los hashea.
+- `ui-input-codigo`: código de un solo uso visible (el TOTP de una app de
+  autenticación): un solo campo con `inputmode="numeric"` y
+  `autocomplete="one-time-code"`, solo dígitos (lo pegado con espacios o guiones
+  se limpia), `longitud` 6 por defecto y `(completo)` al llegar a ella. A
+  diferencia de `ui-input-pin`, los dígitos se ven y no hay teclado en pantalla.
 - `ui-select-filtro`: `mat-select` dentro de `mat-form-field`, con la opción "Todas" y `ariaLabel` (por defecto "Filtro")
   equivalente a `null`. Con `[todas]="false"` no antepone "Todas": es una elección
   obligatoria de formulario (por ejemplo, "Aplica a" de una regla de precio).

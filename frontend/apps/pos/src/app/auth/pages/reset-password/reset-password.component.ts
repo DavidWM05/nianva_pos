@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, ViewChild, inject, signal } from '@angular/core';
 import { Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { AlertComponent } from '@nianva/ui-feedback';
 import { DynamicFormComponent, DynamicFormField } from '@nianva/ui-shared';
 
 import { AuthService } from '../../auth.service';
@@ -16,7 +17,7 @@ import { AuthService } from '../../auth.service';
 @Component({
   selector: 'nucleo-reset-password',
   standalone: true,
-  imports: [DynamicFormComponent, RouterLink],
+  imports: [AlertComponent, DynamicFormComponent, RouterLink],
   templateUrl: './reset-password.component.html',
   styleUrl: './reset-password.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

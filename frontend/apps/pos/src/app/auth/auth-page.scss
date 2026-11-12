@@ -7,54 +7,43 @@
   align-items: center;
   justify-content: center;
   min-height: 100vh;
-  background: var(--nucleo-color-surface-50);
-  padding: var(--nucleo-spacing-4);
+  background: var(--nv-fondo);
+  padding: var(--nv-spacing-4);
 }
 
 .auth-card {
   width: 100%;
   max-width: 400px;
-  background: var(--nucleo-color-surface-0);
-  border-radius: var(--nucleo-radius-lg);
-  padding: var(--nucleo-spacing-8);
+  background: var(--nv-superficie);
+  color: var(--nv-texto);
+  border: 1px solid var(--nv-borde);
+  border-radius: var(--nv-radius-lg);
+  padding: var(--nv-spacing-8);
   box-shadow: var(--nv-shadow-tarjeta);
 
   h1 {
-    margin: 0 0 var(--nucleo-spacing-2);
-    color: var(--nucleo-color-primary-700);
-    font-size: var(--nucleo-font-size-2xl);
+    margin: 0 0 var(--nv-spacing-2);
+    color: var(--nv-primario);
+    font-size: var(--nv-font-size-2xl);
   }
 }
 
 .auth-card__subtitle {
-  margin: 0 0 var(--nucleo-spacing-6);
-  color: var(--nucleo-color-surface-600);
-  font-size: var(--nucleo-font-size-sm);
+  margin: 0 0 var(--nv-spacing-6);
+  color: var(--nv-texto-suave);
+  font-size: var(--nv-font-size-sm);
 }
 
-.auth-card__error {
-  background: color-mix(in srgb, var(--nucleo-color-danger) 10%, var(--nv-color-surface-0));
-  color: var(--nucleo-color-danger);
-  padding: var(--nucleo-spacing-3);
-  border-radius: var(--nucleo-radius-md);
-  font-size: var(--nucleo-font-size-sm);
-  margin-bottom: var(--nucleo-spacing-4);
-}
-
-.auth-card__status {
-  background: color-mix(in srgb, var(--nucleo-color-success) 10%, var(--nv-color-surface-0));
-  color: var(--nucleo-color-success);
-  padding: var(--nucleo-spacing-3);
-  border-radius: var(--nucleo-radius-md);
-  font-size: var(--nucleo-font-size-sm);
-  margin-bottom: var(--nucleo-spacing-4);
+// Avisos de error, de exito o de inactividad: son ui-alert; aqui solo su separacion.
+.auth-card__aviso {
+  margin-bottom: var(--nv-spacing-4);
 }
 
 .auth-card__link {
   display: inline-block;
-  margin-top: var(--nucleo-spacing-4);
-  color: var(--nucleo-color-primary-600);
-  font-size: var(--nucleo-font-size-sm);
+  margin-top: var(--nv-spacing-4);
+  color: var(--nv-primario);
+  font-size: var(--nv-font-size-sm);
   text-decoration: none;
 
   &:hover {

@@ -122,7 +122,12 @@
 
   @if (!readonly) {
     <ui-form-actions>
-      <button matButton="filled" type="submit">{{ submitLabel }}</button>
+      <button matButton="filled" type="submit" [disabled]="enviando()" [attr.aria-busy]="enviando() || null">
+        @if (mostrarIndicador()) {
+          <i class="pi pi-spin pi-spinner dynamic-form__indicador" matButtonIcon aria-hidden="true"></i>
+        }
+        {{ submitLabel }}
+      </button>
     </ui-form-actions>
   }
 </form>

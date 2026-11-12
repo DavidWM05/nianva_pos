@@ -1,10 +1,12 @@
 import { ChangeDetectionStrategy, Component, InjectionToken, OnInit, inject, signal } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { Button } from 'primeng/button';
-import { InputOtp } from 'primeng/inputotp';
+import { MatButton } from '@angular/material/button';
+import { map } from 'rxjs';
 import * as QRCode from 'qrcode';
-import { SkeletonComponent, conUmbral } from '@nianva/ui-feedback';
+import { AlertComponent, SkeletonComponent, conUmbral } from '@nianva/ui-feedback';
+import { CampoComponent, InputCodigoComponent } from '@nianva/ui-forms';
 
 import { AuthStateService } from '../../auth-state.service';
 import { AuthService } from '../../auth.service';
@@ -24,7 +26,7 @@ export const GENERAR_QR = new InjectionToken<(otpauthUrl: string) => Promise<str
 @Component({
   selector: 'nucleo-two-factor-setup',
   standalone: true,
-  imports: [ReactiveFormsModule, InputOtp, Button, SkeletonComponent],
+  imports: [ReactiveFormsModule, MatButton, AlertComponent, CampoComponent, InputCodigoComponent, SkeletonComponent],
   templateUrl: './two-factor-setup.component.html',
   styleUrl: './two-factor-setup.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -39,9 +41,12 @@ export class TwoFactorSetupComponent implements OnInit {
   protected readonly qrDataUrl = signal<string | null>(null);
   protected readonly secret = signal<string | null>(null);
   protected readonly code = new FormControl('', { nonNullable: true });
+  /** Señal del valor: con OnPush, un setValue desde código (limpiar, un rechazo) también refresca el botón. */
+  protected readonly codigoCompleto = toSignal(this.code.valueChanges.pipe(map((valor) => valor.length === 6)), {
+    initialValue: false,
+  });
   /** Fallo al generar el QR: se muestra con "Reintentar" y sin formulario (UI-18). */
   protected readonly errorCarga = signal<string | null>(null);
-  protected readonly error = signal<string | null>(null);
   protected readonly enviando = signal(false);
   protected readonly indicadorEnvio = conUmbral(this.enviando);
   protected readonly recoveryCodes = signal<string[] | null>(null);
@@ -70,7 +75,6 @@ export class TwoFactorSetupComponent implements OnInit {
   onSubmit(event: Event): void {
     event.preventDefault();
     this.enviando.set(true);
-    this.error.set(null);
 
     this.authService.confirmTwoFactor(this.code.value).subscribe({
       next: ({ user, recovery_codes: codigos }) => {
@@ -80,8 +84,10 @@ export class TwoFactorSetupComponent implements OnInit {
       },
       error: () => {
         this.enviando.set(false);
-        this.error.set('Código inválido.');
         this.code.setValue('');
+        // Error del campo: ui-campo lo muestra bajo el codigo y lo asocia (aria-describedby).
+        this.code.setErrors({ servidor: 'Código inválido.' });
+        this.code.markAsTouched();
       },
     });
   }

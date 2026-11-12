@@ -11,7 +11,7 @@
           <li>{{ codigo }}</li>
         }
       </ul>
-      <p-button label="Ya los guardé, continuar" (click)="continuar()" styleClass="auth-card__submit" />
+      <button matButton="filled" type="button" class="auth-card__submit" (click)="continuar()">Ya los guardé, continuar</button>
     } @else {
       <h1>Configura la verificación en dos pasos</h1>
       <p class="auth-card__subtitle">
@@ -19,24 +19,17 @@
         similar.
       </p>
 
-      @if (error(); as mensaje) {
-        <p class="auth-card__error">{{ mensaje }}</p>
-      }
-
       @if (cargando()) {
         <div class="two-factor-setup__qr">
           <ui-skeleton forma="bloque" ancho="200px" alto="200px" etiqueta="Generando el código QR" />
         </div>
         <ui-skeleton forma="texto" ancho="80%" />
       } @else if (errorCarga(); as mensaje) {
-        <p class="auth-card__error">{{ mensaje }}</p>
-        <p-button
-          label="Reintentar"
-          icon="pi pi-refresh"
-          severity="secondary"
-          styleClass="auth-card__submit"
-          (click)="cargarQr()"
-        />
+        <ui-alert tono="peligro" class="auth-card__aviso">{{ mensaje }}</ui-alert>
+        <button matButton="outlined" type="button" class="auth-card__submit" (click)="cargarQr()">
+          <i class="pi pi-refresh" matButtonIcon aria-hidden="true"></i>
+          Reintentar
+        </button>
       } @else {
         @if (qrDataUrl(); as qr) {
           <img [src]="qr" alt="Código QR para configurar 2FA" class="two-factor-setup__qr" />
@@ -46,14 +39,21 @@
         }
 
         <form (submit)="onSubmit($event)">
-          <p-inputotp [formControl]="code" [length]="6" [integerOnly]="true" />
-          <p-button
+          <ui-campo etiqueta="Código de verificación">
+            <ui-input-codigo [formControl]="code" />
+          </ui-campo>
+          <button
+            matButton="filled"
             type="submit"
-            label="Confirmar"
-            [disabled]="enviando() || code.value.length !== 6"
-            [loading]="indicadorEnvio()"
-            styleClass="auth-card__submit"
-          />
+            class="auth-card__submit"
+            [disabled]="enviando() || !codigoCompleto()"
+            [attr.aria-busy]="enviando() || null"
+          >
+            @if (indicadorEnvio()) {
+              <i class="pi pi-spin pi-spinner" matButtonIcon aria-hidden="true"></i>
+            }
+            Confirmar
+          </button>
         </form>
       }
     }

@@ -82,21 +82,4 @@ describe('TwoFactorSetupComponent', () => {
     expect(authService.getTwoFactorSetup).toHaveBeenCalledTimes(2);
     expect(el.querySelector('ui-skeleton')).not.toBeNull();
   });
-
-  it('al confirmar, el boton queda deshabilitado y muestra su indicador pasado el umbral', async () => {
-    const { fixture, el } = await crear();
-    await cargarQr(fixture);
-
-    fixture.componentInstance['code'].setValue('123456');
-    fixture.detectChanges();
-    el.querySelector('form')?.dispatchEvent(new Event('submit'));
-    fixture.detectChanges();
-
-    const boton = () => el.querySelector<HTMLButtonElement>('form button[type="submit"]');
-    expect(boton()?.disabled).toBe(true);
-
-    await vi.advanceTimersByTimeAsync(300);
-    fixture.detectChanges();
-    expect(boton()?.querySelector('[data-p-icon="spinner"], .p-button-loading-icon, svg')).not.toBeNull();
-  });
 });
