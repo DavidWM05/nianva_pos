@@ -186,3 +186,88 @@ for (const tema of ['claro', 'oscuro'] as const) {
     sinErrores(errores, '/login', SIN_SESION);
   });
 }
+
+/** Cierra sesion desde el menu de usuario y olvida el dispositivo confiable, que saltaria el 2FA. */
+async function cerrarSesion(page: Page): Promise<void> {
+  await page.getByRole('button', { name: /^Menú de usuario/ }).click();
+  await page.getByRole('menuitem', { name: 'Cerrar sesión' }).click();
+  await expect(page).toHaveURL(/\/login/);
+  await page.context().clearCookies({ name: 'dispositivo_confiable' });
+}
+
+async function entrarConCodigoDeRecuperacion(page: Page, correo: string, codigo: string): Promise<void> {
+  await enviarCredenciales(page, correo);
+  await expect(page).toHaveURL(/\/two-factor\/verify/);
+  await page.getByRole('button', { name: /Usar un código de recuperación/ }).click();
+  await page.getByLabel('Código de recuperación').fill(codigo);
+  await page.getByRole('button', { name: 'Verificar' }).click();
+}
+
+test('login con 2FA: quien perdio su app entra con un codigo de recuperacion, que sirve una sola vez', async ({ page }) => {
+  const correo = 'admin-recuperacion@abarrotes.test';
+  crearUsuarioComo(ADMIN, correo);
+  const errores = vigilarErrores(page);
+
+  // Activa el 2FA y guarda los codigos de recuperacion que trae la respuesta de confirm.
+  await enviarCredenciales(page, correo);
+  await expect(page).toHaveURL(/\/two-factor\/setup/);
+  const secreto = (await page.locator('.two-factor-setup__secret code').textContent())?.trim() ?? '';
+  await escribirCodigo(page, codigoTotp(secreto));
+  await page.getByRole('button', { name: 'Confirmar' }).click();
+  await expect(page.locator('.recovery-codes li')).toHaveCount(8);
+  const codigos = (await page.locator('.recovery-codes li').allTextContents()).map((codigo) => codigo.trim());
+  expect(codigos[0]).toMatch(/^[A-Z0-9]{10}-[A-Z0-9]{10}$/);
+  await page.getByRole('button', { name: 'Ya los guardé, continuar' }).click();
+  await dentroDeLaApp(page);
+  await cerrarSesion(page);
+
+  // Escrito como lo copiaria alguien de un papel: en minusculas y con espacios.
+  const [antes, despues] = codigos[0].toLowerCase().split('-');
+  await entrarConCodigoDeRecuperacion(page, correo, ` ${antes.slice(0, 5)} ${antes.slice(5)}-${despues} `);
+  await dentroDeLaApp(page);
+  await cerrarSesion(page);
+
+  // El backend lo borra al usarlo: la segunda vez se rechaza en el mismo campo.
+  await entrarConCodigoDeRecuperacion(page, correo, codigos[0]);
+  await expect(page.getByText('Código inválido.')).toBeVisible();
+  await expect(page).toHaveURL(/\/two-factor\/verify/);
+
+  sinErrores(errores, '/two-factor/verify', SIN_SESION);
+});
+
+for (const tema of ['claro', 'oscuro'] as const) {
+  test(`axe en tema ${tema}, a 1280 y 390 px: el paso 2FA en sus dos modos, con sus errores`, async ({ page }) => {
+    test.setTimeout(120000);
+    await page.addInitScript((valor) => localStorage.setItem('nv-tema', valor), tema);
+    const errores = vigilarErrores(page);
+
+    await enviarCredenciales(page, ADMIN);
+    await expect(page).toHaveURL(/\/two-factor\/verify/);
+    expect(await page.evaluate(() => document.documentElement.classList.contains('nv-tema-oscuro'))).toBe(tema === 'oscuro');
+    await axeEnDosAnchos(page);
+
+    await page.getByRole('button', { name: /Usar un código de recuperación/ }).click();
+    const campo = page.getByLabel('Código de recuperación');
+    await expect(campo).toBeFocused();
+    await axeEnDosAnchos(page);
+
+    // Un formato que no es el de un codigo se marca en el campo, sin llamar al backend.
+    await campo.fill('abc-123');
+    await page.getByRole('button', { name: 'Verificar' }).click();
+    await expect(campo).toHaveAttribute('aria-invalid', 'true');
+    await axeEnDosAnchos(page);
+
+    // Uno con formato que no es de este usuario: el rechazo del backend, en el mismo campo.
+    await campo.fill('AAAAAAAAAA-BBBBBBBBBB');
+    await page.getByRole('button', { name: 'Verificar' }).click();
+    await expect(page.getByText('Código inválido.')).toBeVisible();
+    await axeEnDosAnchos(page);
+
+    await page.getByRole('button', { name: 'Usar el código de 6 dígitos de mi app' }).click();
+    await expect(page.getByLabel('Código de verificación')).toBeFocused();
+    await expect(page.getByText('Código inválido.')).toHaveCount(0);
+    await axeEnDosAnchos(page);
+
+    sinErrores(errores, '/two-factor/verify', SIN_SESION);
+  });
+}
