@@ -1740,6 +1740,23 @@ repo.
       `modulos/errores-negocio.spec.ts`: eliminar un rol con usuarios asignados da un solo
       toast con el mensaje del backend. Pasa también en `master`, porque la lista de roles
       ya mostraba ese mismo texto; falla si el interceptor no usa el `message` (mutación).
+  - **50k · inventario, catálogos (Codex):**
+    - categorías y departamentos (listado, alta, detalle y formulario) sobre `libs/ui`.
+      Productos, variantes, compras, proveedores y kardex quedan para la 50m. Los servicios
+      conservan la petición paginada y sus firmas, con `RespuestaDe` y `CuerpoDe`; salen de
+      `contrato-pendientes`;
+    - los formularios propagan `enviando` a `dynamic-form` sin reconstruir sus campos, para
+      no perder valores ni errores 422 (mutación de reconstrucción: fallan los cuatro casos);
+    - **PRO-01 (`pro-01-autorizado`):** los dos casos "Nueva categoría/departamento navega a
+      la vista dedicada" pasan de buscar `a[href]` a hacer clic en `ui-btn-crear` y comprobar
+      la URL y que no se abre un `ui-modal`, con mutación de la ruta (como en la 50e);
+    - **e2e y hash de contraseñas:** el backend del e2e usa el `HASH_DRIVER` de `.env`
+      (Argon2id), y bajo carga el login tardaba más que las esperas de 5 s: de ahí los
+      timeouts intermitentes en varias corridas. Con `HASH_DRIVER=bcrypt` y
+      `BCRYPT_ROUNDS=4`, como `phpunit.xml`, pasaron los 80. Codex lo aplicó solo como
+      variables de su corrida; fijarlo en `playwright.config.ts` va en un PR aparte;
+    - pendientes: contrato 23 → 21, cargando 15 → 13; línea base 1637 → 1531 líneas. 671
+      tests de `pos`, 80 e2e, axe en 40 análisis sin violaciones.
 - **Posibles mejoras (roadmap):**
   - **capturas de Linux sin pasar por CI (Docker):** hoy cada PR con cambio visual falla una
     vez en "Catálogo visual", se baja el artifact y se versionan las capturas, porque en el
