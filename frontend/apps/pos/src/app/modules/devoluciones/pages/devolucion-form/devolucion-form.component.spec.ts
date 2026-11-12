@@ -1,8 +1,8 @@
+import { proveedoresDePantalla } from '../../../../testing/proveedores-pantalla';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { ActivatedRoute, Router, convertToParamMap, provideRouter } from '@angular/router';
 import { ToastService } from '@nianva/ui-shared';
-import { providePrimeNG } from 'primeng/config';
 import { of } from 'rxjs';
 import { describe, expect, it, vi } from 'vitest';
 
@@ -64,8 +64,8 @@ describe('DevolucionFormComponent', () => {
     await TestBed.configureTestingModule({
       imports: [DevolucionFormComponent],
       providers: [
+        ...proveedoresDePantalla(),
         provideAnimationsAsync(),
-        providePrimeNG(),
         provideRouter([]),
         { provide: VentaService, useValue: ventaService },
         { provide: DevolucionService, useValue: devolucionService },

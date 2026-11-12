@@ -1,3 +1,4 @@
+import { CuerpoDe, RespuestaDe } from '@nianva/api-contrato';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { DataTableLazyEvent } from '@nianva/ui-shared';
@@ -22,20 +23,21 @@ export class DevolucionService {
     }
 
     return this.http
-      .get<{ data: Devolucion[]; meta: { total: number; permisos: DevolucionesPagina['permisos'] } }>(
+      .get<RespuestaDe<'/devoluciones', 'get'>>(
         urlApi(`/devoluciones`),
         { params },
       )
-      .pipe(map((r) => ({ data: r.data, total: r.meta.total, permisos: r.meta.permisos })));
+      .pipe(map((r) => ({ data: r.data as Devolucion[], total: r.meta.total, permisos: r.meta.permisos })));
   }
 
   obtener(id: number): Observable<Devolucion> {
-    return this.http.get<{ data: Devolucion }>(urlApi(`/devoluciones/${id}`)).pipe(map((r) => r.data));
+    return this.http.get<RespuestaDe<'/devoluciones/{devolucion}', 'get'>>(urlApi(`/devoluciones/${id}`)).pipe(map((r) => r.data as Devolucion));
   }
 
   registrar(payload: DevolucionFormPayload): Observable<{ devolucion: Devolucion; notaCredito: DevolucionNotaCreditoInfo | null }> {
+    const cuerpo: CuerpoDe<'/devoluciones', 'post'> = payload;
     return this.http
-      .post<{ data: Devolucion; nota_credito: DevolucionNotaCreditoInfo | null }>(urlApi(`/devoluciones`), payload)
-      .pipe(map((r) => ({ devolucion: r.data, notaCredito: r.nota_credito })));
+      .post<RespuestaDe<'/devoluciones', 'post'>>(urlApi(`/devoluciones`), cuerpo)
+      .pipe(map((r) => ({ devolucion: r.data as Devolucion, notaCredito: r.nota_credito })));
   }
 }

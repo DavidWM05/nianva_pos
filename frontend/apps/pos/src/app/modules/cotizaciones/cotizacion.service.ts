@@ -1,3 +1,4 @@
+import { CuerpoDe, RespuestaDe } from '@nianva/api-contrato';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { DataTableLazyEvent } from '@nianva/ui-shared';
@@ -57,23 +58,25 @@ export class CotizacionService {
       .pipe(map((r) => r.meta.permisos));
   }
   obtener(id: number): Observable<Cotizacion> {
-    return this.http.get<{ data: Cotizacion }>(urlApi(`/cotizaciones/${id}`)).pipe(map((r) => r.data));
+    return this.http.get<RespuestaDe<'/cotizaciones/{cotizacion}', 'get'>>(urlApi(`/cotizaciones/${id}`)).pipe(map((r) => r.data as Cotizacion));
   }
 
   crear(payload: CotizacionCrearPayload): Observable<Cotizacion> {
+    const cuerpo: CuerpoDe<'/cotizaciones', 'post'> = payload;
     return this.http
-      .post<{ data: Cotizacion }>(urlApi(`/cotizaciones`), payload)
-      .pipe(map((r) => r.data));
+      .post<RespuestaDe<'/cotizaciones', 'post'>>(urlApi(`/cotizaciones`), cuerpo)
+      .pipe(map((r) => r.data as Cotizacion));
   }
 
   actualizar(id: number, payload: CotizacionFormPayload): Observable<Cotizacion> {
+    const cuerpo: CuerpoDe<'/cotizaciones/{id}', 'put'> = payload;
     return this.http
-      .put<{ data: Cotizacion }>(urlApi(`/cotizaciones/${id}`), payload)
-      .pipe(map((r) => r.data));
+      .put<RespuestaDe<'/cotizaciones/{id}', 'put'>>(urlApi(`/cotizaciones/${id}`), cuerpo)
+      .pipe(map((r) => r.data as Cotizacion));
   }
 
   anular(id: number): Observable<void> {
-    return this.http.delete<void>(urlApi(`/cotizaciones/${id}`));
+    return this.http.delete<RespuestaDe<'/cotizaciones/{id}', 'delete'>>(urlApi(`/cotizaciones/${id}`)).pipe(map(() => undefined));
   }
 
   /**
@@ -83,8 +86,9 @@ export class CotizacionService {
    * codigo nunca los lee). No inventar ese campo aqui.
    */
   convertir(id: number, metodoPagoId: number): Observable<{ ventaId: number }> {
+    const cuerpo: CuerpoDe<'/cotizaciones/{id}/convertir', 'post'> = { metodo_pago_id: metodoPagoId };
     return this.http
-      .post<{ venta_id: number }>(urlApi(`/cotizaciones/${id}/convertir`), { metodo_pago_id: metodoPagoId })
+      .post<RespuestaDe<'/cotizaciones/{id}/convertir', 'post'>>(urlApi(`/cotizaciones/${id}/convertir`), cuerpo)
       .pipe(map((r) => ({ ventaId: r.venta_id })));
   }
 }

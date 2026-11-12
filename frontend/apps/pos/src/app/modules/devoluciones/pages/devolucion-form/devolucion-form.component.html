@@ -1,45 +1,41 @@
-<div class="devolucion-form">
-  <div class="devolucion-form__header">
+<ui-page-header clave="devoluciones" subtitulo="Nueva devolución / cambio" />
+<ui-page estado="listo" forma="formulario">
+<div>
+  <div>
     <h2>Nueva devolución / cambio</h2>
     <a routerLink="/devoluciones">Volver a la lista</a>
   </div>
 
   @if (!ventaOrigen()) {
-    <section class="devolucion-form__seccion">
-      <h3>Venta origen</h3>
-      <div class="devolucion-form__buscar-venta">
-        <label for="devolucion-venta-id">Número de venta</label>
+    <ui-section titulo="Venta origen">
+      <ui-campo #campo1 etiqueta="Número de venta">
         <input
-          pInputText
           type="number"
-          id="devolucion-venta-id"
+          [id]="campo1.controlId()"
           [ngModel]="ventaIdBusqueda()"
           (ngModelChange)="ventaIdBusqueda.set($event)"
         />
-        <p-button label="Buscar" icon="pi pi-search" [loading]="cargandoVenta()" [disabled]="ventaIdBusqueda() === null" (click)="buscarVenta()" />
-      </div>
-    </section>
+        <button matButton="filled" type="button" [disabled]="(ventaIdBusqueda() === null) || (cargandoVenta())" [attr.aria-busy]="cargandoVenta()" (click)="buscarVenta()">@if (indicadorcargandoVenta()) { <mat-spinner diameter="18" /> } Buscar</button>
+      </ui-campo>
+    </ui-section>
   } @else {
-    <section class="devolucion-form__seccion">
-      <h3>Venta origen</h3>
+    <ui-section titulo="Venta origen">
       <p>
-        Venta #{{ ventaOrigen()!.id }} — {{ ventaOrigen()!.cliente?.nombre ?? '—' }} — Total: ${{ ventaOrigen()!.total }}
-        <p-button label="Cambiar venta" [text]="true" size="small" (click)="cambiarVenta()" />
+        Venta #{{ ventaOrigen()!.id }} — {{ ventaOrigen()!.cliente?.nombre ?? '—' }} — Total: {{ ventaOrigen()!.total | dinero }}
+        <button matButton="text" type="button" (click)="cambiarVenta()">Cambiar venta</button>
       </p>
 
       @if (ventaEsSombra()) {
-        <p class="devolucion-form__aviso">
-          Esta venta es una venta sombra (resultado de un cambio anterior).
+        <ui-alert tono="advertencia">Esta venta es una venta sombra (resultado de un cambio anterior).
           @if (tipo() === 'devolucion') {
             No puede ser origen de una devolución normal — solo de un nuevo "cambio". Cambia el tipo abajo o elige otra venta.
           }
-        </p>
+        </ui-alert>
       }
-    </section>
+    </ui-section>
 
-    <section class="devolucion-form__seccion">
-      <h3>Tipo</h3>
-      <div class="devolucion-form__tipo">
+    <ui-section titulo="Tipo">
+      <div>
         <label>
           <input type="radio" name="tipo" [checked]="tipo() === 'devolucion'" (change)="cambiarTipo('devolucion')" />
           Devolución
@@ -49,75 +45,48 @@
           Cambio
         </label>
       </div>
-    </section>
+    </ui-section>
 
-    <section class="devolucion-form__seccion">
-      <h3>Items a devolver</h3>
-      <table class="devolucion-form__tabla">
-        <thead>
-          <tr>
-            <th>Producto</th>
-            <th>Vendido</th>
-            <th>Cantidad a devolver</th>
-            <th>Va a merma</th>
-          </tr>
-        </thead>
-        <tbody>
-          @for (linea of lineasDevueltas(); track linea.variante_id) {
-            <tr>
-              <td>{{ linea.etiqueta }}</td>
-              <td>{{ linea.cantidadMaxima }}</td>
-              <td>
-                <input
-                  pInputText
-                  type="number"
-                  min="0"
-                  [max]="linea.cantidadMaxima"
-                  class="devolucion-form__input-cantidad"
-                  [ngModel]="linea.cantidad"
-                  (ngModelChange)="actualizarCantidadDevuelta($index, $event)"
-                />
-              </td>
-              <td>
-                <p-checkbox [binary]="true" [ngModel]="linea.vaAMerma" (ngModelChange)="actualizarMerma($index, $event)" />
-              </td>
-            </tr>
-          }
-        </tbody>
-      </table>
-      <p class="devolucion-form__resumen-stock">
-        Regresan a stock: {{ unidadesRegresanAStock() }} unidad(es) · Merma: {{ unidadesMerma() }} unidad(es)
+    <ui-section titulo="Items a devolver">
+      @for (grupo of gruposLineas.controls; track grupo; let indice = $index) {
+        @let linea = lineasDevueltas()[indice];
+        <ui-section [titulo]="'Línea ' + (indice + 1) + ': ' + linea.etiqueta">
+          <p>Vendido: {{ linea.cantidadMaxima | cantidad: 'unidad(es)' }}</p>
+          <div class="campos-linea" [class.campos-linea--angosta]="pantalla.angosta()">
+            <ui-campo [etiqueta]="'Cantidad, línea ' + (indice + 1) + ': ' + linea.etiqueta"><ui-input-cantidad [formControl]="grupo.controls.cantidad" [decimales]="0" /></ui-campo>
+            <ui-campo [etiqueta]="'Va a merma, línea ' + (indice + 1) + ': ' + linea.etiqueta"><mat-checkbox [formControl]="grupo.controls.va_a_merma" [aria-label]="'Va a merma, línea ' + (indice + 1) + ': ' + linea.etiqueta">Va a merma</mat-checkbox></ui-campo>
+          </div>
+        </ui-section>
+      }
+      <p>
+        Regresan a stock: {{ unidadesRegresanAStock() | cantidad: 'unidad(es)' }} · Merma: {{ unidadesMerma() | cantidad: 'unidad(es)' }}
       </p>
-    </section>
+    </ui-section>
 
     @if (tipo() === 'cambio') {
-      <section class="devolucion-form__seccion">
-        <h3>Items nuevos</h3>
+      <ui-section titulo="Items nuevos">
         <nucleo-lineas-producto (cambio)="onLineasNuevasCambio($event)" />
-      </section>
+      </ui-section>
     }
 
-    <section class="devolucion-form__seccion devolucion-form__totales">
-      <p>Monto a devolver: ${{ montoDevolucionEstimado() }}</p>
+    <ui-section titulo="Resumen">
+      <p>Monto a devolver: {{ montoDevolucionEstimado() | dinero }}</p>
       @if (tipo() === 'cambio') {
-        <p>Monto del cambio: ${{ montoCambio() }}</p>
+        <p>Monto del cambio: {{ montoCambio() | dinero }}</p>
       }
       <p
-        class="devolucion-form__diferencia"
-        [class.devolucion-form__diferencia--reembolso]="diferenciaEstimada() < 0"
-        [class.devolucion-form__diferencia--cobro]="diferenciaEstimada() > 0"
       >
         @if (diferenciaEstimada() < 0) {
-          Reembolso al cliente: ${{ -diferenciaEstimada() }}
+          Reembolso al cliente: {{ -diferenciaEstimada() | dinero }}
         } @else if (diferenciaEstimada() > 0) {
-          Cobro adicional: ${{ diferenciaEstimada() }}
+          Cobro adicional: {{ diferenciaEstimada() | dinero }}
         } @else {
           Sin diferencia que liquidar
         }
       </p>
 
       @if (requiereEleccionReembolso()) {
-        <div class="devolucion-form__tipo">
+        <div>
           <label>
             <input type="radio" name="tipo-reembolso" [checked]="tipoReembolso() === 'efectivo'" (change)="tipoReembolso.set('efectivo')" />
             Efectivo / método original
@@ -132,31 +101,25 @@
             Nota de crédito
           </label>
         </div>
-        <p class="devolucion-form__ayuda">
+        <p>
           Elegir "Nota de crédito" además genera una nota por el monto devuelto -- de cualquier forma hay que capturar abajo
           cómo se liquida la diferencia.
         </p>
       }
-    </section>
+    </ui-section>
 
     @if (pagoNecesario()) {
-      <section class="devolucion-form__seccion">
-        <h3>Pago de la diferencia</h3>
+      <ui-section titulo="Pago de la diferencia">
         <nucleo-lineas-pago [montoObjetivo]="montoAPagar()" (cambio)="onPagosCambio($event)" />
-      </section>
+      </ui-section>
     }
 
-    <section class="devolucion-form__seccion">
-      <h3>Motivo (opcional)</h3>
-      <textarea pTextarea rows="2" [ngModel]="motivo()" (ngModelChange)="motivo.set($event)"></textarea>
-    </section>
+    <ui-section titulo="Motivo (opcional)">
+      <ui-campo #motivoCampo etiqueta="Motivo (opcional)"><textarea [id]="motivoCampo.controlId()" rows="2" [ngModel]="motivo()" (ngModelChange)="motivo.set($event)"></textarea></ui-campo>
+    </ui-section>
 
-    <p-button
-      label="Registrar"
-      icon="pi pi-check"
-      [loading]="registrando()"
-      [disabled]="!puedeRegistrar()"
-      (click)="registrarDevolucion()"
-    />
+    <ui-form-actions><fieldset class="acciones-envio" [disabled]="!puedeRegistrar()"><ui-btn-enviar etiqueta="Registrar" [enviando]="registrando()" (click)="registrarDevolucion()" /></fieldset></ui-form-actions>
   }
 </div>
+
+</ui-page>

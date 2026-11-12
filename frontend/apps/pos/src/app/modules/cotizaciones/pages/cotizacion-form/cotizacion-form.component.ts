@@ -1,17 +1,18 @@
+import { MatButton } from '@angular/material/button';
+import { BtnEnviarComponent, aplicarErroresServidor, CampoComponent, InputDineroComponent } from '@nianva/ui-forms';
+import { DineroPipe, } from '@nianva/ui-format';
+import { FormActionsComponent, PageComponent, PageHeaderComponent, SectionComponent } from '@nianva/ui-layout';
 import { HttpErrorResponse } from '@angular/common/http';
-import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, ViewChild, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { EntidadSelectorComponent, MENSAJE_SUCURSAL_REQUERIDA, ToastService, esErrorNegocio, mensajeError } from '@nianva/ui-shared';
-import { Button } from 'primeng/button';
-import { InputText } from 'primeng/inputtext';
-import { Textarea } from 'primeng/textarea';
-
 import { AuthStateService } from '../../../../auth/auth-state.service';
 import { BUSCADOR_CLIENTE } from '../../../../core/buscadores-entidad.tokens';
 import { LineasCotizacionCambio, LineasCotizacionComponent } from '../../lineas-cotizacion/lineas-cotizacion.component';
 import { Cotizacion, CotizacionFormPayload, CotizacionItemPayload } from '../../cotizacion.types';
 import { CotizacionService } from '../../cotizacion.service';
+
 
 function esNumero(valor: unknown): valor is number {
   return typeof valor === 'number';
@@ -34,12 +35,14 @@ function esNumero(valor: unknown): valor is number {
 @Component({
   selector: 'nucleo-cotizacion-form',
   standalone: true,
-  imports: [FormsModule, RouterLink, EntidadSelectorComponent, LineasCotizacionComponent, Button, InputText, Textarea],
+  imports: [FormsModule,RouterLink,EntidadSelectorComponent,LineasCotizacionComponent,MatButton,BtnEnviarComponent,CampoComponent,InputDineroComponent,DineroPipe,FormActionsComponent,PageComponent,PageHeaderComponent,SectionComponent,],
   templateUrl: './cotizacion-form.component.html',
   styleUrl: './cotizacion-form.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CotizacionFormComponent implements OnInit {
+  @ViewChild(LineasCotizacionComponent) private editorLineas?: LineasCotizacionComponent;
+  protected lineasInvalidas(): boolean { return this.editorLineas?.formularioLineas.invalid ?? false; }
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly cotizacionService = inject(CotizacionService);
@@ -51,6 +54,7 @@ export class CotizacionFormComponent implements OnInit {
   protected readonly cotizacionId = signal<number | null>(null);
   protected readonly editando = computed(() => this.cotizacionId() !== null);
   protected readonly cargando = signal(false);
+  protected readonly errorCarga = signal(false);
   protected readonly cotizacionActual = signal<Cotizacion | null>(null);
 
   protected readonly clienteId = signal<number | null>(null);
@@ -67,6 +71,7 @@ export class CotizacionFormComponent implements OnInit {
   protected readonly guardando = signal(false);
 
   ngOnInit(): void {
+    this.errorCarga.set(false);
     const permisos$ = this.cotizacionService.permisos?.();
     permisos$?.subscribe((permisos) => this.precioManual.set(permisos.precio_manual ?? false));
 
@@ -89,6 +94,7 @@ export class CotizacionFormComponent implements OnInit {
       },
       error: () => {
         this.cargando.set(false);
+        this.errorCarga.set(true);
         this.toast.error('No se pudo cargar la cotización.');
       },
     });
@@ -100,7 +106,7 @@ export class CotizacionFormComponent implements OnInit {
   }
 
   guardar(): void {
-    if (this.items().length === 0) {
+    if (this.items().length === 0 || this.lineasInvalidas()) {
       this.toast.warn('Agrega al menos un producto a la cotización.');
 
       return;
@@ -140,6 +146,7 @@ export class CotizacionFormComponent implements OnInit {
       },
       error: (error: HttpErrorResponse) => {
         this.guardando.set(false);
+        if (this.editorLineas) aplicarErroresServidor(this.editorLineas.formularioLineas, error);
         this.toast.error(
           esErrorNegocio(error, 'sucursal_requerida')
             ? MENSAJE_SUCURSAL_REQUERIDA

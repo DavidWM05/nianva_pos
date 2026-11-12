@@ -74,4 +74,19 @@ describe('ReglaPrecioFormComponent', () => {
 
     expect((fixture.nativeElement as HTMLElement).querySelector('nucleo-entidad-selector')).not.toBeNull();
   });
+  it('proyecta la categoria dentro del form antes de Guardar y respeta readonly', () => {
+    fixture.componentInstance.onCambiarAplicaA('categoria');
+    fixture.detectChanges();
+    const form = (fixture.nativeElement as HTMLElement).querySelector('form')!;
+    const selector = form.querySelector('nucleo-entidad-selector')!;
+    const guardar = form.querySelector('button[type="submit"]')!;
+    expect(selector).not.toBeNull();
+    expect(selector.compareDocumentPosition(guardar) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    fixture.componentRef.setInput('readonly', true);
+    fixture.detectChanges();
+    expect(form.querySelector('button[type="submit"]')).toBeNull();
+    fixture.componentInstance.onCambiarAplicaA('categoria');
+    fixture.detectChanges();
+    expect(form.querySelector<HTMLInputElement>('nucleo-entidad-selector input')?.disabled).toBe(true);
+  });
 });

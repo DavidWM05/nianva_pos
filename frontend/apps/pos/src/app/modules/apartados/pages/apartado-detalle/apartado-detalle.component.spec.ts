@@ -1,8 +1,8 @@
+import { proveedoresDePantalla } from '../../../../testing/proveedores-pantalla';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { ActivatedRoute, convertToParamMap } from '@angular/router';
 import { AuditLogSource, ToastService } from '@nianva/ui-shared';
-import { providePrimeNG } from 'primeng/config';
 import { of } from 'rxjs';
 import { By } from '@angular/platform-browser';
 import { describe, expect, it, vi } from 'vitest';
@@ -69,8 +69,8 @@ describe('ApartadoDetalleComponent', () => {
     await TestBed.configureTestingModule({
       imports: [ApartadoDetalleComponent],
       providers: [
+        ...proveedoresDePantalla(),
         provideAnimationsAsync(),
-        providePrimeNG(),
         { provide: ApartadoService, useValue: apartadoService },
         { provide: MetodoPagoService, useValue: { listar: vi.fn().mockReturnValue(of([{ id: 1, nombre: 'Efectivo', tipo: 'efectivo' }])) } },
         { provide: AuditLogSource, useValue: { listar: vi.fn().mockReturnValue(of([])) } },

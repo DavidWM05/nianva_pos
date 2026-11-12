@@ -1,27 +1,26 @@
-<div class="apartado-detalle">
-  @if (cargando()) {
-    <p>Cargando apartado...</p>
-  } @else if (apartado(); as apartadoActual) {
-    <div class="apartado-detalle__header">
+<ui-page-header clave="apartados" subtitulo="Detalle del registro" />
+<div>
+  <ui-page [estado]="cargando() ? 'cargando' : error() ? 'error' : 'listo'" forma="detalle" (reintentar)="cargar(apartado()?.id ?? 0)">
+  @if (apartado(); as apartadoActual) {
+    <div>
       <h2>Apartado #{{ apartadoActual.id }} — {{ apartadoActual.cliente?.nombre ?? '—' }}</h2>
-      <nucleo-status-badge
-        [value]="apartadoActual.estado"
-        [colorMap]="{ activo: 'info', completado: 'success', cancelado: 'neutral' }"
-      />
+      <ui-badge entidad="apartado" [estado]="apartadoActual.estado" />
     </div>
 
-    <nucleo-record-tabs [tabs]="tabs">
-      <ng-template>
-        <div class="apartado-detalle__tab">
-          <dl class="apartado-detalle__resumen">
+<nucleo-record-tabs [tabs]="tabs"><ng-template><ng-container [ngTemplateOutlet]="tab0" /></ng-template>
+<ng-template><ng-container [ngTemplateOutlet]="tab1" /></ng-template>
+<ng-template><ng-container [ngTemplateOutlet]="tab2" /></ng-template></nucleo-record-tabs>
+<ng-template #tab0>
+        <div>
+          <dl uiDatos>
             <dt>Total</dt>
-            <dd>${{ apartadoActual.total }}</dd>
+            <dd>{{ apartadoActual.total | dinero }}</dd>
             <dt>Abonado</dt>
-            <dd>${{ apartadoActual.total_abonado }}</dd>
+            <dd>{{ apartadoActual.total_abonado | dinero }}</dd>
             <dt>Saldo pendiente</dt>
-            <dd>${{ saldoPendiente() }}</dd>
+            <dd>{{ saldoPendiente() | dinero }}</dd>
             <dt>Vencimiento</dt>
-            <dd>{{ apartadoActual.fecha_vencimiento ? (apartadoActual.fecha_vencimiento | date: 'shortDate') : 'Sin definir' }}</dd>
+            <dd>{{ apartadoActual.fecha_vencimiento ? (apartadoActual.fecha_vencimiento | fecha) : 'Sin definir' }}</dd>
             @if (apartadoActual.estado === 'cancelado') {
               <dt>Motivo de cancelación</dt>
               <dd>{{ apartadoActual.motivo_cancelacion }}</dd>
@@ -33,160 +32,72 @@
           </dl>
 
           <h4>Líneas</h4>
-          <table class="apartado-detalle__tabla">
-            <thead>
-              <tr>
-                <th>Producto</th>
-                <th>Cantidad</th>
-                <th>Precio</th>
-                <th>Subtotal</th>
-              </tr>
-            </thead>
-            <tbody>
-              @for (detalle of apartadoActual.detalles; track detalle.id) {
-                <tr>
-                  <td>
-                    {{ detalle.variante?.producto_nombre }}
-                    @if (detalle.variante?.talla || detalle.variante?.color) {
-                      ({{ detalle.variante.talla }} / {{ detalle.variante.color }})
-                    }
-                  </td>
-                  <td>{{ detalle.cantidad }}</td>
-                  <td>${{ detalle.precio_unitario }}</td>
-                  <td>${{ detalle.subtotal }}</td>
-                </tr>
-              }
-            </tbody>
-          </table>
+          <ui-tabla [columnas]="columnasLineas" [filas]="filasLineas()" [meta]="metaLineas()" (cambio)="paginaLineas.set($event)" />
 
           @if (apartadoActual.estado === 'activo') {
-            <div class="apartado-detalle__acciones">
+            <div>
               @if (permisos().abonar) {
-                <p-button
-                  label="Liquidar"
-                  icon="pi pi-check-circle"
-                  [loading]="liquidando()"
-                  [disabled]="!puedeLiquidar()"
-                  (click)="liquidar()"
-                />
+                <button matButton="filled" type="button" [disabled]="(!puedeLiquidar()) || (liquidando())" [attr.aria-busy]="liquidando()" (click)="liquidar()">@if (indicadorliquidando()) { <mat-spinner diameter="18" /> } Liquidar</button>
               }
               @if (permisos().cancelar) {
-                <p-button label="Cancelar apartado" icon="pi pi-ban" severity="danger" [text]="true" (click)="abrirCancelacion()" />
+                <button matButton="text" type="button" (click)="abrirCancelacion()">Cancelar apartado</button>
               }
             </div>
           }
         </div>
       </ng-template>
-
-      <ng-template>
-        <div class="apartado-detalle__tab">
+<ng-template #tab1>
+        <div>
           <h4>Historial de abonos</h4>
           @if (!apartadoActual.abonos || apartadoActual.abonos.length === 0) {
             <p>Todavía no hay abonos registrados.</p>
           } @else {
-            <table class="apartado-detalle__tabla">
-              <thead>
-                <tr>
-                  <th>Fecha</th>
-                  <th>Monto</th>
-                  <th>Pago</th>
-                </tr>
-              </thead>
-              <tbody>
-                @for (abono of apartadoActual.abonos; track abono.id) {
-                  <tr>
-                    <td>{{ abono.fecha | date: 'short' }}</td>
-                    <td>${{ abono.monto }}</td>
-                    <td>{{ etiquetaMetodosPago(abono.pagos) }}</td>
-                  </tr>
-                }
-              </tbody>
-            </table>
+            <ui-tabla [columnas]="columnasAbonos" [filas]="filasAbonos()" [meta]="metaAbonos()" (cambio)="paginaAbonos.set($event)" />
           }
 
           @if (apartadoActual.estado === 'activo' && permisos().abonar) {
             <h4>Registrar abono</h4>
-            <div class="apartado-detalle__campo">
-              <label for="abono-monto">Monto a abonar</label>
-              <input
-                pInputText
-                type="number"
-                id="abono-monto"
-                min="0.01"
-                step="0.01"
-                [ngModel]="montoAbono()"
-                (ngModelChange)="montoAbono.set($event)"
-              />
-            </div>
+            <ui-campo #campo1 etiqueta="Monto a abonar"><ui-input-dinero [min]="0.01" [ngModel]="montoAbono()" (ngModelChange)="montoAbono.set($event)" /></ui-campo>
 
             <nucleo-lineas-pago [montoObjetivo]="montoAbono() ?? 0" (cambio)="onPagosAbonoCambio($event)" />
 
-            <p-button
-              label="Registrar abono"
-              icon="pi pi-check"
-              [loading]="registrandoAbono()"
-              [disabled]="montoAbono() === null || montoAbono()! <= 0 || !pagoAbonoCuadra()"
-              (click)="registrarAbono()"
-            />
+            <ui-form-actions><fieldset class="acciones-envio" [disabled]="montoAbono() === null || montoAbono()! <= 0 || !pagoAbonoCuadra()"><ui-btn-enviar etiqueta="Registrar abono" [enviando]="registrandoAbono()" (click)="registrarAbono()" /></fieldset></ui-form-actions>
           }
         </div>
       </ng-template>
-
-      <ng-template>
+<ng-template #tab2>
         @defer (on viewport) {
           <nucleo-audit-log-viewer [tabla]="'apartados'" [registroId]="apartadoActual.id" />
         } @placeholder {
-          <p>Auditoría (se carga al hacer scroll hasta aquí)...</p>
+          <ui-skeleton forma="bloque" />
         } @loading (minimum 200ms) {
-          <p>Cargando auditoría...</p>
+          <ui-skeleton forma="bloque" />
         }
       </ng-template>
-    </nucleo-record-tabs>
   }
+</ui-page>
 </div>
 
-<p-dialog
-  header="Cancelar apartado"
-  [visible]="mostrarCancelacion()"
-  (visibleChange)="cerrarCancelacion()"
-  [modal]="true"
-  [dismissableMask]="true"
-  [style]="{ width: '28rem' }"
->
+<ui-modal titulo="Cancelar apartado" [visible]="mostrarCancelacion()" (visibleChange)="cerrarCancelacion()">
   <p>¿Cancelar este apartado? Esta acción no se puede deshacer. Los abonos ya registrados no se reembolsan automáticamente.</p>
-  <label for="motivo-cancelacion">Motivo</label>
-  <textarea
-    pTextarea
-    id="motivo-cancelacion"
+  <ui-campo #motivoCampo etiqueta="Motivo"><textarea
+    [id]="motivoCampo.controlId()"
     rows="3"
     [ngModel]="motivoCancelacion()"
     (ngModelChange)="motivoCancelacion.set($event)"
-  ></textarea>
-  <p-button
-    label="Confirmar cancelación"
-    severity="danger"
-    [loading]="cancelando()"
-    [disabled]="!motivoCancelacion().trim()"
-    (click)="confirmarCancelacion()"
-  />
-</p-dialog>
+  ></textarea></ui-campo>
+  <ui-form-actions acciones><fieldset class="acciones-envio" [disabled]="!motivoCancelacion().trim()"><ui-btn-enviar etiqueta="Confirmar cancelación" [enviando]="cancelando()" (click)="confirmarCancelacion()" /></fieldset></ui-form-actions>
+</ui-modal>
 
-<p-dialog
-  header="Apartado cancelado"
-  [visible]="resultadoCancelacion() !== null"
-  (visibleChange)="cerrarResultadoCancelacion()"
-  [modal]="true"
-  [dismissableMask]="true"
-  [style]="{ width: '28rem' }"
->
+<ui-modal titulo="Apartado cancelado" [visible]="resultadoCancelacion() !== null" (visibleChange)="cerrarResultadoCancelacion()">
   @if (resultadoCancelacion(); as resultado) {
     <p>El apartado #{{ resultado.apartado.id }} fue cancelado.</p>
     @if (resultado.tieneAbonosPendientes) {
-      <p class="apartado-detalle__aviso">
-        Este apartado tenía ${{ resultado.montoAbonadoPendiente }} ya abonados. Ese monto no se reembolsó
+      <p>
+        Este apartado tenía {{ resultado.montoAbonadoPendiente | dinero }} ya abonados. Ese monto no se reembolsó
         automáticamente -- coordina con el cliente cómo resolverlo.
       </p>
     }
-    <p-button label="Entendido" (click)="cerrarResultadoCancelacion()" />
+    <button matButton="filled" type="button" (click)="cerrarResultadoCancelacion()">Entendido</button>
   }
-</p-dialog>
+</ui-modal>

@@ -1,6 +1,6 @@
 import type { Page } from '@playwright/test';
 
-const API = 'http://127.0.0.1:8100/api/v1';
+const API = 'http://127.0.0.1:' + (process.env['POS_E2E_BACKEND_PORT'] ?? '8100') + '/api/v1';
 
 interface RespuestaApi<T> {
   status: number;

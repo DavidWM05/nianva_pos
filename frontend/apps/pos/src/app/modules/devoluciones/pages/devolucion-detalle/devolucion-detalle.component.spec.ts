@@ -1,8 +1,8 @@
+import { proveedoresDePantalla } from '../../../../testing/proveedores-pantalla';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { ActivatedRoute, convertToParamMap } from '@angular/router';
 import { AuditLogSource } from '@nianva/ui-shared';
-import { providePrimeNG } from 'primeng/config';
 import { of } from 'rxjs';
 import { describe, expect, it, vi } from 'vitest';
 
@@ -67,8 +67,8 @@ describe('DevolucionDetalleComponent', () => {
     await TestBed.configureTestingModule({
       imports: [DevolucionDetalleComponent],
       providers: [
+        ...proveedoresDePantalla(),
         provideAnimationsAsync(),
-        providePrimeNG(),
         { provide: DevolucionService, useValue: { obtener: vi.fn().mockReturnValue(of(devolucion)) } },
         { provide: AuditLogSource, useValue: { listar: vi.fn().mockReturnValue(of([])) } },
         { provide: ActivatedRoute, useValue: { snapshot: { paramMap: convertToParamMap({ id: String(devolucion.id) }) } } },

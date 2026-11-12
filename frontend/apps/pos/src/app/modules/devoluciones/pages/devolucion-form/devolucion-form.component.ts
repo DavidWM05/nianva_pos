@@ -1,13 +1,15 @@
+import { MatButton } from '@angular/material/button';
+import { BtnEnviarComponent, CampoComponent, InputCantidadComponent, aplicarErroresServidor } from '@nianva/ui-forms';
+import { DineroPipe, CantidadPipe } from '@nianva/ui-format';
+import { AlertComponent, conUmbral } from '@nianva/ui-feedback';
+import { FormActionsComponent, PageComponent, PageHeaderComponent, SectionComponent, PantallaService } from '@nianva/ui-layout';
+import { MatProgressSpinner } from '@angular/material/progress-spinner';
 import { HttpErrorResponse } from '@angular/common/http';
 import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { FormArray, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import { MatCheckbox } from '@angular/material/checkbox';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { ToastService } from '@nianva/ui-shared';
-import { Button } from 'primeng/button';
-import { Checkbox } from 'primeng/checkbox';
-import { InputText } from 'primeng/inputtext';
-import { Textarea } from 'primeng/textarea';
-
+import { ToastService, erroresValidacion } from '@nianva/ui-shared';
 import { LineasPagoCambio, LineasPagoComponent } from '../../../tpv/lineas-pago/lineas-pago.component';
 import { LineasProductoCambio, LineasProductoComponent } from '../../../tpv/lineas-producto/lineas-producto.component';
 import { ErrorNegocioTpv } from '../../../tpv/tpv-error.types';
@@ -15,6 +17,7 @@ import { Venta, VentaItemPayload, VentaPagoPayload } from '../../../tpv/venta.ty
 import { VentaService } from '../../../tpv/venta.service';
 import { DevolucionService } from '../../devolucion.service';
 import { DevolucionFormPayload, TipoDevolucion, TipoReembolso } from '../../devolucion.types';
+
 
 interface LineaDevuelta {
   variante_id: number;
@@ -48,12 +51,15 @@ function centavos(monto: number): number {
 @Component({
   selector: 'nucleo-devolucion-form',
   standalone: true,
-  imports: [FormsModule, RouterLink, LineasProductoComponent, LineasPagoComponent, Button, Checkbox, InputText, Textarea],
+  imports: [ReactiveFormsModule,MatCheckbox,CampoComponent,InputCantidadComponent,SectionComponent,CantidadPipe,FormsModule,RouterLink,LineasProductoComponent,LineasPagoComponent,MatButton,BtnEnviarComponent,DineroPipe,AlertComponent,FormActionsComponent,PageComponent,PageHeaderComponent,MatProgressSpinner],
   templateUrl: './devolucion-form.component.html',
   styleUrl: './devolucion-form.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DevolucionFormComponent implements OnInit {
+  protected readonly pantalla = inject(PantallaService);
+  readonly formularioLineas = new FormGroup({ items_devueltos: new FormArray<FormGroup<{ cantidad: FormControl<number>; va_a_merma: FormControl<boolean> }>>([]) });
+  protected readonly gruposLineas = this.formularioLineas.controls.items_devueltos;
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly ventaService = inject(VentaService);
@@ -145,6 +151,18 @@ export class DevolucionFormComponent implements OnInit {
             precioUnitario: Number(detalle.precio_unitario),
           })),
         );
+        this.gruposLineas.clear({ emitEvent: false });
+        for (const linea of this.lineasDevueltas()) {
+          const grupo = new FormGroup({
+            cantidad: new FormControl(linea.cantidad, { nonNullable: true, validators: [Validators.required, Validators.min(0), Validators.max(linea.cantidadMaxima)] }),
+            va_a_merma: new FormControl(linea.vaAMerma, { nonNullable: true }),
+          });
+          this.gruposLineas.push(grupo, { emitEvent: false });
+          grupo.controls.cantidad.valueChanges.subscribe(valor => {
+            if (grupo.controls.cantidad.valid) this.actualizarCantidadDevuelta(this.gruposLineas.controls.indexOf(grupo), valor);
+          });
+          grupo.controls.va_a_merma.valueChanges.subscribe(valor => this.actualizarMerma(this.gruposLineas.controls.indexOf(grupo), valor));
+        }
         this.cargandoVenta.set(false);
       },
       error: () => {
@@ -178,10 +196,12 @@ export class DevolucionFormComponent implements OnInit {
         return { ...linea, cantidad: cantidadValida };
       }),
     );
+    this.gruposLineas.at(indice)?.controls.cantidad.setValue(this.lineasDevueltas()[indice].cantidad, { emitEvent: false });
   }
 
   actualizarMerma(indice: number, vaAMerma: boolean): void {
     this.lineasDevueltas.update((actuales) => actuales.map((linea, i) => (i === indice ? { ...linea, vaAMerma } : linea)));
+    this.gruposLineas.at(indice)?.controls.va_a_merma.setValue(vaAMerma, { emitEvent: false });
   }
 
   onLineasNuevasCambio(cambio: LineasProductoCambio): void {
@@ -195,7 +215,7 @@ export class DevolucionFormComponent implements OnInit {
   }
 
   protected puedeRegistrar(): boolean {
-    if (!this.ventaOrigen() || this.rechazoPorVentaSombra()) return false;
+    if (!this.ventaOrigen() || this.rechazoPorVentaSombra() || this.formularioLineas.invalid) return false;
     if (this.lineasDevueltas().every((l) => l.cantidad <= 0)) return false;
     if (this.tipo() === 'cambio' && this.itemsNuevosActuales().length === 0) return false;
     if (this.pagoNecesario() && !this.pagoCuadra()) return false;
@@ -221,6 +241,7 @@ export class DevolucionFormComponent implements OnInit {
       tipo_reembolso: this.requiereEleccionReembolso() ? this.tipoReembolso() : null,
     };
 
+    const indicesEnviados = this.lineasDevueltas().flatMap((linea, indice) => linea.cantidad > 0 ? [indice] : []);
     this.devolucionService.registrar(payload).subscribe({
       next: ({ devolucion, notaCredito }) => {
         this.registrando.set(false);
@@ -233,6 +254,10 @@ export class DevolucionFormComponent implements OnInit {
       },
       error: (error: HttpErrorResponse) => {
         this.registrando.set(false);
+        const errores = Object.fromEntries(Object.entries(erroresValidacion(error)).map(([clave, mensajes]) => [
+          clave.replace(/^items_devueltos\.(\d+)\./, (_, indice: string) => 'items_devueltos.' + indicesEnviados[Number(indice)] + '.'), mensajes,
+        ]));
+        aplicarErroresServidor(this.formularioLineas, { error: { errors: errores } });
         const cuerpo = error.error as ErrorNegocioTpv | undefined;
         this.toast.error(cuerpo?.message ?? 'No se pudo registrar la devolución.');
       },
@@ -240,6 +265,7 @@ export class DevolucionFormComponent implements OnInit {
   }
 
   private reiniciarLineas(): void {
+    this.gruposLineas.clear({ emitEvent: false });
     this.lineasDevueltas.set([]);
     this.tipo.set('devolucion');
     this.itemsNuevosActuales.set([]);
@@ -249,4 +275,6 @@ export class DevolucionFormComponent implements OnInit {
     this.tipoReembolso.set('efectivo');
     this.motivo.set('');
   }
+  protected readonly indicadorcargandoVenta = conUmbral(this.cargandoVenta);
+
 }

@@ -1,6 +1,6 @@
+import { proveedoresDePantalla } from '../../../testing/proveedores-pantalla';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
-import { providePrimeNG } from 'primeng/config';
 import { of, throwError } from 'rxjs';
 import { describe, expect, it, vi } from 'vitest';
 
@@ -26,8 +26,8 @@ describe('LineasCotizacionComponent', () => {
     await TestBed.configureTestingModule({
       imports: [LineasCotizacionComponent],
       providers: [
+        ...proveedoresDePantalla(),
         provideAnimationsAsync(),
-        providePrimeNG(),
         { provide: VentaService, useValue: ventaService },
         {
           provide: BUSCADOR_PRODUCTO,
@@ -119,11 +119,22 @@ describe('LineasCotizacionComponent', () => {
     expect(fixture.componentInstance['lineas']()[0].precio_unitario).toBe(100);
     expect(fixture.componentInstance['lineas']()[0].descuento).toBe(10);
 
-    const inputs = Array.from(
-      (fixture.nativeElement as HTMLElement).querySelectorAll<HTMLInputElement>('input[type="number"]'),
-    ).filter((input) => input.min === '0');
+    const controles = fixture.componentInstance.formularioLineas.controls.items.at(0).controls;
+    expect(controles.precio_unitario.disabled).toBe(true);
+    expect(controles.descuento.disabled).toBe(true);
+    const inputs = Array.from((fixture.nativeElement as HTMLElement).querySelectorAll<HTMLInputElement>('ui-input-dinero input'));
     expect(inputs).toHaveLength(2);
-    expect(inputs.every((input) => input.readOnly)).toBe(true);
+    for (const input of inputs) {
+      expect(input.disabled).toBe(true);
+      const valor = input.value;
+      input.focus();
+      input.dispatchEvent(new KeyboardEvent('keydown', { key: '9', bubbles: true }));
+      input.dispatchEvent(new KeyboardEvent('keyup', { key: '9', bubbles: true }));
+      expect(input.value).toBe(valor);
+    }
+    expect(fixture.componentInstance['lineas']()[0].precio_unitario).toBe(100);
+    expect(fixture.componentInstance['lineas']()[0].descuento).toBe(10);
+    expect(fixture.componentInstance['subtotal']()).toBe(190);
   });
 
   it('con valorInicial (editar una cotizacion existente), precarga las lineas desde los detalles crudos del backend', async () => {

@@ -3,13 +3,14 @@
   [submitLabel]="submitLabel"
   [readonly]="readonly"
   (formSubmit)="onSubmit($event)"
-/>
+>
 
 <div class="regla-precio-form__aplica-a">
   <ui-campo etiqueta="Aplica a" [requerido]="true">
     <ui-select-filtro
       [todas]="false"
       [opciones]="opcionesAplicaA"
+      [ngModelOptions]="{ standalone: true }"
       [ngModel]="aplicaA()"
       (ngModelChange)="onCambiarAplicaA($event)"
       [disabled]="readonly"
@@ -53,3 +54,5 @@
     />
   }
 </div>
+
+</nucleo-dynamic-form>

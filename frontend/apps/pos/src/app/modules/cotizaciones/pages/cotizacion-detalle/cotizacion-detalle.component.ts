@@ -1,17 +1,21 @@
-import { DatePipe } from '@angular/common';
+import { MatButton } from '@angular/material/button';
+import { BtnEnviarComponent, CampoComponent, SelectFiltroComponent } from '@nianva/ui-forms';
+import { CambioListado, ColumnaListado, MetaListado, TablaComponent } from '@nianva/ui-data';
+import { DineroPipe, FechaPipe, FechaHoraPipe } from '@nianva/ui-format';
+import { BadgeComponent, SkeletonComponent, } from '@nianva/ui-feedback';
+import { DatosComponent, FormActionsComponent, PageComponent, PageHeaderComponent, } from '@nianva/ui-layout';
+import { ModalComponent } from '@nianva/ui-overlays';
+import { NgTemplateOutlet } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { AuditLogViewerComponent, ConfirmDialogService, RecordTabConfig, RecordTabsComponent, StatusBadgeComponent, ToastService, mensajeError } from '@nianva/ui-shared';
-import { Button } from 'primeng/button';
-import { Dialog } from 'primeng/dialog';
-import { Select } from 'primeng/select';
-
+import { AuditLogViewerComponent, ConfirmDialogService, RecordTabConfig, RecordTabsComponent, ToastService, mensajeError } from '@nianva/ui-shared';
 import { MetodoPago } from '../../../tpv/metodo-pago.types';
 import { MetodoPagoService } from '../../../tpv/metodo-pago.service';
 import { CotizacionService } from '../../cotizacion.service';
 import { Cotizacion } from '../../cotizacion.types';
+
 
 /**
  * Vista de registro (RecordTabsComponent, obligatorio para toda entidad
@@ -26,17 +30,7 @@ import { Cotizacion } from '../../cotizacion.types';
 @Component({
   selector: 'nucleo-cotizacion-detalle',
   standalone: true,
-  imports: [
-    DatePipe,
-    FormsModule,
-    RouterLink,
-    RecordTabsComponent,
-    AuditLogViewerComponent,
-    StatusBadgeComponent,
-    Button,
-    Dialog,
-    Select,
-  ],
+  imports: [BtnEnviarComponent,FormsModule, RouterLink, NgTemplateOutlet, RecordTabsComponent, AuditLogViewerComponent, MatButton, CampoComponent, SelectFiltroComponent, TablaComponent, DineroPipe, FechaPipe, FechaHoraPipe, BadgeComponent, SkeletonComponent, DatosComponent, FormActionsComponent, PageComponent, PageHeaderComponent, ModalComponent, ],
   templateUrl: './cotizacion-detalle.component.html',
   styleUrl: './cotizacion-detalle.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -55,6 +49,7 @@ export class CotizacionDetalleComponent implements OnInit {
   ];
 
   protected readonly cargando = signal(true);
+  protected readonly error = signal(false);
   protected readonly cotizacion = signal<Cotizacion | null>(null);
 
   protected readonly puedeConvertir = computed(() => {
@@ -135,15 +130,24 @@ export class CotizacionDetalleComponent implements OnInit {
     });
   }
 
-  private cargar(id: number): void {
+  protected cargar(id: number): void {
     this.cargando.set(true);
+    this.error.set(false);
     this.cotizacionService.obtener(id).subscribe({
       next: (cotizacion) => {
         this.cotizacion.set(cotizacion);
         this.cargando.set(false);
       },
-      error: () => this.cargando.set(false),
+      error: () => { this.cargando.set(false); this.error.set(true); },
     });
   }
+
+  protected readonly paginaLineas = signal<CambioListado>({ page: 1, rows: 25, sortField: null, sortOrder: null });
+  protected readonly todasLineas = computed(() => (this.cotizacion()?.detalles ?? []).map(d => ({ ...d, productoTexto: d.variante?.nombre ?? ('Variante #' + d.variante_id) })));
+  protected readonly filasLineas = computed(() => this.todasLineas().slice((this.paginaLineas().page - 1) * this.paginaLineas().rows, this.paginaLineas().page * this.paginaLineas().rows));
+  protected readonly metaLineas = computed<MetaListado>(() => ({ total: this.todasLineas().length, page: this.paginaLineas().page, rows: this.paginaLineas().rows, filtros_aplicados: {}, permisos: {} }));
+  protected readonly columnasLineas: ColumnaListado<ReturnType<typeof this.todasLineas>[number]>[] = [{ tipo: 'principal', campo: 'productoTexto', encabezado: 'Producto' },{ tipo: 'cantidad', campo: 'cantidad', encabezado: 'Cantidad', unidad: 'unidad(es)' },{ tipo: 'dinero', campo: 'precio_unitario', encabezado: 'Precio' },{ tipo: 'dinero', campo: 'descuento', encabezado: 'Descuento' },{ tipo: 'dinero', campo: 'subtotal', encabezado: 'Subtotal' }];
+
+  protected readonly opcionesPago = computed(() => this.metodosPago().map(m => ({ label: m.nombre, value: m.id })));
 
 }

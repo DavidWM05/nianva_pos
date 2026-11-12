@@ -1,14 +1,18 @@
-import { DatePipe } from '@angular/common';
-import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import { BotonCrearComponent } from '@nianva/ui-actions';
+import { CambioListado, ColumnaListado, FilterBarComponent, MetaListado, TablaComponent } from '@nianva/ui-data';
+import { CampoComponent } from '@nianva/ui-forms';
+import { DineroPipe, FechaPipe } from '@nianva/ui-format';
+import { PageComponent, PageHeaderComponent } from '@nianva/ui-layout';
+import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { RouterLink } from '@angular/router';
-import { DataTableCellDirective, DataTableColumn, DataTableComponent, DataTableLazyEvent, StatusBadgeComponent } from '@nianva/ui-shared';
-import { Button } from 'primeng/button';
-import { InputText } from 'primeng/inputtext';
+import { Router } from '@angular/router';
+import { DataTableLazyEvent } from '@nianva/ui-shared';
 import { Subject, debounceTime } from 'rxjs';
 
 import { ApartadoService } from '../../apartado.service';
 import { Apartado, ApartadosListaPermisos } from '../../apartado.types';
+
+type FilaListado = Apartado & { clienteTexto: string; avanceTexto: string; avancePorcentaje: number; vencimientoTexto: string };
 
 const PERMISOS_VACIOS: ApartadosListaPermisos = { crear: false };
 
@@ -25,21 +29,16 @@ const DIAS_AVISO_VENCIMIENTO = 7;
 @Component({
   selector: 'nucleo-apartados-list',
   standalone: true,
-  imports: [DatePipe, RouterLink, DataTableComponent, DataTableCellDirective, StatusBadgeComponent, Button, InputText],
+  providers: [DineroPipe, FechaPipe],
+  imports: [BotonCrearComponent, FilterBarComponent, TablaComponent, CampoComponent, PageComponent, PageHeaderComponent],
   templateUrl: './apartados-list.component.html',
   styleUrl: './apartados-list.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ApartadosListComponent {
+  private readonly router = inject(Router);
   private readonly apartadoService = inject(ApartadoService);
 
-  protected readonly columns: DataTableColumn[] = [
-    { field: 'cliente', header: 'Cliente' },
-    { field: 'avance', header: 'Abonado' },
-    { field: 'estado', header: 'Estado' },
-    { field: 'fecha_vencimiento', header: 'Vencimiento' },
-    { field: 'acciones', header: '' },
-  ];
 
   protected readonly apartados = signal<Apartado[]>([]);
   protected readonly total = signal(0);
@@ -47,14 +46,15 @@ export class ApartadosListComponent {
   protected readonly permisos = signal<ApartadosListaPermisos>(PERMISOS_VACIOS);
   protected readonly busqueda = signal('');
 
-  private ultimoEvento: DataTableLazyEvent = { first: 0, rows: 25, sortField: null, sortOrder: null, filters: {} };
+  private readonly ultimoEvento = signal<DataTableLazyEvent>({ first: 0, rows: 25, sortField: null, sortOrder: null, filters: {} });
   private readonly busquedaSubject = new Subject<string>();
 
   constructor() {
     this.busquedaSubject.pipe(debounceTime(300), takeUntilDestroyed()).subscribe((texto) => {
       this.busqueda.set(texto);
-      this.cargar({ ...this.ultimoEvento, first: 0 });
+      this.cargar({ ...this.ultimoEvento(), first: 0 });
     });
+    this.cargar(this.ultimoEvento());
   }
 
   onBuscarInput(texto: string): void {
@@ -66,8 +66,9 @@ export class ApartadosListComponent {
   }
 
   private cargar(evento: DataTableLazyEvent): void {
-    this.ultimoEvento = evento;
+    this.ultimoEvento.set(evento);
     this.loading.set(true);
+    this.error.set(false);
 
     this.apartadoService.listar(evento, this.busqueda()).subscribe({
       next: (respuesta) => {
@@ -75,8 +76,9 @@ export class ApartadosListComponent {
         this.total.set(respuesta.total);
         this.permisos.set(respuesta.permisos);
         this.loading.set(false);
+        this.primeraCarga.set(false);
       },
-      error: () => this.loading.set(false),
+      error: () => { this.loading.set(false); this.primeraCarga.set(false); this.error.set(true); },
     });
   }
 
@@ -104,4 +106,16 @@ export class ApartadosListComponent {
 
     return null;
   }
+  private readonly dinero = inject(DineroPipe);
+  private readonly fecha = inject(FechaPipe);
+  protected readonly primeraCarga = signal(true);
+  protected readonly error = signal(false);
+  protected readonly estado = computed(() => this.primeraCarga() && this.loading() ? 'cargando' : this.error() ? 'error' : 'listo');
+  protected readonly meta = computed<MetaListado>(() => ({ total: this.total(), page: Math.floor(this.ultimoEvento().first / (this.ultimoEvento().rows || 25)) + 1, rows: this.ultimoEvento().rows || 25, filtros_aplicados: {}, permisos: { ...this.permisos() } }));
+  protected readonly filas = computed<FilaListado[]>(() => this.apartados().map(fila => ({ ...fila, clienteTexto: fila.cliente?.nombre ?? '—', avanceTexto: this.dinero.transform(fila.total_abonado) + ' / ' + this.dinero.transform(fila.total), avancePorcentaje: this.porcentajeAbonado(fila), vencimientoTexto: fila.fecha_vencimiento ? this.fecha.transform(fila.fecha_vencimiento) + (this.estadoVencimiento(fila) === 'vencido' ? ' (vencido)' : this.estadoVencimiento(fila) === 'proximo' ? ' (por vencer)' : '') : '—' })));
+  protected readonly columnas: ColumnaListado<FilaListado>[] = [{ tipo: 'principal', campo: 'clienteTexto', encabezado: 'Cliente' }, { tipo: 'texto', campo: 'avanceTexto', encabezado: 'Abonado' }, { tipo: 'porcentaje', campo: 'avancePorcentaje', encabezado: 'Avance' }, { tipo: 'estado', campo: 'estado', encabezado: 'Estado', entidad: 'apartado' }, { tipo: 'texto', campo: 'vencimientoTexto', encabezado: 'Vencimiento' }, { tipo: 'acciones', acciones: () => [{ tipo: 'ver' }] }];
+  reintentar(): void { this.cargar(this.ultimoEvento()); }
+  onCambio(evento: CambioListado): void { this.onLazyLoad({ first: (evento.page - 1) * evento.rows, rows: evento.rows, sortField: evento.sortField, sortOrder: evento.sortOrder === 'asc' ? 1 : evento.sortOrder === 'desc' ? -1 : null, filters: {} }); }
+  verFila(fila: Apartado): void { this.router.navigate(['/apartados', fila.id]); }
+
 }

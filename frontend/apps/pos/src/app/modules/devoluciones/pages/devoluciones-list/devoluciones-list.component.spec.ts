@@ -1,7 +1,7 @@
+import { proveedoresDePantalla } from '../../../../testing/proveedores-pantalla';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { provideRouter } from '@angular/router';
-import { providePrimeNG } from 'primeng/config';
 import { of } from 'rxjs';
 import { describe, expect, it, vi } from 'vitest';
 
@@ -52,8 +52,8 @@ describe('DevolucionesListComponent', () => {
     await TestBed.configureTestingModule({
       imports: [DevolucionesListComponent],
       providers: [
+        ...proveedoresDePantalla(),
         provideAnimationsAsync(),
-        providePrimeNG(),
         provideRouter([]),
         { provide: DevolucionService, useValue: devolucionService },
       ],
@@ -66,20 +66,25 @@ describe('DevolucionesListComponent', () => {
   it('muestra el reembolso en negativo y el cobro adicional en positivo', async () => {
     await crearComponente({ crear: true });
 
-    const texto = (fixture.nativeElement as HTMLElement).textContent ?? '';
-    expect(texto).toContain('-$120.00 (reembolso)');
-    expect(texto).toContain('+$280.00 (cobro)');
+    const filas = (fixture.nativeElement as HTMLElement).querySelectorAll('tbody tr');
+    expect(filas).toHaveLength(2);
+    expect(filas[0].querySelector('.ui-tabla__numero')?.textContent?.trim()).toBe('-$120.00');
+    expect(filas[0].textContent).toContain('Reembolso');
+    expect(filas[1].querySelector('.ui-tabla__numero')?.textContent?.trim()).toBe('$280.00');
+    expect(filas[1].textContent).toContain('Cobro');
   });
 
   it('colorea el reembolso distinto del cobro adicional', async () => {
     await crearComponente({ crear: true });
 
-    const spans = fixture.nativeElement.querySelectorAll(
-      '.devoluciones-list__diferencia--reembolso, .devoluciones-list__diferencia--cobro',
-    );
-    expect(spans).toHaveLength(2);
-    expect(spans[0].classList.contains('devoluciones-list__diferencia--reembolso')).toBe(true);
-    expect(spans[1].classList.contains('devoluciones-list__diferencia--cobro')).toBe(true);
+    const filas = (fixture.nativeElement as HTMLElement).querySelectorAll('tbody tr');
+    expect(filas).toHaveLength(2);
+    const negativo = filas[0].querySelector('.ui-tabla__numero');
+    const positivo = filas[1].querySelector('.ui-tabla__numero');
+    expect(negativo).not.toBeNull();
+    expect(positivo).not.toBeNull();
+    expect(negativo?.classList.contains('ui-tabla__numero--peligro')).toBe(true);
+    expect(positivo?.classList.contains('ui-tabla__numero--peligro')).toBe(false);
   });
 
   it('oculta "Nueva devolución / cambio" sin el permiso devoluciones.crear', async () => {
