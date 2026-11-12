@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, ViewChild, inject, signal } from '@angular/core';
 import { Validators } from '@angular/forms';
 import { RouterLink } from '@angular/router';
+import { AlertComponent } from '@nianva/ui-feedback';
 import { DynamicFormComponent, DynamicFormField } from '@nianva/ui-shared';
 
 import { AuthService } from '../../auth.service';
@@ -8,7 +9,7 @@ import { AuthService } from '../../auth.service';
 @Component({
   selector: 'nucleo-forgot-password',
   standalone: true,
-  imports: [DynamicFormComponent, RouterLink],
+  imports: [AlertComponent, DynamicFormComponent, RouterLink],
   templateUrl: './forgot-password.component.html',
   styleUrl: './forgot-password.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

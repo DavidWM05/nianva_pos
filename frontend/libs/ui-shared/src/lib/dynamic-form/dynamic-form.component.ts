@@ -8,8 +8,10 @@ import {
   OnChanges,
   Output,
   QueryList,
+  SimpleChanges,
   ViewEncapsulation,
   inject,
+  input,
 } from '@angular/core';
 import { FormBuilder, FormGroup, NgControl, ReactiveFormsModule, ValidatorFn, Validators } from '@angular/forms';
 import { MatButton } from '@angular/material/button';
@@ -18,6 +20,7 @@ import { provideNativeDateAdapter } from '@angular/material/core';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
+import { conUmbral } from '@nianva/ui-feedback';
 import { FormActionsComponent } from '@nianva/ui-layout';
 
 import { DynamicFormField } from './dynamic-form.types';
@@ -74,6 +77,13 @@ export class DynamicFormComponent implements OnChanges {
    * deshabilita solo un campo puntual (ej. codigo de barras autogenerado).
    */
   @Input() readonly = false;
+  /**
+   * La pantalla esta esperando la respuesta del envio: el boton queda deshabilitado con
+   * `aria-busy` y, pasado el umbral, muestra su indicador (UI-18). Mientras tanto no se emite
+   * otro `formSubmit`.
+   */
+  readonly enviando = input(false);
+  protected readonly mostrarIndicador = conUmbral(this.enviando);
 
   @Output() formSubmit = new EventEmitter<Record<string, unknown>>();
 
@@ -84,8 +94,12 @@ export class DynamicFormComponent implements OnChanges {
 
   form: FormGroup = this.fb.group({});
 
-  ngOnChanges(): void {
-    this.buildForm();
+  ngOnChanges(cambios?: SimpleChanges): void {
+    // Solo `fields` y `readonly` definen el formulario. Rehacerlo por `enviando` borraba lo
+    // escrito y el error del servidor al llegar la respuesta (50j).
+    if (!cambios || cambios['fields'] || cambios['readonly']) {
+      this.buildForm();
+    }
   }
 
   /**
@@ -185,6 +199,18 @@ export class DynamicFormComponent implements OnChanges {
   }
 
   onSubmit(): void {
+    if (this.enviando()) {
+      return;
+    }
+
+    // Un error del servidor describe el envio anterior: si se queda, un campo que el usuario no
+    // edito (el correo tras "credenciales no validas") bloquea el reenvio para siempre (50j).
+    for (const control of Object.values(this.form.controls)) {
+      if (control.hasError('server')) {
+        control.updateValueAndValidity();
+      }
+    }
+
     this.form.markAllAsTouched();
     const proyectados = this.controlesProyectados?.toArray() ?? [];
     proyectados.forEach((proyectado) => proyectado.control?.markAsTouched());

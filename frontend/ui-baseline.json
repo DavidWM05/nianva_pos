@@ -1,14 +1,14 @@
 {
-  "total": 2137,
+  "total": 2121,
   "archivos": {
     "apps/pos/src/app/app.scss": 4,
-    "apps/pos/src/app/auth/auth-page.scss": 55,
+    "apps/pos/src/app/auth/auth-page.scss": 45,
     "apps/pos/src/app/auth/pages/forgot-password/forgot-password.component.scss": 1,
     "apps/pos/src/app/auth/pages/login/login.component.scss": 1,
     "apps/pos/src/app/auth/pages/reset-password/reset-password.component.scss": 1,
     "apps/pos/src/app/auth/pages/two-factor-setup/two-factor-setup.component.scss": 34,
     "apps/pos/src/app/auth/pages/two-factor-verify/two-factor-verify.component.scss": 1,
-    "apps/pos/src/app/auth/two-factor-code-input/two-factor-code-input.component.scss": 15,
+    "apps/pos/src/app/auth/two-factor-code-input/two-factor-code-input.component.scss": 9,
     "apps/pos/src/app/demo/registro-ejemplo.component.scss": 5,
     "apps/pos/src/app/modules/administracion/metodo-pago-form/metodo-pago-form.component.scss": 0,
     "apps/pos/src/app/modules/administracion/pages/metodo-pago-crear/metodo-pago-crear.component.scss": 0,

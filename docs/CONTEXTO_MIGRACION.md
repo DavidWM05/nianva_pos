@@ -1648,6 +1648,50 @@ repo.
       quitados `providePrimeNG()` y el `ConfirmationService` de PrimeNG, ya sin uso, de dos
       specs de `perfil`, y agregado `proveedoresDePantalla()` (solo providers) al de
       Preferencias, para `ui-page-header` (aprobado por el responsable).
+  - **50j · auth: login, 2FA y recuperación de contraseña (Claude):**
+    - `auth/` sin PrimeNG; entra en `CARPETAS_POS_SIN_PRIMENG` (verificado con un import de
+      `primeng` que falla). Solo usaban PrimeNG el campo del código TOTP
+      (`two-factor-code-input`, que también usan Preferencias y el detalle de usuario) y la
+      configuración inicial de 2FA; login, recuperación y restablecer ya iban sobre
+      `dynamic-form`;
+    - **e2e de flujo (`auth.spec.ts`), verde antes de migrar y después:** login con
+      credenciales erróneas y correctas; login con 2FA (código rechazado y el TOTP real);
+      2FA inicial de un admin sin configurar (QR, códigos de recuperación y entrada); y
+      recuperación (pide el enlace, restablece y entra con la nueva contraseña). Más axe en
+      claro y en oscuro, a 1280 y 390 px, en las cinco pantallas, con sus estados de error.
+      `soporte/backend.ts` corre PHP contra la SQLite del e2e para lo que la API no da (el
+      secreto TOTP del admin, un token de restablecimiento, un usuario sin 2FA) y calcula el
+      TOTP (RFC 6238) en Node;
+    - **bugs que vio el e2e antes de migrar, en `master`, con su test visto en rojo:**
+      - **login:** tras "Las credenciales no son validas.", corregir la contraseña y volver a
+        enviar no hacía nada: el error del servidor quedaba en `correo` hasta editar ese
+        campo. `dynamic-form` limpia los errores del servidor al enviar
+        (`dynamic-form-envio.spec.ts`); vale para todos sus formularios;
+      - **recuperación:** el primer correo con el backend recién levantado tarda unos 6 s
+        (compila las vistas del correo) y el botón no daba ninguna señal. `dynamic-form`
+        gana `enviando` (botón deshabilitado, `aria-busy` y el indicador pasado el umbral,
+        UI-18), que ya pasan login, recuperación y restablecer
+        (`auth-formularios-envio.spec.ts`). Al agregarlo apareció otro: `ngOnChanges` rehacía
+        el formulario por cualquier input y borraba lo escrito al cambiar `enviando`; ahora
+        solo lo rehacen `fields` y `readonly`;
+    - **`ui-input-codigo` (nuevo, `libs/ui/forms`, en el catálogo `/forms`):** código de un
+      solo uso visible, un solo campo con `inputmode="numeric"`, `autocomplete="one-time-code"`
+      y solo dígitos, dentro de `ui-campo` (etiqueta, `aria-invalid` y `aria-describedby`).
+      Reemplaza a las seis casillas sin etiqueta de `p-inputotp` en el campo del código y en
+      la configuración de 2FA. El rechazo del código es un error del campo (lo anuncia
+      `ui-campo`) y se va al escribir; el botón se habilita con 6 dígitos y muestra su
+      indicador (`two-factor-code-input-accesibilidad.spec.ts`, visto en rojo con PrimeNG);
+    - avisos de error, éxito e inactividad pasan a `ui-alert`; `auth-page.scss` y la
+      configuración de 2FA, de `--nucleo-*` (en oscuro la tarjeta seguía blanca con texto
+      claro, 1.04:1; el aviso de éxito daba 2.95:1 en claro) a semánticos `--nv-*`;
+    - **PRO-01 (con la etiqueta `pro-01-autorizado`):** spec nuevo de comportamiento verde
+      con PrimeNG (`two-factor-setup-comportamiento.spec.ts` y
+      `two-factor-code-input-comportamiento.spec.ts`), migración, y retirado el caso
+      "al confirmar, el boton queda deshabilitado y muestra su indicador pasado el umbral" de
+      `two-factor-setup.component.spec.ts`, que buscaba el icono de carga de `p-button`;
+    - **pendiente para el responsable:** el backend acepta un código de recuperación en
+      lugar del TOTP (`TwoFactorController::verifyLogin`), pero la pantalla solo admite 6
+      dígitos: quien perdió su app no tiene cómo usarlo desde la UI. No entra en el 50j.
 - **Posibles mejoras (roadmap):**
   - **capturas de Linux sin pasar por CI (Docker):** hoy cada PR con cambio visual falla una
     vez en "Catálogo visual", se baja el artifact y se versionan las capturas, porque en el

@@ -3,6 +3,7 @@ import { ChangeDetectionStrategy, Component, ViewChild, inject, signal } from '@
 import { toSignal } from '@angular/core/rxjs-interop';
 import { Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { AlertComponent } from '@nianva/ui-feedback';
 import { DynamicFormComponent, DynamicFormField } from '@nianva/ui-shared';
 import { map } from 'rxjs';
 
@@ -12,7 +13,7 @@ import { AuthService } from '../../auth.service';
 @Component({
   selector: 'nucleo-login',
   standalone: true,
-  imports: [DynamicFormComponent, RouterLink],
+  imports: [AlertComponent, DynamicFormComponent, RouterLink],
   templateUrl: './login.component.html',
   styleUrl: './login.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

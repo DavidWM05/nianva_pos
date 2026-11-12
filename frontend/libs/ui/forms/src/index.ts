@@ -4,6 +4,7 @@ export * from './lib/input-dinero/input-dinero.component';
 export * from './lib/input-cantidad/input-cantidad.component';
 export * from './lib/input-password/input-password.component';
 export * from './lib/input-pin/input-pin.component';
+export * from './lib/input-codigo/input-codigo.component';
 export * from './lib/select-filtro/select-filtro.component';
 export * from './lib/btn-enviar/btn-enviar.component';
 export * from './lib/checklist-agrupado/checklist-agrupado.component';

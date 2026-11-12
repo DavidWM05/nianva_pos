@@ -1,13 +1,17 @@
-@if (error; as mensaje) {
-  <p class="two-factor-code-input__error">{{ mensaje }}</p>
-}
-
 <form (submit)="onSubmit($event)">
-  <p-inputotp [formControl]="code" [length]="6" [integerOnly]="true" />
-  <p-button
+  <ui-campo etiqueta="Código de verificación">
+    <ui-input-codigo [formControl]="code" />
+  </ui-campo>
+  <button
+    matButton="filled"
     type="submit"
-    [label]="submitLabel"
-    [disabled]="enviando || code.value.length !== 6"
-    styleClass="two-factor-code-input__submit"
-  />
+    class="two-factor-code-input__submit"
+    [disabled]="enviandoAhora() || !codigoCompleto()"
+    [attr.aria-busy]="enviandoAhora() || null"
+  >
+    @if (indicadorEnvio()) {
+      <i class="pi pi-spin pi-spinner" matButtonIcon aria-hidden="true"></i>
+    }
+    {{ submitLabel }}
+  </button>
 </form>

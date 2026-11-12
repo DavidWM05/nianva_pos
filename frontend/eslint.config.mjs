@@ -22,8 +22,8 @@ const contratoPendientes = JSON.parse(
 // encargo agrega el suyo al cerrar, y desde ahi ESLint prohibe PrimeNG en ese modulo, specs
 // incluidos. La lista solo crece; al final de la serie, PrimeNG sale de todo apps/pos.
 const MODULOS_POS_SIN_PRIMENG = ['unidades-medida', 'auditoria', 'nucleo', 'configuracion', 'precios', 'crm', 'administracion', 'cotizaciones', 'apartados', 'devoluciones'];
-// Carpetas de pos fuera de modules/ que ya no usan PrimeNG (50i: shell, perfil y demo).
-const CARPETAS_POS_SIN_PRIMENG = ['shell', 'perfil', 'demo'];
+// Carpetas de pos fuera de modules/ que ya no usan PrimeNG (50i: shell, perfil y demo; 50j: auth).
+const CARPETAS_POS_SIN_PRIMENG = ['shell', 'perfil', 'demo', 'auth'];
 
 const sinPrimeNg = ['primeng', 'primeng/*', '@primeuix/themes', '@primeuix/themes/*'];
 const sinHttpClientEnComponentes = {

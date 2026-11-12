@@ -1,0 +1,15 @@
+<input
+  type="text"
+  inputmode="numeric"
+  autocomplete="one-time-code"
+  class="ui-input-codigo"
+  [attr.maxlength]="longitudEfectiva()"
+  [value]="digitos()"
+  [disabled]="deshabilitado()"
+  [id]="idControl()"
+  [attr.aria-required]="ariaRequerido() ? 'true' : null"
+  [attr.aria-invalid]="ariaInvalido() ? 'true' : null"
+  [attr.aria-describedby]="descritoPor()"
+  (input)="alEntrada($event)"
+  (blur)="alSalir()"
+/>
