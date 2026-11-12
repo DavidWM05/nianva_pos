@@ -1,0 +1,56 @@
+:host {
+  display: block;
+  min-width: 0;
+}
+
+.ui-migas__lista {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--nv-spacing-1);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: var(--nv-font-size-sm);
+}
+
+.ui-migas__item {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--nv-spacing-1);
+  min-width: 0;
+}
+
+.ui-migas__enlace,
+.ui-migas__actual {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--nv-spacing-1);
+  overflow-wrap: anywhere;
+}
+
+.ui-migas__enlace {
+  border-radius: var(--nv-radius-sm);
+  color: var(--nv-texto-suave);
+  text-decoration: none;
+
+  &:hover {
+    color: var(--nv-texto);
+    text-decoration: underline;
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--nv-foco);
+    outline-offset: 2px;
+  }
+}
+
+.ui-migas__actual {
+  color: var(--nv-texto);
+  font-weight: var(--nv-font-weight-medium);
+}
+
+.ui-migas__separador {
+  color: var(--nv-texto-suave);
+  font-size: var(--nv-font-size-xs);
+}

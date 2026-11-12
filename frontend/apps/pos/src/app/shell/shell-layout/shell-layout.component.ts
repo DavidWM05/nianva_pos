@@ -3,6 +3,7 @@ import { RouterOutlet } from '@angular/router';
 import { ShellComponent } from '@nianva/ui-layout';
 
 import { BreadcrumbComponent } from '../breadcrumb/breadcrumb.component';
+import { MenuUsuarioComponent } from '../menu-usuario/menu-usuario.component';
 import { SidebarComponent } from '../sidebar/sidebar.component';
 
 /**
@@ -17,7 +18,7 @@ import { SidebarComponent } from '../sidebar/sidebar.component';
 @Component({
   selector: 'nucleo-pos-layout',
   standalone: true,
-  imports: [RouterOutlet, ShellComponent, SidebarComponent, BreadcrumbComponent],
+  imports: [RouterOutlet, ShellComponent, SidebarComponent, BreadcrumbComponent, MenuUsuarioComponent],
   templateUrl: './shell-layout.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

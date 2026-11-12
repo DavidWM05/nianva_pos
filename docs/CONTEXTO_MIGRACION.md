@@ -1604,6 +1604,50 @@ repo.
     - pendientes: contrato 32 → 30, cargando 26 → 22, formato 47 → 37; línea base 2622 →
       2157 líneas. 574 tests de `pos`, 55 e2e, axe en 50 análisis (25 vistas a 1280 y
       390 px) sin violaciones.
+  - **50i · shell, perfil y demo (Claude):**
+    - `shell/`, `perfil/` y `demo/` sin PrimeNG; entran en ESLint como
+      `CARPETAS_POS_SIN_PRIMENG` (verificado con un import de `primeng` que falla). E2e antes
+      de migrar, verdes con PrimeNG (`modulos/perfil.spec.ts` y el primer caso de
+      `shell.spec.ts`), y en verde después;
+    - **breadcrumb:** `p-breadcrumb` pasa a `ui-migas` (`libs/ui/layout`, aditivo y en el
+      catálogo `/layout`): `nav` con nombre accesible, lista ordenada y `aria-current="page"`
+      en la última miga. El breadcrumb de pos sigue armando las migas desde
+      `data.breadcrumb`;
+    - **menú de usuario (nuevo):** `ui-shell` gana el hueco `acciones`, a la derecha del
+      encabezado, también en angosta; `libs/ui` no conoce usuario ni tema. El menú vive en
+      pos (`shell/menu-usuario`, `mat-menu`): el botón se llama "Menú de usuario: <nombre>";
+      el tema va como tres `menuitemradio` con `aria-checked` dentro de un grupo "Tema";
+      Preferencias; y **Cerrar sesión**, que antes no existía en la UI. Con éxito,
+      `AuthService.logout()` cierra la sesión en las demás pestañas
+      (`SesionEntrePestanasService`) y lleva a `/login`; si el backend falla, se limpia la
+      sesión local y se va a `/login` igual. Sin confirmación;
+    - **tema (UI-03):** el valor por defecto sigue en "claro" mientras queden pantallas con
+      PrimeNG; pasa a "sistema" en el 50n, con el retiro de los dos casos de
+      `tema.service.spec.ts` que fijan "claro". `TemaService` expone `preferenciaActual`
+      (signal) y escucha `matchMedia`: con "sistema", el tema cambia cuando cambia el del
+      sistema operativo;
+    - **bugs encontrados por axe con el interruptor, con su test visto en rojo:**
+      - el `body` de pos tomaba fondo y texto de la paleta fija (`--nucleo-color-surface-50`
+        y `-900`): en oscuro el texto suave quedaba sobre fondo claro (1.41:1). Pasa a
+        `--nv-fondo` y `--nv-texto`, que en claro valen lo mismo (lo vio `shell.spec.ts`);
+      - la capa de estado de Material (12%) bajaba a 4.37:1 el texto primario de un botón
+        de texto u outlined con foco o pulsado, en claro; se ve con el menú de usuario
+        abierto. `material.scss` fija en 8% la capa de foco y de pulsado y el color del ripple
+        del clic, que es otra capa (`material-botones-estado.spec.ts`; el ripple lo vio el e2e
+        completo, que a veces corria axe justo tras el clic). Afecta a todos los botones de
+        texto y outlined, solo en foco y pulsado;
+    - **deuda para el responsable:** UI-03 pide un atributo en `<html>`; el código usa una
+      clase de la que dependen tokens y catálogo. Hay que decidir si se corrige el estándar o
+      el mecanismo;
+    - el sidebar, Preferencias, la lista de dispositivos y el demo pasan de `--nucleo-*`
+      (paleta fija, no cambia en oscuro) a semánticos `--nv-*`; los botones, a `matButton`;
+      "Cargando dispositivos..." y "Cargando auditoría..." a `ui-skeleton`. Preferencias
+      usa `ui-page-header`;
+    - **PRO-01:** retirados dos casos de `sidebar-pantalla-angosta.spec.ts` que buscaban
+      `p-button` (cubiertos antes por `sidebar-boton-colapsar.spec.ts`, verde con PrimeNG);
+      quitados `providePrimeNG()` y el `ConfirmationService` de PrimeNG, ya sin uso, de dos
+      specs de `perfil`, y agregado `proveedoresDePantalla()` (solo providers) al de
+      Preferencias, para `ui-page-header` (aprobado por el responsable).
 - **Posibles mejoras (roadmap):**
   - **capturas de Linux sin pasar por CI (Docker):** hoy cada PR con cambio visual falla una
     vez en "Catálogo visual", se baja el artifact y se versionan las capturas, porque en el

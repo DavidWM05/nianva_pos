@@ -1,5 +1,4 @@
 [
-    "apps/pos/src/app/demo/registro-ejemplo.component.html",
     "apps/pos/src/app/modules/cuentas-cobrar/pages/cuenta-cobrar-detalle/cuenta-cobrar-detalle.component.html",
     "apps/pos/src/app/modules/cuentas-pagar/pages/cuenta-pagar-detalle/cuenta-pagar-detalle.component.html",
     "apps/pos/src/app/modules/delivery/pages/pedido-detalle/pedido-detalle.component.html",
@@ -19,6 +18,5 @@
     "apps/pos/src/app/modules/tpv/pages/caja/caja.component.html",
     "apps/pos/src/app/modules/tpv/pages/venta-detalle/venta-detalle.component.html",
     "apps/pos/src/app/modules/ventas-plazos/pages/plan-pago-detalle/plan-pago-detalle.component.html",
-    "apps/pos/src/app/perfil/dispositivos-confiables-list/dispositivos-confiables-list.component.html",
     "libs/ui-shared/src/lib/data-table/data-table.component.html"
 ]

@@ -1,5 +1,7 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { ChangeDetectionStrategy, Component, OnInit, ViewChild, inject, signal } from '@angular/core';
+import { MatButton } from '@angular/material/button';
+import { PageHeaderComponent } from '@nianva/ui-layout';
 import { ToastService } from '@nianva/ui-shared';
 
 import { AuthStateService } from '../../../auth/auth-state.service';
@@ -22,7 +24,7 @@ import { DispositivoConfiable } from '../../seguridad.types';
 @Component({
   selector: 'nucleo-preferencias',
   standalone: true,
-  imports: [DispositivosConfiablesListComponent, CambiarPasswordFormComponent, TwoFactorCodeInputComponent],
+  imports: [MatButton, PageHeaderComponent, DispositivosConfiablesListComponent, CambiarPasswordFormComponent, TwoFactorCodeInputComponent],
   templateUrl: './preferencias.component.html',
   styleUrl: './preferencias.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

@@ -6,17 +6,17 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: var(--nucleo-spacing-4);
+  margin-bottom: var(--nv-spacing-4);
 
   h2 {
     margin: 0;
-    font-size: var(--nucleo-font-size-lg);
+    font-size: var(--nv-font-size-lg);
   }
 }
 
 .dispositivos-list__estado {
-  color: var(--nucleo-color-surface-500);
-  font-size: var(--nucleo-font-size-sm);
+  color: var(--nv-texto-suave);
+  font-size: var(--nv-font-size-sm);
 }
 
 .dispositivos-list {
@@ -25,43 +25,43 @@
   padding: 0;
   display: flex;
   flex-direction: column;
-  gap: var(--nucleo-spacing-3);
+  gap: var(--nv-spacing-3);
 }
 
 .dispositivos-list__item {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: var(--nucleo-spacing-4);
-  padding: var(--nucleo-spacing-4);
-  border: 1px solid var(--nucleo-color-surface-200);
-  border-radius: var(--nucleo-radius-md);
+  gap: var(--nv-spacing-4);
+  padding: var(--nv-spacing-4);
+  border: 1px solid var(--nv-borde);
+  border-radius: var(--nv-radius-md);
 }
 
 .dispositivos-list__info {
   display: flex;
   flex-direction: column;
-  gap: var(--nucleo-spacing-1);
+  gap: var(--nv-spacing-1);
 }
 
 .dispositivos-list__nombre {
-  font-size: var(--nucleo-font-size-base);
+  font-size: var(--nv-font-size-base);
   font-weight: 600;
   display: flex;
   align-items: center;
-  gap: var(--nucleo-spacing-2);
+  gap: var(--nv-spacing-2);
 }
 
 .dispositivos-list__badge {
-  font-size: var(--nucleo-font-size-xs);
+  font-size: var(--nv-font-size-xs);
   font-weight: 500;
-  color: var(--nucleo-color-primary-700);
-  background: var(--nucleo-color-primary-50);
-  padding: 0.125rem var(--nucleo-spacing-2);
-  border-radius: var(--nucleo-radius-full);
+  color: var(--nv-texto);
+  background: var(--nv-primario-suave);
+  padding: 0.125rem var(--nv-spacing-2);
+  border-radius: var(--nv-radius-full);
 }
 
 .dispositivos-list__detalle {
-  font-size: var(--nucleo-font-size-sm);
-  color: var(--nucleo-color-surface-500);
+  font-size: var(--nv-font-size-sm);
+  color: var(--nv-texto-suave);
 }

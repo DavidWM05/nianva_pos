@@ -4,14 +4,14 @@
       <span class="sidebar__brand">Núcleo</span>
     }
     @if (!angosta()) {
-      <p-button
-        [icon]="colapsado() ? 'pi pi-angle-right' : 'pi pi-angle-left'"
-        [text]="true"
-        [rounded]="true"
-        size="small"
+      <button
+        matIconButton
+        type="button"
         (click)="toggleCollapsed()"
-        [ariaLabel]="colapsado() ? 'Expandir menu' : 'Colapsar menu'"
-      />
+        [attr.aria-label]="colapsado() ? 'Expandir menu' : 'Colapsar menu'"
+      >
+        <i [class]="colapsado() ? 'pi pi-angle-right' : 'pi pi-angle-left'" aria-hidden="true"></i>
+      </button>
     }
   </div>
 

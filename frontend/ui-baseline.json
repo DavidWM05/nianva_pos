@@ -1,5 +1,5 @@
 {
-  "total": 2157,
+  "total": 2137,
   "archivos": {
     "apps/pos/src/app/app.scss": 4,
     "apps/pos/src/app/auth/auth-page.scss": 55,
@@ -9,7 +9,7 @@
     "apps/pos/src/app/auth/pages/two-factor-setup/two-factor-setup.component.scss": 34,
     "apps/pos/src/app/auth/pages/two-factor-verify/two-factor-verify.component.scss": 1,
     "apps/pos/src/app/auth/two-factor-code-input/two-factor-code-input.component.scss": 15,
-    "apps/pos/src/app/demo/registro-ejemplo.component.scss": 11,
+    "apps/pos/src/app/demo/registro-ejemplo.component.scss": 5,
     "apps/pos/src/app/modules/administracion/metodo-pago-form/metodo-pago-form.component.scss": 0,
     "apps/pos/src/app/modules/administracion/pages/metodo-pago-crear/metodo-pago-crear.component.scss": 0,
     "apps/pos/src/app/modules/administracion/pages/metodo-pago-detalle/metodo-pago-detalle.component.scss": 0,
@@ -103,7 +103,7 @@
     "apps/pos/src/app/modules/ventas-plazos/pages/planes-pago-list/planes-pago-list.component.scss": 13,
     "apps/pos/src/app/perfil/cambiar-password-form/cambiar-password-form.component.scss": 8,
     "apps/pos/src/app/perfil/dispositivos-confiables-list/dispositivos-confiables-list.component.scss": 58,
-    "apps/pos/src/app/perfil/pages/preferencias/preferencias.component.scss": 33,
+    "apps/pos/src/app/perfil/pages/preferencias/preferencias.component.scss": 19,
     "apps/pos/src/app/shell/sidebar/sidebar.component.scss": 86,
     "apps/pos/src/styles.scss": 16
   }

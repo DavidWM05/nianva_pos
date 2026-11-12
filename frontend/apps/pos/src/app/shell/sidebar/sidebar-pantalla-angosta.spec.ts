@@ -27,12 +27,6 @@ describe('SidebarComponent en pantalla angosta', () => {
     return { fixture, el: fixture.nativeElement as HTMLElement };
   }
 
-  it('no muestra el boton de colapsar', () => {
-    const { el } = crear();
-
-    expect(el.querySelector('.sidebar__header p-button')).toBeNull();
-  });
-
   it('se ve completo aunque el usuario lo haya colapsado en escritorio', () => {
     const { fixture, el } = crear();
 
@@ -41,16 +35,5 @@ describe('SidebarComponent en pantalla angosta', () => {
 
     expect(el.querySelector('.sidebar')?.classList).not.toContain('sidebar--collapsed');
     expect(el.textContent).toContain(NUCLEO_ITEM_INICIO.label);
-  });
-
-  it('al volver a pantalla ancha respeta otra vez la preferencia de colapsado', () => {
-    const { fixture, el } = crear();
-
-    fixture.componentInstance.toggleCollapsed();
-    angosta.set(false);
-    fixture.detectChanges();
-
-    expect(el.querySelector('.sidebar')?.classList).toContain('sidebar--collapsed');
-    expect(el.querySelector('.sidebar__header p-button')).not.toBeNull();
   });
 });

@@ -1,9 +1,9 @@
 <div class="registro-ejemplo">
-  <p class="registro-ejemplo__nota">
+  <ui-alert tono="info">
     Demo de scaffolding -- muestra el patron de vista de registro con pestañas
     (<code>RecordTabsComponent</code>) y un <code>&#64;defer (on viewport)</code> real en la pestaña
     "Auditoría". Se reemplaza cuando el primer modulo real lo necesite.
-  </p>
+  </ui-alert>
 
   <nucleo-record-tabs [tabs]="tabs">
     <ng-template>
@@ -18,7 +18,7 @@
       } @placeholder {
         <p>Auditoría (se carga al hacer scroll hasta aquí)...</p>
       } @loading (minimum 200ms) {
-        <p>Cargando auditoría...</p>
+        <ui-skeleton forma="texto" [lineas]="3" etiqueta="Cargando auditoría" />
       }
     </ng-template>
   </nucleo-record-tabs>

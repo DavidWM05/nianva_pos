@@ -1,18 +1,12 @@
 <div class="dispositivos-list__header">
   <h2>Mis dispositivos</h2>
   @if (dispositivos.length > 1) {
-    <p-button
-      label="Revocar todos"
-      severity="danger"
-      [outlined]="true"
-      size="small"
-      (click)="onRevocarTodos()"
-    />
+    <button matButton="outlined" type="button" (click)="onRevocarTodos()">Revocar todos</button>
   }
 </div>
 
 @if (cargando) {
-  <p class="dispositivos-list__estado">Cargando dispositivos...</p>
+  <ui-skeleton forma="texto" [lineas]="3" etiqueta="Cargando dispositivos" />
 } @else if (dispositivos.length === 0) {
   <p class="dispositivos-list__estado">No tienes dispositivos confiados registrados.</p>
 } @else {
@@ -35,7 +29,7 @@
           </span>
         </div>
 
-        <p-button label="Revocar" severity="danger" [text]="true" size="small" (click)="onRevocar(dispositivo)" />
+        <button matButton type="button" (click)="onRevocar(dispositivo)">Revocar</button>
       </li>
     }
   </ul>

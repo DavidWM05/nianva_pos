@@ -29,6 +29,14 @@
   background: var(--nv-superficie);
 }
 
+// Acciones de la app (menu de usuario): a la derecha del encabezado, tambien en angosta.
+.ui-shell__acciones {
+  display: flex;
+  align-items: center;
+  gap: var(--nv-spacing-2);
+  margin-left: auto;
+}
+
 .ui-shell__contenido {
   flex: 1;
   overflow-y: auto;

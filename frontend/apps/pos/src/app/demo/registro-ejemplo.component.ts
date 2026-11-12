@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { AlertComponent, SkeletonComponent } from '@nianva/ui-feedback';
 import { AuditLogViewerComponent, RecordTabConfig, RecordTabsComponent } from '@nianva/ui-shared';
 
 /**
@@ -13,7 +14,7 @@ import { AuditLogViewerComponent, RecordTabConfig, RecordTabsComponent } from '@
 @Component({
   selector: 'nucleo-registro-ejemplo',
   standalone: true,
-  imports: [RecordTabsComponent, AuditLogViewerComponent],
+  imports: [AlertComponent, SkeletonComponent, RecordTabsComponent, AuditLogViewerComponent],
   templateUrl: './registro-ejemplo.component.html',
   styleUrl: './registro-ejemplo.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
