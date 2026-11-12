@@ -58,3 +58,30 @@ for (const ruta of rutas) {
     );
   });
 }
+
+// UI-17: a 390 px el contenido llegaba al borde de la pantalla (ui-shell no dejaba margen
+// lateral). Cada pagina deja aire a los dos lados y no se desborda.
+for (const ruta of rutas) {
+  test(`margen lateral ${ruta} 375`, async ({ page }) => {
+    await page.setViewportSize({ width: 375, height: 900 });
+    await page.goto(`/${ruta}?tema=claro`);
+    await page.waitForLoadState('networkidle');
+    await expect(page.locator('cat-root')).toBeVisible();
+
+    const medidas = await page.evaluate(() => {
+      const encabezado = document.querySelector('.ui-page-header')?.getBoundingClientRect();
+      const main = document.querySelector('main');
+
+      return {
+        izquierda: encabezado?.left ?? 0,
+        derecha: window.innerWidth - (encabezado?.right ?? window.innerWidth),
+        scroll: main?.scrollWidth ?? 0,
+        cliente: main?.clientWidth ?? 0,
+      };
+    });
+
+    expect(medidas.izquierda, `${ruta}: margen izquierdo ${medidas.izquierda}px`).toBeGreaterThan(0);
+    expect(medidas.derecha, `${ruta}: margen derecho ${medidas.derecha}px`).toBeGreaterThan(0);
+    expect(medidas.scroll, `${ruta}: main ${medidas.scroll}px > ${medidas.cliente}px`).toBeLessThanOrEqual(medidas.cliente);
+  });
+}

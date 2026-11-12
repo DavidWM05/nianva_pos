@@ -1,5 +1,7 @@
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { ColumnaListado, EmptyComponent, FilterBarComponent, MetaListado, TablaComponent } from '@nianva/ui-data';
+import { CampoComponent, SelectFiltroComponent } from '@nianva/ui-forms';
 import { PageHeaderComponent, SectionComponent } from '@nianva/ui-layout';
 
 interface FilaDemo {
@@ -15,7 +17,16 @@ interface FilaDemo {
 @Component({
   selector: 'cat-data-page',
   standalone: true,
-  imports: [EmptyComponent, FilterBarComponent, PageHeaderComponent, SectionComponent, TablaComponent],
+  imports: [
+    CampoComponent,
+    EmptyComponent,
+    FilterBarComponent,
+    FormsModule,
+    PageHeaderComponent,
+    SectionComponent,
+    SelectFiltroComponent,
+    TablaComponent,
+  ],
   template: `
     <ui-page-header clave="catalogo-data" subtitulo="Estado vacío, filtros y tabla" />
 
@@ -30,6 +41,21 @@ interface FilaDemo {
       </ui-filter-bar>
       <ui-filter-bar [meta]="meta" [hayFiltros]="true" (limpiar)="limpiar()" />
       <p>Limpiezas: {{ limpiados() }}</p>
+      <!-- La barra de un listado: busqueda nativa junto a un selector, con la misma caja y el mismo alto. -->
+      <ui-filter-bar [meta]="meta">
+        <ui-campo #buscador etiqueta="Buscar">
+          <input
+            type="search"
+            [id]="buscador.controlId()"
+            placeholder="Buscar por nombre..."
+            [ngModel]="busqueda()"
+            (ngModelChange)="busqueda.set($event)"
+          />
+        </ui-campo>
+        <ui-campo etiqueta="Estado">
+          <ui-select-filtro [opciones]="estados" [ngModel]="estado()" (ngModelChange)="estado.set($event)" />
+        </ui-campo>
+      </ui-filter-bar>
     </ui-section>
 
     <ui-section titulo="Tabla con totales y fila inactiva">
@@ -81,6 +107,12 @@ export class DataPage {
   protected readonly esInactiva = (fila: FilaDemo): boolean => !fila.activo;
 
   protected readonly limpiados = signal(0);
+  protected readonly busqueda = signal('');
+  protected readonly estado = signal<string | null>(null);
+  protected readonly estados = [
+    { label: 'Completada', value: 'completada' },
+    { label: 'Anulada', value: 'anulada' },
+  ];
 
   protected limpiar(): void {
     this.limpiados.update((total) => total + 1);

@@ -40,6 +40,9 @@
 .ui-shell__contenido {
   flex: 1;
   overflow-y: auto;
+  // UI-17: el margen lateral de toda pagina lo da el shell, alineado con el encabezado (las
+  // paginas no tienen relleno propio y el contenido llegaba al borde de la pantalla).
+  padding: var(--nv-spacing-6);
 }
 
 .ui-shell__abrir {
@@ -64,6 +67,10 @@
 .ui-shell--angosta {
   .ui-shell__encabezado {
     padding: var(--nv-spacing-2) var(--nv-spacing-4);
+  }
+
+  .ui-shell__contenido {
+    padding: var(--nv-spacing-4);
   }
 
   .ui-shell__menu {
