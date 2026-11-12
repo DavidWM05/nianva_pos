@@ -101,3 +101,16 @@ export function codigoTotp(secreto: string, instante = Date.now()): string {
 
   return String((hmac.readUInt32BE(inicio) & 0x7fffffff) % 1_000_000).padStart(6, '0');
 }
+
+/**
+ * Un rol del tenant de `base` asignado a `correo` (creado como `base`): el backend no deja
+ * eliminarlo mientras tenga usuarios. Si ya existe, lo reutiliza.
+ */
+export function rolConUsuarioAsignado(base: string, nombreRol: string, correo: string): void {
+  crearUsuarioComo(base, correo);
+  enBackend(`
+    $base = ${usuario(base)};
+    $rol = App\\Modules\\Nucleo\\Models\\Rol::query()->where('tenant_id', $base->tenant_id)->where('nombre', ${JSON.stringify(nombreRol)})->first()
+        ?? App\\Modules\\Nucleo\\Models\\Rol::factory()->create(['tenant_id' => $base->tenant_id, 'nombre' => ${JSON.stringify(nombreRol)}]);    ${usuario(correo)}->roles()->syncWithoutDetaching([$rol->id]);
+  `);
+}

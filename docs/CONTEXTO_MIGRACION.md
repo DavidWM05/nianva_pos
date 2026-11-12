@@ -1713,6 +1713,33 @@ repo.
     - pendientes: contrato 30 → 25, cargando 20 → 15, formato 37 → 27; línea base 2121 →
       1637 líneas. 642 tests de `pos`, 75 e2e, axe en 70 análisis (1280 y 390 px) sin
       violaciones.
+  - **Errores de negocio en el interceptor (ARQ-12, UI-13; Claude):**
+    - `erroresInterceptor` muestra un toast con el `message` del backend ante un 4xx con
+      `error_code` (las `ExcepcionNegocio` y el mapa genérico de `MapaErroresHttp`) en una
+      petición que modifica (POST, PUT, PATCH o DELETE). Quedan fuera los GET (la carga
+      fallida la muestra la pantalla con el error de `ui-page`), 401 y 419, las validaciones
+      422 de Laravel (`errors` sin `error_code`, van a los campos) y lo marcado;
+    - usa la misma supresión que el toast técnico (`errorTecnico`): el `toast.error` que la
+      pantalla dispara después por el mismo fallo se descarta, así que las 83 llamadas de
+      `apps/pos` no cambian en este encargo;
+    - **marca nueva `CODIGOS_EN_PANTALLA`** (`HttpContextToken<readonly CodigoError[]>`), en
+      lugar de `ERROR_EN_PANTALLA`: calla solo los códigos que la pantalla maneja con su
+      propio mensaje, y deja el toast de los demás errores de negocio y de los técnicos (red,
+      403, 5xx). `ERROR_EN_PANTALLA` lo calla todo y sigue para auth y el 2FA;
+    - **revisión de los 8 archivos con `esErrorNegocio`/`leerErrorNegocio`:** solo
+      cotizaciones (crear y actualizar), delivery (crear pedido) y payroll (generar nómina)
+      cambian el `message` de `sucursal_requerida` por `MENSAJE_SUCURSAL_REQUERIDA`; sus
+      peticiones llevan `CODIGOS_EN_PANTALLA` (en delivery y payroll, congelados, solo esa
+      marca). Caja (`caja_ya_cerrada`), ventas (`venta_ya_anulada`) y ventas a plazos
+      (`cuota_ya_pagada`, `plan_pago_ya_activo`) muestran el mismo `message` y solo
+      reaccionan al código: no se marcan. `auth.interceptor` mira un 401, que queda fuera;
+      login y 2FA ya van con `ERROR_EN_PANTALLA`;
+    - tests: `errores-interceptor-negocio.spec.ts` (10 casos, 6 vistos en rojo contra
+      `master`; los 4 que no muestran toast son guardas) con una mutación por regla, y
+      `codigos-en-pantalla-marcas.spec.ts` (3, en rojo sin las marcas). E2e
+      `modulos/errores-negocio.spec.ts`: eliminar un rol con usuarios asignados da un solo
+      toast con el mensaje del backend. Pasa también en `master`, porque la lista de roles
+      ya mostraba ese mismo texto; falla si el interceptor no usa el `message` (mutación).
 - **Posibles mejoras (roadmap):**
   - **capturas de Linux sin pasar por CI (Docker):** hoy cada PR con cambio visual falla una
     vez en "Catálogo visual", se baja el artifact y se versionan las capturas, porque en el

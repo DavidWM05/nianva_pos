@@ -1,10 +1,11 @@
 import { CuerpoDe, RespuestaDe } from '@nianva/api-contrato';
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpContext, HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { DataTableLazyEvent } from '@nianva/ui-shared';
 import { Observable, map } from 'rxjs';
 
 import { urlApi } from '../../core/api-config';
+import { CODIGOS_EN_PANTALLA } from '../../core/errores.interceptor';
 import { Cotizacion, CotizacionCrearPayload, CotizacionFormPayload } from './cotizacion.types';
 
 export interface CotizacionesPermisos {
@@ -34,6 +35,8 @@ function permisosDesde(permisos: Record<string, boolean>): CotizacionesPermisos 
 @Injectable({ providedIn: 'root' })
 export class CotizacionService {
   private readonly http = inject(HttpClient);
+  // La pantalla muestra su propio mensaje para `sucursal_requerida` (ARQ-12); el resto, el interceptor.
+  private readonly sucursalEnPantalla = new HttpContext().set(CODIGOS_EN_PANTALLA, ['sucursal_requerida']);
 
   listar(evento: DataTableLazyEvent, filtros: { numero?: string; estado?: string; clienteId?: number } = {}): Observable<CotizacionesPagina> {
     const rows = evento.rows || 25;
@@ -75,14 +78,14 @@ export class CotizacionService {
   crear(payload: CotizacionCrearPayload): Observable<Cotizacion> {
     const cuerpo: CuerpoDe<'/cotizaciones', 'post'> = payload;
     return this.http
-      .post<RespuestaDe<'/cotizaciones', 'post'>>(urlApi(`/cotizaciones`), cuerpo)
+      .post<RespuestaDe<'/cotizaciones', 'post'>>(urlApi(`/cotizaciones`), cuerpo, { context: this.sucursalEnPantalla })
       .pipe(map((r) => r.data as Cotizacion));
   }
 
   actualizar(id: number, payload: CotizacionFormPayload): Observable<Cotizacion> {
     const cuerpo: CuerpoDe<'/cotizaciones/{id}', 'put'> = payload;
     return this.http
-      .put<RespuestaDe<'/cotizaciones/{id}', 'put'>>(urlApi(`/cotizaciones/${id}`), cuerpo)
+      .put<RespuestaDe<'/cotizaciones/{id}', 'put'>>(urlApi(`/cotizaciones/${id}`), cuerpo, { context: this.sucursalEnPantalla })
       .pipe(map((r) => r.data as Cotizacion));
   }
 
