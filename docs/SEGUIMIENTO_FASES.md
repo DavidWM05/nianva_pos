@@ -64,7 +64,7 @@ línea base de PHPStan; se paga al tocar cada módulo.
 | PRO-05 | Análisis estático bloqueante | Hecho | Pint, PHPStan, ESLint y `tsc` en CI; stylelint en la Fase 2 y el diff de OpenAPI con API-08 | 7 |
 | PRO-06 | Un tema por encargo | Hecho | Revisión del diff; tests en SQLite en memoria por proceso | — |
 | PRO-07 | Servicio compartido: re-correr consumidores | Hecho | CI corre la suite completa en cada PR | — |
-| PRO-08 | Datos de prueba reproducibles | Hecho | Factories (`Factories/FactoriesConDatosDadosTest`); escenarios (`Seeders/EscenariosSeederTest` y paso de CI) | 26 |
+| PRO-08 | Datos de prueba reproducibles | Hecho | Factories (`Factories/FactoriesConDatosDadosTest`); `Venta::factory()` reutiliza la caja abierta de la sucursal en vez de abrir otra (`Factories/VentaFactoryCajaAbiertaTest`); escenarios (`Seeders/EscenariosSeederTest` y paso de CI) | 26, fix/venta-factory-caja |
 | PRO-09 | Flujo de un encargo a DS | Hecho | Reporte con checklist y conteo, revisado contra el prompt | — |
 | PRO-10 | Estrategia fuera del repo | Hecho | `.gitignore` y revisión de `git status` | — |
 
