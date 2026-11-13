@@ -24,10 +24,17 @@ class VentaFactory extends Factory
                 'tenant_id' => $a['tenant_id'],
                 'sucursal_id' => $a['sucursal_id'],
             ])->id,
-            'caja_sesion_id' => fn (array $a) => CajaSesion::factory()->create([
-                'sucursal_id' => $a['sucursal_id'],
-                'usuario_id' => $a['usuario_id'],
-            ])->id,
+            // Una sucursal tiene a lo sumo una caja abierta (CajaService::abrirCajaConSucursal):
+            // se reutiliza la de la sucursal y del tenant si existe; si no, se abre una.
+            'caja_sesion_id' => fn (array $a) => CajaSesion::sinTenant()
+                ->where('sucursal_id', $a['sucursal_id'])
+                ->where('estado', 'abierta')
+                ->whereHas('sucursal', fn ($q) => $q->withoutGlobalScopes()->where('tenant_id', $a['tenant_id']))
+                ->value('id')
+                ?? CajaSesion::factory()->create([
+                    'sucursal_id' => $a['sucursal_id'],
+                    'usuario_id' => $a['usuario_id'],
+                ])->id,
             'cliente_id' => fn (array $a) => Cliente::factory()->create(['tenant_id' => $a['tenant_id']])->id,
             'cupon_id' => null,
             'total' => 100,
