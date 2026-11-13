@@ -4,7 +4,7 @@ import { DateAdapter } from '@angular/material/core';
 import { Router } from '@angular/router';
 import { ToastService } from '@nianva/ui-shared';
 import { of } from 'rxjs';
-import { afterEach, expect, it, vi } from 'vitest';
+import { afterAll, afterEach, beforeAll, expect, it, vi } from 'vitest';
 import { AuthStateService } from '../../auth/auth-state.service';
 import { BUSCADOR_USUARIO } from '../../core/buscadores-entidad.tokens';
 import { proveedoresDePantalla } from '../../testing/proveedores-pantalla';
@@ -23,6 +23,22 @@ interface CasoFecha {
   metodo: string;
   api: string;
 }
+
+// La zona se fija aqui y no depende de la maquina: CI corre en UTC, donde new Date('YYYY-MM-DD')
+// no retrocede un dia y la regresion de carga pasaria inadvertida. Node aplica el cambio de TZ
+// en caliente; al terminar se restaura para los demas specs del mismo proceso.
+const zonaOriginal = process.env['TZ'];
+beforeAll(() => {
+  process.env['TZ'] = 'America/Mexico_City';
+});
+afterAll(() => {
+  if (zonaOriginal === undefined) {
+    delete process.env['TZ'];
+  } else {
+    process.env['TZ'] = zonaOriginal;
+  }
+});
+
 const casos: CasoFecha[] = [
   {
     pantalla: EmpleadosListComponent,
