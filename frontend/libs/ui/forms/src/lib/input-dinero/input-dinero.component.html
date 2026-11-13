@@ -9,7 +9,7 @@
     [attr.aria-required]="ariaRequerido() ? 'true' : null"
     [attr.aria-invalid]="ariaInvalido() ? 'true' : null"
     [attr.aria-describedby]="descritoPor()"
-    (focus)="alEnfocar()"
+    (focus)="alEnfocar($event)"
     (input)="alEntrar($event)"
     (blur)="alSalir()"
   />
