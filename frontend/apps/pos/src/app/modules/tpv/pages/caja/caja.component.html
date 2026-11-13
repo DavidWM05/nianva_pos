@@ -2,12 +2,12 @@
   <h2>Caja</h2>
 
   @if (cargando()) {
-    <p>Cargando estado de caja...</p>
+    <ui-skeleton forma="bloque" alto="12rem" etiqueta="Cargando estado de caja" />
   } @else if (estado(); as estadoActual) {
     @if (cajaRecienCerrada(); as cerrada) {
       <div class="caja__panel caja__panel--resultado">
         <h3>Caja cerrada</h3>
-        <dl class="caja__detalle">
+        <dl uiDatos>
           <dt>Monto de apertura</dt>
           <dd>${{ cerrada.monto_apertura }}</dd>
           <dt>Ventas del sistema</dt>
@@ -25,7 +25,7 @@
 
         @if (desgloseCierre(); as desglose) {
           <h4>Desglose del total teórico</h4>
-          <dl class="caja__detalle">
+          <dl uiDatos>
             <dt>Gastos</dt>
             <dd>-${{ desglose.total_gastos }}</dd>
             <dt>Abonos de cuentas por cobrar</dt>
@@ -37,14 +37,16 @@
           </dl>
         }
 
-        <p-button label="Continuar" (click)="cerrarResumenDeCierre()" />
+        <div>
+          <button matButton="filled" type="button" (click)="cerrarResumenDeCierre()">Continuar</button>
+        </div>
       </div>
     } @else if (estadoActual.sesion; as sesion) {
       <div class="caja__panel">
         <h3>Caja abierta</h3>
-        <dl class="caja__detalle">
+        <dl uiDatos>
           <dt>Abierta desde</dt>
-          <dd>{{ sesion.fecha_apertura | date: 'short' }}</dd>
+          <dd>{{ sesion.fecha_apertura | fechaHora }}</dd>
           <dt>Monto de apertura</dt>
           <dd>${{ sesion.monto_apertura }}</dd>
           <dt>Ventas de la sesión</dt>
@@ -59,7 +61,6 @@
           <div class="caja__form">
             <label for="caja-monto-fisico">Monto físico contado</label>
             <input
-              pInputText
               type="number"
               id="caja-monto-fisico"
               min="0"
@@ -67,13 +68,9 @@
               [ngModel]="montoFisico()"
               (ngModelChange)="montoFisico.set($event)"
             />
-            <p-button
-              label="Cerrar caja"
-              severity="danger"
-              [loading]="cerrando()"
-              [disabled]="montoFisico() === null"
-              (click)="cerrarCaja()"
-            />
+            <div>
+              <ui-btn-enviar etiqueta="Cerrar caja" [enviando]="cerrando()" [deshabilitado]="montoFisico() === null" (click)="cerrarCaja()" />
+            </div>
           </div>
         }
       </div>
@@ -83,7 +80,7 @@
 
         @if (estadoActual.permisos.gastos_ver) {
           @if (cargandoGastos()) {
-            <p>Cargando gastos...</p>
+            <ui-skeleton forma="texto" [lineas]="3" etiqueta="Cargando gastos" />
           } @else if (gastos().length === 0) {
             <p>No hay gastos registrados en esta sesión.</p>
           } @else {
@@ -100,7 +97,7 @@
                   <tr>
                     <td>{{ gasto.descripcion }}</td>
                     <td>${{ gasto.monto }}</td>
-                    <td>{{ gasto.fecha | date: 'short' }}</td>
+                    <td>{{ gasto.fecha | fechaHora }}</td>
                   </tr>
                 }
               </tbody>
@@ -111,7 +108,9 @@
         }
 
         @if (estadoActual.permisos.gastos_crear) {
-          <p-button label="Registrar gasto" icon="pi pi-plus" [text]="true" size="small" (click)="abrirModalGasto()" />
+          <div>
+            <button matButton type="button" (click)="abrirModalGasto()"><i class="pi pi-plus" aria-hidden="true"></i> Registrar gasto</button>
+          </div>
         }
       </div>
     } @else {
@@ -123,7 +122,6 @@
           <div class="caja__form">
             <label for="caja-monto-apertura">Monto de apertura</label>
             <input
-              pInputText
               type="number"
               id="caja-monto-apertura"
               min="0"
@@ -131,12 +129,9 @@
               [ngModel]="montoApertura()"
               (ngModelChange)="montoApertura.set($event)"
             />
-            <p-button
-              label="Abrir caja"
-              [loading]="abriendo()"
-              [disabled]="montoApertura() === null"
-              (click)="abrirCaja()"
-            />
+            <div>
+              <ui-btn-enviar etiqueta="Abrir caja" [enviando]="abriendo()" [deshabilitado]="montoApertura() === null" (click)="abrirCaja()" />
+            </div>
           </div>
         } @else {
           <p class="caja__error">No tienes permiso para abrir la caja.</p>
@@ -146,41 +141,32 @@
   }
 </div>
 
-<p-dialog
-  header="Registrar gasto"
-  [visible]="mostrarModalGasto()"
-  (visibleChange)="cerrarModalGasto()"
-  [modal]="true"
-  [dismissableMask]="true"
-  [style]="{ width: '24rem' }"
->
-  <div class="caja__campo">
-    <label for="gasto-descripcion">Descripción</label>
+<ui-modal titulo="Registrar gasto" tamano="sm" [visible]="mostrarModalGasto()" (visibleChange)="cerrarModalGasto()">
+  <ui-campo #descripcion etiqueta="Descripción">
     <input
-      pInputText
       type="text"
-      id="gasto-descripcion"
+      [id]="descripcion.controlId()"
       maxlength="255"
       [ngModel]="descripcionGasto()"
       (ngModelChange)="descripcionGasto.set($event)"
     />
-  </div>
-  <div class="caja__campo">
-    <label for="gasto-monto">Monto</label>
+  </ui-campo>
+  <ui-campo #monto etiqueta="Monto">
     <input
-      pInputText
       type="number"
-      id="gasto-monto"
+      [id]="monto.controlId()"
       min="0.01"
       step="0.01"
       [ngModel]="montoGasto()"
       (ngModelChange)="montoGasto.set($event)"
     />
-  </div>
-  <p-button
-    label="Registrar"
-    [loading]="registrandoGasto()"
-    [disabled]="!descripcionGasto().trim() || montoGasto() === null || montoGasto()! <= 0"
-    (click)="registrarGasto()"
-  />
-</p-dialog>
+  </ui-campo>
+  <ui-form-actions acciones>
+    <ui-btn-enviar
+      etiqueta="Registrar"
+      [enviando]="registrandoGasto()"
+      [deshabilitado]="!descripcionGasto().trim() || montoGasto() === null || montoGasto()! <= 0"
+      (click)="registrarGasto()"
+    />
+  </ui-form-actions>
+</ui-modal>

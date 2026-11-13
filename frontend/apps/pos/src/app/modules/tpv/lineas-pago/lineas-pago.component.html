@@ -1,31 +1,37 @@
 <div class="lineas-pago">
   @for (pago of pagos(); track $index) {
     <div class="lineas-pago__linea">
-      <p-select
-        [options]="metodosPago()"
-        optionLabel="nombre"
-        optionValue="id"
-        placeholder="Método de pago"
-        [ngModel]="pago.metodo_pago_id"
-        (ngModelChange)="actualizarMetodoPago($index, $event)"
-      />
-      <input
-        pInputText
-        type="number"
-        min="0"
-        step="0.01"
-        placeholder="Monto"
-        [ngModel]="pago.monto"
-        (ngModelChange)="actualizarMontoPago($index, $event)"
-      />
+      <ui-campo etiqueta="Método de pago">
+        <ui-select-filtro
+          [opciones]="opcionesMetodoPago()"
+          [todas]="false"
+          [ngModel]="pago.metodo_pago_id"
+          (ngModelChange)="actualizarMetodoPago($index, $event)"
+        />
+      </ui-campo>
+      <ui-campo #monto etiqueta="Monto">
+        <input
+          type="number"
+          [id]="monto.controlId()"
+          min="0"
+          step="0.01"
+          placeholder="Monto"
+          [ngModel]="pago.monto"
+          (ngModelChange)="actualizarMontoPago($index, $event)"
+        />
+      </ui-campo>
       @if (pagos().length > 1) {
-        <p-button icon="pi pi-trash" [text]="true" severity="danger" size="small" aria-label="Quitar pago" (click)="quitarLineaPago($index)" />
+        <button matIconButton type="button" aria-label="Quitar pago" (click)="quitarLineaPago($index)">
+          <i class="pi pi-trash" aria-hidden="true"></i>
+        </button>
       }
     </div>
   }
-  <p-button label="Agregar método de pago" icon="pi pi-plus" [text]="true" size="small" (click)="agregarLineaPago()" />
+  <div>
+    <button matButton type="button" (click)="agregarLineaPago()"><i class="pi pi-plus" aria-hidden="true"></i> Agregar método de pago</button>
+  </div>
 
   <p class="lineas-pago__suma" [class.lineas-pago__suma--ok]="pagoCuadra()">
-    Pagado: ${{ sumaPagos() }} de ${{ montoObjetivo }}
+    Pagado: {{ sumaPagos() | dinero }} de {{ montoObjetivo | dinero }}
   </p>
 </div>

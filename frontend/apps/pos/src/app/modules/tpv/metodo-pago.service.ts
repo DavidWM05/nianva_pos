@@ -1,3 +1,4 @@
+import { RespuestaDe } from '@nianva/api-contrato';
 import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable, map } from 'rxjs';
@@ -17,7 +18,7 @@ export class MetodoPagoService {
    */
   listar(): Observable<MetodoPago[]> {
     return this.http
-      .get<{ data: MetodoPago[] }>(urlApi(`/metodos-pago`), { params: { solo_activos: 1 } })
-      .pipe(map((r) => r.data));
+      .get<RespuestaDe<'/metodos-pago', 'get'>>(urlApi(`/metodos-pago`), { params: { solo_activos: 1 } })
+      .pipe(map((r) => r.data as MetodoPago[]));
   }
 }

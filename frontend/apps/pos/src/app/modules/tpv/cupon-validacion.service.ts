@@ -1,3 +1,4 @@
+import { CuerpoDe, RespuestaDe } from '@nianva/api-contrato';
 import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable, map } from 'rxjs';
@@ -29,8 +30,18 @@ export class CuponValidacionService {
   private readonly http = inject(HttpClient);
 
   validar(codigo: string, total: number): Observable<CuponValidacion> {
+    const cuerpo: CuerpoDe<'/cupones/validar', 'post'> = { codigo, total };
+
     return this.http
-      .post<{ data: CuponValidacion }>(urlApi(`/cupones/validar`), { codigo, total })
-      .pipe(map((r) => r.data));
+      .post<RespuestaDe<'/cupones/validar', 'post'>>(urlApi(`/cupones/validar`), cuerpo)
+      // El contrato tipa id como string y descuento como unknown (Scramble no los infiere): se
+      // convierten aqui, sin cast doble.
+      .pipe(
+        map(({ data }) => ({
+          cupon: { ...data.cupon, id: Number(data.cupon.id), tipo: data.cupon.tipo as CuponValidacion['cupon']['tipo'] },
+          descuento: Number(data.descuento),
+          total_con_descuento: data.total_con_descuento,
+        })),
+      );
   }
 }

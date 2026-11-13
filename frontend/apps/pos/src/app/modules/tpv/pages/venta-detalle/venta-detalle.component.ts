@@ -1,8 +1,10 @@
-import { DatePipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
+import { MatButton } from '@angular/material/button';
 import { ActivatedRoute, RouterLink } from '@angular/router';
+import { SkeletonComponent } from '@nianva/ui-feedback';
+import { CantidadPipe, DineroPipe, FechaHoraPipe } from '@nianva/ui-format';
+import { DatosComponent } from '@nianva/ui-layout';
 import { AuditLogViewerComponent, RecordTabConfig, RecordTabsComponent, StatusBadgeComponent } from '@nianva/ui-shared';
-import { Button } from 'primeng/button';
 
 import { VentaService } from '../../venta.service';
 import { Venta } from '../../venta.types';
@@ -19,7 +21,18 @@ import { Venta } from '../../venta.types';
 @Component({
   selector: 'nucleo-venta-detalle',
   standalone: true,
-  imports: [DatePipe, RouterLink, RecordTabsComponent, StatusBadgeComponent, Button, AuditLogViewerComponent],
+  imports: [
+    RouterLink,
+    RecordTabsComponent,
+    StatusBadgeComponent,
+    AuditLogViewerComponent,
+    MatButton,
+    SkeletonComponent,
+    CantidadPipe,
+    DineroPipe,
+    FechaHoraPipe,
+    DatosComponent,
+  ],
   templateUrl: './venta-detalle.component.html',
   styleUrl: './venta-detalle.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

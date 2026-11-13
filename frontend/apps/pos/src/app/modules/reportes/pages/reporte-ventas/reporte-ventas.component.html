@@ -2,33 +2,21 @@
   <h1>Reporte de Ventas</h1>
 
   <div class="reporte-ventas__filtros">
-    <div class="reporte-ventas__campo">
-      <label for="reporte-fecha-desde">Desde</label>
-      <input pInputText type="date" id="reporte-fecha-desde" [ngModel]="fechaDesde()" (ngModelChange)="fechaDesde.set($event)" />
-    </div>
-    <div class="reporte-ventas__campo">
-      <label for="reporte-fecha-hasta">Hasta</label>
-      <input pInputText type="date" id="reporte-fecha-hasta" [ngModel]="fechaHasta()" (ngModelChange)="fechaHasta.set($event)" />
-    </div>
-    <div class="reporte-ventas__campo">
-      <label for="reporte-sucursal">Sucursal</label>
-      <p-select
-        inputId="reporte-sucursal"
-        [options]="sucursales()"
-        optionLabel="nombre"
-        optionValue="id"
-        placeholder="Todas"
-        [showClear]="true"
-        [ngModel]="sucursalId()"
-        (ngModelChange)="sucursalId.set($event)"
-      />
-    </div>
-    <p-button label="Filtrar" icon="pi pi-filter" (click)="filtrar()" />
-    <p-button label="Limpiar" [text]="true" (click)="limpiarFiltros()" />
+    <ui-campo #desde etiqueta="Desde">
+      <input type="date" [id]="desde.controlId()" [ngModel]="fechaDesde()" (ngModelChange)="fechaDesde.set($event)" />
+    </ui-campo>
+    <ui-campo #hasta etiqueta="Hasta">
+      <input type="date" [id]="hasta.controlId()" [ngModel]="fechaHasta()" (ngModelChange)="fechaHasta.set($event)" />
+    </ui-campo>
+    <ui-campo etiqueta="Sucursal">
+      <ui-select-filtro [opciones]="opcionesSucursal()" [ngModel]="sucursalId()" (ngModelChange)="sucursalId.set($event)" />
+    </ui-campo>
+    <button matButton="filled" type="button" (click)="filtrar()"><i class="pi pi-filter" aria-hidden="true"></i> Filtrar</button>
+    <button matButton type="button" (click)="limpiarFiltros()">Limpiar</button>
   </div>
 
   @if (cargando()) {
-    <p>Cargando reporte...</p>
+    <ui-skeleton forma="bloque" alto="20rem" etiqueta="Cargando reporte" />
   } @else if (reporte(); as r) {
     <div class="reporte-ventas__tiles">
       <div class="reporte-ventas__tile">

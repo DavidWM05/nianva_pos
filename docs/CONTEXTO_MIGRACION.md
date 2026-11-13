@@ -1826,6 +1826,34 @@ repo.
       violaciones;
     - pendientes: contrato 21 → 19, cargando 13 → 11, formato 27 → 24; línea base 1531 →
       1357 líneas en 96 archivos.
+  - **50n-a · tpv y reportes, con cambio mínimo (otra sesión):**
+    - las 6 piezas de tpv con PrimeNG (caja, venta, detalle, listado y las líneas de
+      producto y de pago) y `reporte-ventas` pasan a `libs/ui`; `ventas-list` cambia
+      `nucleo-data-table` por `ui-tabla`. `tpv` y `reportes` entran en
+      `MODULOS_POS_SIN_PRIMENG`. Sin cambios de flujo: el TPV se rediseña en la Fase 4 y
+      los reportes en la Fase 6;
+    - los 4 servicios de tpv usan `RespuestaDe`/`CuerpoDe` con las mismas firmas. El
+      contrato tipa como texto el `id` del cupón y la `cantidad` de los items de cotización
+      que lee la venta: se convierten con `Number()` (deuda de contrato en el backend);
+    - **margen del shell:** a 390 px la venta con líneas desbordaba 12 px; se ajustó el
+      relleno de las celdas de la tabla de líneas. El reporte desbordaba 156 px por sus
+      tarjetas, con o sin margen; ahora hacen `flex-wrap`. 0 px de scroll horizontal en los
+      13 estados a 1280 y 390 px, y axe sin violaciones;
+    - **e2e nuevo `modulos/tpv.spec.ts`:** abre caja, cobra una venta de dos líneas con pago
+      mixto, revisa el detalle y el listado, cierra caja (la venta queda bloqueada) y filtra
+      el reporte de ventas; en verde antes y después de migrar. Usa un vendedor con un rol
+      extra con `reportes.ver` (`usuarioConPermisosExtra`), porque el admin exige 2FA, y
+      deja la caja abierta al terminar (`asegurarCajaAbierta`);
+    - **hallazgo:** `soporte/saldos-50h.ts` crea ventas con `Venta::factory()`, y esa
+      factory abre su propia caja en la sucursal aunque ya haya una abierta, saltándose la
+      regla de una caja por sucursal. Pendiente: que la factory reutilice la caja abierta;
+    - ningún caso existente cambió: los specs solo pierden `providePrimeNG`. Caja y los 4
+      reportes siguen en `formato-pendientes` porque sus specs buscan importes sin el pipe
+      `dinero`. Para la revisión visual: una venta completada ya no lleva insignia (así lo
+      define el registro de estados) y los montos de caja quedan fuera de `ui-campo` por los
+      ids fijos que busca su spec;
+    - pendientes: contrato 19 → 15, cargando 11 → 5, formato 24 → 19; línea base 1357 →
+      1293. 703 tests de `pos` y 83 e2e.
 - **Posibles mejoras (roadmap):**
   - **capturas de Linux sin pasar por CI (Docker):** hoy cada PR con cambio visual falla una
     vez en "Catálogo visual", se baja el artifact y se versionan las capturas, porque en el

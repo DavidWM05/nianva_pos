@@ -103,6 +103,24 @@ export function codigoTotp(secreto: string, instante = Date.now()): string {
 }
 
 /**
+ * 50n-a: `correo` (creado como `base`) recibe ademas un rol del tenant con `permisos`
+ * ("modulo.accion"). Asi un vendedor ve un reporte sin usar el rol admin, que exige 2FA.
+ */
+export function usuarioConPermisosExtra(base: string, correo: string, nombreRol: string, permisos: readonly string[]): void {
+  crearUsuarioComo(base, correo);
+  enBackend(`
+    $base = ${usuario(base)};
+    $rol = App\\Modules\\Nucleo\\Models\\Rol::query()->where('tenant_id', $base->tenant_id)->where('nombre', ${JSON.stringify(nombreRol)})->first()
+        ?? App\\Modules\\Nucleo\\Models\\Rol::factory()->create(['tenant_id' => $base->tenant_id, 'nombre' => ${JSON.stringify(nombreRol)}]);
+    foreach (${JSON.stringify(permisos)} as $permiso) {
+        [$modulo, $accion] = explode('.', $permiso, 2);
+        $rol->permisos()->syncWithoutDetaching([App\\Modules\\Nucleo\\Models\\Permiso::query()->where('modulo', $modulo)->where('accion', $accion)->firstOrFail()->id]);
+    }
+    ${usuario(correo)}->roles()->syncWithoutDetaching([$rol->id]);
+  `);
+}
+
+/**
  * Un rol del tenant de `base` asignado a `correo` (creado como `base`): el backend no deja
  * eliminarlo mientras tenga usuarios. Si ya existe, lo reutiliza.
  */

@@ -1,5 +1,6 @@
 import { DatePipe, KeyValuePipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
+import { SkeletonComponent } from '@nianva/ui-feedback';
 
 import { CrmAvanzadoService } from '../../../crm/crm-avanzado.service';
 import { ReporteCrm } from '../../../crm/crm-avanzado.types';
@@ -16,7 +17,7 @@ const ETIQUETAS_TIPO_INTERACCION: Record<string, string> = {
 @Component({
   selector: 'nucleo-reporte-crm',
   standalone: true,
-  imports: [DatePipe, KeyValuePipe],
+  imports: [DatePipe, KeyValuePipe, SkeletonComponent],
   templateUrl: './reporte-crm.component.html',
   styleUrl: './reporte-crm.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
