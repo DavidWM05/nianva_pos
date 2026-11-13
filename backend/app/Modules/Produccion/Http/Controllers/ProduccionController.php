@@ -211,6 +211,12 @@ class ProduccionController extends Controller
         return $usuario;
     }
 
+    /**
+     * Un booleano por acción: el OpenAPI lo documenta como objeto, no como lista.
+     *
+     * @param  list<string>  $acciones
+     * @return array<string, bool>
+     */
     private function permisosDe(Request $request, string $modulo, array $acciones): array
     {
         $usuario = $request->user();

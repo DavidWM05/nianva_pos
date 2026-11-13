@@ -6134,7 +6134,9 @@ export interface operations {
                         data: components["schemas"]["EmpleadoResource"][];
                         meta: {
                             total: number;
-                            permisos: unknown[];
+                            permisos: {
+                                [key: string]: boolean;
+                            };
                         };
                     };
                 };
@@ -6217,7 +6219,9 @@ export interface operations {
                         data: components["schemas"]["NominaResource"][];
                         meta: {
                             total: number;
-                            permisos: unknown[];
+                            permisos: {
+                                [key: string]: boolean;
+                            };
                         };
                     };
                 };
@@ -6325,7 +6329,9 @@ export interface operations {
                         data: components["schemas"]["PedidoResource"][];
                         meta: {
                             total: number;
-                            permisos: unknown[];
+                            permisos: {
+                                [key: string]: boolean;
+                            };
                         };
                     };
                 };
@@ -6721,7 +6727,9 @@ export interface operations {
                         data: components["schemas"]["InsumoResource"][];
                         meta: {
                             total: number;
-                            permisos: unknown[];
+                            permisos: {
+                                [key: string]: boolean;
+                            };
                         };
                     };
                 };
@@ -6834,7 +6842,9 @@ export interface operations {
                         data: components["schemas"]["RecetaResource"][];
                         meta: {
                             total: number;
-                            permisos: unknown[];
+                            permisos: {
+                                [key: string]: boolean;
+                            };
                         };
                     };
                 };
@@ -6890,7 +6900,9 @@ export interface operations {
                         data: components["schemas"]["OrdenProduccionResource"][];
                         meta: {
                             total: number;
-                            permisos: unknown[];
+                            permisos: {
+                                [key: string]: boolean;
+                            };
                         };
                     };
                 };
@@ -6979,7 +6991,9 @@ export interface operations {
                         data: components["schemas"]["TransformacionResource"][];
                         meta: {
                             total: number;
-                            permisos: unknown[];
+                            permisos: {
+                                [key: string]: boolean;
+                            };
                         };
                     };
                 };

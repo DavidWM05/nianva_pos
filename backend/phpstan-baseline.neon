@@ -2103,18 +2103,6 @@ parameters:
 			path: app/Modules/Delivery/Http/Controllers/PedidoController.php
 
 		-
-			message: '#^Method App\\Modules\\Delivery\\Http\\Controllers\\PedidoController\:\:permisosDe\(\) has parameter \$acciones with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Modules/Delivery/Http/Controllers/PedidoController.php
-
-		-
-			message: '#^Method App\\Modules\\Delivery\\Http\\Controllers\\PedidoController\:\:permisosDe\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Modules/Delivery/Http/Controllers/PedidoController.php
-
-		-
 			message: '#^Method App\\Modules\\Delivery\\Http\\Controllers\\PedidoController\:\:show\(\) has no return type specified\.$#'
 			identifier: missingType.return
 			count: 1
@@ -4853,18 +4841,6 @@ parameters:
 			path: app/Modules/Payroll/Http/Controllers/PayrollController.php
 
 		-
-			message: '#^Method App\\Modules\\Payroll\\Http\\Controllers\\PayrollController\:\:permisosDe\(\) has parameter \$acciones with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Modules/Payroll/Http/Controllers/PayrollController.php
-
-		-
-			message: '#^Method App\\Modules\\Payroll\\Http\\Controllers\\PayrollController\:\:permisosDe\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Modules/Payroll/Http/Controllers/PayrollController.php
-
-		-
 			message: '#^Access to an undefined property App\\Modules\\Payroll\\Http\\Resources\\EmpleadoResource\:\:\$activo\.$#'
 			identifier: property.notFound
 			count: 1
@@ -5675,18 +5651,6 @@ parameters:
 		-
 			message: '#^Method App\\Modules\\Produccion\\Http\\Controllers\\ProduccionController\:\:ordenesStore\(\) has no return type specified\.$#'
 			identifier: missingType.return
-			count: 1
-			path: app/Modules/Produccion/Http/Controllers/ProduccionController.php
-
-		-
-			message: '#^Method App\\Modules\\Produccion\\Http\\Controllers\\ProduccionController\:\:permisosDe\(\) has parameter \$acciones with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Modules/Produccion/Http/Controllers/ProduccionController.php
-
-		-
-			message: '#^Method App\\Modules\\Produccion\\Http\\Controllers\\ProduccionController\:\:permisosDe\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
 			count: 1
 			path: app/Modules/Produccion/Http/Controllers/ProduccionController.php
 
