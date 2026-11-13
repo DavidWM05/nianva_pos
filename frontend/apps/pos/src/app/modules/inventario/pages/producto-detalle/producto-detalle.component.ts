@@ -90,7 +90,6 @@ import { VariantesListComponent } from '../../variantes-list/variantes-list.comp
     ModalComponent,
   ],
   templateUrl: './producto-detalle.component.html',
-  styleUrl: './producto-detalle.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProductoDetalleComponent implements OnInit {

@@ -51,7 +51,6 @@ import { ProductoVariante, StockPorSucursal } from '../producto.types';
   ],
   providers: [CantidadPipe],
   templateUrl: './variantes-list.component.html',
-  styleUrl: './variantes-list.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class VariantesListComponent {

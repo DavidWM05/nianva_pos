@@ -32,7 +32,6 @@ import { ProductoFormPayload, ProductoService } from '../../producto.service';
     ProductoFormComponent,
   ],
   templateUrl: './producto-crear.component.html',
-  styleUrl: './producto-crear.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProductoCrearComponent {

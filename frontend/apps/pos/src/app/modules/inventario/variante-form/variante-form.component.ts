@@ -24,7 +24,6 @@ import { ProductoVariante } from '../producto.types';
   standalone: true,
   imports: [DynamicFormComponent],
   templateUrl: './variante-form.component.html',
-  styleUrl: './variante-form.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class VarianteFormComponent implements OnChanges {

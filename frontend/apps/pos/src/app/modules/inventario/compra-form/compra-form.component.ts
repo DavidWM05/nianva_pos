@@ -51,7 +51,6 @@ export interface CompraFormValue {
     InputCantidadComponent,
   ],
   templateUrl: './compra-form.component.html',
-  styleUrl: './compra-form.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CompraFormComponent implements OnChanges {
