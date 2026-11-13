@@ -9,10 +9,14 @@ import { EstadoPagina, PageComponent, PageHeaderComponent } from '@nianva/ui-lay
 import { ConfirmDialogService, DataTableLazyEvent, ToastService } from '@nianva/ui-shared';
 import { Subject, debounceTime } from 'rxjs';
 
+import { AuthStateService } from '../../../../auth/auth-state.service';
 import { UsuarioAdminService } from '../../usuario-admin.service';
 import { UsuarioAdmin, UsuariosPermisos } from '../../usuario.types';
 
 const PERMISOS_VACIOS: UsuariosPermisos = { crear: false, editar: false, eliminar: false };
+
+// UI-07: el backend rechaza desactivar al propio usuario (403 en UsuarioController); la accion se ve deshabilitada.
+const MOTIVO_PROPIO_USUARIO = 'No puedes desactivar tu propio usuario';
 
 interface FilaUsuario extends UsuarioAdmin {
   sucursalTexto: string;
@@ -37,6 +41,8 @@ export class UsuariosListComponent {
   private readonly router = inject(Router);
   private readonly confirmDialog = inject(ConfirmDialogService);
   private readonly toast = inject(ToastService);
+  // Quien tiene la sesion, ya cargado al arrancar (GET /sesion): no se pide otra vez.
+  private readonly authState = inject(AuthStateService);
 
   protected readonly columnas: ColumnaListado<FilaUsuario>[] = [
     { tipo: 'principal', campo: 'nombre', encabezado: 'Nombre', ordenable: true },
@@ -48,7 +54,13 @@ export class UsuariosListComponent {
       tipo: 'acciones',
       acciones: (fila) => [
         ...(this.permisos().editar ? [{ tipo: 'editar' as const }] : []),
-        ...(this.permisos().eliminar && fila.activo ? [{ tipo: 'estado' as const, activo: true }] : []),
+        ...(this.permisos().eliminar && fila.activo
+          ? [
+              fila.id === this.authState.usuario()?.id
+                ? { tipo: 'estado' as const, activo: true, motivoDeshabilitada: MOTIVO_PROPIO_USUARIO }
+                : { tipo: 'estado' as const, activo: true },
+            ]
+          : []),
       ],
     },
   ];
