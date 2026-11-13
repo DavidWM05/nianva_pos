@@ -1,3 +1,4 @@
+import { RespuestaDe, CuerpoDe } from '@nianva/api-contrato';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { DataTableLazyEvent } from '@nianva/ui-shared';
@@ -26,14 +27,19 @@ export interface InsumosPagina {
 export class InsumoService {
   private readonly http = inject(HttpClient);
 
-  listar(evento: DataTableLazyEvent, filtros: { nombre?: string; sku?: string; stockBajo?: boolean } = {}): Observable<InsumosPagina> {
+  listar(
+    evento: DataTableLazyEvent,
+    filtros: { nombre?: string; sku?: string; stockBajo?: boolean } = {},
+  ): Observable<InsumosPagina> {
     const rows = evento.rows || 25;
     const page = Math.floor(evento.first / rows) + 1;
 
     let params = new HttpParams().set('page', page).set('rows', rows);
 
     if (evento.sortField) {
-      params = params.set('sort_field', evento.sortField).set('sort_order', evento.sortOrder === -1 ? 'desc' : 'asc');
+      params = params
+        .set('sort_field', evento.sortField)
+        .set('sort_order', evento.sortOrder === -1 ? 'desc' : 'asc');
     }
     if (filtros.nombre?.trim()) {
       params = params.set('filtro_nombre', filtros.nombre.trim());
@@ -46,11 +52,22 @@ export class InsumoService {
     }
 
     return this.http
-      .get<{ data: Insumo[]; meta: { total: number; permisos: InsumosPermisos } }>(urlApi(`/insumos`), { params })
-      .pipe(map((r) => ({ data: r.data, total: r.meta.total, permisos: r.meta.permisos })));
+      .get<RespuestaDe<'/insumos', 'get'>>(urlApi(`/insumos`), { params })
+      .pipe(
+        map((r) => ({
+          data: r.data as Insumo[],
+          total: r.meta.total,
+          permisos: { ...r.meta.permisos, crear: r.meta.permisos['crear'] },
+        })),
+      );
   }
 
   crear(payload: InsumoCrearPayload): Observable<Insumo> {
-    return this.http.post<{ data: Insumo }>(urlApi(`/insumos`), payload).pipe(map((r) => r.data));
+    return this.http
+      .post<RespuestaDe<'/insumos', 'post'>>(
+        urlApi(`/insumos`),
+        payload satisfies CuerpoDe<'/insumos', 'post'>,
+      )
+      .pipe(map((r) => r.data as Insumo));
   }
 }

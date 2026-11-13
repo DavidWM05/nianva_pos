@@ -1,12 +1,32 @@
+import { PageComponent } from '@nianva/ui-layout';
+import { SkeletonComponent } from '@nianva/ui-feedback';
+import {
+  CampoComponent,
+  InputDineroComponent,
+  BtnEnviarComponent,
+} from '@nianva/ui-forms';
+
+import { ModalComponent } from '@nianva/ui-overlays';
+import { MatButton } from '@angular/material/button';
 import { DatePipe } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
-import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  OnInit,
+  computed,
+  inject,
+  signal,
+} from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
-import { AuditLogViewerComponent, RecordTabConfig, RecordTabsComponent, StatusBadgeComponent, ToastService } from '@nianva/ui-shared';
-import { Button } from 'primeng/button';
-import { Dialog } from 'primeng/dialog';
-import { InputText } from 'primeng/inputtext';
+import {
+  AuditLogViewerComponent,
+  RecordTabConfig,
+  RecordTabsComponent,
+  StatusBadgeComponent,
+  ToastService,
+} from '@nianva/ui-shared';
 
 import { PrestamoService } from '../../prestamo.service';
 import { Prestamo } from '../../prestamo.types';
@@ -20,7 +40,20 @@ import { Prestamo } from '../../prestamo.types';
 @Component({
   selector: 'nucleo-prestamo-detalle',
   standalone: true,
-  imports: [DatePipe, FormsModule, RecordTabsComponent, AuditLogViewerComponent, StatusBadgeComponent, Button, Dialog, InputText],
+  imports: [
+    PageComponent,
+    SkeletonComponent,
+    DatePipe,
+    FormsModule,
+    RecordTabsComponent,
+    AuditLogViewerComponent,
+    StatusBadgeComponent,
+    CampoComponent,
+    InputDineroComponent,
+    BtnEnviarComponent,
+    ModalComponent,
+    MatButton,
+  ],
   templateUrl: './prestamo-detalle.component.html',
   styleUrl: './prestamo-detalle.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -38,7 +71,9 @@ export class PrestamoDetalleComponent implements OnInit {
   protected readonly cargando = signal(true);
   protected readonly prestamo = signal<Prestamo | null>(null);
 
-  protected readonly puedePagar = computed(() => this.prestamo()?.estado === 'activo');
+  protected readonly puedePagar = computed(
+    () => this.prestamo()?.estado === 'activo',
+  );
 
   // -- Registrar pago --
   protected readonly mostrarRegistrarPago = signal(false);

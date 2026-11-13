@@ -1,14 +1,31 @@
+import { ColumnaListado, MetaListado, TablaComponent } from '@nianva/ui-data';
+import {
+  PageComponent,
+  PageHeaderComponent,
+  SectionComponent,
+} from '@nianva/ui-layout';
+import { CampoComponent, BtnEnviarComponent } from '@nianva/ui-forms';
+
+import { MatInput } from '@angular/material/input';
+import { MatButton } from '@angular/material/button';
 import { HttpErrorResponse } from '@angular/common/http';
-import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  inject,
+  signal,
+} from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { EntidadSelectorComponent, ToastService } from '@nianva/ui-shared';
-import { Button } from 'primeng/button';
-import { InputText } from 'primeng/inputtext';
-import { Textarea } from 'primeng/textarea';
 import { forkJoin } from 'rxjs';
 
-import { BUSCADOR_INSUMO, BUSCADOR_PRODUCTO, BUSCADOR_UNIDAD_MEDIDA, BUSCADOR_VARIANTE_DE_PRODUCTO } from '../../../../core/buscadores-entidad.tokens';
+import {
+  BUSCADOR_INSUMO,
+  BUSCADOR_PRODUCTO,
+  BUSCADOR_UNIDAD_MEDIDA,
+  BUSCADOR_VARIANTE_DE_PRODUCTO,
+} from '../../../../core/buscadores-entidad.tokens';
 import { RecetaService } from '../../receta.service';
 import { RecetaIngredientePayload } from '../../receta.types';
 
@@ -25,9 +42,20 @@ interface IngredienteEnLista extends RecetaIngredientePayload {
 @Component({
   selector: 'nucleo-receta-form',
   standalone: true,
-  imports: [FormsModule, RouterLink, EntidadSelectorComponent, Button, InputText, Textarea],
+  imports: [
+    TablaComponent,
+    PageComponent,
+    PageHeaderComponent,
+    SectionComponent,
+    FormsModule,
+    RouterLink,
+    EntidadSelectorComponent,
+    CampoComponent,
+    BtnEnviarComponent,
+    MatInput,
+    MatButton,
+  ],
   templateUrl: './receta-form.component.html',
-  styleUrl: './receta-form.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class RecetaFormComponent {
@@ -36,7 +64,9 @@ export class RecetaFormComponent {
   private readonly toast = inject(ToastService);
 
   protected readonly buscadorProducto = inject(BUSCADOR_PRODUCTO);
-  protected readonly buscadorVarianteDeProducto = inject(BUSCADOR_VARIANTE_DE_PRODUCTO);
+  protected readonly buscadorVarianteDeProducto = inject(
+    BUSCADOR_VARIANTE_DE_PRODUCTO,
+  );
   protected readonly buscadorInsumo = inject(BUSCADOR_INSUMO);
   protected readonly buscadorUnidadMedida = inject(BUSCADOR_UNIDAD_MEDIDA);
 
@@ -64,7 +94,13 @@ export class RecetaFormComponent {
     const insumoId = this.insumoStagingId();
     const unidadMedidaId = this.unidadMedidaStagingId();
     const cantidad = this.cantidadStaging();
-    if (insumoId === null || unidadMedidaId === null || !cantidad || cantidad <= 0) return;
+    if (
+      insumoId === null ||
+      unidadMedidaId === null ||
+      !cantidad ||
+      cantidad <= 0
+    )
+      return;
 
     forkJoin({
       insumo: this.buscadorInsumo.obtener(insumoId),
@@ -72,7 +108,13 @@ export class RecetaFormComponent {
     }).subscribe(({ insumo, unidad }) => {
       this.ingredientes.update((actuales) => [
         ...actuales,
-        { insumo_id: insumoId, cantidad, unidad_medida_id: unidadMedidaId, etiquetaInsumo: insumo.nombre, etiquetaUnidad: unidad.nombre },
+        {
+          insumo_id: insumoId,
+          cantidad,
+          unidad_medida_id: unidadMedidaId,
+          etiquetaInsumo: insumo.nombre,
+          etiquetaUnidad: unidad.nombre,
+        },
       ]);
       this.insumoStagingId.set(null);
       this.unidadMedidaStagingId.set(null);
@@ -81,14 +123,18 @@ export class RecetaFormComponent {
   }
 
   quitarIngrediente(indice: number): void {
-    this.ingredientes.update((actuales) => actuales.filter((_, i) => i !== indice));
+    this.ingredientes.update((actuales) =>
+      actuales.filter((_, i) => i !== indice),
+    );
   }
 
   crear(): void {
     const varianteId = this.varianteId();
     const nombre = this.nombre().trim();
     if (varianteId === null || !nombre || this.ingredientes().length === 0) {
-      this.toast.warn('Selecciona una variante, un nombre y al menos un ingrediente.');
+      this.toast.warn(
+        'Selecciona una variante, un nombre y al menos un ingrediente.',
+      );
 
       return;
     }
@@ -102,7 +148,13 @@ export class RecetaFormComponent {
         rendimiento: this.rendimiento() ?? 1,
         descripcion: this.descripcion().trim() || null,
         instrucciones: this.instrucciones().trim() || null,
-        ingredientes: this.ingredientes().map(({ insumo_id, cantidad, unidad_medida_id }) => ({ insumo_id, cantidad, unidad_medida_id })),
+        ingredientes: this.ingredientes().map(
+          ({ insumo_id, cantidad, unidad_medida_id }) => ({
+            insumo_id,
+            cantidad,
+            unidad_medida_id,
+          }),
+        ),
       })
       .subscribe({
         next: () => {
@@ -117,4 +169,32 @@ export class RecetaFormComponent {
         },
       });
   }
+  protected readonly paginaIngredientes = signal({ page: 1, rows: 25 });
+  protected get metaIngredientes(): MetaListado {
+    const total = this.ingredientes().length;
+    const actual = this.paginaIngredientes();
+    return {
+      total,
+      rows: actual.rows,
+      page: Math.min(actual.page, Math.max(1, Math.ceil(total / actual.rows))),
+      filtros_aplicados: {},
+      permisos: {},
+    };
+  }
+  protected get filasIngredientes(): (IngredienteEnLista & {
+    indice: number;
+  })[] {
+    const meta = this.metaIngredientes;
+    return this.ingredientes()
+      .map((f, indice) => ({ ...f, indice }))
+      .slice((meta.page - 1) * meta.rows, meta.page * meta.rows);
+  }
+  protected readonly columnasIngredientes: ColumnaListado<
+    IngredienteEnLista & { indice: number }
+  >[] = [
+    { tipo: 'principal', campo: 'etiquetaInsumo', encabezado: 'Insumo' },
+    { tipo: 'cantidad', campo: 'cantidad', encabezado: 'Cantidad' },
+    { tipo: 'texto', campo: 'etiquetaUnidad', encabezado: 'Unidad' },
+    { tipo: 'acciones', acciones: () => [{ tipo: 'eliminar' }] },
+  ];
 }

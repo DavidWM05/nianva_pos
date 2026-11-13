@@ -8,16 +8,19 @@
   "exclude": ["src/**/*.spec.ts", "src/**/*.test.ts"],
   "references": [
     {
+      "path": "../../libs/ui/report"
+    },
+    {
       "path": "../../libs/ui/actions"
     },
     {
       "path": "../../libs/ui/overlays"
     },
     {
-      "path": "../../libs/ui/forms"
+      "path": "../../libs/ui/data"
     },
     {
-      "path": "../../libs/ui/data"
+      "path": "../../libs/ui/forms"
     },
     {
       "path": "../../libs/ui/feedback"

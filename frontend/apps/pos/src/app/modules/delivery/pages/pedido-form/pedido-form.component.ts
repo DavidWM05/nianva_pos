@@ -1,15 +1,34 @@
+import {
+  CampoComponent,
+  InputDineroComponent,
+  BtnEnviarComponent,
+} from '@nianva/ui-forms';
+
+import { MatInput } from '@angular/material/input';
+import { MatButton } from '@angular/material/button';
 import { HttpErrorResponse } from '@angular/common/http';
-import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  inject,
+  signal,
+} from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
-import { EntidadSelectorComponent, MENSAJE_SUCURSAL_REQUERIDA, ToastService, esErrorNegocio, mensajeError } from '@nianva/ui-shared';
-import { Button } from 'primeng/button';
-import { InputText } from 'primeng/inputtext';
-import { Textarea } from 'primeng/textarea';
+import {
+  EntidadSelectorComponent,
+  MENSAJE_SUCURSAL_REQUERIDA,
+  ToastService,
+  esErrorNegocio,
+  mensajeError,
+} from '@nianva/ui-shared';
 
 import { AuthStateService } from '../../../../auth/auth-state.service';
 import { BUSCADOR_CLIENTE } from '../../../../core/buscadores-entidad.tokens';
-import { LineasCotizacionCambio, LineasCotizacionComponent } from '../../../cotizaciones/lineas-cotizacion/lineas-cotizacion.component';
+import {
+  LineasCotizacionCambio,
+  LineasCotizacionComponent,
+} from '../../../cotizaciones/lineas-cotizacion/lineas-cotizacion.component';
 import { PedidoService } from '../../pedido.service';
 import { PedidoItemPayload } from '../../pedido.types';
 
@@ -32,7 +51,17 @@ function esNumero(valor: unknown): valor is number {
 @Component({
   selector: 'nucleo-pedido-form',
   standalone: true,
-  imports: [FormsModule, RouterLink, EntidadSelectorComponent, LineasCotizacionComponent, Button, InputText, Textarea],
+  imports: [
+    FormsModule,
+    RouterLink,
+    EntidadSelectorComponent,
+    LineasCotizacionComponent,
+    CampoComponent,
+    InputDineroComponent,
+    BtnEnviarComponent,
+    MatInput,
+    MatButton,
+  ],
   templateUrl: './pedido-form.component.html',
   styleUrl: './pedido-form.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -57,7 +86,13 @@ export class PedidoFormComponent {
   protected readonly guardando = signal(false);
 
   onLineasCambio(cambio: LineasCotizacionCambio): void {
-    this.items.set(cambio.items.map((i) => ({ variante_id: i.variante_id, cantidad: i.cantidad, precio_unitario: i.precio_unitario })));
+    this.items.set(
+      cambio.items.map((i) => ({
+        variante_id: i.variante_id,
+        cantidad: i.cantidad,
+        precio_unitario: i.precio_unitario,
+      })),
+    );
   }
 
   crear(): void {
@@ -70,7 +105,9 @@ export class PedidoFormComponent {
 
     const sucursalId = this.authState.usuario()?.sucursal_id;
     if (!esNumero(sucursalId)) {
-      this.toast.error('No se pudo determinar tu sucursal. Vuelve a iniciar sesión.');
+      this.toast.error(
+        'No se pudo determinar tu sucursal. Vuelve a iniciar sesión.',
+      );
 
       return;
     }

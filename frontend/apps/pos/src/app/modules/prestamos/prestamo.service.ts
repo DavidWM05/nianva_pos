@@ -1,10 +1,15 @@
+import { RespuestaDe, CuerpoDe } from '@nianva/api-contrato';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { DataTableLazyEvent } from '@nianva/ui-shared';
 import { Observable, map } from 'rxjs';
 
 import { urlApi } from '../../core/api-config';
-import { Prestamo, PrestamoCrearPayload, RegistrarPagoPrestamoPayload } from './prestamo.types';
+import {
+  Prestamo,
+  PrestamoCrearPayload,
+  RegistrarPagoPrestamoPayload,
+} from './prestamo.types';
 
 export interface PrestamosPagina {
   data: Prestamo[];
@@ -22,20 +27,31 @@ export class PrestamoService {
     let params = new HttpParams().set('page', page).set('rows', rows);
 
     if (evento.sortField) {
-      params = params.set('sort_field', evento.sortField).set('sort_order', evento.sortOrder === -1 ? 'desc' : 'asc');
+      params = params
+        .set('sort_field', evento.sortField)
+        .set('sort_order', evento.sortOrder === -1 ? 'desc' : 'asc');
     }
 
     return this.http
-      .get<{ data: Prestamo[]; meta: { total: number } }>(urlApi(`/prestamos`), { params })
-      .pipe(map((r) => ({ data: r.data, total: r.meta.total })));
+      .get<RespuestaDe<'/prestamos', 'get'>>(urlApi(`/prestamos`), { params })
+      .pipe(map((r) => ({ data: r.data as Prestamo[], total: r.meta.total })));
   }
 
   obtener(id: number): Observable<Prestamo> {
-    return this.http.get<{ data: Prestamo }>(urlApi(`/prestamos/${id}`)).pipe(map((r) => r.data));
+    return this.http
+      .get<RespuestaDe<'/prestamos/{prestamo}', 'get'>>(
+        urlApi(`/prestamos/${id}`),
+      )
+      .pipe(map((r) => r.data as Prestamo));
   }
 
   crear(payload: PrestamoCrearPayload): Observable<Prestamo> {
-    return this.http.post<{ data: Prestamo }>(urlApi(`/prestamos`), payload).pipe(map((r) => r.data));
+    return this.http
+      .post<RespuestaDe<'/prestamos', 'post'>>(
+        urlApi(`/prestamos`),
+        payload satisfies CuerpoDe<'/prestamos', 'post'>,
+      )
+      .pipe(map((r) => r.data as Prestamo));
   }
 
   /**
@@ -44,7 +60,15 @@ export class PrestamoService {
    * diferencia de CuentaCobrarController/CuentaPagarController) -- por eso
    * el observable es `void`: quien llama debe volver a pedir listar().
    */
-  registrarPago(id: number, payload: RegistrarPagoPrestamoPayload): Observable<void> {
-    return this.http.post<void>(urlApi(`/prestamos/${id}/pagos`), payload).pipe(map(() => undefined));
+  registrarPago(
+    id: number,
+    payload: RegistrarPagoPrestamoPayload,
+  ): Observable<void> {
+    return this.http
+      .post<RespuestaDe<'/prestamos/{id}/pagos', 'post'>>(
+        urlApi(`/prestamos/${id}/pagos`),
+        payload satisfies CuerpoDe<'/prestamos/{id}/pagos', 'post'>,
+      )
+      .pipe(map(() => undefined));
   }
 }

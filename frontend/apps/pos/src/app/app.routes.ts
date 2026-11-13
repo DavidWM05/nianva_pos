@@ -632,6 +632,9 @@ export const appRoutes: Route[] = [
         path: 'produccion',
         data: { breadcrumb: 'Producción' },
         children: [
+          { path: 'recetas/nueva', redirectTo: 'recetas/nuevo', pathMatch: 'full' },
+          { path: 'transformaciones/nueva', redirectTo: 'transformaciones/nuevo', pathMatch: 'full' },
+          { path: 'insumos/nuevo', title: 'Núcleo · Nuevo registro', data: { breadcrumb: 'Nuevo' }, loadComponent: () => import('./modules/produccion/pages/insumo-form/insumo-form.component').then(m => m.InsumoFormComponent) },
           {
             path: 'insumos',
             pathMatch: 'full',
@@ -651,7 +654,7 @@ export const appRoutes: Route[] = [
               ),
           },
           {
-            path: 'recetas/nueva',
+            path: 'recetas/nuevo',
             title: 'Núcleo · Nueva receta',
             data: { breadcrumb: 'Nueva receta' },
             loadComponent: () =>
@@ -659,6 +662,7 @@ export const appRoutes: Route[] = [
                 (m) => m.RecetaFormComponent,
               ),
           },
+          { path: 'ordenes/nuevo', title: 'Núcleo · Nuevo registro', data: { breadcrumb: 'Nuevo' }, loadComponent: () => import('./modules/produccion/pages/orden-form/orden-form.component').then(m => m.OrdenFormComponent) },
           {
             path: 'ordenes',
             pathMatch: 'full',
@@ -678,7 +682,7 @@ export const appRoutes: Route[] = [
               ),
           },
           {
-            path: 'transformaciones/nueva',
+            path: 'transformaciones/nuevo',
             title: 'Núcleo · Nueva transformación',
             data: { breadcrumb: 'Nueva transformación' },
             loadComponent: () =>

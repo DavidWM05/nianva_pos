@@ -5,13 +5,5 @@
     "apps/pos/src/app/modules/administracion/sucursal.service.ts",
     "apps/pos/src/app/modules/administracion/usuario-admin.service.ts",
     "apps/pos/src/app/modules/configuracion/configuracion.service.ts",
-    "apps/pos/src/app/modules/delivery/pedido.service.ts",
-    "apps/pos/src/app/modules/payroll/empleado.service.ts",
-    "apps/pos/src/app/modules/payroll/nomina.service.ts",
-    "apps/pos/src/app/modules/prestamos/prestamo.service.ts",
-    "apps/pos/src/app/modules/produccion/insumo.service.ts",
-    "apps/pos/src/app/modules/produccion/orden.service.ts",
-    "apps/pos/src/app/modules/produccion/receta.service.ts",
-    "apps/pos/src/app/modules/produccion/transformacion.service.ts",
     "apps/pos/src/app/perfil/seguridad.service.ts"
 ]

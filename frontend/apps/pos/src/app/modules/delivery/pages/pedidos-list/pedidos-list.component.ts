@@ -1,21 +1,36 @@
-import { DatePipe } from '@angular/common';
-import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
-import { FormsModule } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { SelectFiltroComponent } from '@nianva/ui-forms';
+import { MatInput } from '@angular/material/input';
 import {
-  DataTableCellDirective,
-  DataTableColumn,
-  DataTableComponent,
+  CambioListado,
+  ColumnaListado,
+  MetaListado,
+  TablaComponent,
+} from '@nianva/ui-data';
+import {
+  BotonCrearComponent,
+  AccionEmitida,
+  AccionFila,
+} from '@nianva/ui-actions';
+import { PageComponent } from '@nianva/ui-layout';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  inject,
+  signal,
+} from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
+import {
   DataTableLazyEvent,
   EntidadSelectorComponent,
-  StatusBadgeComponent,
 } from '@nianva/ui-shared';
-import { Button } from 'primeng/button';
-import { InputText } from 'primeng/inputtext';
-import { Select } from 'primeng/select';
 import { Subject, debounceTime } from 'rxjs';
 
-import { BUSCADOR_CLIENTE, BUSCADOR_USUARIO } from '../../../../core/buscadores-entidad.tokens';
+import {
+  BUSCADOR_CLIENTE,
+  BUSCADOR_USUARIO,
+} from '../../../../core/buscadores-entidad.tokens';
 import { PedidoService, PedidosPermisos } from '../../pedido.service';
 import { EstadoPedido, Pedido } from '../../pedido.types';
 
@@ -34,16 +49,13 @@ const ESTADOS: { label: string; value: EstadoPedido | null }[] = [
   selector: 'nucleo-pedidos-list',
   standalone: true,
   imports: [
-    DatePipe,
+    TablaComponent,
+    BotonCrearComponent,
+    PageComponent,
     FormsModule,
-    RouterLink,
-    DataTableComponent,
-    DataTableCellDirective,
     EntidadSelectorComponent,
-    StatusBadgeComponent,
-    Button,
-    InputText,
-    Select,
+    SelectFiltroComponent,
+    MatInput,
   ],
   templateUrl: './pedidos-list.component.html',
   styleUrl: './pedidos-list.component.scss',
@@ -57,13 +69,25 @@ export class PedidosListComponent {
   protected readonly buscadorRepartidor = inject(BUSCADOR_USUARIO);
   protected readonly estados = ESTADOS;
 
-  protected readonly columns: DataTableColumn[] = [
-    { field: 'numero_pedido', header: 'Número' },
-    { field: 'cliente', header: 'Cliente' },
-    { field: 'repartidor', header: 'Repartidor' },
-    { field: 'estado', header: 'Estado' },
-    { field: 'created_at', header: 'Creado', sortable: true },
-    { field: 'acciones', header: '' },
+  protected readonly columns: ColumnaListado<
+    Pedido & { clienteTexto: string; repartidorTexto: string }
+  >[] = [
+    { tipo: 'principal', campo: 'numero_pedido', encabezado: 'Número' },
+    { tipo: 'texto', campo: 'clienteTexto', encabezado: 'Cliente' },
+    { tipo: 'texto', campo: 'repartidorTexto', encabezado: 'Repartidor' },
+    {
+      tipo: 'estado',
+      campo: 'estado',
+      encabezado: 'Estado',
+      entidad: 'pedido',
+    },
+    {
+      tipo: 'fechaHora',
+      campo: 'created_at',
+      encabezado: 'Creado',
+      ordenable: true,
+    },
+    { tipo: 'acciones', acciones: () => this.acciones() },
   ];
 
   protected readonly pedidos = signal<Pedido[]>([]);
@@ -75,10 +99,17 @@ export class PedidosListComponent {
   protected readonly clienteFiltroId = signal<number | null>(null);
   protected readonly repartidorFiltroId = signal<number | null>(null);
 
-  private ultimoEvento: DataTableLazyEvent = { first: 0, rows: 25, sortField: null, sortOrder: null, filters: {} };
+  private ultimoEvento: DataTableLazyEvent = {
+    first: 0,
+    rows: 25,
+    sortField: null,
+    sortOrder: null,
+    filters: {},
+  };
   private readonly numeroSubject = new Subject<string>();
 
   constructor() {
+    this.cargar(this.ultimoEvento);
     this.numeroSubject.pipe(debounceTime(300)).subscribe((texto) => {
       this.numeroFiltro.set(texto);
       this.cargar({ ...this.ultimoEvento, first: 0 });
@@ -114,6 +145,7 @@ export class PedidosListComponent {
 
   private cargar(evento: DataTableLazyEvent): void {
     this.ultimoEvento = evento;
+    this.errorCarga.set(false);
     this.loading.set(true);
 
     this.pedidoService
@@ -128,9 +160,63 @@ export class PedidosListComponent {
           this.pedidos.set(respuesta.data);
           this.total.set(respuesta.total);
           this.permisos.set(respuesta.permisos);
+          this.primeraCarga.set(false);
           this.loading.set(false);
         },
-        error: () => this.loading.set(false),
+        error: () => {
+          this.primeraCarga.set(false);
+          this.loading.set(false);
+          this.errorCarga.set(true);
+        },
       });
+  }
+  protected readonly primeraCarga = signal(true);
+  protected readonly errorCarga = signal(false);
+  protected readonly estado = computed(() =>
+    this.loading() && this.primeraCarga()
+      ? 'cargando'
+      : this.errorCarga()
+        ? 'error'
+        : 'listo',
+  );
+  protected readonly filas = computed(() =>
+    this.pedidos().map((f) => ({
+      ...f,
+      clienteTexto: f.cliente?.nombre ?? 'Sin cliente',
+      repartidorTexto: f.repartidor?.nombre ?? 'Sin asignar',
+    })),
+  );
+  protected get meta(): MetaListado {
+    return {
+      total: this.total(),
+      page: Math.floor(this.ultimoEvento.first / this.ultimoEvento.rows) + 1,
+      rows: this.ultimoEvento.rows,
+      filtros_aplicados: {},
+      permisos: {},
+    };
+  }
+  onCambio(evento: CambioListado): void {
+    this.onLazyLoad({
+      first: (evento.page - 1) * evento.rows,
+      rows: evento.rows,
+      sortField: evento.sortField,
+      sortOrder:
+        evento.sortOrder === 'asc'
+          ? 1
+          : evento.sortOrder === 'desc'
+            ? -1
+            : null,
+      filters: {},
+    });
+  }
+  reintentar(): void {
+    this.cargar(this.ultimoEvento);
+  }
+
+  protected acciones(): AccionFila[] {
+    return [{ tipo: 'ver' }];
+  }
+  onAccion(fila: Pedido, accion: AccionEmitida): void {
+    if (accion.tipo === 'ver') this.irADetalle(fila);
   }
 }

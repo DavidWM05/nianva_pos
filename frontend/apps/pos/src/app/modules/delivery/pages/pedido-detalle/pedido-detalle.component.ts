@@ -1,9 +1,26 @@
+import { PageComponent } from '@nianva/ui-layout';
+import { SkeletonComponent } from '@nianva/ui-feedback';
+import { BtnEnviarComponent } from '@nianva/ui-forms';
 import { DatePipe } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
-import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  OnInit,
+  computed,
+  inject,
+  signal,
+} from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { AuditLogViewerComponent, EntidadSelectorComponent, RecordTabConfig, RecordTabsComponent, StatusBadgeComponent, ToastService, mensajeError } from '@nianva/ui-shared';
-import { Button } from 'primeng/button';
+import {
+  AuditLogViewerComponent,
+  EntidadSelectorComponent,
+  RecordTabConfig,
+  RecordTabsComponent,
+  StatusBadgeComponent,
+  ToastService,
+  mensajeError,
+} from '@nianva/ui-shared';
 
 import { BUSCADOR_USUARIO } from '../../../../core/buscadores-entidad.tokens';
 import { PedidoService } from '../../pedido.service';
@@ -27,7 +44,16 @@ const ETIQUETAS_ESTADO: Record<EstadoPedido, string> = {
 @Component({
   selector: 'nucleo-pedido-detalle',
   standalone: true,
-  imports: [DatePipe, RecordTabsComponent, AuditLogViewerComponent, StatusBadgeComponent, EntidadSelectorComponent, Button],
+  imports: [
+    PageComponent,
+    SkeletonComponent,
+    DatePipe,
+    RecordTabsComponent,
+    AuditLogViewerComponent,
+    StatusBadgeComponent,
+    EntidadSelectorComponent,
+    BtnEnviarComponent,
+  ],
   templateUrl: './pedido-detalle.component.html',
   styleUrl: './pedido-detalle.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -59,7 +85,9 @@ export class PedidoDetalleComponent implements OnInit {
   protected readonly puedeAsignarRepartidor = computed(() => {
     const estado = this.pedido()?.estado;
 
-    return estado !== undefined && estado !== 'entregado' && estado !== 'cancelado';
+    return (
+      estado !== undefined && estado !== 'entregado' && estado !== 'cancelado'
+    );
   });
 
   ngOnInit(): void {
@@ -77,11 +105,15 @@ export class PedidoDetalleComponent implements OnInit {
       next: (actualizado) => {
         this.cambiandoEstado.set(false);
         this.pedido.set(actualizado);
-        this.toast.success(`Pedido marcado como "${ETIQUETAS_ESTADO[nuevoEstado]}".`);
+        this.toast.success(
+          `Pedido marcado como "${ETIQUETAS_ESTADO[nuevoEstado]}".`,
+        );
       },
       error: (error: HttpErrorResponse) => {
         this.cambiandoEstado.set(false);
-        this.toast.error(mensajeError(error, 'No se pudo cambiar el estado del pedido.'));
+        this.toast.error(
+          mensajeError(error, 'No se pudo cambiar el estado del pedido.'),
+        );
       },
     });
   }
@@ -100,7 +132,9 @@ export class PedidoDetalleComponent implements OnInit {
       },
       error: (error: HttpErrorResponse) => {
         this.asignandoRepartidor.set(false);
-        this.toast.error(mensajeError(error, 'No se pudo asignar el repartidor.'));
+        this.toast.error(
+          mensajeError(error, 'No se pudo asignar el repartidor.'),
+        );
       },
     });
   }
@@ -115,5 +149,4 @@ export class PedidoDetalleComponent implements OnInit {
       error: () => this.cargando.set(false),
     });
   }
-
 }

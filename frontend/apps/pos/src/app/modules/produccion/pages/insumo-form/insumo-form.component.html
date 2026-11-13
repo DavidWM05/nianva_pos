@@ -1,0 +1,61 @@
+<ui-page-header clave="insumos" subtitulo="Nuevo insumo" />
+<ui-page estado="listo" forma="formulario"
+  ><a matButton="text" routerLink="/produccion/insumos">Volver a la lista</a>
+  <ui-campo #campo50l1 etiqueta="Nombre">
+    <input
+      matInput
+      type="text"
+      [id]="campo50l1.controlId() ?? 'insumo-form-campo50l1'"
+      maxlength="200"
+      [ngModel]="nombre()"
+      (ngModelChange)="nombre.set($event)"
+    />
+  </ui-campo>
+  <ui-campo #campo50l2 etiqueta="SKU (opcional)">
+    <input
+      matInput
+      type="text"
+      [id]="campo50l2.controlId() ?? 'insumo-form-campo50l2'"
+      maxlength="50"
+      [ngModel]="sku()"
+      (ngModelChange)="sku.set($event)"
+    />
+  </ui-campo>
+  <div class="insumos-list__campo">
+    <nucleo-entidad-selector
+      [buscador]="buscadorUnidadMedida"
+      label="Unidad de medida"
+      placeholder="Buscar unidad por nombre..."
+      [valorInicial]="unidadMedidaId()"
+      (seleccionado)="unidadMedidaId.set($event)"
+    />
+  </div>
+  <ui-campo #campo50l3 etiqueta="Costo (opcional)">
+    <input
+      matInput
+      type="number"
+      min="0"
+      step="0.0001"
+      [id]="campo50l3.controlId() ?? 'insumo-form-campo50l3'"
+      [ngModel]="costo()"
+      (ngModelChange)="costo.set($event)"
+    />
+  </ui-campo>
+  <ui-campo #campo50l4 etiqueta="Stock mínimo (opcional)">
+    <input
+      matInput
+      type="number"
+      min="0"
+      step="0.01"
+      [id]="campo50l4.controlId() ?? 'insumo-form-campo50l4'"
+      [ngModel]="stockMinimo()"
+      (ngModelChange)="stockMinimo.set($event)"
+    />
+  </ui-campo>
+  <ui-btn-enviar
+    etiqueta="Registrar insumo"
+    [enviando]="guardando()"
+    [deshabilitado]="!nombre().trim() || unidadMedidaId() === null"
+    (click)="guardar()"
+  />
+</ui-page>
