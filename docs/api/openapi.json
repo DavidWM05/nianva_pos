@@ -5278,8 +5278,10 @@
                                                     "type": "integer"
                                                 },
                                                 "permisos": {
-                                                    "type": "array",
-                                                    "items": {}
+                                                    "type": "object",
+                                                    "additionalProperties": {
+                                                        "type": "boolean"
+                                                    }
                                                 }
                                             },
                                             "required": [
@@ -5435,8 +5437,10 @@
                                                     "type": "integer"
                                                 },
                                                 "permisos": {
-                                                    "type": "array",
-                                                    "items": {}
+                                                    "type": "object",
+                                                    "additionalProperties": {
+                                                        "type": "boolean"
+                                                    }
                                                 }
                                             },
                                             "required": [
@@ -5645,8 +5649,10 @@
                                                     "type": "integer"
                                                 },
                                                 "permisos": {
-                                                    "type": "array",
-                                                    "items": {}
+                                                    "type": "object",
+                                                    "additionalProperties": {
+                                                        "type": "boolean"
+                                                    }
                                                 }
                                             },
                                             "required": [
@@ -6406,8 +6412,10 @@
                                                     "type": "integer"
                                                 },
                                                 "permisos": {
-                                                    "type": "array",
-                                                    "items": {}
+                                                    "type": "object",
+                                                    "additionalProperties": {
+                                                        "type": "boolean"
+                                                    }
                                                 }
                                             },
                                             "required": [
@@ -6619,8 +6627,10 @@
                                                     "type": "integer"
                                                 },
                                                 "permisos": {
-                                                    "type": "array",
-                                                    "items": {}
+                                                    "type": "object",
+                                                    "additionalProperties": {
+                                                        "type": "boolean"
+                                                    }
                                                 }
                                             },
                                             "required": [
@@ -6731,8 +6741,10 @@
                                                     "type": "integer"
                                                 },
                                                 "permisos": {
-                                                    "type": "array",
-                                                    "items": {}
+                                                    "type": "object",
+                                                    "additionalProperties": {
+                                                        "type": "boolean"
+                                                    }
                                                 }
                                             },
                                             "required": [
@@ -6903,8 +6915,10 @@
                                                     "type": "integer"
                                                 },
                                                 "permisos": {
-                                                    "type": "array",
-                                                    "items": {}
+                                                    "type": "object",
+                                                    "additionalProperties": {
+                                                        "type": "boolean"
+                                                    }
                                                 }
                                             },
                                             "required": [
