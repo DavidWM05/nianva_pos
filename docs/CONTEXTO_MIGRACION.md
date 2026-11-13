@@ -1789,6 +1789,13 @@ repo.
       escribe ese texto en el input al momento. `input-dinero-enfoque.spec.ts`: 2 casos vistos
       en rojo (`1820` en lugar de `20`) y con mutación; ningún otro control de `ui-forms`
       reformatea al enfocar;
+    - **Escape en `ui-modal` (`fix/modal-escape-overlay`, hallado en la 50l):** el modal
+      escuchaba Escape en todo el documento y cerraba sin más; con un `matDatepicker` abierto
+      dentro (altas de empleados y nóminas), Escape cerraba el calendario y también el
+      formulario. Ahora ignora el Escape que un overlay interno ya atendió
+      (`defaultPrevented`). `modal-escape-overlay.spec.ts`: el caso del calendario, visto en
+      rojo, y otro que comprueba que sin overlay Escape sigue cerrando. `ui-drawer` escucha
+      Escape en su propio panel y el calendario vive fuera de él;
     - ningún test existente cambió. 684 tests de `pos` y 60 de `ui-forms`; la línea base no
       sube. "Catálogo visual" falla una vez por el margen nuevo y se versionan las capturas
       de Linux del artifact. En local, la recuperación de contraseña de `auth.spec.ts` tardó

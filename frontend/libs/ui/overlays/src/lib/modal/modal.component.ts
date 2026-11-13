@@ -26,7 +26,7 @@ import { claseOverlay, TamanoOverlay } from '../overlay.types';
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
-    '(document:keydown.escape)': 'cerrar()',
+    '(document:keydown.escape)': 'alEscape($event)',
   },
 })
 export class ModalComponent {
@@ -50,6 +50,16 @@ export class ModalComponent {
         this.dialogRef?.close();
       }
     });
+  }
+
+  protected alEscape(evento: Event): void {
+    // Un overlay abierto dentro del modal (matDatepicker, mat-select) atiende Escape antes y
+    // marca el evento con preventDefault: ese Escape es suyo y no debe cerrar el formulario.
+    if (evento.defaultPrevented) {
+      return;
+    }
+
+    this.cerrar();
   }
 
   protected cerrar(): void {
