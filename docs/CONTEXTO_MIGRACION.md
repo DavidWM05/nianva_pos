@@ -1757,6 +1757,36 @@ repo.
       variables de su corrida; fijarlo en `playwright.config.ts` va en un PR aparte;
     - pendientes: contrato 23 → 21, cargando 15 → 13; línea base 1637 → 1531 líneas. 671
       tests de `pos`, 80 e2e, axe en 40 análisis sin violaciones.
+  - **Detalles de `libs/ui` antes de la revisión visual (otra sesión):**
+    - **búsqueda en `ui-campo` (UI-11):** un input nativo proyectado como hijo directo
+      toma caja, borde, foco y alto con tokens `--nv-*` (37 px, como `ui-select-filtro`;
+      antes 21 px). `ui-campo` pasa a `ViewEncapsulation.None`; sus selectores ya llevaban el
+      prefijo `.ui-campo` y los del input van en `:where()`, así que el estilo propio de una
+      pantalla sigue ganando y `matInput` y los `ui-*` no cambian. Caso en `/data` del
+      catálogo y `buscar-filtro.spec.ts` en claro y oscuro;
+    - **margen lateral (UI-04):** venía de `ui-shell`, que no daba relleno al contenido.
+      Ahora deja `--nv-spacing-6` y `--nv-spacing-4` en pantalla angosta. Caso nuevo en
+      `responsivo.spec.ts`: a 375 px, las 9 rutas del catálogo dejan margen a los dos lados
+      sin desbordarse. **Ojo:** 27 pantallas de PrimeNG sin migrar (produccion 6, payroll 4,
+      tpv 4, reportes 4, delivery 3, inventario 3, prestamos 3) tienen
+      `padding: var(--nucleo-spacing-6)` en su raíz y quedan con margen doble hasta
+      migrarse. La 50m, la 50l y la 50n quitan ese relleno; en la revisión visual se mira
+      que la venta del TPV, de alto completo, no gane scroll;
+    - **ayuda enlazada (UI-04, UI-17):** la ayuda de `ui-campo` tiene id. A un control
+      proyectado con id (un `matInput` o un input nativo), `ui-campo` le suma a su
+      `aria-describedby` la ayuda y, cuando se muestra, el error, sin quitar ni repetir los
+      ids que ya tenía. Los controles de `ui-forms` la enlazan con `descritoPor()`.
+      `campo-ayuda.spec.ts`: 4 casos, los 4 en rojo antes del cambio, y 4 mutaciones
+      detectadas;
+    - **flake de `cotizaciones.spec.ts`: no reproducido.** Con la CPU frenada hasta 20× y
+      el permiso retrasado entre 4 y 30 s pasaron las 7 corridas. Precio y descuento están
+      deshabilitados hasta que llega el permiso, y Playwright espera a que se habiliten; la
+      captura previa espera a que no haya peticiones pendientes. Sigue abierto: si vuelve a
+      fallar en CI, hace falta el trace;
+    - ningún test existente cambió. 684 tests de `pos` y 60 de `ui-forms`; la línea base no
+      sube. "Catálogo visual" falla una vez por el margen nuevo y se versionan las capturas
+      de Linux del artifact. En local, la recuperación de contraseña de `auth.spec.ts` tardó
+      más de 20 s con el primer correo y pasó al repetirla: se vigila.
 - **Posibles mejoras (roadmap):**
   - **capturas de Linux sin pasar por CI (Docker):** hoy cada PR con cambio visual falla una
     vez en "Catálogo visual", se baja el artifact y se versionan las capturas, porque en el
