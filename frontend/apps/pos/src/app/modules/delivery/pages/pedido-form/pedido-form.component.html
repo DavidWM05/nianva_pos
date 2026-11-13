@@ -17,56 +17,68 @@
 
   <section class="pedido-form__seccion">
     <h3>Entrega</h3>
-    <div class="pedido-form__campo">
-      <label for="pedido-direccion">Dirección de entrega (opcional)</label>
+    <ui-campo #campo50l1 etiqueta="Dirección de entrega (opcional)">
       <textarea
-        pTextarea
-        id="pedido-direccion"
+        matInput
+        [id]="campo50l1.controlId() ?? 'pedido-form-campo50l1'"
         rows="2"
         [ngModel]="direccionEntrega()"
         (ngModelChange)="direccionEntrega.set($event)"
       ></textarea>
-    </div>
-    <div class="pedido-form__campo">
-      <label for="pedido-referencia">Referencia de la dirección (opcional)</label>
-      <input pInputText type="text" id="pedido-referencia" maxlength="255" [ngModel]="referencia()" (ngModelChange)="referencia.set($event)" />
-    </div>
-    <div class="pedido-form__campo">
-      <label for="pedido-costo-delivery">Costo de envío (opcional)</label>
+    </ui-campo>
+    <ui-campo #campo50l2 etiqueta="Referencia de la dirección (opcional)">
       <input
-        pInputText
-        type="number"
-        id="pedido-costo-delivery"
-        min="0"
-        step="0.01"
+        matInput
+        type="text"
+        [id]="campo50l2.controlId() ?? 'pedido-form-campo50l2'"
+        maxlength="255"
+        [ngModel]="referencia()"
+        (ngModelChange)="referencia.set($event)"
+      />
+    </ui-campo>
+    <ui-campo #campo50l3 etiqueta="Costo de envío (opcional)">
+      <ui-input-dinero
+        [min]="0"
         [ngModel]="costoDelivery()"
         (ngModelChange)="costoDelivery.set($event)"
       />
-    </div>
-    <div class="pedido-form__campo">
-      <label for="pedido-tiempo-estimado">Tiempo estimado en minutos (opcional)</label>
+    </ui-campo>
+    <ui-campo #campo50l4 etiqueta="Tiempo estimado en minutos (opcional)">
       <input
-        pInputText
+        matInput
         type="number"
-        id="pedido-tiempo-estimado"
+        [id]="campo50l4.controlId() ?? 'pedido-form-campo50l4'"
         min="1"
         [ngModel]="tiempoEstimado()"
         (ngModelChange)="tiempoEstimado.set($event)"
       />
-    </div>
-    <div class="pedido-form__campo">
-      <label for="pedido-notas">Notas (opcional)</label>
-      <textarea pTextarea id="pedido-notas" rows="2" [ngModel]="notas()" (ngModelChange)="notas.set($event)"></textarea>
-    </div>
+    </ui-campo>
+    <ui-campo #campo50l5 etiqueta="Notas (opcional)">
+      <textarea
+        matInput
+        [id]="campo50l5.controlId() ?? 'pedido-form-campo50l5'"
+        rows="2"
+        [ngModel]="notas()"
+        (ngModelChange)="notas.set($event)"
+      ></textarea>
+    </ui-campo>
   </section>
 
   <section class="pedido-form__seccion">
     <h3>Items (opcional)</h3>
-    <nucleo-lineas-cotizacion [valorInicial]="null" (cambio)="onLineasCambio($event)" />
+    <nucleo-lineas-cotizacion
+      [valorInicial]="null"
+      (cambio)="onLineasCambio($event)"
+    />
   </section>
 
   <div class="pedido-form__acciones">
-    <p-button label="Crear pedido" icon="pi pi-check" [loading]="guardando()" [disabled]="clienteId() === null" (click)="crear()" />
-    <a routerLink="/pedidos"><p-button label="Cancelar" [text]="true" /></a>
+    <ui-btn-enviar
+      etiqueta="Crear pedido"
+      [enviando]="guardando()"
+      [deshabilitado]="clienteId() === null"
+      (click)="crear()"
+    />
+    <a matButton="text" routerLink="/pedidos">Cancelar</a>
   </div>
 </div>

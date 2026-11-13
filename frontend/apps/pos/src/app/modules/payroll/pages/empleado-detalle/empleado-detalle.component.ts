@@ -1,7 +1,20 @@
+import { PageComponent } from '@nianva/ui-layout';
+import { SkeletonComponent } from '@nianva/ui-feedback';
 import { DatePipe } from '@angular/common';
-import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  OnInit,
+  inject,
+  signal,
+} from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { AuditLogViewerComponent, RecordTabConfig, RecordTabsComponent, StatusBadgeComponent } from '@nianva/ui-shared';
+import {
+  AuditLogViewerComponent,
+  RecordTabConfig,
+  RecordTabsComponent,
+  StatusBadgeComponent,
+} from '@nianva/ui-shared';
 
 import { EmpleadoService } from '../../empleado.service';
 import { Empleado } from '../../empleado.types';
@@ -14,7 +27,14 @@ import { Empleado } from '../../empleado.types';
 @Component({
   selector: 'nucleo-empleado-detalle',
   standalone: true,
-  imports: [DatePipe, RecordTabsComponent, AuditLogViewerComponent, StatusBadgeComponent],
+  imports: [
+    PageComponent,
+    SkeletonComponent,
+    DatePipe,
+    RecordTabsComponent,
+    AuditLogViewerComponent,
+    StatusBadgeComponent,
+  ],
   templateUrl: './empleado-detalle.component.html',
   styleUrl: './empleado-detalle.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

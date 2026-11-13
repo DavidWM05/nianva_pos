@@ -1,5 +1,4 @@
 .prestamo-detalle {
-  padding: var(--nucleo-spacing-6);
   max-width: 48rem;
 }
 
@@ -62,16 +61,4 @@
   display: flex;
   align-items: center;
   gap: var(--nucleo-spacing-3);
-}
-
-.prestamo-detalle__campo {
-  display: flex;
-  flex-direction: column;
-  gap: var(--nucleo-spacing-1);
-  margin-bottom: var(--nucleo-spacing-3);
-
-  label {
-    font-size: var(--nucleo-font-size-sm);
-    font-weight: 500;
-  }
 }

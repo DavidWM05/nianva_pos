@@ -1,0 +1,51 @@
+<ui-page-header
+  clave="ordenes-produccion"
+  subtitulo="Nueva orden de producción"
+/>
+<ui-page estado="listo" forma="formulario"
+  ><a matButton="text" routerLink="/produccion/ordenes">Volver a la lista</a>
+  <div class="ordenes-list__campo">
+    <nucleo-entidad-selector
+      [buscador]="buscadorReceta"
+      label="Receta"
+      placeholder="Buscar receta por nombre..."
+      [valorInicial]="recetaId()"
+      (seleccionado)="recetaId.set($event)"
+    />
+  </div>
+  <ui-campo #campo50l1 etiqueta="Cantidad programada">
+    <input
+      matInput
+      type="number"
+      min="1"
+      step="1"
+      [id]="campo50l1.controlId() ?? 'orden-form-campo50l1'"
+      [ngModel]="cantidadProgramada()"
+      (ngModelChange)="cantidadProgramada.set($event)"
+    />
+  </ui-campo>
+  <ui-campo #campo50l2 etiqueta="Fecha programada (opcional)">
+    <input
+      matInput
+      type="date"
+      [id]="campo50l2.controlId() ?? 'orden-form-campo50l2'"
+      [ngModel]="fechaProgramada()"
+      (ngModelChange)="fechaProgramada.set($event)"
+    />
+  </ui-campo>
+  <ui-campo #campo50l3 etiqueta="Notas (opcional)">
+    <textarea
+      matInput
+      [id]="campo50l3.controlId() ?? 'orden-form-campo50l3'"
+      rows="2"
+      [ngModel]="notas()"
+      (ngModelChange)="notas.set($event)"
+    ></textarea>
+  </ui-campo>
+  <ui-btn-enviar
+    etiqueta="Crear orden"
+    [enviando]="guardando()"
+    [deshabilitado]="recetaId() === null || !cantidadProgramada()"
+    (click)="guardar()"
+  />
+</ui-page>

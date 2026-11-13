@@ -1,3 +1,4 @@
+import { RespuestaDe, CuerpoDe } from '@nianva/api-contrato';
 import { HttpClient, HttpContext, HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { DataTableLazyEvent } from '@nianva/ui-shared';
@@ -21,7 +22,10 @@ export interface NominasPagina {
 export class NominaService {
   private readonly http = inject(HttpClient);
   // La pantalla muestra su propio mensaje para `sucursal_requerida` (ARQ-12); el resto, el interceptor.
-  private readonly sucursalEnPantalla = new HttpContext().set(CODIGOS_EN_PANTALLA, ['sucursal_requerida']);
+  private readonly sucursalEnPantalla = new HttpContext().set(
+    CODIGOS_EN_PANTALLA,
+    ['sucursal_requerida'],
+  );
 
   listar(evento: DataTableLazyEvent): Observable<NominasPagina> {
     const rows = evento.rows || 25;
@@ -30,23 +34,44 @@ export class NominaService {
     let params = new HttpParams().set('page', page).set('rows', rows);
 
     if (evento.sortField) {
-      params = params.set('sort_field', evento.sortField).set('sort_order', evento.sortOrder === -1 ? 'desc' : 'asc');
+      params = params
+        .set('sort_field', evento.sortField)
+        .set('sort_order', evento.sortOrder === -1 ? 'desc' : 'asc');
     }
 
     return this.http
-      .get<{ data: Nomina[]; meta: { total: number; permisos: NominasPermisos } }>(urlApi(`/nominas`), { params })
-      .pipe(map((r) => ({ data: r.data, total: r.meta.total, permisos: r.meta.permisos })));
+      .get<RespuestaDe<'/nominas', 'get'>>(urlApi(`/nominas`), { params })
+      .pipe(
+        map((r) => ({
+          data: r.data as Nomina[],
+          total: r.meta.total,
+          permisos: { ...r.meta.permisos, crear: r.meta.permisos['crear'] },
+        })),
+      );
   }
 
   obtener(id: number): Observable<Nomina> {
-    return this.http.get<{ data: Nomina }>(urlApi(`/nominas/${id}`)).pipe(map((r) => r.data));
+    return this.http
+      .get<RespuestaDe<'/nominas/{nomina}', 'get'>>(urlApi(`/nominas/${id}`))
+      .pipe(map((r) => r.data as Nomina));
   }
 
   generar(payload: GenerarNominaPayload): Observable<Nomina> {
-    return this.http.post<{ data: Nomina }>(urlApi(`/nominas/generar`), payload, { context: this.sucursalEnPantalla }).pipe(map((r) => r.data));
+    return this.http
+      .post<RespuestaDe<'/nominas/generar', 'post'>>(
+        urlApi(`/nominas/generar`),
+        payload satisfies CuerpoDe<'/nominas/generar', 'post'>,
+        { context: this.sucursalEnPantalla },
+      )
+      .pipe(map((r) => r.data as Nomina));
   }
 
   pagar(id: number): Observable<Nomina> {
-    return this.http.patch<{ data: Nomina }>(urlApi(`/nominas/${id}/pagar`), {}).pipe(map((r) => r.data));
+    return this.http
+      .patch<RespuestaDe<'/nominas/{id}/pagar', 'patch'>>(
+        urlApi(`/nominas/${id}/pagar`),
+        {},
+      )
+      .pipe(map((r) => r.data as Nomina));
   }
 }

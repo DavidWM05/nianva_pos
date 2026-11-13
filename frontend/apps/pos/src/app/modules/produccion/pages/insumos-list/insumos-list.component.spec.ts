@@ -1,7 +1,9 @@
+import { provideRouter } from '@angular/router';
+import { InsumoFormComponent } from '../insumo-form/insumo-form.component';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { ToastService } from '@nianva/ui-shared';
-import { providePrimeNG } from 'primeng/config';
+import { proveedoresDePantalla } from '../../../../testing/proveedores-pantalla';
 import { of } from 'rxjs';
 import { describe, expect, it, vi } from 'vitest';
 
@@ -26,10 +28,11 @@ describe('InsumosListComponent', () => {
     insumoService = { listar: vi.fn().mockReturnValue(of(paginaCon(permisos))), crear: vi.fn() };
 
     await TestBed.configureTestingModule({
-      imports: [InsumosListComponent],
+      imports: [InsumosListComponent, InsumoFormComponent],
       providers: [
         provideAnimationsAsync(),
-        providePrimeNG(),
+        ...proveedoresDePantalla(),
+        provideRouter([{ path: 'produccion/insumos', children: [] }]),
         { provide: InsumoService, useValue: insumoService },
         { provide: ToastService, useValue: { success: vi.fn(), error: vi.fn(), warn: vi.fn() } },
         {
@@ -41,6 +44,14 @@ describe('InsumosListComponent', () => {
 
     fixture = TestBed.createComponent(InsumosListComponent);
     fixture.detectChanges();
+  }
+
+  async function crearFormulario() {
+    await crearComponente();
+    insumoService.crear.mockReturnValue(of(insumos[0]));
+    const formulario = TestBed.createComponent(InsumoFormComponent);
+    formulario.detectChanges();
+    return formulario;
   }
 
   it('carga los insumos al iniciar y resuelve el nombre de la unidad de medida', async () => {
@@ -69,21 +80,21 @@ describe('InsumosListComponent', () => {
   });
 
   it('guardar() sin unidad de medida seleccionada no llama al backend', async () => {
-    await crearComponente();
-    fixture.componentInstance['nombre'].set('Azúcar');
+    const formulario = await crearFormulario();
+    formulario.componentInstance['nombre'].set('Azúcar');
 
-    fixture.componentInstance.guardar();
+    formulario.componentInstance.guardar();
 
     expect(insumoService.crear).not.toHaveBeenCalled();
   });
 
   it('guardar() manda el payload correcto', async () => {
-    await crearComponente();
+    const formulario = await crearFormulario();
     insumoService.crear.mockReturnValue(of(insumos[0]));
 
-    fixture.componentInstance['nombre'].set('Azúcar');
-    fixture.componentInstance['unidadMedidaId'].set(5);
-    fixture.componentInstance.guardar();
+    formulario.componentInstance['nombre'].set('Azúcar');
+    formulario.componentInstance['unidadMedidaId'].set(5);
+    formulario.componentInstance.guardar();
 
     expect(insumoService.crear).toHaveBeenCalledWith(
       expect.objectContaining({ nombre: 'Azúcar', unidad_medida_id: 5 }),

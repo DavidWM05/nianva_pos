@@ -2,7 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { Router, provideRouter } from '@angular/router';
 import { ToastService } from '@nianva/ui-shared';
-import { providePrimeNG } from 'primeng/config';
+import { proveedoresDePantalla } from '../../../../testing/proveedores-pantalla';
 import { of } from 'rxjs';
 import { describe, expect, it, vi } from 'vitest';
 
@@ -36,7 +36,7 @@ describe('PrestamoFormComponent', () => {
       imports: [PrestamoFormComponent],
       providers: [
         provideAnimationsAsync(),
-        providePrimeNG(),
+        ...proveedoresDePantalla(),
         provideRouter([]),
         { provide: PrestamoService, useValue: prestamoService },
         { provide: ToastService, useValue: { success: vi.fn(), error: vi.fn(), warn: vi.fn() } },
@@ -54,7 +54,7 @@ describe('PrestamoFormComponent', () => {
     prestamoService.crear.mockReturnValue(of(prestamoCreado));
 
     fixture.componentInstance['monto'].set(500);
-    fixture.componentInstance['fechaPrestamo'].set(new Date('2026-07-27T00:00:00Z'));
+    fixture.componentInstance['fechaPrestamo'].set(new Date(2026, 6, 27));
     fixture.componentInstance.crear();
 
     expect(prestamoService.crear).toHaveBeenCalledWith(

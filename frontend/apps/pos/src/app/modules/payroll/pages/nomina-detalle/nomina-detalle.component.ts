@@ -1,9 +1,24 @@
+import { PageComponent } from '@nianva/ui-layout';
+import { SkeletonComponent } from '@nianva/ui-feedback';
+import { BtnEnviarComponent } from '@nianva/ui-forms';
 import { DatePipe } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
-import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  OnInit,
+  computed,
+  inject,
+  signal,
+} from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { AuditLogViewerComponent, RecordTabConfig, RecordTabsComponent, StatusBadgeComponent, ToastService } from '@nianva/ui-shared';
-import { Button } from 'primeng/button';
+import {
+  AuditLogViewerComponent,
+  RecordTabConfig,
+  RecordTabsComponent,
+  StatusBadgeComponent,
+  ToastService,
+} from '@nianva/ui-shared';
 
 import { NominaService } from '../../nomina.service';
 import { Nomina } from '../../nomina.types';
@@ -15,7 +30,15 @@ import { Nomina } from '../../nomina.types';
 @Component({
   selector: 'nucleo-nomina-detalle',
   standalone: true,
-  imports: [DatePipe, RecordTabsComponent, AuditLogViewerComponent, StatusBadgeComponent, Button],
+  imports: [
+    PageComponent,
+    SkeletonComponent,
+    DatePipe,
+    RecordTabsComponent,
+    AuditLogViewerComponent,
+    StatusBadgeComponent,
+    BtnEnviarComponent,
+  ],
   templateUrl: './nomina-detalle.component.html',
   styleUrl: './nomina-detalle.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -34,7 +57,9 @@ export class NominaDetalleComponent implements OnInit {
   protected readonly nomina = signal<Nomina | null>(null);
   protected readonly pagando = signal(false);
 
-  protected readonly puedePagar = computed(() => this.nomina()?.estado === 'calculada');
+  protected readonly puedePagar = computed(
+    () => this.nomina()?.estado === 'calculada',
+  );
 
   ngOnInit(): void {
     const id = Number(this.route.snapshot.paramMap.get('id'));

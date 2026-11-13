@@ -3,7 +3,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { Router, provideRouter } from '@angular/router';
 import { ToastService } from '@nianva/ui-shared';
-import { providePrimeNG } from 'primeng/config';
+import { proveedoresDePantalla } from '../../../../testing/proveedores-pantalla';
 import { of, throwError } from 'rxjs';
 import { describe, expect, it, vi } from 'vitest';
 
@@ -60,7 +60,7 @@ describe('NominasListComponent', () => {
       imports: [NominasListComponent],
       providers: [
         provideAnimationsAsync(),
-        providePrimeNG(),
+        ...proveedoresDePantalla(),
         provideRouter([]),
         { provide: NominaService, useValue: nominaService },
         { provide: AuthStateService, useValue: { usuario: () => usuario } },
@@ -76,7 +76,7 @@ describe('NominasListComponent', () => {
     await crearComponente();
 
     const texto = (fixture.nativeElement as HTMLElement).textContent ?? '';
-    expect(texto).toContain('4000.00');
+    expect(texto).toContain('$4,000.00');
     expect(nominaService.listar).toHaveBeenCalledTimes(1);
   });
 
@@ -94,8 +94,8 @@ describe('NominasListComponent', () => {
     await crearComponente();
     nominaService.generar.mockReturnValue(of(nominaCon({})));
 
-    fixture.componentInstance['periodoInicio'].set(new Date('2026-07-01T00:00:00Z'));
-    fixture.componentInstance['periodoFin'].set(new Date('2026-07-15T00:00:00Z'));
+    fixture.componentInstance['periodoInicio'].set(new Date(2026, 6, 1));
+    fixture.componentInstance['periodoFin'].set(new Date(2026, 6, 15));
     fixture.componentInstance.confirmarGenerar();
 
     expect(nominaService.generar).toHaveBeenCalledWith({

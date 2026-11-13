@@ -1,7 +1,9 @@
+import { provideRouter } from '@angular/router';
+import { OrdenFormComponent } from '../orden-form/orden-form.component';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { ConfirmDialogService, ToastService } from '@nianva/ui-shared';
-import { providePrimeNG } from 'primeng/config';
+import { proveedoresDePantalla } from '../../../../testing/proveedores-pantalla';
 import { of } from 'rxjs';
 import { describe, expect, it, vi } from 'vitest';
 
@@ -39,10 +41,11 @@ describe('OrdenesListComponent', () => {
     confirmDialog = { confirm: vi.fn().mockResolvedValue(true) };
 
     await TestBed.configureTestingModule({
-      imports: [OrdenesListComponent],
+      imports: [OrdenesListComponent, OrdenFormComponent],
       providers: [
         provideAnimationsAsync(),
-        providePrimeNG(),
+        ...proveedoresDePantalla(),
+        provideRouter([{ path: 'produccion/ordenes', children: [] }]),
         { provide: OrdenProduccionService, useValue: ordenService },
         { provide: ConfirmDialogService, useValue: confirmDialog },
         { provide: ToastService, useValue: { success: vi.fn(), error: vi.fn(), warn: vi.fn() } },
@@ -52,6 +55,14 @@ describe('OrdenesListComponent', () => {
 
     fixture = TestBed.createComponent(OrdenesListComponent);
     fixture.detectChanges();
+  }
+
+  async function crearFormulario() {
+    await crearComponente();
+    ordenService.crear.mockReturnValue(of(ordenPendiente));
+    const formulario = TestBed.createComponent(OrdenFormComponent);
+    formulario.detectChanges();
+    return formulario;
   }
 
   it('carga las ordenes al iniciar y muestra el nombre de la receta', async () => {
@@ -70,20 +81,20 @@ describe('OrdenesListComponent', () => {
   });
 
   it('guardar() sin receta u cantidad no llama al backend', async () => {
-    await crearComponente();
+    const formulario = await crearFormulario();
 
-    fixture.componentInstance.guardar();
+    formulario.componentInstance.guardar();
 
     expect(ordenService.crear).not.toHaveBeenCalled();
   });
 
   it('guardar() manda el payload correcto', async () => {
-    await crearComponente();
+    const formulario = await crearFormulario();
     ordenService.crear.mockReturnValue(of(ordenPendiente));
 
-    fixture.componentInstance['recetaId'].set(10);
-    fixture.componentInstance['cantidadProgramada'].set(20);
-    fixture.componentInstance.guardar();
+    formulario.componentInstance['recetaId'].set(10);
+    formulario.componentInstance['cantidadProgramada'].set(20);
+    formulario.componentInstance.guardar();
 
     expect(ordenService.crear).toHaveBeenCalledWith(
       expect.objectContaining({ receta_id: 10, cantidad_programada: 20 }),

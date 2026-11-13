@@ -2,7 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { Router, provideRouter } from '@angular/router';
 import { ToastService } from '@nianva/ui-shared';
-import { providePrimeNG } from 'primeng/config';
+import { proveedoresDePantalla } from '../../../../testing/proveedores-pantalla';
 import { of } from 'rxjs';
 import { describe, expect, it, vi } from 'vitest';
 
@@ -32,7 +32,7 @@ describe('RecetaFormComponent', () => {
       imports: [RecetaFormComponent],
       providers: [
         provideAnimationsAsync(),
-        providePrimeNG(),
+        ...proveedoresDePantalla(),
         provideRouter([]),
         { provide: RecetaService, useValue: recetaService },
         { provide: ToastService, useValue: { success: vi.fn(), error: vi.fn(), warn: vi.fn() } },

@@ -1,3 +1,4 @@
+import { RespuestaDe, CuerpoDe } from '@nianva/api-contrato';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { DataTableLazyEvent } from '@nianva/ui-shared';
@@ -28,15 +29,28 @@ export class RecetaService {
     let params = new HttpParams().set('page', page).set('rows', rows);
 
     if (evento.sortField) {
-      params = params.set('sort_field', evento.sortField).set('sort_order', evento.sortOrder === -1 ? 'desc' : 'asc');
+      params = params
+        .set('sort_field', evento.sortField)
+        .set('sort_order', evento.sortOrder === -1 ? 'desc' : 'asc');
     }
 
     return this.http
-      .get<{ data: Receta[]; meta: { total: number; permisos: RecetasPermisos } }>(urlApi(`/recetas`), { params })
-      .pipe(map((r) => ({ data: r.data, total: r.meta.total, permisos: r.meta.permisos })));
+      .get<RespuestaDe<'/recetas', 'get'>>(urlApi(`/recetas`), { params })
+      .pipe(
+        map((r) => ({
+          data: r.data as Receta[],
+          total: r.meta.total,
+          permisos: { ...r.meta.permisos, crear: r.meta.permisos['crear'] },
+        })),
+      );
   }
 
   crear(payload: RecetaCrearPayload): Observable<Receta> {
-    return this.http.post<{ data: Receta }>(urlApi(`/recetas`), payload).pipe(map((r) => r.data));
+    return this.http
+      .post<RespuestaDe<'/recetas', 'post'>>(
+        urlApi(`/recetas`),
+        payload satisfies CuerpoDe<'/recetas', 'post'>,
+      )
+      .pipe(map((r) => r.data as Receta));
   }
 }

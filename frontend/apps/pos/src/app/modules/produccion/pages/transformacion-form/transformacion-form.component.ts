@@ -1,15 +1,27 @@
-import { HttpErrorResponse } from '@angular/common/http';
-import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
-import { FormsModule } from '@angular/forms';
-import { RouterLink } from '@angular/router';
-import { EntidadSelectorComponent, ToastService } from '@nianva/ui-shared';
-import { Button } from 'primeng/button';
-import { InputText } from 'primeng/inputtext';
-import { Textarea } from 'primeng/textarea';
+import {
+  PageComponent,
+  PageHeaderComponent,
+  SectionComponent,
+} from '@nianva/ui-layout';
+import { CampoComponent, BtnEnviarComponent } from '@nianva/ui-forms';
 
-import { BUSCADOR_PRODUCTO, BUSCADOR_VARIANTE_DE_PRODUCTO } from '../../../../core/buscadores-entidad.tokens';
+import { MatInput } from '@angular/material/input';
+import { HttpErrorResponse } from '@angular/common/http';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  inject,
+  signal,
+} from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { Router, RouterLink } from '@angular/router';
+import { EntidadSelectorComponent, ToastService } from '@nianva/ui-shared';
+
+import {
+  BUSCADOR_PRODUCTO,
+  BUSCADOR_VARIANTE_DE_PRODUCTO,
+} from '../../../../core/buscadores-entidad.tokens';
 import { TransformacionService } from '../../transformacion.service';
-import { TransformacionProducto } from '../../transformacion.types';
 
 /**
  * Solo alta -- TransformacionResource no tiene show() propio, asi que tras
@@ -20,19 +32,33 @@ import { TransformacionProducto } from '../../transformacion.types';
 @Component({
   selector: 'nucleo-transformacion-form',
   standalone: true,
-  imports: [FormsModule, RouterLink, EntidadSelectorComponent, Button, InputText, Textarea],
+  imports: [
+    PageComponent,
+    PageHeaderComponent,
+    SectionComponent,
+    FormsModule,
+    RouterLink,
+    EntidadSelectorComponent,
+    CampoComponent,
+    BtnEnviarComponent,
+    MatInput,
+  ],
   templateUrl: './transformacion-form.component.html',
-  styleUrl: './transformacion-form.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TransformacionFormComponent {
+  private readonly router = inject(Router);
   private readonly transformacionService = inject(TransformacionService);
   private readonly toast = inject(ToastService);
 
   protected readonly buscadorProductoOrigen = inject(BUSCADOR_PRODUCTO);
-  protected readonly buscadorVarianteOrigen = inject(BUSCADOR_VARIANTE_DE_PRODUCTO);
+  protected readonly buscadorVarianteOrigen = inject(
+    BUSCADOR_VARIANTE_DE_PRODUCTO,
+  );
   protected readonly buscadorProductoDestino = inject(BUSCADOR_PRODUCTO);
-  protected readonly buscadorVarianteDestino = inject(BUSCADOR_VARIANTE_DE_PRODUCTO);
+  protected readonly buscadorVarianteDestino = inject(
+    BUSCADOR_VARIANTE_DE_PRODUCTO,
+  );
 
   protected readonly productoOrigenId = signal<number | null>(null);
   protected readonly varianteOrigenId = signal<number | null>(null);
@@ -44,15 +70,21 @@ export class TransformacionFormComponent {
 
   protected readonly notas = signal('');
   protected readonly guardando = signal(false);
-  protected readonly ultimaCreada = signal<TransformacionProducto | null>(null);
 
   crear(): void {
     const varianteOrigenId = this.varianteOrigenId();
     const varianteDestinoId = this.varianteDestinoId();
     const cantidadOrigen = this.cantidadOrigen();
     const cantidadDestino = this.cantidadDestino();
-    if (varianteOrigenId === null || varianteDestinoId === null || !cantidadOrigen || !cantidadDestino) {
-      this.toast.warn('Selecciona variante de origen, de destino y ambas cantidades.');
+    if (
+      varianteOrigenId === null ||
+      varianteDestinoId === null ||
+      !cantidadOrigen ||
+      !cantidadDestino
+    ) {
+      this.toast.warn(
+        'Selecciona variante de origen, de destino y ambas cantidades.',
+      );
 
       return;
     }
@@ -68,16 +100,18 @@ export class TransformacionFormComponent {
         notas: this.notas().trim() || null,
       })
       .subscribe({
-        next: (transformacion) => {
+        next: () => {
           this.guardando.set(false);
-          this.ultimaCreada.set(transformacion);
           this.toast.success('Transformación registrada.');
           this.reiniciar();
+          void this.router.navigate(['/produccion/transformaciones']);
         },
         error: (error: HttpErrorResponse) => {
           this.guardando.set(false);
           const cuerpo = error.error as { message?: string } | undefined;
-          this.toast.error(cuerpo?.message ?? 'No se pudo registrar la transformación.');
+          this.toast.error(
+            cuerpo?.message ?? 'No se pudo registrar la transformación.',
+          );
         },
       });
   }

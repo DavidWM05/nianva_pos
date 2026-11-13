@@ -1,10 +1,14 @@
+import { RespuestaDe, CuerpoDe } from '@nianva/api-contrato';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { DataTableLazyEvent } from '@nianva/ui-shared';
 import { Observable, map } from 'rxjs';
 
 import { urlApi } from '../../core/api-config';
-import { TransformacionCrearPayload, TransformacionProducto } from './transformacion.types';
+import {
+  TransformacionCrearPayload,
+  TransformacionProducto,
+} from './transformacion.types';
 
 export interface TransformacionesPermisos {
   crear: boolean;
@@ -28,17 +32,33 @@ export class TransformacionService {
     let params = new HttpParams().set('page', page).set('rows', rows);
 
     if (evento.sortField) {
-      params = params.set('sort_field', evento.sortField).set('sort_order', evento.sortOrder === -1 ? 'desc' : 'asc');
+      params = params
+        .set('sort_field', evento.sortField)
+        .set('sort_order', evento.sortOrder === -1 ? 'desc' : 'asc');
     }
 
     return this.http
-      .get<{ data: TransformacionProducto[]; meta: { total: number; permisos: TransformacionesPermisos } }>(urlApi(`/transformaciones`), { params })
-      .pipe(map((r) => ({ data: r.data, total: r.meta.total, permisos: r.meta.permisos })));
+      .get<RespuestaDe<'/transformaciones', 'get'>>(
+        urlApi(`/transformaciones`),
+        { params },
+      )
+      .pipe(
+        map((r) => ({
+          data: r.data as TransformacionProducto[],
+          total: r.meta.total,
+          permisos: { ...r.meta.permisos, crear: r.meta.permisos['crear'] },
+        })),
+      );
   }
 
-  crear(payload: TransformacionCrearPayload): Observable<TransformacionProducto> {
+  crear(
+    payload: TransformacionCrearPayload,
+  ): Observable<TransformacionProducto> {
     return this.http
-      .post<{ data: TransformacionProducto }>(urlApi(`/transformaciones`), payload)
-      .pipe(map((r) => r.data));
+      .post<RespuestaDe<'/transformaciones', 'post'>>(
+        urlApi(`/transformaciones`),
+        payload satisfies CuerpoDe<'/transformaciones', 'post'>,
+      )
+      .pipe(map((r) => r.data as TransformacionProducto));
   }
 }

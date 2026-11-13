@@ -2,23 +2,23 @@
   <div class="pedidos-list__header">
     <h1>Pedidos</h1>
     @if (permisos().crear) {
-      <a routerLink="/pedidos/nuevo"><p-button label="Nuevo pedido" icon="pi pi-plus" /></a>
+      <ui-btn-crear objeto="pedido" ruta="/pedidos/nuevo" />
     }
   </div>
 
   <div class="pedidos-list__filtros">
     <input
-      pInputText
+      aria-label="Buscar por número..."
+      matInput
       type="text"
       placeholder="Buscar por número..."
       class="pedidos-list__buscar"
       (input)="onNumeroInput($any($event.target).value)"
     />
-    <p-select
-      [options]="estados"
-      optionLabel="label"
-      optionValue="value"
-      placeholder="Estado"
+    <ui-select-filtro
+      [todas]="false"
+      ariaLabel="Estado"
+      [opciones]="estados"
       [ngModel]="estadoFiltro()"
       (ngModelChange)="onEstadoCambio($event)"
     />
@@ -38,42 +38,14 @@
     />
   </div>
 
-  <nucleo-data-table
-    [columns]="columns"
-    [value]="pedidos()"
-    [totalRecords]="total()"
-    [loading]="loading()"
-    [virtualScroll]="false"
-    emptyMessage="No hay pedidos que coincidan con la búsqueda."
-    (lazyLoad)="onLazyLoad($event)"
-  >
-    <ng-template nucleoDataTableCell="cliente" let-row>
-      {{ row.cliente?.nombre ?? 'Sin cliente' }}
-    </ng-template>
-
-    <ng-template nucleoDataTableCell="repartidor" let-row>
-      {{ row.repartidor?.nombre ?? 'Sin asignar' }}
-    </ng-template>
-
-    <ng-template nucleoDataTableCell="estado" let-row>
-      <nucleo-status-badge
-        [value]="row.estado"
-        [colorMap]="{
-          pendiente: 'neutral',
-          preparando: 'info',
-          en_camino: 'info',
-          entregado: 'success',
-          cancelado: 'danger',
-        }"
-      />
-    </ng-template>
-
-    <ng-template nucleoDataTableCell="created_at" let-row>
-      {{ row.created_at | date: 'short' }}
-    </ng-template>
-
-    <ng-template nucleoDataTableCell="acciones" let-row>
-      <p-button icon="pi pi-eye" [text]="true" size="small" aria-label="Ver" (click)="irADetalle(row)" />
-    </ng-template>
-  </nucleo-data-table>
+  <ui-page [estado]="estado()" forma="listado" (reintentar)="reintentar()"
+    ><ui-tabla
+      [columnas]="columns"
+      [filas]="filas()"
+      [meta]="meta"
+      [cargando]="loading()"
+      (accion)="onAccion($event.fila, $event.accion)"
+      mensajeVacio="No hay pedidos que coincidan con la búsqueda."
+      (cambio)="onCambio($event)"
+  /></ui-page>
 </div>
