@@ -1781,8 +1781,14 @@ repo.
     - **flake de `cotizaciones.spec.ts`: no reproducido.** Con la CPU frenada hasta 20× y
       el permiso retrasado entre 4 y 30 s pasaron las 7 corridas. Precio y descuento están
       deshabilitados hasta que llega el permiso, y Playwright espera a que se habiliten; la
-      captura previa espera a que no haya peticiones pendientes. Sigue abierto: si vuelve a
-      fallar en CI, hace falta el trace;
+      captura previa espera a que no haya peticiones pendientes. **Resuelto después
+      (`fix/input-dinero-enfoque`):** el trace de CI de master (corrida 43338822232) mostró el
+      precio de la línea 1 en `$1,820.00`. `ui-input-dinero` pasaba a su texto de edición
+      ("18") solo en la siguiente detección de cambios; si caía entre seleccionar todo y
+      escribir, el navegador perdía la selección y "20" quedaba pegado al 18. Ahora el foco
+      escribe ese texto en el input al momento. `input-dinero-enfoque.spec.ts`: 2 casos vistos
+      en rojo (`1820` en lugar de `20`) y con mutación; ningún otro control de `ui-forms`
+      reformatea al enfocar;
     - ningún test existente cambió. 684 tests de `pos` y 60 de `ui-forms`; la línea base no
       sube. "Catálogo visual" falla una vez por el margen nuevo y se versionan las capturas
       de Linux del artifact. En local, la recuperación de contraseña de `auth.spec.ts` tardó
