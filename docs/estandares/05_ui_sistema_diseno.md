@@ -61,7 +61,9 @@ mueven a la lib nueva que corresponda.
 - **Regla:**
   - todo componente y pantalla funciona en ambos temas sin CSS adicional;
   - el tema se elige por preferencia del usuario, con el sistema operativo como valor por
-    defecto, y se aplica con un atributo en `<html>`;
+    defecto, y se aplica con la clase `.nv-tema-oscuro` en `<html>` (antes decía "un
+    atributo"; se corrigió al cierre de la Fase 2 porque tokens y catálogo ya dependían de la
+    clase);
   - los impresos no tienen tema (UI-12).
 - **Por qué:** en Lite, el modo oscuro se agregó al final y obligó a revisar cada vista.
 - **Verifica:** el catálogo visual (UI-14) con capturas en ambos temas, y una prueba de

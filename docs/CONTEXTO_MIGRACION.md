@@ -50,6 +50,21 @@ Un solo POS funcional y adaptable:
 5. **Módulos congelados** (opcionales y sin inversión): Nómina, Préstamos, Delivery y CRM
    avanzado.
 6. **Estándares antes que funcionalidad.**
+7. **Cierre de la Fase 2 (2026-11-13):**
+   - **orden:** primero se cierra todo lo técnico (50l, 50n-b, contadores y estas
+     decisiones); la revisión visual va al final y solo trae ajustes de frontend;
+   - **filas acotadas:** UI-02 se cumple con pantallas solo de `libs/ui` y sin PrimeNG
+     (ESLint y línea base). Pasan a la Fase 3: los servicios de `domain/*` (ARQ-12b), los
+     estados contra los enums del contrato (UI-06b) y los límites de formulario desde
+     OpenAPI (UI-11b);
+   - **tema (UI-03):** se queda la clase `.nv-tema-oscuro` en `<html>`; se corrigió el
+     estándar, no el código;
+   - **PRO-01 autorizados:** retirar los dos casos de `tema.service.spec.ts` que fijan
+     "claro" (tema por defecto "sistema", 50n-b); los specs de caja y de los 4 reportes
+     pasan al formato del pipe `dinero`; `ConfiguracionSeguridad` se alinea con el contrato
+     (`minutos_inactividad` obligatorio) con sus specs;
+   - **un usuario tiene al menos un rol:** el backend lo valida al crear y editar, y la
+     pantalla lo exige.
 
 ## 4. Fases
 
