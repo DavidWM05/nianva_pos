@@ -22,7 +22,6 @@ import { ProveedorFormPayload } from '../compra.service';
   standalone: true,
   imports: [DynamicFormComponent],
   templateUrl: './proveedor-form.component.html',
-  styleUrl: './proveedor-form.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProveedorFormComponent implements OnInit {

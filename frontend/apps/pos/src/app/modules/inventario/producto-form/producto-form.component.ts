@@ -50,7 +50,6 @@ import { CatalogoSimple, Producto } from '../producto.types';
     InputDineroComponent,
   ],
   templateUrl: './producto-form.component.html',
-  styleUrl: './producto-form.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProductoFormComponent implements OnInit, OnChanges {

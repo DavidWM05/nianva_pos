@@ -66,7 +66,6 @@ const PERMISOS_VACIOS: ProductosPermisos = {
     TablaComponent,
   ],
   templateUrl: './productos-list.component.html',
-  styleUrl: './productos-list.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProductosListComponent {

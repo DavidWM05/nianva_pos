@@ -29,7 +29,6 @@ import { MovimientoKardex } from '../producto.types';
   standalone: true,
   imports: [PageComponent, TablaComponent],
   templateUrl: './kardex-list.component.html',
-  styleUrl: './kardex-list.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class KardexListComponent {
