@@ -1875,6 +1875,32 @@ repo.
       ids fijos que busca su spec;
     - pendientes: contrato 19 → 15, cargando 11 → 5, formato 24 → 19; línea base 1357 →
       1293. 703 tests de `pos` y 83 e2e.
+  - **50l · producción y congelados (Codex):**
+    - producción (insumos, recetas, órdenes y transformaciones) sobre `libs/ui`, y delivery,
+      payroll y préstamos con cambio mínimo; los cuatro entran en `MODULOS_POS_SIN_PRIMENG`
+      y sus listados dejan `nucleo-data-table` por `ui-tabla`. Ya no queda PrimeNG en
+      ninguna pantalla de `pos` (solo `app.config.ts`, que es de la 50n-b);
+    - **producción sin detalle:** el backend solo tiene listado y alta (y cambio de estado
+      de órdenes), sin `GET /{id}` ni `update`. Las altas pasan a vistas dedicadas
+      (`/produccion/<recurso>/nuevo`) y no se inventan rutas `/:id` ni acciones «Ver». El
+      detalle queda para el rediseño de producción en la Fase 3, con DAT-01;
+    - **congelados:** el alta de empleado y la generación de nómina siguen en modal (no se
+      reorganizan). Las fechas usan `matDatepicker` con `PROVEEDORES_FECHA_ES_MX`, que
+      `libs/ui/report` ahora exporta, en los `providers` de cada componente; envían con
+      `fechaComoIso()` y cargan `YYYY-MM-DD` como día local (tests en
+      `America/Mexico_City`, con mutación de carga UTC). Deuda: el adaptador de fechas
+      pertenece a `ui/forms`;
+    - **hallazgos resueltos aparte:** Escape en `ui-modal` con un calendario abierto
+      (`fix/modal-escape-overlay`) y `meta.permisos` sin tipo en el OpenAPI de producción,
+      delivery y payroll (`fix/contrato-permisos-produccion`); con ellos, los siete
+      `listar()` usan `RespuestaDe`;
+    - **PRO-01 (`pro-01-autorizado`), 8 casos:** los cuatro `guardar()` de insumos y órdenes
+      preparan la vista de alta en su mismo archivo; «carga las nominas al iniciar» espera
+      `$4,000.00`; el caso de crear transformación comprueba la URL de regreso
+      (`ultimaCreada` se elimina); dos casos de fechas preparan el día local. Cada uno con
+      su mutación en rojo;
+    - pendientes: contrato 15 → 7, cargando 5 → 1, formato 19 → 11; línea base 1293 → 1047
+      líneas en 90 archivos. 720 tests de `pos`, 87 e2e y 108 análisis axe sin violaciones.
 - **Posibles mejoras (roadmap):**
   - **capturas de Linux sin pasar por CI (Docker):** hoy cada PR con cambio visual falla una
     vez en "Catálogo visual", se baja el artifact y se versionan las capturas, porque en el
