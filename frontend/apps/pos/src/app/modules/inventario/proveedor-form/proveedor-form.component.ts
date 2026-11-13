@@ -1,4 +1,12 @@
-import { ChangeDetectionStrategy, Component, EventEmitter, OnInit, Output, ViewChild } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  EventEmitter,
+  Input,
+  OnInit,
+  Output,
+  ViewChild,
+} from '@angular/core';
 import { DynamicFormComponent, DynamicFormField } from '@nianva/ui-shared';
 
 import { ProveedorFormPayload } from '../compra.service';
@@ -14,10 +22,11 @@ import { ProveedorFormPayload } from '../compra.service';
   standalone: true,
   imports: [DynamicFormComponent],
   templateUrl: './proveedor-form.component.html',
-  styleUrl: './proveedor-form.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProveedorFormComponent implements OnInit {
+  @Input() enviando = false;
+
   @Output() guardar = new EventEmitter<ProveedorFormPayload>();
 
   @ViewChild(DynamicFormComponent) private formComponent!: DynamicFormComponent;
@@ -25,11 +34,19 @@ export class ProveedorFormComponent implements OnInit {
   protected fields: DynamicFormField[] = [];
 
   ngOnInit(): void {
-    this.fields = [{ name: 'razon_social', label: 'Razón social', type: 'text', required: true, maxLength: 200 }];
+    this.fields = [
+      {
+        name: 'razon_social',
+        label: 'Razón social',
+        type: 'text',
+        required: true,
+        maxLength: 200,
+      },
+    ];
   }
 
   onSubmit(value: Record<string, unknown>): void {
-    this.guardar.emit(value as unknown as ProveedorFormPayload);
+    this.guardar.emit({ razon_social: value['razon_social'] as string });
   }
 
   setServerErrors(errors: Record<string, string | string[]>): void {

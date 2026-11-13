@@ -1,3 +1,4 @@
+import { proveedoresDePantalla } from '../../../testing/proveedores-pantalla';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { beforeEach, describe, expect, it } from 'vitest';
 
@@ -31,7 +32,7 @@ describe('KardexListComponent', () => {
   ];
 
   beforeEach(async () => {
-    await TestBed.configureTestingModule({ imports: [KardexListComponent] }).compileComponents();
+    await TestBed.configureTestingModule({ imports: [KardexListComponent], providers: [...proveedoresDePantalla()] }).compileComponents();
     fixture = TestBed.createComponent(KardexListComponent);
   });
 
@@ -39,7 +40,7 @@ describe('KardexListComponent', () => {
     fixture.componentInstance.cargando = true;
     fixture.detectChanges();
 
-    expect((fixture.nativeElement as HTMLElement).textContent).toContain('Cargando kardex');
+    expect((fixture.nativeElement as HTMLElement).querySelector('ui-page ui-skeleton')).not.toBeNull();
   });
 
   it('muestra un mensaje cuando no hay movimientos', () => {

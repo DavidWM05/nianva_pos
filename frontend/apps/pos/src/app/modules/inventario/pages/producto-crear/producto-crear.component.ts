@@ -1,5 +1,13 @@
+import { MatButton } from '@angular/material/button';
+import { PageComponent, PageHeaderComponent } from '@nianva/ui-layout';
 import { HttpErrorResponse } from '@angular/common/http';
-import { ChangeDetectionStrategy, Component, ViewChild, inject, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  ViewChild,
+  inject,
+  signal,
+} from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { ToastService } from '@nianva/ui-shared';
 
@@ -16,9 +24,14 @@ import { ProductoFormPayload, ProductoService } from '../../producto.service';
 @Component({
   selector: 'nucleo-producto-crear',
   standalone: true,
-  imports: [RouterLink, ProductoFormComponent],
+  imports: [
+    MatButton,
+    PageComponent,
+    PageHeaderComponent,
+    RouterLink,
+    ProductoFormComponent,
+  ],
   templateUrl: './producto-crear.component.html',
-  styleUrl: './producto-crear.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProductoCrearComponent {

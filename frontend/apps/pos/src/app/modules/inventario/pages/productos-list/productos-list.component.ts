@@ -1,23 +1,46 @@
-import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  inject,
+  signal,
+} from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { Router, RouterLink } from '@angular/router';
+import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
+import {
+  BotonCrearComponent,
+  AccionEmitida,
+  AccionFila,
+} from '@nianva/ui-actions';
+import {
+  CambioListado,
+  ColumnaListado,
+  FilterBarComponent,
+  MetaListado,
+  TablaComponent,
+} from '@nianva/ui-data';
+import { CampoComponent } from '@nianva/ui-forms';
+import { PageComponent, PageHeaderComponent } from '@nianva/ui-layout';
 import {
   ConfirmDialogService,
-  DataTableCellDirective,
-  DataTableColumn,
-  DataTableComponent,
   DataTableLazyEvent,
-  StatusBadgeComponent,
   ToastService,
 } from '@nianva/ui-shared';
-import { Button } from 'primeng/button';
-import { InputText } from 'primeng/inputtext';
 import { Subject, debounceTime } from 'rxjs';
-
 import { ProductoService } from '../../producto.service';
 import { Producto, ProductosPermisos } from '../../producto.types';
 
-const PERMISOS_VACIOS: ProductosPermisos = { crear: false, editar: false, eliminar: false };
+interface FilaProducto extends Producto {
+  categoriaTexto: string;
+  departamentoTexto: string;
+}
+
+const PERMISOS_VACIOS: ProductosPermisos = {
+  crear: false,
+  editar: false,
+  eliminar: false,
+};
 
 /**
  * Segundo modulo real conectado al shell, mismo esquema que
@@ -33,9 +56,16 @@ const PERMISOS_VACIOS: ProductosPermisos = { crear: false, editar: false, elimin
 @Component({
   selector: 'nucleo-productos-list',
   standalone: true,
-  imports: [RouterLink, DataTableComponent, DataTableCellDirective, StatusBadgeComponent, Button, InputText],
+  imports: [
+    FormsModule,
+    BotonCrearComponent,
+    CampoComponent,
+    FilterBarComponent,
+    PageComponent,
+    PageHeaderComponent,
+    TablaComponent,
+  ],
   templateUrl: './productos-list.component.html',
-  styleUrl: './productos-list.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProductosListComponent {
@@ -43,34 +73,88 @@ export class ProductosListComponent {
   private readonly router = inject(Router);
   private readonly confirmDialog = inject(ConfirmDialogService);
   private readonly toast = inject(ToastService);
-
-  protected readonly columns: DataTableColumn[] = [
-    { field: 'nombre', header: 'Nombre', sortable: true },
-    { field: 'categoria', header: 'Categoría' },
-    { field: 'departamento', header: 'Departamento' },
-    { field: 'precio_venta', header: 'Precio de venta', sortable: true },
-    { field: 'stock_total', header: 'Stock', sortable: true },
-    { field: 'activo', header: 'Estado' },
-    { field: 'acciones', header: '' },
-  ];
-
   protected readonly productos = signal<Producto[]>([]);
   protected readonly total = signal(0);
   protected readonly loading = signal(false);
   protected readonly permisos = signal<ProductosPermisos>(PERMISOS_VACIOS);
   protected readonly busqueda = signal('');
-
-  private ultimoEvento: DataTableLazyEvent = { first: 0, rows: 25, sortField: null, sortOrder: null, filters: {} };
+  protected readonly primeraCarga = signal(true);
+  protected readonly error = signal(false);
+  private readonly ultimoEvento = signal<DataTableLazyEvent>({
+    first: 0,
+    rows: 25,
+    sortField: null,
+    sortOrder: null,
+    filters: {},
+  });
   private readonly busquedaSubject = new Subject<string>();
+  protected readonly estado = computed(() =>
+    this.primeraCarga() && this.loading()
+      ? 'cargando'
+      : this.error()
+        ? 'error'
+        : 'listo',
+  );
+  protected readonly hayFiltros = computed(() => this.busqueda().length > 0);
+  protected readonly meta = computed<MetaListado>(() => ({
+    total: this.total(),
+    page:
+      Math.floor(this.ultimoEvento().first / (this.ultimoEvento().rows || 25)) +
+      1,
+    rows: this.ultimoEvento().rows || 25,
+    filtros_aplicados: { filtro_nombre: this.busqueda() },
+    permisos: { ...this.permisos() },
+  }));
+  protected readonly filaInactiva = (fila: Producto) => !fila.activo;
+  protected readonly filas = computed<FilaProducto[]>(() =>
+    this.productos().map((p) => ({
+      ...p,
+      categoriaTexto: p.categoria?.nombre ?? '—',
+      departamentoTexto: p.departamento?.nombre ?? '—',
+    })),
+  );
+  protected readonly columnas: ColumnaListado<FilaProducto>[] = [
+    {
+      tipo: 'principal',
+      campo: 'nombre',
+      encabezado: 'Nombre',
+      ordenable: true,
+    },
+    { tipo: 'texto', campo: 'categoriaTexto', encabezado: 'Categoría' },
+    { tipo: 'texto', campo: 'departamentoTexto', encabezado: 'Departamento' },
+    {
+      tipo: 'dinero',
+      campo: 'precio_venta',
+      encabezado: 'Precio de venta',
+      ordenable: true,
+    },
+    {
+      tipo: 'cantidad',
+      campo: 'stock_total',
+      encabezado: 'Stock',
+      ordenable: true,
+    },
+    {
+      tipo: 'acciones',
+      acciones: () => {
+        const acciones: AccionFila[] = [];
+        if (this.permisos().editar) acciones.push({ tipo: 'editar' });
+        if (this.permisos().eliminar)
+          acciones.push({ tipo: 'estado', activo: true });
+        return acciones;
+      },
+    },
+  ];
 
   constructor() {
-    this.busquedaSubject.pipe(debounceTime(300), takeUntilDestroyed()).subscribe((texto) => {
-      this.busqueda.set(texto);
-      this.cargar({ ...this.ultimoEvento, first: 0 });
-    });
+    this.busquedaSubject
+      .pipe(debounceTime(300), takeUntilDestroyed())
+      .subscribe(() => this.cargar({ ...this.ultimoEvento(), first: 0 }));
+    this.cargar(this.ultimoEvento());
   }
 
   onBuscarInput(texto: string): void {
+    this.busqueda.set(texto);
     this.busquedaSubject.next(texto);
   }
 
@@ -78,23 +162,58 @@ export class ProductosListComponent {
     this.cargar(evento);
   }
 
-  private cargar(evento: DataTableLazyEvent): void {
-    this.ultimoEvento = evento;
-    this.loading.set(true);
+  onCambio(evento: CambioListado): void {
+    this.onLazyLoad({
+      first: (evento.page - 1) * evento.rows,
+      rows: evento.rows,
+      sortField: evento.sortField,
+      sortOrder:
+        evento.sortOrder === 'asc'
+          ? 1
+          : evento.sortOrder === 'desc'
+            ? -1
+            : null,
+      filters: {},
+    });
+  }
 
+  limpiarFiltros(): void {
+    this.busqueda.set('');
+    this.busquedaSubject.next('');
+    this.cargar({ ...this.ultimoEvento(), first: 0 });
+  }
+
+  reintentar(): void {
+    this.cargar(this.ultimoEvento());
+  }
+
+  private cargar(evento: DataTableLazyEvent): void {
+    this.ultimoEvento.set(evento);
+    this.loading.set(true);
+    this.error.set(false);
     this.productoService.listar(evento, this.busqueda()).subscribe({
       next: (respuesta) => {
         this.productos.set(respuesta.data);
         this.total.set(respuesta.total);
         this.permisos.set(respuesta.permisos);
         this.loading.set(false);
+        this.primeraCarga.set(false);
       },
-      error: () => this.loading.set(false),
+      error: () => {
+        this.loading.set(false);
+        this.primeraCarga.set(false);
+        this.error.set(true);
+      },
     });
   }
 
   irADetalle(producto: Producto): void {
     this.router.navigate(['/inventario/productos', producto.id]);
+  }
+
+  onAccion(fila: Producto, accion: AccionEmitida): void {
+    if (accion.tipo === 'editar') this.irADetalle(fila);
+    if (accion.tipo === 'estado') void this.onDesactivar(fila);
   }
 
   async onDesactivar(producto: Producto): Promise<void> {
@@ -111,7 +230,7 @@ export class ProductosListComponent {
     this.productoService.desactivar(producto.id).subscribe({
       next: () => {
         this.toast.success('Producto desactivado.');
-        this.cargar(this.ultimoEvento);
+        this.cargar(this.ultimoEvento());
       },
       error: () => this.toast.error('No se pudo desactivar el producto.'),
     });
