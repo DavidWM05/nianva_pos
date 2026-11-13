@@ -1846,7 +1846,13 @@ repo.
       deja la caja abierta al terminar (`asegurarCajaAbierta`);
     - **hallazgo:** `soporte/saldos-50h.ts` crea ventas con `Venta::factory()`, y esa
       factory abre su propia caja en la sucursal aunque ya haya una abierta, saltándose la
-      regla de una caja por sucursal. Pendiente: que la factory reutilice la caja abierta;
+      regla de una caja por sucursal. **Resuelto en `fix/venta-factory-caja`:** la factory
+      reutiliza la caja abierta de la sucursal y del tenant, y solo abre una si no hay
+      (`Factories/VentaFactoryCajaAbiertaTest`, 4 casos, 2 vistos en rojo). Quedan
+      anotados: `GastoFactory` deja el gasto en una sucursal y su caja en otra si el test
+      pasa `sucursal_id` sin `caja_sesion_id`; y `caja_sesiones` no impide dos cajas
+      abiertas por sucursal en la base (la regla vive solo en `CajaService`, sin bloqueo de
+      fila), decisión de datos para la Fase 3;
     - ningún caso existente cambió: los specs solo pierden `providePrimeNG`. Caja y los 4
       reportes siguen en `formato-pendientes` porque sus specs buscan importes sin el pipe
       `dinero`. Para la revisión visual: una venta completada ya no lleva insignia (así lo
