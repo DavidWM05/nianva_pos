@@ -1,9 +1,10 @@
+import { CuerpoDe, RespuestaDe } from '@nianva/api-contrato';
 import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable, map } from 'rxjs';
 
 import { urlApi } from '../../core/api-config';
-import { CajaActual, CajaDesglose, CajaPermisos, CajaResumen, CajaSesion } from './caja.types';
+import { CajaActual, CajaDesglose, CajaSesion } from './caja.types';
 
 @Injectable({ providedIn: 'root' })
 export class CajaService {
@@ -12,16 +13,16 @@ export class CajaService {
   /** sesion=null = no hay caja abierta para la sucursal del usuario actual. */
   actual(): Observable<CajaActual> {
     return this.http
-      .get<{ data: CajaSesion | null; meta: { resumen: CajaResumen | null; permisos: CajaPermisos } }>(
-        urlApi(`/caja/actual`),
-      )
-      .pipe(map((r) => ({ sesion: r.data, resumen: r.meta.resumen, permisos: r.meta.permisos })));
+      .get<RespuestaDe<'/caja/actual', 'get'>>(urlApi(`/caja/actual`))
+      .pipe(map((r) => ({ sesion: r.data as CajaSesion | null, resumen: r.meta.resumen, permisos: r.meta.permisos })));
   }
 
   abrir(montoApertura: number): Observable<CajaSesion> {
+    const cuerpo: CuerpoDe<'/caja/abrir', 'post'> = { monto_apertura: montoApertura };
+
     return this.http
-      .post<{ data: CajaSesion }>(urlApi(`/caja/abrir`), { monto_apertura: montoApertura })
-      .pipe(map((r) => r.data));
+      .post<RespuestaDe<'/caja/abrir', 'post'>>(urlApi(`/caja/abrir`), cuerpo)
+      .pipe(map((r) => r.data as CajaSesion));
   }
 
   /**
@@ -31,10 +32,10 @@ export class CajaService {
    * manipulada -- ver el docblock del Controller.
    */
   cerrar(id: number, montoFisico: number): Observable<{ sesion: CajaSesion; desglose: CajaDesglose }> {
+    const cuerpo: CuerpoDe<'/caja/{cajaSesion}/cerrar', 'patch'> = { monto_fisico: montoFisico };
+
     return this.http
-      .patch<{ data: CajaSesion; desglose: CajaDesglose }>(urlApi(`/caja/${id}/cerrar`), {
-        monto_fisico: montoFisico,
-      })
-      .pipe(map((r) => ({ sesion: r.data, desglose: r.desglose })));
+      .patch<RespuestaDe<'/caja/{cajaSesion}/cerrar', 'patch'>>(urlApi(`/caja/${id}/cerrar`), cuerpo)
+      .pipe(map((r) => ({ sesion: r.data as CajaSesion, desglose: r.desglose })));
   }
 }

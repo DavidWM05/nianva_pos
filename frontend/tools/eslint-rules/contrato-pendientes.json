@@ -13,9 +13,5 @@
     "apps/pos/src/app/modules/produccion/orden.service.ts",
     "apps/pos/src/app/modules/produccion/receta.service.ts",
     "apps/pos/src/app/modules/produccion/transformacion.service.ts",
-    "apps/pos/src/app/modules/tpv/caja.service.ts",
-    "apps/pos/src/app/modules/tpv/cupon-validacion.service.ts",
-    "apps/pos/src/app/modules/tpv/metodo-pago.service.ts",
-    "apps/pos/src/app/modules/tpv/venta.service.ts",
     "apps/pos/src/app/perfil/seguridad.service.ts"
 ]

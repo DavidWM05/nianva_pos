@@ -17,33 +17,35 @@
         @if (stockVarianteSeleccionada() === 0) {
           Sin stock disponible en esta sucursal.
         } @else {
-          Disponible: {{ stockVarianteSeleccionada() }}
+          Disponible: {{ stockVarianteSeleccionada() | cantidad }}
         }
       </p>
     }
 
     <div class="lineas-producto__alta-linea">
-      <label for="lineas-producto-cantidad">Cantidad</label>
-      <input
-        pInputText
-        type="number"
-        id="lineas-producto-cantidad"
-        min="1"
-        [max]="stockVarianteSeleccionada()"
-        [ngModel]="cantidadNueva()"
-        (ngModelChange)="cantidadNueva.set($event)"
-      />
+      <ui-campo #cantidad etiqueta="Cantidad">
+        <input
+          type="number"
+          [id]="cantidad.controlId()"
+          min="1"
+          [max]="stockVarianteSeleccionada()"
+          [ngModel]="cantidadNueva()"
+          (ngModelChange)="cantidadNueva.set($event)"
+        />
+      </ui-campo>
       @if (cantidadExcedeStock()) {
         <p class="lineas-producto__stock lineas-producto__stock--agotado">
-          Solo hay {{ stockVarianteSeleccionada() }} disponible(s).
+          Solo hay {{ stockVarianteSeleccionada() | cantidad }} disponible(s).
         </p>
       }
-      <p-button
-        label="Agregar línea"
-        icon="pi pi-plus"
+      <button
+        matButton="filled"
+        type="button"
         [disabled]="varianteSeleccionadaId() === null || cantidadExcedeStock()"
         (click)="agregarLinea()"
-      />
+      >
+        <i class="pi pi-plus" aria-hidden="true"></i> Agregar línea
+      </button>
     </div>
   </section>
 
@@ -69,26 +71,32 @@
               <td>{{ linea.etiqueta }}</td>
               <td>
                 <input
-                  pInputText
                   type="number"
                   min="1"
                   [max]="linea.stockDisponible ?? null"
                   class="lineas-producto__input-cantidad"
+                  [attr.aria-label]="'Cantidad de ' + linea.etiqueta"
                   [ngModel]="linea.cantidad"
                   (ngModelChange)="cambiarCantidad($index, $event)"
                 />
               </td>
-              <td>${{ linea.precio_unitario ?? '…' }}</td>
+              <td>
+                @if (linea.precio_unitario === undefined) { … } @else { {{ linea.precio_unitario | dinero }} }
+              </td>
               <td>
                 @if (linea.descuento_aplicado) {
-                  -${{ linea.descuento_aplicado }}
+                  -{{ linea.descuento_aplicado | dinero }}
                 } @else {
                   —
                 }
               </td>
-              <td>${{ linea.subtotal ?? '…' }}</td>
               <td>
-                <p-button icon="pi pi-trash" [text]="true" severity="danger" size="small" aria-label="Quitar" (click)="quitarLinea($index)" />
+                @if (linea.subtotal === undefined) { … } @else { {{ linea.subtotal | dinero }} }
+              </td>
+              <td>
+                <button matIconButton type="button" aria-label="Quitar" (click)="quitarLinea($index)">
+                  <i class="pi pi-trash" aria-hidden="true"></i>
+                </button>
               </td>
             </tr>
           }

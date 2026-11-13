@@ -1,8 +1,9 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Output, ViewChild, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { EntidadBuscable, EntidadSelectorComponent } from '@nianva/ui-shared';
-import { Button } from 'primeng/button';
-import { InputText } from 'primeng/inputtext';
+import { MatButton, MatIconButton } from '@angular/material/button';
+import { CampoComponent } from '@nianva/ui-forms';
+import { CantidadPipe, DineroPipe } from '@nianva/ui-format';
 
 import { BUSCADOR_PRODUCTO, BUSCADOR_VARIANTE_DE_PRODUCTO } from '../../../core/buscadores-entidad.tokens';
 import { VentaItemPayload } from '../venta.types';
@@ -50,7 +51,7 @@ export interface LineasProductoCambio {
 @Component({
   selector: 'nucleo-lineas-producto',
   standalone: true,
-  imports: [FormsModule, EntidadSelectorComponent, Button, InputText],
+  imports: [FormsModule, EntidadSelectorComponent, MatButton, MatIconButton, CampoComponent, CantidadPipe, DineroPipe],
   templateUrl: './lineas-producto.component.html',
   styleUrl: './lineas-producto.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

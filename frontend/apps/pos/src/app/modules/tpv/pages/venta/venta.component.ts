@@ -1,11 +1,12 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { ChangeDetectionStrategy, Component, HostListener, OnInit, ViewChild, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { MatButton } from '@angular/material/button';
 import { RouterLink } from '@angular/router';
+import { SkeletonComponent } from '@nianva/ui-feedback';
+import { BtnEnviarComponent, CampoComponent, SelectFiltroComponent, SelectFiltroOpcion } from '@nianva/ui-forms';
+import { DineroPipe } from '@nianva/ui-format';
 import { EntidadSelectorComponent, ToastService, mensajeError } from '@nianva/ui-shared';
-import { Button } from 'primeng/button';
-import { InputText } from 'primeng/inputtext';
-import { Select } from 'primeng/select';
 
 import { BUSCADOR_CLIENTE } from '../../../../core/buscadores-entidad.tokens';
 import { NotaCreditoService } from '../../../notas-credito/nota-credito.service';
@@ -36,7 +37,19 @@ import { VentaService } from '../../venta.service';
 @Component({
   selector: 'nucleo-venta',
   standalone: true,
-  imports: [FormsModule, RouterLink, EntidadSelectorComponent, LineasProductoComponent, LineasPagoComponent, Button, InputText, Select],
+  imports: [
+    FormsModule,
+    RouterLink,
+    EntidadSelectorComponent,
+    LineasProductoComponent,
+    LineasPagoComponent,
+    MatButton,
+    SkeletonComponent,
+    BtnEnviarComponent,
+    CampoComponent,
+    SelectFiltroComponent,
+    DineroPipe,
+  ],
   templateUrl: './venta.component.html',
   styleUrl: './venta.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -93,6 +106,11 @@ export class VentaComponent implements OnInit {
   protected readonly notasCreditoOpciones = computed(() =>
     this.notasCreditoDisponibles().map((n) => ({ id: n.id, label: `$${n.saldo_disponible} disponibles (nota #${n.id})` })),
   );
+  // Sin nota de credito es una opcion mas: el select de libs/ui no tiene boton de limpiar.
+  protected readonly opcionesNotaCredito = computed<SelectFiltroOpcion[]>(() => [
+    { label: 'Sin nota de crédito', value: null },
+    ...this.notasCreditoOpciones().map((opcion) => ({ label: opcion.label, value: opcion.id })),
+  ]);
   protected readonly montoNotaCredito = computed(() => {
     const nota = this.notasCreditoDisponibles().find((n) => n.id === this.notaCreditoSeleccionadaId());
 

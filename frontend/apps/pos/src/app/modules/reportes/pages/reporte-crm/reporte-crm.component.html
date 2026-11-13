@@ -2,7 +2,7 @@
   <h1>Reporte de CRM</h1>
 
   @if (cargando()) {
-    <p>Cargando reporte...</p>
+    <ui-skeleton forma="bloque" alto="20rem" etiqueta="Cargando reporte" />
   } @else if (reporte(); as r) {
     <section class="reporte-crm__seccion">
       <h2>Clientes por segmento</h2>

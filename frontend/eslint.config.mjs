@@ -21,7 +21,7 @@ const contratoPendientes = JSON.parse(
 // Serie 50: modulos de apps/pos ya migrados a libs/ui (carpeta bajo src/app/modules). Cada
 // encargo agrega el suyo al cerrar, y desde ahi ESLint prohibe PrimeNG en ese modulo, specs
 // incluidos. La lista solo crece; al final de la serie, PrimeNG sale de todo apps/pos.
-const MODULOS_POS_SIN_PRIMENG = ['unidades-medida', 'auditoria', 'nucleo', 'configuracion', 'precios', 'crm', 'administracion', 'cotizaciones', 'apartados', 'devoluciones', 'notas-credito', 'cuentas-cobrar', 'cuentas-pagar', 'gift-cards', 'ventas-plazos', 'inventario'];
+const MODULOS_POS_SIN_PRIMENG = ['unidades-medida', 'auditoria', 'nucleo', 'configuracion', 'precios', 'crm', 'administracion', 'cotizaciones', 'apartados', 'devoluciones', 'notas-credito', 'cuentas-cobrar', 'cuentas-pagar', 'gift-cards', 'ventas-plazos', 'inventario', 'tpv', 'reportes'];
 // Carpetas de pos fuera de modules/ que ya no usan PrimeNG (50i: shell, perfil y demo; 50j: auth).
 const CARPETAS_POS_SIN_PRIMENG = ['shell', 'perfil', 'demo', 'auth'];
 

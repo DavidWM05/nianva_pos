@@ -46,6 +46,37 @@ export function crearCliente(page: Page, nombre: string): Promise<{ id: number }
   return crear(page, '/clientes', { nombre });
 }
 
+/**
+ * 50n-a: deja abierta la caja de la sucursal, como la siembra el escenario. El e2e de tpv la
+ * cierra y la vuelve a abrir; si falla a la mitad, los specs que venden despues no dependen de el.
+ */
+export async function asegurarCajaAbierta(page: Page): Promise<void> {
+  const resultado = await page.evaluate(async (api) => {
+    const coincidencia = document.cookie.match(/(?:^|;\s*)XSRF-TOKEN=([^;]+)/);
+    const token = coincidencia ? decodeURIComponent(coincidencia[1]) : '';
+    const cabeceras = { Accept: 'application/json', 'Content-Type': 'application/json', 'X-XSRF-TOKEN': token };
+    const actual = await fetch(`${api}/caja/actual`, { credentials: 'include', headers: cabeceras });
+    const cuerpo = await actual.json();
+
+    if (cuerpo.data !== null) {
+      return actual.status;
+    }
+
+    const apertura = await fetch(`${api}/caja/abrir`, {
+      method: 'POST',
+      credentials: 'include',
+      headers: cabeceras,
+      body: JSON.stringify({ monto_apertura: 500 }),
+    });
+
+    return apertura.status;
+  }, API);
+
+  if (resultado !== 200 && resultado !== 201) {
+    throw new Error(`No se pudo dejar la caja abierta: ${resultado}`);
+  }
+}
+
 export function crearUnidadMedida(page: Page, nombre: string): Promise<{ id: number }> {
   return crear(page, '/unidades-medida', { nombre, abreviatura: 'e2e', tipo: 'entero', activo: true });
 }

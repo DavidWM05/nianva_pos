@@ -1,55 +1,54 @@
 .lineas-producto {
-  display: flex;
-  flex-direction: column;
-  gap: var(--nucleo-spacing-4);
+  display: grid;
+  gap: var(--nv-spacing-4);
 }
 
 .lineas-producto__seccion {
-  display: flex;
-  flex-direction: column;
-  gap: var(--nucleo-spacing-2);
+  display: grid;
+  gap: var(--nv-spacing-2);
 
   h3 {
     margin: 0;
-    font-size: var(--nucleo-font-size-sm);
+    font-size: var(--nv-font-size-sm);
     text-transform: uppercase;
-    color: var(--nucleo-color-surface-600);
+    color: var(--nv-texto-suave);
   }
 }
 
 .lineas-producto__alta-linea {
   display: flex;
-  align-items: center;
-  gap: var(--nucleo-spacing-3);
-
-  input {
-    width: 6rem;
-  }
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: var(--nv-spacing-3);
 }
 
 .lineas-producto__tabla {
   width: 100%;
   border-collapse: collapse;
 
-  th,
-  td {
+  th, td {
     text-align: left;
-    padding: var(--nucleo-spacing-2);
-    border-bottom: 1px solid var(--nucleo-color-surface-100);
+    padding: var(--nv-spacing-2) var(--nv-spacing-1);
+    border-bottom: 1px solid var(--nv-borde);
   }
 }
 
 .lineas-producto__input-cantidad {
   width: 4rem;
+  padding: var(--nv-spacing-1) var(--nv-spacing-2);
+  border: 1px solid var(--nv-borde);
+  border-radius: var(--nv-radius-md);
+  background: var(--nv-superficie);
+  color: var(--nv-texto);
 }
 
 .lineas-producto__stock {
   margin: 0;
-  font-size: var(--nucleo-font-size-sm);
-  color: var(--nucleo-color-surface-600);
+  font-size: var(--nv-font-size-sm);
+  color: var(--nv-texto-suave);
 }
 
 .lineas-producto__stock--agotado {
-  color: var(--nucleo-color-danger);
+  color: var(--nv-peligro-texto);
   font-weight: 600;
 }

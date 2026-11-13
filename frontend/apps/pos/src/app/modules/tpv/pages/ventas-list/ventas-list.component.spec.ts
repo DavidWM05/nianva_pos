@@ -3,7 +3,6 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { Router, provideRouter } from '@angular/router';
 import { ToastService } from '@nianva/ui-shared';
-import { providePrimeNG } from 'primeng/config';
 import { of, throwError } from 'rxjs';
 import { describe, expect, it, vi } from 'vitest';
 
@@ -50,7 +49,6 @@ describe('VentasListComponent', () => {
       imports: [VentasListComponent],
       providers: [
         provideAnimationsAsync(),
-        providePrimeNG(),
         provideRouter([]),
         { provide: VentaService, useValue: ventaService },
         { provide: ToastService, useValue: { success: vi.fn(), error: vi.fn() } },

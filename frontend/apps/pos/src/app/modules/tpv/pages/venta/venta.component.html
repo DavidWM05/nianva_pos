@@ -1,17 +1,17 @@
 <div class="venta">
   @if (cargandoCaja()) {
-    <p>Verificando estado de caja...</p>
+    <ui-skeleton forma="bloque" alto="16rem" etiqueta="Verificando estado de caja" />
   } @else if (!cajaAbierta()) {
     <div class="venta__bloqueo">
       <h2>No se puede vender todavía</h2>
       <p>No hay una caja abierta para tu sucursal. Abre la caja antes de registrar una venta.</p>
-      <a routerLink="/tpv/caja"><p-button label="Ir a Caja" icon="pi pi-arrow-right" /></a>
+      <a matButton="filled" routerLink="/tpv/caja"><i class="pi pi-arrow-right" aria-hidden="true"></i> Ir a Caja</a>
     </div>
   } @else if (ventaRegistrada(); as venta) {
     <div class="venta__confirmacion">
       <h2>Venta #{{ venta.id }} registrada</h2>
-      <p>Total: ${{ venta.total }}</p>
-      <p-button label="Nueva venta" icon="pi pi-plus" (click)="nuevaVenta()" />
+      <p>Total: {{ venta.total | dinero }}</p>
+      <button matButton="filled" type="button" (click)="nuevaVenta()"><i class="pi pi-plus" aria-hidden="true"></i> Nueva venta</button>
     </div>
   } @else {
     <h2>Nueva venta</h2>
@@ -35,53 +35,59 @@
       <h3>Cupón</h3>
       @if (cuponAplicado(); as cupon) {
         <p>
-          Cupón <strong>{{ cupon.cupon.codigo }}</strong> aplicado: -${{ cupon.descuento }}
-          <p-button label="Quitar" [text]="true" size="small" (click)="quitarCupon()" />
+          Cupón <strong>{{ cupon.cupon.codigo }}</strong> aplicado: -{{ cupon.descuento | dinero }}
+          <button matButton type="button" (click)="quitarCupon()">Quitar</button>
         </p>
       } @else {
         <div class="venta__cupon">
-          <input
-            pInputText
-            type="text"
-            placeholder="Código de cupón"
-            maxlength="50"
-            [ngModel]="cuponCodigo()"
-            (ngModelChange)="cuponCodigo.set($event)"
-          />
-          <p-button label="Aplicar" [loading]="validandoCupon()" [disabled]="!cuponCodigo().trim()" (click)="aplicarCupon()" />
+          <ui-campo #campoCupon etiqueta="Código de cupón">
+            <input
+              type="text"
+              [id]="campoCupon.controlId()"
+              placeholder="Código de cupón"
+              maxlength="50"
+              [ngModel]="cuponCodigo()"
+              (ngModelChange)="cuponCodigo.set($event)"
+            />
+          </ui-campo>
+          <ui-btn-enviar etiqueta="Aplicar" [enviando]="validandoCupon()" [deshabilitado]="!cuponCodigo().trim()" (click)="aplicarCupon()" />
         </div>
       }
     </section>
 
     <section class="venta__seccion venta__totales">
-      <p>Subtotal: ${{ subtotal() }}</p>
+      <p>Subtotal: {{ subtotal() | dinero }}</p>
       @if (cuponAplicado(); as cupon) {
-        <p>Descuento cupón: -${{ cupon.descuento }}</p>
+        <p>Descuento cupón: -{{ cupon.descuento | dinero }}</p>
       }
-      <p class="venta__total">Total: ${{ total() }}</p>
+      <p class="venta__total">Total: {{ total() | dinero }}</p>
     </section>
 
     <section class="venta__seccion">
       <h3>Gift Card (opcional)</h3>
       <div class="venta__gift-card">
-        <input
-          pInputText
-          type="text"
-          placeholder="Código de la gift card"
-          maxlength="50"
-          [ngModel]="giftCardCodigo()"
-          (ngModelChange)="giftCardCodigo.set($event)"
-        />
-        @if (giftCardCodigo().trim()) {
+        <ui-campo #giftCard etiqueta="Código de la gift card">
           <input
-            pInputText
-            type="number"
-            min="0.01"
-            step="0.01"
-            placeholder="Monto que esperas cubrir"
-            [ngModel]="giftCardMontoEstimado()"
-            (ngModelChange)="giftCardMontoEstimado.set($event)"
+            type="text"
+            [id]="giftCard.controlId()"
+            placeholder="Código de la gift card"
+            maxlength="50"
+            [ngModel]="giftCardCodigo()"
+            (ngModelChange)="giftCardCodigo.set($event)"
           />
+        </ui-campo>
+        @if (giftCardCodigo().trim()) {
+          <ui-campo #giftCardMonto etiqueta="Monto que esperas cubrir">
+            <input
+              type="number"
+              [id]="giftCardMonto.controlId()"
+              min="0.01"
+              step="0.01"
+              placeholder="Monto que esperas cubrir"
+              [ngModel]="giftCardMontoEstimado()"
+              (ngModelChange)="giftCardMontoEstimado.set($event)"
+            />
+          </ui-campo>
         }
       </div>
       @if (giftCardCodigo().trim()) {
@@ -95,17 +101,16 @@
     @if (notasCreditoDisponibles().length > 0) {
       <section class="venta__seccion">
         <h3>Nota de Crédito (opcional)</h3>
-        <p-select
-          [options]="notasCreditoOpciones()"
-          optionLabel="label"
-          optionValue="id"
-          placeholder="Selecciona una nota de crédito"
-          [showClear]="true"
-          [ngModel]="notaCreditoSeleccionadaId()"
-          (ngModelChange)="notaCreditoSeleccionadaId.set($event)"
-        />
+        <ui-campo etiqueta="Nota de crédito">
+          <ui-select-filtro
+            [opciones]="opcionesNotaCredito()"
+            [todas]="false"
+            [ngModel]="notaCreditoSeleccionadaId()"
+            (ngModelChange)="notaCreditoSeleccionadaId.set($event)"
+          />
+        </ui-campo>
         @if (notaCreditoSeleccionadaId() !== null) {
-          <p class="venta__ayuda">Se aplicarán ${{ montoNotaCredito() }} de esta nota de crédito.</p>
+          <p class="venta__ayuda">Se aplicarán {{ montoNotaCredito() | dinero }} de esta nota de crédito.</p>
         }
       </section>
     }
@@ -119,13 +124,9 @@
       <p class="venta__bloqueo-mensaje">{{ motivo }}</p>
     }
 
-    <p-button
-      label="Registrar venta"
-      icon="pi pi-check"
-      [loading]="registrando()"
-      [disabled]="!puedeRegistrar()"
-      (click)="registrarVenta()"
-    />
+    <div>
+      <ui-btn-enviar etiqueta="Registrar venta" [enviando]="registrando()" [deshabilitado]="!puedeRegistrar()" (click)="registrarVenta()" />
+    </div>
 
     <p class="venta__atajos">F2 Buscar producto · F4 / F9 Cobrar · ESC Cancelar línea</p>
   }

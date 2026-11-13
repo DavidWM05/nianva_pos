@@ -2,7 +2,7 @@
   <h1>Reporte de Cuentas por pagar</h1>
 
   @if (cargando()) {
-    <p>Cargando reporte...</p>
+    <ui-skeleton forma="bloque" alto="20rem" etiqueta="Cargando reporte" />
   } @else if (reporte(); as r) {
     <div class="reporte-cxp__tiles">
       <div class="reporte-cxp__tile">

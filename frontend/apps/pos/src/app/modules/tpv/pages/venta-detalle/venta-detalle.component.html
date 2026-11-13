@@ -1,19 +1,20 @@
 <div class="venta-detalle">
   @if (cargando()) {
-    <p>Cargando venta...</p>
+    <ui-skeleton forma="texto" ancho="12rem" />
+    <ui-skeleton forma="bloque" alto="16rem" etiqueta="Cargando venta" />
   } @else if (venta(); as ventaActual) {
     <h1>Venta #{{ ventaActual.id }}</h1>
 
     <nucleo-record-tabs [tabs]="tabs">
       <ng-template>
         <div class="venta-detalle__tab">
-          <dl class="venta-detalle__resumen">
+          <dl uiDatos>
             <dt>Cliente</dt>
             <dd>{{ ventaActual.cliente?.nombre ?? '—' }}</dd>
             <dt>Fecha</dt>
-            <dd>{{ ventaActual.fecha | date: 'short' }}</dd>
+            <dd>{{ ventaActual.fecha | fechaHora }}</dd>
             <dt>Total</dt>
-            <dd>${{ ventaActual.total }}</dd>
+            <dd>{{ ventaActual.total | dinero }}</dd>
             <dt>Estado</dt>
             <dd>
               <nucleo-status-badge
@@ -30,9 +31,11 @@
           </dl>
 
           @if (ventaActual.estado === 'completada') {
-            <a [routerLink]="['/devoluciones/nueva']" [queryParams]="{ venta_id: ventaActual.id }">
-              <p-button label="Devolver" icon="pi pi-replay" severity="secondary" />
-            </a>
+            <div>
+              <a matButton="outlined" [routerLink]="['/devoluciones/nueva']" [queryParams]="{ venta_id: ventaActual.id }">
+                <i class="pi pi-replay" aria-hidden="true"></i> Devolver
+              </a>
+            </div>
           }
         </div>
       </ng-template>
@@ -58,10 +61,10 @@
                       ({{ detalle.variante.talla }} / {{ detalle.variante.color }})
                     }
                   </td>
-                  <td>{{ detalle.cantidad }}</td>
-                  <td>${{ detalle.precio_unitario }}</td>
-                  <td>${{ detalle.descuento_aplicado }}</td>
-                  <td>${{ detalle.subtotal }}</td>
+                  <td>{{ detalle.cantidad | cantidad }}</td>
+                  <td>{{ detalle.precio_unitario | dinero }}</td>
+                  <td>{{ detalle.descuento_aplicado | dinero }}</td>
+                  <td>{{ detalle.subtotal | dinero }}</td>
                 </tr>
               }
             </tbody>
@@ -73,9 +76,9 @@
         @defer (on viewport) {
           <nucleo-audit-log-viewer [tabla]="'ventas'" [registroId]="ventaActual.id" />
         } @placeholder {
-          <p>Auditoría (se carga al hacer scroll hasta aquí)...</p>
+          <ui-skeleton forma="bloque" />
         } @loading (minimum 200ms) {
-          <p>Cargando auditoría...</p>
+          <ui-skeleton forma="bloque" />
         }
       </ng-template>
     </nucleo-record-tabs>

@@ -1,7 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { EntidadSelectorComponent } from '@nianva/ui-shared';
-import { providePrimeNG } from 'primeng/config';
 import { of } from 'rxjs';
 import { describe, expect, it, vi } from 'vitest';
 
@@ -27,7 +26,6 @@ describe('LineasProductoComponent', () => {
       imports: [LineasProductoComponent],
       providers: [
         provideAnimationsAsync(),
-        providePrimeNG(),
         { provide: VentaService, useValue: ventaService },
         { provide: BUSCADOR_PRODUCTO, useValue: { buscar: vi.fn().mockReturnValue(of([])), obtener: vi.fn().mockReturnValue(of({ id: 1, nombre: 'Playera' })) } },
         { provide: BUSCADOR_VARIANTE_DE_PRODUCTO, useValue: { hijosDe: vi.fn().mockReturnValue(of([{ id: 5, nombre: 'M / Rojo' }])) } },
