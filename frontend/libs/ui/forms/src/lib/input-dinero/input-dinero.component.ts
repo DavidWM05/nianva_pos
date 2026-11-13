@@ -27,10 +27,15 @@ export class InputDineroComponent extends CampoBase {
     this.texto.set(numero === null ? '' : this.formatearDinero(numero));
   }
 
-  protected alEnfocar(): void {
+  protected alEnfocar(evento: Event): void {
     const valor = this.valor();
+    const texto = valor === null ? '' : this.formatearEdicion(valor);
 
-    this.texto.set(valor === null ? '' : this.formatearEdicion(valor));
+    // El texto de edicion entra al input en el mismo foco, como en alEntrar. Si esperara a la
+    // deteccion de cambios, el [value] cambiaria despues y el navegador perderia una seleccion
+    // hecha en medio: lo que el usuario escribe se agregaria en vez de reemplazar.
+    (evento.target as HTMLInputElement).value = texto;
+    this.texto.set(texto);
   }
 
   protected alEntrar(evento: Event): void {
