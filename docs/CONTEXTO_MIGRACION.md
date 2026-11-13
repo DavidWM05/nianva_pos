@@ -1787,6 +1787,32 @@ repo.
       sube. "Catálogo visual" falla una vez por el margen nuevo y se versionan las capturas
       de Linux del artifact. En local, la recuperación de contraseña de `auth.spec.ts` tardó
       más de 20 s con el primer correo y pasó al repetirla: se vigila.
+  - **50m · inventario, productos (Codex):**
+    - listado, alta, detalle (General, Kardex y Auditoría diferida), formularios de
+      producto, variante, compra y proveedor, lista de variantes y kardex sobre `libs/ui`.
+      Inventario entra en `MODULOS_POS_SIN_PRIMENG`; los nueve SCSS quedan vacíos y se
+      borran, así que el margen lo da `ui-shell`. `producto.service` y `compra.service` usan
+      `RespuestaDe` y `CuerpoDe` sin cambiar sus firmas;
+    - **stock bajo:** un solo `ui-alert` de peligro por tabla de variante, que nombra en
+      texto cada sucursal con `stock_actual ≤ stock_minimo` y sus cantidades, en lugar de
+      colorear la fila (no depende solo del color);
+    - **bug encontrado por el e2e:** dos respuestas tardías de los catálogos reconstruían el
+      formulario de producto y borraban lo escrito. `producto-form` espera categorías y
+      departamentos juntos (`forkJoin`) antes de mostrarse, con skeleton y reintento; los dos
+      casos se vieron en rojo antes de corregirlo;
+    - **PRO-01 (`pro-01-autorizado`):** «Nuevo producto navega…» pasa al clic en
+      `ui-btn-crear` con URL exacta y sin `ui-modal` (como en la 50e y la 50k); «muestra un
+      mensaje mientras carga» de kardex comprueba el skeleton (UI-18); el caso de stock bajo
+      comprueba el `ui-alert` con sucursal y cantidades, y su ausencia; en `xss.spec.ts`
+      solo cambia el selector del título, acotado al encabezado del detalle
+      (`producto-detalle-encabezado`, h2), porque el h1 es el título compartido
+      «Productos». Las cuatro con su mutación en rojo;
+    - 19 tests nuevos (`productos-50m.spec.ts`) y el flujo e2e
+      `modulos/inventario-productos.spec.ts`: crea producto, variante y proveedor, registra
+      una compra y consulta el kardex. 703 tests de `pos`, 82 e2e y 40 análisis axe sin
+      violaciones;
+    - pendientes: contrato 21 → 19, cargando 13 → 11, formato 27 → 24; línea base 1531 →
+      1357 líneas en 96 archivos.
 - **Posibles mejoras (roadmap):**
   - **capturas de Linux sin pasar por CI (Docker):** hoy cada PR con cambio visual falla una
     vez en "Catálogo visual", se baja el artifact y se versionan las capturas, porque en el
