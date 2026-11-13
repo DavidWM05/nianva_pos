@@ -1,3 +1,4 @@
+import { CuerpoDe, RespuestaDe } from '@nianva/api-contrato';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { DataTableLazyEvent } from '@nianva/ui-shared';
@@ -25,24 +26,28 @@ export class VentaService {
     }
 
     return this.http
-      .get<{ data: Venta[]; meta: { total: number; permisos: VentasPagina['permisos'] } }>(urlApi(`/ventas`), {
+      .get<RespuestaDe<'/ventas', 'get'>>(urlApi(`/ventas`), {
         params,
       })
-      .pipe(map((r) => ({ data: r.data, total: r.meta.total, permisos: r.meta.permisos })));
+      .pipe(map((r) => ({ data: r.data as Venta[], total: r.meta.total, permisos: r.meta.permisos })));
   }
 
   obtener(id: number): Observable<Venta> {
-    return this.http.get<{ data: Venta }>(urlApi(`/ventas/${id}`)).pipe(map((r) => r.data));
+    return this.http.get<RespuestaDe<'/ventas/{venta}', 'get'>>(urlApi(`/ventas/${id}`)).pipe(map((r) => r.data as Venta));
   }
 
   registrar(payload: VentaFormPayload): Observable<Venta> {
-    return this.http.post<{ data: Venta }>(urlApi(`/ventas`), payload).pipe(map((r) => r.data));
+    const cuerpo: CuerpoDe<'/ventas', 'post'> = payload;
+
+    return this.http.post<RespuestaDe<'/ventas', 'post'>>(urlApi(`/ventas`), cuerpo).pipe(map((r) => r.data as Venta));
   }
 
   anular(id: number, motivo: string): Observable<Venta> {
+    const cuerpo: CuerpoDe<'/ventas/{venta}/anular', 'patch'> = { motivo };
+
     return this.http
-      .patch<{ data: Venta }>(urlApi(`/ventas/${id}/anular`), { motivo })
-      .pipe(map((r) => r.data));
+      .patch<RespuestaDe<'/ventas/{venta}/anular', 'patch'>>(urlApi(`/ventas/${id}/anular`), cuerpo)
+      .pipe(map((r) => r.data as Venta));
   }
 
   /**
@@ -51,9 +56,17 @@ export class VentaService {
    * venta agrega o cambia la cantidad de una linea.
    */
   cotizar(items: VentaItemPayload[]): Observable<VentaCotizacion> {
+    const cuerpo: CuerpoDe<'/ventas/cotizar', 'post'> = { items };
+
     return this.http
-      .post<{ data: VentaCotizacion }>(urlApi(`/ventas/cotizar`), { items })
-      .pipe(map((r) => r.data));
+      .post<RespuestaDe<'/ventas/cotizar', 'post'>>(urlApi(`/ventas/cotizar`), cuerpo)
+      // El contrato trae cantidad como string (decimal del backend): se convierte, sin cast doble.
+      .pipe(
+        map(({ data }): VentaCotizacion => ({
+          items: data.items.map((item) => ({ ...item, cantidad: Number(item.cantidad) })),
+          subtotal: data.subtotal,
+        })),
+      );
   }
 
   /** Sin filtros: backend usa el mes actual (dia 1 a hoy) y todas las sucursales del tenant. */
@@ -71,7 +84,7 @@ export class VentaService {
     }
 
     return this.http
-      .get<{ data: ReporteVentas }>(urlApi(`/ventas/reporte`), { params })
-      .pipe(map((r) => r.data));
+      .get<RespuestaDe<'/ventas/reporte', 'get'>>(urlApi(`/ventas/reporte`), { params })
+      .pipe(map((r) => r.data as ReporteVentas));
   }
 }

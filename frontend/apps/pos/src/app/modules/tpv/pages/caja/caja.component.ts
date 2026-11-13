@@ -1,11 +1,13 @@
-import { DatePipe } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { MatButton } from '@angular/material/button';
+import { SkeletonComponent } from '@nianva/ui-feedback';
+import { BtnEnviarComponent, CampoComponent } from '@nianva/ui-forms';
+import { FechaHoraPipe } from '@nianva/ui-format';
+import { DatosComponent, FormActionsComponent } from '@nianva/ui-layout';
+import { ModalComponent } from '@nianva/ui-overlays';
 import { ToastService, esErrorNegocio, mensajeError } from '@nianva/ui-shared';
-import { Button } from 'primeng/button';
-import { Dialog } from 'primeng/dialog';
-import { InputText } from 'primeng/inputtext';
 
 import { CajaService } from '../../caja.service';
 import { CajaActual, CajaDesglose, CajaSesion } from '../../caja.types';
@@ -31,7 +33,17 @@ import { GastoService } from '../../gasto.service';
 @Component({
   selector: 'nucleo-caja',
   standalone: true,
-  imports: [FormsModule, DatePipe, Button, InputText, Dialog],
+  imports: [
+    FormsModule,
+    MatButton,
+    SkeletonComponent,
+    BtnEnviarComponent,
+    CampoComponent,
+    FechaHoraPipe,
+    DatosComponent,
+    FormActionsComponent,
+    ModalComponent,
+  ],
   templateUrl: './caja.component.html',
   styleUrl: './caja.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

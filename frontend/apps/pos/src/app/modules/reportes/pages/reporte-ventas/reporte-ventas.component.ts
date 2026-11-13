@@ -1,8 +1,8 @@
-import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Button } from 'primeng/button';
-import { InputText } from 'primeng/inputtext';
-import { Select } from 'primeng/select';
+import { MatButton } from '@angular/material/button';
+import { SkeletonComponent } from '@nianva/ui-feedback';
+import { CampoComponent, SelectFiltroComponent, SelectFiltroOpcion } from '@nianva/ui-forms';
 
 import { SucursalService, SucursalSimple } from '../../../administracion/sucursal.service';
 import { VentaService } from '../../../tpv/venta.service';
@@ -12,7 +12,7 @@ import { ReporteVentas } from '../../../tpv/venta.types';
 @Component({
   selector: 'nucleo-reporte-ventas',
   standalone: true,
-  imports: [FormsModule, Button, InputText, Select],
+  imports: [FormsModule, MatButton, SkeletonComponent, CampoComponent, SelectFiltroComponent],
   templateUrl: './reporte-ventas.component.html',
   styleUrl: './reporte-ventas.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -24,6 +24,9 @@ export class ReporteVentasComponent implements OnInit {
   protected readonly cargando = signal(true);
   protected readonly reporte = signal<ReporteVentas | null>(null);
   protected readonly sucursales = signal<SucursalSimple[]>([]);
+  protected readonly opcionesSucursal = computed<SelectFiltroOpcion[]>(() =>
+    this.sucursales().map((sucursal) => ({ label: sucursal.nombre, value: sucursal.id })),
+  );
 
   protected readonly fechaDesde = signal('');
   protected readonly fechaHasta = signal('');

@@ -1,8 +1,8 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnChanges, OnInit, Output, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Button } from 'primeng/button';
-import { InputText } from 'primeng/inputtext';
-import { Select } from 'primeng/select';
+import { MatButton, MatIconButton } from '@angular/material/button';
+import { CampoComponent, SelectFiltroComponent, SelectFiltroOpcion } from '@nianva/ui-forms';
+import { DineroPipe } from '@nianva/ui-format';
 
 import { MetodoPago } from '../metodo-pago.types';
 import { MetodoPagoService } from '../metodo-pago.service';
@@ -45,7 +45,7 @@ function centavos(monto: number): number {
 @Component({
   selector: 'nucleo-lineas-pago',
   standalone: true,
-  imports: [FormsModule, Button, InputText, Select],
+  imports: [FormsModule, MatButton, MatIconButton, CampoComponent, SelectFiltroComponent, DineroPipe],
   templateUrl: './lineas-pago.component.html',
   styleUrl: './lineas-pago.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -57,6 +57,9 @@ export class LineasPagoComponent implements OnInit, OnChanges {
   @Output() cambio = new EventEmitter<LineasPagoCambio>();
 
   protected readonly metodosPago = signal<MetodoPago[]>([]);
+  protected readonly opcionesMetodoPago = computed<SelectFiltroOpcion[]>(() =>
+    this.metodosPago().map((metodo) => ({ label: metodo.nombre, value: metodo.id })),
+  );
   protected readonly pagos = signal<LineaPagoForm[]>([{ metodo_pago_id: null, monto: null }]);
 
   // `montoObjetivo` es un @Input plano (no signal) -- un computed() que lo

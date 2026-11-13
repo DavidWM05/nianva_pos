@@ -1,21 +1,18 @@
 .lineas-pago {
   display: flex;
   flex-direction: column;
-  gap: var(--nucleo-spacing-3);
+  gap: var(--nv-spacing-3);
 }
 
 .lineas-pago__linea {
   display: flex;
-  align-items: center;
-  gap: var(--nucleo-spacing-3);
-
-  input {
-    width: 8rem;
-  }
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: var(--nv-spacing-3);
 }
 
 .lineas-pago__suma {
-  color: var(--nucleo-color-danger);
+  color: var(--nv-peligro-texto);
   font-weight: 600;
 }
 

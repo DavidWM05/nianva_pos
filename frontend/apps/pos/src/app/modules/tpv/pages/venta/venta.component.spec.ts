@@ -2,7 +2,6 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { provideRouter } from '@angular/router';
 import { ToastService } from '@nianva/ui-shared';
-import { providePrimeNG } from 'primeng/config';
 import { of } from 'rxjs';
 import { describe, expect, it, vi } from 'vitest';
 
@@ -53,7 +52,6 @@ describe('VentaComponent', () => {
       imports: [VentaComponent],
       providers: [
         provideAnimationsAsync(),
-        providePrimeNG(),
         provideRouter([]),
         { provide: CajaService, useValue: { actual: vi.fn().mockReturnValue(of(estadoCaja)) } },
         { provide: VentaService, useValue: ventaService },

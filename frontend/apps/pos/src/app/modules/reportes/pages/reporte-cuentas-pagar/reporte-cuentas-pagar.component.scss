@@ -1,6 +1,4 @@
 .reporte-cxp {
-  padding: var(--nucleo-spacing-6);
-
   h1 {
     margin: 0 0 var(--nucleo-spacing-6);
     font-size: var(--nucleo-font-size-2xl);
@@ -9,6 +7,7 @@
 
 .reporte-cxp__tiles {
   display: flex;
+  flex-wrap: wrap;
   gap: var(--nucleo-spacing-4);
   margin-bottom: var(--nucleo-spacing-6);
 }
