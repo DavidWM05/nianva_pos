@@ -1264,17 +1264,7 @@ parameters:
 			count: 1
 			path: app/Modules/CrmAvanzado/Http/Controllers/CrmAvanzadoController.php
 
-		-
-			message: '#^Method App\\Modules\\CrmAvanzado\\Http\\Controllers\\CrmAvanzadoController\:\:permisosDe\(\) has parameter \$acciones with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Modules/CrmAvanzado/Http/Controllers/CrmAvanzadoController.php
 
-		-
-			message: '#^Method App\\Modules\\CrmAvanzado\\Http\\Controllers\\CrmAvanzadoController\:\:permisosDe\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Modules/CrmAvanzado/Http/Controllers/CrmAvanzadoController.php
 
 		-
 			message: '#^Method App\\Modules\\CrmAvanzado\\Http\\Controllers\\CrmAvanzadoController\:\:reporte\(\) has no return type specified\.$#'
@@ -1558,17 +1548,7 @@ parameters:
 			count: 1
 			path: app/Modules/CuentasCobrar/Http/Controllers/CuentaCobrarController.php
 
-		-
-			message: '#^Method App\\Modules\\CuentasCobrar\\Http\\Controllers\\CuentaCobrarController\:\:permisosDe\(\) has parameter \$acciones with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Modules/CuentasCobrar/Http/Controllers/CuentaCobrarController.php
 
-		-
-			message: '#^Method App\\Modules\\CuentasCobrar\\Http\\Controllers\\CuentaCobrarController\:\:permisosDe\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Modules/CuentasCobrar/Http/Controllers/CuentaCobrarController.php
 
 		-
 			message: '#^Method App\\Modules\\CuentasCobrar\\Http\\Controllers\\CuentaCobrarController\:\:registrarAbono\(\) has no return type specified\.$#'
@@ -1860,17 +1840,7 @@ parameters:
 			count: 1
 			path: app/Modules/CuentasPagar/Http/Controllers/CuentaPagarController.php
 
-		-
-			message: '#^Method App\\Modules\\CuentasPagar\\Http\\Controllers\\CuentaPagarController\:\:permisosDe\(\) has parameter \$acciones with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Modules/CuentasPagar/Http/Controllers/CuentaPagarController.php
 
-		-
-			message: '#^Method App\\Modules\\CuentasPagar\\Http\\Controllers\\CuentaPagarController\:\:permisosDe\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Modules/CuentasPagar/Http/Controllers/CuentaPagarController.php
 
 		-
 			message: '#^Method App\\Modules\\CuentasPagar\\Http\\Controllers\\CuentaPagarController\:\:registrarPago\(\) has no return type specified\.$#'
@@ -2769,17 +2739,7 @@ parameters:
 			count: 1
 			path: app/Modules/GiftCards/Http/Controllers/GiftCardController.php
 
-		-
-			message: '#^Method App\\Modules\\GiftCards\\Http\\Controllers\\GiftCardController\:\:permisosDe\(\) has parameter \$acciones with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Modules/GiftCards/Http/Controllers/GiftCardController.php
 
-		-
-			message: '#^Method App\\Modules\\GiftCards\\Http\\Controllers\\GiftCardController\:\:permisosDe\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Modules/GiftCards/Http/Controllers/GiftCardController.php
 
 		-
 			message: '#^Method App\\Modules\\GiftCards\\Http\\Controllers\\GiftCardController\:\:recargar\(\) has no return type specified\.$#'
@@ -3658,17 +3618,7 @@ parameters:
 			count: 1
 			path: app/Modules/NotasCredito/Http/Controllers/NotaCreditoController.php
 
-		-
-			message: '#^Method App\\Modules\\NotasCredito\\Http\\Controllers\\NotaCreditoController\:\:permisosDe\(\) has parameter \$acciones with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Modules/NotasCredito/Http/Controllers/NotaCreditoController.php
 
-		-
-			message: '#^Method App\\Modules\\NotasCredito\\Http\\Controllers\\NotaCreditoController\:\:permisosDe\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Modules/NotasCredito/Http/Controllers/NotaCreditoController.php
 
 		-
 			message: '#^Method App\\Modules\\NotasCredito\\Http\\Controllers\\NotaCreditoController\:\:show\(\) has no return type specified\.$#'
@@ -5426,17 +5376,7 @@ parameters:
 			count: 1
 			path: app/Modules/Prestamos/Http/Controllers/PrestamoController.php
 
-		-
-			message: '#^Method App\\Modules\\Prestamos\\Http\\Controllers\\PrestamoController\:\:permisosDe\(\) has parameter \$acciones with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Modules/Prestamos/Http/Controllers/PrestamoController.php
 
-		-
-			message: '#^Method App\\Modules\\Prestamos\\Http\\Controllers\\PrestamoController\:\:permisosDe\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Modules/Prestamos/Http/Controllers/PrestamoController.php
 
 		-
 			message: '#^Method App\\Modules\\Prestamos\\Http\\Controllers\\PrestamoController\:\:registrarPago\(\) has no return type specified\.$#'

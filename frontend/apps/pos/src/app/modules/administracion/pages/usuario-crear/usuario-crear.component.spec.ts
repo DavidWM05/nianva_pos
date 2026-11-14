@@ -64,7 +64,7 @@ describe('UsuarioCrearComponent', () => {
     await crearComponente();
     usuarioService.crear.mockReturnValue(throwError(() => ({ status: 500 })));
 
-    fixture.componentInstance.onGuardar({ nombre: 'Carlos Ruiz', correo: 'carlos@test.com', roles: [] });
+    fixture.componentInstance.onGuardar({ nombre: 'Carlos Ruiz', correo: 'carlos@test.com', password: 'password-valida-123', roles: [] });
 
     expect(toastService.error).toHaveBeenCalledWith('No se pudo crear el usuario.');
     expect(router.navigate).not.toHaveBeenCalled();

@@ -8,15 +8,26 @@ import { urlApi } from '../../core/api-config';
 import { ERROR_EN_PANTALLA } from '../../core/errores.interceptor';
 import { UsuarioAdmin, UsuariosPagina, UsuariosPermisos } from './usuario.types';
 
-export interface UsuarioFormPayload {
-  nombre: string;
-  apellido?: string | null;
-  alias?: string | null;
-  correo: string;
+/** Cuerpo del alta: password y roles obligatorios, tal cual el contrato de POST /usuarios. */
+export type UsuarioAltaPayload = CuerpoDe<'/usuarios', 'post'>;
+
+/**
+ * Cuerpo de la edicion: parcial. Una password en blanco o ausente no cambia la actual y, si
+ * `roles` no llega, se conservan (GuardarUsuarioRequest). El contrato de PUT reutiliza el
+ * esquema del alta (crear y editar comparten el FormRequest y Scramble documenta la rama del
+ * alta), por eso password y roles se vuelven opcionales aqui.
+ */
+export type UsuarioEdicionPayload = Omit<CuerpoDe<'/usuarios/{usuario}', 'put'>, 'password' | 'roles'> & {
   password?: string | null;
-  telefono?: string | null;
-  sucursal_id?: number | null;
-  roles: number[];
+  roles?: number[];
+};
+
+/** Lo que emite el formulario de usuario: un alta o una edicion. */
+export type UsuarioFormPayload = UsuarioAltaPayload | UsuarioEdicionPayload;
+
+/** Un payload es de alta si trae password (no vacia) y la lista de roles. */
+export function esAltaUsuario(payload: UsuarioFormPayload): payload is UsuarioAltaPayload {
+  return typeof payload.password === 'string' && payload.password !== '' && Array.isArray(payload.roles);
 }
 
 /**
@@ -61,14 +72,14 @@ export class UsuarioAdminService {
       .pipe(map((r) => ({ usuario: r.data as UsuarioAdmin, permisos: r.meta.permisos })));
   }
 
-  crear(payload: UsuarioFormPayload): Observable<UsuarioAdmin> {
-    const cuerpo = payload as CuerpoDe<'/usuarios', 'post'>;
+  crear(payload: UsuarioAltaPayload): Observable<UsuarioAdmin> {
+    const cuerpo: CuerpoDe<'/usuarios', 'post'> = payload;
 
     return this.http.post<RespuestaDe<'/usuarios', 'post'>>(urlApi(`/usuarios`), cuerpo).pipe(map((r) => r.data as UsuarioAdmin));
   }
 
-  actualizar(id: number, payload: UsuarioFormPayload): Observable<UsuarioAdmin> {
-    const cuerpo = payload as CuerpoDe<'/usuarios/{usuario}', 'put'>;
+  actualizar(id: number, payload: UsuarioEdicionPayload): Observable<UsuarioAdmin> {
+    const cuerpo: UsuarioEdicionPayload = payload;
 
     return this.http
       .put<RespuestaDe<'/usuarios/{usuario}', 'put'>>(urlApi(`/usuarios/${id}`), cuerpo)

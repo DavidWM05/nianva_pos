@@ -4576,7 +4576,9 @@ export interface operations {
                     "application/json": {
                         data: components["schemas"]["CrmInteraccionResource"][];
                         meta: {
-                            permisos: unknown[];
+                            permisos: {
+                                [key: string]: boolean;
+                            };
                         };
                     };
                 };
@@ -4773,7 +4775,9 @@ export interface operations {
                         data: components["schemas"]["CuentaCobrarResource"][];
                         meta: {
                             total: number;
-                            permisos: unknown[];
+                            permisos: {
+                                [key: string]: boolean;
+                            };
                         };
                     };
                 };
@@ -4930,7 +4934,9 @@ export interface operations {
                         data: components["schemas"]["CuentaPagarResource"][];
                         meta: {
                             total: number;
-                            permisos: unknown[];
+                            permisos: {
+                                [key: string]: boolean;
+                            };
                         };
                     };
                 };
@@ -5642,7 +5648,9 @@ export interface operations {
                         data: components["schemas"]["GiftCardResource"][];
                         meta: {
                             total: number;
-                            permisos: unknown[];
+                            permisos: {
+                                [key: string]: boolean;
+                            };
                         };
                     };
                 };
@@ -6029,7 +6037,9 @@ export interface operations {
                         data: components["schemas"]["NotaCreditoResource"][];
                         meta: {
                             total: number;
-                            permisos: unknown[];
+                            permisos: {
+                                [key: string]: boolean;
+                            };
                         };
                     };
                 };
@@ -6619,7 +6629,9 @@ export interface operations {
                         data: components["schemas"]["PrestamoResource"][];
                         meta: {
                             total: number;
-                            permisos: unknown[];
+                            permisos: {
+                                [key: string]: boolean;
+                            };
                         };
                     };
                 };
