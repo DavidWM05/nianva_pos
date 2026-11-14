@@ -25,6 +25,7 @@ class LicenciaLocalResource extends JsonResource
             : null;
 
         return [
+            /** @var 'activa'|'vencida'|'revocada'|'prueba' */
             'estado' => $this->estado,
             'tipo' => $this->tipo,
             'fecha_expiracion' => $this->fecha_expiracion,

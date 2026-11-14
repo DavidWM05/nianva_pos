@@ -2087,7 +2087,8 @@ export interface components {
             } | null;
             total: string;
             total_abonado: string;
-            estado: string;
+            /** @enum {string} */
+            estado: "activo" | "completado" | "cancelado";
             /** Format: date-time */
             fecha_vencimiento: string | null;
             /** Format: date-time */
@@ -2146,7 +2147,8 @@ export interface components {
             fecha_apertura: string;
             /** Format: date-time */
             fecha_cierre: string | null;
-            estado: string;
+            /** @enum {string} */
+            estado: "abierta" | "cerrada";
         };
         /** CambiarEstadoOrdenRequest */
         CambiarEstadoOrdenRequest: {
@@ -2259,7 +2261,8 @@ export interface components {
             };
             total: string;
             descuento: string;
-            estado: string;
+            /** @enum {string} */
+            estado: "pendiente" | "convertida" | "vencida" | "anulada";
             validez_dias: number;
             /** Format: date-time */
             fecha_vencimiento: string | null;
@@ -2502,7 +2505,8 @@ export interface components {
             saldo_pendiente: string;
             /** Format: date-time */
             fecha_vencimiento: string | null;
-            estado: string;
+            /** @enum {string} */
+            estado: "pendiente" | "pagada" | "anulada";
             dias_vencida: unknown;
             abonos?: components["schemas"]["AbonoCuentaResource"][];
             /** Format: date-time */
@@ -2520,7 +2524,8 @@ export interface components {
             saldo_pendiente: string;
             /** Format: date-time */
             fecha_vencimiento: string | null;
-            estado: string;
+            /** @enum {string} */
+            estado: "pendiente" | "pagada" | "anulada";
             abonos?: components["schemas"]["AbonoPagarResource"][];
             /** Format: date-time */
             created_at: string;
@@ -2664,7 +2669,8 @@ export interface components {
                 /** Format: date-time */
                 fecha: string;
             }[];
-            estado: string;
+            /** @enum {string} */
+            estado: "activa" | "usada" | "expirada" | "cancelada";
             /** Format: date-time */
             created_at: string;
         };
@@ -2806,7 +2812,8 @@ export interface components {
         };
         /** LicenciaLocalResource */
         LicenciaLocalResource: {
-            estado: string;
+            /** @enum {string} */
+            estado: "activa" | "vencida" | "revocada" | "prueba";
             tipo: string;
             /** Format: date-time */
             fecha_expiracion: string | null;
@@ -2885,7 +2892,8 @@ export interface components {
             total_percepciones: string;
             total_deducciones: string;
             total_neto: string;
-            estado: string;
+            /** @enum {string} */
+            estado: "calculada" | "pagada" | "cancelada";
             /** Format: date-time */
             fecha_pago: string | null;
             detalles?: components["schemas"]["NominaDetalleResource"][];
@@ -2902,7 +2910,8 @@ export interface components {
             saldo_disponible: string;
             /** Format: date-time */
             fecha_expiracion: string | null;
-            estado: string;
+            /** @enum {string} */
+            estado: "activa" | "usada_parcial" | "usada_total" | "expirada" | "cancelada";
             usos?: components["schemas"]["NotaCreditoUso"][];
             /** Format: date-time */
             created_at: string;
@@ -2924,7 +2933,8 @@ export interface components {
             };
             cantidad_programada: number;
             cantidad_producida: number | null;
-            estado: string;
+            /** @enum {string} */
+            estado: "pendiente" | "en_proceso" | "completada" | "cancelada";
             notas: string | null;
             /** Format: date-time */
             fecha_programada: string | null;
@@ -2961,7 +2971,8 @@ export interface components {
             referencia: string | null;
             direccion_entrega: string | null;
             costo_delivery: string;
-            estado: string;
+            /** @enum {string} */
+            estado: "pendiente" | "preparando" | "en_camino" | "entregado" | "cancelado";
             tiempo_estimado: number | null;
             notas: string | null;
             /** Format: date-time */
@@ -3007,7 +3018,8 @@ export interface components {
             fecha_vencimiento: string;
             /** Format: date-time */
             fecha_pago: string | null;
-            estado: string;
+            /** @enum {string} */
+            estado: "pendiente" | "pagada" | "vencida";
             monto_interes: string;
             monto_capital: string;
             /** Format: date-time */
@@ -3056,7 +3068,8 @@ export interface components {
             fecha_prestamo: string;
             /** Format: date-time */
             fecha_vencimiento: string | null;
-            estado: string;
+            /** @enum {string} */
+            estado: "activo" | "pagado" | "cancelado";
             notas: string | null;
             pagos?: components["schemas"]["PrestamoPago"][];
         };
@@ -3362,7 +3375,8 @@ export interface components {
             descuento_cupon: string;
             descuento_manual: string;
             abono_previo: string;
-            estado: string;
+            /** @enum {string} */
+            estado: "completada" | "anulada";
             motivo_anulacion: string | null;
             /** Format: date-time */
             fecha_anulacion: string | null;
@@ -3758,7 +3772,8 @@ export interface operations {
                             id: number;
                             tabla_afectada: string;
                             registro_id: number;
-                            accion: string;
+                            /** @enum {string} */
+                            accion: "create" | "update" | "delete";
                             usuario_id: number | null;
                             usuario_nombre: string | null;
                             cambios: unknown[] | null;
@@ -3797,7 +3812,8 @@ export interface operations {
                             id: number;
                             tabla_afectada: string;
                             registro_id: number;
-                            accion: string;
+                            /** @enum {string} */
+                            accion: "create" | "update" | "delete";
                             usuario_id: number | null;
                             usuario_nombre: string | null;
                             cambios: unknown[] | null;

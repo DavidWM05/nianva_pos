@@ -1,16 +1,9 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, Input, OnChanges, inject, signal } from '@angular/core';
-import { SkeletonComponent } from '@nianva/ui-feedback';
+import { BadgeComponent, SkeletonComponent } from '@nianva/ui-feedback';
 import { FechaHoraPipe } from '@nianva/ui-format';
 
-import { StatusBadgeColorMap, StatusBadgeComponent } from '../status-badge/status-badge.component';
 import { AuditLogEntry, AuditLogSource } from './audit-log-viewer.types';
-
-const ACCION_COLOR_MAP: StatusBadgeColorMap = {
-  create: 'success',
-  update: 'info',
-  delete: 'danger',
-};
 
 /**
  * Pestana de auditoria montable en cualquier vista de registro (ver
@@ -23,7 +16,7 @@ const ACCION_COLOR_MAP: StatusBadgeColorMap = {
 @Component({
   selector: 'nucleo-audit-log-viewer',
   standalone: true,
-  imports: [CommonModule, FechaHoraPipe, SkeletonComponent, StatusBadgeComponent],
+  imports: [BadgeComponent, CommonModule, FechaHoraPipe, SkeletonComponent],
   templateUrl: './audit-log-viewer.component.html',
   styleUrl: './audit-log-viewer.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -34,7 +27,6 @@ export class AuditLogViewerComponent implements OnChanges {
   @Input({ required: true }) tabla!: string;
   @Input({ required: true }) registroId!: number;
 
-  protected readonly accionColorMap = ACCION_COLOR_MAP;
   protected readonly loading = signal(false);
   protected readonly entries = signal<AuditLogEntry[]>([]);
   protected readonly sinPermiso = signal(false);

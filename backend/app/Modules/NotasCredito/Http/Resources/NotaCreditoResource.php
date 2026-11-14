@@ -18,6 +18,7 @@ class NotaCreditoResource extends JsonResource
             'monto_original' => $this->monto_original,
             'saldo_disponible' => $this->saldo_disponible,
             'fecha_expiracion' => $this->fecha_expiracion,
+            /** @var 'activa'|'usada_parcial'|'usada_total'|'expirada'|'cancelada' */
             'estado' => $this->estado,
             'usos' => $this->whenLoaded('usos'),
             'created_at' => $this->created_at,

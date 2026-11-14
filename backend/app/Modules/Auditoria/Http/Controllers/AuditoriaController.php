@@ -60,6 +60,7 @@ class AuditoriaController extends Controller
                 'id' => $entrada->id,
                 'tabla_afectada' => $entrada->tabla_afectada,
                 'registro_id' => $entrada->registro_id,
+                /** @var 'create'|'update'|'delete' */
                 'accion' => $entrada->accion,
                 'usuario_id' => $entrada->usuario_id,
                 'usuario_nombre' => $entrada->usuario?->nombre,
@@ -87,6 +88,7 @@ class AuditoriaController extends Controller
                 'id' => $entrada->id,
                 'tabla_afectada' => $entrada->tabla_afectada,
                 'registro_id' => $entrada->registro_id,
+                /** @var 'create'|'update'|'delete' */
                 'accion' => $entrada->accion,
                 'usuario_id' => $entrada->usuario_id,
                 'usuario_nombre' => $entrada->usuario?->nombre,

@@ -6905,12 +6905,6 @@ parameters:
 			path: app/Modules/VentasPlazos/Services/VentasPlazosService.php
 
 		-
-			message: '#^Access to an undefined property App\\Modules\\VentasPlazos\\Models\\PlanPagoClienteCuota\:\:\$estado\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Modules/VentasPlazos/Services/VentasPlazosService.php
-
-		-
 			message: '#^Access to an undefined property App\\Modules\\VentasPlazos\\Models\\PlanPagoClienteCuota\:\:\$monto\.$#'
 			identifier: property.notFound
 			count: 3

@@ -31,6 +31,7 @@ class VentaResource extends JsonResource
             'descuento_cupon' => $this->descuento_cupon,
             'descuento_manual' => $this->descuento_manual,
             'abono_previo' => $this->abono_previo,
+            /** @var 'completada'|'anulada' */
             'estado' => $this->estado,
             'motivo_anulacion' => $this->motivo_anulacion,
             'fecha_anulacion' => $this->fecha_anulacion,

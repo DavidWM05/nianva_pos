@@ -16,6 +16,7 @@ class NominaResource extends JsonResource
             'total_percepciones' => $this->total_percepciones,
             'total_deducciones' => $this->total_deducciones,
             'total_neto' => $this->total_neto,
+            /** @var 'calculada'|'pagada'|'cancelada' */
             'estado' => $this->estado,
             'fecha_pago' => $this->fecha_pago,
             'detalles' => NominaDetalleResource::collection($this->whenLoaded('detalles')),

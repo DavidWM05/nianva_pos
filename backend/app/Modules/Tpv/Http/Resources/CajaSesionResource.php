@@ -23,6 +23,7 @@ class CajaSesionResource extends JsonResource
             'diferencia' => $this->diferencia,
             'fecha_apertura' => $this->fecha_apertura,
             'fecha_cierre' => $this->fecha_cierre,
+            /** @var 'abierta'|'cerrada' */
             'estado' => $this->estado,
         ];
     }

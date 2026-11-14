@@ -24,6 +24,7 @@ class GiftCardResource extends JsonResource
                 'usuario' => $r->usuario ? ['id' => $r->usuario->id, 'nombre' => $r->usuario->nombre] : null,
                 'fecha' => $r->fecha,
             ])),
+            /** @var 'activa'|'usada'|'expirada'|'cancelada' */
             'estado' => $this->estado,
             'created_at' => $this->created_at,
         ];

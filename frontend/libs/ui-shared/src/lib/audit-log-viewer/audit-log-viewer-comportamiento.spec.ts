@@ -55,8 +55,8 @@ describe('AuditLogViewerComponent (comportamiento)', () => {
   it('pinta la accion de cada entrada con su badge', () => {
     fixture.detectChanges();
 
-    const badges = [...(fixture.nativeElement as HTMLElement).querySelectorAll('nucleo-status-badge')];
-    expect(badges.map((b) => b.textContent?.trim().toLowerCase())).toEqual(['update', 'create']);
+    const badges = [...(fixture.nativeElement as HTMLElement).querySelectorAll('ui-badge')];
+    expect(badges.map((b) => b.textContent?.trim().toLowerCase())).toEqual(['modificado', 'creado']);
   });
 
   it('lista los cambios campo por campo, con antes y despues', () => {
