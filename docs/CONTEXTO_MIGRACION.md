@@ -70,6 +70,16 @@ Un solo POS funcional y adaptable:
    - **cierre (2026-11-14):** los módulos congelados quedan exentos de UI-05, UI-06 y UI-08
      por ARQ-10 (cambio mínimo); los 4 reportes pasan a la Fase 6 (UI-10). Configuración,
      detalle de venta, Preferencias y el visor de auditoría se terminaron antes de cerrar.
+8. **UX después de la Fase 2 (2026-11-14),** al comparar `pos` con Nianva POS Ropa:
+   - **Inicio con KPIs** del negocio en la Fase 6 (fila UI-10b), sobre la capa de métricas;
+   - **maquetación de página como regla** (UI-19): un mismo diseño en todas las pantallas,
+     salvo casos especiales como el TPV;
+   - **revisión visual y optimización de UX/UI al terminar la Fase 6** (no antes): ahí se
+     aplica UI-19 y se hacen los ajustes anotados al cerrar la Fase 2;
+   - **TPV de la Fase 4:** se diseña desde cero, como dice el plan, tomando el TPV de
+     Nianva POS Ropa como referencia de qué considerar: ticket fijo a la derecha con
+     total y Cobrar, búsqueda con escáner y filtro de categorías, vista en lista o
+     grilla, cliente con "Cambiar", cupón y descuento manual, y pantalla completa.
 
 ## 4. Fases
 
@@ -79,9 +89,9 @@ Un solo POS funcional y adaptable:
 | 1 | Estándares (`docs/estandares/`) y saneamiento de este repo | **Hecho** el 2026-11-02. Estándares aprobados el 2026-10-30 |
 | 2 | Sistema de diseño `libs/ui/*` (tokens, formato, layout, acciones, datos, feedback, overlays, forms, print) y catálogo visual; incluye el teclado de PIN (SEG-12) | **Hecho** el 2026-11-14 |
 | 3 | Catálogo (variante = SKU con precio y costo heredables, atributos genéricos, unidades y presentaciones, impuestos), inventario por libro y `PricingService` | — |
-| 4 | TPV, terminales, sesiones de caja, folios por serie e impresos; bloqueo de pantalla con PIN (SEG-12) y autorización de supervisor (SEG-05) | — |
+| 4 | TPV, terminales, sesiones de caja, folios por serie e impresos; bloqueo de pantalla con PIN (SEG-12) y autorización de supervisor (SEG-05); TPV desde cero con Nianva POS Ropa como referencia | — |
 | 5 | Apartados, devoluciones y cambios, crédito (libro), cotizaciones, compras (sugieren el precio), cuentas por pagar y gastos | — |
-| 6 | Capa de métricas y reportes | — |
+| 6 | Capa de métricas y reportes; Inicio con KPIs del negocio | — |
 | 7 | Perfiles de giro, planes del tabulador, licencia firmada | — |
 | 8 | Entornos: escritorio, LAN, servidor, SaaS; instalador y actualizador | — |
 
@@ -2146,7 +2156,7 @@ repo.
 2. **Fase 2: sistema de diseño, cerrada el 2026-11-14.** Sus filas están en
    `SEGUIMIENTO_FASES.md`, todas en Hecho. Lo que pasó a otras fases: ARQ-12b, UI-06b,
    UI-11b y API-08b a la Fase 3, los 4 reportes a la Fase 6 (UI-10). La revisión visual
-   del responsable queda después del cierre y solo trae ajustes de frontend.
+   y optimización de UX/UI del responsable se hace al terminar la Fase 6 (decisión 8).
 
    **Cierre (2026-11-13 y 14):**
    - 50n-b: PrimeNG fuera de dependencias, prohibido por ESLint en `apps/pos` y todas las
