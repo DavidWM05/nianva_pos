@@ -7,7 +7,7 @@ import { Router, RouterLink } from '@angular/router';
 import { ColumnaListado, FilterBarComponent, MetaListado, TablaComponent } from '@nianva/ui-data';
 import { CampoComponent } from '@nianva/ui-forms';
 import { EstadoPagina, PageComponent, PageHeaderComponent } from '@nianva/ui-layout';
-import { ConfirmDialogService, DataTableLazyEvent, ToastService } from '@nianva/ui-shared';
+import { ConfirmDialogService, DataTableLazyEvent, ToastService, esErrorNegocio, mensajeError } from '@nianva/ui-shared';
 import { Subject, debounceTime } from 'rxjs';
 
 import { RolService } from '../../rol.service';
@@ -166,7 +166,8 @@ export class RolesListComponent {
         this.cargar(this.ultimoEvento());
       },
       error: (error: HttpErrorResponse) => {
-        this.toast.error(error.status === 422 ? error.error?.message : 'No se pudo eliminar el rol.');
+        // DAT-10: un rol con usuarios asignados no se borra (tiene_movimientos); el mensaje lo explica.
+        this.toast.error(esErrorNegocio(error, 'tiene_movimientos') ? mensajeError(error, 'No se pudo eliminar el rol.') : 'No se pudo eliminar el rol.');
       },
     });
   }

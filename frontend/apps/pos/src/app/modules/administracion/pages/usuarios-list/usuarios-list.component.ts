@@ -6,7 +6,7 @@ import { Router, RouterLink } from '@angular/router';
 import { ColumnaListado, FilterBarComponent, MetaListado, TablaComponent } from '@nianva/ui-data';
 import { CampoComponent } from '@nianva/ui-forms';
 import { EstadoPagina, PageComponent, PageHeaderComponent } from '@nianva/ui-layout';
-import { ConfirmDialogService, DataTableLazyEvent, ToastService } from '@nianva/ui-shared';
+import { ConfirmDialogService, DataTableLazyEvent, ToastService, esErrorNegocio, mensajeError } from '@nianva/ui-shared';
 import { Subject, debounceTime } from 'rxjs';
 
 import { AuthStateService } from '../../../../auth/auth-state.service';
@@ -178,7 +178,13 @@ export class UsuariosListComponent {
         this.toast.success('Usuario desactivado.');
         this.cargar(this.ultimoEvento());
       },
-      error: () => this.toast.error('No se pudo desactivar el usuario.'),
+      // DAT-10: el ultimo admin activo no se desactiva (ultimo_admin), ni uno mismo; el mensaje lo explica.
+      error: (error: unknown) =>
+        this.toast.error(
+          esErrorNegocio(error, 'ultimo_admin') || esErrorNegocio(error, 'desactivar_propio_usuario')
+            ? mensajeError(error, 'No se pudo desactivar el usuario.')
+            : 'No se pudo desactivar el usuario.',
+        ),
     });
   }
 }

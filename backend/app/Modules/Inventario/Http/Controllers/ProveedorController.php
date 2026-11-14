@@ -2,8 +2,10 @@
 
 namespace App\Modules\Inventario\Http\Controllers;
 
+use App\Aplicacion\Inventario\DesactivarProveedor;
 use App\Http\Controllers\Controller;
 use App\Modules\Inventario\Http\Requests\CrearProveedorRequest;
+use App\Modules\Inventario\Http\Resources\ProveedorResource;
 use App\Modules\Inventario\Models\Proveedor;
 use App\Modules\Nucleo\Services\TenantContext;
 
@@ -33,5 +35,11 @@ class ProveedorController extends Controller
         $proveedor = Proveedor::create($datos);
 
         return response()->json(['data' => $proveedor->only(['id', 'razon_social'])], 201);
+    }
+
+    /** Soft: nunca DELETE fisico -- solo apaga `activo` (DAT-10, ver DesactivarProveedor). */
+    public function desactivar(Proveedor $proveedor, DesactivarProveedor $action): ProveedorResource
+    {
+        return new ProveedorResource($action->ejecutar($proveedor));
     }
 }

@@ -1621,6 +1621,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/proveedores/{proveedor}/desactivar": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Soft: nunca DELETE fisico -- solo apaga `activo` (DAT-10, ver DesactivarProveedor) */
+        patch: operations["proveedor.desactivar"];
+        trace?: never;
+    };
     "/reglas-precio": {
         parameters: {
             query?: never;
@@ -1830,6 +1847,10 @@ export interface paths {
             cookie?: never;
         };
         get: operations["usuario.show"];
+        /**
+         * La contrasena opcional, el filtro de roles visibles y la guarda del
+         *     ultimo admin (DAT-10) viven en ActualizarUsuario
+         */
         put: operations["usuario.update"];
         post?: never;
         delete?: never;
@@ -1855,7 +1876,8 @@ export interface paths {
          * Soft: nunca DELETE fisico (igual que el resto del catalogo) -- solo
          *     apaga `activo`. Un usuario no puede desactivarse a si mismo, sin
          *     importar el permiso -- se quedaria sin poder volver a entrar a
-         *     revertirlo
+         *     revertirlo. Esa guarda y la del ultimo admin (DAT-10) viven en
+         *     DesactivarUsuario
          */
         patch: operations["usuario.desactivar"];
         trace?: never;
@@ -3147,6 +3169,15 @@ export interface components {
             /** Format: date-time */
             created_at: string;
         };
+        /** ProveedorResource */
+        ProveedorResource: {
+            id: number;
+            razon_social: string;
+            rfc: string | null;
+            telefono: string | null;
+            correo: string | null;
+            activo: boolean;
+        };
         /** RecargarGiftCardRequest */
         RecargarGiftCardRequest: {
             monto: number;
@@ -3543,6 +3574,7 @@ export type PrestamoResource = components['schemas']['PrestamoResource'];
 export type ProductoResource = components['schemas']['ProductoResource'];
 export type ProductoVarianteResource = components['schemas']['ProductoVarianteResource'];
 export type Proveedor = components['schemas']['Proveedor'];
+export type ProveedorResource = components['schemas']['ProveedorResource'];
 export type RecargarGiftCardRequest = components['schemas']['RecargarGiftCardRequest'];
 export type RecetaIngrediente = components['schemas']['RecetaIngrediente'];
 export type RecetaResource = components['schemas']['RecetaResource'];
@@ -7362,6 +7394,33 @@ export interface operations {
             422: components["responses"]["ValidationException"];
         };
     };
+    "proveedor.desactivar": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The proveedor ID */
+                proveedor: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description `ProveedorResource` */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["ProveedorResource"];
+                    };
+                };
+            };
+            401: components["responses"]["AuthenticationException"];
+            404: components["responses"]["ModelNotFoundException"];
+        };
+    };
     "reglaPrecio.index": {
         parameters: {
             query?: {
@@ -7667,21 +7726,6 @@ export interface operations {
             };
             401: components["responses"]["AuthenticationException"];
             404: components["responses"]["ModelNotFoundException"];
-            /** @description An error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /**
-                         * @description Error overview.
-                         * @example No puedes eliminar un rol con usuarios asignados. Quita el rol de esos usuarios primero.
-                         */
-                        message: string;
-                    };
-                };
-            };
         };
     };
     "sesion.show": {
@@ -8073,21 +8117,6 @@ export interface operations {
                 };
             };
             401: components["responses"]["AuthenticationException"];
-            /** @description An error */
-            403: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /**
-                         * @description Error overview.
-                         * @example No puedes desactivar tu propio usuario.
-                         */
-                        message: string;
-                    };
-                };
-            };
             404: components["responses"]["ModelNotFoundException"];
         };
     };

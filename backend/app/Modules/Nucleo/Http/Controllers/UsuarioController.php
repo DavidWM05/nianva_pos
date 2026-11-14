@@ -2,6 +2,8 @@
 
 namespace App\Modules\Nucleo\Http\Controllers;
 
+use App\Aplicacion\Nucleo\ActualizarUsuario;
+use App\Aplicacion\Nucleo\DesactivarUsuario;
 use App\Http\Controllers\Controller;
 use App\Modules\Nucleo\Http\Requests\GuardarUsuarioRequest;
 use App\Modules\Nucleo\Http\Resources\UsuarioAdminResource;
@@ -65,22 +67,13 @@ class UsuarioController extends Controller
         return (new UsuarioAdminResource($usuario))->response()->setStatusCode(201);
     }
 
-    public function update(GuardarUsuarioRequest $request, Usuario $usuario)
+    /**
+     * La contrasena opcional, el filtro de roles visibles y la guarda del
+     * ultimo admin (DAT-10) viven en ActualizarUsuario.
+     */
+    public function update(GuardarUsuarioRequest $request, Usuario $usuario, ActualizarUsuario $action)
     {
-        $dto = $request->toDto();
-        $roles = $dto->rolesParaSync();
-        $datos = $dto->datosPresentes();
-
-        // Contrasena opcional en edicion -- omitirla del array deja el
-        // valor actual intacto (nunca se sobreescribe con null/vacio).
-        if (empty($datos['password'])) {
-            unset($datos['password']);
-        }
-
-        $usuario->update($datos);
-        if ($roles !== null) {
-            $usuario->roles()->sync($this->rolesVisiblesDelTenant($roles));
-        }
+        $usuario = $action->ejecutar($usuario, $request->toDto());
         $usuario->load(['sucursal:id,nombre', 'roles:id,nombre']);
 
         return new UsuarioAdminResource($usuario);
@@ -90,15 +83,18 @@ class UsuarioController extends Controller
      * Soft: nunca DELETE fisico (igual que el resto del catalogo) -- solo
      * apaga `activo`. Un usuario no puede desactivarse a si mismo, sin
      * importar el permiso -- se quedaria sin poder volver a entrar a
-     * revertirlo.
+     * revertirlo. Esa guarda y la del ultimo admin (DAT-10) viven en
+     * DesactivarUsuario.
      */
-    public function desactivar(Request $request, Usuario $usuario)
+    public function desactivar(Request $request, Usuario $usuario, DesactivarUsuario $action)
     {
-        if ($usuario->is($request->user())) {
-            abort(403, 'No puedes desactivar tu propio usuario.');
+        $actor = $request->user();
+
+        if ($actor === null) {
+            abort(401);
         }
 
-        $usuario->update(['activo' => false]);
+        $usuario = $action->ejecutar($usuario, $actor);
         $usuario->load(['sucursal:id,nombre', 'roles:id,nombre']);
 
         return new UsuarioAdminResource($usuario);
