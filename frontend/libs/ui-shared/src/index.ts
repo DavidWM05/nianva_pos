@@ -1,5 +1,3 @@
-export * from './lib/data-table/data-table.component';
-export * from './lib/data-table/data-table-cell.directive';
 export * from './lib/data-table/data-table.types';
 export * from './lib/status-badge/status-badge.component';
 export * from './lib/confirm-dialog/confirm-dialog.service';

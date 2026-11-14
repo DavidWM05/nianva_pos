@@ -30,7 +30,7 @@
   h2 {
     margin: 0 0 var(--nucleo-spacing-2);
     font-size: var(--nucleo-font-size-sm);
-    color: var(--nucleo-color-surface-500);
+    color: var(--nv-texto-suave);
     text-transform: uppercase;
   }
 }
@@ -63,6 +63,6 @@
 }
 
 .reporte-ventas__aviso {
-  color: var(--nucleo-color-surface-500);
+  color: var(--nv-texto-suave);
   font-size: var(--nucleo-font-size-sm);
 }

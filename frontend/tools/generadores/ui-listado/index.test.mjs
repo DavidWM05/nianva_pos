@@ -1,5 +1,6 @@
 import { createRequire } from 'node:module';
-import { Linter } from 'eslint';
+import { ESLint, Linter } from 'eslint';
+import { fileURLToPath } from 'node:url';
 import { templateParser } from 'angular-eslint';
 import { describe, expect, it } from 'vitest';
 
@@ -83,6 +84,25 @@ describe('generador ui-listado', () => {
     ];
 
     expect(linter.verify(tree.archivos.get(`${componente}.html`), config, { filename: 'listado.html' })).toEqual([]);
+  });
+
+  it('genera codigo sin dependencias retiradas y pasa ESLint raiz', async () => {
+    const tree = arbol();
+    await generar(tree, opciones);
+
+    expect([...tree.archivos.values()].join('\n')).not.toMatch(/primeng|@primeuix/);
+    const eslint = new ESLint({
+      cwd: fileURLToPath(new URL('../../../', import.meta.url)),
+      overrideConfigFile: 'eslint.config.mjs',
+    });
+    for (const [ruta, contenido] of tree.archivos) {
+      if (!ruta.endsWith('.ts')) {
+        continue;
+      }
+      const resultados = await eslint.lintText(contenido, { filePath: ruta });
+
+      expect(resultados.flatMap((resultado) => resultado.messages), ruta).toEqual([]);
+    }
   });
 
   it('no sobrescribe archivos que ya existen', async () => {

@@ -36,9 +36,6 @@
     },
     {
       "path": "../../libs/ui/layout"
-    },
-    {
-      "path": "../../libs/ui/tokens"
     }
   ]
 }

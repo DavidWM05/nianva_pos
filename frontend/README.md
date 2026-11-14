@@ -31,20 +31,20 @@ pnpm exec nx test ui-shared           # tests de la libreria de componentes
 pnpm exec nx sync                     # sincroniza project references de TS (correr tras agregar libs/apps)
 ```
 
-## Sistema de tokens de diseño (`libs/design-tokens`)
+## Sistema de tokens de diseño (`libs/ui/tokens`)
 
-Ver `libs/design-tokens/README.md` para el detalle completo. Resumen: los valores viven en
-`tokens.ts` (TypeScript) y se espejan en `tokens.scss` (CSS custom properties). PrimeNG lee
-su paleta de `primeng-preset.ts` (`definePreset(Aura, {...})` con nuestros colores), nunca del
-tema Aura default -- cambiar un color es una edición en `tokens.ts` + `tokens.scss`.
+Ver `libs/ui/tokens/README.md` para el detalle completo. Resumen: los valores viven en
+`tokens.json`; el generador produce `tokens.css` (CSS custom properties) y `material.scss`
+(tema de Angular Material). Los componentes de `libs/ui` consumen esos tokens; cambiar un
+color es una edición en `tokens.json` y regenerar sus salidas.
 
 ## `libs/ui-shared`
 
 Cuándo usar cada componente:
 
-- `DataTableComponent` (`nucleo-data-table`) -- listas paginadas server-side (paginación/orden/
-  filtros vía evento `lazyLoad`), virtual scroll habilitado por defecto. Úsalo para cualquier
-  pantalla `*-list` que consulta un endpoint paginado.
+- `TablaComponent` (`ui-tabla`, en `libs/ui/data`) -- listas paginadas server-side con
+  paginación y orden mediante el evento `cambio`, junto a `ui-filter-bar` para los filtros.
+  Úsalo para cualquier pantalla `*-list` que consulta un endpoint paginado.
 - `StatusBadgeComponent` (`nucleo-status-badge`) -- badge de estado genérico (`[value]` +
   `[colorMap]`); el color por valor lo define quien lo usa, el componente no sabe de dominios
   de negocio. Úsalo para pintar `estado`/`tipo` en listas y vistas de detalle.
@@ -127,7 +127,7 @@ lista en `app.routes.ts` (las rutas se arman aparte, pero deben apuntar a los mi
 
 - **Toda entidad raíz** (la que tiene su propia tabla de negocio con `tenant_id`, no un
   "detalle"/"pago" fijo de otra) usa **rutas dedicadas**, no modales, para las tres operaciones:
-  - `GET /modulo` -- lista paginada (`nucleo-data-table`).
+  - `GET /modulo` -- lista paginada (`ui-tabla`).
   - `/modulo/nuevo` -- `<Entidad>CrearComponent` (p. ej. `CategoriaCrearComponent`), ruta
     estática registrada ANTES de `/modulo/:id` en `app.routes.ts` (si no, el router
     interpretaría `nuevo` como un `id`).
