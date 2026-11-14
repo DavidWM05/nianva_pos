@@ -65,6 +65,7 @@ Un solo POS funcional y adaptable:
      (`minutos_inactividad` obligatorio) con sus specs;
    - **un usuario tiene al menos un rol:** el backend lo valida al crear y editar, y la
      pantalla lo exige.
+     **Hecho** en `fix/usuario-rol-minimo` (`UsuarioRolMinimoTest`, `usuario-form-rol-minimo.spec.ts`).
 
 ## 4. Fases
 
