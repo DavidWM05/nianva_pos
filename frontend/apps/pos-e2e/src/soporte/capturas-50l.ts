@@ -31,6 +31,12 @@ export async function capturarPantalla50l(
         height: Math.max(900, altura),
       });
     }
+    // Al cambiar de ancho, un overlay (el calendario a 390 px) puede quedar bajo el puntero
+    // y mostrar el tooltip de un boton ("Next month") a mitad de su animacion, justo cuando
+    // corre axe. El puntero se lleva a una esquina sin tooltips y se espera a que no quede
+    // ninguno visible.
+    await page.mouse.move(0, 0);
+    await expect(page.locator('.mat-mdc-tooltip-surface:visible')).toHaveCount(0);
     await page.waitForFunction(() =>
       document
         .getAnimations()
