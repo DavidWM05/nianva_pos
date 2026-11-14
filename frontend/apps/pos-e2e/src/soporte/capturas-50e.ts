@@ -10,7 +10,7 @@ export async function capturarPantalla50e(
   await expect(page.locator('ui-toast-content')).toHaveCount(0, { timeout: 6000 });
   if (nombre.endsWith('-auditoria')) {
     await expect(
-      page.locator('nucleo-audit-log-viewer .badge').first(),
+      page.locator('nucleo-audit-log-viewer .ui-badge').first(),
     ).toBeVisible();
   }
   for (const ancho of [1280, 390]) {
