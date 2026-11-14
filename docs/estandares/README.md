@@ -162,6 +162,9 @@ Cada lección es un hecho ocurrido. Las de Lite tienen el commit o el archivo; l
 | 2026-10-31 | C9 | Resuelto: CI bloqueante con ambas suites y `master` protegido. Quedan abiertos C6 (Fase 3) y C10 (Fase 2) |
 | 2026-11-02 | UI-18 | Nueva, aprobada por el responsable: estados de carga (skeleton en la primera carga, indicador en el botón que envía, error con "Reintentar"); desde la Fase 2 |
 | 2026-11-02 | — | Fase 1 cerrada: todas las reglas "Desde: Fase 1" tienen su verificación (ver `docs/SEGUIMIENTO_FASES.md`) |
+| 2026-11-13 | UI-03 | Decisión del responsable: el tema oscuro se aplica con la clase `.nv-tema-oscuro` en `<html>`; se corrige el estándar en lugar del código |
+| 2026-11-14 | C10 | Resuelto: las pantallas se regeneraron sobre `libs/ui/*` (serie 50) y PrimeNG salió del frontend (50n-b). Los módulos congelados quedan exentos por ARQ-10. Queda abierto C6 (Fase 3) |
+| 2026-11-14 | — | Fase 2 cerrada: todas sus filas en Hecho (ver `docs/SEGUIMIENTO_FASES.md`); lo que no entró pasó a las Fases 3 y 6 |
 | 2026-11-01 | SEG-10 | Decisión del responsable: el Kardex es la bitácora de inventario (sin fila de auditoría por movimiento); los pivotes de permisos y roles se auditan por configuración |
 | 2026-11-01 | API-05 | Decisión del responsable: la cotización acepta precio y descuento manuales solo con `cotizaciones.precio_manual`; la venta siempre recalcula |
 | 2026-11-01 | SEG-08 | Decisión del responsable: el test de descarga sin permiso → 403 se exige con la primera ruta de descarga (Fase 6 u 8); hoy no existe ninguna |
