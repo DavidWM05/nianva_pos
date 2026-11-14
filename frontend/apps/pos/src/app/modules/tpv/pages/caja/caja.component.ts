@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { MatButton } from '@angular/material/button';
 import { SkeletonComponent } from '@nianva/ui-feedback';
 import { BtnEnviarComponent, CampoComponent } from '@nianva/ui-forms';
-import { FechaHoraPipe } from '@nianva/ui-format';
+import { DineroPipe, FechaHoraPipe } from '@nianva/ui-format';
 import { DatosComponent, FormActionsComponent } from '@nianva/ui-layout';
 import { ModalComponent } from '@nianva/ui-overlays';
 import { ToastService, esErrorNegocio, mensajeError } from '@nianva/ui-shared';
@@ -39,6 +39,7 @@ import { GastoService } from '../../gasto.service';
     SkeletonComponent,
     BtnEnviarComponent,
     CampoComponent,
+    DineroPipe,
     FechaHoraPipe,
     DatosComponent,
     FormActionsComponent,

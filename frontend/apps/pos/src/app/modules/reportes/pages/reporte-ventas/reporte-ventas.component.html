@@ -21,7 +21,7 @@
     <div class="reporte-ventas__tiles">
       <div class="reporte-ventas__tile">
         <h2>Total vendido</h2>
-        <p class="reporte-ventas__tile-valor">${{ r.total_ventas }}</p>
+        <p class="reporte-ventas__tile-valor">{{ r.total_ventas | dinero }}</p>
       </div>
       <div class="reporte-ventas__tile">
         <h2>Número de ventas</h2>
@@ -29,7 +29,7 @@
       </div>
       <div class="reporte-ventas__tile">
         <h2>Ticket promedio</h2>
-        <p class="reporte-ventas__tile-valor">${{ r.ticket_promedio }}</p>
+        <p class="reporte-ventas__tile-valor">{{ r.ticket_promedio | dinero }}</p>
       </div>
     </div>
 
@@ -48,7 +48,7 @@
             @for (fila of r.por_sucursal; track fila.sucursal_id) {
               <tr>
                 <td>{{ fila.sucursal_nombre ?? ('Sucursal #' + fila.sucursal_id) }}</td>
-                <td>${{ fila.total }}</td>
+                <td>{{ fila.total | dinero }}</td>
                 <td>{{ fila.numero_ventas }}</td>
               </tr>
             }
@@ -73,7 +73,7 @@
             @for (fila of r.por_metodo_pago; track fila.metodo_pago_id) {
               <tr>
                 <td>{{ fila.metodo_pago_nombre ?? ('Método #' + fila.metodo_pago_id) }}</td>
-                <td>${{ fila.total }}</td>
+                <td>{{ fila.total | dinero }}</td>
               </tr>
             }
           </tbody>
@@ -100,8 +100,8 @@
               <tr>
                 <td>{{ fila.producto_nombre ?? ('Producto #' + fila.variante_id) }}</td>
                 <td>{{ fila.talla ?? '—' }} / {{ fila.color ?? '—' }}</td>
-                <td>{{ fila.cantidad_vendida }}</td>
-                <td>${{ fila.total_vendido }}</td>
+                <td>{{ fila.cantidad_vendida | cantidad }}</td>
+                <td>{{ fila.total_vendido | dinero }}</td>
               </tr>
             }
           </tbody>

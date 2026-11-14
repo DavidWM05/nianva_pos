@@ -36,7 +36,7 @@ describe('ReporteCrmComponent', () => {
     const texto = (fixture.nativeElement as HTMLElement).textContent ?? '';
     expect(texto).toContain('12');
     expect(texto).toContain('Llamada');
-    expect(texto).toContain('15200');
+    expect(texto).toContain('15,200');
     expect(texto).toContain('Promo verano');
   });
 

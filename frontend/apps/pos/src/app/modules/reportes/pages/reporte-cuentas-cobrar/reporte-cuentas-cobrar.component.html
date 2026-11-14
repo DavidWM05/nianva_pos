@@ -7,11 +7,11 @@
     <div class="reporte-cxc__tiles">
       <div class="reporte-cxc__tile">
         <h2>Saldo pendiente</h2>
-        <p class="reporte-cxc__tile-valor">${{ r.total_pendiente }}</p>
+        <p class="reporte-cxc__tile-valor">{{ r.total_pendiente | dinero }}</p>
       </div>
       <div class="reporte-cxc__tile">
         <h2>Saldo vencido</h2>
-        <p class="reporte-cxc__tile-valor reporte-cxc__tile-valor--vencido">${{ r.total_vencido }}</p>
+        <p class="reporte-cxc__tile-valor reporte-cxc__tile-valor--vencido">{{ r.total_vencido | dinero }}</p>
       </div>
     </div>
 
@@ -29,11 +29,11 @@
         </thead>
         <tbody>
           <tr>
-            <td>${{ r.por_antiguedad.al_dia }}</td>
-            <td>${{ r.por_antiguedad.vencido_1_30 }}</td>
-            <td>${{ r.por_antiguedad.vencido_31_60 }}</td>
-            <td>${{ r.por_antiguedad.vencido_61_90 }}</td>
-            <td>${{ r.por_antiguedad.vencido_90_mas }}</td>
+            <td>{{ r.por_antiguedad.al_dia | dinero }}</td>
+            <td>{{ r.por_antiguedad.vencido_1_30 | dinero }}</td>
+            <td>{{ r.por_antiguedad.vencido_31_60 | dinero }}</td>
+            <td>{{ r.por_antiguedad.vencido_61_90 | dinero }}</td>
+            <td>{{ r.por_antiguedad.vencido_90_mas | dinero }}</td>
           </tr>
         </tbody>
       </table>
@@ -54,7 +54,7 @@
             @for (fila of r.por_cliente; track fila.cliente_id) {
               <tr>
                 <td>{{ fila.cliente_nombre ?? ('Cliente #' + fila.cliente_id) }}</td>
-                <td>${{ fila.saldo_pendiente }}</td>
+                <td>{{ fila.saldo_pendiente | dinero }}</td>
                 <td>{{ fila.cuentas_pendientes }}</td>
               </tr>
             }

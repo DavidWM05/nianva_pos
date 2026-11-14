@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
 import { SkeletonComponent } from '@nianva/ui-feedback';
+import { DineroPipe } from '@nianva/ui-format';
 
 import { CuentaCobrarService } from '../../../cuentas-cobrar/cuenta-cobrar.service';
 import { ReporteCuentasCobrar } from '../../../cuentas-cobrar/cuenta-cobrar.types';
@@ -12,7 +13,7 @@ import { ReporteCuentasCobrar } from '../../../cuentas-cobrar/cuenta-cobrar.type
 @Component({
   selector: 'nucleo-reporte-cuentas-cobrar',
   standalone: true,
-  imports: [SkeletonComponent],
+  imports: [SkeletonComponent, DineroPipe],
   templateUrl: './reporte-cuentas-cobrar.component.html',
   styleUrl: './reporte-cuentas-cobrar.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

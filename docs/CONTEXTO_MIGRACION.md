@@ -61,7 +61,7 @@ Un solo POS funcional y adaptable:
      estándar, no el código;
    - **PRO-01 autorizados:** retirar los dos casos de `tema.service.spec.ts` que fijan
      "claro" (tema por defecto "sistema", 50n-b); los specs de caja y de los 4 reportes
-     pasan al formato del pipe `dinero`; `ConfiguracionSeguridad` se alinea con el contrato
+     pasan al formato del pipe `dinero` (**Hecho** en `fix/formato-caja-reportes`); `ConfiguracionSeguridad` se alinea con el contrato
      (`minutos_inactividad` obligatorio) con sus specs;
      **Hecho** en `fix/configuracion-seguridad-contrato` (`configuracion-seguridad-contrato.spec.ts`);
    - **un usuario tiene al menos un rol:** el backend lo valida al crear y editar, y la
