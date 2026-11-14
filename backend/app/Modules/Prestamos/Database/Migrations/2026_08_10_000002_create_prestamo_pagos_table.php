@@ -12,7 +12,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('prestamo_id')->constrained('prestamos')->cascadeOnDelete();
             $table->foreignId('caja_sesion_id')->nullable()->constrained('caja_sesiones')->nullOnDelete();
-            $table->decimal('monto', 10, 2);
+            $table->decimal('monto', 12, 2);
             $table->dateTime('fecha')->useCurrent();
             $table->text('notas')->nullable();
             $table->index('prestamo_id');

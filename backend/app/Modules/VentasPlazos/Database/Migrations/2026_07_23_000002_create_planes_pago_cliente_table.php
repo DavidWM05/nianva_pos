@@ -13,7 +13,7 @@ return new class extends Migration
             $table->foreignId('tenant_id')->constrained('tenants')->cascadeOnDelete();
             $table->foreignId('cliente_id')->constrained('clientes')->cascadeOnDelete();
             $table->string('concepto', 200);
-            $table->decimal('monto_total', 10, 2);
+            $table->decimal('monto_total', 12, 2);
             $table->date('fecha_inicio');
             $table->dateTime('created_at')->useCurrent();
         });

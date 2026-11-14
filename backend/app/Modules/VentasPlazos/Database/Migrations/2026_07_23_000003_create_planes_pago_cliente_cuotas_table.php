@@ -12,7 +12,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('plan_pago_cliente_id')->constrained('planes_pago_cliente')->cascadeOnDelete();
             $table->integer('numero_cuota');
-            $table->decimal('monto', 10, 2);
+            $table->decimal('monto', 12, 2);
             $table->date('fecha_vencimiento');
             $table->dateTime('fecha_pago')->nullable();
             $table->enum('estado', ['pendiente', 'pagada', 'vencida'])->default('pendiente');

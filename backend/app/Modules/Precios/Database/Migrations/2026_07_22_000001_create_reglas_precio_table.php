@@ -16,7 +16,7 @@ return new class extends Migration
             $table->decimal('valor', 10, 2)->nullable()->comment('usado en porcentaje/monto_fijo');
             $table->integer('cantidad_compra')->nullable()->comment('N en nxm/bundle');
             $table->integer('cantidad_paga')->nullable()->comment('M en nxm');
-            $table->decimal('precio_bundle', 10, 2)->nullable()->comment('solo bundle');
+            $table->decimal('precio_bundle', 12, 2)->nullable()->comment('solo bundle');
             $table->enum('aplica_a', ['todo', 'categoria', 'producto', 'variante']);
             $table->foreignId('categoria_id')->nullable()->constrained('categorias')->cascadeOnDelete();
             $table->foreignId('producto_id')->nullable()->constrained('productos')->cascadeOnDelete();

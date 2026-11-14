@@ -16,9 +16,9 @@ return new class extends Migration
             $table->foreignId('venta_sombra_id')->nullable()->constrained('ventas')->nullOnDelete()->comment('venta generada si tipo=cambio; permite devolucion recursiva');
             $table->foreignId('usuario_id')->constrained('usuarios')->restrictOnDelete();
             $table->enum('tipo', ['devolucion', 'cambio']);
-            $table->decimal('monto_devolucion', 10, 2);
-            $table->decimal('monto_cambio', 10, 2)->default(0);
-            $table->decimal('diferencia', 10, 2)->comment('negativo = reembolso, positivo = cobro adicional');
+            $table->decimal('monto_devolucion', 12, 2);
+            $table->decimal('monto_cambio', 12, 2)->default(0);
+            $table->decimal('diferencia', 12, 2)->comment('negativo = reembolso, positivo = cobro adicional');
             $table->text('motivo')->nullable();
             $table->dateTime('fecha')->useCurrent();
         });

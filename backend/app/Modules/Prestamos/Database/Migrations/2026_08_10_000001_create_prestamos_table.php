@@ -13,10 +13,10 @@ return new class extends Migration
             $table->foreignId('tenant_id')->constrained('tenants')->cascadeOnDelete();
             $table->foreignId('proveedor_id')->nullable()->constrained('proveedores')->nullOnDelete();
             $table->string('referencia', 100)->nullable()->comment('Nombre de persona o entidad');
-            $table->decimal('monto', 10, 2);
-            $table->decimal('interes', 5, 2)->default(0);
-            $table->decimal('monto_a_pagar', 10, 2)->comment('Monto + intereses');
-            $table->decimal('saldo_pendiente', 10, 2);
+            $table->decimal('monto', 12, 2);
+            $table->decimal('interes', 7, 4)->default(0);
+            $table->decimal('monto_a_pagar', 12, 2)->comment('Monto + intereses');
+            $table->decimal('saldo_pendiente', 12, 2);
             $table->date('fecha_prestamo');
             $table->date('fecha_vencimiento')->nullable();
             $table->enum('estado', ['activo', 'pagado', 'cancelado'])->default('activo');

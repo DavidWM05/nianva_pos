@@ -214,4 +214,4 @@
 
 ## Excepciones
 
-Ninguna acordada.
+DAT-02: `insumos.costo` (costo unitario de insumo de producción) en decimal(12,4); se multiplica por la cantidad y con 2 decimales los insumos por gramo o mililitro quedan en cero (decisión del responsable, 2026-11-14).

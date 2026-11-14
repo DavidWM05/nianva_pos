@@ -8,6 +8,7 @@ use App\Modules\Inventario\Models\Producto;
 use App\Modules\Inventario\Models\ProductoVariante;
 use App\Modules\Nucleo\Scopes\TenantScope;
 use App\Modules\Nucleo\Scopes\TenantScopeViaRelacion;
+use App\Modules\Nucleo\Support\Dinero;
 use App\Modules\Precios\Exceptions\CuponInvalidoException;
 use App\Modules\Precios\Models\Cupon;
 use App\Modules\Precios\Models\ReglaPrecio;
@@ -38,16 +39,16 @@ final class PricingService
     public function cotizar(Carrito $carrito, ContextoPrecio $contexto): CotizacionPrecio
     {
         $lineas = [];
-        $subtotal = 0.0;
+        $subtotal = Dinero::desde(0);
         foreach ($carrito->lineas as $linea) {
             $variante = ProductoVariante::query()->withoutGlobalScope(TenantScopeViaRelacion::class)->findOrFail($linea->varianteId);
             $producto = Producto::query()->withoutGlobalScope(TenantScope::class)->findOrFail((int) $variante->getAttribute('producto_id'));
             if ((int) $producto->getAttribute('tenant_id') !== $contexto->tenantId) {
                 throw new InvalidArgumentException("La variante {$linea->varianteId} no pertenece al tenant {$contexto->tenantId}.");
             }
-            $precioBase = (float) $producto->getAttribute('precio_venta');
+            $precioBase = Dinero::desde((string) $producto->getAttribute('precio_venta'));
             $regla = $this->reglaAplicable($variante, $producto, $contexto);
-            $descuento = $regla === null ? 0.0 : $this->calcularDescuentoPorTipo($regla, $precioBase, $linea->cantidad);
+            $descuento = $regla === null ? Dinero::desde(0) : $this->calcularDescuentoPorTipo($regla, $precioBase, $linea->cantidad);
             $reglas = [];
             if ($regla !== null) {
                 $prioridad = match ($regla->getAttribute('aplica_a')) {
@@ -55,14 +56,18 @@ final class PricingService
                 };
                 $reglas[] = new ReglaAplicada((int) $regla->getKey(), (string) $regla->getAttribute('tipo'), $prioridad, false);
             }
-            $totalLinea = round(round($precioBase * $linea->cantidad, 2) - $descuento, 2);
-            $lineas[] = new LineaPrecio($linea->varianteId, $linea->cantidad, $precioBase, null, $reglas, $descuento, 0.0, $totalLinea);
-            $subtotal += $totalLinea;
+            $totalLinea = $precioBase->multiplicar($linea->cantidad)->restar($descuento);
+            $lineas[] = new LineaPrecio($linea->varianteId, $linea->cantidad, (float) $precioBase->aCadena(), null, $reglas, (float) $descuento->aCadena(), 0.0, (float) $totalLinea->aCadena());
+            $subtotal = $subtotal->sumar($totalLinea);
         }
-        $subtotal = $carrito->subtotalReferencia ?? round($subtotal, 2);
-        $cupon = $carrito->codigoCupon === null ? null : $this->cotizarCupon($carrito->codigoCupon, $subtotal, $contexto);
+        $importeSubtotal = $carrito->subtotalReferencia === null ? $subtotal->aCadena() : $this->referenciaDecimal($carrito->subtotalReferencia);
+        $cotizacionCupon = $carrito->codigoCupon === null ? null : $this->cotizarCupon($carrito->codigoCupon, $importeSubtotal, $contexto);
 
-        return new CotizacionPrecio($lineas, $subtotal, $cupon, round($subtotal - ($cupon->descuento ?? 0.0), 2));
+        $descuentoCupon = $cotizacionCupon['descuento'] ?? Dinero::desde(0);
+        $cupon = $cotizacionCupon === null ? null : new CuponAplicado((int) $cotizacionCupon['modelo']->getKey(), (float) $descuentoCupon->aCadena(), $cotizacionCupon['modelo']);
+        $total = Dinero::desdeResta($importeSubtotal, $descuentoCupon->aCadena());
+
+        return new CotizacionPrecio($lineas, $carrito->subtotalReferencia ?? (float) $subtotal->aCadena(), $cupon, (float) $total->aCadena());
     }
 
     /**
@@ -70,9 +75,11 @@ final class PricingService
      * completo de la cascada de reglas -- no recibe variante ni cantidad,
      * solo el total ya calculado.
      *
+     * @return array{modelo: Cupon, descuento: Dinero}
+     *
      * @throws CuponInvalidoException si el codigo no existe, esta inactivo o fuera de vigencia.
      */
-    private function cotizarCupon(string $codigo, float $totalCarrito, ContextoPrecio $contexto): CuponAplicado
+    private function cotizarCupon(string $codigo, string $totalCarrito, ContextoPrecio $contexto): array
     {
         $cupon = $this->vigentes(Cupon::query()->withoutGlobalScope(TenantScope::class)->where('codigo', $codigo), $contexto)->first();
         if ($cupon === null) {
@@ -84,10 +91,10 @@ final class PricingService
         // que sabe cuantas veces se aplico un cupon. Aqui solo se valida
         // vigencia (activo + rango de fechas), no consumo.
         $descuento = $cupon->getAttribute('tipo') === 'porcentaje'
-            ? round($totalCarrito * ((float) $cupon->getAttribute('valor') / 100), 2)
-            : min(round((float) $cupon->getAttribute('valor'), 2), round($totalCarrito, 2));
+            ? Dinero::porcentajeDe($totalCarrito, (string) $cupon->getAttribute('valor'))
+            : $this->menor(Dinero::desde((string) $cupon->getAttribute('valor')), Dinero::desde($totalCarrito));
 
-        return new CuponAplicado((int) $cupon->getKey(), $descuento, $cupon);
+        return ['modelo' => $cupon, 'descuento' => $descuento];
     }
 
     /**
@@ -145,14 +152,14 @@ final class PricingService
             ->where(fn (Builder $q) => $q->whereNull('fecha_fin')->orWhereDate('fecha_fin', '>=', $hoy));
     }
 
-    private function calcularDescuentoPorTipo(ReglaPrecio $regla, float $precioUnitario, int $cantidad): float
+    private function calcularDescuentoPorTipo(ReglaPrecio $regla, Dinero $precioUnitario, int $cantidad): Dinero
     {
         return match ($regla->getAttribute('tipo')) {
-            'porcentaje' => round($precioUnitario * $cantidad * ((float) $regla->getAttribute('valor') / 100), 2),
-            'monto_fijo' => min(round((float) $regla->getAttribute('valor') * $cantidad, 2), round($precioUnitario * $cantidad, 2)),
+            'porcentaje' => $precioUnitario->multiplicar($cantidad)->porcentaje((string) ($regla->getAttribute('valor') ?? '0')),
+            'monto_fijo' => $this->menor(Dinero::desdeProducto((string) ($regla->getAttribute('valor') ?? '0'), $cantidad), $precioUnitario->multiplicar($cantidad)),
             'nxm' => $this->descuentoNxm($regla, $precioUnitario, $cantidad),
             'bundle' => $this->descuentoBundle($regla, $precioUnitario, $cantidad),
-            default => 0.0,
+            default => Dinero::desde(0),
         };
     }
 
@@ -161,13 +168,13 @@ final class PricingService
      * unidades solo se cobran M: el resto (menos de N unidades) paga
      * precio completo, sin descuento parcial de grupo.
      */
-    private function descuentoNxm(ReglaPrecio $regla, float $precioUnitario, int $cantidad): float
+    private function descuentoNxm(ReglaPrecio $regla, Dinero $precioUnitario, int $cantidad): Dinero
     {
         $compra = (int) $regla->getAttribute('cantidad_compra');
         $paga = (int) $regla->getAttribute('cantidad_paga');
 
         if ($compra <= 0 || $paga <= 0 || $paga >= $compra) {
-            return 0.0;
+            return Dinero::desde(0);
         }
 
         $gruposCompletos = intdiv($cantidad, $compra);
@@ -175,7 +182,7 @@ final class PricingService
         $unidadesAPagar = ($gruposCompletos * $paga) + $resto;
         $unidadesGratis = $cantidad - $unidadesAPagar;
 
-        return round($unidadesGratis * $precioUnitario, 2);
+        return $precioUnitario->multiplicar($unidadesGratis);
     }
 
     /**
@@ -183,20 +190,47 @@ final class PricingService
      * precio_bundle fijo (total, no por unidad); el resto paga precio
      * unitario normal.
      */
-    private function descuentoBundle(ReglaPrecio $regla, float $precioUnitario, int $cantidad): float
+    private function descuentoBundle(ReglaPrecio $regla, Dinero $precioUnitario, int $cantidad): Dinero
     {
         $compra = (int) $regla->getAttribute('cantidad_compra');
-        $precioBundle = (float) $regla->getAttribute('precio_bundle');
+        $precioBundle = Dinero::desde((string) ($regla->getAttribute('precio_bundle') ?? '0'));
 
-        if ($compra <= 0 || $precioBundle <= 0) {
-            return 0.0;
+        if ($compra <= 0 || $precioBundle->comparar(Dinero::desde(0)) <= 0) {
+            return Dinero::desde(0);
         }
 
         $gruposCompletos = intdiv($cantidad, $compra);
         $resto = $cantidad % $compra;
-        $totalConBundle = ($gruposCompletos * $precioBundle) + ($resto * $precioUnitario);
-        $totalSinDescuento = $precioUnitario * $cantidad;
+        $totalConBundle = $precioBundle->multiplicar($gruposCompletos)->sumar($precioUnitario->multiplicar($resto));
+        $totalSinDescuento = $precioUnitario->multiplicar($cantidad);
 
-        return round(max($totalSinDescuento - $totalConBundle, 0), 2);
+        $descuento = $totalSinDescuento->restar($totalConBundle);
+
+        return $descuento->comparar(Dinero::desde(0)) > 0 ? $descuento : Dinero::desde(0);
+    }
+
+    private function menor(Dinero $a, Dinero $b): Dinero
+    {
+        return $a->comparar($b) <= 0 ? $a : $b;
+    }
+
+    // El DTO público conserva float. Aquí se expande su representación textual
+    // sin operar en binario ni redondear la referencia antes del descuento.
+    private function referenciaDecimal(float $importe): string
+    {
+        $decimal = (string) $importe;
+        if (! preg_match('/\A([+-]?)(\d+)(?:\.(\d+))?[eE]([+-]?\d+)\z/', $decimal, $partes)) {
+            return $decimal;
+        }
+        $digitos = $partes[2].$partes[3];
+        $posicion = strlen($partes[2]) + (int) $partes[4];
+        if ($posicion <= 0) {
+            return $partes[1].'0.'.str_repeat('0', -$posicion).$digitos;
+        }
+        if ($posicion >= strlen($digitos)) {
+            return $partes[1].$digitos.str_repeat('0', $posicion - strlen($digitos));
+        }
+
+        return $partes[1].substr($digitos, 0, $posicion).'.'.substr($digitos, $posicion);
     }
 }

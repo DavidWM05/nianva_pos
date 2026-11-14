@@ -171,3 +171,4 @@ Cada lección es un hecho ocurrido. Las de Lite tienen el commit o el archivo; l
 | 2026-11-01 | SEG-08 | Decisión del responsable: el test de descarga sin permiso → 403 se exige con la primera ruta de descarga (Fase 6 u 8); hoy no existe ninguna |
 | 2026-11-01 | PRO-09 | El checklist de cierre suma "`SEGUIMIENTO_FASES.md` actualizado"; la tabla de seguimiento por regla vive en `docs/SEGUIMIENTO_FASES.md` |
 | 2026-11-01 | API-02, API-08 | Decisión del responsable: se parten. API-02 deja el dinero y las cantidades como cadena para la Fase 3 (con DAT-02); API-08, los tipos generados en el frontend para la Fase 2 |
+| 2026-11-14 | DAT-02 | Excepción aprobada por el responsable: `insumos.costo` en decimal(12,4) (costo unitario de insumo de producción) |

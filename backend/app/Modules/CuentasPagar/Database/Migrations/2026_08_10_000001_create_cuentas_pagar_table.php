@@ -14,8 +14,8 @@ return new class extends Migration
             $table->foreignId('compra_id')->constrained('compras')->restrictOnDelete()
                 ->comment('Compra que origina la deuda');
             $table->foreignId('proveedor_id')->constrained('proveedores')->restrictOnDelete();
-            $table->decimal('monto_total', 10, 2);
-            $table->decimal('saldo_pendiente', 10, 2);
+            $table->decimal('monto_total', 12, 2);
+            $table->decimal('saldo_pendiente', 12, 2);
             $table->date('fecha_vencimiento')->nullable();
             $table->enum('estado', ['pendiente', 'pagada', 'anulada'])->default('pendiente');
             $table->dateTime('created_at')->useCurrent();

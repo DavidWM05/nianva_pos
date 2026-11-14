@@ -127,6 +127,7 @@ class CuponController extends Controller
                     'tipo' => $cupon->tipo,
                     'valor' => $cupon->valor,
                 ],
+                /** @var mixed */
                 'descuento' => $aplicado->descuento,
                 'total_con_descuento' => $resultado->total,
             ],

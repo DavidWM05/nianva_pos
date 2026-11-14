@@ -12,8 +12,8 @@ return new class extends Migration
             $table->foreignId('venta_id')->nullable()->after('cliente_id')
                 ->constrained('ventas')->nullOnDelete()
                 ->comment('Venta que origina el plan');
-            $table->decimal('interes_total', 10, 2)->default(0)->after('monto_total');
-            $table->decimal('tasa_interes', 5, 2)->nullable()->after('interes_total')
+            $table->decimal('interes_total', 12, 2)->default(0)->after('monto_total');
+            $table->decimal('tasa_interes', 7, 4)->nullable()->after('interes_total')
                 ->comment('Tasa de interes porcentual ej: 5.00 = 5%');
             $table->unsignedInteger('numero_cuotas')->default(1)->after('tasa_interes');
             $table->enum('periodicidad', ['semanal', 'quincenal', 'mensual'])->default('mensual')

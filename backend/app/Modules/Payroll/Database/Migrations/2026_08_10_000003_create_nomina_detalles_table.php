@@ -12,11 +12,11 @@ return new class extends Migration
             $table->id();
             $table->foreignId('nomina_id')->constrained('nominas')->cascadeOnDelete();
             $table->foreignId('empleado_id')->constrained('empleados')->restrictOnDelete();
-            $table->decimal('salario_base', 10, 2);
+            $table->decimal('salario_base', 12, 2);
             $table->integer('dias_trabajados')->default(0);
-            $table->decimal('percepciones', 10, 2)->default(0);
-            $table->decimal('deducciones', 10, 2)->default(0);
-            $table->decimal('neto', 10, 2)->default(0);
+            $table->decimal('percepciones', 12, 2)->default(0);
+            $table->decimal('deducciones', 12, 2)->default(0);
+            $table->decimal('neto', 12, 2)->default(0);
             $table->dateTime('created_at')->useCurrent();
             $table->index('nomina_id');
             $table->index('empleado_id');

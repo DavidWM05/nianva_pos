@@ -13,7 +13,7 @@ return new class extends Migration
             $table->foreignId('tenant_id')->constrained('tenants')->cascadeOnDelete();
             $table->foreignId('usuario_id')->constrained('usuarios')->cascadeOnDelete()->unique();
             $table->foreignId('sucursal_id')->constrained('sucursales')->restrictOnDelete();
-            $table->decimal('salario_base', 10, 2)->default(0);
+            $table->decimal('salario_base', 12, 2)->default(0);
             $table->enum('tipo_salario', ['fijo', 'por_hora'])->default('fijo');
             $table->date('fecha_ingreso')->nullable();
             $table->string('numero_seguridad_social', 30)->nullable();

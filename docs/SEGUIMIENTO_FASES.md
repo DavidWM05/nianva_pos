@@ -113,7 +113,7 @@ Conflicto que se resuelve aquí: C10.
 | ARQ-05 | Un solo `PricingService` | Parcial | `PricingService::cotizar(Carrito, ContextoPrecio): CotizacionPrecio` resuelve las reglas por línea (cascada variante > producto > categoría > todo) y el cupón sobre el total, con vigencia a la fecha del contexto y solo filas del tenant o globales. `PricingServiceTest`: tabla con el resultado completo, incluidos tres casos de SEG-01 verificados con la mutación del filtro de tenant. `Arquitectura/PreciosSoloEnPricingTest` impide calcular precios fuera de Precios, sin pendientes. `PrecioService` queda `@deprecated`. Faltan listas de precio (05c), y que el responsable decida impuestos, precio por variante y reglas combinables (L-26) | 05a |
 | ARQ-07 | El giro es configuración | Pendiente | — | — |
 | DAT-01 | Cantidades decimales con unidad | Pendiente | — | — |
-| DAT-02 | Dinero | Pendiente | — | — |
+| DAT-02 | Dinero | Parcial | DAT-02a incorpora `Dinero` inmutable en centavos, redondeo por línea y PricingService exacto. `DineroEnDecimalTest` verifica dinero `decimal(12,2)` y tasas `decimal(7,4)` sobre las migraciones reescritas. `insumos.costo` queda EXENTO con `decimal(12,4)` por ser costo unitario de producción (decisión del responsable, 2026-11-14). Quedan dos columnas mixtas en PENDIENTES, `reglas_precio.valor` y `cupones.valor`. API-02 y los demás cálculos monetarios siguen en sus etapas. | DAT-02a |
 | DAT-03 | Foto por línea | Pendiente | — | — |
 | DAT-04 | Libros de movimientos | Pendiente | — | — |
 | DAT-05 | Saldo inicial explícito | Pendiente | — | — |

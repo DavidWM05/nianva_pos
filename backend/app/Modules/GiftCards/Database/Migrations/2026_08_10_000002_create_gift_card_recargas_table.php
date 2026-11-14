@@ -11,7 +11,7 @@ return new class extends Migration
         Schema::create('gift_card_recargas', function (Blueprint $table) {
             $table->id();
             $table->foreignId('gift_card_id')->constrained('gift_cards')->cascadeOnDelete();
-            $table->decimal('monto', 10, 2);
+            $table->decimal('monto', 12, 2);
             $table->foreignId('usuario_id')->constrained('usuarios')->restrictOnDelete();
             $table->dateTime('fecha')->useCurrent();
 

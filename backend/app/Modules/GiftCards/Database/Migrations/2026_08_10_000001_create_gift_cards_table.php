@@ -14,8 +14,8 @@ return new class extends Migration
             $table->foreignId('cliente_id')->nullable()->constrained('clientes')->nullOnDelete()
                 ->comment('Propietario (NULL = anonima)');
             $table->string('codigo', 50);
-            $table->decimal('saldo_inicial', 10, 2);
-            $table->decimal('saldo_actual', 10, 2);
+            $table->decimal('saldo_inicial', 12, 2);
+            $table->decimal('saldo_actual', 12, 2);
             $table->date('fecha_expiracion')->nullable();
             $table->enum('estado', ['activa', 'usada', 'expirada', 'cancelada'])->default('activa');
             $table->dateTime('created_at')->useCurrent();

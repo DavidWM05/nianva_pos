@@ -13,8 +13,8 @@ return new class extends Migration
             $table->foreignId('apartado_id')->constrained('apartados')->cascadeOnDelete();
             $table->foreignId('variante_id')->constrained('producto_variantes')->restrictOnDelete();
             $table->integer('cantidad');
-            $table->decimal('precio_unitario', 10, 2);
-            $table->decimal('subtotal', 10, 2);
+            $table->decimal('precio_unitario', 12, 2);
+            $table->decimal('subtotal', 12, 2);
         });
     }
 

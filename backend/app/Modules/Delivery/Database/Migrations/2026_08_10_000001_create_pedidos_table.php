@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('numero_pedido', 30);
             $table->text('direccion_entrega')->nullable();
             $table->string('referencia', 255)->nullable();
-            $table->decimal('costo_delivery', 10, 2)->default(0);
+            $table->decimal('costo_delivery', 12, 2)->default(0);
             $table->enum('estado', ['pendiente', 'preparando', 'en_camino', 'entregado', 'cancelado'])->default('pendiente');
             $table->unsignedInteger('tiempo_estimado')->nullable()->comment('Minutos estimados');
             $table->text('notas')->nullable();
