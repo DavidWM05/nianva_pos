@@ -148,7 +148,16 @@ Conflicto que se resuelve aquí: C6. En las Fases 3 a 5, los Services pasan a re
 | ARQ-09 | Una sola capa de métricas | Pendiente | — | — |
 | SEG-08 | Descarga sin permiso → 403, con la primera descarga (exportaciones; si llegan antes los respaldos, en la Fase 8) | Pendiente | — | — |
 | DAT-06 | Reportes en la zona del tenant | Pendiente | — | — |
+| UI-10b | Inicio con KPIs del negocio | Pendiente | Tablero de Inicio con `ui-kpi` y cifras de la capa de métricas (ARQ-09): ventas, tickets y gastos del día, ingresos del mes, catálogo activo, stock bajo, ventas de los últimos 7 días y productos más vendidos. Referencia: el Inicio de Nianva POS Ropa (decisión del responsable, 2026-11-14) | — |
 | UI-10 | Plantilla de reporte | Pendiente | Incluye los 4 reportes de `pos` (ventas, CRM, cuentas por cobrar y por pagar) con `ui-page-header`, `ui-report` y `ui-tabla`, movidos desde UI-08 de la Fase 2 (decisión del responsable, 2026-11-14) | — |
+
+## Revisión visual y optimización de UX/UI (al terminar la Fase 6)
+
+Incluye los ajustes anotados al cerrar la Fase 2 («Agua 1L ()», menú lateral del catálogo, montos de caja fuera de `ui-campo`, venta completada sin insignia y las 4 reglas menores de axe).
+
+| Regla | Qué pide | Estado | Dónde se verifica | Encargo |
+|---|---|---|---|---|
+| UI-19 | Maquetación de página | Pendiente | — | — |
 
 ## Fase 7: planes y licencia
 

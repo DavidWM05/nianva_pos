@@ -279,6 +279,31 @@ mueven a la lib nueva que corresponda.
   - estados de carga y de error de cada componente en el catálogo visual (UI-14).
 - **Desde:** Fase 2.
 
+### UI-19 · Maquetación de página
+- **Regla:**
+  - `ui-page` fija la maquetación según la forma de la pantalla (listado, detalle,
+    formulario, reporte o tablero); una pantalla no declara su propio ancho, margen ni
+    alineación (`max-width`, `width` fijo, `margin: 0 auto`);
+  - listados, reportes y tableros usan todo el ancho del área de contenido;
+  - formularios y detalles se acomodan en una rejilla: dos columnas desde `lg` y una en
+    `md` o menos, con cada bloque en un `ui-section` y las acciones al pie en
+    `ui-form-actions`; un campo o bloque ancho (notas, tablas de líneas) ocupa las dos;
+  - el contenido nunca queda pegado a un lado con media pantalla vacía: si una forma tiene
+    ancho máximo, sale de un token y se centra;
+  - anchos, márgenes y separaciones salen de los tokens (UI-01);
+  - tienen maquetación propia, fuera de esta regla: el TPV (Fase 4), las pantallas de
+    autenticación y los impresos (UI-12).
+- **Por qué:** al cerrar la Fase 2, 13 pantallas fijaban su propio `max-width` y los
+  formularios y detalles quedaban a la izquierda, con media pantalla vacía a partir de
+  1280 px. La revisión del responsable (2026-11-14) pidió un mismo diseño en todas, con
+  Nianva POS Ropa como referencia.
+- **Verifica:**
+  - stylelint prohíbe `max-width` y anchos fijos en `apps/**`, salvo las excepciones de la
+    regla;
+  - el catálogo visual (UI-14) muestra cada forma de `ui-page` a 768, 1280 y 1920 px;
+  - la regresión visual de Playwright compara esas capturas.
+- **Desde:** la revisión visual y optimización de UX/UI al terminar la Fase 6.
+
 ## De las 28 reglas de `estandar_ui.md` de Lite a componentes
 
 | # | Regla de Lite (sección) | En la nueva base |
