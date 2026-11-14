@@ -5,7 +5,7 @@ import { PageComponent, PageHeaderComponent } from '@nianva/ui-layout';
 import { ToastService } from '@nianva/ui-shared';
 
 import { UsuarioFormComponent } from '../../usuario-form/usuario-form.component';
-import { UsuarioAdminService, UsuarioFormPayload } from '../../usuario-admin.service';
+import { UsuarioAdminService, UsuarioFormPayload, esAltaUsuario } from '../../usuario-admin.service';
 
 /**
  * Vista dedicada, no modal (ver el reporte de Fase B/C): usuario es una
@@ -28,6 +28,11 @@ export class UsuarioCrearComponent {
   protected readonly guardando = signal(false);
 
   onGuardar(payload: UsuarioFormPayload): void {
+    // El formulario emite alta o edicion; aqui solo se manda un cuerpo de alta (password y roles).
+    if (!esAltaUsuario(payload)) {
+      return;
+    }
+
     this.guardando.set(true);
 
     this.usuarioService.crear(payload).subscribe({
