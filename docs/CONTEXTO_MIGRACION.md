@@ -67,14 +67,17 @@ Un solo POS funcional y adaptable:
    - **un usuario tiene al menos un rol:** el backend lo valida al crear y editar, y la
      pantalla lo exige.
      **Hecho** en `fix/usuario-rol-minimo` (`UsuarioRolMinimoTest`, `usuario-form-rol-minimo.spec.ts`).
+   - **cierre (2026-11-14):** los módulos congelados quedan exentos de UI-05, UI-06 y UI-08
+     por ARQ-10 (cambio mínimo); los 4 reportes pasan a la Fase 6 (UI-10). Configuración,
+     detalle de venta, Preferencias y el visor de auditoría se terminaron antes de cerrar.
 
 ## 4. Fases
 
 | Fase | Contenido | Estado |
 |---|---|---|
 | 0 | Endurecer Lite en producción (XSS, aislamiento por sucursal, transacción en abonos, límite de intentos de la clave de admin, costo en cambios, compras) | En Lite, otra sesión; implementado y en pruebas manuales |
-| 1 | Estándares (`docs/estandares/`) y saneamiento de este repo | **En curso.** Estándares aprobados el 2026-10-30; sigue el saneamiento |
-| 2 | Sistema de diseño `libs/ui/*` (tokens, formato, layout, acciones, datos, feedback, overlays, forms, print) y catálogo visual; incluye el teclado de PIN (SEG-12) | — |
+| 1 | Estándares (`docs/estandares/`) y saneamiento de este repo | **Hecho** el 2026-11-02. Estándares aprobados el 2026-10-30 |
+| 2 | Sistema de diseño `libs/ui/*` (tokens, formato, layout, acciones, datos, feedback, overlays, forms, print) y catálogo visual; incluye el teclado de PIN (SEG-12) | **Hecho** el 2026-11-14 |
 | 3 | Catálogo (variante = SKU con precio y costo heredables, atributos genéricos, unidades y presentaciones, impuestos), inventario por libro y `PricingService` | — |
 | 4 | TPV, terminales, sesiones de caja, folios por serie e impresos; bloqueo de pantalla con PIN (SEG-12) y autorización de supervisor (SEG-05) | — |
 | 5 | Apartados, devoluciones y cambios, crédito (libro), cotizaciones, compras (sugieren el precio), cuentas por pagar y gastos | — |
@@ -2140,7 +2143,23 @@ repo.
    - stylelint (PRO-05) pasa a la Fase 2;
    - después de C8: que los Services reciban DTOs en vez de arreglos (se hace al reescribirlos
      en las Fases 3 a 5); `RequiereDosFactorReciente` sigue validando dentro del middleware.
-2. **Fase 2: sistema de diseño, en curso.** Sus filas están en `SEGUIMIENTO_FASES.md`.
+2. **Fase 2: sistema de diseño, cerrada el 2026-11-14.** Sus filas están en
+   `SEGUIMIENTO_FASES.md`, todas en Hecho. Lo que pasó a otras fases: ARQ-12b, UI-06b,
+   UI-11b y API-08b a la Fase 3, los 4 reportes a la Fase 6 (UI-10). La revisión visual
+   del responsable queda después del cierre y solo trae ajustes de frontend.
+
+   **Cierre (2026-11-13 y 14):**
+   - 50n-b: PrimeNG fuera de dependencias, prohibido por ESLint en `apps/pos` y todas las
+     libs; `nucleo-data-table` y el preset retirados; tema por defecto "sistema";
+   - un usuario tiene al menos un rol; `ConfiguracionSeguridad` con `minutos_inactividad`
+     del contrato; caja y reportes con formato por pipe; configuración, detalle de venta,
+     Preferencias y visor de auditoría con componentes de `libs/ui`; los servicios de
+     administración y perfil con tipos del contrato;
+   - contadores: contrato-pendientes 0, cargando-pendientes 0, formato-pendientes 4 (los
+     detalles congelados), línea base de CSS 1043 líneas en 90 archivos;
+   - deuda anotada: `GastoFactory` (sucursal y caja distintas), `caja_sesiones` sin
+     restricción en la base, `abort(403)` sin `error_code`, el adaptador de fechas en
+     `ui/report` en vez de `ui/forms`, el detalle de producción `/:id` y acelerar CI.
 
    **Punto de partida (2026-11-02):**
    - dos libs, `design-tokens` y `ui-shared` (9 componentes), que se reemplazan por las
