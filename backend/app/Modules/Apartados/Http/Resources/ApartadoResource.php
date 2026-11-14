@@ -31,6 +31,7 @@ class ApartadoResource extends JsonResource
             ),
             'total' => $this->total,
             'total_abonado' => $this->total_abonado,
+            /** @var 'activo'|'completado'|'cancelado' */
             'estado' => $this->estado,
             'fecha_vencimiento' => $this->fecha_vencimiento,
             'fecha_completado' => $this->fecha_completado,

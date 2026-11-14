@@ -16,6 +16,7 @@ class OrdenProduccionResource extends JsonResource
             'receta' => $this->whenLoaded('receta', fn () => ['id' => $this->receta->id, 'nombre' => $this->receta->nombre]),
             'cantidad_programada' => $this->cantidad_programada,
             'cantidad_producida' => $this->cantidad_producida,
+            /** @var 'pendiente'|'en_proceso'|'completada'|'cancelada' */
             'estado' => $this->estado,
             'notas' => $this->notas,
             'fecha_programada' => $this->fecha_programada,

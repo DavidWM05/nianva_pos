@@ -23,6 +23,7 @@ class CuentaPagarResource extends JsonResource
             'monto_total' => $this->monto_total,
             'saldo_pendiente' => $this->saldo_pendiente,
             'fecha_vencimiento' => $this->fecha_vencimiento,
+            /** @var 'pendiente'|'pagada'|'anulada' */
             'estado' => $this->estado,
             'abonos' => AbonoPagarResource::collection($this->whenLoaded('abonos')),
             'created_at' => $this->created_at,

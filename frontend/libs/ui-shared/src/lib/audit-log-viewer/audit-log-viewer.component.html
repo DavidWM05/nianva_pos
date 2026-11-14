@@ -11,7 +11,7 @@
         <span class="audit-log-viewer__marcador" aria-hidden="true"></span>
         <div class="audit-log-viewer__entry">
           <div class="audit-log-viewer__header">
-            <nucleo-status-badge [value]="entry.accion" [colorMap]="accionColorMap" />
+            <ui-badge entidad="accionAuditoria" [estado]="entry.accion" />
             <span class="audit-log-viewer__usuario">{{ entry.usuario_nombre ?? 'Sistema' }}</span>
             <span class="audit-log-viewer__fecha">{{ entry.fecha | fechaHora }}</span>
           </div>

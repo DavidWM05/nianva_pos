@@ -475,7 +475,12 @@
                                                         "type": "integer"
                                                     },
                                                     "accion": {
-                                                        "type": "string"
+                                                        "type": "string",
+                                                        "enum": [
+                                                            "create",
+                                                            "update",
+                                                            "delete"
+                                                        ]
                                                     },
                                                     "usuario_id": {
                                                         "type": [
@@ -611,7 +616,12 @@
                                                         "type": "integer"
                                                     },
                                                     "accion": {
-                                                        "type": "string"
+                                                        "type": "string",
+                                                        "enum": [
+                                                            "create",
+                                                            "update",
+                                                            "delete"
+                                                        ]
                                                     },
                                                     "usuario_id": {
                                                         "type": [
@@ -9987,7 +9997,12 @@
                         "type": "string"
                     },
                     "estado": {
-                        "type": "string"
+                        "type": "string",
+                        "enum": [
+                            "activo",
+                            "completado",
+                            "cancelado"
+                        ]
                     },
                     "fecha_vencimiento": {
                         "type": [
@@ -10241,7 +10256,11 @@
                         "format": "date-time"
                     },
                     "estado": {
-                        "type": "string"
+                        "type": "string",
+                        "enum": [
+                            "abierta",
+                            "cerrada"
+                        ]
                     }
                 },
                 "required": [
@@ -10664,7 +10683,13 @@
                         "type": "string"
                     },
                     "estado": {
-                        "type": "string"
+                        "type": "string",
+                        "enum": [
+                            "pendiente",
+                            "convertida",
+                            "vencida",
+                            "anulada"
+                        ]
                     },
                     "validez_dias": {
                         "type": "integer"
@@ -11726,7 +11751,12 @@
                         "format": "date-time"
                     },
                     "estado": {
-                        "type": "string"
+                        "type": "string",
+                        "enum": [
+                            "pendiente",
+                            "pagada",
+                            "anulada"
+                        ]
                     },
                     "dias_vencida": {},
                     "abonos": {
@@ -11790,7 +11820,12 @@
                         "format": "date-time"
                     },
                     "estado": {
-                        "type": "string"
+                        "type": "string",
+                        "enum": [
+                            "pendiente",
+                            "pagada",
+                            "anulada"
+                        ]
                     },
                     "abonos": {
                         "type": "array",
@@ -12366,7 +12401,13 @@
                         }
                     },
                     "estado": {
-                        "type": "string"
+                        "type": "string",
+                        "enum": [
+                            "activa",
+                            "usada",
+                            "expirada",
+                            "cancelada"
+                        ]
                     },
                     "created_at": {
                         "type": "string",
@@ -12967,7 +13008,13 @@
                 "type": "object",
                 "properties": {
                     "estado": {
-                        "type": "string"
+                        "type": "string",
+                        "enum": [
+                            "activa",
+                            "vencida",
+                            "revocada",
+                            "prueba"
+                        ]
                     },
                     "tipo": {
                         "type": "string"
@@ -13212,7 +13259,12 @@
                         "type": "string"
                     },
                     "estado": {
-                        "type": "string"
+                        "type": "string",
+                        "enum": [
+                            "calculada",
+                            "pagada",
+                            "cancelada"
+                        ]
                     },
                     "fecha_pago": {
                         "type": [
@@ -13278,7 +13330,14 @@
                         "format": "date-time"
                     },
                     "estado": {
-                        "type": "string"
+                        "type": "string",
+                        "enum": [
+                            "activa",
+                            "usada_parcial",
+                            "usada_total",
+                            "expirada",
+                            "cancelada"
+                        ]
                     },
                     "usos": {
                         "type": "array",
@@ -13361,7 +13420,13 @@
                         ]
                     },
                     "estado": {
-                        "type": "string"
+                        "type": "string",
+                        "enum": [
+                            "pendiente",
+                            "en_proceso",
+                            "completada",
+                            "cancelada"
+                        ]
                     },
                     "notas": {
                         "type": [
@@ -13502,7 +13567,14 @@
                         "type": "string"
                     },
                     "estado": {
-                        "type": "string"
+                        "type": "string",
+                        "enum": [
+                            "pendiente",
+                            "preparando",
+                            "en_camino",
+                            "entregado",
+                            "cancelado"
+                        ]
                     },
                     "tiempo_estimado": {
                         "type": [
@@ -13675,7 +13747,12 @@
                         "format": "date-time"
                     },
                     "estado": {
-                        "type": "string"
+                        "type": "string",
+                        "enum": [
+                            "pendiente",
+                            "pagada",
+                            "vencida"
+                        ]
                     },
                     "monto_interes": {
                         "type": "string"
@@ -13863,7 +13940,12 @@
                         "format": "date-time"
                     },
                     "estado": {
-                        "type": "string"
+                        "type": "string",
+                        "enum": [
+                            "activo",
+                            "pagado",
+                            "cancelado"
+                        ]
                     },
                     "notas": {
                         "type": [
@@ -15048,7 +15130,11 @@
                         "type": "string"
                     },
                     "estado": {
-                        "type": "string"
+                        "type": "string",
+                        "enum": [
+                            "completada",
+                            "anulada"
+                        ]
                     },
                     "motivo_anulacion": {
                         "type": [

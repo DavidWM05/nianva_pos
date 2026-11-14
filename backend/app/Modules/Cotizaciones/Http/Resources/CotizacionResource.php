@@ -26,6 +26,7 @@ class CotizacionResource extends JsonResource
             ]),
             'total' => $this->total,
             'descuento' => $this->descuento,
+            /** @var 'pendiente'|'convertida'|'vencida'|'anulada' */
             'estado' => $this->estado,
             'validez_dias' => $this->validez_dias,
             'fecha_vencimiento' => $this->fecha_vencimiento,

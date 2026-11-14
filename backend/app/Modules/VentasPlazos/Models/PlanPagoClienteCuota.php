@@ -12,6 +12,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 /**
  * Sin tenant_id propio: el aislamiento se resuelve via BelongsToTenantViaRelacion
  * consultando planPagoCliente.tenant_id (ver tenantRelacion()).
+ *
+ * @property 'pendiente'|'pagada'|'vencida' $estado
  */
 #[Fillable([
     'plan_pago_cliente_id', 'numero_cuota', 'monto', 'monto_capital',

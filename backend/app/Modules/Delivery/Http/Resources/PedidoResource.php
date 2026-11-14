@@ -19,6 +19,7 @@ class PedidoResource extends JsonResource
             'referencia' => $this->referencia,
             'direccion_entrega' => $this->direccion_entrega,
             'costo_delivery' => $this->costo_delivery,
+            /** @var 'pendiente'|'preparando'|'en_camino'|'entregado'|'cancelado' */
             'estado' => $this->estado,
             'tiempo_estimado' => $this->tiempo_estimado,
             'notas' => $this->notas,
