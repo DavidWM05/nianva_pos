@@ -1,9 +1,13 @@
+<ui-page-header clave="tpv-ventas" subtitulo="Detalle del registro" />
 <div class="venta-detalle">
   @if (cargando()) {
     <ui-skeleton forma="texto" ancho="12rem" />
     <ui-skeleton forma="bloque" alto="16rem" etiqueta="Cargando venta" />
   } @else if (venta(); as ventaActual) {
-    <h1>Venta #{{ ventaActual.id }}</h1>
+    <div class="venta-detalle__encabezado">
+      <h2>Venta #{{ ventaActual.id }}</h2>
+      <ui-badge entidad="venta" [estado]="ventaActual.estado" />
+    </div>
 
     <nucleo-record-tabs [tabs]="tabs">
       <ng-template>
@@ -15,13 +19,6 @@
             <dd>{{ ventaActual.fecha | fechaHora }}</dd>
             <dt>Total</dt>
             <dd>{{ ventaActual.total | dinero }}</dd>
-            <dt>Estado</dt>
-            <dd>
-              <nucleo-status-badge
-                [value]="ventaActual.estado === 'completada' ? 'completada' : 'anulada'"
-                [colorMap]="{ completada: 'success', anulada: 'danger' }"
-              />
-            </dd>
             @if (ventaActual.estado === 'anulada') {
               <dt>Motivo de anulación</dt>
               <dd>{{ ventaActual.motivo_anulacion }}</dd>
@@ -42,33 +39,7 @@
 
       <ng-template>
         <div class="venta-detalle__tab">
-          <table class="venta-detalle__tabla-lineas">
-            <thead>
-              <tr>
-                <th>Producto</th>
-                <th>Cantidad</th>
-                <th>Precio</th>
-                <th>Descuento</th>
-                <th>Subtotal</th>
-              </tr>
-            </thead>
-            <tbody>
-              @for (detalle of ventaActual.detalles; track detalle.id) {
-                <tr>
-                  <td>
-                    {{ detalle.variante?.producto_nombre }}
-                    @if (detalle.variante?.talla || detalle.variante?.color) {
-                      ({{ detalle.variante.talla }} / {{ detalle.variante.color }})
-                    }
-                  </td>
-                  <td>{{ detalle.cantidad | cantidad }}</td>
-                  <td>{{ detalle.precio_unitario | dinero }}</td>
-                  <td>{{ detalle.descuento_aplicado | dinero }}</td>
-                  <td>{{ detalle.subtotal | dinero }}</td>
-                </tr>
-              }
-            </tbody>
-          </table>
+          <ui-tabla [columnas]="columnasLineas" [filas]="filasLineas()" [meta]="metaLineas()" (cambio)="paginaLineas.set($event)" />
         </div>
       </ng-template>
 

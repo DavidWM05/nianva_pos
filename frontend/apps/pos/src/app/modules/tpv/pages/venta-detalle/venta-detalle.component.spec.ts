@@ -16,6 +16,7 @@ if (typeof globalThis.ResizeObserver === 'undefined') {
 }
 /* eslint-enable @typescript-eslint/no-empty-function */
 
+import { proveedoresDePantalla } from '../../../../testing/proveedores-pantalla';
 import { VentaService } from '../../venta.service';
 import { Venta } from '../../venta.types';
 import { VentaDetalleComponent } from './venta-detalle.component';
@@ -56,6 +57,7 @@ describe('VentaDetalleComponent', () => {
       imports: [VentaDetalleComponent],
       deferBlockBehavior: DeferBlockBehavior.Manual,
       providers: [
+        ...proveedoresDePantalla(),
         provideRouter([]),
         { provide: VentaService, useValue: ventaService },
         { provide: AuditLogSource, useValue: { listar: vi.fn().mockReturnValue(of([])) } },

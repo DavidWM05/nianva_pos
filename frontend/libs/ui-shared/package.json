@@ -8,6 +8,7 @@
     "@angular/material": "22.2.5",
     "@angular/platform-browser": "^22.0.0",
     "@nianva/ui-feedback": "0.0.1",
+    "@nianva/ui-format": "0.0.1",
     "@nianva/ui-layout": "0.0.1",
     "rxjs": "^7.8.0",
     "vitest": "^4.0.8"

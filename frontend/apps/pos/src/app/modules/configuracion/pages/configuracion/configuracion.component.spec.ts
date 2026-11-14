@@ -164,7 +164,7 @@ describe('ConfiguracionComponent', () => {
     const texto = (fixture.nativeElement as HTMLElement).textContent ?? '';
     expect(texto).toContain('activa');
     expect(texto).toContain('saas');
-    expect(fixture.nativeElement.querySelector('nucleo-status-badge')).not.toBeNull();
+    expect(fixture.nativeElement.querySelector('ui-badge .ui-badge')).toBeNull();
   });
 
   it('el tab Licencia muestra un aviso claro cuando esta en periodo de gracia', async () => {

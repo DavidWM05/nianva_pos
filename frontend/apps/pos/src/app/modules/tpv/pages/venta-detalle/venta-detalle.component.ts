@@ -1,13 +1,14 @@
-import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal } from '@angular/core';
 import { MatButton } from '@angular/material/button';
 import { ActivatedRoute, RouterLink } from '@angular/router';
-import { SkeletonComponent } from '@nianva/ui-feedback';
-import { CantidadPipe, DineroPipe, FechaHoraPipe } from '@nianva/ui-format';
-import { DatosComponent } from '@nianva/ui-layout';
-import { AuditLogViewerComponent, RecordTabConfig, RecordTabsComponent, StatusBadgeComponent } from '@nianva/ui-shared';
+import { CambioListado, ColumnaListado, MetaListado, TablaComponent } from '@nianva/ui-data';
+import { BadgeComponent, SkeletonComponent } from '@nianva/ui-feedback';
+import { DineroPipe, FechaHoraPipe } from '@nianva/ui-format';
+import { DatosComponent, PageHeaderComponent } from '@nianva/ui-layout';
+import { AuditLogViewerComponent, RecordTabConfig, RecordTabsComponent } from '@nianva/ui-shared';
 
 import { VentaService } from '../../venta.service';
-import { Venta } from '../../venta.types';
+import { Venta, VentaDetalle } from '../../venta.types';
 
 /**
  * Vista de registro de Venta -- General (resumen + cliente + pago, ver el
@@ -24,14 +25,15 @@ import { Venta } from '../../venta.types';
   imports: [
     RouterLink,
     RecordTabsComponent,
-    StatusBadgeComponent,
+    BadgeComponent,
     AuditLogViewerComponent,
     MatButton,
     SkeletonComponent,
-    CantidadPipe,
+    TablaComponent,
     DineroPipe,
     FechaHoraPipe,
     DatosComponent,
+    PageHeaderComponent,
   ],
   templateUrl: './venta-detalle.component.html',
   styleUrl: './venta-detalle.component.scss',
@@ -50,6 +52,34 @@ export class VentaDetalleComponent implements OnInit {
   protected readonly venta = signal<Venta | null>(null);
   protected readonly cargando = signal(true);
 
+  // Lineas en ui-tabla, paginadas en el cliente como en el detalle de cotizacion y de apartado.
+  protected readonly paginaLineas = signal<CambioListado>({ page: 1, rows: 25, sortField: null, sortOrder: null });
+  protected readonly todasLineas = computed(() =>
+    (this.venta()?.detalles ?? []).map((detalle) => ({
+      ...detalle,
+      productoTexto: this.textoProducto(detalle),
+    })),
+  );
+  protected readonly filasLineas = computed(() => {
+    const { page, rows } = this.paginaLineas();
+
+    return this.todasLineas().slice((page - 1) * rows, page * rows);
+  });
+  protected readonly metaLineas = computed<MetaListado>(() => ({
+    total: this.todasLineas().length,
+    page: this.paginaLineas().page,
+    rows: this.paginaLineas().rows,
+    filtros_aplicados: {},
+    permisos: {},
+  }));
+  protected readonly columnasLineas: ColumnaListado<ReturnType<typeof this.todasLineas>[number]>[] = [
+    { tipo: 'principal', campo: 'productoTexto', encabezado: 'Producto' },
+    { tipo: 'cantidad', campo: 'cantidad', encabezado: 'Cantidad' },
+    { tipo: 'dinero', campo: 'precio_unitario', encabezado: 'Precio' },
+    { tipo: 'dinero', campo: 'descuento_aplicado', encabezado: 'Descuento' },
+    { tipo: 'dinero', campo: 'subtotal', encabezado: 'Subtotal' },
+  ];
+
   ngOnInit(): void {
     const id = Number(this.route.snapshot.paramMap.get('id'));
 
@@ -57,6 +87,13 @@ export class VentaDetalleComponent implements OnInit {
       this.venta.set(venta);
       this.cargando.set(false);
     });
+  }
+
+  private textoProducto(detalle: VentaDetalle): string {
+    const variante = detalle.variante;
+    const nombre = variante?.producto_nombre ?? '';
+
+    return variante?.talla || variante?.color ? `${nombre} (${variante.talla ?? ''} / ${variante.color ?? ''})` : nombre;
   }
 
   protected etiquetaMetodosPago(venta: Venta): string {

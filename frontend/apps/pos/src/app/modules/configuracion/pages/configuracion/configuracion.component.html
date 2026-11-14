@@ -31,20 +31,23 @@
         @if (licenciaCargando()) {
           <ui-skeleton forma="bloque" etiqueta="Cargando licencia" />
         } @else if (licencia(); as licenciaActual) {
-          <div class="configuracion__licencia-estado">
-            <nucleo-status-badge
-              [value]="licenciaActual.estado"
-              [colorMap]="{ activa: 'success', prueba: 'info', vencida: 'warning', revocada: 'danger' }"
-            />
-            @if (licenciaActual.en_periodo_gracia) {
+          @if (licenciaActual.en_periodo_gracia) {
+            <div class="configuracion__licencia-estado">
               <ui-alert tono="advertencia">
                 Última validación exitosa hace {{ licenciaActual.dias_desde_ultima_validacion }} día(s), reintentando
                 conexión con el servidor de licencias.
               </ui-alert>
-            }
-          </div>
+            </div>
+          }
 
           <dl uiDatos>
+            <dt>Estado</dt>
+            <dd>
+              <ui-badge entidad="licencia" [estado]="licenciaActual.estado" />
+              @if (licenciaEnEstadoNormal()) {
+                Licencia activa
+              }
+            </dd>
             <dt>Tipo</dt>
             <dd>{{ licenciaActual.tipo }}</dd>
             <dt>Vence</dt>

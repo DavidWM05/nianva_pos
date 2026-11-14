@@ -13,7 +13,7 @@
           <div class="audit-log-viewer__header">
             <nucleo-status-badge [value]="entry.accion" [colorMap]="accionColorMap" />
             <span class="audit-log-viewer__usuario">{{ entry.usuario_nombre ?? 'Sistema' }}</span>
-            <span class="audit-log-viewer__fecha">{{ entry.fecha | date: 'short' }}</span>
+            <span class="audit-log-viewer__fecha">{{ entry.fecha | fechaHora }}</span>
           </div>
 
           @if (entry.cambios) {

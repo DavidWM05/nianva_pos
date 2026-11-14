@@ -89,6 +89,12 @@ export const REGISTRO_ESTADOS = {
     pagado: { etiqueta: 'Pagado', tono: 'exito', icono: 'pi pi-check' },
     cancelado: { etiqueta: 'Cancelado', tono: 'peligro', icono: 'pi pi-times' },
   },
+  licencia: {
+    activa: null,
+    prueba: { etiqueta: 'Prueba', tono: 'info', icono: 'pi pi-hourglass' },
+    vencida: { etiqueta: 'Vencida', tono: 'advertencia', icono: 'pi pi-clock' },
+    revocada: { etiqueta: 'Revocada', tono: 'peligro', icono: 'pi pi-ban' },
+  },
 } as const satisfies Record<string, Record<string, EstadoVisual | null>>;
 
 export type EntidadConEstado = keyof typeof REGISTRO_ESTADOS;
