@@ -7559,6 +7559,52 @@
                 }
             }
         },
+        "/proveedores/{proveedor}/desactivar": {
+            "patch": {
+                "operationId": "proveedor.desactivar",
+                "summary": "Soft: nunca DELETE fisico -- solo apaga `activo` (DAT-10, ver DesactivarProveedor)",
+                "tags": [
+                    "Proveedor"
+                ],
+                "parameters": [
+                    {
+                        "name": "proveedor",
+                        "in": "path",
+                        "required": true,
+                        "description": "The proveedor ID",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "`ProveedorResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/ProveedorResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
         "/reglas-precio": {
             "get": {
                 "operationId": "reglaPrecio.index",
@@ -8179,28 +8225,6 @@
                             }
                         }
                     },
-                    "422": {
-                        "description": "An error",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "message": {
-                                            "type": "string",
-                                            "description": "Error overview.",
-                                            "examples": [
-                                                "No puedes eliminar un rol con usuarios asignados. Quita el rol de esos usuarios primero."
-                                            ]
-                                        }
-                                    },
-                                    "required": [
-                                        "message"
-                                    ]
-                                }
-                            }
-                        }
-                    },
                     "404": {
                         "$ref": "#/components/responses/ModelNotFoundException"
                     },
@@ -8798,6 +8822,7 @@
             },
             "put": {
                 "operationId": "usuario.update",
+                "summary": "La contrasena opcional, el filtro de roles visibles y la guarda del\nultimo admin (DAT-10) viven en ActualizarUsuario",
                 "tags": [
                     "Usuario"
                 ],
@@ -8856,7 +8881,7 @@
         "/usuarios/{usuario}/desactivar": {
             "patch": {
                 "operationId": "usuario.desactivar",
-                "summary": "Soft: nunca DELETE fisico (igual que el resto del catalogo) -- solo\napaga `activo`. Un usuario no puede desactivarse a si mismo, sin\nimportar el permiso -- se quedaria sin poder volver a entrar a\nrevertirlo",
+                "summary": "Soft: nunca DELETE fisico (igual que el resto del catalogo) -- solo\napaga `activo`. Un usuario no puede desactivarse a si mismo, sin\nimportar el permiso -- se quedaria sin poder volver a entrar a\nrevertirlo. Esa guarda y la del ultimo admin (DAT-10) viven en\nDesactivarUsuario",
                 "tags": [
                     "Usuario"
                 ],
@@ -8890,33 +8915,11 @@
                             }
                         }
                     },
-                    "403": {
-                        "description": "An error",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "message": {
-                                            "type": "string",
-                                            "description": "Error overview.",
-                                            "examples": [
-                                                "No puedes desactivar tu propio usuario."
-                                            ]
-                                        }
-                                    },
-                                    "required": [
-                                        "message"
-                                    ]
-                                }
-                            }
-                        }
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
                     },
                     "404": {
                         "$ref": "#/components/responses/ModelNotFoundException"
-                    },
-                    "401": {
-                        "$ref": "#/components/responses/AuthenticationException"
                     }
                 }
             }
@@ -14199,6 +14202,47 @@
                     "created_at"
                 ],
                 "title": "Proveedor"
+            },
+            "ProveedorResource": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer"
+                    },
+                    "razon_social": {
+                        "type": "string"
+                    },
+                    "rfc": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "telefono": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "correo": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "activo": {
+                        "type": "boolean"
+                    }
+                },
+                "required": [
+                    "id",
+                    "razon_social",
+                    "rfc",
+                    "telefono",
+                    "correo",
+                    "activo"
+                ],
+                "title": "ProveedorResource"
             },
             "RecargarGiftCardRequest": {
                 "type": "object",

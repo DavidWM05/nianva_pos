@@ -119,7 +119,7 @@ Conflicto que se resuelve aquí: C10.
 | DAT-05 | Saldo inicial explícito | Pendiente | — | — |
 | DAT-08 | Identificadores (ULID) | Pendiente | — | — |
 | DAT-09 | Unicidad con tenant: el resto | Pendiente | — | — |
-| DAT-10 | No se borra lo que tiene historia | Pendiente | — | — |
+| DAT-10 | No se borra lo que tiene historia | Hecho | Hecho en `feat/dat10-historia`. Producto, variante, cliente, usuario y proveedor no tienen DELETE (405) y se desactivan con `PATCH …/desactivar`; proveedor gana esa ruta (`inventario.eliminar`, `DesactivarProveedor`, `ProveedorResource`; sin pantalla de proveedores en el frontend). Sucursal no aplica: solo tiene `GET /sucursales`. Borrado físico solo sin dependencias: rol (`EliminarRol`, 422 `tiene_movimientos`, nuevo) y unidad de medida (ya existía: 422 `unidad_en_uso`). Protegidos en la Action: último admin activo del tenant, al desactivarlo o quitarle el rol (`DesactivarUsuario`, `ActualizarUsuario`, 422 `ultimo_admin`); Público General (`DesactivarCliente`, `cliente_sistema`, conserva el 403 que su test ya esperaba); desactivarse a uno mismo pasa a `desactivar_propio_usuario` (mismo 403 y mensaje). Dispositivos confiables (sin historia) y cotizaciones (el DELETE ya anula) no cambian. `Datos/NoSeBorraLoQueTieneHistoriaTest` (17 casos, uno o más por entidad); roles, lista y detalle de usuarios reaccionan por `error_code` | dat10 |
 | DAT-15 | Costo de inventario | Pendiente | — | — |
 | API-02 | Dinero y cantidades como cadena decimal | Pendiente | — | — |
 | ARQ-12b | Servicios de `domain/*` con tipos del contrato | Pendiente | Viene de ARQ-12 (Fase 2): nacen con las libs de dominio | — |

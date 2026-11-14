@@ -180,6 +180,8 @@ Route::middleware('auth:sanctum')->group(function () {
         // Inventario, no uno dedicado.
         Route::get('/proveedores', [ProveedorController::class, 'index'])->middleware('permiso:inventario.ver');
         Route::post('/proveedores', [ProveedorController::class, 'store'])->middleware('permiso:inventario.crear');
+        Route::patch('/proveedores/{proveedor}/desactivar', [ProveedorController::class, 'desactivar'])
+            ->middleware('permiso:inventario.eliminar');
 
         // Unica puerta HTTP hacia InventarioService::registrarCompra() --
         // antes no existia (ver el reporte del bug "no puedo ingresar

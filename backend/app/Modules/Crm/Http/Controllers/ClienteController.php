@@ -2,7 +2,9 @@
 
 namespace App\Modules\Crm\Http\Controllers;
 
+use App\Aplicacion\Crm\DesactivarCliente;
 use App\Http\Controllers\Controller;
+use App\Modules\Crm\Exceptions\ClienteSistemaException;
 use App\Modules\Crm\Http\Requests\GuardarClienteRequest;
 use App\Modules\Crm\Http\Resources\ClienteResource;
 use App\Modules\Crm\Models\Cliente;
@@ -119,19 +121,15 @@ class ClienteController extends Controller
      * distinto al frontend oficial no puede desactivarlo solo porque el
      * boton estaba oculto.
      */
-    public function desactivar(Cliente $cliente)
+    public function desactivar(Cliente $cliente, DesactivarCliente $action)
     {
-        $this->rechazarSiEsSistema($cliente);
-
-        $cliente->update(['activo' => false]);
-
-        return new ClienteResource($cliente);
+        return new ClienteResource($action->ejecutar($cliente));
     }
 
     private function rechazarSiEsSistema(Cliente $cliente): void
     {
         if ($cliente->es_sistema) {
-            abort(403, 'Este es un cliente de sistema y no se puede modificar.');
+            throw new ClienteSistemaException((int) $cliente->getKey());
         }
     }
 }

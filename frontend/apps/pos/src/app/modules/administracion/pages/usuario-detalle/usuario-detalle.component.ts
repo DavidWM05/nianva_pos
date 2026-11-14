@@ -4,7 +4,7 @@ import { ActivatedRoute } from '@angular/router';
 import { MatButton } from '@angular/material/button';
 import { AlertComponent, SkeletonComponent } from '@nianva/ui-feedback';
 import { PageComponent, PageHeaderComponent, SectionComponent } from '@nianva/ui-layout';
-import { AuditLogViewerComponent, RecordTabConfig, RecordTabsComponent, ToastService } from '@nianva/ui-shared';
+import { AuditLogViewerComponent, RecordTabConfig, RecordTabsComponent, ToastService, esErrorNegocio, mensajeError } from '@nianva/ui-shared';
 
 import { AuthStateService } from '../../../../auth/auth-state.service';
 import { TwoFactorCodeInputComponent } from '../../../../auth/two-factor-code-input/two-factor-code-input.component';
@@ -96,6 +96,9 @@ export class UsuarioDetalleComponent implements OnInit {
 
         if (error.status === 422 && error.error?.errors) {
           this.formulario?.setServerErrors(error.error.errors);
+        } else if (esErrorNegocio(error, 'ultimo_admin')) {
+          // DAT-10: al ultimo admin activo no se le quita el rol de admin.
+          this.toast.error(mensajeError(error, 'No se pudo guardar el usuario.'));
         } else {
           this.toast.error('No se pudo guardar el usuario.');
         }

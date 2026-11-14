@@ -12,6 +12,7 @@ Generado con `php artisan errores:catalogo` desde las excepciones de negocio y e
 | `caja_no_abierta` | 422 | `App\Modules\Tpv\Exceptions\CajaSesionNoAbiertaException` | Tpv | sucursal_id |
 | `caja_ya_abierta` | 422 | `App\Modules\Tpv\Exceptions\CajaYaAbiertaException` | Tpv | sucursal_id |
 | `caja_ya_cerrada` | 422 | `App\Modules\Tpv\Exceptions\CajaYaCerradaException` | Tpv | caja_sesion_id |
+| `cliente_sistema` | 403 | `App\Modules\Crm\Exceptions\ClienteSistemaException` | Crm | cliente_id |
 | `conflicto` | 409 | `App\Modules\Nucleo\Support\MapaErroresHttp` | Nucleo | - |
 | `contenido_demasiado_grande` | 413 | `App\Modules\Nucleo\Support\MapaErroresHttp` | Nucleo | - |
 | `cotizacion_no_editable` | 422 | `App\Modules\Cotizaciones\Exceptions\CotizacionNoEditableException` | Cotizaciones | — |
@@ -28,6 +29,7 @@ Generado con `php artisan errores:catalogo` desde las excepciones de negocio y e
 | `cupon_invalido` | 422 | `App\Modules\Precios\Exceptions\CuponInvalidoException` | Precios | codigo |
 | `datos_invalidos` | 422 | `App\Modules\Nucleo\Support\MapaErroresHttp` | Nucleo | - |
 | `demasiadas_solicitudes` | 429 | `App\Modules\Nucleo\Support\MapaErroresHttp` | Nucleo | - |
+| `desactivar_propio_usuario` | 403 | `App\Modules\Nucleo\Exceptions\DesactivarPropioUsuarioException` | Nucleo | usuario_id |
 | `devolucion_excede_cantidad_vendida` | 422 | `App\Modules\Devoluciones\Exceptions\DevolucionExcedeCantidadVendidaException` | Devoluciones | venta_id, variante_id, solicitado, vendido |
 | `devolucion_pago_no_cuadra` | 422 | `App\Modules\Devoluciones\Exceptions\DevolucionPagoNoCuadraException` | Devoluciones | diferencia, suma_pagos |
 | `devolucion_sobre_venta_sombra` | 422 | `App\Modules\Devoluciones\Exceptions\DevolucionSobreVentaSombraException` | Devoluciones | venta_id |
@@ -71,8 +73,10 @@ Generado con `php artisan errores:catalogo` desde las excepciones de negocio y e
 | `sucursal_no_permitida` | 422 | `App\Modules\Nucleo\Exceptions\SucursalNoPermitidaException` | Nucleo | sucursal_id |
 | `sucursal_requerida` | 422 | `App\Modules\Nucleo\Exceptions\SucursalRequeridaException` | Nucleo | — |
 | `tiempo_agotado` | 504 | `App\Modules\Nucleo\Support\MapaErroresHttp` | Nucleo | - |
+| `tiene_movimientos` | 422 | `App\Modules\Nucleo\Exceptions\TieneMovimientosException` | Nucleo | entidad, id |
 | `tipo_contenido_no_soportado` | 415 | `App\Modules\Nucleo\Support\MapaErroresHttp` | Nucleo | - |
 | `transicion_estado_invalida` | 422 | `App\Modules\Delivery\Exceptions\TransicionEstadoInvalidaException` | Delivery | — |
+| `ultimo_admin` | 422 | `App\Modules\Nucleo\Exceptions\UltimoAdminException` | Nucleo | usuario_id |
 | `unidad_en_uso` | 422 | `App\Modules\UnidadesMedida\Exceptions\UnidadEnUsoException` | UnidadesMedida | — |
 | `venta_total_negativo` | 422 | `App\Modules\Tpv\Exceptions\VentaTotalNegativoException` | Tpv | subtotal, descuento_manual, descuento_cupon |
 | `venta_ya_anulada` | 422 | `App\Modules\Tpv\Exceptions\VentaYaAnuladaException` | Tpv | venta_id |

@@ -2,6 +2,7 @@
 
 namespace App\Modules\Nucleo\Http\Controllers;
 
+use App\Aplicacion\Nucleo\EliminarRol;
 use App\Http\Controllers\Controller;
 use App\Modules\Nucleo\Http\Requests\GuardarRolRequest;
 use App\Modules\Nucleo\Http\Resources\RolResource;
@@ -80,15 +81,11 @@ class RolController extends Controller
         return new RolResource($rol);
     }
 
-    public function destroy(Request $request, Rol $rol)
+    public function destroy(Request $request, Rol $rol, EliminarRol $action)
     {
         GuardasDeRecurso::rolSistema($rol, $request->user());
 
-        if ($rol->usuarios()->exists()) {
-            abort(422, 'No puedes eliminar un rol con usuarios asignados. Quita el rol de esos usuarios primero.');
-        }
-
-        $rol->delete();
+        $action->ejecutar($rol);
 
         return response()->json(['data' => null]);
     }
