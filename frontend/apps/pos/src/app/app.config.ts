@@ -2,9 +2,6 @@ import { provideHttpClient, withFetch, withInterceptors } from '@angular/common/
 import { ApplicationConfig, inject, provideAppInitializer, provideBrowserGlobalErrorListeners } from '@angular/core';
 import { TitleStrategy, provideRouter } from '@angular/router';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
-import { providePrimeNG } from 'primeng/config';
-import { ConfirmationService, MessageService } from 'primeng/api';
-import { nucleoPreset } from '@nianva/ui-tokens';
 import { REGISTRO_NAVEGACION, TituloDesdeRegistro } from '@nianva/ui-layout';
 import { AuditLogSource } from '@nianva/ui-shared';
 import { appRoutes } from './app.routes';
@@ -52,8 +49,6 @@ export const appConfig: ApplicationConfig = {
     // El titulo de la pestaña de una pantalla del menu sale del registro, no de su ruta.
     { provide: TitleStrategy, useClass: TituloDesdeRegistro },
     provideAnimationsAsync(),
-    ConfirmationService,
-    MessageService,
     // AuditLogViewerComponent (ui-shared) pide AuditLogSource por DI sin
     // saber que hay detras -- aqui se lo conectamos a la implementacion
     // real contra el backend.
@@ -92,15 +87,5 @@ export const appConfig: ApplicationConfig = {
     provideAppInitializer(() => inject(SesionEntrePestanasService).inicializar()),
     // Tras el login o el 2FA (que solo traen el usuario) carga GET /sesion.
     provideAppInitializer(() => inject(CargaSesionService).iniciar()),
-    // Paleta, tipografia y radios vienen de libs/ui/tokens (nucleoPreset),
-    // nunca del tema Aura default de PrimeNG -- ver libs/ui/tokens/README.md.
-    providePrimeNG({
-      theme: {
-        preset: nucleoPreset,
-        options: {
-          darkModeSelector: '.nv-tema-oscuro',
-        },
-      },
-    }),
   ],
 };

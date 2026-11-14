@@ -61,7 +61,7 @@ test('menu de usuario: se maneja con teclado y la opcion de tema marcada se anun
   const menu = page.getByRole('menu');
   await expect(menu).toBeVisible();
   await expect(menu.getByRole('group', { name: 'Tema' })).toBeVisible();
-  await expect(page.getByRole('menuitemradio', { name: 'Tema claro' })).toHaveAttribute('aria-checked', 'true');
+  await expect(page.getByRole('menuitemradio', { name: 'Tema del sistema' })).toHaveAttribute('aria-checked', 'true');
   await expect(page.getByRole('menuitemradio', { name: 'Tema oscuro' })).toHaveAttribute('aria-checked', 'false');
   await expect(page.getByRole('menuitem', { name: 'Preferencias' })).toBeVisible();
   await expect(page.getByRole('menuitem', { name: 'Cerrar sesión' })).toBeVisible();
@@ -101,6 +101,7 @@ test('tema del sistema: sigue al sistema operativo en vivo', async ({ page }) =>
   await iniciarSesion(page, 'vendedor@abarrotes.test');
   await abrirPantalla(page, '/perfil/preferencias');
 
+  await elegirTema(page, 'Tema claro');
   await page.emulateMedia({ colorScheme: 'dark' });
   expect(await enOscuro(page)).toBe(false);
   await elegirTema(page, 'Tema del sistema');

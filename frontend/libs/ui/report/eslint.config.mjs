@@ -43,7 +43,6 @@ export default [
   {
     files: ['**/*.ts'],
     rules: {
-      'no-restricted-imports': ['error', { patterns: ['primeng', 'primeng/*', '@primeuix/themes', '@primeuix/themes/*'] }],
     },
   },
   {

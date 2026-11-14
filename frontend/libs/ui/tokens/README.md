@@ -10,8 +10,6 @@ breakpoints del frontend. Ningun componente debe escribir un color, espaciado o 
   - `src/styles/tokens.css`: primitivos y semanticos como `--nv-*`, tema claro en `:root` y
     oscuro en `.nv-tema-oscuro`, mas los alias temporales `--nucleo-*`;
   - `src/styles/material.scss`: tema M3 de Angular Material generado desde estos tokens;
-  - `src/lib/primeng-preset.ts`: preset de PrimeNG (Aura) con `colorScheme.light` y
-    `colorScheme.dark`;
   - `src/lib/breakpoints.ts`.
 - Los archivos generados se versionan. No se editan a mano.
 
@@ -26,7 +24,6 @@ node libs/ui/tokens/scripts/generate.mjs --check
 
 ## Consumo
 
-- `apps/pos` importa `nucleoPreset` desde `@nianva/ui-tokens` en `app.config.ts`.
 - El CSS se carga una sola vez desde `apps/pos/src/styles.scss`; el `includePaths` de SCSS
   apunta a `libs/ui/tokens/src/styles`.
 - Las pantallas actuales siguen usando `--nucleo-*`. Esos alias apuntan a los `--nv-*`
@@ -35,8 +32,9 @@ node libs/ui/tokens/scripts/generate.mjs --check
 ## Tema oscuro
 
 `TemaService` aplica `.nv-tema-oscuro` en `<html>` segun `prefers-color-scheme` y la
-preferencia guardada en `localStorage` (`nv-tema`: `claro`, `oscuro` o `sistema`). Todavia
-no hay interruptor visible: las pantallas usan grises primitivos y se migraran despues.
+preferencia guardada en `localStorage` (`nv-tema`: `claro`, `oscuro` o `sistema`). Sin
+preferencia guardada usa `sistema` y sigue los cambios del sistema operativo. El menu de
+usuario permite elegir cualquiera de las tres opciones.
 
 ## Compatibilidad
 
@@ -104,6 +102,3 @@ sale al cambiar `.nv-tema-oscuro`.
 | `shadow` | `--nv-sombra` |
 | `neutral10` | `--nv-sombra` |
 | `neutral-variant20` | `--nv-sombra` |
-## Excepcion: preset de PrimeNG
-
-`src/lib/primeng-preset.ts` es la excepcion temporal de `libs/ui`: importa `@primeuix/themes` (no primeng) y lo usa `apps/pos` en `app.config.ts` para las pantallas que aun no migran. No es una dependencia de los componentes de `libs/ui`. Se retira cuando `apps/pos` deje de usar PrimeNG.

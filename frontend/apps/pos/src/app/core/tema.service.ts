@@ -6,12 +6,9 @@ const CLAVE = 'nv-tema';
 const CLASE_OSCURO = 'nv-tema-oscuro';
 const CONSULTA_OSCURO = '(prefers-color-scheme: dark)';
 
-// Claro por defecto, no 'sistema': hasta que las pantallas migren a los tokens
-// semanticos (plan de la Fase 2, punto 12) el tema oscuro se veria a medias, y aun
-// no hay interruptor para salir de el. Al migrarlas, pasa a 'sistema'.
-// 50i: el interruptor ya existe (menu de usuario del shell); el valor por defecto sigue en
-// 'claro' mientras queden pantallas con PrimeNG y cambia en el 50n.
-const TEMA_POR_DEFECTO: TemaPreferido = 'claro';
+// Sin preferencia guardada, sigue el tema del sistema operativo y sus cambios.
+// El menu de usuario permite elegir claro, oscuro o sistema y conserva la eleccion.
+const TEMA_POR_DEFECTO: TemaPreferido = 'sistema';
 
 @Injectable({ providedIn: 'root' })
 export class TemaService {

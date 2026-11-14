@@ -18,41 +18,12 @@ const contratoPendientes = JSON.parse(
   readFileSync(new URL('./tools/eslint-rules/contrato-pendientes.json', import.meta.url), 'utf8'),
 );
 
-// Serie 50: modulos de apps/pos ya migrados a libs/ui (carpeta bajo src/app/modules). Cada
-// encargo agrega el suyo al cerrar, y desde ahi ESLint prohibe PrimeNG en ese modulo, specs
-// incluidos. La lista solo crece; al final de la serie, PrimeNG sale de todo apps/pos.
-const MODULOS_POS_SIN_PRIMENG = ['unidades-medida', 'auditoria', 'nucleo', 'configuracion', 'precios', 'crm', 'administracion', 'cotizaciones', 'apartados', 'devoluciones', 'notas-credito', 'cuentas-cobrar', 'cuentas-pagar', 'gift-cards', 'ventas-plazos', 'inventario', 'tpv', 'reportes', 'produccion', 'delivery', 'payroll', 'prestamos'];
-// Carpetas de pos fuera de modules/ que ya no usan PrimeNG (50i: shell, perfil y demo; 50j: auth).
-const CARPETAS_POS_SIN_PRIMENG = ['shell', 'perfil', 'demo', 'auth'];
-
-const sinPrimeNg = ['primeng', 'primeng/*', '@primeuix/themes', '@primeuix/themes/*'];
+const sinPrimeNg = ['primeng', 'primeng/*', '@primeuix/*'];
 const sinHttpClientEnComponentes = {
   name: '@angular/common/http',
   importNames: ['HttpClient'],
   message: 'Un componente no llama a la API: mueve la llamada a un servicio de dominio.',
 };
-const archivosDeModulos = (sufijo) => [
-  ...MODULOS_POS_SIN_PRIMENG.map((modulo) => `apps/pos/src/app/modules/${modulo}/**/${sufijo}`),
-  ...CARPETAS_POS_SIN_PRIMENG.map((carpeta) => `apps/pos/src/app/${carpeta}/**/${sufijo}`),
-];
-// Sin modulos no se agrega nada: `files: []` aplicaria el bloque a todos los archivos. El bloque
-// de componentes repite la regla de HttpClient porque un bloque posterior reemplaza la regla
-// completa, no la suma.
-const bloquesSinPrimeNgEnPos =
-  MODULOS_POS_SIN_PRIMENG.length === 0
-    ? []
-    : [
-        {
-          files: archivosDeModulos('*.ts'),
-          rules: { 'no-restricted-imports': ['error', { patterns: sinPrimeNg }] },
-        },
-        {
-          files: archivosDeModulos('*.component.ts'),
-          rules: {
-            'no-restricted-imports': ['error', { paths: [sinHttpClientEnComponentes], patterns: sinPrimeNg }],
-          },
-        },
-      ];
 
 export default [
   ...nx.configs['flat/base'],
@@ -136,50 +107,17 @@ export default [
     },
   },
   {
-    files: ['**/*.component.ts'],
+    files: ['apps/pos/**/*.{ts,tsx,cts,mts,js,jsx,cjs,mjs}', 'libs/**/*.{ts,tsx,cts,mts,js,jsx,cjs,mjs}'],
     rules: {
-      'no-restricted-imports': [
-        'error',
-        {
-          paths: [
-            {
-              name: '@angular/common/http',
-              importNames: ['HttpClient'],
-              message:
-                'Un componente no llama a la API: mueve la llamada a un servicio de dominio.',
-            },
-          ],
-        },
-      ],
+      'no-restricted-imports': ['error', { patterns: sinPrimeNg }],
     },
   },
   {
-    files: ['libs/ui/**/*.ts'],
-    ignores: ['libs/ui/tokens/src/lib/primeng-preset.ts'],
+    files: ['**/*.component.ts', 'libs/ui/**/*.ts', 'libs/ui-shared/**/*.ts'],
     rules: {
-      'no-restricted-imports': [
-        'error',
-        {
-          paths: [
-            {
-              name: '@angular/common/http',
-              importNames: ['HttpClient'],
-              message:
-                'Un componente no llama a la API: mueve la llamada a un servicio de dominio.',
-            },
-          ],
-          patterns: ['primeng', 'primeng/*', '@primeuix/themes', '@primeuix/themes/*'],
-        },
-      ],
+      'no-restricted-imports': ['error', { paths: [sinHttpClientEnComponentes], patterns: sinPrimeNg }],
     },
   },
-  {
-    files: ['libs/ui/tokens/src/lib/primeng-preset.ts'],
-    rules: {
-      'no-restricted-imports': ['error', { patterns: ['primeng', 'primeng/*'] }],
-    },
-  },
-  ...bloquesSinPrimeNgEnPos,
   {
     // API-08: las respuestas de urlApi se tipan con el contrato generado. Los servicios que
     // aun usan interfaces escritas a mano estan en contrato-pendientes.json y salen con la

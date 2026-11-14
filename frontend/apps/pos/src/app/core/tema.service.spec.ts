@@ -22,14 +22,14 @@ describe('TemaService', () => {
     vi.restoreAllMocks();
   });
 
-  it('sin preferencia guardada usa claro aunque el sistema prefiera oscuro', () => {
+  it('sin preferencia guardada usa sistema y sigue la preferencia oscura', () => {
     prepararSistema(true);
     const servicio = new TemaService();
 
     servicio.inicializar();
 
-    expect(servicio.preferencia()).toBe('claro');
-    expect(document.documentElement.classList.contains(CLASE)).toBe(false);
+    expect(servicio.preferencia()).toBe('sistema');
+    expect(document.documentElement.classList.contains(CLASE)).toBe(true);
   });
 
   it('con la preferencia sistema guardada sigue al sistema', () => {
@@ -41,7 +41,7 @@ describe('TemaService', () => {
     expect(document.documentElement.classList.contains(CLASE)).toBe(true);
   });
 
-  it('si localStorage no esta disponible no falla y usa claro', () => {
+  it('si localStorage no esta disponible no falla y usa sistema', () => {
     prepararSistema(true);
     vi.spyOn(Storage.prototype, 'getItem').mockImplementation(() => {
       throw new Error('bloqueado');
@@ -54,7 +54,7 @@ describe('TemaService', () => {
     expect(() => servicio.inicializar()).not.toThrow();
     expect(() => servicio.establecer('oscuro')).not.toThrow();
     expect(document.documentElement.classList.contains(CLASE)).toBe(true);
-    expect(servicio.preferencia()).toBe('claro');
+    expect(servicio.preferencia()).toBe('sistema');
   });
 
   it('respeta una preferencia guardada por encima del sistema', () => {
@@ -148,7 +148,7 @@ describe('TemaService', () => {
     prepararSistema(false);
     const servicio = new TemaService();
     servicio.inicializar();
-    expect(servicio.preferenciaActual()).toBe('claro');
+    expect(servicio.preferenciaActual()).toBe('sistema');
 
     servicio.establecer('sistema');
 

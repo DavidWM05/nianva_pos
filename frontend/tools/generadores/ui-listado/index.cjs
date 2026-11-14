@@ -42,8 +42,9 @@ export interface ${Entidad} {
 `,
     [`${raizModulo}/${o.entidad}-listado.service.ts`]: `import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
+import type { RespuestaDe } from '@nianva/api-contrato';
 import { RespuestaListado } from '@nianva/ui-data';
-import { Observable } from 'rxjs';
+import { Observable, map } from 'rxjs';
 
 import { urlApi } from '../../core/api-config';
 import { ${Entidad} } from './${o.entidad}.types';
@@ -54,7 +55,9 @@ export class ${Entidad}ListadoService {
   private readonly http = inject(HttpClient);
 
   listar(parametros: Record<string, string | number>): Observable<RespuestaListado<${Entidad}>> {
-    return this.http.get<RespuestaListado<${Entidad}>>(urlApi('${o.endpoint}'), { params: parametros });
+    return this.http
+      .get<RespuestaDe<'${o.endpoint}', 'get'>>(urlApi('${o.endpoint}'), { params: parametros })
+      .pipe(map((respuesta) => respuesta as RespuestaListado<${Entidad}>));
   }
 }
 `,
@@ -70,7 +73,7 @@ import {
   parametrosListado,
 } from '@nianva/ui-data';
 import { PageComponent, PageHeaderComponent } from '@nianva/ui-layout';
-import { InputText } from 'primeng/inputtext';
+import { CampoComponent } from '@nianva/ui-forms';
 
 import { ${Entidad}ListadoService } from '../../${o.entidad}-listado.service';
 import { ${Entidad} } from '../../${o.entidad}.types';
@@ -82,7 +85,7 @@ import { ${Entidad} } from '../../${o.entidad}.types';
 @Component({
   selector: 'nucleo-${o.plural}-listado',
   standalone: true,
-  imports: [PageHeaderComponent, PageComponent, FilterBarComponent, TablaComponent, BotonCrearComponent, InputText],
+  imports: [PageHeaderComponent, PageComponent, FilterBarComponent, TablaComponent, BotonCrearComponent, CampoComponent],
   templateUrl: './${o.plural}-listado.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -168,15 +171,16 @@ export class ${Plural}ListadoComponent {
 
 <ui-page [estado]="fallo() ? 'error' : 'listo'" forma="listado" (reintentar)="cargar()">
   <ui-filter-bar [meta]="meta()" [hayFiltros]="hayFiltros()" (limpiar)="limpiar()">
-    <input
-      #buscador
-      pInputText
-      type="search"
-      aria-label="Buscar"
-      placeholder="Buscar"
-      [value]="busqueda()"
-      (keyup.enter)="buscar(buscador.value)"
-    />
+    <ui-campo #campoBuscar etiqueta="Buscar">
+      <input
+        #buscador
+        [id]="campoBuscar.controlId()"
+        type="search"
+        placeholder="Buscar"
+        [value]="busqueda()"
+        (keyup.enter)="buscar(buscador.value)"
+      />
+    </ui-campo>
   </ui-filter-bar>
 
   <ui-tabla
