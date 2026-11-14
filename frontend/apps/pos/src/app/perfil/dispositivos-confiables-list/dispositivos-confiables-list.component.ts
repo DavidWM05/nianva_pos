@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output, inject } from '@angular/core';
-import { DatePipe } from '@angular/common';
 import { MatButton } from '@angular/material/button';
 import { SkeletonComponent } from '@nianva/ui-feedback';
+import { FechaHoraPipe } from '@nianva/ui-format';
 import { ConfirmDialogService } from '@nianva/ui-shared';
 
 import { DispositivoConfiable } from '../seguridad.types';
@@ -18,7 +18,7 @@ import { DispositivoConfiable } from '../seguridad.types';
 @Component({
   selector: 'nucleo-dispositivos-confiables-list',
   standalone: true,
-  imports: [DatePipe, MatButton, SkeletonComponent],
+  imports: [FechaHoraPipe, MatButton, SkeletonComponent],
   templateUrl: './dispositivos-confiables-list.component.html',
   styleUrl: './dispositivos-confiables-list.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

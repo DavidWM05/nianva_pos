@@ -99,6 +99,18 @@ describe('REGISTRO_ESTADOS', () => {
       expect(estadoVisual('accionAuditoria' as EntidadConEstado, valor), valor).not.toBeNull();
     }
   });
+  it('licencia cubre exactamente el enum estado de licencia_local, y el valor por defecto no lleva badge', () => {
+    const columna = enums.get('licencia_local');
+    const registro = (REGISTRO_ESTADOS as Record<string, Record<string, unknown>>)['licencia'];
+
+    expect(columna, 'no se encontro el enum de licencia_local').toBeDefined();
+    expect(Object.keys(registro ?? {}).sort()).toEqual([...(columna?.valores ?? [])].sort());
+    expect(estadoVisual('licencia' as EntidadConEstado, columna?.porDefecto ?? '')).toBeNull();
+    expect(estadoVisual('licencia' as EntidadConEstado, 'vencida')?.tono).toBe('advertencia');
+    expect(estadoVisual('licencia' as EntidadConEstado, 'revocada')?.tono).toBe('peligro');
+    expect(estadoVisual('licencia' as EntidadConEstado, 'prueba')?.tono).toBe('info');
+  });
+
   it('un estado desconocido se muestra tal cual en tono neutro', () => {
     expect(estadoVisual('venta', 'reembolsada')).toEqual({
       etiqueta: 'reembolsada',

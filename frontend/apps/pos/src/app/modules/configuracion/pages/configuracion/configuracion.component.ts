@@ -1,8 +1,8 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { ChangeDetectionStrategy, Component, OnInit, ViewChild, computed, inject, signal } from '@angular/core';
-import { RecordTabConfig, RecordTabsComponent, StatusBadgeComponent, ToastService } from '@nianva/ui-shared';
+import { RecordTabConfig, RecordTabsComponent, ToastService } from '@nianva/ui-shared';
 import { DatosComponent, EstadoPagina, PageComponent, PageHeaderComponent, SectionComponent } from '@nianva/ui-layout';
-import { AlertComponent, SkeletonComponent } from '@nianva/ui-feedback';
+import { AlertComponent, BadgeComponent, SkeletonComponent, estadoVisual } from '@nianva/ui-feedback';
 import { FechaHoraPipe, FechaPipe } from '@nianva/ui-format';
 
 import { ConfiguracionFormComponent } from '../../configuracion-form/configuracion-form.component';
@@ -33,7 +33,7 @@ import {
 @Component({
   selector: 'nucleo-configuracion',
   standalone: true,
-  imports: [AlertComponent, ConfiguracionFormComponent, DatosComponent, ConfiguracionSeguridadFormComponent, FechaHoraPipe, FechaPipe, PageComponent, PageHeaderComponent, RecordTabsComponent, SectionComponent, SkeletonComponent, StatusBadgeComponent],
+  imports: [AlertComponent, BadgeComponent, ConfiguracionFormComponent, DatosComponent, ConfiguracionSeguridadFormComponent, FechaHoraPipe, FechaPipe, PageComponent, PageHeaderComponent, RecordTabsComponent, SectionComponent, SkeletonComponent],
   templateUrl: './configuracion.component.html',
   styleUrl: './configuracion.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -61,6 +61,13 @@ export class ConfiguracionComponent implements OnInit {
 
   protected readonly licenciaCargando = signal(true);
   protected readonly licencia = signal<LicenciaLocal | null>(null);
+  // El estado normal de la licencia no lleva badge (UI-06), pero es el dato principal de la
+  // pestana: se dice en texto.
+  protected readonly licenciaEnEstadoNormal = computed(() => {
+    const licencia = this.licencia();
+
+    return licencia !== null && estadoVisual('licencia', licencia.estado) === null;
+  });
   protected readonly estadoPagina = computed<EstadoPagina>(() => (this.cargando() ? 'cargando' : 'listo'));
 
   ngOnInit(): void {
