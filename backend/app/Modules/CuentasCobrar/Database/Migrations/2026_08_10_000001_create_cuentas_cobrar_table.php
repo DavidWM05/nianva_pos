@@ -14,8 +14,8 @@ return new class extends Migration
             $table->foreignId('venta_id')->constrained('ventas')->restrictOnDelete()
                 ->comment('Venta que origina la deuda');
             $table->foreignId('cliente_id')->constrained('clientes')->restrictOnDelete();
-            $table->decimal('monto_total', 10, 2);
-            $table->decimal('saldo_pendiente', 10, 2);
+            $table->decimal('monto_total', 12, 2);
+            $table->decimal('saldo_pendiente', 12, 2);
             $table->date('fecha_vencimiento')->nullable()
                 ->comment('Default: fecha_venta + N dias (configurable)');
             $table->enum('estado', ['pendiente', 'pagada', 'anulada'])->default('pendiente');

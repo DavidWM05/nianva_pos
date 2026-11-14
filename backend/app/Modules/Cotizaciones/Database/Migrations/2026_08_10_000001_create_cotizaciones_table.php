@@ -16,8 +16,8 @@ return new class extends Migration
                 ->comment('NULL = cotizacion sin cliente');
             $table->foreignId('usuario_id')->constrained('usuarios')->restrictOnDelete();
             $table->string('numero_cotizacion', 30);
-            $table->decimal('total', 10, 2);
-            $table->decimal('descuento', 10, 2)->default(0);
+            $table->decimal('total', 12, 2);
+            $table->decimal('descuento', 12, 2)->default(0);
             $table->integer('validez_dias')->unsigned()->default(15);
             $table->enum('estado', ['pendiente', 'convertida', 'vencida', 'anulada'])->default('pendiente');
             $table->foreignId('venta_id')->nullable()->constrained('ventas')->nullOnDelete()

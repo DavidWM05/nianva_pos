@@ -17,10 +17,10 @@ return new class extends Migration
             $table->foreignId('cliente_id')->constrained('clientes')->restrictOnDelete();
             $table->foreignId('cupon_id')->nullable()->constrained('cupones')->nullOnDelete();
             $table->dateTime('fecha')->useCurrent();
-            $table->decimal('total', 10, 2);
-            $table->decimal('descuento_cupon', 10, 2)->default(0);
-            $table->decimal('descuento_manual', 10, 2)->default(0);
-            $table->decimal('abono_previo', 10, 2)->default(0)->comment('liquidacion de apartado: lo ya cobrado antes');
+            $table->decimal('total', 12, 2);
+            $table->decimal('descuento_cupon', 12, 2)->default(0);
+            $table->decimal('descuento_manual', 12, 2)->default(0);
+            $table->decimal('abono_previo', 12, 2)->default(0)->comment('liquidacion de apartado: lo ya cobrado antes');
             $table->boolean('es_venta_sombra')->default(false)->comment('true = venta generada por un cambio; excluir de reportes financieros');
             $table->enum('estado', ['completada', 'anulada'])->default('completada');
             $table->string('motivo_anulacion', 255)->nullable();

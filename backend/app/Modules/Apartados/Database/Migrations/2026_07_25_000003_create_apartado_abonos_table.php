@@ -11,7 +11,7 @@ return new class extends Migration
         Schema::create('apartado_abonos', function (Blueprint $table) {
             $table->id();
             $table->foreignId('apartado_id')->constrained('apartados')->cascadeOnDelete();
-            $table->decimal('monto', 10, 2);
+            $table->decimal('monto', 12, 2);
             $table->dateTime('fecha')->useCurrent();
             $table->foreignId('usuario_id')->constrained('usuarios')->restrictOnDelete();
             $table->text('notas')->nullable();

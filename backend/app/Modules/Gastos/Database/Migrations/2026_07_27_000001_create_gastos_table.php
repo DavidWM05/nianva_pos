@@ -14,7 +14,7 @@ return new class extends Migration
             $table->foreignId('sucursal_id')->constrained('sucursales')->restrictOnDelete();
             $table->foreignId('usuario_id')->constrained('usuarios')->restrictOnDelete();
             $table->string('descripcion', 255);
-            $table->decimal('monto', 10, 2);
+            $table->decimal('monto', 12, 2);
             $table->dateTime('fecha')->useCurrent();
         });
     }

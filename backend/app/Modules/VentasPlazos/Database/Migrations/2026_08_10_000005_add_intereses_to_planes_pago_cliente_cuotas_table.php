@@ -9,9 +9,9 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('planes_pago_cliente_cuotas', function (Blueprint $table) {
-            $table->decimal('monto_interes', 10, 2)->default(0)->after('monto')
+            $table->decimal('monto_interes', 12, 2)->default(0)->after('monto')
                 ->comment('Porcion de interes en esta cuota');
-            $table->decimal('monto_capital', 10, 2)->default(0)->after('monto_interes')
+            $table->decimal('monto_capital', 12, 2)->default(0)->after('monto_interes')
                 ->comment('Porcion de capital en esta cuota');
             $table->dateTime('fecha_pago_real')->nullable()->after('fecha_pago');
         });

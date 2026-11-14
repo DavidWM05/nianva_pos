@@ -16,7 +16,7 @@ return new class extends Migration
             $table->foreignId('usuario_id')->constrained('usuarios')->restrictOnDelete();
             $table->string('numero_comprobante', 60)->nullable();
             $table->string('comprobante_url', 500)->nullable();
-            $table->decimal('total', 10, 2);
+            $table->decimal('total', 12, 2);
             $table->dateTime('fecha')->useCurrent();
         });
     }

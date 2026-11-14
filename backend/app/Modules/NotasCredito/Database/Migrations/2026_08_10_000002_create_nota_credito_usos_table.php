@@ -12,7 +12,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('nota_credito_id')->constrained('notas_credito')->cascadeOnDelete();
             $table->foreignId('venta_id')->constrained('ventas')->restrictOnDelete();
-            $table->decimal('monto_usado', 10, 2);
+            $table->decimal('monto_usado', 12, 2);
             $table->dateTime('created_at')->useCurrent();
 
             $table->index('nota_credito_id');

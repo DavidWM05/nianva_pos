@@ -14,8 +14,8 @@ return new class extends Migration
             $table->string('slug', 80)->unique();
             $table->unsignedInteger('limite_usuarios')->nullable()->comment('NULL = ilimitado');
             $table->unsignedInteger('limite_sucursales')->nullable()->comment('NULL = ilimitado');
-            $table->decimal('precio_mensual', 10, 2)->nullable();
-            $table->decimal('precio_anual', 10, 2)->nullable();
+            $table->decimal('precio_mensual', 12, 2)->nullable();
+            $table->decimal('precio_anual', 12, 2)->nullable();
             $table->json('features')->nullable();
             $table->boolean('activo')->default(true);
             $table->dateTime('created_at')->useCurrent();

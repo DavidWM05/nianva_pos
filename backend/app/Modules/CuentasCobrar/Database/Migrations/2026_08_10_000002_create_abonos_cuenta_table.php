@@ -14,7 +14,7 @@ return new class extends Migration
             $table->foreignId('caja_sesion_id')->nullable()->constrained('caja_sesiones')->nullOnDelete()
                 ->comment('Caja donde se recibio');
             $table->foreignId('usuario_id')->constrained('usuarios')->restrictOnDelete();
-            $table->decimal('monto', 10, 2);
+            $table->decimal('monto', 12, 2);
             $table->foreignId('metodo_pago_id')->constrained('metodos_pago')->restrictOnDelete();
             $table->string('referencia', 100)->nullable()
                 ->comment('Nro. transferencia, cheque, etc.');

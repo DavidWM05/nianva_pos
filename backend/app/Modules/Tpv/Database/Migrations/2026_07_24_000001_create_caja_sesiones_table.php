@@ -12,10 +12,10 @@ return new class extends Migration
             $table->id();
             $table->foreignId('sucursal_id')->constrained('sucursales')->restrictOnDelete();
             $table->foreignId('usuario_id')->constrained('usuarios')->restrictOnDelete();
-            $table->decimal('monto_apertura', 10, 2);
-            $table->decimal('monto_cierre', 10, 2)->nullable();
-            $table->decimal('total_ventas_sistema', 10, 2)->nullable();
-            $table->decimal('diferencia', 10, 2)->nullable();
+            $table->decimal('monto_apertura', 12, 2);
+            $table->decimal('monto_cierre', 12, 2)->nullable();
+            $table->decimal('total_ventas_sistema', 12, 2)->nullable();
+            $table->decimal('diferencia', 12, 2)->nullable();
             $table->dateTime('fecha_apertura')->useCurrent();
             $table->dateTime('fecha_cierre')->nullable();
             $table->enum('estado', ['abierta', 'cerrada'])->default('abierta');

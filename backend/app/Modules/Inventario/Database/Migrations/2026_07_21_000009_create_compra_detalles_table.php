@@ -13,8 +13,8 @@ return new class extends Migration
             $table->foreignId('compra_id')->constrained('compras')->cascadeOnDelete();
             $table->foreignId('variante_id')->constrained('producto_variantes')->restrictOnDelete();
             $table->integer('cantidad');
-            $table->decimal('precio_compra', 10, 2);
-            $table->decimal('subtotal', 10, 2);
+            $table->decimal('precio_compra', 12, 2);
+            $table->decimal('subtotal', 12, 2);
         });
     }
 

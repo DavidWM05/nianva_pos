@@ -14,8 +14,8 @@ return new class extends Migration
             $table->foreignId('cliente_id')->constrained('clientes')->restrictOnDelete();
             $table->foreignId('devolucion_id')->constrained('devoluciones')->restrictOnDelete()
                 ->comment('Devolucion que la origino');
-            $table->decimal('monto_original', 10, 2);
-            $table->decimal('saldo_disponible', 10, 2);
+            $table->decimal('monto_original', 12, 2);
+            $table->decimal('saldo_disponible', 12, 2);
             $table->date('fecha_expiracion')->nullable();
             $table->enum('estado', ['activa', 'usada_parcial', 'usada_total', 'expirada', 'cancelada'])->default('activa');
             $table->dateTime('created_at')->useCurrent();

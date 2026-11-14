@@ -12,7 +12,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('venta_id')->constrained('ventas')->cascadeOnDelete();
             $table->foreignId('metodo_pago_id')->constrained('metodos_pago')->restrictOnDelete();
-            $table->decimal('monto', 10, 2);
+            $table->decimal('monto', 12, 2);
         });
     }
 

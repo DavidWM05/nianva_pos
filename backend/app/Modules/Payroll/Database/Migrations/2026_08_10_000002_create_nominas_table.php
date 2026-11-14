@@ -14,9 +14,9 @@ return new class extends Migration
             $table->foreignId('sucursal_id')->constrained('sucursales')->restrictOnDelete();
             $table->date('periodo_inicio');
             $table->date('periodo_fin');
-            $table->decimal('total_percepciones', 10, 2)->default(0);
-            $table->decimal('total_deducciones', 10, 2)->default(0);
-            $table->decimal('total_neto', 10, 2)->default(0);
+            $table->decimal('total_percepciones', 12, 2)->default(0);
+            $table->decimal('total_deducciones', 12, 2)->default(0);
+            $table->decimal('total_neto', 12, 2)->default(0);
             $table->enum('estado', ['calculada', 'pagada', 'cancelada'])->default('calculada');
             $table->date('fecha_pago')->nullable();
             $table->dateTime('created_at')->useCurrent();

@@ -15,8 +15,8 @@ return new class extends Migration
             $table->foreignId('departamento_id')->nullable()->constrained('departamentos')->nullOnDelete();
             $table->string('nombre', 200);
             $table->text('descripcion')->nullable();
-            $table->decimal('precio_compra', 10, 2)->default(0);
-            $table->decimal('precio_venta', 10, 2)->default(0);
+            $table->decimal('precio_compra', 12, 2)->default(0);
+            $table->decimal('precio_venta', 12, 2)->default(0);
             $table->string('imagen_url', 500)->nullable();
             $table->boolean('no_resurtible')->default(false);
             $table->boolean('sin_descuento')->default(false);
