@@ -12852,19 +12852,19 @@
                         ]
                     },
                     "roles": {
-                        "type": [
-                            "array",
-                            "null"
-                        ],
+                        "type": "array",
+                        "description": "Todo usuario de un tenant tiene al menos un rol: sin rol entra pero no ve nada.\nEn edicion es parcial: si `roles` no llega, conserva los actuales.",
                         "items": {
                             "type": "integer"
-                        }
+                        },
+                        "minItems": 1
                     }
                 },
                 "required": [
                     "nombre",
                     "correo",
-                    "password"
+                    "password",
+                    "roles"
                 ],
                 "title": "GuardarUsuarioRequest"
             },
