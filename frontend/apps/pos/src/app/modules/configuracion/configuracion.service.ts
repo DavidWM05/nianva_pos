@@ -50,7 +50,9 @@ export class ConfiguracionService {
   }
 
   actualizarSeguridad(payload: ConfiguracionSeguridad): Observable<ConfiguracionSeguridad> {
-    return this.http.put<ConfiguracionSeguridad>(urlApi(`/configuracion-seguridad`), payload);
+    const cuerpo: CuerpoDe<'/configuracion-seguridad', 'put'> = payload;
+
+    return this.http.put<RespuestaDe<'/configuracion-seguridad', 'put'>>(urlApi(`/configuracion-seguridad`), cuerpo);
   }
 
   /**

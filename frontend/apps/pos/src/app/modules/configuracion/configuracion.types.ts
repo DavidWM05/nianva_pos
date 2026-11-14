@@ -1,3 +1,5 @@
+import type { ConfiguracionSeguridadResource } from '@nianva/api-contrato';
+
 /** Espejo de ConfiguracionTenantResource del backend (backend/app/Modules/Configuracion). */
 export type FrecuenciaBackup = 'diario' | 'semanal' | 'mensual';
 
@@ -23,12 +25,9 @@ export type ConfiguracionTenantFormPayload = Omit<ConfiguracionTenant, 'backup_u
  * "recordar este dispositivo" por tenant. Vive en el tab Empresa de esta
  * pantalla (antes en el perfil de Preferencias, ver el reporte): es
  * politica de toda la empresa, no algo personal del usuario.
+ * Sale del contrato: minutos_inactividad es obligatorio (5-480), como en el backend.
  */
-export interface ConfiguracionSeguridad {
-  dias_dispositivo_normal: number;
-  dias_dispositivo_admin: number;
-  minutos_inactividad?: number;
-}
+export type ConfiguracionSeguridad = ConfiguracionSeguridadResource;
 
 /** Espejo de LicenciaLocalResource. */
 export type LicenciaEstado = 'activa' | 'vencida' | 'revocada' | 'prueba';
