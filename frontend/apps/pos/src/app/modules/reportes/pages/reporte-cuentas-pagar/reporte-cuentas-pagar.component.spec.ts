@@ -34,8 +34,8 @@ describe('ReporteCuentasPagarComponent', () => {
 
     expect(cuentaPagarService.reporte).toHaveBeenCalledTimes(1);
     const texto = (fixture.nativeElement as HTMLElement).textContent ?? '';
-    expect(texto).toContain('$8000');
-    expect(texto).toContain('$3000');
+    expect(texto).toContain('$8,000.00');
+    expect(texto).toContain('$3,000.00');
     expect(texto).toContain('Distribuidora X');
   });
 

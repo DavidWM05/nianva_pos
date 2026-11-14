@@ -177,7 +177,7 @@ describe('CajaComponent', () => {
 
     const texto = (fixture.nativeElement as HTMLElement).textContent ?? '';
     expect(texto).toContain('Caja cerrada');
-    expect(texto).toContain('-20.00');
+    expect(texto).toContain('-$20.00');
   });
 
   it('al cerrar la caja, muestra el desglose del total teorico (gastos, abonos CxC, recargas GC, pagos CxP)', async () => {

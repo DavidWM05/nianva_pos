@@ -9,17 +9,17 @@
         <h3>Caja cerrada</h3>
         <dl uiDatos>
           <dt>Monto de apertura</dt>
-          <dd>${{ cerrada.monto_apertura }}</dd>
+          <dd>{{ cerrada.monto_apertura | dinero }}</dd>
           <dt>Ventas del sistema</dt>
-          <dd>${{ cerrada.total_ventas_sistema }}</dd>
+          <dd>{{ cerrada.total_ventas_sistema | dinero }}</dd>
           <dt>Monto físico contado</dt>
-          <dd>${{ cerrada.monto_cierre }}</dd>
+          <dd>{{ cerrada.monto_cierre | dinero }}</dd>
           <dt>Diferencia</dt>
           <dd
             [class.caja__diferencia--positiva]="+cerrada.diferencia! > 0"
             [class.caja__diferencia--negativa]="+cerrada.diferencia! < 0"
           >
-            ${{ cerrada.diferencia }}
+            {{ cerrada.diferencia | dinero }}
           </dd>
         </dl>
 
@@ -27,13 +27,13 @@
           <h4>Desglose del total teórico</h4>
           <dl uiDatos>
             <dt>Gastos</dt>
-            <dd>-${{ desglose.total_gastos }}</dd>
+            <dd>-{{ desglose.total_gastos | dinero }}</dd>
             <dt>Abonos de cuentas por cobrar</dt>
-            <dd>+${{ desglose.total_abonos_cxc }}</dd>
+            <dd>+{{ desglose.total_abonos_cxc | dinero }}</dd>
             <dt>Recargas de gift card</dt>
-            <dd>+${{ desglose.total_recargas_gc }}</dd>
+            <dd>+{{ desglose.total_recargas_gc | dinero }}</dd>
             <dt>Pagos de cuentas por pagar</dt>
-            <dd>-${{ desglose.total_pagos_cxp }}</dd>
+            <dd>-{{ desglose.total_pagos_cxp | dinero }}</dd>
           </dl>
         }
 
@@ -48,13 +48,13 @@
           <dt>Abierta desde</dt>
           <dd>{{ sesion.fecha_apertura | fechaHora }}</dd>
           <dt>Monto de apertura</dt>
-          <dd>${{ sesion.monto_apertura }}</dd>
+          <dd>{{ sesion.monto_apertura | dinero }}</dd>
           <dt>Ventas de la sesión</dt>
           <dd>{{ estadoActual.resumen?.ventas_count ?? 0 }}</dd>
           <dt>Total acumulado</dt>
-          <dd>${{ estadoActual.resumen?.total_ventas ?? 0 }}</dd>
+          <dd>{{ estadoActual.resumen?.total_ventas ?? 0 | dinero }}</dd>
           <dt>Gastos</dt>
-          <dd>${{ estadoActual.resumen?.total_gastos ?? 0 }}</dd>
+          <dd>{{ estadoActual.resumen?.total_gastos ?? 0 | dinero }}</dd>
         </dl>
 
         @if (estadoActual.permisos.cerrar) {
@@ -96,7 +96,7 @@
                 @for (gasto of gastos(); track gasto.id) {
                   <tr>
                     <td>{{ gasto.descripcion }}</td>
-                    <td>${{ gasto.monto }}</td>
+                    <td>{{ gasto.monto | dinero }}</td>
                     <td>{{ gasto.fecha | fechaHora }}</td>
                   </tr>
                 }

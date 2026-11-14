@@ -55,19 +55,19 @@
       <div class="reporte-crm__tiles">
         <div class="reporte-crm__tile">
           <h3>Puntos ganados</h3>
-          <p class="reporte-crm__tile-valor">{{ r.loyalty.puntos_ganados_total }}</p>
+          <p class="reporte-crm__tile-valor">{{ r.loyalty.puntos_ganados_total | cantidad }}</p>
         </div>
         <div class="reporte-crm__tile">
           <h3>Puntos canjeados</h3>
-          <p class="reporte-crm__tile-valor">{{ r.loyalty.puntos_canjeados_total }}</p>
+          <p class="reporte-crm__tile-valor">{{ r.loyalty.puntos_canjeados_total | cantidad }}</p>
         </div>
         <div class="reporte-crm__tile">
           <h3>Puntos vencidos</h3>
-          <p class="reporte-crm__tile-valor">{{ r.loyalty.puntos_vencidos_total }}</p>
+          <p class="reporte-crm__tile-valor">{{ r.loyalty.puntos_vencidos_total | cantidad }}</p>
         </div>
         <div class="reporte-crm__tile">
           <h3>Saldo actual</h3>
-          <p class="reporte-crm__tile-valor reporte-crm__tile-valor--vip">{{ r.loyalty.saldo_actual_total }}</p>
+          <p class="reporte-crm__tile-valor reporte-crm__tile-valor--vip">{{ r.loyalty.saldo_actual_total | cantidad }}</p>
         </div>
       </div>
     </section>
@@ -90,7 +90,7 @@
                 <td>{{ campana.asunto }}</td>
                 <td>{{ campana.segmento ?? '—' }}</td>
                 <td>{{ campana.destinatarios }}</td>
-                <td>{{ campana.enviado_en | date: 'short' }}</td>
+                <td>{{ campana.enviado_en | fechaHora }}</td>
               </tr>
             }
           </tbody>

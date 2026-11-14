@@ -44,7 +44,7 @@ describe('ReporteVentasComponent', () => {
 
     expect(ventaService.reporte).toHaveBeenCalledWith({ fechaDesde: null, fechaHasta: null, sucursalId: null });
     const texto = (fixture.nativeElement as HTMLElement).textContent ?? '';
-    expect(texto).toContain('$125000');
+    expect(texto).toContain('$125,000.00');
     expect(texto).toContain('340');
     expect(texto).toContain('Playera básica');
   });
