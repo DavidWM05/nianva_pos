@@ -2776,7 +2776,11 @@ export interface components {
             password: string;
             telefono?: string | null;
             sucursal_id?: number | null;
-            roles?: number[] | null;
+            /**
+             * @description Todo usuario de un tenant tiene al menos un rol: sin rol entra pero no ve nada.
+             *     En edicion es parcial: si `roles` no llega, conserva los actuales.
+             */
+            roles: number[];
         };
         /** InsumoResource */
         InsumoResource: {
