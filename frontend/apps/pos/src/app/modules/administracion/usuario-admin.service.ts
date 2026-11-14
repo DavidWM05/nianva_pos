@@ -1,5 +1,6 @@
 import { HttpClient, HttpContext, HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
+import type { CuerpoDe, RespuestaDe } from '@nianva/api-contrato';
 import { DataTableLazyEvent } from '@nianva/ui-shared';
 import { Observable, map } from 'rxjs';
 
@@ -41,10 +42,10 @@ export class UsuarioAdminService {
     }
 
     return this.http
-      .get<{ data: UsuarioAdmin[]; meta: { total: number; permisos: UsuariosPermisos } }>(urlApi(`/usuarios`), {
+      .get<RespuestaDe<'/usuarios', 'get'>>(urlApi(`/usuarios`), {
         params,
       })
-      .pipe(map((r) => ({ data: r.data, total: r.meta.total, permisos: r.meta.permisos })));
+      .pipe(map((r) => ({ data: r.data as UsuarioAdmin[], total: r.meta.total, permisos: r.meta.permisos })));
   }
 
   /** Lista completa (sin paginar) para el selector de usuario del navegador global de Auditoría. */
@@ -56,24 +57,28 @@ export class UsuarioAdminService {
 
   obtener(id: number): Observable<{ usuario: UsuarioAdmin; permisos: UsuariosPermisos }> {
     return this.http
-      .get<{ data: UsuarioAdmin; meta: { permisos: UsuariosPermisos } }>(urlApi(`/usuarios/${id}`))
-      .pipe(map((r) => ({ usuario: r.data, permisos: r.meta.permisos })));
+      .get<RespuestaDe<'/usuarios/{usuario}', 'get'>>(urlApi(`/usuarios/${id}`))
+      .pipe(map((r) => ({ usuario: r.data as UsuarioAdmin, permisos: r.meta.permisos })));
   }
 
   crear(payload: UsuarioFormPayload): Observable<UsuarioAdmin> {
-    return this.http.post<{ data: UsuarioAdmin }>(urlApi(`/usuarios`), payload).pipe(map((r) => r.data));
+    const cuerpo = payload as CuerpoDe<'/usuarios', 'post'>;
+
+    return this.http.post<RespuestaDe<'/usuarios', 'post'>>(urlApi(`/usuarios`), cuerpo).pipe(map((r) => r.data as UsuarioAdmin));
   }
 
   actualizar(id: number, payload: UsuarioFormPayload): Observable<UsuarioAdmin> {
+    const cuerpo = payload as CuerpoDe<'/usuarios/{usuario}', 'put'>;
+
     return this.http
-      .put<{ data: UsuarioAdmin }>(urlApi(`/usuarios/${id}`), payload)
-      .pipe(map((r) => r.data));
+      .put<RespuestaDe<'/usuarios/{usuario}', 'put'>>(urlApi(`/usuarios/${id}`), cuerpo)
+      .pipe(map((r) => r.data as UsuarioAdmin));
   }
 
   desactivar(id: number): Observable<UsuarioAdmin> {
     return this.http
-      .patch<{ data: UsuarioAdmin }>(urlApi(`/usuarios/${id}/desactivar`), {})
-      .pipe(map((r) => r.data));
+      .patch<RespuestaDe<'/usuarios/{usuario}/desactivar', 'patch'>>(urlApi(`/usuarios/${id}/desactivar`), {})
+      .pipe(map((r) => r.data as UsuarioAdmin));
   }
 
   /**
@@ -85,9 +90,9 @@ export class UsuarioAdminService {
    */
   desactivarDosFactor(id: number, code?: string): Observable<UsuarioAdmin> {
     return this.http
-      .post<{ data: UsuarioAdmin }>(urlApi(`/usuarios/${id}/desactivar-2fa`), code ? { code } : {}, {
+      .post<RespuestaDe<'/usuarios/{usuario}/desactivar-2fa', 'post'>>(urlApi(`/usuarios/${id}/desactivar-2fa`), code ? { code } : {}, {
         context: this.contextoErrorEnPantalla,
       })
-      .pipe(map((r) => r.data));
+      .pipe(map((r) => r.data as UsuarioAdmin));
   }
 }

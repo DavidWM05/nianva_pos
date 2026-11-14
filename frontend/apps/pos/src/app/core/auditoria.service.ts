@@ -1,5 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
+import type { RespuestaDe } from '@nianva/api-contrato';
 import { AuditLogEntry, AuditLogSource } from '@nianva/ui-shared';
 import { Observable, map } from 'rxjs';
 
@@ -16,9 +17,9 @@ export class AuditoriaService implements AuditLogSource {
 
   listar(tabla: string, registroId: number): Observable<AuditLogEntry[]> {
     return this.http
-      .get<{ data: AuditLogEntry[] }>(urlApi(`/auditoria`), {
+      .get<RespuestaDe<'/auditoria', 'get'>>(urlApi(`/auditoria`), {
         params: { tabla, registro_id: String(registroId) },
       })
-      .pipe(map((respuesta) => respuesta.data));
+      .pipe(map((respuesta) => respuesta.data as AuditLogEntry[]));
   }
 }

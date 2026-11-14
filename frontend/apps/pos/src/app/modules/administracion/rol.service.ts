@@ -1,5 +1,6 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
+import type { CuerpoDe, RespuestaDe } from '@nianva/api-contrato';
 import { DataTableLazyEvent } from '@nianva/ui-shared';
 import { Observable, map } from 'rxjs';
 
@@ -30,8 +31,8 @@ export class RolService {
     }
 
     return this.http
-      .get<{ data: Rol[]; meta: { total: number; permisos: RolesPermisos } }>(urlApi(`/roles`), { params })
-      .pipe(map((r) => ({ data: r.data, total: r.meta.total, permisos: r.meta.permisos })));
+      .get<RespuestaDe<'/roles', 'get'>>(urlApi(`/roles`), { params })
+      .pipe(map((r) => ({ data: r.data as Rol[], total: r.meta.total, permisos: r.meta.permisos })));
   }
 
   /** Lista completa (sin paginar) para el selector de roles de UsuarioFormComponent. */
@@ -43,16 +44,20 @@ export class RolService {
 
   obtener(id: number): Observable<{ rol: Rol; permisos: RolesPermisos }> {
     return this.http
-      .get<{ data: Rol; meta: { permisos: RolesPermisos } }>(urlApi(`/roles/${id}`))
-      .pipe(map((r) => ({ rol: r.data, permisos: r.meta.permisos })));
+      .get<RespuestaDe<'/roles/{rol}', 'get'>>(urlApi(`/roles/${id}`))
+      .pipe(map((r) => ({ rol: r.data as Rol, permisos: r.meta.permisos })));
   }
 
   crear(payload: RolFormPayload): Observable<Rol> {
-    return this.http.post<{ data: Rol }>(urlApi(`/roles`), payload).pipe(map((r) => r.data));
+    const cuerpo: CuerpoDe<'/roles', 'post'> = payload;
+
+    return this.http.post<RespuestaDe<'/roles', 'post'>>(urlApi(`/roles`), cuerpo).pipe(map((r) => r.data as Rol));
   }
 
   actualizar(id: number, payload: RolFormPayload): Observable<Rol> {
-    return this.http.put<{ data: Rol }>(urlApi(`/roles/${id}`), payload).pipe(map((r) => r.data));
+    const cuerpo: CuerpoDe<'/roles/{rol}', 'put'> = payload;
+
+    return this.http.put<RespuestaDe<'/roles/{rol}', 'put'>>(urlApi(`/roles/${id}`), cuerpo).pipe(map((r) => r.data as Rol));
   }
 
   eliminar(id: number): Observable<void> {
