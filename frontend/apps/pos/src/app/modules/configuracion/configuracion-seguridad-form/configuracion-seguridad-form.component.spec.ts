@@ -20,7 +20,7 @@ describe('ConfiguracionSeguridadFormComponent', () => {
     // ngOnChanges no se dispara solo -- normalmente lo llama Angular cuando
     // el binding [valorInicial] cambia desde una plantilla host; aqui no
     // hay plantilla host, asi que se llama a mano tras asignar el input.
-    fixture.componentInstance.valorInicial = { dias_dispositivo_normal: 30, dias_dispositivo_admin: 14 };
+    fixture.componentInstance.valorInicial = { dias_dispositivo_normal: 30, dias_dispositivo_admin: 14, minutos_inactividad: 30 };
     fixture.componentInstance.ngOnChanges();
     fixture.detectChanges();
 
@@ -60,7 +60,7 @@ describe('ConfiguracionSeguridadFormComponent', () => {
     dynamicForm.form.get('dias_dispositivo_admin')?.setValue(20);
     dynamicForm.onSubmit();
 
-    expect(emitido).toEqual({ dias_dispositivo_normal: 45, dias_dispositivo_admin: 20 });
+    expect(emitido).toEqual({ dias_dispositivo_normal: 45, dias_dispositivo_admin: 20, minutos_inactividad: 30 });
   });
 
   it('no emite guardar mientras el formulario tenga un valor fuera de rango', () => {

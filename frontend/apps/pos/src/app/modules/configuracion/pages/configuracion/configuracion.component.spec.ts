@@ -45,7 +45,7 @@ describe('ConfiguracionComponent', () => {
     codigo_barras_automatico: false,
   };
 
-  const configuracionSeguridad: ConfiguracionSeguridad = { dias_dispositivo_normal: 30, dias_dispositivo_admin: 14 };
+  const configuracionSeguridad: ConfiguracionSeguridad = { dias_dispositivo_normal: 30, dias_dispositivo_admin: 14, minutos_inactividad: 30 };
 
   const licenciaActiva: LicenciaLocal = {
     estado: 'activa',

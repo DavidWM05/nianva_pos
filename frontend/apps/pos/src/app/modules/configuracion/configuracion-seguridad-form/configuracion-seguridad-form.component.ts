@@ -51,10 +51,7 @@ export class ConfiguracionSeguridadFormComponent implements OnChanges {
         defaultValue: this.valorInicial.dias_dispositivo_admin,
         validators: [Validators.min(DIAS_MIN), Validators.max(DIAS_MAX)],
       },
-    ];
-
-    if (this.valorInicial.minutos_inactividad !== undefined) {
-      this.fields.push({
+      {
         name: 'minutos_inactividad',
         label: 'Cerrar sesión por inactividad (minutos)',
         type: 'number',
@@ -65,19 +62,16 @@ export class ConfiguracionSeguridadFormComponent implements OnChanges {
           Validators.max(MINUTOS_INACTIVIDAD_MAX),
           Validators.pattern(/^\d+$/),
         ],
-      });
-    }
+      },
+    ];
   }
 
   onSubmit(value: Record<string, unknown>): void {
     const datos: ConfiguracionSeguridad = {
       dias_dispositivo_normal: Number(value['dias_dispositivo_normal']),
       dias_dispositivo_admin: Number(value['dias_dispositivo_admin']),
+      minutos_inactividad: Number(value['minutos_inactividad']),
     };
-
-    if (value['minutos_inactividad'] !== undefined) {
-      datos.minutos_inactividad = Number(value['minutos_inactividad']);
-    }
 
     this.guardar.emit(datos);
   }

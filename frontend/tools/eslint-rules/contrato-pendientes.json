@@ -4,6 +4,5 @@
     "apps/pos/src/app/modules/administracion/rol.service.ts",
     "apps/pos/src/app/modules/administracion/sucursal.service.ts",
     "apps/pos/src/app/modules/administracion/usuario-admin.service.ts",
-    "apps/pos/src/app/modules/configuracion/configuracion.service.ts",
     "apps/pos/src/app/perfil/seguridad.service.ts"
 ]

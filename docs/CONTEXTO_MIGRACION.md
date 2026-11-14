@@ -63,6 +63,7 @@ Un solo POS funcional y adaptable:
      "claro" (tema por defecto "sistema", 50n-b); los specs de caja y de los 4 reportes
      pasan al formato del pipe `dinero`; `ConfiguracionSeguridad` se alinea con el contrato
      (`minutos_inactividad` obligatorio) con sus specs;
+     **Hecho** en `fix/configuracion-seguridad-contrato` (`configuracion-seguridad-contrato.spec.ts`);
    - **un usuario tiene al menos un rol:** el backend lo valida al crear y editar, y la
      pantalla lo exige.
      **Hecho** en `fix/usuario-rol-minimo` (`UsuarioRolMinimoTest`, `usuario-form-rol-minimo.spec.ts`).
