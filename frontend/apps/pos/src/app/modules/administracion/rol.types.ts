@@ -1,19 +1,12 @@
+import type { RespuestaDe, RolResource } from '@nianva/api-contrato';
+
 /** Espejo de RolResource. */
-export interface Rol {
-  id: number;
-  nombre: string;
-  descripcion: string | null;
-  es_sistema: boolean;
-  usuarios_count?: number;
+export interface Rol extends Omit<RolResource, 'permisos'> {
   /** Solo viaja en show()/store()/update() -- index() no carga la relacion completa. */
   permisos?: number[];
 }
 
-export interface RolesPermisos {
-  crear: boolean;
-  editar: boolean;
-  eliminar: boolean;
-}
+export type RolesPermisos = RespuestaDe<'/roles', 'get'>['meta']['permisos'];
 
 export interface RolesPagina {
   data: Rol[];

@@ -1,11 +1,10 @@
+import type { RespuestaDe } from '@nianva/api-contrato';
+
 /** Espejo de PermisoController::index(). Catalogo fijo, sembrado por NucleoRolesPermisosSeeder. */
-export interface Permiso {
-  id: number;
-  modulo: string;
-  accion: string;
-  nombre: string;
-  descripcion: string | null;
-}
+export type Permiso = Pick<
+  RespuestaDe<'/permisos', 'get'>['data'][number],
+  'id' | 'modulo' | 'accion' | 'nombre' | 'descripcion'
+>;
 
 export interface GrupoPermisos {
   modulo: string;

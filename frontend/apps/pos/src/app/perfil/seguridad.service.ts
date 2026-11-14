@@ -1,5 +1,6 @@
 import { HttpClient, HttpContext } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
+import type { CuerpoDe, RespuestaDe } from '@nianva/api-contrato';
 import { Observable, map } from 'rxjs';
 
 import { urlApi } from '../core/api-config';
@@ -23,7 +24,7 @@ export class SeguridadService {
 
   listarDispositivosConfiables(): Observable<DispositivoConfiable[]> {
     return this.http
-      .get<{ data: DispositivoConfiable[] }>(urlApi(`/dispositivos-confiables`))
+      .get<RespuestaDe<'/dispositivos-confiables', 'get'>>(urlApi(`/dispositivos-confiables`))
       .pipe(map((respuesta) => respuesta.data));
   }
 
@@ -37,7 +38,9 @@ export class SeguridadService {
 
   /** Protegido por dos-factor.reciente en el backend -- ver `code` en CambiarPasswordPayload. */
   cambiarPassword(payload: CambiarPasswordPayload): Observable<void> {
-    return this.http.post<void>(urlApi(`/password/change`), payload, {
+    const cuerpo: CuerpoDe<'/password/change', 'post'> = payload;
+
+    return this.http.post<void>(urlApi(`/password/change`), cuerpo, {
       context: this.contextoErrorEnPantalla,
     });
   }

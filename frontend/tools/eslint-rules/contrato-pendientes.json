@@ -1,8 +1,1 @@
-[
-    "apps/pos/src/app/core/auditoria.service.ts",
-    "apps/pos/src/app/modules/administracion/permiso.service.ts",
-    "apps/pos/src/app/modules/administracion/rol.service.ts",
-    "apps/pos/src/app/modules/administracion/sucursal.service.ts",
-    "apps/pos/src/app/modules/administracion/usuario-admin.service.ts",
-    "apps/pos/src/app/perfil/seguridad.service.ts"
-]
+[]

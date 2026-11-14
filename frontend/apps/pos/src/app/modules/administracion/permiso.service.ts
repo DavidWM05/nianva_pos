@@ -1,5 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
+import type { RespuestaDe } from '@nianva/api-contrato';
 import { Observable, map } from 'rxjs';
 
 import { urlApi } from '../../core/api-config';
@@ -11,7 +12,7 @@ export class PermisoService {
   private readonly http = inject(HttpClient);
 
   listar(): Observable<Permiso[]> {
-    return this.http.get<{ data: Permiso[] }>(urlApi(`/permisos`)).pipe(map((r) => r.data));
+    return this.http.get<RespuestaDe<'/permisos', 'get'>>(urlApi(`/permisos`)).pipe(map((r) => r.data));
   }
 
   /** Agrupa por `modulo` client-side -- el backend ya los ordena por modulo/accion. */
