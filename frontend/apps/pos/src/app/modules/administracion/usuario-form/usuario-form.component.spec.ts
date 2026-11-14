@@ -115,14 +115,15 @@ describe('UsuarioFormComponent', () => {
     expect(emitidos[0]).toMatchObject({ nombre: 'Ana', correo: 'ana@test.com', sucursal_id: 2, roles: [3] });
   });
 
-  it('al crear sin roles ni sucursal, el payload lleva roles vacio y sucursal null', async () => {
+  it('al crear sin sucursal (con un rol elegido), el payload lleva sucursal null', async () => {
     await crear();
     llenarObligatorios();
 
+    await elegir('usuario-roles', 'Cajero');
     enviar();
 
     expect(emitidos).toHaveLength(1);
-    expect(emitidos[0]).toMatchObject({ sucursal_id: null, roles: [] });
+    expect(emitidos[0]).toMatchObject({ sucursal_id: null, roles: [3] });
   });
 
   it('al editar, la sucursal y los roles del usuario viajan en el payload, y se pueden cambiar', async () => {

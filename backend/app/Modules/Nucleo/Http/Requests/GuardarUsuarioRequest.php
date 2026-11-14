@@ -30,8 +30,22 @@ class GuardarUsuarioRequest extends SolicitudNegocio
             'password' => [$usuarioId === null ? 'required' : 'nullable', PasswordRule::min(8)],
             'telefono' => ['nullable', 'string', 'max:20'],
             'sucursal_id' => ['nullable', 'integer', ReglasTenant::existe('sucursales', $tenantId)],
-            'roles' => ['nullable', 'array'],
+            // Todo usuario de un tenant tiene al menos un rol: sin rol entra pero no ve nada.
+            // En edicion es parcial: si `roles` no llega, conserva los actuales.
+            'roles' => [$usuarioId === null ? 'required' : 'sometimes', 'array', 'min:1'],
             'roles.*' => ['integer', ReglasTenant::existeGlobalODelTenant('roles', $tenantId)],
+        ];
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    public function messages(): array
+    {
+        return [
+            'roles.required' => 'Asigna al menos un rol al usuario.',
+            'roles.array' => 'Asigna al menos un rol al usuario.',
+            'roles.min' => 'Asigna al menos un rol al usuario.',
         ];
     }
 

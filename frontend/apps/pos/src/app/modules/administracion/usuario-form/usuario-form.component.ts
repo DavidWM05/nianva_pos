@@ -1,6 +1,9 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnChanges, OnInit, Output, ViewChild, inject, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
+import { aplicarErroresServidor } from '@nianva/ui-forms';
 import { DynamicFormComponent, DynamicFormField } from '@nianva/ui-shared';
 
 import { Rol } from '../rol.types';
@@ -23,7 +26,7 @@ import { UsuarioAdmin } from '../usuario.types';
 @Component({
   selector: 'nucleo-usuario-form',
   standalone: true,
-  imports: [DynamicFormComponent, MatFormFieldModule, MatSelectModule],
+  imports: [DynamicFormComponent, MatFormFieldModule, MatSelectModule, ReactiveFormsModule],
   templateUrl: './usuario-form.component.html',
   styleUrl: './usuario-form.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -43,10 +46,18 @@ export class UsuarioFormComponent implements OnInit, OnChanges {
   protected fields: DynamicFormField[] = [];
 
   protected readonly sucursalId = signal<number | null>(null);
-  protected readonly rolesIds = signal<number[]>([]);
+  // Todo usuario de un tenant tiene al menos un rol (el backend responde 422 en `roles`). Al ser
+  // un control proyectado, dynamic-form no envia mientras sea invalido.
+  protected readonly rolesControl = new FormControl<number[]>([], { nonNullable: true, validators: Validators.required });
+  private readonly rolesGrupo = new FormGroup({ roles: this.rolesControl });
+  protected readonly errorRoles = signal<string | null>(null);
 
   protected readonly sucursales = signal<SucursalSimple[]>([]);
   protected readonly roles = signal<Rol[]>([]);
+
+  constructor() {
+    this.rolesControl.events.pipe(takeUntilDestroyed()).subscribe(() => this.actualizarErrorRoles());
+  }
 
   ngOnInit(): void {
     this.sucursalService.listar().subscribe((sucursales) => this.sucursales.set(sucursales));
@@ -55,7 +66,12 @@ export class UsuarioFormComponent implements OnInit, OnChanges {
 
   ngOnChanges(): void {
     this.sucursalId.set(this.valorInicial?.sucursal?.id ?? null);
-    this.rolesIds.set(this.valorInicial?.roles.map((rol) => rol.id) ?? []);
+    this.rolesControl.reset(this.valorInicial?.roles.map((rol) => rol.id) ?? []);
+    if (this.readonly) {
+      this.rolesControl.disable();
+    } else {
+      this.rolesControl.enable();
+    }
 
     const esEdicion = this.valorInicial !== null;
 
@@ -111,11 +127,23 @@ export class UsuarioFormComponent implements OnInit, OnChanges {
     this.guardar.emit({
       ...(value as unknown as UsuarioFormPayload),
       sucursal_id: this.sucursalId(),
-      roles: this.rolesIds(),
+      roles: this.rolesControl.getRawValue(),
     });
   }
 
   setServerErrors(errors: Record<string, string | string[]>): void {
     this.formComponent.setServerErrors(errors);
+    // `roles` no es campo de dynamic-form: su 422 se marca en su propio control.
+    aplicarErroresServidor(this.rolesGrupo, { errors });
+  }
+
+  private actualizarErrorRoles(): void {
+    const servidor = this.rolesControl.getError('servidor');
+
+    if (typeof servidor === 'string') {
+      this.errorRoles.set(servidor);
+    } else {
+      this.errorRoles.set(this.rolesControl.touched && this.rolesControl.invalid ? 'Asigna al menos un rol al usuario.' : null);
+    }
   }
 }

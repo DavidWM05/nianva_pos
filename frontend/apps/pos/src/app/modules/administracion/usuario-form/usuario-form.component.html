@@ -20,21 +20,29 @@
   </div>
 
   <div class="dynamic-form__field">
-    <label id="usuario-roles-etiqueta" for="usuario-roles">Roles</label>
+    <!-- Obligatorio: mismo marcador que los campos propios de dynamic-form. El nombre accesible
+         sale solo del span "Roles", sin el asterisco. -->
+    <label for="usuario-roles"
+      ><span id="usuario-roles-etiqueta">Roles</span>
+      <span class="dynamic-form__required" aria-hidden="true">*</span></label
+    >
     <mat-form-field class="dynamic-form__material" appearance="outline" subscriptSizing="dynamic">
       <mat-select
         id="usuario-roles"
         aria-labelledby="usuario-roles-etiqueta"
         placeholder="Selecciona uno o más roles"
         [multiple]="true"
-        [value]="rolesIds()"
-        [disabled]="readonly"
-        (selectionChange)="rolesIds.set($event.value)"
+        [required]="true"
+        [formControl]="rolesControl"
+        [attr.aria-describedby]="errorRoles() ? 'usuario-roles-error' : null"
       >
         @for (rol of roles(); track rol.id) {
           <mat-option [value]="rol.id">{{ rol.nombre }}</mat-option>
         }
       </mat-select>
     </mat-form-field>
+    @if (errorRoles(); as error) {
+      <small id="usuario-roles-error" class="dynamic-form__error" role="alert">{{ error }}</small>
+    }
   </div>
 </nucleo-dynamic-form>
