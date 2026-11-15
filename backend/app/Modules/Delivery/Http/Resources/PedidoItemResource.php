@@ -3,6 +3,7 @@
 namespace App\Modules\Delivery\Http\Resources;
 
 use App\Modules\Delivery\Models\PedidoItem;
+use App\Modules\Nucleo\Support\DecimalApi;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -14,9 +15,9 @@ class PedidoItemResource extends JsonResource
         return [
             'id' => $this->id,
             'variante_id' => $this->variante_id,
-            'cantidad' => $this->cantidad,
-            'precio_unitario' => $this->precio_unitario,
-            'subtotal' => $this->subtotal,
+            'cantidad' => DecimalApi::cantidad($this->cantidad),
+            'precio_unitario' => DecimalApi::dinero($this->precio_unitario),
+            'subtotal' => DecimalApi::dinero($this->subtotal),
         ];
     }
 }

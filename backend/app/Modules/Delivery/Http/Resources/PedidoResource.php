@@ -3,6 +3,7 @@
 namespace App\Modules\Delivery\Http\Resources;
 
 use App\Modules\Delivery\Models\Pedido;
+use App\Modules\Nucleo\Support\DecimalApi;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -18,7 +19,7 @@ class PedidoResource extends JsonResource
             'repartidor' => $this->whenLoaded('repartidor', fn () => ['id' => $this->repartidor->id, 'nombre' => $this->repartidor->nombre]),
             'referencia' => $this->referencia,
             'direccion_entrega' => $this->direccion_entrega,
-            'costo_delivery' => $this->costo_delivery,
+            'costo_delivery' => DecimalApi::dinero($this->costo_delivery),
             /** @var 'pendiente'|'preparando'|'en_camino'|'entregado'|'cancelado' */
             'estado' => $this->estado,
             'tiempo_estimado' => $this->tiempo_estimado,

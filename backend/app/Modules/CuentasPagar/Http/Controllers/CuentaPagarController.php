@@ -8,6 +8,7 @@ use App\Http\Controllers\Controller;
 use App\Modules\CuentasPagar\Http\Requests\RegistrarPagoRequest;
 use App\Modules\CuentasPagar\Http\Resources\CuentaPagarResource;
 use App\Modules\CuentasPagar\Models\CuentaPagar;
+use App\Modules\Nucleo\Support\DecimalApi;
 use Illuminate\Http\Request;
 
 class CuentaPagarController extends Controller
@@ -76,7 +77,7 @@ class CuentaPagarController extends Controller
                 'abono' => $abono,
                 'cuenta' => [
                     'id' => $cuenta->id,
-                    'saldo_pendiente' => $cuenta->saldo_pendiente,
+                    'saldo_pendiente' => DecimalApi::dinero($cuenta->saldo_pendiente),
                     'estado' => $cuenta->estado,
                 ],
             ],
@@ -114,15 +115,15 @@ class CuentaPagarController extends Controller
             $saldo = (float) $cuenta->saldo_pendiente;
 
             if ($dias <= 0) {
-                $porAntiguedad['al_dia'] = (string) round((float) $porAntiguedad['al_dia'] + $saldo, 2);
+                $porAntiguedad['al_dia'] = DecimalApi::dinero(round((float) $porAntiguedad['al_dia'] + $saldo, 2));
             } elseif ($dias <= 30) {
-                $porAntiguedad['vencido_1_30'] = (string) round((float) $porAntiguedad['vencido_1_30'] + $saldo, 2);
+                $porAntiguedad['vencido_1_30'] = DecimalApi::dinero(round((float) $porAntiguedad['vencido_1_30'] + $saldo, 2));
             } elseif ($dias <= 60) {
-                $porAntiguedad['vencido_31_60'] = (string) round((float) $porAntiguedad['vencido_31_60'] + $saldo, 2);
+                $porAntiguedad['vencido_31_60'] = DecimalApi::dinero(round((float) $porAntiguedad['vencido_31_60'] + $saldo, 2));
             } elseif ($dias <= 90) {
-                $porAntiguedad['vencido_61_90'] = (string) round((float) $porAntiguedad['vencido_61_90'] + $saldo, 2);
+                $porAntiguedad['vencido_61_90'] = DecimalApi::dinero(round((float) $porAntiguedad['vencido_61_90'] + $saldo, 2));
             } else {
-                $porAntiguedad['vencido_90_mas'] = (string) round((float) $porAntiguedad['vencido_90_mas'] + $saldo, 2);
+                $porAntiguedad['vencido_90_mas'] = DecimalApi::dinero(round((float) $porAntiguedad['vencido_90_mas'] + $saldo, 2));
             }
         }
 
@@ -136,13 +137,13 @@ class CuentaPagarController extends Controller
             ->map(fn ($r) => [
                 'proveedor_id' => $r->proveedor_id,
                 'proveedor_nombre' => $r->proveedor?->razon_social,
-                'saldo_pendiente' => round((float) $r->saldo_pendiente, 2),
+                'saldo_pendiente' => DecimalApi::dinero($r->saldo_pendiente),
                 'cuentas_pendientes' => (int) $r->cuentas_pendientes,
             ]);
 
         return response()->json(['data' => [
-            'total_pendiente' => $totalPendiente,
-            'total_vencido' => $totalVencido,
+            'total_pendiente' => DecimalApi::dinero($totalPendiente),
+            'total_vencido' => DecimalApi::dinero($totalVencido),
             'por_antiguedad' => $porAntiguedad,
             'por_proveedor' => $porProveedor,
         ]]);

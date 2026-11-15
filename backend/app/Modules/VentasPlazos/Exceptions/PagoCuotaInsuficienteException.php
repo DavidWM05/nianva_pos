@@ -3,6 +3,7 @@
 namespace App\Modules\VentasPlazos\Exceptions;
 
 use App\Modules\Nucleo\Exceptions\ExcepcionNegocio;
+use App\Modules\Nucleo\Support\DecimalApi;
 
 class PagoCuotaInsuficienteException extends ExcepcionNegocio
 {
@@ -23,8 +24,8 @@ class PagoCuotaInsuficienteException extends ExcepcionNegocio
     {
         return [
             'cuota_id' => $this->cuotaId,
-            'monto_requerido' => $this->montoRequerido,
-            'monto_recibido' => $this->montoRecibido,
+            'monto_requerido' => DecimalApi::dinero($this->montoRequerido),
+            'monto_recibido' => DecimalApi::dinero($this->montoRecibido),
         ];
     }
 }

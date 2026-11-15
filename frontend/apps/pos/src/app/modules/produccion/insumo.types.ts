@@ -11,7 +11,7 @@ export interface Insumo {
   nombre: string;
   sku: string | null;
   unidad_medida_id: number;
-  costo: string | null;
+  costo: string;
   stock_minimo: string | null;
   activo: boolean;
 }

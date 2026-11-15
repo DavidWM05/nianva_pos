@@ -3,6 +3,7 @@
 namespace App\Modules\CuentasCobrar\Exceptions;
 
 use App\Modules\Nucleo\Exceptions\ExcepcionNegocio;
+use App\Modules\Nucleo\Support\DecimalApi;
 
 class AbonoExcedeSaldoException extends ExcepcionNegocio
 {
@@ -25,8 +26,8 @@ class AbonoExcedeSaldoException extends ExcepcionNegocio
     public function contexto(): array
     {
         return [
-            'saldo_pendiente' => $this->saldoPendiente,
-            'monto_abono' => $this->montoAbono,
+            'saldo_pendiente' => DecimalApi::dinero($this->saldoPendiente),
+            'monto_abono' => DecimalApi::dinero($this->montoAbono),
         ];
     }
 }

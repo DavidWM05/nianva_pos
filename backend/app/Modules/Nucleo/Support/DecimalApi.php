@@ -13,6 +13,15 @@ final class DecimalApi
     /** Tasas decimal(7,4) y costos unitarios con 4 decimales. */
     public const PATRON_CUATRO_DECIMALES = '^-?[0-9]+\.[0-9]{4}$';
 
+    public static function costoUnitario(string|int|float $valor): string
+    {
+        $decimal = is_float($valor) ? self::decimalCalculado($valor) : $valor;
+        $unidades = Dinero::desdeProducto($decimal, 100)->centavos;
+        $absoluto = abs($unidades);
+
+        return ($unidades < 0 ? '-' : '').intdiv($absoluto, 10000).'.'.str_pad((string) ($absoluto % 10000), 4, '0', STR_PAD_LEFT);
+    }
+
     public static function dinero(string|int|float $valor): string
     {
         return Dinero::desde(is_float($valor) ? self::decimalCalculado($valor) : $valor)->aCadena();

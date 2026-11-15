@@ -3,6 +3,7 @@
 namespace App\Modules\Prestamos\Exceptions;
 
 use App\Modules\Nucleo\Exceptions\ExcepcionNegocio;
+use App\Modules\Nucleo\Support\DecimalApi;
 
 class PagoExcedeSaldoPrestamoException extends ExcepcionNegocio
 {
@@ -25,8 +26,8 @@ class PagoExcedeSaldoPrestamoException extends ExcepcionNegocio
     public function contexto(): array
     {
         return [
-            'saldo_pendiente' => $this->saldoPendiente,
-            'monto_pago' => $this->montoPago,
+            'saldo_pendiente' => DecimalApi::dinero($this->saldoPendiente),
+            'monto_pago' => DecimalApi::dinero($this->montoPago),
         ];
     }
 }

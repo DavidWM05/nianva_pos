@@ -4,6 +4,7 @@ namespace App\Modules\Produccion\Models;
 
 use App\Modules\Nucleo\Casts\CantidadFormateada;
 use App\Modules\Nucleo\Models\Concerns\BelongsToTenantViaRelacion;
+use App\Modules\Nucleo\Models\Concerns\SerializaDecimales;
 use App\Modules\Produccion\Database\Factories\RecetaIngredienteFactory;
 use App\Modules\UnidadesMedida\Models\UnidadMedida;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
@@ -18,6 +19,8 @@ class RecetaIngrediente extends Model
 
     /** @use HasFactory<RecetaIngredienteFactory> */
     use HasFactory;
+
+    use SerializaDecimales;
 
     public $timestamps = false;
 

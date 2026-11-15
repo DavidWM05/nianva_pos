@@ -1,4 +1,4 @@
-import { aCentavos, DineroPipe } from '@nianva/ui-format';
+import { aCentavos, cantidadANumero, compararDinero, multiplicarDinero, sumarDinero, DineroPipe } from '@nianva/ui-format';
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnChanges, Output, computed, inject, signal } from '@angular/core';
 import { FormArray, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButton } from '@angular/material/button';
@@ -26,9 +26,6 @@ export interface LineasCotizacionCambio {
   subtotal: number;
 }
 
-function redondear(monto: number): number {
-  return Math.round(monto * 100) / 100;
-}
 
 /**
  * Carrito editable de Cotizaciones -- a diferencia de
@@ -87,8 +84,12 @@ export class LineasCotizacionComponent implements OnChanges {
   protected readonly lineas = signal<LineaCotizacion[]>([]);
 
   protected readonly subtotal = computed(() =>
-    redondear(this.lineas().reduce((acumulado, l) => acumulado + l.cantidad * l.precio_unitario - l.descuento, 0)),
+    aCentavos(sumarDinero(...this.lineas().map((linea) => this.subtotalLinea(linea)))) / 100,
   );
+
+  protected subtotalLinea(linea: LineaCotizacion): string {
+    return multiplicarDinero(linea.precio_unitario, linea.cantidad, linea.descuento);
+  }
 
   ngOnChanges(): void {
     if (this.valorInicial && this.lineas().length === 0) {
@@ -96,9 +97,9 @@ export class LineasCotizacionComponent implements OnChanges {
         this.valorInicial.map((detalle) => ({
           variante_id: detalle.variante_id,
           etiqueta: detalle.variante?.nombre ?? `Variante #${detalle.variante_id}`,
-          cantidad: detalle.cantidad,
-          precio_unitario: Number(detalle.precio_unitario),
-          descuento: Number(detalle.descuento),
+          cantidad: cantidadANumero(detalle.cantidad),
+          precio_unitario: aCentavos(detalle.precio_unitario) / 100,
+          descuento: aCentavos(detalle.descuento) / 100,
         })),
       );
       this.emitirCambio();
@@ -187,14 +188,14 @@ export class LineasCotizacionComponent implements OnChanges {
   }
 
   actualizarPrecio(indice: number, precio: number): void {
-    if (!this.precioManual || precio < 0) return;
+    if (!this.precioManual || compararDinero(precio, 0) < 0) return;
     this.lineas.update((actuales) => actuales.map((l, i) => (i === indice ? { ...l, precio_unitario: precio } : l)));
     this.gruposLineas.at(indice)?.controls.precio_unitario.setValue(precio, { emitEvent: false });
     this.emitirCambio();
   }
 
   actualizarDescuento(indice: number, descuento: number): void {
-    if (!this.precioManual || descuento < 0) return;
+    if (!this.precioManual || compararDinero(descuento, 0) < 0) return;
     this.lineas.update((actuales) => actuales.map((l, i) => (i === indice ? { ...l, descuento } : l)));
     this.gruposLineas.at(indice)?.controls.descuento.setValue(descuento, { emitEvent: false });
     this.emitirCambio();

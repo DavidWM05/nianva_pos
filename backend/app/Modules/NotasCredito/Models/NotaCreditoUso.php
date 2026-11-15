@@ -4,6 +4,7 @@ namespace App\Modules\NotasCredito\Models;
 
 use App\Modules\NotasCredito\Database\Factories\NotaCreditoUsoFactory;
 use App\Modules\Nucleo\Models\Concerns\BelongsToTenantViaRelacion;
+use App\Modules\Nucleo\Models\Concerns\SerializaDecimales;
 use App\Modules\Tpv\Models\Venta;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -17,6 +18,8 @@ class NotaCreditoUso extends Model
 
     /** @use HasFactory<NotaCreditoUsoFactory> */
     use HasFactory;
+
+    use SerializaDecimales;
 
     const UPDATED_AT = null;
 

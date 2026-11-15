@@ -43,14 +43,14 @@ export interface ReporteAntiguedad {
 export interface ReporteCuentasCobrarCliente {
   cliente_id: number;
   cliente_nombre: string | null;
-  saldo_pendiente: number;
+  saldo_pendiente: string;
   cuentas_pendientes: number;
 }
 
 /** CuentaCobrarController::reporte() -- solo cuentas con estado='pendiente', siempre "hoy". */
 export interface ReporteCuentasCobrar {
-  total_pendiente: number;
-  total_vencido: number;
+  total_pendiente: string;
+  total_vencido: string;
   por_antiguedad: ReporteAntiguedad;
   por_cliente: ReporteCuentasCobrarCliente[];
 }

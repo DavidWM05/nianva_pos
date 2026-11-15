@@ -1,6 +1,6 @@
 import { MatButton } from '@angular/material/button';
 import { BtnEnviarComponent, aplicarErroresServidor, CampoComponent, InputDineroComponent } from '@nianva/ui-forms';
-import { DineroPipe, } from '@nianva/ui-format';
+import { aCentavos, restarDinero, DineroPipe } from '@nianva/ui-format';
 import { FormActionsComponent, PageComponent, PageHeaderComponent, SectionComponent } from '@nianva/ui-layout';
 import { HttpErrorResponse } from '@angular/common/http';
 import { ChangeDetectionStrategy, Component, OnInit, ViewChild, computed, inject, signal } from '@angular/core';
@@ -66,7 +66,7 @@ export class CotizacionFormComponent implements OnInit {
 
   protected readonly items = signal<CotizacionItemPayload[]>([]);
   protected readonly subtotal = signal(0);
-  protected readonly total = computed(() => Math.max(0, Math.round((this.subtotal() - this.descuentoGlobal()) * 100) / 100));
+  protected readonly total = computed(() => Math.max(0, aCentavos(restarDinero(this.subtotal(), this.descuentoGlobal())) / 100));
 
   protected readonly guardando = signal(false);
 
@@ -87,7 +87,7 @@ export class CotizacionFormComponent implements OnInit {
         this.cotizacionActual.set(cotizacion);
         this.clienteId.set(cotizacion.cliente?.id ?? null);
         this.validezDias.set(cotizacion.validez_dias);
-        this.descuentoGlobal.set(Number(cotizacion.descuento));
+        this.descuentoGlobal.set(aCentavos(cotizacion.descuento) / 100);
         this.usoCfdi.set(cotizacion.uso_cfdi ?? '');
         this.observaciones.set(cotizacion.observaciones ?? '');
         this.cargando.set(false);

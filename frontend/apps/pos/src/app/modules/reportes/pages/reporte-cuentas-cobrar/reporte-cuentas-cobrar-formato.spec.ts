@@ -10,10 +10,10 @@ import { ReporteCuentasCobrarComponent } from './reporte-cuentas-cobrar.componen
 describe('ReporteCuentasCobrarComponent formato por pipe', () => {
   it('muestra totales, antiguedad y saldo por cliente con dinero', async () => {
     const reporte: ReporteCuentasCobrar = {
-      total_pendiente: 5000,
-      total_vencido: 1000.5,
+      total_pendiente: '5000.00',
+      total_vencido: '1000.50',
       por_antiguedad: { al_dia: '4000.00', vencido_1_30: '1100.00', vencido_31_60: '1200.00', vencido_61_90: '1300.00', vencido_90_mas: '1400.00' },
-      por_cliente: [{ cliente_id: 9, cliente_nombre: 'Juan', saldo_pendiente: 2500, cuentas_pendientes: 1 }],
+      por_cliente: [{ cliente_id: 9, cliente_nombre: 'Juan', saldo_pendiente: '2500.00', cuentas_pendientes: 1 }],
     };
 
     await TestBed.configureTestingModule({

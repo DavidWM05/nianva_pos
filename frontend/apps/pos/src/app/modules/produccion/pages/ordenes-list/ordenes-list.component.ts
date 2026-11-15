@@ -1,3 +1,4 @@
+import { cantidadANumero } from '@nianva/ui-format';
 import {
   FilterBarComponent,
   CambioListado,
@@ -139,7 +140,7 @@ export class OrdenesListComponent {
 
   abrirCompletar(orden: OrdenProduccion): void {
     this.ordenACompletar.set(orden);
-    this.cantidadProducida.set(orden.cantidad_programada);
+    this.cantidadProducida.set(cantidadANumero(orden.cantidad_programada));
   }
 
   cerrarCompletar(): void {

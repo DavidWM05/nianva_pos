@@ -2,6 +2,7 @@
 
 namespace App\Modules\Produccion\Http\Resources;
 
+use App\Modules\Nucleo\Support\DecimalApi;
 use App\Modules\Produccion\Models\OrdenProduccion;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -14,8 +15,8 @@ class OrdenProduccionResource extends JsonResource
         return [
             'id' => $this->id,
             'receta' => $this->whenLoaded('receta', fn () => ['id' => $this->receta->id, 'nombre' => $this->receta->nombre]),
-            'cantidad_programada' => $this->cantidad_programada,
-            'cantidad_producida' => $this->cantidad_producida,
+            'cantidad_programada' => DecimalApi::cantidad($this->cantidad_programada),
+            'cantidad_producida' => $this->cantidad_producida === null ? null : DecimalApi::cantidad($this->cantidad_producida),
             /** @var 'pendiente'|'en_proceso'|'completada'|'cancelada' */
             'estado' => $this->estado,
             'notas' => $this->notas,

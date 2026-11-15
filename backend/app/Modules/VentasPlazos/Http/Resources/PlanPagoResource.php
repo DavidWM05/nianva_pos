@@ -2,6 +2,7 @@
 
 namespace App\Modules\VentasPlazos\Http\Resources;
 
+use App\Modules\Nucleo\Support\DecimalApi;
 use App\Modules\VentasPlazos\Models\PlanPagoCliente;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -16,8 +17,8 @@ class PlanPagoResource extends JsonResource
             'cliente' => $this->whenLoaded('cliente', fn () => ['id' => $this->cliente->id, 'nombre' => $this->cliente->nombre]),
             'venta_id' => $this->venta_id,
             'concepto' => $this->concepto,
-            'monto_total' => $this->monto_total,
-            'interes_total' => $this->interes_total,
+            'monto_total' => DecimalApi::dinero($this->monto_total),
+            'interes_total' => DecimalApi::dinero($this->interes_total),
             'tasa_interes' => $this->tasa_interes,
             'numero_cuotas' => $this->numero_cuotas,
             'periodicidad' => $this->periodicidad,

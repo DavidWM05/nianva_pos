@@ -22,7 +22,7 @@ export interface PedidoRepartidorResumen {
 export interface PedidoItem {
   id: number;
   variante_id: number;
-  cantidad: number;
+  cantidad: string;
   precio_unitario: string;
   subtotal: string;
 }
