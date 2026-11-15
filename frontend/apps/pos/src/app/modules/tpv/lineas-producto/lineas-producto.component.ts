@@ -3,7 +3,7 @@ import { FormsModule } from '@angular/forms';
 import { EntidadBuscable, EntidadSelectorComponent } from '@nianva/ui-shared';
 import { MatButton, MatIconButton } from '@angular/material/button';
 import { CampoComponent } from '@nianva/ui-forms';
-import { CantidadPipe, DineroPipe } from '@nianva/ui-format';
+import { aCentavos, CantidadPipe, DineroPipe } from '@nianva/ui-format';
 
 import { BUSCADOR_PRODUCTO, BUSCADOR_VARIANTE_DE_PRODUCTO } from '../../../core/buscadores-entidad.tokens';
 import { VentaItemPayload } from '../venta.types';
@@ -24,9 +24,9 @@ interface LineaCarrito {
    */
   stockDisponible?: number;
   /** Se llenan tras cotizar() -- undefined mientras la cotizacion esta en curso. */
-  precio_unitario?: number;
-  descuento_aplicado?: number;
-  subtotal?: number;
+  precio_unitario?: string | number;
+  descuento_aplicado?: string | number;
+  subtotal?: string | number;
 }
 
 export interface LineasProductoCambio {
@@ -192,7 +192,7 @@ export class LineasProductoComponent {
             subtotal: cotizacion.items[i]?.subtotal,
           })),
         );
-        this.subtotal.set(cotizacion.subtotal);
+        this.subtotal.set(aCentavos(cotizacion.subtotal) / 100);
         this.cotizando.set(false);
         this.emitirCambio();
       },

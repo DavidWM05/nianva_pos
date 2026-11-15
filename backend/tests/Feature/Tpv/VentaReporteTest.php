@@ -148,7 +148,7 @@ class VentaReporteTest extends TestCase
         $this->assertSame('Playera', $top[0]['producto_nombre']);
         $this->assertSame('M', $top[0]['talla']);
         $this->assertSame('Negro', $top[0]['color']);
-        $this->assertSame(3, $top[0]['cantidad_vendida']);
+        $this->assertSame('3.000', $top[0]['cantidad_vendida']);
         $this->assertEquals(300.0, $top[0]['total_vendido']);
     }
 

@@ -2,6 +2,7 @@
 
 namespace App\Modules\Precios\Http\Resources;
 
+use App\Modules\Nucleo\Support\DecimalApi;
 use App\Modules\Precios\Models\ReglaPrecio;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -17,10 +18,10 @@ class ReglaPrecioResource extends JsonResource
             'id' => $this->id,
             'nombre' => $this->nombre,
             'tipo' => $this->tipo,
-            'valor' => $this->valor,
-            'cantidad_compra' => $this->cantidad_compra,
-            'cantidad_paga' => $this->cantidad_paga,
-            'precio_bundle' => $this->precio_bundle,
+            'valor' => $this->valor === null ? null : DecimalApi::dinero($this->valor),
+            'cantidad_compra' => $this->cantidad_compra === null ? null : DecimalApi::cantidad($this->cantidad_compra),
+            'cantidad_paga' => $this->cantidad_paga === null ? null : DecimalApi::cantidad($this->cantidad_paga),
+            'precio_bundle' => $this->precio_bundle === null ? null : DecimalApi::dinero($this->precio_bundle),
             'aplica_a' => $this->aplica_a,
             // El nombre de la entidad especifica, no solo el nivel -- ver
             // el requisito de la columna "a que aplica" en la lista.

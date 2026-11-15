@@ -3,6 +3,7 @@
 namespace App\Modules\Gastos\Http\Resources;
 
 use App\Modules\Gastos\Models\Gasto;
+use App\Modules\Nucleo\Support\DecimalApi;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -16,7 +17,7 @@ class GastoResource extends JsonResource
         return [
             'id' => $this->id,
             'descripcion' => $this->descripcion,
-            'monto' => $this->monto,
+            'monto' => DecimalApi::dinero($this->monto),
             'fecha' => $this->fecha,
         ];
     }

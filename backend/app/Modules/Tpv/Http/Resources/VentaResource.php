@@ -2,6 +2,7 @@
 
 namespace App\Modules\Tpv\Http\Resources;
 
+use App\Modules\Nucleo\Support\DecimalApi;
 use App\Modules\Tpv\Models\Venta;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -27,10 +28,10 @@ class VentaResource extends JsonResource
                 'cliente',
                 fn () => $this->cliente ? ['id' => $this->cliente->id, 'nombre' => $this->cliente->nombre] : null,
             ),
-            'total' => $this->total,
-            'descuento_cupon' => $this->descuento_cupon,
-            'descuento_manual' => $this->descuento_manual,
-            'abono_previo' => $this->abono_previo,
+            'total' => DecimalApi::dinero($this->total),
+            'descuento_cupon' => DecimalApi::dinero($this->descuento_cupon),
+            'descuento_manual' => DecimalApi::dinero($this->descuento_manual),
+            'abono_previo' => DecimalApi::dinero($this->abono_previo),
             /** @var 'completada'|'anulada' */
             'estado' => $this->estado,
             'motivo_anulacion' => $this->motivo_anulacion,
@@ -39,7 +40,7 @@ class VentaResource extends JsonResource
             'metodos_pago' => $this->whenLoaded('pagos', fn () => $this->pagos->map(fn ($pago) => [
                 'metodo_pago_id' => $pago->metodo_pago_id,
                 'nombre' => $pago->metodoPago?->nombre,
-                'monto' => $pago->monto,
+                'monto' => DecimalApi::dinero($pago->monto),
             ])),
             'detalles' => $this->whenLoaded('detalles', fn () => $this->detalles->map(fn ($detalle) => [
                 'id' => $detalle->id,
@@ -50,10 +51,10 @@ class VentaResource extends JsonResource
                     'color' => $detalle->variante->color,
                     'producto_nombre' => $detalle->variante->producto?->nombre,
                 ] : null,
-                'cantidad' => $detalle->cantidad,
-                'precio_unitario' => $detalle->precio_unitario,
-                'descuento_aplicado' => $detalle->descuento_aplicado,
-                'subtotal' => $detalle->subtotal,
+                'cantidad' => DecimalApi::cantidad($detalle->cantidad),
+                'precio_unitario' => DecimalApi::dinero($detalle->precio_unitario),
+                'descuento_aplicado' => DecimalApi::dinero($detalle->descuento_aplicado),
+                'subtotal' => DecimalApi::dinero($detalle->subtotal),
             ])),
         ];
     }

@@ -136,8 +136,8 @@ class CuponTest extends TestCase
 
         $respuesta->assertOk()
             ->assertJsonPath('data.cupon.codigo', 'VERANO10')
-            ->assertJsonPath('data.descuento', 20)
-            ->assertJsonPath('data.total_con_descuento', 180);
+            ->assertJsonPath('data.descuento', '20.00')
+            ->assertJsonPath('data.total_con_descuento', '180.00');
     }
 
     public function test_validar_con_codigo_inexistente_devuelve_422_con_error_code_cupon_invalido(): void

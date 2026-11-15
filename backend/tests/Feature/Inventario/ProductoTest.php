@@ -76,9 +76,9 @@ class ProductoTest extends TestCase
         $respuesta->assertJsonPath('meta.permisos.crear', true);
         $respuesta->assertJsonPath('meta.permisos.editar', false);
         $respuesta->assertJsonPath('data.0.nombre', 'Pantalon Cargo');
-        $respuesta->assertJsonPath('data.0.stock_total', 0);
+        $respuesta->assertJsonPath('data.0.stock_total', '0.000');
         $respuesta->assertJsonPath('data.1.nombre', 'Playera Basica');
-        $respuesta->assertJsonPath('data.1.stock_total', 8);
+        $respuesta->assertJsonPath('data.1.stock_total', '8.000');
         $respuesta->assertJsonPath('data.1.categoria.nombre', 'Playeras');
 
         $filtrado = $this->getJson('/api/v1/productos?filtro_nombre=playera');
@@ -142,8 +142,8 @@ class ProductoTest extends TestCase
         $respuesta->assertOk();
         $respuesta->assertJsonPath('data.variantes.0.color', 'Negro');
         $respuesta->assertJsonPath('data.variantes.0.stock.0.sucursal_nombre', 'Centro');
-        $respuesta->assertJsonPath('data.variantes.0.stock.0.stock_actual', 12);
-        $respuesta->assertJsonPath('data.variantes.0.stock_actual', 12);
+        $respuesta->assertJsonPath('data.variantes.0.stock.0.stock_actual', '12.000');
+        $respuesta->assertJsonPath('data.variantes.0.stock_actual', '12.000');
     }
 
     /**
@@ -170,8 +170,8 @@ class ProductoTest extends TestCase
         $respuesta = $this->getJson("/api/v1/productos/{$producto->id}");
 
         $respuesta->assertOk();
-        $respuesta->assertJsonPath('data.variantes.0.stock_actual', 7);
-        $respuesta->assertJsonPath('data.variantes.1.stock_actual', 0);
+        $respuesta->assertJsonPath('data.variantes.0.stock_actual', '7.000');
+        $respuesta->assertJsonPath('data.variantes.1.stock_actual', '0.000');
     }
 
     public function test_variantes_se_crean_editan_y_desactivan_anidadas_bajo_el_producto(): void
@@ -261,8 +261,8 @@ class ProductoTest extends TestCase
         $respuesta->assertOk();
         $respuesta->assertJsonCount(2, 'data');
         $respuesta->assertJsonPath('data.0.tipo', 'salida');
-        $respuesta->assertJsonPath('data.0.stock_resultante', 7);
+        $respuesta->assertJsonPath('data.0.stock_resultante', '7.000');
         $respuesta->assertJsonPath('data.1.tipo', 'entrada');
-        $respuesta->assertJsonPath('data.1.stock_resultante', 10);
+        $respuesta->assertJsonPath('data.1.stock_resultante', '10.000');
     }
 }

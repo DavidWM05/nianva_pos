@@ -1,8 +1,8 @@
+import { aCentavos, DineroPipe } from '@nianva/ui-format';
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnChanges, Output, computed, inject, signal } from '@angular/core';
 import { FormArray, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButton } from '@angular/material/button';
 import { CampoComponent, InputCantidadComponent, InputDineroComponent } from '@nianva/ui-forms';
-import { DineroPipe } from '@nianva/ui-format';
 import { EmptyComponent } from '@nianva/ui-data';
 import { FormActionsComponent, PantallaService, SectionComponent } from '@nianva/ui-layout';
 import { conUmbral } from '@nianva/ui-feedback';
@@ -147,8 +147,8 @@ export class LineasCotizacionComponent implements OnChanges {
             variante_id: varianteId,
             etiqueta,
             cantidad,
-            precio_unitario: sugerido?.precio_unitario ?? 0,
-            descuento: sugerido?.descuento_aplicado ?? 0,
+            precio_unitario: aCentavos(sugerido?.precio_unitario ?? 0) / 100,
+            descuento: aCentavos(sugerido?.descuento_aplicado ?? 0) / 100,
           },
         ]);
         this.sugiriendoPrecio.set(false);

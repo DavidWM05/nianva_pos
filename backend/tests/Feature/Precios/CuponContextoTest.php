@@ -43,8 +43,8 @@ class CuponContextoTest extends TestCase
             ->assertExactJson([
                 'data' => [
                     'cupon' => ['id' => $cupon->id, 'codigo' => 'SIN-SUCURSAL', 'nombre' => 'Descuento', 'tipo' => 'porcentaje', 'valor' => '10.00'],
-                    'descuento' => 20,
-                    'total_con_descuento' => 180,
+                    'descuento' => '20.00',
+                    'total_con_descuento' => '180.00',
                 ],
             ]);
     }

@@ -3,7 +3,7 @@
 namespace App\Modules\Inventario\Http\Resources;
 
 use App\Modules\Inventario\Models\Producto;
-use App\Modules\Nucleo\Support\Cantidad;
+use App\Modules\Nucleo\Support\DecimalApi;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -26,8 +26,8 @@ class ProductoResource extends JsonResource
                 'departamento',
                 fn () => $this->departamento ? ['id' => $this->departamento->id, 'nombre' => $this->departamento->nombre] : null,
             ),
-            'precio_compra' => $this->precio_compra,
-            'precio_venta' => $this->precio_venta,
+            'precio_compra' => DecimalApi::dinero($this->precio_compra),
+            'precio_venta' => DecimalApi::dinero($this->precio_venta),
             'imagen_url' => $this->imagen_url,
             'no_resurtible' => $this->no_resurtible,
             'sin_descuento' => $this->sin_descuento,
@@ -39,7 +39,7 @@ class ProductoResource extends JsonResource
             // no selecciono stock_total.
             'stock_total' => $this->when(
                 array_key_exists('stock_total', $this->resource->getAttributes()),
-                fn () => Cantidad::numero($this->stock_total),
+                fn () => DecimalApi::cantidad($this->stock_total),
             ),
             'variantes' => ProductoVarianteResource::collection($this->whenLoaded('variantes')),
         ];

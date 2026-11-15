@@ -6,6 +6,7 @@ namespace App\Modules\Precios\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Modules\Nucleo\Services\TenantContext;
+use App\Modules\Nucleo\Support\DecimalApi;
 use App\Modules\Precios\Exceptions\CuponInvalidoException;
 use App\Modules\Precios\Http\Requests\GuardarCuponRequest;
 use App\Modules\Precios\Http\Requests\ValidarCuponRequest;
@@ -125,11 +126,10 @@ class CuponController extends Controller
                     'codigo' => $cupon->codigo,
                     'nombre' => $cupon->nombre,
                     'tipo' => $cupon->tipo,
-                    'valor' => $cupon->valor,
+                    'valor' => DecimalApi::dinero($cupon->valor),
                 ],
-                /** @var mixed */
-                'descuento' => $aplicado->descuento,
-                'total_con_descuento' => $resultado->total,
+                'descuento' => DecimalApi::dinero($aplicado->descuento),
+                'total_con_descuento' => DecimalApi::dinero($resultado->total),
             ],
         ]);
     }

@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Modules\Inventario\Models\Kardex;
 use App\Modules\Inventario\Models\ProductoVariante;
 use App\Modules\Nucleo\Models\Usuario;
+use App\Modules\Nucleo\Support\DecimalApi;
 use App\Modules\Nucleo\Support\SucursalOperacion;
 
 /**
@@ -39,11 +40,11 @@ class KardexController extends Controller
             ->map(fn (Kardex $movimiento) => [
                 'id' => $movimiento->id,
                 'tipo' => $movimiento->tipo,
-                'cantidad' => $movimiento->cantidad,
+                'cantidad' => DecimalApi::cantidad($movimiento->cantidad),
                 'motivo' => $movimiento->motivo,
                 'sucursal_nombre' => $movimiento->sucursal?->nombre,
                 'usuario_nombre' => $movimiento->usuario?->nombre,
-                'stock_resultante' => $movimiento->stock_resultante,
+                'stock_resultante' => DecimalApi::cantidad($movimiento->stock_resultante),
                 'fecha' => $movimiento->fecha,
             ]);
 

@@ -3,6 +3,7 @@
 namespace App\Modules\Inventario\Exceptions;
 
 use App\Modules\Nucleo\Exceptions\ExcepcionNegocio;
+use App\Modules\Nucleo\Support\DecimalApi;
 
 class StockInsuficienteException extends ExcepcionNegocio
 {
@@ -28,8 +29,8 @@ class StockInsuficienteException extends ExcepcionNegocio
         return [
             'variante_id' => $this->varianteId,
             'sucursal_id' => $this->sucursalId,
-            'solicitado' => $this->solicitado,
-            'disponible' => $this->disponible,
+            'solicitado' => DecimalApi::cantidad($this->solicitado),
+            'disponible' => DecimalApi::cantidad($this->disponible),
         ];
     }
 }

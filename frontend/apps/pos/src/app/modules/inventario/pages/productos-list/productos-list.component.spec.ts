@@ -27,7 +27,7 @@ describe('ProductosListComponent', () => {
       no_resurtible: false,
       sin_descuento: false,
       activo: true,
-      stock_total: 23,
+      stock_total: '23.000',
     },
     {
       id: 2,
@@ -41,7 +41,7 @@ describe('ProductosListComponent', () => {
       no_resurtible: false,
       sin_descuento: false,
       activo: false,
-      stock_total: 0,
+      stock_total: '0.000',
     },
   ];
 

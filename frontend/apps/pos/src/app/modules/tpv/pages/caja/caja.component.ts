@@ -1,10 +1,10 @@
+import { compararDinero, DineroPipe, FechaHoraPipe } from '@nianva/ui-format';
 import { HttpErrorResponse } from '@angular/common/http';
 import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatButton } from '@angular/material/button';
 import { SkeletonComponent } from '@nianva/ui-feedback';
 import { BtnEnviarComponent, CampoComponent } from '@nianva/ui-forms';
-import { DineroPipe, FechaHoraPipe } from '@nianva/ui-format';
 import { DatosComponent, FormActionsComponent } from '@nianva/ui-layout';
 import { ModalComponent } from '@nianva/ui-overlays';
 import { ToastService, esErrorNegocio, mensajeError } from '@nianva/ui-shared';
@@ -50,6 +50,7 @@ import { GastoService } from '../../gasto.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CajaComponent implements OnInit {
+  protected readonly compararDinero = compararDinero;
   private readonly cajaService = inject(CajaService);
   private readonly gastoService = inject(GastoService);
   private readonly toast = inject(ToastService);

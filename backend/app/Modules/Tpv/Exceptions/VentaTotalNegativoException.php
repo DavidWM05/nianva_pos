@@ -3,6 +3,7 @@
 namespace App\Modules\Tpv\Exceptions;
 
 use App\Modules\Nucleo\Exceptions\ExcepcionNegocio;
+use App\Modules\Nucleo\Support\DecimalApi;
 
 class VentaTotalNegativoException extends ExcepcionNegocio
 {
@@ -22,9 +23,9 @@ class VentaTotalNegativoException extends ExcepcionNegocio
     public function contexto(): array
     {
         return [
-            'subtotal' => $this->subtotal,
-            'descuento_manual' => $this->descuentoManual,
-            'descuento_cupon' => $this->descuentoCupon,
+            'subtotal' => DecimalApi::dinero($this->subtotal),
+            'descuento_manual' => DecimalApi::dinero($this->descuentoManual),
+            'descuento_cupon' => DecimalApi::dinero($this->descuentoCupon),
         ];
     }
 }

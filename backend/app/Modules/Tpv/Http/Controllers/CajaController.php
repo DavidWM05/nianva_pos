@@ -9,6 +9,7 @@ use App\Aplicacion\Caja\CerrarCaja;
 use App\Aplicacion\Caja\ObtenerCajaActual;
 use App\Http\Controllers\Controller;
 use App\Modules\Nucleo\Models\Usuario;
+use App\Modules\Nucleo\Support\DecimalApi;
 use App\Modules\Tpv\Http\Requests\AbrirCajaRequest;
 use App\Modules\Tpv\Http\Requests\CerrarCajaRequest;
 use App\Modules\Tpv\Http\Resources\CajaSesionResource;
@@ -41,7 +42,12 @@ class CajaController extends Controller
         return response()->json([
             'data' => $resultado['sesion'] ? new CajaSesionResource($resultado['sesion']) : null,
             'meta' => [
-                'resumen' => $resultado['resumen'],
+                'resumen' => $resultado['resumen'] === null ? null : [
+                    /** @var non-negative-int */
+                    'ventas_count' => (int) $resultado['resumen']['ventas_count'],
+                    'total_ventas' => DecimalApi::dinero($resultado['resumen']['total_ventas']),
+                    'total_gastos' => DecimalApi::dinero($resultado['resumen']['total_gastos']),
+                ],
                 'permisos' => $resultado['permisos'],
             ],
         ]);
@@ -71,7 +77,12 @@ class CajaController extends Controller
 
         return response()->json([
             'data' => new CajaSesionResource($resultado['sesion']),
-            'desglose' => $resultado['desglose'],
+            'desglose' => [
+                'total_gastos' => DecimalApi::dinero($resultado['desglose']['total_gastos']),
+                'total_abonos_cxc' => DecimalApi::dinero($resultado['desglose']['total_abonos_cxc']),
+                'total_recargas_gc' => DecimalApi::dinero($resultado['desglose']['total_recargas_gc']),
+                'total_pagos_cxp' => DecimalApi::dinero($resultado['desglose']['total_pagos_cxp']),
+            ],
         ]);
     }
 }

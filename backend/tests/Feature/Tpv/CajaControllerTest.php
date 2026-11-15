@@ -102,7 +102,7 @@ class CajaControllerTest extends TestCase
 
         $this->getJson('/api/v1/caja/actual')->assertOk()
             ->assertJsonPath('meta.resumen.ventas_count', 1)
-            ->assertJsonPath('meta.resumen.total_ventas', 100);
+            ->assertJsonPath('meta.resumen.total_ventas', '100.00');
     }
 
     public function test_abrir_con_caja_ya_abierta_devuelve_422_con_error_code_caja_ya_abierta(): void
@@ -146,7 +146,7 @@ class CajaControllerTest extends TestCase
         $this->actingAs($usuario);
 
         $this->getJson('/api/v1/caja/actual')->assertOk()
-            ->assertJsonPath('meta.resumen.total_gastos', 80)
+            ->assertJsonPath('meta.resumen.total_gastos', '80.00')
             ->assertJsonPath('meta.permisos.gastos_ver', false)
             ->assertJsonPath('meta.permisos.gastos_crear', false);
 

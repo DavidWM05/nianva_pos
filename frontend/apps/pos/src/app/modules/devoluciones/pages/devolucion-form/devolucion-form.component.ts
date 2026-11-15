@@ -1,6 +1,6 @@
+import { cantidadANumero, sumarCantidades, aCentavos, sumarDinero, restarDinero, multiplicarDinero, DineroPipe, CantidadPipe } from '@nianva/ui-format';
 import { MatButton } from '@angular/material/button';
 import { BtnEnviarComponent, CampoComponent, InputCantidadComponent, aplicarErroresServidor } from '@nianva/ui-forms';
-import { DineroPipe, CantidadPipe } from '@nianva/ui-format';
 import { AlertComponent, conUmbral } from '@nianva/ui-feedback';
 import { FormActionsComponent, PageComponent, PageHeaderComponent, SectionComponent, PantallaService } from '@nianva/ui-layout';
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
@@ -25,16 +25,10 @@ interface LineaDevuelta {
   cantidadMaxima: number;
   cantidad: number;
   vaAMerma: boolean;
-  precioUnitario: number;
+  precioUnitario: string;
 }
 
-function redondear(monto: number): number {
-  return Math.round(monto * 100) / 100;
-}
 
-function centavos(monto: number): number {
-  return Math.round(monto * 100);
-}
 
 /**
  * Creacion de devolucion/cambio. Dos formas de entrar (ver el reporte,
@@ -84,32 +78,24 @@ export class DevolucionFormComponent implements OnInit {
   protected readonly registrando = signal(false);
 
   protected readonly montoDevolucionEstimado = computed(() =>
-    redondear(
-      this.lineasDevueltas()
-        .filter((l) => l.cantidad > 0)
-        .reduce((acumulado, l) => acumulado + l.cantidad * l.precioUnitario, 0),
-    ),
+    aCentavos(sumarDinero(...this.lineasDevueltas().filter(l => l.cantidad > 0).map(l => multiplicarDinero(l.precioUnitario, l.cantidad)))) / 100,
   );
 
   /** Estimacion solo para feedback en vivo -- la diferencia real la calcula el backend al registrar. */
   protected readonly diferenciaEstimada = computed(() =>
-    redondear((this.tipo() === 'cambio' ? this.montoCambio() : 0) - this.montoDevolucionEstimado()),
+    aCentavos(restarDinero(this.tipo() === 'cambio' ? this.montoCambio() : 0, this.montoDevolucionEstimado())) / 100,
   );
 
   /** Una linea va_a_merma=true NUNCA cuenta aqui -- ver DevolucionService, que ni siquiera la toca en InventarioService. */
   protected readonly unidadesRegresanAStock = computed(() =>
-    this.lineasDevueltas()
-      .filter((l) => l.cantidad > 0 && !l.vaAMerma)
-      .reduce((acumulado, l) => acumulado + l.cantidad, 0),
+    cantidadANumero(sumarCantidades(...this.lineasDevueltas().filter(l => l.cantidad > 0 && !l.vaAMerma).map(l => l.cantidad))),
   );
 
   protected readonly unidadesMerma = computed(() =>
-    this.lineasDevueltas()
-      .filter((l) => l.cantidad > 0 && l.vaAMerma)
-      .reduce((acumulado, l) => acumulado + l.cantidad, 0),
+    cantidadANumero(sumarCantidades(...this.lineasDevueltas().filter(l => l.cantidad > 0 && l.vaAMerma).map(l => l.cantidad))),
   );
 
-  protected readonly pagoNecesario = computed(() => centavos(this.diferenciaEstimada()) !== 0);
+  protected readonly pagoNecesario = computed(() => aCentavos(this.diferenciaEstimada()) !== 0);
   protected readonly montoAPagar = computed(() => Math.abs(this.diferenciaEstimada()));
 
   // Solo importa cuando la tienda le debe dinero al cliente (diferencia<0)
@@ -145,10 +131,10 @@ export class DevolucionFormComponent implements OnInit {
           (venta.detalles ?? []).map((detalle) => ({
             variante_id: detalle.variante_id,
             etiqueta: `${detalle.variante?.producto_nombre ?? ''} (${[detalle.variante?.talla, detalle.variante?.color].filter((v) => !!v).join(' / ')})`,
-            cantidadMaxima: detalle.cantidad,
+            cantidadMaxima: cantidadANumero(detalle.cantidad),
             cantidad: 0,
             vaAMerma: false,
-            precioUnitario: Number(detalle.precio_unitario),
+            precioUnitario: detalle.precio_unitario,
           })),
         );
         this.gruposLineas.clear({ emitEvent: false });

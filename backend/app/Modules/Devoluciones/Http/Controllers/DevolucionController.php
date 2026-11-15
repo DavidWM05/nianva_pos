@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Modules\Devoluciones\Http\Requests\CrearDevolucionRequest;
 use App\Modules\Devoluciones\Http\Resources\DevolucionResource;
 use App\Modules\Devoluciones\Models\Devolucion;
+use App\Modules\Nucleo\Support\DecimalApi;
 use Illuminate\Http\Request;
 
 /**
@@ -82,7 +83,7 @@ class DevolucionController extends Controller
 
         return response()->json([
             'data' => new DevolucionResource($devolucion),
-            'nota_credito' => $nota ? ['id' => $nota->id, 'monto_original' => $nota->monto_original] : null,
+            'nota_credito' => $nota ? ['id' => $nota->id, 'monto_original' => DecimalApi::dinero($nota->monto_original)] : null,
         ], 201);
     }
 }

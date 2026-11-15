@@ -3,6 +3,7 @@
 namespace App\Modules\Devoluciones\Exceptions;
 
 use App\Modules\Nucleo\Exceptions\ExcepcionNegocio;
+use App\Modules\Nucleo\Support\DecimalApi;
 
 class DevolucionExcedeCantidadVendidaException extends ExcepcionNegocio
 {
@@ -28,8 +29,8 @@ class DevolucionExcedeCantidadVendidaException extends ExcepcionNegocio
         return [
             'venta_id' => $this->ventaId,
             'variante_id' => $this->varianteId,
-            'solicitado' => $this->solicitado,
-            'vendido' => $this->vendido,
+            'solicitado' => DecimalApi::cantidad($this->solicitado),
+            'vendido' => DecimalApi::cantidad($this->vendido),
         ];
     }
 }

@@ -1,7 +1,7 @@
 /** Espejo de InicioController::resumen(). */
 export interface VentasHoyResumen {
   cantidad: number;
-  total: number;
+  total: string;
 }
 
 export interface ApartadoPorVencer {

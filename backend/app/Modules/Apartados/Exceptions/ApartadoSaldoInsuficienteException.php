@@ -3,6 +3,7 @@
 namespace App\Modules\Apartados\Exceptions;
 
 use App\Modules\Nucleo\Exceptions\ExcepcionNegocio;
+use App\Modules\Nucleo\Support\DecimalApi;
 
 class ApartadoSaldoInsuficienteException extends ExcepcionNegocio
 {
@@ -25,8 +26,8 @@ class ApartadoSaldoInsuficienteException extends ExcepcionNegocio
     {
         return [
             'apartado_id' => $this->apartadoId,
-            'total' => $this->total,
-            'total_abonado' => $this->totalAbonado,
+            'total' => DecimalApi::dinero($this->total),
+            'total_abonado' => DecimalApi::dinero($this->totalAbonado),
         ];
     }
 }

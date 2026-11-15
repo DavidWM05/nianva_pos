@@ -2129,7 +2129,7 @@ export interface components {
                     color: string | null;
                     producto_nombre: string;
                 } | null;
-                cantidad: number;
+                cantidad: string;
                 precio_unitario: string;
                 subtotal: string;
             }[];
@@ -2611,7 +2611,7 @@ export interface components {
                     color: string | null;
                     producto_nombre: string;
                 } | null;
-                cantidad: number;
+                cantidad: string;
                 precio_unitario: string;
                 subtotal: string;
                 va_a_merma: boolean;
@@ -3105,7 +3105,7 @@ export interface components {
              *     para no disparar MissingAttributeException cuando la consulta
              *     no selecciono stock_total.
              */
-            stock_total?: number;
+            stock_total?: string;
             variantes?: components["schemas"]["ProductoVarianteResource"][];
         };
         /** ProductoVarianteResource */
@@ -3126,8 +3126,8 @@ export interface components {
             stock?: {
                 sucursal_id: number;
                 sucursal_nombre: string;
-                stock_actual: number;
-                stock_minimo: number;
+                stock_actual: string;
+                stock_minimo: string;
             }[];
             /**
              * @description Resuelto server-side para la sucursal del usuario que pide el
@@ -3138,7 +3138,7 @@ export interface components {
              *     todavia, nunca null, para que el frontend no tenga que
              *     distinguir "sin stock" de "sin dato".
              */
-            stock_actual?: number;
+            stock_actual?: string;
         };
         /** Proveedor */
         Proveedor: {
@@ -3221,8 +3221,8 @@ export interface components {
             nombre: string;
             tipo: string;
             valor: string | null;
-            cantidad_compra: null | number;
-            cantidad_paga: null | number;
+            cantidad_compra: string | null;
+            cantidad_paga: string | null;
             precio_bundle: string | null;
             aplica_a: string;
             /**
@@ -3410,7 +3410,7 @@ export interface components {
                     color: string | null;
                     producto_nombre: string;
                 } | null;
-                cantidad: number;
+                cantidad: string;
                 precio_unitario: string;
                 descuento_aplicado: string;
                 subtotal: string;
@@ -3755,7 +3755,7 @@ export interface operations {
                         data: components["schemas"]["ApartadoResource"] & Record<string, never>;
                         meta: {
                             tiene_abonos_pendientes: boolean;
-                            monto_abonado_pendiente: number;
+                            monto_abonado_pendiente: string;
                         };
                     };
                 };
@@ -3865,8 +3865,8 @@ export interface operations {
                         meta: {
                             resumen: {
                                 ventas_count: number;
-                                total_ventas: number;
-                                total_gastos: number;
+                                total_ventas: string;
+                                total_gastos: string;
                             } | null;
                             permisos: {
                                 abrir: boolean;
@@ -3933,10 +3933,10 @@ export interface operations {
                     "application/json": {
                         data: components["schemas"]["CajaSesionResource"];
                         desglose: {
-                            total_gastos: number;
-                            total_abonos_cxc: number;
-                            total_recargas_gc: number;
-                            total_pagos_cxp: number;
+                            total_gastos: string;
+                            total_abonos_cxc: string;
+                            total_recargas_gc: string;
+                            total_pagos_cxp: string;
                         };
                     };
                 };
@@ -5282,8 +5282,8 @@ export interface operations {
                                 tipo: string;
                                 valor: string;
                             };
-                            descuento: unknown;
-                            total_con_descuento: number;
+                            descuento: string;
+                            total_con_descuento: string;
                         };
                     };
                 };
@@ -5817,7 +5817,7 @@ export interface operations {
                         data: {
                             ventas_hoy: {
                                 cantidad: number;
-                                total: number;
+                                total: string;
                             };
                             apartados_por_vencer: {
                                 id: number;
@@ -5855,11 +5855,11 @@ export interface operations {
                         data: {
                             id: number;
                             tipo: string;
-                            cantidad: number;
+                            cantidad: string;
                             motivo: string;
                             sucursal_nombre: string;
                             usuario_nombre: string;
-                            stock_resultante: number;
+                            stock_resultante: string;
                             /** Format: date-time */
                             fecha: string;
                         }[];
@@ -8296,11 +8296,11 @@ export interface operations {
                                 variante_id: number;
                                 regla_precio_id: number | null;
                                 cantidad: string;
-                                precio_unitario: number;
-                                descuento_aplicado: number;
-                                subtotal: number;
+                                precio_unitario: string;
+                                descuento_aplicado: string;
+                                subtotal: string;
                             }[];
-                            subtotal: number;
+                            subtotal: string;
                         };
                     };
                 };
@@ -8344,27 +8344,27 @@ export interface operations {
                 content: {
                     "application/json": {
                         data: {
-                            total_ventas: number;
+                            total_ventas: string;
                             numero_ventas: number;
-                            ticket_promedio: number;
+                            ticket_promedio: string;
                             por_sucursal: {
                                 sucursal_id: number;
                                 sucursal_nombre: string | null;
-                                total: number;
+                                total: string;
                                 numero_ventas: number;
                             }[];
                             por_metodo_pago: {
                                 metodo_pago_id: number;
                                 metodo_pago_nombre: string;
-                                total: number;
+                                total: string;
                             }[];
                             top_productos: {
                                 variante_id: number;
                                 producto_nombre: string;
                                 talla: string | null;
                                 color: string | null;
-                                cantidad_vendida: number;
-                                total_vendido: number;
+                                cantidad_vendida: string;
+                                total_vendido: string;
                             }[];
                         };
                     };

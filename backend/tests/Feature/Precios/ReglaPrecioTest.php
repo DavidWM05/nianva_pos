@@ -135,7 +135,7 @@ class ReglaPrecioTest extends TestCase
 
         $this->postJson('/api/v1/reglas-precio', $this->datosBase([
             'tipo' => 'nxm', 'valor' => null, 'cantidad_compra' => 3, 'cantidad_paga' => 2,
-        ]))->assertCreated()->assertJsonPath('data.cantidad_compra', 3);
+        ]))->assertCreated()->assertJsonPath('data.cantidad_compra', '3.000');
     }
 
     public function test_crear_regla_bundle_exige_cantidad_compra_y_precio_bundle(): void

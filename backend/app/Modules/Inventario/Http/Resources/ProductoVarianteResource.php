@@ -3,7 +3,7 @@
 namespace App\Modules\Inventario\Http\Resources;
 
 use App\Modules\Inventario\Models\ProductoVariante;
-use App\Modules\Nucleo\Support\Cantidad;
+use App\Modules\Nucleo\Support\DecimalApi;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -31,8 +31,8 @@ class ProductoVarianteResource extends JsonResource
                 fn () => $this->stock->map(fn ($fila) => [
                     'sucursal_id' => $fila->sucursal_id,
                     'sucursal_nombre' => $fila->sucursal?->nombre,
-                    'stock_actual' => $fila->stock_actual,
-                    'stock_minimo' => $fila->stock_minimo,
+                    'stock_actual' => DecimalApi::cantidad($fila->stock_actual),
+                    'stock_minimo' => DecimalApi::cantidad($fila->stock_minimo),
                 ]),
             ),
             // Resuelto server-side para la sucursal del usuario que pide el
@@ -44,7 +44,7 @@ class ProductoVarianteResource extends JsonResource
             // distinguir "sin stock" de "sin dato".
             'stock_actual' => $this->when(
                 $this->relationLoaded('stock'),
-                fn () => Cantidad::numero($this->stock->firstWhere('sucursal_id', $request->user()?->sucursal_id)?->stock_actual ?? 0),
+                fn () => DecimalApi::cantidad($this->stock->firstWhere('sucursal_id', $request->user()?->sucursal_id)?->stock_actual ?? 0),
             ),
         ];
     }

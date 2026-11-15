@@ -14,8 +14,8 @@ export interface ProveedorSimple {
 export interface StockPorSucursal {
   sucursal_id: number;
   sucursal_nombre: string | null;
-  stock_actual: number;
-  stock_minimo: number;
+  stock_actual: string;
+  stock_minimo: string;
 }
 
 export interface ProductoVariante {
@@ -33,7 +33,7 @@ export interface ProductoVariante {
    * VariantesDeProductoBuscadorService, que lo reexpone como
    * `stock_actual` en el EntidadBuscable que consume LineasProductoComponent.
    */
-  stock_actual?: number;
+  stock_actual?: string;
 }
 
 /** Espejo de ProductoResource. */
@@ -50,7 +50,7 @@ export interface Producto {
   sin_descuento: boolean;
   activo: boolean;
   /** Solo presente en la respuesta de index(). */
-  stock_total?: number;
+  stock_total?: string;
   /** Solo presente en la respuesta de show(). */
   variantes?: ProductoVariante[];
 }
@@ -73,10 +73,10 @@ export interface ProductosPagina {
 export interface MovimientoKardex {
   id: number;
   tipo: 'entrada' | 'salida';
-  cantidad: number;
+  cantidad: string;
   motivo: 'venta' | 'compra' | 'devolucion' | 'merma' | 'ajuste' | 'apartado';
   sucursal_nombre: string | null;
   usuario_nombre: string | null;
-  stock_resultante: number;
+  stock_resultante: string;
   fecha: string;
 }

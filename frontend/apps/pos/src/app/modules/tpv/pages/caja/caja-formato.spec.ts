@@ -49,7 +49,7 @@ describe('CajaComponent formato por pipe', () => {
 
   it('con caja abierta, apertura, totales y gastos salen con dinero', async () => {
     const { fixture } = await crear(
-      { sesion: sesionAbierta, resumen: { ventas_count: 3, total_ventas: 12500.5, total_gastos: 1080 }, permisos },
+      { sesion: sesionAbierta, resumen: { ventas_count: 3, total_ventas: '12500.50', total_gastos: '1080.00' }, permisos },
       [{ id: 1, descripcion: 'Luz', monto: '1080.00', fecha: '2026-07-22T10:00:00.000000Z' }],
     );
     const texto = (fixture.nativeElement as HTMLElement).textContent ?? '';
@@ -60,7 +60,7 @@ describe('CajaComponent formato por pipe', () => {
   });
 
   it('al cerrar, el resultado y el desglose salen con dinero (con su signo)', async () => {
-    const { fixture, cajaService } = await crear({ sesion: sesionAbierta, resumen: { ventas_count: 1, total_ventas: 100, total_gastos: 0 }, permisos });
+    const { fixture, cajaService } = await crear({ sesion: sesionAbierta, resumen: { ventas_count: 1, total_ventas: '100.00', total_gastos: '0.00' }, permisos });
     const cerrada: CajaSesion = {
       ...sesionAbierta,
       estado: 'cerrada',

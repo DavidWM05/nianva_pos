@@ -16,8 +16,8 @@
           <dd>{{ cerrada.monto_cierre | dinero }}</dd>
           <dt>Diferencia</dt>
           <dd
-            [class.caja__diferencia--positiva]="+cerrada.diferencia! > 0"
-            [class.caja__diferencia--negativa]="+cerrada.diferencia! < 0"
+            [class.caja__diferencia--positiva]="compararDinero(cerrada.diferencia ?? '0.00', 0) > 0"
+            [class.caja__diferencia--negativa]="compararDinero(cerrada.diferencia ?? '0.00', 0) < 0"
           >
             {{ cerrada.diferencia | dinero }}
           </dd>
