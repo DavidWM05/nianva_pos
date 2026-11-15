@@ -2794,22 +2794,6 @@ export interface components {
             /** @enum {string} */
             tipo: "entero" | "fraccionario";
         };
-        /** GuardarUsuarioRequest */
-        GuardarUsuarioRequest: {
-            nombre: string;
-            apellido?: string | null;
-            alias?: string | null;
-            /** Format: email */
-            correo: string;
-            password: string;
-            telefono?: string | null;
-            sucursal_id?: number | null;
-            /**
-             * @description Todo usuario de un tenant tiene al menos un rol: sin rol entra pero no ve nada.
-             *     En edicion es parcial: si `roles` no llega, conserva los actuales.
-             */
-            roles: number[];
-        };
         /** InsumoResource */
         InsumoResource: {
             id: number;
@@ -3550,7 +3534,6 @@ export type GuardarProductoVarianteRequest = components['schemas']['GuardarProdu
 export type GuardarReglaPrecioRequest = components['schemas']['GuardarReglaPrecioRequest'];
 export type GuardarRolRequest = components['schemas']['GuardarRolRequest'];
 export type GuardarUnidadMedidaRequest = components['schemas']['GuardarUnidadMedidaRequest'];
-export type GuardarUsuarioRequest = components['schemas']['GuardarUsuarioRequest'];
 export type InsumoResource = components['schemas']['InsumoResource'];
 export type InsumoStock = components['schemas']['InsumoStock'];
 export type LicenciaLocalResource = components['schemas']['LicenciaLocalResource'];
@@ -8009,7 +7992,21 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["GuardarUsuarioRequest"];
+                "application/json": {
+                    nombre: string;
+                    apellido?: string | null;
+                    alias?: string | null;
+                    /** Format: email */
+                    correo: string;
+                    password: string;
+                    telefono?: string | null;
+                    sucursal_id?: number | null;
+                    /**
+                     * @description Todo usuario de un tenant tiene al menos un rol: sin rol entra pero no ve nada.
+                     *     En edicion es parcial: si `roles` no llega, conserva los actuales.
+                     */
+                    roles: number[];
+                };
             };
         };
         responses: {
@@ -8073,7 +8070,21 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["GuardarUsuarioRequest"];
+                "application/json": {
+                    nombre: string;
+                    apellido?: string | null;
+                    alias?: string | null;
+                    /** Format: email */
+                    correo: string;
+                    password?: string | null;
+                    telefono?: string | null;
+                    sucursal_id?: number | null;
+                    /**
+                     * @description Todo usuario de un tenant tiene al menos un rol: sin rol entra pero no ve nada.
+                     *     En edicion es parcial: si `roles` no llega, conserva los actuales.
+                     */
+                    roles?: number[];
+                };
             };
         };
         responses: {
