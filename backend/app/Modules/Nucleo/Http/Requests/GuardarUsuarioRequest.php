@@ -8,6 +8,16 @@ use App\Modules\Nucleo\Support\ReglasTenant;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Password as PasswordRule;
 
+/**
+ * Alta (POST /usuarios) y edicion (PUT /usuarios/{usuario}) comparten esta request.
+ *
+ * Scramble documenta las reglas instanciando la request con el metodo HTTP de cada ruta,
+ * pero sin parametros de ruta: por eso la edicion se reconoce tambien por el metodo (no
+ * solo por `usuario`), y `@ignoreSchema` deja el cuerpo de cada operacion en linea en vez
+ * de un componente compartido (Scramble reutilizaria el primero que registra, el del alta).
+ *
+ * @ignoreSchema
+ */
 class GuardarUsuarioRequest extends SolicitudNegocio
 {
     /**
@@ -17,6 +27,7 @@ class GuardarUsuarioRequest extends SolicitudNegocio
     {
         $usuario = $this->route('usuario');
         $usuarioId = $usuario instanceof Usuario ? $usuario->id : null;
+        $esEdicion = $usuarioId !== null || ! $this->isMethod('POST');
         $tenantId = $this->tenantId();
 
         return [
@@ -27,12 +38,12 @@ class GuardarUsuarioRequest extends SolicitudNegocio
                 'required', 'email', 'max:150',
                 Rule::unique('usuarios', 'correo')->ignore($usuarioId),
             ],
-            'password' => [$usuarioId === null ? 'required' : 'nullable', PasswordRule::min(8)],
+            'password' => [$esEdicion ? 'nullable' : 'required', PasswordRule::min(8)],
             'telefono' => ['nullable', 'string', 'max:20'],
             'sucursal_id' => ['nullable', 'integer', ReglasTenant::existe('sucursales', $tenantId)],
             // Todo usuario de un tenant tiene al menos un rol: sin rol entra pero no ve nada.
             // En edicion es parcial: si `roles` no llega, conserva los actuales.
-            'roles' => [$usuarioId === null ? 'required' : 'sometimes', 'array', 'min:1'],
+            'roles' => [$esEdicion ? 'sometimes' : 'required', 'array', 'min:1'],
             'roles.*' => ['integer', ReglasTenant::existeGlobalODelTenant('roles', $tenantId)],
         ];
     }

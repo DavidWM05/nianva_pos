@@ -38,8 +38,9 @@ export class MetodoPagoAdminService {
       .get<RespuestaDe<'/metodos-pago', 'get'>>(urlApi(`/metodos-pago`), { params })
       .pipe(
         map((r) => {
-          const respuesta = r as { data: MetodoPagoAdmin[]; meta: { total: number; permisos: MetodosPagoPermisos } };
-          return { data: respuesta.data, total: respuesta.meta.total, permisos: respuesta.meta.permisos };
+          // Sin solo_activos la respuesta trae meta (la otra rama del contrato es el selector del TPV).
+          const meta = 'meta' in r ? r.meta : { total: 0, permisos: { crear: false, editar: false, eliminar: false } };
+          return { data: r.data as MetodoPagoAdmin[], total: meta.total, permisos: meta.permisos };
         }),
       );
   }
@@ -47,7 +48,7 @@ export class MetodoPagoAdminService {
   obtener(id: number): Observable<{ metodoPago: MetodoPagoAdmin; permisos: MetodosPagoPermisos }> {
     return this.http
       .get<RespuestaDe<'/metodos-pago/{metodoPago}', 'get'>>(urlApi(`/metodos-pago/${id}`))
-      .pipe(map((r) => ({ metodoPago: r.data as MetodoPagoAdmin, permisos: r.meta.permisos as MetodosPagoPermisos })));
+      .pipe(map((r) => ({ metodoPago: r.data as MetodoPagoAdmin, permisos: r.meta.permisos })));
   }
 
   crear(payload: MetodoPagoFormPayload): Observable<MetodoPagoAdmin> {

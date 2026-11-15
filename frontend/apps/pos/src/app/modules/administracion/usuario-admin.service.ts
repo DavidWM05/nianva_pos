@@ -13,14 +13,10 @@ export type UsuarioAltaPayload = CuerpoDe<'/usuarios', 'post'>;
 
 /**
  * Cuerpo de la edicion: parcial. Una password en blanco o ausente no cambia la actual y, si
- * `roles` no llega, se conservan (GuardarUsuarioRequest). El contrato de PUT reutiliza el
- * esquema del alta (crear y editar comparten el FormRequest y Scramble documenta la rama del
- * alta), por eso password y roles se vuelven opcionales aqui.
+ * `roles` no llega, se conservan (GuardarUsuarioRequest). El contrato de PUT ya documenta la
+ * rama de edicion del FormRequest (password y roles opcionales), asi que sale tal cual.
  */
-export type UsuarioEdicionPayload = Omit<CuerpoDe<'/usuarios/{usuario}', 'put'>, 'password' | 'roles'> & {
-  password?: string | null;
-  roles?: number[];
-};
+export type UsuarioEdicionPayload = CuerpoDe<'/usuarios/{usuario}', 'put'>;
 
 /** Lo que emite el formulario de usuario: un alta o una edicion. */
 export type UsuarioFormPayload = UsuarioAltaPayload | UsuarioEdicionPayload;
