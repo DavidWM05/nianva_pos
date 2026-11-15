@@ -48,14 +48,14 @@ class PricingDineroTest extends TestCase
     public static function lineas(): array
     {
         return [
-            'medio centavo por linea' => ['0.05', 1, ['tipo' => 'porcentaje', 'valor' => '10'], 2, 0.01, 0.04, 0.08],
-            'porcentaje decimal' => ['12.35', 3, ['tipo' => 'porcentaje', 'valor' => '12.50'], 1, 4.63, 32.42, 32.42],
-            'monto fijo por unidad' => ['0.08', 3, ['tipo' => 'monto_fijo', 'valor' => '0.03'], 1, 0.09, 0.15, 0.15],
-            'monto fijo limitado al precio' => ['0.08', 3, ['tipo' => 'monto_fijo', 'valor' => '1.00'], 1, 0.24, 0.0, 0.0],
+            'medio centavo por linea' => ['0.05', 1, ['tipo' => 'porcentaje', 'porcentaje' => '10'], 2, 0.01, 0.04, 0.08],
+            'porcentaje decimal' => ['12.35', 3, ['tipo' => 'porcentaje', 'porcentaje' => '12.50'], 1, 4.63, 32.42, 32.42],
+            'monto fijo por unidad' => ['0.08', 3, ['tipo' => 'monto_fijo', 'monto' => '0.03'], 1, 0.09, 0.15, 0.15],
+            'monto fijo limitado al precio' => ['0.08', 3, ['tipo' => 'monto_fijo', 'monto' => '1.00'], 1, 0.24, 0.0, 0.0],
             'nxm con resto' => ['33.33', 7, ['tipo' => 'nxm', 'cantidad_compra' => 3, 'cantidad_paga' => 2], 1, 66.66, 166.65, 166.65],
             'bundle con resto' => ['0.10', 7, ['tipo' => 'bundle', 'cantidad_compra' => 3, 'precio_bundle' => '0.25'], 1, 0.10, 0.60, 0.60],
-            'porcentaje sin valor conserva cero' => ['0.10', 3, ['tipo' => 'porcentaje', 'valor' => null], 1, 0.0, 0.30, 0.30],
-            'monto fijo sin valor conserva cero' => ['0.10', 3, ['tipo' => 'monto_fijo', 'valor' => null], 1, 0.0, 0.30, 0.30],
+            'porcentaje sin valor conserva cero' => ['0.10', 3, ['tipo' => 'porcentaje', 'porcentaje' => null], 1, 0.0, 0.30, 0.30],
+            'monto fijo sin valor conserva cero' => ['0.10', 3, ['tipo' => 'monto_fijo', 'monto' => null], 1, 0.0, 0.30, 0.30],
             'bundle mas caro no descuenta' => ['0.10', 3, ['tipo' => 'bundle', 'cantidad_compra' => 3, 'precio_bundle' => '0.40'], 1, 0.0, 0.30, 0.30],
         ];
     }
@@ -65,7 +65,7 @@ class PricingDineroTest extends TestCase
     {
         $tenant = Tenant::factory()->create();
         app(TenantContext::class)->set($tenant);
-        Cupon::factory()->create(['tenant_id' => $tenant->id, 'codigo' => 'EXACTO', 'tipo' => $tipo, 'valor' => $valor, 'activo' => true, 'fecha_inicio' => null, 'fecha_fin' => null]);
+        Cupon::factory()->create(['tenant_id' => $tenant->id, 'codigo' => 'EXACTO', 'tipo' => $tipo, ($tipo === 'porcentaje' ? 'porcentaje' : 'monto') => $valor, 'activo' => true, 'fecha_inicio' => null, 'fecha_fin' => null]);
         $resultado = app(PricingService::class)->cotizar(new Carrito([], 'EXACTO', $referencia), new ContextoPrecio($tenant->id, null, null, CarbonImmutable::parse('2026-11-14'), 1));
         $this->assertSame($referencia, $resultado->subtotal);
         $this->assertSame($descuento, $resultado->cupon->descuento);

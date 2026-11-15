@@ -12,7 +12,8 @@ export interface CuponValidacion {
     codigo: string;
     nombre: string;
     tipo: 'porcentaje' | 'monto_fijo';
-    valor: string;
+    porcentaje: RespuestaDe<'/cupones/validar', 'post'>['data']['cupon']['porcentaje'];
+    monto: RespuestaDe<'/cupones/validar', 'post'>['data']['cupon']['monto'];
   };
   descuento: string;
   total_con_descuento: string;

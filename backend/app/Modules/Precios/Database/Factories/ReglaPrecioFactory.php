@@ -17,7 +17,9 @@ class ReglaPrecioFactory extends Factory
             'tenant_id' => fn () => TenantParaFactory::id(),
             'nombre' => fake()->words(3, true),
             'tipo' => 'porcentaje',
-            'valor' => 10,
+            // El campo que no le toca al tipo queda null; nxm y bundle sin ninguno (DAT-02b).
+            'porcentaje' => fn (array $a) => $a['tipo'] === 'porcentaje' ? 10 : null,
+            'monto' => fn (array $a) => $a['tipo'] === 'monto_fijo' ? 10 : null,
             'cantidad_compra' => null,
             'cantidad_paga' => null,
             'precio_bundle' => null,

@@ -1,3 +1,5 @@
+import type { ReglaPrecioResource } from '@nianva/api-contrato';
+
 export type TipoReglaPrecio = 'porcentaje' | 'monto_fijo' | 'nxm' | 'bundle';
 export type AplicaA = 'todo' | 'categoria' | 'producto' | 'variante';
 
@@ -6,7 +8,8 @@ export interface ReglaPrecio {
   id: number;
   nombre: string;
   tipo: TipoReglaPrecio;
-  valor: string | null;
+  porcentaje: ReglaPrecioResource['porcentaje'];
+  monto: ReglaPrecioResource['monto'];
   cantidad_compra: string | null;
   cantidad_paga: string | null;
   precio_bundle: string | null;

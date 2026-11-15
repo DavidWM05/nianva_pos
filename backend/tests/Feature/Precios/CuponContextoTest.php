@@ -35,14 +35,14 @@ class CuponContextoTest extends TestCase
             $rol->permisos()->attach($permiso->id);
         }
         $usuario->roles()->attach($rol->id);
-        $cupon = Cupon::factory()->create(['tenant_id' => $tenant->id, 'codigo' => 'SIN-SUCURSAL', 'nombre' => 'Descuento', 'tipo' => 'porcentaje', 'valor' => 10]);
+        $cupon = Cupon::factory()->create(['tenant_id' => $tenant->id, 'codigo' => 'SIN-SUCURSAL', 'nombre' => 'Descuento', 'tipo' => 'porcentaje', 'porcentaje' => 10]);
 
         $this->actingAs($usuario)
             ->postJson('/api/v1/cupones/validar', ['codigo' => 'SIN-SUCURSAL', 'total' => 200])
             ->assertOk()
             ->assertExactJson([
                 'data' => [
-                    'cupon' => ['id' => $cupon->id, 'codigo' => 'SIN-SUCURSAL', 'nombre' => 'Descuento', 'tipo' => 'porcentaje', 'valor' => '10.00'],
+                    'cupon' => ['id' => $cupon->id, 'codigo' => 'SIN-SUCURSAL', 'nombre' => 'Descuento', 'tipo' => 'porcentaje', 'porcentaje' => '10.0000', 'monto' => null],
                     'descuento' => '20.00',
                     'total_con_descuento' => '180.00',
                 ],

@@ -52,7 +52,7 @@ test('precios: buscar, crear y editar una regla', async ({ page }) => {
   await capturarPantalla50e(page, 'precios-regla-crear-categoria');
   const nombre = 'Regla E2E ' + Date.now();
   await page.locator('#nombre').fill(nombre);
-  await page.locator('#valor').fill('12');
+  await page.locator('#porcentaje').fill('12');
   await page.getByRole('button', { name: /Crear regla$/ }).click();
   await expect(
     page.getByRole('heading', { name: nombre, exact: true }),
@@ -106,7 +106,7 @@ test('precios: buscar, crear y editar un cupón', async ({ page }) => {
   const codigo = 'E2E-' + Date.now();
   await page.locator('#codigo').fill(codigo);
   await page.locator('#nombre').fill('Cupón de prueba');
-  await page.locator('#valor').fill('15');
+  await page.locator('#porcentaje').fill('15');
   await page.getByRole('button', { name: /Crear cupón$/ }).click();
   await expect(
     page.getByRole('heading', { name: codigo, exact: true }),

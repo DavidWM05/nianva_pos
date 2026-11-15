@@ -2558,7 +2558,8 @@ export interface components {
             codigo: string;
             nombre: string;
             tipo: string;
-            valor: string;
+            porcentaje: string | null;
+            monto: string | null;
             uso_maximo: number | null;
             uso_maximo_por_cliente: number | null;
             /** Format: date-time */
@@ -2716,7 +2717,8 @@ export interface components {
             nombre: string;
             /** @enum {string} */
             tipo: "porcentaje" | "monto_fijo";
-            valor: number;
+            porcentaje?: number | null;
+            monto?: number | null;
             uso_maximo?: number | null;
             uso_maximo_por_cliente?: number | null;
             /** Format: date-time */
@@ -2767,7 +2769,8 @@ export interface components {
             nombre: string;
             /** @enum {string} */
             tipo: "porcentaje" | "monto_fijo" | "nxm" | "bundle";
-            valor?: number | null;
+            porcentaje?: number | null;
+            monto?: number | null;
             cantidad_compra?: number | null;
             cantidad_paga?: number | null;
             precio_bundle?: number | null;
@@ -3220,7 +3223,8 @@ export interface components {
             id: number;
             nombre: string;
             tipo: string;
-            valor: string | null;
+            porcentaje: string | null;
+            monto: string | null;
             cantidad_compra: string | null;
             cantidad_paga: string | null;
             precio_bundle: string | null;
@@ -5280,7 +5284,8 @@ export interface operations {
                                 codigo: string;
                                 nombre: string;
                                 tipo: string;
-                                valor: string;
+                                porcentaje: string | null;
+                                monto: string | null;
                             };
                             descuento: string;
                             total_con_descuento: string;

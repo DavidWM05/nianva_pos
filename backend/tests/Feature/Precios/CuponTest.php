@@ -49,8 +49,8 @@ class CuponTest extends TestCase
     public function test_lista_pagina_y_filtra_por_codigo_o_nombre(): void
     {
         ['tenant' => $tenant, 'usuario' => $usuario] = $this->crearUsuarioConPermisos(['cupones.ver']);
-        Cupon::create(['tenant_id' => $tenant->id, 'codigo' => 'VERANO10', 'nombre' => 'Descuento de verano', 'tipo' => 'porcentaje', 'valor' => 10]);
-        Cupon::create(['tenant_id' => $tenant->id, 'codigo' => 'INVIERNO20', 'nombre' => 'Descuento de invierno', 'tipo' => 'porcentaje', 'valor' => 20]);
+        Cupon::create(['tenant_id' => $tenant->id, 'codigo' => 'VERANO10', 'nombre' => 'Descuento de verano', 'tipo' => 'porcentaje', 'porcentaje' => 10]);
+        Cupon::create(['tenant_id' => $tenant->id, 'codigo' => 'INVIERNO20', 'nombre' => 'Descuento de invierno', 'tipo' => 'porcentaje', 'porcentaje' => 20]);
 
         $this->actingAs($usuario);
 
@@ -62,7 +62,7 @@ class CuponTest extends TestCase
     public function test_show_exige_el_permiso_cupones_ver_y_devuelve_el_cupon_con_permisos(): void
     {
         ['tenant' => $tenant, 'usuario' => $usuario] = $this->crearUsuarioConPermisos(['cupones.ver']);
-        $cupon = Cupon::create(['tenant_id' => $tenant->id, 'codigo' => 'VERANO10', 'nombre' => 'Descuento de verano', 'tipo' => 'porcentaje', 'valor' => 10]);
+        $cupon = Cupon::create(['tenant_id' => $tenant->id, 'codigo' => 'VERANO10', 'nombre' => 'Descuento de verano', 'tipo' => 'porcentaje', 'porcentaje' => 10]);
 
         $this->actingAs($usuario);
 
@@ -75,7 +75,7 @@ class CuponTest extends TestCase
     public function test_show_sin_el_permiso_cupones_ver_devuelve_403(): void
     {
         ['tenant' => $tenant, 'usuario' => $usuario] = $this->crearUsuarioConPermisos([]);
-        $cupon = Cupon::create(['tenant_id' => $tenant->id, 'codigo' => 'VERANO10', 'nombre' => 'Descuento de verano', 'tipo' => 'porcentaje', 'valor' => 10]);
+        $cupon = Cupon::create(['tenant_id' => $tenant->id, 'codigo' => 'VERANO10', 'nombre' => 'Descuento de verano', 'tipo' => 'porcentaje', 'porcentaje' => 10]);
 
         $this->actingAs($usuario);
 
@@ -93,24 +93,24 @@ class CuponTest extends TestCase
     public function test_el_codigo_del_cupon_es_unico_por_tenant_no_globalmente(): void
     {
         ['tenant' => $tenantA, 'usuario' => $usuarioA] = $this->crearUsuarioConPermisos(['cupones.crear']);
-        Cupon::create(['tenant_id' => $tenantA->id, 'codigo' => 'DESC10', 'nombre' => 'Descuento', 'tipo' => 'porcentaje', 'valor' => 10]);
+        Cupon::create(['tenant_id' => $tenantA->id, 'codigo' => 'DESC10', 'nombre' => 'Descuento', 'tipo' => 'porcentaje', 'porcentaje' => 10]);
 
         $this->actingAs($usuarioA);
-        $this->postJson('/api/v1/cupones', ['codigo' => 'DESC10', 'nombre' => 'Otro', 'tipo' => 'porcentaje', 'valor' => 5])
+        $this->postJson('/api/v1/cupones', ['codigo' => 'DESC10', 'nombre' => 'Otro', 'tipo' => 'porcentaje', 'porcentaje' => 5])
             ->assertUnprocessable()
             ->assertJsonValidationErrors('codigo');
 
         // Mismo codigo, tenant DISTINTO: no deberia chocar.
         ['usuario' => $usuarioB] = $this->crearUsuarioConPermisos(['cupones.crear']);
         $this->actingAs($usuarioB);
-        $this->postJson('/api/v1/cupones', ['codigo' => 'DESC10', 'nombre' => 'Descuento tenant B', 'tipo' => 'porcentaje', 'valor' => 8])
+        $this->postJson('/api/v1/cupones', ['codigo' => 'DESC10', 'nombre' => 'Descuento tenant B', 'tipo' => 'porcentaje', 'porcentaje' => 8])
             ->assertCreated();
     }
 
     public function test_desactivar_cupon_nunca_borra_fisicamente(): void
     {
         ['tenant' => $tenant, 'usuario' => $usuario] = $this->crearUsuarioConPermisos(['cupones.eliminar']);
-        $cupon = Cupon::create(['tenant_id' => $tenant->id, 'codigo' => 'PROMO5', 'nombre' => 'Promo', 'tipo' => 'monto_fijo', 'valor' => 50]);
+        $cupon = Cupon::create(['tenant_id' => $tenant->id, 'codigo' => 'PROMO5', 'nombre' => 'Promo', 'tipo' => 'monto_fijo', 'monto' => 50]);
 
         $this->actingAs($usuario);
 
@@ -128,7 +128,7 @@ class CuponTest extends TestCase
     public function test_validar_devuelve_el_descuento_de_un_cupon_vigente(): void
     {
         ['tenant' => $tenant, 'usuario' => $usuario] = $this->crearUsuarioConPermisos(['ventas.crear']);
-        Cupon::create(['tenant_id' => $tenant->id, 'codigo' => 'VERANO10', 'nombre' => 'Descuento de verano', 'tipo' => 'porcentaje', 'valor' => 10]);
+        Cupon::create(['tenant_id' => $tenant->id, 'codigo' => 'VERANO10', 'nombre' => 'Descuento de verano', 'tipo' => 'porcentaje', 'porcentaje' => 10]);
 
         $this->actingAs($usuario);
 
@@ -153,7 +153,7 @@ class CuponTest extends TestCase
     public function test_validar_sin_permiso_ventas_crear_devuelve_403(): void
     {
         ['tenant' => $tenant, 'usuario' => $usuario] = $this->crearUsuarioConPermisos(['cupones.ver']);
-        Cupon::create(['tenant_id' => $tenant->id, 'codigo' => 'VERANO10', 'nombre' => 'Descuento de verano', 'tipo' => 'porcentaje', 'valor' => 10]);
+        Cupon::create(['tenant_id' => $tenant->id, 'codigo' => 'VERANO10', 'nombre' => 'Descuento de verano', 'tipo' => 'porcentaje', 'porcentaje' => 10]);
 
         $this->actingAs($usuario);
 

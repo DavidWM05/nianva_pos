@@ -5049,12 +5049,6 @@ parameters:
 			path: app/Modules/Precios/Http/Controllers/CuponController.php
 
 		-
-			message: '#^Access to an undefined property App\\Modules\\Precios\\Models\\Cupon\:\:\$valor\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Modules/Precios/Http/Controllers/CuponController.php
-
-		-
 			message: '#^Cannot call method tienePermiso\(\) on App\\Modules\\Nucleo\\Models\\Usuario\|null\.$#'
 			identifier: method.nonObject
 			count: 5
@@ -5181,12 +5175,6 @@ parameters:
 			path: app/Modules/Precios/Http/Resources/CuponResource.php
 
 		-
-			message: '#^Access to an undefined property App\\Modules\\Precios\\Http\\Resources\\CuponResource\:\:\$valor\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Modules/Precios/Http/Resources/CuponResource.php
-
-		-
 			message: '#^Method App\\Modules\\Precios\\Http\\Resources\\CuponResource\:\:toArray\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
@@ -5242,12 +5230,6 @@ parameters:
 
 		-
 			message: '#^Access to an undefined property App\\Modules\\Precios\\Http\\Resources\\ReglaPrecioResource\:\:\$tipo\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Modules/Precios/Http/Resources/ReglaPrecioResource.php
-
-		-
-			message: '#^Access to an undefined property App\\Modules\\Precios\\Http\\Resources\\ReglaPrecioResource\:\:\$valor\.$#'
 			identifier: property.notFound
 			count: 1
 			path: app/Modules/Precios/Http/Resources/ReglaPrecioResource.php

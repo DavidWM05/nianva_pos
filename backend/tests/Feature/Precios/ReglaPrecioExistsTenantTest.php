@@ -22,7 +22,7 @@ class ReglaPrecioExistsTenantTest extends TestCase
         return array_merge([
             'nombre' => 'Regla de prueba',
             'tipo' => 'porcentaje',
-            'valor' => 10,
+            'porcentaje' => 10,
             'aplica_a' => 'todo',
         ], $overrides);
     }

@@ -24,6 +24,7 @@ import {
 } from '../../../core/buscadores-entidad.tokens';
 import { ReglaPrecioFormPayload } from '../regla-precio.service';
 import { AplicaA, ReglaPrecio, TipoReglaPrecio } from '../regla-precio.types';
+import { numeroONulo } from '../numero-o-nulo';
 
 const OPCIONES_APLICA_A: { label: string; value: AplicaA }[] = [
   { label: 'Todo el catálogo', value: 'todo' },
@@ -121,12 +122,20 @@ export class ReglaPrecioFormComponent implements OnChanges {
           this.valorInicial?.tipo ?? ('porcentaje' as TipoReglaPrecio),
       },
       {
-        name: 'valor',
-        label: 'Valor',
+        name: 'porcentaje',
+        label: 'Valor (%)',
         type: 'number',
         required: true,
-        dependsOn: { field: 'tipo', values: ['porcentaje', 'monto_fijo'] },
-        defaultValue: this.valorInicial?.valor ?? null,
+        dependsOn: { field: 'tipo', values: ['porcentaje'] },
+        defaultValue: numeroONulo(this.valorInicial?.porcentaje),
+      },
+      {
+        name: 'monto',
+        label: 'Valor ($)',
+        type: 'number',
+        required: true,
+        dependsOn: { field: 'tipo', values: ['monto_fijo'] },
+        defaultValue: numeroONulo(this.valorInicial?.monto),
       },
       {
         name: 'cantidad_compra',
@@ -186,10 +195,14 @@ export class ReglaPrecioFormComponent implements OnChanges {
         : String(valor);
     };
 
+    const tipo = value['tipo'] as TipoReglaPrecio;
+
+    // Solo el campo del tipo: el otro va null aunque el formulario conserve lo escrito.
     this.guardar.emit({
       nombre: String(value['nombre'] ?? ''),
-      tipo: value['tipo'] as TipoReglaPrecio,
-      valor: value['valor'] as number | null,
+      tipo,
+      porcentaje: tipo === 'porcentaje' ? numeroONulo(value['porcentaje']) : null,
+      monto: tipo === 'monto_fijo' ? numeroONulo(value['monto']) : null,
       cantidad_compra: value['cantidad_compra'] as number | null,
       cantidad_paga: value['cantidad_paga'] as number | null,
       precio_bundle: value['precio_bundle'] as number | null,

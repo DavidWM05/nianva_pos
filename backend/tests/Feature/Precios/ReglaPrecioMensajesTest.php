@@ -23,7 +23,7 @@ class ReglaPrecioMensajesTest extends TestCase
         $this->postJson('/api/v1/reglas-precio', [
             'nombre' => 'Sin categoria',
             'tipo' => 'porcentaje',
-            'valor' => 10,
+            'porcentaje' => 10,
             'aplica_a' => 'categoria',
         ])
             ->assertUnprocessable()

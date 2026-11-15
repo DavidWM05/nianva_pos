@@ -11,7 +11,8 @@ export interface CuponFormPayload {
   codigo: string;
   nombre: string;
   tipo: 'porcentaje' | 'monto_fijo';
-  valor: number;
+  porcentaje?: CuerpoDe<'/cupones', 'post'>['porcentaje'];
+  monto?: CuerpoDe<'/cupones', 'post'>['monto'];
   uso_maximo?: number | null;
   uso_maximo_por_cliente?: number | null;
   fecha_inicio?: string | null;

@@ -92,8 +92,8 @@ final class PricingService
         // que sabe cuantas veces se aplico un cupon. Aqui solo se valida
         // vigencia (activo + rango de fechas), no consumo.
         $descuento = $cupon->getAttribute('tipo') === 'porcentaje'
-            ? Dinero::porcentajeDe($totalCarrito, (string) $cupon->getAttribute('valor'))
-            : $this->menor(Dinero::desde((string) $cupon->getAttribute('valor')), Dinero::desde($totalCarrito));
+            ? Dinero::porcentajeDe($totalCarrito, (string) $cupon->getAttribute('porcentaje'))
+            : $this->menor(Dinero::desde((string) $cupon->getAttribute('monto')), Dinero::desde($totalCarrito));
 
         return ['modelo' => $cupon, 'descuento' => $descuento];
     }
@@ -156,8 +156,8 @@ final class PricingService
     private function calcularDescuentoPorTipo(ReglaPrecio $regla, Dinero $precioUnitario, int|float $cantidad): Dinero
     {
         return match ($regla->getAttribute('tipo')) {
-            'porcentaje' => $precioUnitario->multiplicarPorcentaje(Cantidad::cadena($cantidad), (string) ($regla->getAttribute('valor') ?? '0')),
-            'monto_fijo' => $this->menor(Dinero::desdeProducto((string) ($regla->getAttribute('valor') ?? '0'), Cantidad::cadena($cantidad)), $precioUnitario->multiplicar(Cantidad::cadena($cantidad))),
+            'porcentaje' => $precioUnitario->multiplicarPorcentaje(Cantidad::cadena($cantidad), (string) ($regla->getAttribute('porcentaje') ?? '0')),
+            'monto_fijo' => $this->menor(Dinero::desdeProducto((string) ($regla->getAttribute('monto') ?? '0'), Cantidad::cadena($cantidad)), $precioUnitario->multiplicar(Cantidad::cadena($cantidad))),
             'nxm' => $this->descuentoNxm($regla, $precioUnitario, $cantidad),
             'bundle' => $this->descuentoBundle($regla, $precioUnitario, $cantidad),
             default => Dinero::desde(0),

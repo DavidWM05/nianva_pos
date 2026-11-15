@@ -11,7 +11,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 #[Fillable([
-    'tenant_id', 'codigo', 'nombre', 'tipo', 'valor',
+    'tenant_id', 'codigo', 'nombre', 'tipo', 'porcentaje', 'monto',
     'uso_maximo', 'uso_maximo_por_cliente', 'fecha_inicio', 'fecha_fin', 'activo',
 ])]
 class Cupon extends Model
@@ -28,7 +28,8 @@ class Cupon extends Model
     protected function casts(): array
     {
         return [
-            'valor' => 'decimal:2',
+            'porcentaje' => 'decimal:4',
+            'monto' => 'decimal:2',
             'fecha_inicio' => 'date',
             'fecha_fin' => 'date',
             'activo' => 'boolean',

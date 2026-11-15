@@ -16,7 +16,8 @@ import {
 export interface ReglaPrecioFormPayload {
   nombre: string;
   tipo: TipoReglaPrecio;
-  valor?: number | null;
+  porcentaje?: CuerpoDe<'/reglas-precio', 'post'>['porcentaje'];
+  monto?: CuerpoDe<'/reglas-precio', 'post'>['monto'];
   cantidad_compra?: number | null;
   cantidad_paga?: number | null;
   precio_bundle?: number | null;
