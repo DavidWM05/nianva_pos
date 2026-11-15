@@ -17,7 +17,7 @@ export interface ApartadoDetalle {
   id: number;
   variante_id: number;
   variante: ApartadoDetalleVariante | null;
-  cantidad: number;
+  cantidad: string;
   precio_unitario: string;
   subtotal: string;
 }
@@ -96,5 +96,5 @@ export interface AbonoFormPayload {
 export interface ResultadoCancelacion {
   apartado: Apartado;
   tieneAbonosPendientes: boolean;
-  montoAbonadoPendiente: number;
+  montoAbonadoPendiente: string;
 }

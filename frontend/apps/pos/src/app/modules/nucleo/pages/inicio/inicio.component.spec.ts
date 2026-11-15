@@ -14,7 +14,7 @@ describe('InicioComponent', () => {
   let fixture: ComponentFixture<InicioComponent>;
 
   const resumen: InicioResumen = {
-    ventas_hoy: { cantidad: 3, total: 450.5 },
+    ventas_hoy: { cantidad: 3, total: '450.50' },
     apartados_por_vencer: [
       { id: 1, cliente_nombre: 'Ana Pérez', fecha_vencimiento: '2026-07-25', total: '200.00', total_abonado: '50.00' },
     ],
@@ -65,7 +65,7 @@ describe('InicioComponent', () => {
         fecha_cierre: null,
         estado: 'abierta',
       },
-      resumen: { ventas_count: 5, total_ventas: 800, total_gastos: 0 },
+      resumen: { ventas_count: 5, total_ventas: '800.00', total_gastos: '0.00' },
       permisos: { abrir: false, cerrar: true, gastos_ver: true, gastos_crear: true },
     };
 

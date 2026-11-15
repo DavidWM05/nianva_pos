@@ -3,6 +3,7 @@
 namespace App\Modules\Devoluciones\Http\Resources;
 
 use App\Modules\Devoluciones\Models\Devolucion;
+use App\Modules\Nucleo\Support\DecimalApi;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -32,9 +33,9 @@ class DevolucionResource extends JsonResource
                 ] : null,
             ),
             'venta_sombra_id' => $this->venta_sombra_id,
-            'monto_devolucion' => $this->monto_devolucion,
-            'monto_cambio' => $this->monto_cambio,
-            'diferencia' => $this->diferencia,
+            'monto_devolucion' => DecimalApi::dinero($this->monto_devolucion),
+            'monto_cambio' => DecimalApi::dinero($this->monto_cambio),
+            'diferencia' => DecimalApi::dinero($this->diferencia),
             'motivo' => $this->motivo,
             'tipo_reembolso' => $this->tipo_reembolso,
             'nota_credito_id' => $this->nota_credito_id,
@@ -48,15 +49,15 @@ class DevolucionResource extends JsonResource
                     'color' => $item->variante->color,
                     'producto_nombre' => $item->variante->producto?->nombre,
                 ] : null,
-                'cantidad' => $item->cantidad,
-                'precio_unitario' => $item->precio_unitario,
-                'subtotal' => $item->subtotal,
+                'cantidad' => DecimalApi::cantidad($item->cantidad),
+                'precio_unitario' => DecimalApi::dinero($item->precio_unitario),
+                'subtotal' => DecimalApi::dinero($item->subtotal),
                 'va_a_merma' => $item->va_a_merma,
             ])),
             'pagos' => $this->whenLoaded('pagos', fn () => $this->pagos->map(fn ($pago) => [
                 'metodo_pago_id' => $pago->metodo_pago_id,
                 'nombre' => $pago->metodoPago?->nombre,
-                'monto' => $pago->monto,
+                'monto' => DecimalApi::dinero($pago->monto),
             ])),
         ];
     }

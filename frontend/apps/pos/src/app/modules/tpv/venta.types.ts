@@ -1,3 +1,5 @@
+import type { RespuestaDe, VentaResource } from '@nianva/api-contrato';
+
 /** Espejo de VentaResource del backend (backend/app/Modules/Tpv). */
 export type EstadoVenta = 'completada' | 'anulada';
 
@@ -23,7 +25,7 @@ export interface VentaDetalle {
   id: number;
   variante_id: number;
   variante: VentaDetalleVariante | null;
-  cantidad: number;
+  cantidad: NonNullable<VentaResource['detalles']>[number]['cantidad'];
   precio_unitario: string;
   descuento_aplicado: string;
   subtotal: string;
@@ -58,19 +60,9 @@ export interface VentasPagina {
 }
 
 /** Espejo de VentaService::cotizarItems() (backend), expuesto via POST /api/ventas/cotizar. */
-export interface VentaCotizacionItem {
-  variante_id: number;
-  regla_precio_id: number | null;
-  cantidad: number;
-  precio_unitario: number;
-  descuento_aplicado: number;
-  subtotal: number;
-}
+export type VentaCotizacionItem = RespuestaDe<'/ventas/cotizar', 'post'>['data']['items'][number];
 
-export interface VentaCotizacion {
-  items: VentaCotizacionItem[];
-  subtotal: number;
-}
+export type VentaCotizacion = RespuestaDe<'/ventas/cotizar', 'post'>['data'];
 
 export interface VentaItemPayload {
   variante_id: number;
@@ -85,14 +77,14 @@ export interface VentaPagoPayload {
 export interface ReporteVentasPorSucursal {
   sucursal_id: number;
   sucursal_nombre: string | null;
-  total: number;
+  total: string;
   numero_ventas: number;
 }
 
 export interface ReporteVentasPorMetodoPago {
   metodo_pago_id: number;
   metodo_pago_nombre: string | null;
-  total: number;
+  total: string;
 }
 
 export interface ReporteVentasProducto {
@@ -100,15 +92,15 @@ export interface ReporteVentasProducto {
   producto_nombre: string | null;
   talla: string | null;
   color: string | null;
-  cantidad_vendida: number;
-  total_vendido: number;
+  cantidad_vendida: string;
+  total_vendido: string;
 }
 
 /** VentaController::reporte() -- solo ventas estado='completada' y es_venta_sombra=false. */
 export interface ReporteVentas {
-  total_ventas: number;
+  total_ventas: string;
   numero_ventas: number;
-  ticket_promedio: number;
+  ticket_promedio: string;
   por_sucursal: ReporteVentasPorSucursal[];
   por_metodo_pago: ReporteVentasPorMetodoPago[];
   top_productos: ReporteVentasProducto[];

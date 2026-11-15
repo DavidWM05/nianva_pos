@@ -1,5 +1,5 @@
+import { compararDinero, DineroPipe, FechaHoraPipe } from '@nianva/ui-format';
 import { CambioListado, ColumnaListado, MetaListado, TablaComponent } from '@nianva/ui-data';
-import { DineroPipe, FechaHoraPipe } from '@nianva/ui-format';
 import { SkeletonComponent, } from '@nianva/ui-feedback';
 import { DatosComponent, PageComponent, PageHeaderComponent, } from '@nianva/ui-layout';
 import { NgTemplateOutlet } from '@angular/common';
@@ -27,6 +27,7 @@ import { Devolucion } from '../../devolucion.types';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DevolucionDetalleComponent implements OnInit {
+  protected readonly compararDinero = compararDinero;
   private readonly route = inject(ActivatedRoute);
   private readonly devolucionService = inject(DevolucionService);
 

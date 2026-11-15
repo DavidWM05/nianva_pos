@@ -12,12 +12,12 @@ import { ReporteVentasComponent } from './reporte-ventas.component';
 describe('ReporteVentasComponent formato por pipe', () => {
   it('muestra importes con dinero y la cantidad vendida con cantidad', async () => {
     const reporte: ReporteVentas = {
-      total_ventas: 125000,
+      total_ventas: '125000.00',
       numero_ventas: 340,
-      ticket_promedio: 367.6,
-      por_sucursal: [{ sucursal_id: 1, sucursal_nombre: 'Centro', total: 80000.5, numero_ventas: 210 }],
-      por_metodo_pago: [{ metodo_pago_id: 1, metodo_pago_nombre: 'Efectivo', total: 70000 }],
-      top_productos: [{ variante_id: 12, producto_nombre: 'Playera', talla: 'M', color: 'Negro', cantidad_vendida: 1250.5, total_vendido: 6750 }],
+      ticket_promedio: '367.60',
+      por_sucursal: [{ sucursal_id: 1, sucursal_nombre: 'Centro', total: '80000.50', numero_ventas: 210 }],
+      por_metodo_pago: [{ metodo_pago_id: 1, metodo_pago_nombre: 'Efectivo', total: '70000.00' }],
+      top_productos: [{ variante_id: 12, producto_nombre: 'Playera', talla: 'M', color: 'Negro', cantidad_vendida: '1250.500', total_vendido: '6750.00' }],
     };
 
     await TestBed.configureTestingModule({

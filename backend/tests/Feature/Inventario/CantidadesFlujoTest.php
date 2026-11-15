@@ -42,7 +42,7 @@ class CantidadesFlujoTest extends TestCase
         $this->postJson('/api/v1/ventas', $this->payloadVenta([
             'items' => [['variante_id' => $this->variante->id, 'cantidad' => 0.5]],
             'pagos' => [['metodo_pago_id' => $this->metodoPago->id, 'monto' => 50]],
-        ]))->assertCreated()->assertJsonPath('data.detalles.0.cantidad', 0.5);
+        ]))->assertCreated()->assertJsonPath('data.detalles.0.cantidad', '0.500');
         $this->assertSame(49.5, InventarioStock::where('variante_id', $this->variante->id)->value('stock_actual'));
         $movimiento = Kardex::where('variante_id', $this->variante->id)->latest('id')->firstOrFail();
         $this->assertSame(0.5, $movimiento->cantidad);
@@ -84,7 +84,7 @@ class CantidadesFlujoTest extends TestCase
         $this->postJson('/api/v1/devoluciones', ['venta_id' => $venta->id, 'tipo' => 'devolucion',
             'items_devueltos' => [['variante_id' => $this->variante->id, 'cantidad' => 0.5]],
             'pagos' => [['metodo_pago_id' => $this->metodoPago->id, 'monto' => 50]],
-        ])->assertCreated()->assertJsonPath('data.items.0.cantidad', 0.5);
+        ])->assertCreated()->assertJsonPath('data.items.0.cantidad', '0.500');
         $this->assertSame(49.5, InventarioStock::where('variante_id', $this->variante->id)->value('stock_actual'));
     }
 
@@ -123,7 +123,7 @@ class CantidadesFlujoTest extends TestCase
         $this->postJson('/api/v1/devoluciones', ['venta_id' => $id, 'tipo' => 'devolucion',
             'items_devueltos' => [['variante_id' => $this->variante->id, 'cantidad' => 1]],
             'pagos' => [['metodo_pago_id' => $this->metodoPago->id, 'monto' => 100]],
-        ])->assertStatus(422)->assertJsonPath('error_code', 'devolucion_excede_cantidad_vendida')->assertJsonPath('vendido', 0.5);
+        ])->assertStatus(422)->assertJsonPath('error_code', 'devolucion_excede_cantidad_vendida')->assertJsonPath('vendido', '0.500');
     }
 
     public function test_transformar_fracciones_conserva_ambos_saldos(): void

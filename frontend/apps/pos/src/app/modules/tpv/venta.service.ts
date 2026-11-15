@@ -60,13 +60,10 @@ export class VentaService {
 
     return this.http
       .post<RespuestaDe<'/ventas/cotizar', 'post'>>(urlApi(`/ventas/cotizar`), cuerpo)
+      // Antes de API-02a
       // El contrato trae cantidad como string (decimal del backend): se convierte, sin cast doble.
-      .pipe(
-        map(({ data }): VentaCotizacion => ({
-          items: data.items.map((item) => ({ ...item, cantidad: Number(item.cantidad) })),
-          subtotal: data.subtotal,
-        })),
-      );
+      // Desde API-02a las cadenas se conservan hasta los controles que las editan.
+      .pipe(map(({ data }): VentaCotizacion => data));
   }
 
   /** Sin filtros: backend usa el mes actual (dia 1 a hoy) y todas las sucursales del tenant. */

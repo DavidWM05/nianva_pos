@@ -1,3 +1,4 @@
+import { sumarCantidades } from '@nianva/ui-format';
 import { proveedoresDePantalla } from '../../../testing/proveedores-pantalla';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ConfirmDialogService } from '@nianva/ui-shared';
@@ -18,8 +19,8 @@ describe('VariantesListComponent', () => {
       codigo_barras: 'COD-001',
       activo: true,
       stock: [
-        { sucursal_id: 1, sucursal_nombre: 'Centro', stock_actual: 5, stock_minimo: 2 },
-        { sucursal_id: 2, sucursal_nombre: 'Norte', stock_actual: 0, stock_minimo: 3 },
+        { sucursal_id: 1, sucursal_nombre: 'Centro', stock_actual: '5.000', stock_minimo: '2.000' },
+        { sucursal_id: 2, sucursal_nombre: 'Norte', stock_actual: '0.000', stock_minimo: '3.000' },
       ],
     },
     {
@@ -66,7 +67,7 @@ describe('VariantesListComponent', () => {
     const aviso = elemento.querySelector('ui-alert.ui-alert--peligro');
     expect(aviso?.textContent).toContain('Norte');
     expect(aviso?.textContent).toContain('0 de 3');
-    fixture.componentRef.setInput('variantes', variantes.map(v => ({ ...v, stock: (v.stock ?? []).map(f => ({ ...f, stock_actual: f.stock_minimo + 1 })) })));
+    fixture.componentRef.setInput('variantes', variantes.map(v => ({ ...v, stock: (v.stock ?? []).map(f => ({ ...f, stock_actual: sumarCantidades(f.stock_minimo, 1) })) })));
     fixture.detectChanges();
     expect(elemento.querySelector('ui-alert.ui-alert--peligro')).toBeNull();
   });

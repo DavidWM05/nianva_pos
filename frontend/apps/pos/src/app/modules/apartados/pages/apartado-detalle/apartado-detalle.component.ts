@@ -1,7 +1,7 @@
 import { MatButton } from '@angular/material/button';
 import { BtnEnviarComponent, CampoComponent, InputDineroComponent, } from '@nianva/ui-forms';
 import { CambioListado, ColumnaListado, MetaListado, TablaComponent } from '@nianva/ui-data';
-import { DineroPipe, FechaPipe, } from '@nianva/ui-format';
+import { aCentavos, DineroPipe, FechaPipe, } from '@nianva/ui-format';
 import { BadgeComponent, SkeletonComponent, conUmbral } from '@nianva/ui-feedback';
 import { DatosComponent, FormActionsComponent, PageComponent, PageHeaderComponent, } from '@nianva/ui-layout';
 import { ModalComponent } from '@nianva/ui-overlays';
@@ -19,9 +19,6 @@ import { AbonoPagoPayload, Apartado, ApartadoDetallePermisos, ResultadoCancelaci
 
 const PERMISOS_VACIOS: ApartadoDetallePermisos = { abonar: false, cancelar: false };
 
-function redondear(monto: number): number {
-  return Math.round(monto * 100) / 100;
-}
 
 /**
  * Vista de registro de un apartado -- General (datos + lineas), Abonos
@@ -62,7 +59,7 @@ export class ApartadoDetalleComponent implements OnInit {
     const apartado = this.apartado();
     if (!apartado) return 0;
 
-    return Math.max(0, redondear(Number(apartado.total) - Number(apartado.total_abonado)));
+    return Math.max(0, aCentavos(apartado.total) - aCentavos(apartado.total_abonado ?? 0)) / 100;
   });
 
   protected readonly puedeLiquidar = computed(() => this.apartado()?.estado === 'activo' && this.saldoPendiente() <= 0);

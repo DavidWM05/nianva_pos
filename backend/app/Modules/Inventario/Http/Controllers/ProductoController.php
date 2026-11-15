@@ -103,7 +103,7 @@ class ProductoController extends Controller
         $datos['tenant_id'] = app(TenantContext::class)->id();
         $datos['activo'] = true;
 
-        $producto = Producto::create($datos);
+        $producto = Producto::create($datos)->refresh();
 
         return (new ProductoResource($producto))->response()->setStatusCode(201);
     }

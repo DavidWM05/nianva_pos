@@ -96,7 +96,7 @@ describe('CajaComponent', () => {
   it('con caja abierta, muestra el resumen de la sesion (incluye gastos) y el formulario de cierre', async () => {
     await crearComponente({
       sesion: sesionAbierta,
-      resumen: { ventas_count: 3, total_ventas: 250, total_gastos: 80 },
+      resumen: { ventas_count: 3, total_ventas: '250.00', total_gastos: '80.00' },
       permisos: { abrir: true, cerrar: true, gastos_ver: true, gastos_crear: true },
     });
 
@@ -111,7 +111,7 @@ describe('CajaComponent', () => {
     const gastos: Gasto[] = [{ id: 1, descripcion: 'Luz', monto: '80.00', fecha: '2026-07-22T10:00:00.000000Z' }];
     await crearComponente({
       sesion: sesionAbierta,
-      resumen: { ventas_count: 0, total_ventas: 0, total_gastos: 80 },
+      resumen: { ventas_count: 0, total_ventas: '0.00', total_gastos: '80.00' },
       permisos: { abrir: true, cerrar: true, gastos_ver: true, gastos_crear: true },
     });
     gastoService.listar.mockReturnValue(of(gastos));
@@ -125,7 +125,7 @@ describe('CajaComponent', () => {
   it('registrar un gasto refresca el resumen en vivo', async () => {
     await crearComponente({
       sesion: sesionAbierta,
-      resumen: { ventas_count: 0, total_ventas: 0, total_gastos: 0 },
+      resumen: { ventas_count: 0, total_ventas: '0.00', total_gastos: '0.00' },
       permisos: { abrir: true, cerrar: true, gastos_ver: true, gastos_crear: true },
     });
 
@@ -153,7 +153,7 @@ describe('CajaComponent', () => {
   it('al cerrar la caja, muestra el resultado con la diferencia calculada', async () => {
     await crearComponente({
       sesion: sesionAbierta,
-      resumen: { ventas_count: 1, total_ventas: 100, total_gastos: 0 },
+      resumen: { ventas_count: 1, total_ventas: '100.00', total_gastos: '0.00' },
       permisos: { abrir: true, cerrar: true, gastos_ver: true, gastos_crear: true },
     });
 
@@ -183,7 +183,7 @@ describe('CajaComponent', () => {
   it('al cerrar la caja, muestra el desglose del total teorico (gastos, abonos CxC, recargas GC, pagos CxP)', async () => {
     await crearComponente({
       sesion: sesionAbierta,
-      resumen: { ventas_count: 1, total_ventas: 100, total_gastos: 0 },
+      resumen: { ventas_count: 1, total_ventas: '100.00', total_gastos: '0.00' },
       permisos: { abrir: true, cerrar: true, gastos_ver: true, gastos_crear: true },
     });
 
@@ -209,7 +209,7 @@ describe('CajaComponent', () => {
   it('cerrarResumenDeCierre() limpia tanto la sesion cerrada como su desglose', async () => {
     await crearComponente({
       sesion: sesionAbierta,
-      resumen: { ventas_count: 1, total_ventas: 100, total_gastos: 0 },
+      resumen: { ventas_count: 1, total_ventas: '100.00', total_gastos: '0.00' },
       permisos: { abrir: true, cerrar: true, gastos_ver: true, gastos_crear: true },
     });
 
@@ -246,7 +246,7 @@ describe('CajaComponent', () => {
   it('registrar un gasto exitosamente muestra un toast de exito', async () => {
     await crearComponente({
       sesion: sesionAbierta,
-      resumen: { ventas_count: 0, total_ventas: 0, total_gastos: 0 },
+      resumen: { ventas_count: 0, total_ventas: '0.00', total_gastos: '0.00' },
       permisos: { abrir: true, cerrar: true, gastos_ver: true, gastos_crear: true },
     });
     gastoService.registrar.mockReturnValue(of({ id: 2, descripcion: 'Agua', monto: '40.00', fecha: '2026-07-22T11:00:00.000000Z' }));
@@ -261,7 +261,7 @@ describe('CajaComponent', () => {
   it('si la caja ya estaba cerrada, recarga el estado actual', async () => {
     await crearComponente({
       sesion: sesionAbierta,
-      resumen: { ventas_count: 1, total_ventas: 100, total_gastos: 0 },
+      resumen: { ventas_count: 1, total_ventas: '100.00', total_gastos: '0.00' },
       permisos: { abrir: true, cerrar: true, gastos_ver: true, gastos_crear: true },
     });
     cajaService.cerrar.mockReturnValue(

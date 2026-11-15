@@ -21,8 +21,8 @@ export interface CajaSesion {
  */
 export interface CajaResumen {
   ventas_count: number;
-  total_ventas: number;
-  total_gastos: number;
+  total_ventas: string;
+  total_gastos: string;
 }
 
 export interface CajaPermisos {
@@ -39,14 +39,15 @@ export interface CajaActual {
 }
 
 /**
+ * Antes de API-02a
  * Solo viaja en la respuesta de CajaController::cerrar() -- son floats de
  * PHP calculados en el Controller (no atributos de un modelo con cast
  * decimal como el resto de CajaSesion), asi que llegan como number, no
  * como string.
  */
 export interface CajaDesglose {
-  total_gastos: number;
-  total_abonos_cxc: number;
-  total_recargas_gc: number;
-  total_pagos_cxp: number;
+  total_gastos: string;
+  total_abonos_cxc: string;
+  total_recargas_gc: string;
+  total_pagos_cxp: string;
 }

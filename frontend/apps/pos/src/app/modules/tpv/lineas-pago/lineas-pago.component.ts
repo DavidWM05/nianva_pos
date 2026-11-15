@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnChanges, OnI
 import { FormsModule } from '@angular/forms';
 import { MatButton, MatIconButton } from '@angular/material/button';
 import { CampoComponent, SelectFiltroComponent, SelectFiltroOpcion } from '@nianva/ui-forms';
-import { DineroPipe } from '@nianva/ui-format';
+import { aCentavos, sumarDinero, DineroPipe } from '@nianva/ui-format';
 
 import { MetodoPago } from '../metodo-pago.types';
 import { MetodoPagoService } from '../metodo-pago.service';
@@ -30,9 +30,6 @@ export interface LineasPagoCambio {
   suma: number;
 }
 
-function centavos(monto: number): number {
-  return Math.round(monto * 100);
-}
 
 /**
  * N lineas de metodo de pago + monto ("pago mixto"), extraido de
@@ -73,9 +70,9 @@ export class LineasPagoComponent implements OnInit, OnChanges {
   private readonly montoObjetivoSignal = signal(0);
 
   protected readonly sumaPagos = computed(() =>
-    Math.round(this.pagos().reduce((acumulado, pago) => acumulado + (pago.monto ?? 0), 0) * 100) / 100,
+    aCentavos(sumarDinero(...this.pagos().map(pago => pago.monto ?? 0))) / 100,
   );
-  protected readonly pagoCuadra = computed(() => centavos(this.sumaPagos()) === centavos(this.montoObjetivoSignal()));
+  protected readonly pagoCuadra = computed(() => aCentavos(this.sumaPagos()) === aCentavos(this.montoObjetivoSignal()));
 
   ngOnInit(): void {
     this.metodoPagoService.listar().subscribe((metodos) =>

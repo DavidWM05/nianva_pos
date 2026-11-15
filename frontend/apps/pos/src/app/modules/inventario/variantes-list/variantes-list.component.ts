@@ -1,3 +1,4 @@
+import { compararCantidades, CantidadPipe } from '@nianva/ui-format';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -22,7 +23,6 @@ import {
   TablaComponent,
 } from '@nianva/ui-data';
 import { AlertComponent } from '@nianva/ui-feedback';
-import { CantidadPipe } from '@nianva/ui-format';
 import { SectionComponent } from '@nianva/ui-layout';
 
 import { ProductoVariante, StockPorSucursal } from '../producto.types';
@@ -98,7 +98,7 @@ export class VariantesListComponent {
   }
   protected stockBajo(variante: ProductoVariante): string {
     return (variante.stock ?? [])
-      .filter((f) => f.stock_actual <= f.stock_minimo)
+      .filter((f) => compararCantidades(f.stock_actual, f.stock_minimo) <= 0)
       .map(
         (f) =>
           (f.sucursal_nombre ?? 'Sin sucursal') +

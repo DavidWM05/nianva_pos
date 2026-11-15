@@ -86,7 +86,7 @@ class InicioControllerTest extends TestCase
 
         $respuesta->assertOk()
             ->assertJsonPath('data.ventas_hoy.cantidad', 1)
-            ->assertJsonPath('data.ventas_hoy.total', 150);
+            ->assertJsonPath('data.ventas_hoy.total', '150.00');
     }
 
     public function test_resumen_incluye_apartados_activos_por_vencer_en_los_proximos_7_dias(): void

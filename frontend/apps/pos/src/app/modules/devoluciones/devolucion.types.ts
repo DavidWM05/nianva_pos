@@ -21,7 +21,7 @@ export interface DevolucionItem {
   tipo: TipoItemDevolucion;
   variante_id: number;
   variante: DevolucionItemVariante | null;
-  cantidad: number;
+  cantidad: string;
   precio_unitario: string;
   subtotal: string;
   va_a_merma: boolean;

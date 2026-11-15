@@ -283,8 +283,8 @@ class VentaControllerTest extends TestCase
         ]);
 
         $respuesta->assertOk()
-            ->assertJsonPath('data.subtotal', 180)
-            ->assertJsonPath('data.items.0.descuento_aplicado', 20);
+            ->assertJsonPath('data.subtotal', '180.00')
+            ->assertJsonPath('data.items.0.descuento_aplicado', '20.00');
 
         $this->assertSame(0, Venta::count());
     }

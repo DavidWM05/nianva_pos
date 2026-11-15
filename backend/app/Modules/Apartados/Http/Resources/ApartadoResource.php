@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\Apartados\Http\Resources;
 
 use App\Modules\Apartados\Models\Apartado;
+use App\Modules\Nucleo\Support\DecimalApi;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -29,8 +30,8 @@ class ApartadoResource extends JsonResource
                 'cliente',
                 fn () => $this->cliente ? ['id' => $this->cliente->id, 'nombre' => $this->cliente->nombre] : null,
             ),
-            'total' => $this->total,
-            'total_abonado' => $this->total_abonado,
+            'total' => DecimalApi::dinero($this->total),
+            'total_abonado' => DecimalApi::dinero($this->total_abonado),
             /** @var 'activo'|'completado'|'cancelado' */
             'estado' => $this->estado,
             'fecha_vencimiento' => $this->fecha_vencimiento,
@@ -48,19 +49,19 @@ class ApartadoResource extends JsonResource
                     'color' => $detalle->variante->color,
                     'producto_nombre' => $detalle->variante->producto?->nombre,
                 ] : null,
-                'cantidad' => $detalle->cantidad,
-                'precio_unitario' => $detalle->precio_unitario,
-                'subtotal' => $detalle->subtotal,
+                'cantidad' => DecimalApi::cantidad($detalle->cantidad),
+                'precio_unitario' => DecimalApi::dinero($detalle->precio_unitario),
+                'subtotal' => DecimalApi::dinero($detalle->subtotal),
             ])),
             'abonos' => $this->whenLoaded('abonos', fn () => $this->abonos->map(fn ($abono) => [
                 'id' => $abono->id,
-                'monto' => $abono->monto,
+                'monto' => DecimalApi::dinero($abono->monto),
                 'fecha' => $abono->fecha,
                 'notas' => $abono->notas,
                 'pagos' => $abono->pagos->map(fn ($pago) => [
                     'metodo_pago_id' => $pago->metodo_pago_id,
                     'nombre' => $pago->metodoPago?->nombre,
-                    'monto' => $pago->monto,
+                    'monto' => DecimalApi::dinero($pago->monto),
                 ]),
             ])),
         ];

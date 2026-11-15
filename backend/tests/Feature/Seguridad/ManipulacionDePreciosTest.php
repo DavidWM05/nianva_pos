@@ -70,8 +70,8 @@ class ManipulacionDePreciosTest extends TestCase
             'costo' => 1,
         ])
             ->assertOk()
-            ->assertJsonPath('data.items.0.precio_unitario', 100)
-            ->assertJsonPath('data.subtotal', 100);
+            ->assertJsonPath('data.items.0.precio_unitario', '100.00')
+            ->assertJsonPath('data.subtotal', '100.00');
     }
 
     public function test_apartado_ignora_precios_alterados(): void

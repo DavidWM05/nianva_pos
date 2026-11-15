@@ -91,10 +91,10 @@ class CerrarCajaTest extends TestCase
             ->assertJsonPath('data.total_ventas_sistema', '100.00')
             ->assertJsonPath('data.monto_cierre', '560.00')
             ->assertJsonPath('data.diferencia', '0.00')
-            ->assertJsonPath('desglose.total_gastos', 80)
-            ->assertJsonPath('desglose.total_abonos_cxc', 30)
-            ->assertJsonPath('desglose.total_recargas_gc', 20)
-            ->assertJsonPath('desglose.total_pagos_cxp', 10);
+            ->assertJsonPath('desglose.total_gastos', '80.00')
+            ->assertJsonPath('desglose.total_abonos_cxc', '30.00')
+            ->assertJsonPath('desglose.total_recargas_gc', '20.00')
+            ->assertJsonPath('desglose.total_pagos_cxp', '10.00');
     }
 
     public function test_si_falla_la_lectura_de_gastos_la_caja_sigue_abierta(): void

@@ -3,6 +3,7 @@
 namespace App\Modules\Devoluciones\Exceptions;
 
 use App\Modules\Nucleo\Exceptions\ExcepcionNegocio;
+use App\Modules\Nucleo\Support\DecimalApi;
 
 class DevolucionPagoNoCuadraException extends ExcepcionNegocio
 {
@@ -21,8 +22,8 @@ class DevolucionPagoNoCuadraException extends ExcepcionNegocio
     public function contexto(): array
     {
         return [
-            'diferencia' => $this->diferencia,
-            'suma_pagos' => $this->sumaPagos,
+            'diferencia' => DecimalApi::dinero($this->diferencia),
+            'suma_pagos' => DecimalApi::dinero($this->sumaPagos),
         ];
     }
 }

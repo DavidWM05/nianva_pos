@@ -1,3 +1,4 @@
+import { aCentavos } from '@nianva/ui-format';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -108,10 +109,10 @@ export class ProductoFormComponent implements OnInit, OnChanges {
     if (cambios && this.fields.length > 0 && !cambios['valorInicial']) return;
     this.numericos.reset({
       precio_compra: this.valorInicial
-        ? Number(this.valorInicial.precio_compra)
+        ? aCentavos(this.valorInicial.precio_compra) / 100
         : null,
       precio_venta: this.valorInicial
-        ? Number(this.valorInicial.precio_venta)
+        ? aCentavos(this.valorInicial.precio_venta) / 100
         : null,
     });
     this.construirCampos();

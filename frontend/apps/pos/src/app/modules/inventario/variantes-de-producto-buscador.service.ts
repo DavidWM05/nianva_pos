@@ -1,3 +1,4 @@
+import { cantidadANumero } from '@nianva/ui-format';
 import { Injectable, inject } from '@angular/core';
 import { BuscadorDeHijos, EntidadBuscable } from '@nianva/ui-shared';
 import { Observable, map } from 'rxjs';
@@ -22,7 +23,7 @@ export class VariantesDeProductoBuscadorService extends BuscadorDeHijos<EntidadB
         (producto.variantes ?? []).map((variante) => ({
           id: variante.id,
           nombre: this.etiqueta(variante.talla, variante.color, variante.id),
-          stock_actual: variante.stock_actual,
+          stock_actual: variante.stock_actual === undefined ? undefined : cantidadANumero(variante.stock_actual),
         })),
       ),
     );

@@ -7,6 +7,7 @@ namespace App\Modules\Inventario\Http\Controllers;
 use App\Aplicacion\Inventario\RegistrarCompra;
 use App\Http\Controllers\Controller;
 use App\Modules\Inventario\Http\Requests\RegistrarCompraRequest;
+use App\Modules\Nucleo\Support\DecimalApi;
 
 /**
  * Unica puerta HTTP para registrar compras, mediante RegistrarCompra. Antes de
@@ -30,6 +31,6 @@ class CompraController extends Controller
 
         $compra = $registrarCompra->ejecutar($request->toDto(), $usuario);
 
-        return response()->json(['data' => ['id' => $compra->id, 'total' => $compra->total]], 201);
+        return response()->json(['data' => ['id' => $compra->id, 'total' => DecimalApi::dinero($compra->total)]], 201);
     }
 }

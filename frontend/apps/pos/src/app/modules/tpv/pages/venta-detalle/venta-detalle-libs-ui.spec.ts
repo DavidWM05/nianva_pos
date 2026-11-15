@@ -30,7 +30,7 @@ describe('VentaDetalleComponent con libs/ui', () => {
         id: 1,
         variante_id: 10,
         variante: { id: 10, talla: 'M', color: 'Azul', producto_nombre: 'Playera' },
-        cantidad: 2,
+        cantidad: '2.000',
         precio_unitario: '750.00',
         descuento_aplicado: '0.00',
         subtotal: '1500.00',

@@ -15,6 +15,7 @@ use App\Modules\Apartados\Http\Requests\CrearApartadoRequest;
 use App\Modules\Apartados\Http\Requests\RegistrarAbonoRequest;
 use App\Modules\Apartados\Http\Resources\ApartadoResource;
 use App\Modules\Apartados\Models\Apartado;
+use App\Modules\Nucleo\Support\DecimalApi;
 use Illuminate\Http\Request;
 
 /**
@@ -85,7 +86,7 @@ class ApartadoController extends Controller
 
         $apartado = $crearApartado->ejecutar($request->toDto(), $usuario);
 
-        $apartado->load(['cliente', 'detalles.variante.producto']);
+        $apartado->refresh()->load(['cliente', 'detalles.variante.producto']);
 
         return (new ApartadoResource($apartado))->response()->setStatusCode(201);
     }
@@ -125,7 +126,7 @@ class ApartadoController extends Controller
             'data' => new ApartadoResource($resultado->apartado->load(['cliente', 'detalles.variante.producto', 'abonos.pagos.metodoPago'])),
             'meta' => [
                 'tiene_abonos_pendientes' => $resultado->tieneAbonosPendientes,
-                'monto_abonado_pendiente' => $resultado->montoAbonadoPendiente,
+                'monto_abonado_pendiente' => DecimalApi::dinero($resultado->montoAbonadoPendiente),
             ],
         ]);
     }

@@ -36,7 +36,7 @@ describe('VentaComponent', () => {
       fecha_cierre: null,
       estado: 'abierta',
     },
-    resumen: { ventas_count: 0, total_ventas: 0, total_gastos: 0 },
+    resumen: { ventas_count: 0, total_ventas: '0.00', total_gastos: '0.00' },
     permisos: { abrir: true, cerrar: true, gastos_ver: true, gastos_crear: true },
   };
 

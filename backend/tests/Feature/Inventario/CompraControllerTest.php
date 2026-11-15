@@ -174,7 +174,7 @@ class CompraControllerTest extends TestCase
         $this->getJson("/api/v1/productos/{$producto['id']}")
             ->assertOk()
             ->assertJsonPath('data.variantes.0.stock.0.sucursal_nombre', $sucursal->nombre)
-            ->assertJsonPath('data.variantes.0.stock.0.stock_actual', 30);
+            ->assertJsonPath('data.variantes.0.stock.0.stock_actual', '30.000');
 
         // Kardex, vía el mismo endpoint que consume la pestaña Kardex.
         $this->getJson("/api/v1/producto-variantes/{$variante['id']}/kardex")
@@ -182,6 +182,6 @@ class CompraControllerTest extends TestCase
             ->assertJsonCount(1, 'data')
             ->assertJsonPath('data.0.tipo', 'entrada')
             ->assertJsonPath('data.0.motivo', 'compra')
-            ->assertJsonPath('data.0.stock_resultante', 30);
+            ->assertJsonPath('data.0.stock_resultante', '30.000');
     }
 }

@@ -1,7 +1,7 @@
+import { aCentavos, DineroPipe, FechaPipe } from '@nianva/ui-format';
 import { BotonCrearComponent } from '@nianva/ui-actions';
 import { CambioListado, ColumnaListado, FilterBarComponent, MetaListado, TablaComponent } from '@nianva/ui-data';
 import { CampoComponent } from '@nianva/ui-forms';
-import { DineroPipe, FechaPipe } from '@nianva/ui-format';
 import { PageComponent, PageHeaderComponent } from '@nianva/ui-layout';
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -83,10 +83,10 @@ export class ApartadosListComponent {
   }
 
   protected porcentajeAbonado(apartado: Apartado): number {
-    const total = Number(apartado.total);
+    const total = aCentavos(apartado.total);
     if (total <= 0) return 0;
 
-    return Math.min(100, Math.round((Number(apartado.total_abonado) / total) * 100));
+    return Math.min(100, Math.round((aCentavos(apartado.total_abonado ?? 0) / total) * 100));
   }
 
   /**

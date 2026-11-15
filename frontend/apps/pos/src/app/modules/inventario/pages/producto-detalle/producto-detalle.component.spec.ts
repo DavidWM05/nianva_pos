@@ -59,7 +59,7 @@ describe('ProductoDetalleComponent', () => {
         color: 'Negro',
         codigo_barras: null,
         activo: true,
-        stock: [{ sucursal_id: 1, sucursal_nombre: 'Centro', stock_actual: 4, stock_minimo: 1 }],
+        stock: [{ sucursal_id: 1, sucursal_nombre: 'Centro', stock_actual: '4.000', stock_minimo: '1.000' }],
       },
     ],
   };

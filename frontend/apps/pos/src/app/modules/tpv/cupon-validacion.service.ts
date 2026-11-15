@@ -14,8 +14,8 @@ export interface CuponValidacion {
     tipo: 'porcentaje' | 'monto_fijo';
     valor: string;
   };
-  descuento: number;
-  total_con_descuento: number;
+  descuento: string;
+  total_con_descuento: string;
 }
 
 /**
@@ -34,12 +34,13 @@ export class CuponValidacionService {
 
     return this.http
       .post<RespuestaDe<'/cupones/validar', 'post'>>(urlApi(`/cupones/validar`), cuerpo)
+      // Antes de API-02a
       // El contrato tipa id como string y descuento como unknown (Scramble no los infiere): se
       // convierten aqui, sin cast doble.
       .pipe(
         map(({ data }) => ({
           cupon: { ...data.cupon, id: Number(data.cupon.id), tipo: data.cupon.tipo as CuponValidacion['cupon']['tipo'] },
-          descuento: Number(data.descuento),
+          descuento: data.descuento,
           total_con_descuento: data.total_con_descuento,
         })),
       );

@@ -2,6 +2,7 @@
 
 namespace App\Modules\Precios\Http\Resources;
 
+use App\Modules\Nucleo\Support\DecimalApi;
 use App\Modules\Precios\Models\Cupon;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -18,7 +19,7 @@ class CuponResource extends JsonResource
             'codigo' => $this->codigo,
             'nombre' => $this->nombre,
             'tipo' => $this->tipo,
-            'valor' => $this->valor,
+            'valor' => DecimalApi::dinero($this->valor),
             'uso_maximo' => $this->uso_maximo,
             'uso_maximo_por_cliente' => $this->uso_maximo_por_cliente,
             'fecha_inicio' => $this->fecha_inicio,

@@ -3,6 +3,7 @@
 namespace App\Modules\Apartados\Exceptions;
 
 use App\Modules\Nucleo\Exceptions\ExcepcionNegocio;
+use App\Modules\Nucleo\Support\DecimalApi;
 
 class AbonoPagoNoCuadraException extends ExcepcionNegocio
 {
@@ -21,8 +22,8 @@ class AbonoPagoNoCuadraException extends ExcepcionNegocio
     public function contexto(): array
     {
         return [
-            'monto' => $this->monto,
-            'suma_pagos' => $this->sumaPagos,
+            'monto' => DecimalApi::dinero($this->monto),
+            'suma_pagos' => DecimalApi::dinero($this->sumaPagos),
         ];
     }
 }

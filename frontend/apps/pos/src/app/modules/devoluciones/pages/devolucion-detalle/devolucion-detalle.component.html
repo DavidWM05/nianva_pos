@@ -28,15 +28,15 @@
             <dt>Diferencia</dt>
             <dd
             >
-              @if (+devolucionActual.diferencia < 0) {
+              @if (compararDinero(devolucionActual.diferencia, 0) < 0) {
                 -{{ montoAbsoluto(devolucionActual.diferencia) | dinero }} (reembolso)
-              } @else if (+devolucionActual.diferencia > 0) {
+              } @else if (compararDinero(devolucionActual.diferencia, 0) > 0) {
                 +{{ devolucionActual.diferencia | dinero }} (cobro adicional)
               } @else {
                 Sin diferencia
               }
             </dd>
-            @if (+devolucionActual.diferencia < 0 && devolucionActual.tipo_reembolso) {
+            @if (compararDinero(devolucionActual.diferencia, 0) < 0 && devolucionActual.tipo_reembolso) {
               <dt>Método de reembolso</dt>
               <dd>
                 @if (devolucionActual.tipo_reembolso === 'nota_credito' && devolucionActual.nota_credito_id) {

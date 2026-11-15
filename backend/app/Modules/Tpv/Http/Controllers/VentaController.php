@@ -10,7 +10,7 @@ use App\Http\Controllers\Controller;
 use App\Modules\Crm\Models\Cliente;
 use App\Modules\Nucleo\Models\Sucursal;
 use App\Modules\Nucleo\Services\TenantContext;
-use App\Modules\Nucleo\Support\Cantidad;
+use App\Modules\Nucleo\Support\DecimalApi;
 use App\Modules\Nucleo\Support\SucursalOperacion;
 use App\Modules\Tpv\Dtos\LineaVentaDto;
 use App\Modules\Tpv\Http\Requests\AnularVentaRequest;
@@ -45,6 +45,10 @@ class VentaController extends Controller
             ->orderByDesc('fecha')
             ->limit(50)
             ->get(['id', 'fecha', 'total', 'estado', 'es_venta_sombra']);
+
+        foreach ($ventas as $venta) {
+            $venta->setAttribute('total', DecimalApi::dinero($venta->getAttribute('total')));
+        }
 
         return response()->json(['data' => $ventas]);
     }
@@ -142,7 +146,19 @@ class VentaController extends Controller
 
         [$lineas, $subtotal] = $ventaService->cotizarItems($tenantId, $items);
 
-        return response()->json(['data' => ['items' => $lineas, 'subtotal' => $subtotal]]);
+        $itemsCotizados = [];
+        foreach ($lineas as $linea) {
+            $itemsCotizados[] = [
+                'variante_id' => (int) $linea['variante_id'],
+                'regla_precio_id' => $linea['regla_precio_id'] === null ? null : (int) $linea['regla_precio_id'],
+                'cantidad' => DecimalApi::cantidad($linea['cantidad']),
+                'precio_unitario' => DecimalApi::dinero($linea['precio_unitario']),
+                'descuento_aplicado' => DecimalApi::dinero($linea['descuento_aplicado']),
+                'subtotal' => DecimalApi::dinero($linea['subtotal']),
+            ];
+        }
+
+        return response()->json(['data' => ['items' => $itemsCotizados, 'subtotal' => DecimalApi::dinero($subtotal)]]);
     }
 
     public function reporte(Request $request)
@@ -188,7 +204,7 @@ class VentaController extends Controller
                 return [
                     'sucursal_id' => $r->sucursal_id,
                     'sucursal_nombre' => $sucursales[$r->sucursal_id] ?? null,
-                    'total' => round((float) $r->total, 2),
+                    'total' => DecimalApi::dinero($r->total),
                     'numero_ventas' => (int) $r->numero_ventas,
                 ];
             });
@@ -205,7 +221,7 @@ class VentaController extends Controller
             ->map(fn ($r) => [
                 'metodo_pago_id' => $r->metodo_pago_id,
                 'metodo_pago_nombre' => $r->metodoPago?->nombre,
-                'total' => round((float) $r->total, 2),
+                'total' => DecimalApi::dinero($r->total),
             ]);
 
         // Top 10 productos por cantidad vendida
@@ -221,14 +237,14 @@ class VentaController extends Controller
                 'producto_nombre' => $r->variante?->producto?->nombre,
                 'talla' => $r->variante?->talla,
                 'color' => $r->variante?->color,
-                'cantidad_vendida' => Cantidad::numero($r->cantidad_vendida),
-                'total_vendido' => round((float) $r->total_vendido, 2),
+                'cantidad_vendida' => DecimalApi::cantidad($r->cantidad_vendida),
+                'total_vendido' => DecimalApi::dinero($r->total_vendido),
             ]);
 
         return response()->json(['data' => [
-            'total_ventas' => $totalVentas,
+            'total_ventas' => DecimalApi::dinero($totalVentas),
             'numero_ventas' => $numeroVentas,
-            'ticket_promedio' => $ticketPromedio,
+            'ticket_promedio' => DecimalApi::dinero($ticketPromedio),
             'por_sucursal' => $porSucursal,
             'por_metodo_pago' => $porMetodoPago,
             'top_productos' => $topProductos,

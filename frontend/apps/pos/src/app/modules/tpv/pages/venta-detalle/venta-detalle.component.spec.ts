@@ -42,7 +42,7 @@ describe('VentaDetalleComponent', () => {
         id: 1,
         variante_id: 10,
         variante: { id: 10, talla: 'M', color: 'Azul', producto_nombre: 'Playera' },
-        cantidad: 2,
+        cantidad: '2.000',
         precio_unitario: '75.00',
         descuento_aplicado: '0.00',
         subtotal: '150.00',

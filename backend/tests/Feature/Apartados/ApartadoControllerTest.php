@@ -214,7 +214,7 @@ class ApartadoControllerTest extends TestCase
         $respuesta->assertOk()
             ->assertJsonPath('data.estado', 'cancelado')
             ->assertJsonPath('meta.tiene_abonos_pendientes', true)
-            ->assertJsonPath('meta.monto_abonado_pendiente', 100);
+            ->assertJsonPath('meta.monto_abonado_pendiente', '100.00');
     }
 
     public function test_cancelar_sin_permiso_devuelve_403(): void

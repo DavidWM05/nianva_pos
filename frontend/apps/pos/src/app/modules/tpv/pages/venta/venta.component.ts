@@ -5,7 +5,7 @@ import { MatButton } from '@angular/material/button';
 import { RouterLink } from '@angular/router';
 import { SkeletonComponent } from '@nianva/ui-feedback';
 import { BtnEnviarComponent, CampoComponent, SelectFiltroComponent, SelectFiltroOpcion } from '@nianva/ui-forms';
-import { DineroPipe } from '@nianva/ui-format';
+import { aCentavos, DineroPipe } from '@nianva/ui-format';
 import { EntidadSelectorComponent, ToastService, mensajeError } from '@nianva/ui-shared';
 
 import { BUSCADOR_CLIENTE } from '../../../../core/buscadores-entidad.tokens';
@@ -83,7 +83,7 @@ export class VentaComponent implements OnInit {
   protected readonly total = computed(() => {
     const descuento = this.cuponAplicado()?.descuento ?? 0;
 
-    return Math.max(0, Math.round((this.subtotal() - descuento) * 100) / 100);
+    return Math.max(0, aCentavos(this.subtotal()) - aCentavos(descuento)) / 100;
   });
 
   // -- Gift Card --
@@ -114,7 +114,7 @@ export class VentaComponent implements OnInit {
   protected readonly montoNotaCredito = computed(() => {
     const nota = this.notasCreditoDisponibles().find((n) => n.id === this.notaCreditoSeleccionadaId());
 
-    return nota ? Math.min(parseFloat(nota.saldo_disponible), this.total()) : 0;
+    return nota ? Math.min(aCentavos(nota.saldo_disponible), aCentavos(this.total())) / 100 : 0;
   });
 
   // Lo que le queda por cubrir a LineasPagoComponent (efectivo/tarjeta/etc)
@@ -123,7 +123,7 @@ export class VentaComponent implements OnInit {
   protected readonly montoObjetivoPago = computed(() => {
     const giftCardEstimado = this.giftCardCodigo().trim() ? (this.giftCardMontoEstimado() ?? 0) : 0;
 
-    return Math.max(0, Math.round((this.total() - giftCardEstimado - this.montoNotaCredito()) * 100) / 100);
+    return Math.max(0, aCentavos(this.total()) - aCentavos(giftCardEstimado) - aCentavos(this.montoNotaCredito())) / 100;
   });
 
   // -- Pagos (delegado a LineasPagoComponent) --

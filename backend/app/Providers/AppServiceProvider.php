@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\OpenApi\PatronesVenta;
+use Dedoc\Scramble\Scramble;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\ServiceProvider;
@@ -22,6 +24,10 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Factory::guessFactoryNamesUsing($this->factoryDe(...));
+
+        if (class_exists(Scramble::class)) {
+            Scramble::configure()->withDocumentTransformers([PatronesVenta::class]);
+        }
 
         // Fuera de produccion, Eloquent no falla en silencio (DAT-14):
         // - un campo mass-assigned que no esta en el #[Fillable] revienta con

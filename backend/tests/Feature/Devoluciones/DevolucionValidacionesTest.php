@@ -76,7 +76,7 @@ class DevolucionValidacionesTest extends TestCase
             ->assertJsonPath('error_code', 'devolucion_excede_cantidad_vendida')
             ->assertJsonPath('venta_id', $venta->id)
             ->assertJsonPath('variante_id', $this->variante->id)
-            ->assertJsonPath('solicitado', 100)
-            ->assertJsonPath('vendido', 1);
+            ->assertJsonPath('solicitado', '100.000')
+            ->assertJsonPath('vendido', '1.000');
     }
 }

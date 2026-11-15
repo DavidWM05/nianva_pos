@@ -7,8 +7,8 @@ export interface ReglaPrecio {
   nombre: string;
   tipo: TipoReglaPrecio;
   valor: string | null;
-  cantidad_compra: number | null;
-  cantidad_paga: number | null;
+  cantidad_compra: string | null;
+  cantidad_paga: string | null;
   precio_bundle: string | null;
   aplica_a: AplicaA;
   categoria: { id: number; nombre: string } | null;
