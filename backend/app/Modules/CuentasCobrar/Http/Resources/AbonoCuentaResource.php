@@ -3,6 +3,7 @@
 namespace App\Modules\CuentasCobrar\Http\Resources;
 
 use App\Modules\CuentasCobrar\Models\AbonoCuenta;
+use App\Modules\Nucleo\Support\DecimalApi;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -15,7 +16,7 @@ class AbonoCuentaResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'monto' => $this->monto,
+            'monto' => DecimalApi::dinero($this->monto),
             'metodo_pago' => $this->whenLoaded('metodoPago', fn () => $this->metodoPago->nombre),
             'referencia' => $this->referencia,
             'fecha' => $this->fecha,

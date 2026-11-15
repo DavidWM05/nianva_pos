@@ -20,6 +20,7 @@ final class InferirDecimal implements StaticMethodReturnTypeExtension
     {
         return match ($event->name) {
             'dinero' => new TipoDecimal(DecimalApi::PATRON_DINERO),
+            'costoUnitario' => new TipoDecimal(DecimalApi::PATRON_CUATRO_DECIMALES),
             'cantidad' => new TipoDecimal(DecimalApi::PATRON_CANTIDAD),
             'tasa' => new TipoDecimal(DecimalApi::PATRON_CUATRO_DECIMALES),
             default => null,

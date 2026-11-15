@@ -10,10 +10,10 @@ import { ReporteCuentasPagarComponent } from './reporte-cuentas-pagar.component'
 describe('ReporteCuentasPagarComponent formato por pipe', () => {
   it('muestra totales, antiguedad y saldo por proveedor con dinero', async () => {
     const reporte: ReporteCuentasPagar = {
-      total_pendiente: 8000,
-      total_vencido: 3000.25,
+      total_pendiente: '8000.00',
+      total_vencido: '3000.25',
       por_antiguedad: { al_dia: '5000.00', vencido_1_30: '1100.00', vencido_31_60: '1200.00', vencido_61_90: '1300.00', vencido_90_mas: '1400.00' },
-      por_proveedor: [{ proveedor_id: 4, proveedor_nombre: 'Distribuidora X', saldo_pendiente: 2500, cuentas_pendientes: 1 }],
+      por_proveedor: [{ proveedor_id: 4, proveedor_nombre: 'Distribuidora X', saldo_pendiente: '2500.00', cuentas_pendientes: 1 }],
     };
 
     await TestBed.configureTestingModule({

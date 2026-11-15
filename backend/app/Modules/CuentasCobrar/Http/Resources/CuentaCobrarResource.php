@@ -3,6 +3,7 @@
 namespace App\Modules\CuentasCobrar\Http\Resources;
 
 use App\Modules\CuentasCobrar\Models\CuentaCobrar;
+use App\Modules\Nucleo\Support\DecimalApi;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -20,8 +21,8 @@ class CuentaCobrarResource extends JsonResource
                 'id' => $this->cliente->id,
                 'nombre' => $this->cliente->nombre,
             ]),
-            'monto_total' => $this->monto_total,
-            'saldo_pendiente' => $this->saldo_pendiente,
+            'monto_total' => DecimalApi::dinero($this->monto_total),
+            'saldo_pendiente' => DecimalApi::dinero($this->saldo_pendiente),
             'fecha_vencimiento' => $this->fecha_vencimiento,
             /** @var 'pendiente'|'pagada'|'anulada' */
             'estado' => $this->estado,

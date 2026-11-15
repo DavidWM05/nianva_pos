@@ -13,7 +13,7 @@
         <ui-campo [etiqueta]="'Precio unitario, línea ' + (indice + 1) + ': ' + linea.etiqueta" [requerido]="true"><ui-input-dinero [formControl]="grupo.controls.precio_unitario" [min]="0" /></ui-campo>
         <ui-campo [etiqueta]="'Descuento, línea ' + (indice + 1) + ': ' + linea.etiqueta" [requerido]="true"><ui-input-dinero [formControl]="grupo.controls.descuento" [min]="0" /></ui-campo>
       </div>
-      <p>Subtotal: {{ linea.cantidad * linea.precio_unitario - linea.descuento | dinero }}</p>
+      <p>Subtotal: {{ subtotalLinea(linea) | dinero }}</p>
       <ui-form-actions><button matButton="text" type="button" [attr.aria-label]="'Quitar línea ' + (indice + 1) + ': ' + linea.etiqueta" (click)="quitarLinea(indice)">Quitar</button></ui-form-actions>
     </ui-section>
   }

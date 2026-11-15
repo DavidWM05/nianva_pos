@@ -3,6 +3,7 @@
 namespace App\Modules\Cotizaciones\Http\Resources;
 
 use App\Modules\Cotizaciones\Models\CotizacionDetalle;
+use App\Modules\Nucleo\Support\DecimalApi;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -20,10 +21,10 @@ class CotizacionDetalleResource extends JsonResource
                 'id' => $this->variante->id,
                 'nombre' => $this->variante->producto?->nombre,
             ]),
-            'cantidad' => $this->cantidad,
-            'precio_unitario' => $this->precio_unitario,
-            'descuento' => $this->descuento,
-            'subtotal' => $this->subtotal,
+            'cantidad' => DecimalApi::cantidad($this->cantidad),
+            'precio_unitario' => DecimalApi::dinero($this->precio_unitario),
+            'descuento' => DecimalApi::dinero($this->descuento),
+            'subtotal' => DecimalApi::dinero($this->subtotal),
         ];
     }
 }

@@ -141,7 +141,7 @@ describe('LineasCotizacionComponent', () => {
     await crearComponente();
 
     const detalles: CotizacionDetalle[] = [
-      { id: 1, variante_id: 8, variante: { id: 8, nombre: 'Pantalón (32)' }, cantidad: 3, precio_unitario: '200.00', descuento: '0.00', subtotal: '600.00' },
+      { id: 1, variante_id: 8, variante: { id: 8, nombre: 'Pantalón (32)' }, cantidad: '3.000', precio_unitario: '200.00', descuento: '0.00', subtotal: '600.00' },
     ];
     fixture.componentInstance.valorInicial = detalles;
     fixture.componentInstance.ngOnChanges();

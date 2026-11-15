@@ -3,6 +3,7 @@
 namespace App\Modules\Cotizaciones\Exceptions;
 
 use App\Modules\Nucleo\Exceptions\ExcepcionNegocio;
+use App\Modules\Nucleo\Support\DecimalApi;
 
 class CotizacionTotalNegativoException extends ExcepcionNegocio
 {
@@ -21,8 +22,8 @@ class CotizacionTotalNegativoException extends ExcepcionNegocio
     public function contexto(): array
     {
         return [
-            'subtotal' => $this->subtotal,
-            'descuento' => $this->descuento,
+            'subtotal' => DecimalApi::dinero($this->subtotal),
+            'descuento' => DecimalApi::dinero($this->descuento),
         ];
     }
 }

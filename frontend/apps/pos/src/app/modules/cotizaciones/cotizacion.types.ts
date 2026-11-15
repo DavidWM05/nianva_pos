@@ -21,7 +21,7 @@ export interface CotizacionDetalle {
   id: number;
   variante_id: number;
   variante: CotizacionDetalleVariante | null;
-  cantidad: number;
+  cantidad: string;
   precio_unitario: string;
   descuento: string;
   subtotal: string;

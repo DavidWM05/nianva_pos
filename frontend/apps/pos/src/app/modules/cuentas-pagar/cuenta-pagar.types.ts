@@ -42,14 +42,14 @@ export interface ReporteAntiguedad {
 export interface ReporteCuentasPagarProveedor {
   proveedor_id: number;
   proveedor_nombre: string | null;
-  saldo_pendiente: number;
+  saldo_pendiente: string;
   cuentas_pendientes: number;
 }
 
 /** CuentaPagarController::reporte() -- solo cuentas con estado='pendiente', siempre "hoy". */
 export interface ReporteCuentasPagar {
-  total_pendiente: number;
-  total_vencido: number;
+  total_pendiente: string;
+  total_vencido: string;
   por_antiguedad: ReporteAntiguedad;
   por_proveedor: ReporteCuentasPagarProveedor[];
 }

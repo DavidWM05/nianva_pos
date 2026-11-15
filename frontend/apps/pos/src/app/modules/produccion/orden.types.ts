@@ -8,8 +8,8 @@ export interface OrdenProduccionReceta {
 /** OrdenProduccionResource (ajuste 9) -- ordenesIndex()/ordenesStore()/ordenesCambiarEstado() ya envuelven en Resource. */
 export interface OrdenProduccion {
   id: number;
-  cantidad_programada: number;
-  cantidad_producida: number | null;
+  cantidad_programada: string;
+  cantidad_producida: string | null;
   estado: EstadoOrdenProduccion;
   notas: string | null;
   fecha_programada: string | null;

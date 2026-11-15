@@ -22,6 +22,8 @@ class Insumo extends Model
 
     protected $table = 'insumos';
 
+    protected $attributes = ['costo' => '0.0000'];
+
     protected function casts(): array
     {
         return ['costo' => 'decimal:4', 'stock_minimo' => CantidadFormateadaNullable::class.':2', 'activo' => 'boolean'];

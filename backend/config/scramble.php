@@ -1,6 +1,7 @@
 <?php
 
 use App\OpenApi\EsquemaDecimal;
+use App\OpenApi\EsquemaModeloDecimal;
 use App\OpenApi\InferirDecimal;
 use Dedoc\Scramble\Http\Middleware\RestrictedDocsAccess;
 
@@ -80,6 +81,7 @@ return [
     'extensions' => [
         InferirDecimal::class,
         EsquemaDecimal::class,
+        EsquemaModeloDecimal::class,
     ],
 
     'security_strategy' => null,

@@ -3,6 +3,7 @@
 namespace App\Modules\Prestamos\Models;
 
 use App\Modules\Nucleo\Models\Concerns\BelongsToTenantViaRelacion;
+use App\Modules\Nucleo\Models\Concerns\SerializaDecimales;
 use App\Modules\Prestamos\Database\Factories\PrestamoPagoFactory;
 use App\Modules\Tpv\Models\CajaSesion;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
@@ -17,6 +18,8 @@ class PrestamoPago extends Model
 
     /** @use HasFactory<PrestamoPagoFactory> */
     use HasFactory;
+
+    use SerializaDecimales;
 
     public $timestamps = false;
 

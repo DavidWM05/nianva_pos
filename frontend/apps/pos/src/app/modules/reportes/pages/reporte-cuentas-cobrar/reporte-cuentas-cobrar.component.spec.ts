@@ -11,10 +11,10 @@ describe('ReporteCuentasCobrarComponent', () => {
   let cuentaCobrarService: { reporte: ReturnType<typeof vi.fn> };
 
   const reporte: ReporteCuentasCobrar = {
-    total_pendiente: 5000,
-    total_vencido: 1000,
+    total_pendiente: '5000.00',
+    total_vencido: '1000.00',
     por_antiguedad: { al_dia: '4000.00', vencido_1_30: '1000.00', vencido_31_60: '0.00', vencido_61_90: '0.00', vencido_90_mas: '0.00' },
-    por_cliente: [{ cliente_id: 9, cliente_nombre: 'Juan Pérez', saldo_pendiente: 1000, cuentas_pendientes: 1 }],
+    por_cliente: [{ cliente_id: 9, cliente_nombre: 'Juan Pérez', saldo_pendiente: '1000.00', cuentas_pendientes: 1 }],
   };
 
   async function crearComponente(): Promise<void> {

@@ -3,6 +3,7 @@
 namespace App\Modules\CuentasPagar\Http\Resources;
 
 use App\Modules\CuentasPagar\Models\CuentaPagar;
+use App\Modules\Nucleo\Support\DecimalApi;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -20,8 +21,8 @@ class CuentaPagarResource extends JsonResource
                 'id' => $this->proveedor->id,
                 'razon_social' => $this->proveedor->razon_social,
             ]),
-            'monto_total' => $this->monto_total,
-            'saldo_pendiente' => $this->saldo_pendiente,
+            'monto_total' => DecimalApi::dinero($this->monto_total),
+            'saldo_pendiente' => DecimalApi::dinero($this->saldo_pendiente),
             'fecha_vencimiento' => $this->fecha_vencimiento,
             /** @var 'pendiente'|'pagada'|'anulada' */
             'estado' => $this->estado,

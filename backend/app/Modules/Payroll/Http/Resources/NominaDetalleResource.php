@@ -2,6 +2,7 @@
 
 namespace App\Modules\Payroll\Http\Resources;
 
+use App\Modules\Nucleo\Support\DecimalApi;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -19,9 +20,9 @@ class NominaDetalleResource extends JsonResource
                 ] : null,
             ]),
             'dias_trabajados' => $this->dias_trabajados,
-            'percepciones' => $this->percepciones,
-            'deducciones' => $this->deducciones,
-            'neto' => $this->neto,
+            'percepciones' => DecimalApi::dinero($this->percepciones),
+            'deducciones' => DecimalApi::dinero($this->deducciones),
+            'neto' => DecimalApi::dinero($this->neto),
         ];
     }
 }

@@ -4,6 +4,7 @@ namespace App\Modules\VentasPlazos\Models;
 
 use App\Modules\Crm\Models\Cliente;
 use App\Modules\Nucleo\Models\Concerns\BelongsToTenant;
+use App\Modules\Nucleo\Models\Concerns\SerializaDecimales;
 use App\Modules\Nucleo\Models\Tenant;
 use App\Modules\Tpv\Models\Venta;
 use App\Modules\VentasPlazos\Database\Factories\PlanPagoClienteFactory;
@@ -23,6 +24,8 @@ class PlanPagoCliente extends Model
 
     /** @use HasFactory<PlanPagoClienteFactory> */
     use HasFactory;
+
+    use SerializaDecimales;
 
     const UPDATED_AT = null;
 

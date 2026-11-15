@@ -34,13 +34,17 @@ export function compararDinero(a: ImporteDecimal, b: ImporteDecimal): number {
   return Math.sign(aCentavos(a) - aCentavos(b));
 }
 
-export function multiplicarDinero(importe: ImporteDecimal, cantidad: string | number): string {
+export function multiplicarDinero(
+  importe: ImporteDecimal,
+  cantidad: string | number,
+  descuento: ImporteDecimal = 0,
+): string {
   const partes = /^(\d+)(?:\.(\d{1,3}))?$/.exec(String(cantidad));
   if (!partes) {
     throw new Error('La cantidad debe ser no negativa y tener hasta tres decimales.');
   }
   const milesimas = BigInt(partes[1]) * 1000n + BigInt((partes[2] ?? '').padEnd(3, '0'));
-  const producto = BigInt(aCentavos(importe)) * milesimas;
+  const producto = BigInt(aCentavos(importe)) * milesimas - BigInt(aCentavos(descuento)) * 1000n;
   const absoluto = producto < 0n ? -producto : producto;
   const redondeado = (absoluto + 500n) / 1000n;
   return desdeCentavos(Number(producto < 0n ? -redondeado : redondeado));

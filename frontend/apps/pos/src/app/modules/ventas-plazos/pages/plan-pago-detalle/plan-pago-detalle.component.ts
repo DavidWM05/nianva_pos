@@ -12,12 +12,10 @@ import {
   TablaComponent,
 } from '@nianva/ui-data';
 import { SkeletonComponent } from '@nianva/ui-feedback';
-import {
-  DineroPipe,
+import { aCentavos, DineroPipe,
   FechaPipe,
   CantidadPipe,
-  PorcentajePipe,
-} from '@nianva/ui-format';
+  PorcentajePipe, } from '@nianva/ui-format';
 import {
   DatosComponent,
   PageComponent,
@@ -104,7 +102,7 @@ export class PlanPagoDetalleComponent implements OnInit {
 
   abrirPagarCuota(cuota: PlanPagoCuota): void {
     this.cuotaAPagar.set(cuota);
-    this.montoPago.set(Number(cuota.monto));
+    this.montoPago.set(aCentavos(cuota.monto) / 100);
   }
 
   cerrarPagarCuota(): void {

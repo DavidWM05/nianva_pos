@@ -2264,7 +2264,7 @@ export interface components {
                 id: number;
                 nombre: string;
             };
-            cantidad: number;
+            cantidad: string;
             precio_unitario: string;
             descuento: string;
             subtotal: string;
@@ -2940,8 +2940,8 @@ export interface components {
                 id: number;
                 nombre: string;
             };
-            cantidad_programada: number;
-            cantidad_producida: null | number;
+            cantidad_programada: string;
+            cantidad_producida: string | null;
             /** @enum {string} */
             estado: "pendiente" | "en_proceso" | "completada" | "cancelada";
             notas: string | null;
@@ -2961,7 +2961,7 @@ export interface components {
         PedidoItemResource: {
             id: number;
             variante_id: number;
-            cantidad: number;
+            cantidad: string;
             precio_unitario: string;
             subtotal: string;
         };
@@ -4836,8 +4836,8 @@ export interface operations {
                 content: {
                     "application/json": {
                         data: {
-                            total_pendiente: number;
-                            total_vencido: number;
+                            total_pendiente: string;
+                            total_vencido: string;
                             por_antiguedad: {
                                 al_dia: string;
                                 vencido_1_30: string;
@@ -4848,7 +4848,7 @@ export interface operations {
                             por_cliente: {
                                 cliente_id: number;
                                 cliente_nombre: string;
-                                saldo_pendiente: number;
+                                saldo_pendiente: string;
                                 cuentas_pendientes: number;
                             }[];
                         };
@@ -4995,8 +4995,8 @@ export interface operations {
                 content: {
                     "application/json": {
                         data: {
-                            total_pendiente: number;
-                            total_vencido: number;
+                            total_pendiente: string;
+                            total_vencido: string;
                             por_antiguedad: {
                                 al_dia: string;
                                 vencido_1_30: string;
@@ -5007,7 +5007,7 @@ export interface operations {
                             por_proveedor: {
                                 proveedor_id: number;
                                 proveedor_nombre: string;
-                                saldo_pendiente: number;
+                                saldo_pendiente: string;
                                 cuentas_pendientes: number;
                             }[];
                         };
