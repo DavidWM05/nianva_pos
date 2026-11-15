@@ -80,6 +80,22 @@ Un solo POS funcional y adaptable:
      Nianva POS Ropa como referencia de qué considerar: ticket fijo a la derecha con
      total y Cobrar, búsqueda con escáner y filtro de categorías, vista en lista o
      grilla, cliente con "Cambiar", cupón y descuento manual, y pantalla completa.
+9. **Precios e impuestos de la Fase 3 (2026-11-15),** que destraban ARQ-05c, el catálogo
+   (resto de DAT-01), DAT-15 y DAT-03:
+   - **impuestos:** el precio se captura con IVA incluido (el de la etiqueta es el que paga
+     el cliente) y el impuesto se desglosa hacia atrás en el ticket; la tasa va por producto
+     (16 %, 8 %, 0 % o exento) con una tasa por defecto del tenant. El IEPS queda para
+     después, sin rehacer lo anterior;
+   - **precio por variante:** la variante puede tener precio y costo propios, opcionales; si
+     no los tiene, hereda los del producto. Cambiar el precio del producto mueve solo a las
+     variantes que heredan. Reglas y listas de precio parten del precio resuelto, y la línea
+     guarda el precio usado (DAT-03). Un "precio extra" por valor de atributo, como en Odoo,
+     queda como posible mejora;
+   - **reglas combinables (L-26):** cada regla tiene prioridad y una bandera
+     `combinable`; sin bandera gana solo la de mayor prioridad. El tenant configura si el
+     cupón se suma a las promociones;
+   - **`valor` separado (DAT-02):** `reglas_precio.valor` y `cupones.valor` se parten en
+     porcentaje (`decimal(7,4)`) y monto (`decimal(12,2)`).
 
 ## 4. Fases
 
