@@ -74,7 +74,7 @@ class EscenarioAbarrotesSeeder extends EscenarioSeederBase
                 'tenant_id' => $tenant->id,
                 'nombre' => 'Mayoreo 3x2 agua',
                 'tipo' => 'nxm',
-                'valor' => null,
+                'porcentaje' => null,
                 'cantidad_compra' => 3,
                 'cantidad_paga' => 2,
                 'aplica_a' => 'producto',

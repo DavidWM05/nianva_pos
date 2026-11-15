@@ -54,7 +54,7 @@ class ReglaPrecioTest extends TestCase
         return array_merge([
             'nombre' => 'Regla de prueba',
             'tipo' => 'porcentaje',
-            'valor' => 10,
+            'porcentaje' => 10,
             'aplica_a' => 'todo',
         ], $overrides);
     }
@@ -73,7 +73,7 @@ class ReglaPrecioTest extends TestCase
         $categoria = Categoria::create(['tenant_id' => $tenant->id, 'nombre' => 'Playeras']);
         ReglaPrecio::create([
             'tenant_id' => $tenant->id, 'nombre' => 'Descuento playeras', 'tipo' => 'porcentaje',
-            'valor' => 15, 'aplica_a' => 'categoria', 'categoria_id' => $categoria->id, 'activo' => true,
+            'porcentaje' => 15, 'aplica_a' => 'categoria', 'categoria_id' => $categoria->id, 'activo' => true,
         ]);
 
         $this->actingAs($usuario);
@@ -90,7 +90,7 @@ class ReglaPrecioTest extends TestCase
         ['tenant' => $tenant, 'usuario' => $usuario] = $this->crearUsuarioConPermisos(['reglas_precio.ver']);
         $regla = ReglaPrecio::create([
             'tenant_id' => $tenant->id, 'nombre' => 'Regla puntual', 'tipo' => 'porcentaje',
-            'valor' => 12, 'aplica_a' => 'todo', 'activo' => true,
+            'porcentaje' => 12, 'aplica_a' => 'todo', 'activo' => true,
         ]);
 
         $this->actingAs($usuario);
@@ -106,7 +106,7 @@ class ReglaPrecioTest extends TestCase
         ['tenant' => $tenant, 'usuario' => $usuario] = $this->crearUsuarioConPermisos([]);
         $regla = ReglaPrecio::create([
             'tenant_id' => $tenant->id, 'nombre' => 'Regla puntual', 'tipo' => 'porcentaje',
-            'valor' => 12, 'aplica_a' => 'todo', 'activo' => true,
+            'porcentaje' => 12, 'aplica_a' => 'todo', 'activo' => true,
         ]);
 
         $this->actingAs($usuario);
@@ -119,9 +119,9 @@ class ReglaPrecioTest extends TestCase
         ['usuario' => $usuario] = $this->crearUsuarioConPermisos(['reglas_precio.crear']);
         $this->actingAs($usuario);
 
-        $this->postJson('/api/v1/reglas-precio', $this->datosBase(['tipo' => 'porcentaje', 'valor' => null]))
+        $this->postJson('/api/v1/reglas-precio', $this->datosBase(['tipo' => 'porcentaje', 'porcentaje' => null]))
             ->assertUnprocessable()
-            ->assertJsonValidationErrors('valor');
+            ->assertJsonValidationErrors('porcentaje');
     }
 
     public function test_crear_regla_nxm_exige_cantidad_compra_y_cantidad_paga(): void
@@ -129,12 +129,12 @@ class ReglaPrecioTest extends TestCase
         ['usuario' => $usuario] = $this->crearUsuarioConPermisos(['reglas_precio.crear']);
         $this->actingAs($usuario);
 
-        $this->postJson('/api/v1/reglas-precio', $this->datosBase(['tipo' => 'nxm', 'valor' => null]))
+        $this->postJson('/api/v1/reglas-precio', $this->datosBase(['tipo' => 'nxm', 'porcentaje' => null]))
             ->assertUnprocessable()
             ->assertJsonValidationErrors(['cantidad_compra', 'cantidad_paga']);
 
         $this->postJson('/api/v1/reglas-precio', $this->datosBase([
-            'tipo' => 'nxm', 'valor' => null, 'cantidad_compra' => 3, 'cantidad_paga' => 2,
+            'tipo' => 'nxm', 'porcentaje' => null, 'cantidad_compra' => 3, 'cantidad_paga' => 2,
         ]))->assertCreated()->assertJsonPath('data.cantidad_compra', '3.000');
     }
 
@@ -143,7 +143,7 @@ class ReglaPrecioTest extends TestCase
         ['usuario' => $usuario] = $this->crearUsuarioConPermisos(['reglas_precio.crear']);
         $this->actingAs($usuario);
 
-        $this->postJson('/api/v1/reglas-precio', $this->datosBase(['tipo' => 'bundle', 'valor' => null]))
+        $this->postJson('/api/v1/reglas-precio', $this->datosBase(['tipo' => 'bundle', 'porcentaje' => null]))
             ->assertUnprocessable()
             ->assertJsonValidationErrors(['cantidad_compra', 'precio_bundle']);
     }
@@ -168,9 +168,9 @@ class ReglaPrecioTest extends TestCase
             'cantidad_compra' => 3, 'cantidad_paga' => 2, 'aplica_a' => 'todo', 'activo' => true,
         ]);
 
-        $this->putJson("/api/v1/reglas-precio/{$regla->id}", $this->datosBase(['tipo' => 'porcentaje', 'valor' => 20]))
+        $this->putJson("/api/v1/reglas-precio/{$regla->id}", $this->datosBase(['tipo' => 'porcentaje', 'porcentaje' => 20]))
             ->assertOk()
-            ->assertJsonPath('data.valor', '20.00')
+            ->assertJsonPath('data.porcentaje', '20.0000')
             ->assertJsonPath('data.cantidad_compra', null)
             ->assertJsonPath('data.cantidad_paga', null);
     }
@@ -180,7 +180,7 @@ class ReglaPrecioTest extends TestCase
         ['tenant' => $tenant, 'usuario' => $usuario] = $this->crearUsuarioConPermisos(['reglas_precio.eliminar']);
         $regla = ReglaPrecio::create([
             'tenant_id' => $tenant->id, 'nombre' => 'Regla X', 'tipo' => 'porcentaje',
-            'valor' => 5, 'aplica_a' => 'todo', 'activo' => true,
+            'porcentaje' => 5, 'aplica_a' => 'todo', 'activo' => true,
         ]);
 
         $this->actingAs($usuario);
@@ -199,7 +199,7 @@ class ReglaPrecioTest extends TestCase
         $variante = ProductoVariante::create(['producto_id' => $producto->id, 'talla' => 'Unica']);
         ReglaPrecio::create([
             'tenant_id' => $tenant->id, 'nombre' => 'Descuento gorra', 'tipo' => 'monto_fijo',
-            'valor' => 20, 'aplica_a' => 'variante', 'variante_id' => $variante->id, 'activo' => true,
+            'monto' => 20, 'aplica_a' => 'variante', 'variante_id' => $variante->id, 'activo' => true,
         ]);
 
         $this->actingAs($usuario);

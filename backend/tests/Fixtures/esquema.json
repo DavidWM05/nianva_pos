@@ -2346,9 +2346,21 @@
                 "default": null
             },
             {
+                "nombre": "monto",
+                "tipo": "numeric",
+                "nullable": true,
+                "default": null
+            },
+            {
                 "nombre": "nombre",
                 "tipo": "varchar",
                 "nullable": false,
+                "default": null
+            },
+            {
+                "nombre": "porcentaje",
+                "tipo": "numeric",
+                "nullable": true,
                 "default": null
             },
             {
@@ -2373,12 +2385,6 @@
                 "nombre": "uso_maximo_por_cliente",
                 "tipo": "integer",
                 "nullable": true,
-                "default": null
-            },
-            {
-                "nombre": "valor",
-                "tipo": "numeric",
-                "nullable": false,
                 "default": null
             }
         ],
@@ -6647,9 +6653,21 @@
                 "default": null
             },
             {
+                "nombre": "monto",
+                "tipo": "numeric",
+                "nullable": true,
+                "default": null
+            },
+            {
                 "nombre": "nombre",
                 "tipo": "varchar",
                 "nullable": false,
+                "default": null
+            },
+            {
+                "nombre": "porcentaje",
+                "tipo": "numeric",
+                "nullable": true,
                 "default": null
             },
             {
@@ -6674,12 +6692,6 @@
                 "nombre": "tipo",
                 "tipo": "varchar",
                 "nullable": false,
-                "default": null
-            },
-            {
-                "nombre": "valor",
-                "tipo": "numeric",
-                "nullable": true,
                 "default": null
             },
             {

@@ -14,7 +14,8 @@ return new class extends Migration
             $table->string('codigo', 50);
             $table->string('nombre', 120);
             $table->enum('tipo', ['porcentaje', 'monto_fijo']);
-            $table->decimal('valor', 10, 2);
+            $table->decimal('porcentaje', 7, 4)->nullable()->comment('solo en porcentaje');
+            $table->decimal('monto', 12, 2)->nullable()->comment('solo en monto_fijo');
             $table->integer('uso_maximo')->nullable();
             $table->integer('uso_maximo_por_cliente')->nullable();
             $table->date('fecha_inicio')->nullable();

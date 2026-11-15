@@ -104,7 +104,7 @@ class VentaServiceTest extends TestCase
 
         ReglaPrecio::create([
             'tenant_id' => $ctx['tenant']->id, 'nombre' => '10% variante A', 'tipo' => 'porcentaje',
-            'valor' => 10, 'aplica_a' => 'variante', 'variante_id' => $ctx['varianteA']->id,
+            'porcentaje' => 10, 'aplica_a' => 'variante', 'variante_id' => $ctx['varianteA']->id,
         ]);
 
         $this->cajaService->abrirCajaConSucursal(Bloqueos04e::sucursal($ctx['sucursal']->id), $ctx['usuario']->id, 500);

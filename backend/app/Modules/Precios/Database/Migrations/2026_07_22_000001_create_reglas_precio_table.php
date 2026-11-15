@@ -13,7 +13,8 @@ return new class extends Migration
             $table->foreignId('tenant_id')->constrained('tenants')->cascadeOnDelete();
             $table->string('nombre', 120);
             $table->enum('tipo', ['porcentaje', 'monto_fijo', 'nxm', 'bundle']);
-            $table->decimal('valor', 10, 2)->nullable()->comment('usado en porcentaje/monto_fijo');
+            $table->decimal('porcentaje', 7, 4)->nullable()->comment('solo en porcentaje');
+            $table->decimal('monto', 12, 2)->nullable()->comment('solo en monto_fijo');
             $table->decimal('cantidad_compra', 14, 3)->nullable()->comment('N en nxm/bundle');
             $table->decimal('cantidad_paga', 14, 3)->nullable()->comment('M en nxm');
             $table->decimal('precio_bundle', 12, 2)->nullable()->comment('solo bundle');

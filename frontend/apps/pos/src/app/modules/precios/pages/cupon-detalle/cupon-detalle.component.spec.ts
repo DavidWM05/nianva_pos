@@ -30,7 +30,7 @@ describe('CuponDetalleComponent', () => {
     codigo: 'VERANO10',
     nombre: 'Verano',
     tipo: 'porcentaje',
-    valor: '10',
+    porcentaje: '10', monto: null,
     uso_maximo: null,
     uso_maximo_por_cliente: null,
     fecha_inicio: null,

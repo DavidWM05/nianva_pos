@@ -35,6 +35,6 @@ it('categoría usa su buscador, conserva el valor inicial y readonly, y comunica
   const guardar = vi.fn();
   fixture.componentInstance.guardar.subscribe(guardar);
   selector.seleccionado.emit(22);
-  fixture.componentInstance.onSubmit({ nombre: 'Promoción', tipo: 'porcentaje', valor: 10 });
+  fixture.componentInstance.onSubmit({ nombre: 'Promoción', tipo: 'porcentaje', porcentaje: 10 });
   expect(guardar).toHaveBeenCalledWith(expect.objectContaining({ categoria_id: 22, aplica_a: 'categoria' }));
 });

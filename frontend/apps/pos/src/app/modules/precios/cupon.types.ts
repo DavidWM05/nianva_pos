@@ -1,10 +1,13 @@
+import type { CuponResource } from '@nianva/api-contrato';
+
 /** Espejo de CuponResource. */
 export interface Cupon {
   id: number;
   codigo: string;
   nombre: string;
   tipo: 'porcentaje' | 'monto_fijo';
-  valor: string;
+  porcentaje: CuponResource['porcentaje'];
+  monto: CuponResource['monto'];
   uso_maximo: number | null;
   uso_maximo_por_cliente: number | null;
   fecha_inicio: string | null;

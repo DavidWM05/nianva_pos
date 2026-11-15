@@ -15,7 +15,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 #[Fillable([
-    'tenant_id', 'nombre', 'tipo', 'valor', 'cantidad_compra', 'cantidad_paga',
+    'tenant_id', 'nombre', 'tipo', 'porcentaje', 'monto', 'cantidad_compra', 'cantidad_paga',
     'precio_bundle', 'aplica_a', 'categoria_id', 'producto_id', 'variante_id',
     'fecha_inicio', 'fecha_fin', 'activo',
 ])]
@@ -33,7 +33,8 @@ class ReglaPrecio extends Model
     protected function casts(): array
     {
         return ['cantidad_compra' => CantidadNullable::class, 'cantidad_paga' => CantidadNullable::class,
-            'valor' => 'decimal:2',
+            'porcentaje' => 'decimal:4',
+            'monto' => 'decimal:2',
             'precio_bundle' => 'decimal:2',
             'fecha_inicio' => 'date',
             'fecha_fin' => 'date',

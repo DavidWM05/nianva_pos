@@ -30,7 +30,7 @@ describe('ReglaPrecioDetalleComponent', () => {
     id: 9,
     nombre: 'Descuento verano',
     tipo: 'porcentaje',
-    valor: '10',
+    porcentaje: '10', monto: null,
     cantidad_compra: null,
     cantidad_paga: null,
     precio_bundle: null,

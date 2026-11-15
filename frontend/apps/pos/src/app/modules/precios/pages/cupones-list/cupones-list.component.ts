@@ -119,8 +119,8 @@ export class CuponesListComponent {
       tipoTexto: fila.tipo === 'porcentaje' ? 'Porcentaje' : 'Monto fijo',
       valorTexto:
         fila.tipo === 'porcentaje'
-          ? this.porcentaje.transform(fila.valor)
-          : this.dinero.transform(fila.valor),
+          ? this.porcentaje.transform(fila.porcentaje)
+          : this.dinero.transform(fila.monto),
       vigenciaTexto: this.vigencia(fila.fecha_inicio, fila.fecha_fin),
     })),
   );

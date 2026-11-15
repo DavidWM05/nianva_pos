@@ -12,10 +12,11 @@ import { DynamicFormComponent, DynamicFormField } from '@nianva/ui-shared';
 
 import { CuponFormPayload } from '../cupon.service';
 import { Cupon } from '../cupon.types';
+import { numeroONulo } from '../numero-o-nulo';
 
 /**
- * Sin campos condicionales -- a diferencia de ReglaPrecioFormComponent,
- * un cupon siempre tiene los mismos campos sin importar su tipo.
+ * Campos condicionales solo para el valor: porcentaje con tipo porcentaje y
+ * monto con monto_fijo (DAT-02b); el resto de los campos no depende del tipo.
  */
 @Component({
   selector: 'nucleo-cupon-form',
@@ -67,12 +68,22 @@ export class CuponFormComponent implements OnChanges {
         defaultValue: this.valorInicial?.tipo ?? 'porcentaje',
       },
       {
-        name: 'valor',
-        label: 'Valor',
+        name: 'porcentaje',
+        label: 'Valor (%)',
         type: 'number',
         required: true,
+        dependsOn: { field: 'tipo', values: ['porcentaje'] },
+        validators: [Validators.min(0), Validators.max(100)],
+        defaultValue: numeroONulo(this.valorInicial?.porcentaje),
+      },
+      {
+        name: 'monto',
+        label: 'Valor ($)',
+        type: 'number',
+        required: true,
+        dependsOn: { field: 'tipo', values: ['monto_fijo'] },
         validators: [Validators.min(0)],
-        defaultValue: this.valorInicial?.valor ?? null,
+        defaultValue: numeroONulo(this.valorInicial?.monto),
       },
       {
         name: 'uso_maximo',
@@ -115,11 +126,15 @@ export class CuponFormComponent implements OnChanges {
         : String(valor);
     };
 
+    const tipo = value['tipo'] as CuponFormPayload['tipo'];
+
+    // Solo el campo del tipo: el otro va null aunque el formulario conserve lo escrito.
     this.guardar.emit({
       codigo: String(value['codigo'] ?? ''),
       nombre: String(value['nombre'] ?? ''),
-      tipo: value['tipo'] as CuponFormPayload['tipo'],
-      valor: value['valor'] as number,
+      tipo,
+      porcentaje: tipo === 'porcentaje' ? numeroONulo(value['porcentaje']) : null,
+      monto: tipo === 'monto_fijo' ? numeroONulo(value['monto']) : null,
       uso_maximo: value['uso_maximo'] as number | null,
       uso_maximo_por_cliente: value['uso_maximo_por_cliente'] as number | null,
       fecha_inicio: fecha(value['fecha_inicio']),

@@ -25,7 +25,7 @@ class CuponEdicionParcialTest extends TestCase
             'codigo' => 'PARCIAL10',
             'nombre' => 'Cupon original',
             'tipo' => 'porcentaje',
-            'valor' => 10,
+            'porcentaje' => 10,
             'uso_maximo' => 5,
         ]);
         $this->actingAs($this->usuario);
@@ -34,12 +34,12 @@ class CuponEdicionParcialTest extends TestCase
             'codigo' => 'PARCIAL10',
             'nombre' => 'Cupon actualizado',
             'tipo' => 'porcentaje',
-            'valor' => 15,
+            'porcentaje' => 15,
         ])->assertOk();
 
         $cupon->refresh();
         $this->assertSame('Cupon actualizado', $cupon->nombre);
-        $this->assertSame(15.0, (float) $cupon->valor);
+        $this->assertSame(15.0, (float) $cupon->porcentaje);
         $this->assertSame(5, $cupon->uso_maximo);
     }
 }

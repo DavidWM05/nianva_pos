@@ -39,9 +39,9 @@ describe('CuponCrearComponent', () => {
   it('al guardar, crea el cupon y navega a su detalle', async () => {
     await crearComponente();
 
-    fixture.componentInstance.onGuardar({ codigo: 'VERANO10', nombre: 'Verano', tipo: 'porcentaje', valor: 10 });
+    fixture.componentInstance.onGuardar({ codigo: 'VERANO10', nombre: 'Verano', tipo: 'porcentaje', porcentaje: 10 });
 
-    expect(cuponService.crear).toHaveBeenCalledWith({ codigo: 'VERANO10', nombre: 'Verano', tipo: 'porcentaje', valor: 10 });
+    expect(cuponService.crear).toHaveBeenCalledWith({ codigo: 'VERANO10', nombre: 'Verano', tipo: 'porcentaje', porcentaje: 10 });
     expect(toastService.success).toHaveBeenCalledWith('Cupón creado.');
     expect(router.navigate).toHaveBeenCalledWith(['/precios/cupones', 4]);
   });
@@ -50,7 +50,7 @@ describe('CuponCrearComponent', () => {
     await crearComponente();
     cuponService.crear.mockReturnValue(throwError(() => ({ status: 500 })));
 
-    fixture.componentInstance.onGuardar({ codigo: 'VERANO10', nombre: 'Verano', tipo: 'porcentaje', valor: 10 });
+    fixture.componentInstance.onGuardar({ codigo: 'VERANO10', nombre: 'Verano', tipo: 'porcentaje', porcentaje: 10 });
 
     expect(toastService.error).toHaveBeenCalledWith('No se pudo crear el cupón.');
     expect(router.navigate).not.toHaveBeenCalled();

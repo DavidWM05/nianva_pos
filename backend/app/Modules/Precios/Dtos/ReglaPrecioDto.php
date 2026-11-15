@@ -7,7 +7,8 @@ final readonly class ReglaPrecioDto
     public function __construct(
         public string $nombre,
         public string $tipo,
-        public ?float $valor,
+        public ?string $porcentaje,
+        public ?string $monto,
         public int|float|null $cantidadCompra,
         public int|float|null $cantidadPaga,
         public ?float $precioBundle,
@@ -27,7 +28,8 @@ final readonly class ReglaPrecioDto
         return [
             'nombre' => $this->nombre,
             'tipo' => $this->tipo,
-            'valor' => $this->valor,
+            'porcentaje' => $this->porcentaje,
+            'monto' => $this->monto,
             'cantidad_compra' => $this->cantidadCompra,
             'cantidad_paga' => $this->cantidadPaga,
             'precio_bundle' => $this->precioBundle,

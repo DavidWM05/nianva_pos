@@ -8,13 +8,12 @@ use App\Modules\Nucleo\Http\Requests\SolicitudNegocio;
 use App\Modules\Nucleo\Support\Cantidad;
 use App\Modules\Nucleo\Support\ReglasTenant;
 use App\Modules\Precios\Dtos\ReglaPrecioDto;
+use App\Modules\Precios\Support\ReglasPorcentajeMonto;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 
 class GuardarReglaPrecioRequest extends SolicitudNegocio
 {
-    private const TIPOS_CON_VALOR = ['porcentaje', 'monto_fijo'];
-
     private const TIPOS_CON_CANTIDAD_COMPRA = ['nxm', 'bundle'];
 
     /**
@@ -27,7 +26,8 @@ class GuardarReglaPrecioRequest extends SolicitudNegocio
         return [
             'nombre' => ['required', 'string', 'max:120'],
             'tipo' => ['required', Rule::in(['porcentaje', 'monto_fijo', 'nxm', 'bundle'])],
-            'valor' => ['nullable', 'numeric', 'min:0'],
+            'porcentaje' => ReglasPorcentajeMonto::porcentaje(),
+            'monto' => ReglasPorcentajeMonto::monto(),
             'cantidad_compra' => ['nullable', ...ReglasCantidad::decimal()],
             'cantidad_paga' => ['nullable', ...ReglasCantidad::decimal()],
             'precio_bundle' => ['nullable', 'numeric', 'min:0'],
@@ -45,7 +45,7 @@ class GuardarReglaPrecioRequest extends SolicitudNegocio
         $v = $this->validated();
 
         $v += [
-            'valor' => null, 'cantidad_compra' => null, 'cantidad_paga' => null, 'precio_bundle' => null,
+            'porcentaje' => null, 'monto' => null, 'cantidad_compra' => null, 'cantidad_paga' => null, 'precio_bundle' => null,
             'categoria_id' => null, 'producto_id' => null, 'variante_id' => null,
             'fecha_inicio' => null, 'fecha_fin' => null,
         ];
@@ -53,16 +53,12 @@ class GuardarReglaPrecioRequest extends SolicitudNegocio
         $tipo = (string) $v['tipo'];
         $aplicaA = (string) $v['aplica_a'];
 
-        $tieneValor = in_array($tipo, self::TIPOS_CON_VALOR, true);
         $tieneCantidadCompra = in_array($tipo, self::TIPOS_CON_CANTIDAD_COMPRA, true);
         $tieneCantidadPaga = $tipo === 'nxm';
         $tienePrecioBundle = $tipo === 'bundle';
 
-        $errores = [];
+        $errores = ReglasPorcentajeMonto::errores($tipo, $v['porcentaje'], $v['monto'], 'reglas');
 
-        if ($tieneValor && $v['valor'] === null) {
-            $errores['valor'] = ['El valor es obligatorio para este tipo de regla.'];
-        }
         if ($tieneCantidadCompra && $v['cantidad_compra'] === null) {
             $errores['cantidad_compra'] = ['La cantidad de compra es obligatoria para este tipo de regla.'];
         }
@@ -87,7 +83,6 @@ class GuardarReglaPrecioRequest extends SolicitudNegocio
             throw ValidationException::withMessages($errores);
         }
 
-        $v['valor'] = $tieneValor ? $v['valor'] : null;
         $v['cantidad_compra'] = $tieneCantidadCompra ? $v['cantidad_compra'] : null;
         $v['cantidad_paga'] = $tieneCantidadPaga ? $v['cantidad_paga'] : null;
         $v['precio_bundle'] = $tienePrecioBundle ? $v['precio_bundle'] : null;
@@ -99,7 +94,8 @@ class GuardarReglaPrecioRequest extends SolicitudNegocio
         return new ReglaPrecioDto(
             nombre: (string) $v['nombre'],
             tipo: $tipo,
-            valor: $v['valor'] === null ? null : (float) $v['valor'],
+            porcentaje: ReglasPorcentajeMonto::porcentajeDelTipo($tipo, $v['porcentaje']),
+            monto: ReglasPorcentajeMonto::montoDelTipo($tipo, $v['monto']),
             cantidadCompra: $v['cantidad_compra'] === null ? null : Cantidad::numero($v['cantidad_compra']),
             cantidadPaga: $v['cantidad_paga'] === null ? null : Cantidad::numero($v['cantidad_paga']),
             precioBundle: $v['precio_bundle'] === null ? null : (float) $v['precio_bundle'],

@@ -28,7 +28,7 @@ const casos = [
       codigo: 'CUPON',
       nombre: 'Cupón',
       tipo: 'porcentaje',
-      valor: '10.00',
+      porcentaje: '10.0000',
       activo: true,
     },
   },

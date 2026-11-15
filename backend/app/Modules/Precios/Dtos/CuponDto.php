@@ -11,7 +11,8 @@ final readonly class CuponDto
         public string $codigo,
         public string $nombre,
         public string $tipo,
-        public float $valor,
+        public ?string $porcentaje,
+        public ?string $monto,
         public ?int $usoMaximo,
         public ?int $usoMaximoPorCliente,
         public ?string $fechaInicio,
@@ -43,8 +44,11 @@ final readonly class CuponDto
         if (in_array('tipo', $this->presentes, true)) {
             $datos['tipo'] = $this->tipo;
         }
-        if (in_array('valor', $this->presentes, true)) {
-            $datos['valor'] = $this->valor;
+        if (in_array('porcentaje', $this->presentes, true)) {
+            $datos['porcentaje'] = $this->porcentaje;
+        }
+        if (in_array('monto', $this->presentes, true)) {
+            $datos['monto'] = $this->monto;
         }
         if (in_array('uso_maximo', $this->presentes, true)) {
             $datos['uso_maximo'] = $this->usoMaximo;

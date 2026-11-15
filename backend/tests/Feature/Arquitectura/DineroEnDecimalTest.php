@@ -10,10 +10,7 @@ use Tests\TestCase;
 class DineroEnDecimalTest extends TestCase
 {
     /** @var array<string, string> */
-    private const PENDIENTES = [
-        'cupones.valor' => 'Importe fijo y porcentaje comparten columna. Pendiente de decidir su separación.',
-        'reglas_precio.valor' => 'Importe fijo y porcentaje comparten columna. Pendiente de decidir su separación.',
-    ];
+    private const PENDIENTES = [];
 
     /** @var array<string, array{tipo: string, razon: string}> */
     private const EXENTOS = [
