@@ -48,7 +48,7 @@ class VentaService
 
     /**
      * @param  array{tenant_id:int, sucursal_id:int, usuario_id:int, cliente_id:int, cupon_id?:?int, descuento_manual?:float, abono_previo?:float, es_venta_sombra?:bool}  $datosVenta
-     * @param  list<array{variante_id:int, cantidad:int}>  $items
+     * @param  list<array{variante_id:int, cantidad:int|float}>  $items
      * @param  list<array{metodo_pago_id:int, monto:float}>  $pagos
      * @param  array<int, InventarioStock>  $stocks
      *
@@ -202,8 +202,8 @@ class VentaService
      * calcular un total sin duplicar la logica de precios ni el
      * InvalidArgumentException de tenant/variante inconsistente.
      *
-     * @param  array<int|string, array{variante_id:int|string, cantidad:int}>  $items
-     * @return array{0: list<array{variante_id:int, regla_precio_id:?int, cantidad:int, precio_unitario:float, descuento_aplicado:float, subtotal:float}>, 1: float}
+     * @param  array<int|string, array{variante_id:int|string, cantidad:int|float}>  $items
+     * @return array{0: list<array{variante_id:int, regla_precio_id:?int, cantidad:int|float, precio_unitario:float, descuento_aplicado:float, subtotal:float}>, 1: float}
      */
     public function cotizarItems(int $tenantId, array $items): array
     {
@@ -213,8 +213,8 @@ class VentaService
     }
 
     /**
-     * @param  array<int|string, array{variante_id:int|string, cantidad:int}>  $items
-     * @return array{0: list<array{variante_id:int, regla_precio_id:?int, cantidad:int, precio_unitario:float, descuento_aplicado:float, subtotal:float}>, 1: float, 2: float}
+     * @param  array<int|string, array{variante_id:int|string, cantidad:int|float}>  $items
+     * @return array{0: list<array{variante_id:int, regla_precio_id:?int, cantidad:int|float, precio_unitario:float, descuento_aplicado:float, subtotal:float}>, 1: float, 2: float}
      */
     private function resolverLineas(int $tenantId, array $items, ?ContextoPrecio $contexto = null, ?int $cuponId = null): array
     {

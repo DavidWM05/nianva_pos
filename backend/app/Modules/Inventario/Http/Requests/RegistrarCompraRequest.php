@@ -4,8 +4,10 @@ namespace App\Modules\Inventario\Http\Requests;
 
 use App\Modules\Inventario\Dtos\CompraDto;
 use App\Modules\Inventario\Dtos\LineaCompraDto;
+use App\Modules\Inventario\Support\ReglasCantidad;
 use App\Modules\Inventario\Support\ReglasVariante;
 use App\Modules\Nucleo\Http\Requests\SolicitudNegocio;
+use App\Modules\Nucleo\Support\Cantidad;
 use App\Modules\Nucleo\Support\ReglasTenant;
 
 class RegistrarCompraRequest extends SolicitudNegocio
@@ -22,7 +24,7 @@ class RegistrarCompraRequest extends SolicitudNegocio
             'numero_comprobante' => ['nullable', 'string', 'max:60'],
             'items' => ['required', 'array', 'min:1'],
             'items.*.variante_id' => ['required', 'integer', ReglasVariante::delTenant($tenantId)],
-            'items.*.cantidad' => ['required', 'integer', 'min:1'],
+            'items.*.cantidad' => ['required', ...ReglasCantidad::paraVariante($tenantId)],
             'items.*.precio_compra' => ['required', 'numeric', 'min:0'],
         ];
     }
@@ -37,7 +39,7 @@ class RegistrarCompraRequest extends SolicitudNegocio
 
                 return new LineaCompraDto(
                     varianteId: (int) $item['variante_id'],
-                    cantidad: (int) $item['cantidad'],
+                    cantidad: Cantidad::numero($item['cantidad']),
                     precioCompra: (float) $item['precio_compra'],
                 );
             },
@@ -49,5 +51,10 @@ class RegistrarCompraRequest extends SolicitudNegocio
             numeroComprobante: isset($v['numero_comprobante']) ? (string) $v['numero_comprobante'] : null,
             items: $items,
         );
+    }
+
+    public function messages(): array
+    {
+        return ReglasCantidad::mensajes(['items.*.cantidad']);
     }
 }

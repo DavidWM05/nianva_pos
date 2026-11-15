@@ -4659,7 +4659,7 @@
                                                         "type": "string"
                                                     },
                                                     "cantidad": {
-                                                        "type": "integer"
+                                                        "type": "number"
                                                     },
                                                     "motivo": {
                                                         "type": "string"
@@ -4671,7 +4671,7 @@
                                                         "type": "string"
                                                     },
                                                     "stock_resultante": {
-                                                        "type": "integer"
+                                                        "type": "number"
                                                     },
                                                     "fecha": {
                                                         "type": "string",
@@ -9431,7 +9431,7 @@
                                                                 ]
                                                             },
                                                             "cantidad_vendida": {
-                                                                "type": "integer"
+                                                                "type": "number"
                                                             },
                                                             "total_vendido": {
                                                                 "type": "number"
@@ -9902,8 +9902,9 @@
                                     "type": "integer"
                                 },
                                 "cantidad": {
-                                    "type": "integer",
-                                    "minimum": 1
+                                    "type": "number",
+                                    "minimum": 0.001,
+                                    "maximum": 99999999999.999
                                 },
                                 "precio_unitario": {
                                     "type": [
@@ -10090,7 +10091,7 @@
                                     ]
                                 },
                                 "cantidad": {
-                                    "type": "integer"
+                                    "type": "number"
                                 },
                                 "precio_unitario": {
                                     "type": "string"
@@ -10293,8 +10294,9 @@
                         ]
                     },
                     "cantidad_producida": {
-                        "type": "integer",
-                        "minimum": 1
+                        "type": "number",
+                        "minimum": 0.001,
+                        "maximum": 99999999999.999
                     }
                 },
                 "required": [
@@ -10618,7 +10620,7 @@
                         ]
                     },
                     "cantidad": {
-                        "type": "integer"
+                        "type": "number"
                     },
                     "precio_unitario": {
                         "type": "string"
@@ -10765,8 +10767,9 @@
                                     "type": "integer"
                                 },
                                 "cantidad": {
-                                    "type": "integer",
-                                    "minimum": 1
+                                    "type": "number",
+                                    "minimum": 0.001,
+                                    "maximum": 99999999999.999
                                 }
                             },
                             "required": [
@@ -10797,8 +10800,9 @@
                                     "type": "integer"
                                 },
                                 "cantidad": {
-                                    "type": "integer",
-                                    "minimum": 1
+                                    "type": "number",
+                                    "minimum": 0.001,
+                                    "maximum": 99999999999.999
                                 }
                             },
                             "required": [
@@ -10881,8 +10885,9 @@
                                     "type": "integer"
                                 },
                                 "cantidad": {
-                                    "type": "integer",
-                                    "minimum": 1
+                                    "type": "number",
+                                    "minimum": 0.001,
+                                    "maximum": 99999999999.999
                                 },
                                 "precio_unitario": {
                                     "type": [
@@ -10934,8 +10939,9 @@
                                     "type": "integer"
                                 },
                                 "cantidad": {
-                                    "type": "integer",
-                                    "minimum": 1
+                                    "type": "number",
+                                    "minimum": 0.001,
+                                    "maximum": 99999999999.999
                                 },
                                 "va_a_merma": {
                                     "type": [
@@ -10963,8 +10969,9 @@
                                     "type": "integer"
                                 },
                                 "cantidad": {
-                                    "type": "integer",
-                                    "minimum": 1
+                                    "type": "number",
+                                    "minimum": 0.001,
+                                    "maximum": 99999999999.999
                                 }
                             }
                         },
@@ -11109,7 +11116,8 @@
                             "number",
                             "null"
                         ],
-                        "minimum": 0
+                        "minimum": 0,
+                        "maximum": 99999999999.999
                     }
                 },
                 "required": [
@@ -11149,8 +11157,9 @@
                         "type": "integer"
                     },
                     "cantidad_programada": {
-                        "type": "integer",
-                        "minimum": 1
+                        "type": "number",
+                        "minimum": 0.001,
+                        "maximum": 99999999999.999
                     },
                     "fecha_programada": {
                         "type": [
@@ -11232,8 +11241,9 @@
                                     "type": "integer"
                                 },
                                 "cantidad": {
-                                    "type": "integer",
-                                    "minimum": 1
+                                    "type": "number",
+                                    "minimum": 0.001,
+                                    "maximum": 99999999999.999
                                 },
                                 "precio_unitario": {
                                     "type": "number",
@@ -11398,7 +11408,8 @@
                             "number",
                             "null"
                         ],
-                        "minimum": 0.01
+                        "minimum": 0.001,
+                        "maximum": 99999999999.999
                     },
                     "instrucciones": {
                         "type": [
@@ -11422,7 +11433,8 @@
                                 },
                                 "cantidad": {
                                     "type": "number",
-                                    "minimum": 0.01
+                                    "minimum": 0.001,
+                                    "maximum": 99999999999.999
                                 },
                                 "unidad_medida_id": {
                                     "type": "integer"
@@ -11455,11 +11467,13 @@
                     },
                     "cantidad_origen": {
                         "type": "number",
-                        "minimum": 0.01
+                        "minimum": 0.001,
+                        "maximum": 99999999999.999
                     },
                     "cantidad_destino": {
                         "type": "number",
-                        "minimum": 0.01
+                        "minimum": 0.001,
+                        "maximum": 99999999999.999
                     },
                     "notas": {
                         "type": [
@@ -11492,8 +11506,9 @@
                                     "type": "integer"
                                 },
                                 "cantidad": {
-                                    "type": "integer",
-                                    "minimum": 1
+                                    "type": "number",
+                                    "minimum": 0.001,
+                                    "maximum": 99999999999.999
                                 }
                             },
                             "required": [
@@ -12085,7 +12100,7 @@
                                     ]
                                 },
                                 "cantidad": {
-                                    "type": "integer"
+                                    "type": "number"
                                 },
                                 "precio_unitario": {
                                     "type": "string"
@@ -12577,7 +12592,8 @@
                     },
                     "cantidad": {
                         "type": "number",
-                        "minimum": 0.01
+                        "minimum": 0.001,
+                        "maximum": 99999999999.999
                     },
                     "lote": {
                         "type": [
@@ -12743,17 +12759,19 @@
                     },
                     "cantidad_compra": {
                         "type": [
-                            "integer",
+                            "number",
                             "null"
                         ],
-                        "minimum": 1
+                        "minimum": 0.001,
+                        "maximum": 99999999999.999
                     },
                     "cantidad_paga": {
                         "type": [
-                            "integer",
+                            "number",
                             "null"
                         ],
-                        "minimum": 1
+                        "minimum": 0.001,
+                        "maximum": 99999999999.999
                     },
                     "precio_bundle": {
                         "type": [
@@ -12946,7 +12964,10 @@
                         "type": "string"
                     },
                     "stock_minimo": {
-                        "type": "string"
+                        "type": [
+                            "string",
+                            "null"
+                        ]
                     },
                     "activo": {
                         "type": "boolean"
@@ -13414,12 +13435,12 @@
                         ]
                     },
                     "cantidad_programada": {
-                        "type": "integer"
+                        "type": "number"
                     },
                     "cantidad_producida": {
                         "type": [
-                            "integer",
-                            "null"
+                            "null",
+                            "number"
                         ]
                     },
                     "estado": {
@@ -13497,7 +13518,7 @@
                         "type": "integer"
                     },
                     "cantidad": {
-                        "type": "integer"
+                        "type": "number"
                     },
                     "precio_unitario": {
                         "type": "string"
@@ -14051,8 +14072,8 @@
                         "type": "boolean"
                     },
                     "stock_total": {
-                        "type": "integer",
-                        "description": "Solo presente en index() (via selectSub) -- show() no lo\nnecesita, ahi se ven las variantes con su stock por sucursal\ndirectamente. Se consulta getAttributes() (no el atributo)\npara no disparar MissingAttributeException cuando la consulta\nno selecciono stock_total."
+                        "description": "Solo presente en index() (via selectSub) -- show() no lo\nnecesita, ahi se ven las variantes con su stock por sucursal\ndirectamente. Se consulta getAttributes() (no el atributo)\npara no disparar MissingAttributeException cuando la consulta\nno selecciono stock_total.",
+                        "type": "number"
                     },
                     "variantes": {
                         "type": "array",
@@ -14117,10 +14138,10 @@
                                     "type": "string"
                                 },
                                 "stock_actual": {
-                                    "type": "integer"
+                                    "type": "number"
                                 },
                                 "stock_minimo": {
-                                    "type": "integer"
+                                    "type": "number"
                                 }
                             },
                             "required": [
@@ -14132,8 +14153,8 @@
                         }
                     },
                     "stock_actual": {
-                        "type": "integer",
-                        "description": "Resuelto server-side para la sucursal del usuario que pide el\nrecurso -- a diferencia de `stock` (todas las sucursales, para\nla pantalla de Inventario), esto es lo unico que necesita el\nTPV/Apartados para validar la cantidad en vivo antes de\nsometer (ver LineasProductoComponent). 0 si no hay fila\ntodavia, nunca null, para que el frontend no tenga que\ndistinguir \"sin stock\" de \"sin dato\"."
+                        "description": "Resuelto server-side para la sucursal del usuario que pide el\nrecurso -- a diferencia de `stock` (todas las sucursales, para\nla pantalla de Inventario), esto es lo unico que necesita el\nTPV/Apartados para validar la cantidad en vivo antes de\nsometer (ver LineasProductoComponent). 0 si no hay fila\ntodavia, nunca null, para que el frontend no tenga que\ndistinguir \"sin stock\" de \"sin dato\".",
+                        "type": "number"
                     }
                 },
                 "required": [
@@ -14391,8 +14412,9 @@
                                     "type": "integer"
                                 },
                                 "cantidad": {
-                                    "type": "integer",
-                                    "minimum": 1
+                                    "type": "number",
+                                    "minimum": 0.001,
+                                    "maximum": 99999999999.999
                                 },
                                 "precio_compra": {
                                     "type": "number",
@@ -14484,14 +14506,14 @@
                     },
                     "cantidad_compra": {
                         "type": [
-                            "integer",
-                            "null"
+                            "null",
+                            "number"
                         ]
                     },
                     "cantidad_paga": {
                         "type": [
-                            "integer",
-                            "null"
+                            "null",
+                            "number"
                         ]
                     },
                     "precio_bundle": {
@@ -15262,7 +15284,7 @@
                                     ]
                                 },
                                 "cantidad": {
-                                    "type": "integer"
+                                    "type": "number"
                                 },
                                 "precio_unitario": {
                                     "type": "string"

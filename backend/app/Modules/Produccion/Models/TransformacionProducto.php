@@ -3,6 +3,7 @@
 namespace App\Modules\Produccion\Models;
 
 use App\Modules\Inventario\Models\ProductoVariante;
+use App\Modules\Nucleo\Casts\CantidadFormateada;
 use App\Modules\Nucleo\Models\Concerns\BelongsToTenant;
 use App\Modules\Nucleo\Models\Sucursal;
 use App\Modules\Nucleo\Models\Tenant;
@@ -27,7 +28,7 @@ class TransformacionProducto extends Model
 
     protected function casts(): array
     {
-        return ['cantidad_origen' => 'decimal:2', 'cantidad_destino' => 'decimal:2'];
+        return ['cantidad_origen' => CantidadFormateada::class.':2', 'cantidad_destino' => CantidadFormateada::class.':2'];
     }
 
     public function tenant(): BelongsTo

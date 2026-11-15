@@ -8,6 +8,7 @@ use App\Modules\Inventario\Models\Producto;
 use App\Modules\Inventario\Models\ProductoVariante;
 use App\Modules\Nucleo\Scopes\TenantScope;
 use App\Modules\Nucleo\Scopes\TenantScopeViaRelacion;
+use App\Modules\Nucleo\Support\Cantidad;
 use App\Modules\Nucleo\Support\Dinero;
 use App\Modules\Precios\Exceptions\CuponInvalidoException;
 use App\Modules\Precios\Models\Cupon;
@@ -56,7 +57,7 @@ final class PricingService
                 };
                 $reglas[] = new ReglaAplicada((int) $regla->getKey(), (string) $regla->getAttribute('tipo'), $prioridad, false);
             }
-            $totalLinea = $precioBase->multiplicar($linea->cantidad)->restar($descuento);
+            $totalLinea = $precioBase->multiplicar(Cantidad::cadena($linea->cantidad))->restar($descuento);
             $lineas[] = new LineaPrecio($linea->varianteId, $linea->cantidad, (float) $precioBase->aCadena(), null, $reglas, (float) $descuento->aCadena(), 0.0, (float) $totalLinea->aCadena());
             $subtotal = $subtotal->sumar($totalLinea);
         }
@@ -152,11 +153,11 @@ final class PricingService
             ->where(fn (Builder $q) => $q->whereNull('fecha_fin')->orWhereDate('fecha_fin', '>=', $hoy));
     }
 
-    private function calcularDescuentoPorTipo(ReglaPrecio $regla, Dinero $precioUnitario, int $cantidad): Dinero
+    private function calcularDescuentoPorTipo(ReglaPrecio $regla, Dinero $precioUnitario, int|float $cantidad): Dinero
     {
         return match ($regla->getAttribute('tipo')) {
-            'porcentaje' => $precioUnitario->multiplicar($cantidad)->porcentaje((string) ($regla->getAttribute('valor') ?? '0')),
-            'monto_fijo' => $this->menor(Dinero::desdeProducto((string) ($regla->getAttribute('valor') ?? '0'), $cantidad), $precioUnitario->multiplicar($cantidad)),
+            'porcentaje' => $precioUnitario->multiplicarPorcentaje(Cantidad::cadena($cantidad), (string) ($regla->getAttribute('valor') ?? '0')),
+            'monto_fijo' => $this->menor(Dinero::desdeProducto((string) ($regla->getAttribute('valor') ?? '0'), Cantidad::cadena($cantidad)), $precioUnitario->multiplicar(Cantidad::cadena($cantidad))),
             'nxm' => $this->descuentoNxm($regla, $precioUnitario, $cantidad),
             'bundle' => $this->descuentoBundle($regla, $precioUnitario, $cantidad),
             default => Dinero::desde(0),
@@ -168,21 +169,21 @@ final class PricingService
      * unidades solo se cobran M: el resto (menos de N unidades) paga
      * precio completo, sin descuento parcial de grupo.
      */
-    private function descuentoNxm(ReglaPrecio $regla, Dinero $precioUnitario, int $cantidad): Dinero
+    private function descuentoNxm(ReglaPrecio $regla, Dinero $precioUnitario, int|float $cantidad): Dinero
     {
-        $compra = (int) $regla->getAttribute('cantidad_compra');
-        $paga = (int) $regla->getAttribute('cantidad_paga');
+        $compra = Cantidad::numero($regla->getAttribute('cantidad_compra') ?? 0);
+        $paga = Cantidad::numero($regla->getAttribute('cantidad_paga') ?? 0);
 
         if ($compra <= 0 || $paga <= 0 || $paga >= $compra) {
             return Dinero::desde(0);
         }
 
-        $gruposCompletos = intdiv($cantidad, $compra);
-        $resto = $cantidad % $compra;
+        $gruposCompletos = intdiv(Cantidad::milesimas($cantidad), Cantidad::milesimas($compra));
+        $resto = Cantidad::desdeMilesimas(Cantidad::milesimas($cantidad) % Cantidad::milesimas($compra));
         $unidadesAPagar = ($gruposCompletos * $paga) + $resto;
         $unidadesGratis = $cantidad - $unidadesAPagar;
 
-        return $precioUnitario->multiplicar($unidadesGratis);
+        return $precioUnitario->multiplicar(Cantidad::cadena($unidadesGratis));
     }
 
     /**
@@ -190,19 +191,19 @@ final class PricingService
      * precio_bundle fijo (total, no por unidad); el resto paga precio
      * unitario normal.
      */
-    private function descuentoBundle(ReglaPrecio $regla, Dinero $precioUnitario, int $cantidad): Dinero
+    private function descuentoBundle(ReglaPrecio $regla, Dinero $precioUnitario, int|float $cantidad): Dinero
     {
-        $compra = (int) $regla->getAttribute('cantidad_compra');
+        $compra = Cantidad::numero($regla->getAttribute('cantidad_compra') ?? 0);
         $precioBundle = Dinero::desde((string) ($regla->getAttribute('precio_bundle') ?? '0'));
 
         if ($compra <= 0 || $precioBundle->comparar(Dinero::desde(0)) <= 0) {
             return Dinero::desde(0);
         }
 
-        $gruposCompletos = intdiv($cantidad, $compra);
-        $resto = $cantidad % $compra;
-        $totalConBundle = $precioBundle->multiplicar($gruposCompletos)->sumar($precioUnitario->multiplicar($resto));
-        $totalSinDescuento = $precioUnitario->multiplicar($cantidad);
+        $gruposCompletos = intdiv(Cantidad::milesimas($cantidad), Cantidad::milesimas($compra));
+        $resto = Cantidad::desdeMilesimas(Cantidad::milesimas($cantidad) % Cantidad::milesimas($compra));
+        $totalConBundle = $precioBundle->multiplicar($gruposCompletos)->sumar($precioUnitario->multiplicar(Cantidad::cadena($resto)));
+        $totalSinDescuento = $precioUnitario->multiplicar(Cantidad::cadena($cantidad));
 
         $descuento = $totalSinDescuento->restar($totalConBundle);
 

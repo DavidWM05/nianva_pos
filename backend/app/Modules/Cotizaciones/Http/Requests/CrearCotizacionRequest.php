@@ -6,6 +6,7 @@ namespace App\Modules\Cotizaciones\Http\Requests;
 
 use App\Modules\Cotizaciones\Dtos\CrearCotizacionDto;
 use App\Modules\Cotizaciones\Support\ResolverPreciosCotizacion;
+use App\Modules\Inventario\Support\ReglasCantidad;
 use App\Modules\Inventario\Support\ReglasVariante;
 use App\Modules\Nucleo\Http\Requests\SolicitudNegocio;
 use App\Modules\Nucleo\Support\ReglasTenant;
@@ -31,7 +32,7 @@ class CrearCotizacionRequest extends SolicitudNegocio
             'observaciones' => ['nullable', 'string', 'max:1000'],
             'items' => ['required', 'array', 'min:1'],
             'items.*.variante_id' => ['required', 'integer', ReglasVariante::delTenant($tenantId)],
-            'items.*.cantidad' => ['required', 'integer', 'min:1'],
+            'items.*.cantidad' => ['required', ...ReglasCantidad::paraVariante($tenantId)],
             'items.*.precio_unitario' => ['nullable', 'numeric', 'min:0'],
             'items.*.descuento' => ['nullable', 'numeric', 'min:0'],
         ];
@@ -64,5 +65,10 @@ class CrearCotizacionRequest extends SolicitudNegocio
             observaciones: isset($v['observaciones']) ? (string) $v['observaciones'] : null,
             items: $items,
         );
+    }
+
+    public function messages(): array
+    {
+        return ReglasCantidad::mensajes(['items.*.cantidad']);
     }
 }

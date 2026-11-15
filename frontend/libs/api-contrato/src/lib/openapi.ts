@@ -2817,7 +2817,7 @@ export interface components {
             sku: string | null;
             unidad_medida_id: number;
             costo: string;
-            stock_minimo: string;
+            stock_minimo: string | null;
             activo: boolean;
         };
         /** InsumoStock */
@@ -2954,7 +2954,7 @@ export interface components {
                 nombre: string;
             };
             cantidad_programada: number;
-            cantidad_producida: number | null;
+            cantidad_producida: null | number;
             /** @enum {string} */
             estado: "pendiente" | "en_proceso" | "completada" | "cancelada";
             notas: string | null;
@@ -3237,8 +3237,8 @@ export interface components {
             nombre: string;
             tipo: string;
             valor: string | null;
-            cantidad_compra: number | null;
-            cantidad_paga: number | null;
+            cantidad_compra: null | number;
+            cantidad_paga: null | number;
             precio_bundle: string | null;
             aplica_a: string;
             /**

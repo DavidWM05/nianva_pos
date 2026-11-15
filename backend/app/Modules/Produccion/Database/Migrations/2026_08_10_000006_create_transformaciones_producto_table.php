@@ -14,8 +14,8 @@ return new class extends Migration
             $table->foreignId('sucursal_id')->constrained('sucursales')->restrictOnDelete();
             $table->foreignId('variante_origen_id')->constrained('producto_variantes')->restrictOnDelete();
             $table->foreignId('variante_destino_id')->constrained('producto_variantes')->restrictOnDelete();
-            $table->decimal('cantidad_origen', 10, 2);
-            $table->decimal('cantidad_destino', 10, 2);
+            $table->decimal('cantidad_origen', 14, 3);
+            $table->decimal('cantidad_destino', 14, 3);
             $table->foreignId('usuario_id')->constrained('usuarios')->restrictOnDelete();
             $table->text('notas')->nullable();
             $table->dateTime('created_at')->useCurrent();

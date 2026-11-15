@@ -13,7 +13,7 @@ return new class extends Migration
             $table->foreignId('devolucion_id')->constrained('devoluciones')->cascadeOnDelete();
             $table->foreignId('variante_id')->constrained('producto_variantes')->restrictOnDelete();
             $table->enum('tipo', ['devuelto', 'nuevo']);
-            $table->integer('cantidad');
+            $table->decimal('cantidad', 14, 3);
             $table->decimal('precio_unitario', 12, 2);
             $table->decimal('subtotal', 12, 2);
             $table->boolean('va_a_merma')->default(false);

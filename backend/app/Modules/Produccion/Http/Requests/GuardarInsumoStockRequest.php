@@ -2,6 +2,7 @@
 
 namespace App\Modules\Produccion\Http\Requests;
 
+use App\Modules\Inventario\Support\ReglasCantidad;
 use App\Modules\Nucleo\Http\Requests\SolicitudNegocio;
 use App\Modules\Nucleo\Support\ReglasTenant;
 use App\Modules\Nucleo\Support\SucursalOperacion;
@@ -16,7 +17,7 @@ class GuardarInsumoStockRequest extends SolicitudNegocio
     {
         return [
             'sucursal_id' => ['nullable', 'integer', ReglasTenant::existe('sucursales', $this->tenantId())],
-            'cantidad' => ['required', 'numeric', 'min:0.01'],
+            'cantidad' => ['required', ...ReglasCantidad::decimal()],
             'lote' => ['nullable', 'string', 'max:50'],
             'fecha_vencimiento' => ['nullable', 'date'],
         ];
@@ -40,5 +41,10 @@ class GuardarInsumoStockRequest extends SolicitudNegocio
             lote: isset($v['lote']) ? (string) $v['lote'] : null,
             fechaVencimiento: isset($v['fecha_vencimiento']) ? (string) $v['fecha_vencimiento'] : null,
         );
+    }
+
+    public function messages(): array
+    {
+        return ReglasCantidad::mensajes(['cantidad']);
     }
 }

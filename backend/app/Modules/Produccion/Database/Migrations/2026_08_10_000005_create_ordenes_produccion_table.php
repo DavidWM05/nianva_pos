@@ -14,8 +14,8 @@ return new class extends Migration
             $table->foreignId('sucursal_id')->constrained('sucursales')->restrictOnDelete();
             $table->foreignId('receta_id')->constrained('recetas')->restrictOnDelete();
             $table->foreignId('usuario_id')->constrained('usuarios')->restrictOnDelete();
-            $table->integer('cantidad_programada');
-            $table->integer('cantidad_producida')->nullable();
+            $table->decimal('cantidad_programada', 14, 3);
+            $table->decimal('cantidad_producida', 14, 3)->nullable();
             $table->enum('estado', ['pendiente', 'en_proceso', 'completada', 'cancelada'])->default('pendiente');
             $table->text('notas')->nullable();
             $table->date('fecha_programada')->nullable();

@@ -13,7 +13,7 @@ return new class extends Migration
             $table->foreignId('venta_id')->constrained('ventas')->cascadeOnDelete();
             $table->foreignId('variante_id')->constrained('producto_variantes')->restrictOnDelete();
             $table->foreignId('regla_precio_id')->nullable()->constrained('reglas_precio')->nullOnDelete();
-            $table->integer('cantidad');
+            $table->decimal('cantidad', 14, 3);
             $table->decimal('precio_unitario', 12, 2);
             $table->decimal('descuento_aplicado', 12, 2)->default(0);
             $table->decimal('subtotal', 12, 2);

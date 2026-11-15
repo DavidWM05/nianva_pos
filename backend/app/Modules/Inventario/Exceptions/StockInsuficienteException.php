@@ -9,8 +9,8 @@ class StockInsuficienteException extends ExcepcionNegocio
     public function __construct(
         public readonly int $varianteId,
         public readonly int $sucursalId,
-        public readonly int $solicitado,
-        public readonly int $disponible,
+        public readonly int|float $solicitado,
+        public readonly int|float $disponible,
     ) {
         parent::__construct(
             "Stock insuficiente para la variante {$varianteId} en la sucursal {$sucursalId}: ".

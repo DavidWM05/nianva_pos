@@ -4,8 +4,10 @@ namespace App\Modules\Apartados\Http\Requests;
 
 use App\Modules\Apartados\Dtos\CrearApartadoDto;
 use App\Modules\Apartados\Dtos\LineaApartadoDto;
+use App\Modules\Inventario\Support\ReglasCantidad;
 use App\Modules\Inventario\Support\ReglasVariante;
 use App\Modules\Nucleo\Http\Requests\SolicitudNegocio;
+use App\Modules\Nucleo\Support\Cantidad;
 use App\Modules\Nucleo\Support\ReglasTenant;
 
 class CrearApartadoRequest extends SolicitudNegocio
@@ -21,7 +23,7 @@ class CrearApartadoRequest extends SolicitudNegocio
             'cliente_id' => ['required', 'integer', ReglasTenant::existe('clientes', $tenantId)],
             'items' => ['required', 'array', 'min:1'],
             'items.*.variante_id' => ['required', 'integer', ReglasVariante::delTenant($tenantId)],
-            'items.*.cantidad' => ['required', 'integer', 'min:1'],
+            'items.*.cantidad' => ['required', ...ReglasCantidad::paraVariante($tenantId)],
             'fecha_vencimiento' => ['nullable', 'date'],
             'notas' => ['nullable', 'string'],
         ];
@@ -37,7 +39,7 @@ class CrearApartadoRequest extends SolicitudNegocio
 
                 return new LineaApartadoDto(
                     varianteId: (int) $item['variante_id'],
-                    cantidad: (int) $item['cantidad'],
+                    cantidad: Cantidad::numero($item['cantidad']),
                 );
             },
             (array) ($v['items'] ?? []),
@@ -49,5 +51,10 @@ class CrearApartadoRequest extends SolicitudNegocio
             fechaVencimiento: isset($v['fecha_vencimiento']) ? (string) $v['fecha_vencimiento'] : null,
             notas: isset($v['notas']) ? (string) $v['notas'] : null,
         );
+    }
+
+    public function messages(): array
+    {
+        return ReglasCantidad::mensajes(['items.*.cantidad']);
     }
 }

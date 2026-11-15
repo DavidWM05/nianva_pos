@@ -3,6 +3,7 @@
 namespace App\Modules\Produccion\Models;
 
 use App\Modules\Inventario\Models\ProductoVariante;
+use App\Modules\Nucleo\Casts\CantidadFormateada;
 use App\Modules\Nucleo\Models\Concerns\BelongsToTenant;
 use App\Modules\Nucleo\Models\Tenant;
 use App\Modules\Produccion\Database\Factories\RecetaFactory;
@@ -24,7 +25,7 @@ class Receta extends Model
 
     protected function casts(): array
     {
-        return ['rendimiento' => 'decimal:2'];
+        return ['rendimiento' => CantidadFormateada::class.':2'];
     }
 
     public function tenant(): BelongsTo

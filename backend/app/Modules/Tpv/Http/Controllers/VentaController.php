@@ -10,6 +10,7 @@ use App\Http\Controllers\Controller;
 use App\Modules\Crm\Models\Cliente;
 use App\Modules\Nucleo\Models\Sucursal;
 use App\Modules\Nucleo\Services\TenantContext;
+use App\Modules\Nucleo\Support\Cantidad;
 use App\Modules\Nucleo\Support\SucursalOperacion;
 use App\Modules\Tpv\Dtos\LineaVentaDto;
 use App\Modules\Tpv\Http\Requests\AnularVentaRequest;
@@ -220,7 +221,7 @@ class VentaController extends Controller
                 'producto_nombre' => $r->variante?->producto?->nombre,
                 'talla' => $r->variante?->talla,
                 'color' => $r->variante?->color,
-                'cantidad_vendida' => (int) $r->cantidad_vendida,
+                'cantidad_vendida' => Cantidad::numero($r->cantidad_vendida),
                 'total_vendido' => round((float) $r->total_vendido, 2),
             ]);
 

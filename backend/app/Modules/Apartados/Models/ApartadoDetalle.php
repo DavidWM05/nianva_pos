@@ -4,6 +4,7 @@ namespace App\Modules\Apartados\Models;
 
 use App\Modules\Apartados\Database\Factories\ApartadoDetalleFactory;
 use App\Modules\Inventario\Models\ProductoVariante;
+use App\Modules\Nucleo\Casts\CantidadDecimal;
 use App\Modules\Nucleo\Models\Concerns\BelongsToTenantViaRelacion;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -28,7 +29,7 @@ class ApartadoDetalle extends Model
 
     protected function casts(): array
     {
-        return [
+        return ['cantidad' => CantidadDecimal::class,
             'precio_unitario' => 'decimal:2',
             'subtotal' => 'decimal:2',
         ];

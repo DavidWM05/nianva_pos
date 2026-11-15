@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\Inventario\Models;
 
 use App\Modules\Inventario\Database\Factories\KardexFactory;
+use App\Modules\Nucleo\Casts\CantidadDecimal;
 use App\Modules\Nucleo\Models\Concerns\BelongsToTenantViaRelacion;
 use App\Modules\Nucleo\Models\Sucursal;
 use App\Modules\Nucleo\Models\Usuario;
@@ -40,7 +41,7 @@ class Kardex extends Model
 
     protected function casts(): array
     {
-        return ['fecha' => 'datetime'];
+        return ['cantidad' => CantidadDecimal::class, 'stock_resultante' => CantidadDecimal::class, 'fecha' => 'datetime'];
     }
 
     public static function tenantRelacion(): string

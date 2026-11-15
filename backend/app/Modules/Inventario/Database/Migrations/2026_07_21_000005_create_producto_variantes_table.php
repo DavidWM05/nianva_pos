@@ -15,6 +15,7 @@ return new class extends Migration
             $table->string('talla', 30)->nullable();
             $table->string('color', 30)->nullable();
             $table->string('codigo_barras', 50)->nullable();
+            $table->boolean('es_granel')->default(false);
             $table->boolean('activo')->default(true);
             $table->dateTime('created_at')->useCurrent();
 

@@ -2,6 +2,7 @@
 
 namespace App\Modules\Produccion\Models;
 
+use App\Modules\Nucleo\Casts\CantidadFormateada;
 use App\Modules\Nucleo\Models\Concerns\BelongsToTenantViaRelacion;
 use App\Modules\Nucleo\Models\Sucursal;
 use App\Modules\Produccion\Database\Factories\InsumoStockFactory;
@@ -25,7 +26,7 @@ class InsumoStock extends Model
     protected function casts(): array
     {
         return [
-            'cantidad' => 'decimal:4',
+            'cantidad' => CantidadFormateada::class.':4',
             'fecha_vencimiento' => 'date',
             'updated_at' => 'datetime',
         ];

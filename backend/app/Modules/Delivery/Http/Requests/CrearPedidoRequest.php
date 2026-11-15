@@ -4,8 +4,10 @@ namespace App\Modules\Delivery\Http\Requests;
 
 use App\Modules\Delivery\Dtos\CrearPedidoDto;
 use App\Modules\Delivery\Dtos\LineaPedidoDto;
+use App\Modules\Inventario\Support\ReglasCantidad;
 use App\Modules\Inventario\Support\ReglasVariante;
 use App\Modules\Nucleo\Http\Requests\SolicitudNegocio;
+use App\Modules\Nucleo\Support\Cantidad;
 use App\Modules\Nucleo\Support\ReglasTenant;
 use App\Modules\Nucleo\Support\SucursalOperacion;
 
@@ -28,7 +30,7 @@ class CrearPedidoRequest extends SolicitudNegocio
             'notas' => ['nullable', 'string', 'max:1000'],
             'items' => ['nullable', 'array'],
             'items.*.variante_id' => ['required_with:items', 'integer', ReglasVariante::delTenant($tenantId)],
-            'items.*.cantidad' => ['required_with:items', 'integer', 'min:1'],
+            'items.*.cantidad' => ['required_with:items', ...ReglasCantidad::paraVariante($tenantId)],
             'items.*.precio_unitario' => ['required_with:items', 'numeric', 'min:0'],
         ];
     }
@@ -48,7 +50,7 @@ class CrearPedidoRequest extends SolicitudNegocio
 
                 return new LineaPedidoDto(
                     varianteId: (int) $item['variante_id'],
-                    cantidad: (int) $item['cantidad'],
+                    cantidad: Cantidad::numero($item['cantidad']),
                     precioUnitario: (float) $item['precio_unitario'],
                 );
             },
@@ -68,5 +70,10 @@ class CrearPedidoRequest extends SolicitudNegocio
             notas: isset($v['notas']) ? (string) $v['notas'] : null,
             items: $items,
         );
+    }
+
+    public function messages(): array
+    {
+        return ReglasCantidad::mensajes(['items.*.cantidad']);
     }
 }

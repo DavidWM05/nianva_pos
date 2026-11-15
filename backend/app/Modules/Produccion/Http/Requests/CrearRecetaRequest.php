@@ -2,6 +2,7 @@
 
 namespace App\Modules\Produccion\Http\Requests;
 
+use App\Modules\Inventario\Support\ReglasCantidad;
 use App\Modules\Inventario\Support\ReglasVariante;
 use App\Modules\Nucleo\Http\Requests\SolicitudNegocio;
 use App\Modules\Nucleo\Support\ReglasTenant;
@@ -20,12 +21,12 @@ class CrearRecetaRequest extends SolicitudNegocio
         return [
             'variante_id' => ['required', 'integer', ReglasVariante::delTenant($tenantId)],
             'nombre' => 'required|string|max:200',
-            'rendimiento' => 'nullable|numeric|min:0.01',
+            'rendimiento' => ['nullable', ...ReglasCantidad::paraVariante($tenantId)],
             'instrucciones' => 'nullable|string',
             'descripcion' => 'nullable|string',
             'ingredientes' => 'required|array|min:1',
             'ingredientes.*.insumo_id' => ['required', 'integer', ReglasTenant::existe('insumos', $tenantId)],
-            'ingredientes.*.cantidad' => 'required|numeric|min:0.01',
+            'ingredientes.*.cantidad' => ['required', ...ReglasCantidad::decimal()],
             'ingredientes.*.unidad_medida_id' => ['required', 'integer', ReglasTenant::existeGlobalODelTenant('unidades_medida', $tenantId)],
         ];
     }
@@ -55,5 +56,10 @@ class CrearRecetaRequest extends SolicitudNegocio
             descripcion: isset($v['descripcion']) ? (string) $v['descripcion'] : null,
             ingredientes: $ingredientes,
         );
+    }
+
+    public function messages(): array
+    {
+        return ReglasCantidad::mensajes(['rendimiento', 'ingredientes.*.cantidad']);
     }
 }

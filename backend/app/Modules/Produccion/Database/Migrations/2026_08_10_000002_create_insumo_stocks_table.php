@@ -12,7 +12,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('insumo_id')->constrained('insumos')->cascadeOnDelete();
             $table->foreignId('sucursal_id')->constrained('sucursales')->cascadeOnDelete();
-            $table->decimal('cantidad', 10, 4)->default(0);
+            $table->decimal('cantidad', 14, 3)->default(0);
             $table->string('lote', 50)->nullable();
             $table->date('fecha_vencimiento')->nullable();
             $table->dateTime('updated_at')->useCurrent()->useCurrentOnUpdate();

@@ -4,6 +4,7 @@ namespace App\Modules\Devoluciones\Models;
 
 use App\Modules\Devoluciones\Database\Factories\DevolucionItemFactory;
 use App\Modules\Inventario\Models\ProductoVariante;
+use App\Modules\Nucleo\Casts\CantidadDecimal;
 use App\Modules\Nucleo\Models\Concerns\BelongsToTenantViaRelacion;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -31,7 +32,7 @@ class DevolucionItem extends Model
 
     protected function casts(): array
     {
-        return [
+        return ['cantidad' => CantidadDecimal::class,
             'precio_unitario' => 'decimal:2',
             'subtotal' => 'decimal:2',
             'va_a_merma' => 'boolean',

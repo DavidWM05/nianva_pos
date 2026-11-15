@@ -13,11 +13,11 @@ return new class extends Migration
             $table->foreignId('variante_id')->constrained('producto_variantes')->restrictOnDelete();
             $table->foreignId('sucursal_id')->constrained('sucursales')->restrictOnDelete();
             $table->enum('tipo', ['entrada', 'salida']);
-            $table->integer('cantidad');
+            $table->decimal('cantidad', 14, 3);
             $table->enum('motivo', ['venta', 'compra', 'devolucion', 'merma', 'ajuste', 'apartado']);
             $table->string('referencia_tabla', 60)->nullable()->comment('ej. ventas, compras, devoluciones');
             $table->unsignedBigInteger('referencia_id')->nullable();
-            $table->integer('stock_resultante')->comment('foto del saldo tras este movimiento, no es fuente de verdad');
+            $table->decimal('stock_resultante', 14, 3)->comment('foto del saldo tras este movimiento, no es fuente de verdad');
             $table->foreignId('usuario_id')->constrained('usuarios')->restrictOnDelete();
             $table->dateTime('fecha')->useCurrent();
 

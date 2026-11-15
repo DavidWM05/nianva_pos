@@ -3,6 +3,7 @@
 namespace App\Modules\Inventario\Http\Resources;
 
 use App\Modules\Inventario\Models\Producto;
+use App\Modules\Nucleo\Support\Cantidad;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -38,7 +39,7 @@ class ProductoResource extends JsonResource
             // no selecciono stock_total.
             'stock_total' => $this->when(
                 array_key_exists('stock_total', $this->resource->getAttributes()),
-                fn () => (int) $this->stock_total,
+                fn () => Cantidad::numero($this->stock_total),
             ),
             'variantes' => ProductoVarianteResource::collection($this->whenLoaded('variantes')),
         ];

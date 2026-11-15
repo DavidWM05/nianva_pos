@@ -6,8 +6,10 @@ use App\Modules\Devoluciones\Dtos\CrearDevolucionDto;
 use App\Modules\Devoluciones\Dtos\ItemDevueltoDto;
 use App\Modules\Devoluciones\Dtos\ItemNuevoDto;
 use App\Modules\Devoluciones\Dtos\PagoDevolucionDto;
+use App\Modules\Inventario\Support\ReglasCantidad;
 use App\Modules\Inventario\Support\ReglasVariante;
 use App\Modules\Nucleo\Http\Requests\SolicitudNegocio;
+use App\Modules\Nucleo\Support\Cantidad;
 use App\Modules\Nucleo\Support\ReglasTenant;
 use Illuminate\Validation\Rule;
 
@@ -25,11 +27,11 @@ class CrearDevolucionRequest extends SolicitudNegocio
             'tipo' => ['required', Rule::in(['devolucion', 'cambio'])],
             'items_devueltos' => ['required', 'array', 'min:1'],
             'items_devueltos.*.variante_id' => ['required', 'integer', ReglasVariante::delTenant($tenantId)],
-            'items_devueltos.*.cantidad' => ['required', 'integer', 'min:1'],
+            'items_devueltos.*.cantidad' => ['required', ...ReglasCantidad::paraVariante($tenantId)],
             'items_devueltos.*.va_a_merma' => ['nullable', 'boolean'],
             'items_nuevos' => ['nullable', 'array', 'required_if:tipo,cambio', 'prohibited_if:tipo,devolucion', 'min:1'],
             'items_nuevos.*.variante_id' => ['required_with:items_nuevos', 'integer', ReglasVariante::delTenant($tenantId)],
-            'items_nuevos.*.cantidad' => ['required_with:items_nuevos', 'integer', 'min:1'],
+            'items_nuevos.*.cantidad' => ['required_with:items_nuevos', ...ReglasCantidad::paraVariante($tenantId)],
             'pagos' => ['nullable', 'array'],
             'pagos.*.metodo_pago_id' => ['required_with:pagos', 'integer', ReglasTenant::existeGlobalODelTenant('metodos_pago', $tenantId)],
             'pagos.*.monto' => ['required_with:pagos', 'numeric', 'min:0.01'],
@@ -48,7 +50,7 @@ class CrearDevolucionRequest extends SolicitudNegocio
 
                 return new ItemDevueltoDto(
                     varianteId: (int) $item['variante_id'],
-                    cantidad: (int) $item['cantidad'],
+                    cantidad: Cantidad::numero($item['cantidad']),
                     vaAMerma: (bool) ($item['va_a_merma'] ?? false),
                 );
             },
@@ -61,7 +63,7 @@ class CrearDevolucionRequest extends SolicitudNegocio
 
                 return new ItemNuevoDto(
                     varianteId: (int) $item['variante_id'],
-                    cantidad: (int) $item['cantidad'],
+                    cantidad: Cantidad::numero($item['cantidad']),
                 );
             },
             (array) ($v['items_nuevos'] ?? []),
@@ -88,5 +90,10 @@ class CrearDevolucionRequest extends SolicitudNegocio
             motivo: isset($v['motivo']) ? (string) $v['motivo'] : null,
             tipoReembolso: (string) ($v['tipo_reembolso'] ?? 'efectivo'),
         );
+    }
+
+    public function messages(): array
+    {
+        return ReglasCantidad::mensajes(['items_devueltos.*.cantidad', 'items_nuevos.*.cantidad']);
     }
 }

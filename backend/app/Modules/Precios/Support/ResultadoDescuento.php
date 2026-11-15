@@ -14,7 +14,7 @@ final class ResultadoDescuento
     public function __construct(
         public readonly ?ReglaPrecio $regla,
         public readonly float $precioUnitario,
-        public readonly int $cantidad,
+        public readonly int|float $cantidad,
         public readonly float $descuentoTotal,
     ) {}
 

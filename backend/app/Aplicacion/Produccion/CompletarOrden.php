@@ -14,7 +14,7 @@ final class CompletarOrden
 {
     public function __construct(private readonly ProduccionService $service, private readonly BloqueosProduccion $bloqueos, private readonly RegistrarMovimiento $movimiento) {}
 
-    public function ejecutar(int $id, int $cantidadProducida): OrdenProduccion
+    public function ejecutar(int $id, int|float $cantidadProducida): OrdenProduccion
     {
         $operacion = function () use ($id, $cantidadProducida) {
             $orden = OrdenProduccion::query()->whereKey($id)->lockForUpdate()->firstOrFail();

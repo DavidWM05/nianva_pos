@@ -6,7 +6,7 @@ final readonly class LineaCotizacionDto
 {
     public function __construct(
         public int $varianteId,
-        public int $cantidad,
+        public int|float $cantidad,
         public float $precioUnitario,
         public float $descuento,
     ) {}

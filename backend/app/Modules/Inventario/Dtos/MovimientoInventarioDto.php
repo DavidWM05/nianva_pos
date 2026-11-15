@@ -11,7 +11,7 @@ final readonly class MovimientoInventarioDto
         public int $varianteId,
         public int $sucursalId,
         public string $tipo,
-        public int $cantidad,
+        public int|float $cantidad,
         public string $motivo,
         public int $usuarioId,
         public ?string $referenciaTabla = null,

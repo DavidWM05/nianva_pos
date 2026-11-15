@@ -2,6 +2,7 @@
 
 namespace App\Modules\Produccion\Models;
 
+use App\Modules\Nucleo\Casts\CantidadFormateada;
 use App\Modules\Nucleo\Models\Concerns\BelongsToTenantViaRelacion;
 use App\Modules\Produccion\Database\Factories\RecetaIngredienteFactory;
 use App\Modules\UnidadesMedida\Models\UnidadMedida;
@@ -24,7 +25,7 @@ class RecetaIngrediente extends Model
 
     protected function casts(): array
     {
-        return ['cantidad' => 'decimal:4'];
+        return ['cantidad' => CantidadFormateada::class.':4'];
     }
 
     public static function tenantRelacion(): string

@@ -44,7 +44,7 @@ class CotizacionService
      * Crea cotizacion con sus items. No modifica stock.
      *
      * @param  array{tenant_id:int, sucursal_id:int, usuario_id:int, cliente_id:?int, validez_dias:int, descuento:float, observaciones:?string, uso_cfdi:?string}  $data
-     * @param  list<array{variante_id:int, cantidad:int, precio_unitario:float, descuento:float}>  $items
+     * @param  list<array{variante_id:int, cantidad:int|float, precio_unitario?:float, descuento?:float}>  $items
      *
      * @throws InvalidArgumentException si cantidad <= 0 o variante no existe
      */
@@ -135,7 +135,7 @@ class CotizacionService
      * Solo si estado = 'pendiente'.
      *
      * @param  array<string, mixed>  $data
-     * @param  list<array{variante_id:int, cantidad:int, precio_unitario?:float, descuento?:float}>  $items
+     * @param  list<array{variante_id:int, cantidad:int|float, precio_unitario?:float, descuento?:float}>  $items
      */
     public function actualizarConCotizacion(Cotizacion $cotizacion, array $data, array $items): Cotizacion
     {
