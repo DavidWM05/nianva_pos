@@ -62,6 +62,18 @@ export function sinErrores(errores: ErroresDePantalla, ruta: string, apiEsperada
  * pantallas ya migradas a `libs/ui`: las de PrimeNG todavia no lo cumplen.
  */
 export async function sinViolacionesSerias(page: Page): Promise<void> {
+  // axe mide el color que ve en ese instante: un toast o un overlay a mitad de su animacion de
+  // entrada (escalado y semitransparente) da un contraste falso e intermitente. Se espera a que
+  // terminen las animaciones finitas; las infinitas (skeleton, spinner) no terminan nunca y se
+  // ignoran.
+  await page.waitForFunction(() =>
+    document
+      .getAnimations()
+      .every(
+        (animacion) =>
+          animacion.playState !== 'running' || animacion.effect?.getComputedTiming().iterations === Infinity,
+      ),
+  );
   const resultado = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa']).analyze();
   const serias = resultado.violations
     .filter((violacion) => violacion.impact === 'serious' || violacion.impact === 'critical')
