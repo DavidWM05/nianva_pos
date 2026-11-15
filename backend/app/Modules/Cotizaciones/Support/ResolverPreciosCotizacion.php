@@ -6,6 +6,7 @@ namespace App\Modules\Cotizaciones\Support;
 
 use App\Modules\Cotizaciones\Dtos\LineaCotizacionDto;
 use App\Modules\Inventario\Models\ProductoVariante;
+use App\Modules\Nucleo\Support\Cantidad;
 use App\Modules\Precios\Services\PricingService;
 use App\Modules\Precios\Support\Carrito;
 use App\Modules\Precios\Support\ContextoPrecio;
@@ -54,7 +55,7 @@ final class ResolverPreciosCotizacion
                 ]);
             }
 
-            $cantidad = (int) $item['cantidad'];
+            $cantidad = Cantidad::numero($item['cantidad']);
             $sugerido = $this->pricingService->cotizar(new Carrito([new LineaCarrito($variante->id, $cantidad)]), $contexto ?? new ContextoPrecio((int) $variante->producto?->getAttribute('tenant_id'), null, null, CarbonImmutable::now()))->lineas[0];
 
             $precio = $precioManual && isset($item['precio_unitario'])

@@ -15,7 +15,7 @@ return new class extends Migration
             $table->string('nombre', 200);
             $table->text('descripcion')->nullable();
             $table->text('instrucciones')->nullable();
-            $table->decimal('rendimiento', 10, 2)->default(1);
+            $table->decimal('rendimiento', 14, 3)->default(1);
             $table->dateTime('created_at')->useCurrent();
             $table->dateTime('updated_at')->useCurrent()->useCurrentOnUpdate();
             $table->index('tenant_id');

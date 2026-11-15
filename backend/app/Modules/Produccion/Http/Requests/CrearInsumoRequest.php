@@ -2,6 +2,7 @@
 
 namespace App\Modules\Produccion\Http\Requests;
 
+use App\Modules\Inventario\Support\ReglasCantidad;
 use App\Modules\Nucleo\Http\Requests\SolicitudNegocio;
 use App\Modules\Nucleo\Support\ReglasTenant;
 use App\Modules\Produccion\Dtos\InsumoDto;
@@ -21,7 +22,7 @@ class CrearInsumoRequest extends SolicitudNegocio
             'sku' => ['nullable', 'string', 'max:50', Rule::unique('insumos', 'sku')->where('tenant_id', $tenantId)],
             'unidad_medida_id' => ['required', 'integer', ReglasTenant::existeGlobalODelTenant('unidades_medida', $tenantId)],
             'costo' => 'nullable|numeric|min:0',
-            'stock_minimo' => 'nullable|numeric|min:0',
+            'stock_minimo' => ['nullable', ...ReglasCantidad::decimal(permiteCero: true)],
         ];
     }
 
@@ -37,5 +38,10 @@ class CrearInsumoRequest extends SolicitudNegocio
             stockMinimo: isset($v['stock_minimo']) ? (float) $v['stock_minimo'] : null,
             presentes: array_keys($v),
         );
+    }
+
+    public function messages(): array
+    {
+        return ReglasCantidad::mensajes(['stock_minimo']);
     }
 }

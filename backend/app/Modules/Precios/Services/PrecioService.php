@@ -24,7 +24,7 @@ class PrecioService
     public function __construct(private readonly PricingService $pricingService) {}
 
     /** @deprecated Usa PricingService::cotizar() con un Carrito y ContextoPrecio. */
-    public function calcularDescuento(ProductoVariante $variante, int $cantidad): ResultadoDescuento
+    public function calcularDescuento(ProductoVariante $variante, int|float $cantidad): ResultadoDescuento
     {
         $producto = Producto::query()->withoutGlobalScope(TenantScope::class)->findOrFail((int) $variante->getAttribute('producto_id'));
         $contexto = new ContextoPrecio((int) $producto->getAttribute('tenant_id'), null, null, CarbonImmutable::now());

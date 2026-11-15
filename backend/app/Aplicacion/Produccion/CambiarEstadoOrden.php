@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Aplicacion\Produccion;
 
+use App\Modules\Nucleo\Support\Cantidad;
 use App\Modules\Produccion\Dtos\CambiarEstadoOrdenDto;
 use App\Modules\Produccion\Models\OrdenProduccion;
 use App\Modules\Produccion\Services\ProduccionService;
@@ -17,7 +18,7 @@ final class CambiarEstadoOrden
     {
         $operacion = function () use ($dto, $id) {
             if ($dto->estado === 'completada') {
-                return $this->completar->ejecutar($id, (int) $dto->cantidadProducida);
+                return $this->completar->ejecutar($id, Cantidad::numero($dto->cantidadProducida ?? 0));
             }
             $orden = OrdenProduccion::query()->whereKey($id)->lockForUpdate()->firstOrFail();
 

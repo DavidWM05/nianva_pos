@@ -2,8 +2,10 @@
 
 namespace App\Modules\Precios\Http\Requests;
 
+use App\Modules\Inventario\Support\ReglasCantidad;
 use App\Modules\Inventario\Support\ReglasVariante;
 use App\Modules\Nucleo\Http\Requests\SolicitudNegocio;
+use App\Modules\Nucleo\Support\Cantidad;
 use App\Modules\Nucleo\Support\ReglasTenant;
 use App\Modules\Precios\Dtos\ReglaPrecioDto;
 use Illuminate\Validation\Rule;
@@ -26,8 +28,8 @@ class GuardarReglaPrecioRequest extends SolicitudNegocio
             'nombre' => ['required', 'string', 'max:120'],
             'tipo' => ['required', Rule::in(['porcentaje', 'monto_fijo', 'nxm', 'bundle'])],
             'valor' => ['nullable', 'numeric', 'min:0'],
-            'cantidad_compra' => ['nullable', 'integer', 'min:1'],
-            'cantidad_paga' => ['nullable', 'integer', 'min:1'],
+            'cantidad_compra' => ['nullable', ...ReglasCantidad::decimal()],
+            'cantidad_paga' => ['nullable', ...ReglasCantidad::decimal()],
             'precio_bundle' => ['nullable', 'numeric', 'min:0'],
             'aplica_a' => ['required', Rule::in(['todo', 'categoria', 'producto', 'variante'])],
             'categoria_id' => ['nullable', 'integer', ReglasTenant::existe('categorias', $tenantId)],
@@ -98,8 +100,8 @@ class GuardarReglaPrecioRequest extends SolicitudNegocio
             nombre: (string) $v['nombre'],
             tipo: $tipo,
             valor: $v['valor'] === null ? null : (float) $v['valor'],
-            cantidadCompra: $v['cantidad_compra'] === null ? null : (int) $v['cantidad_compra'],
-            cantidadPaga: $v['cantidad_paga'] === null ? null : (int) $v['cantidad_paga'],
+            cantidadCompra: $v['cantidad_compra'] === null ? null : Cantidad::numero($v['cantidad_compra']),
+            cantidadPaga: $v['cantidad_paga'] === null ? null : Cantidad::numero($v['cantidad_paga']),
             precioBundle: $v['precio_bundle'] === null ? null : (float) $v['precio_bundle'],
             aplicaA: $aplicaA,
             categoriaId: $v['categoria_id'] === null ? null : (int) $v['categoria_id'],
@@ -108,5 +110,10 @@ class GuardarReglaPrecioRequest extends SolicitudNegocio
             fechaInicio: $v['fecha_inicio'] === null ? null : (string) $v['fecha_inicio'],
             fechaFin: $v['fecha_fin'] === null ? null : (string) $v['fecha_fin'],
         );
+    }
+
+    public function messages(): array
+    {
+        return ReglasCantidad::mensajes(['cantidad_compra', 'cantidad_paga']);
     }
 }

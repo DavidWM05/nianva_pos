@@ -18,6 +18,7 @@ use App\Modules\Inventario\Models\ProductoVariante;
 use App\Modules\Inventario\Services\InventarioService;
 use App\Modules\Nucleo\Models\Sucursal;
 use App\Modules\Nucleo\Models\Usuario;
+use App\Modules\Nucleo\Support\Cantidad;
 use App\Modules\Precios\Services\PricingService;
 use App\Modules\Precios\Support\Carrito;
 use App\Modules\Precios\Support\ContextoPrecio;
@@ -70,7 +71,7 @@ class ApartadoService
 
     /**
      * @param  array{tenant_id:int, sucursal_id:int, cliente_id:int, usuario_id:int, fecha_vencimiento?:?string, notas?:?string}  $datosApartado
-     * @param  list<array{variante_id:int, cantidad:int}>  $items
+     * @param  list<array{variante_id:int, cantidad:int|float}>  $items
      * @param  array<int, InventarioStock>  $stocks
      */
     public function crearApartadoConStocks(array $datosApartado, array $items, array $stocks): Apartado
@@ -218,7 +219,7 @@ class ApartadoService
 
         $items = array_values($detalles->map(fn ($detalle) => [
             'variante_id' => (int) $detalle->getAttribute('variante_id'),
-            'cantidad' => (int) $detalle->getAttribute('cantidad'),
+            'cantidad' => Cantidad::numero($detalle->getAttribute('cantidad')),
         ])->all());
 
         $venta = $this->ventaService->registrarVentaConBloqueos(
@@ -296,8 +297,8 @@ class ApartadoService
     }
 
     /**
-     * @param  list<array{variante_id:int, cantidad:int}>  $items
-     * @return array{0: list<array{variante_id:int, cantidad:int, precio_unitario:float, subtotal:float}>, 1: float}
+     * @param  list<array{variante_id:int, cantidad:int|float}>  $items
+     * @return array{0: list<array{variante_id:int, cantidad:int|float, precio_unitario:float, subtotal:float}>, 1: float}
      */
     private function resolverLineas(int $tenantId, array $items, ContextoPrecio $contexto): array
     {

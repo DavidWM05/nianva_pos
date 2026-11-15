@@ -3,6 +3,7 @@
 namespace App\Modules\Tpv\Models;
 
 use App\Modules\Inventario\Models\ProductoVariante;
+use App\Modules\Nucleo\Casts\CantidadDecimal;
 use App\Modules\Nucleo\Models\Concerns\BelongsToTenantViaRelacion;
 use App\Modules\Precios\Models\ReglaPrecio;
 use App\Modules\Tpv\Database\Factories\VentaDetalleFactory;
@@ -29,7 +30,7 @@ class VentaDetalle extends Model
 
     protected function casts(): array
     {
-        return [
+        return ['cantidad' => CantidadDecimal::class,
             'precio_unitario' => 'decimal:2',
             'descuento_aplicado' => 'decimal:2',
             'subtotal' => 'decimal:2',

@@ -3,6 +3,7 @@
 namespace App\Modules\Inventario\Http\Resources;
 
 use App\Modules\Inventario\Models\ProductoVariante;
+use App\Modules\Nucleo\Support\Cantidad;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -43,7 +44,7 @@ class ProductoVarianteResource extends JsonResource
             // distinguir "sin stock" de "sin dato".
             'stock_actual' => $this->when(
                 $this->relationLoaded('stock'),
-                fn () => (int) ($this->stock->firstWhere('sucursal_id', $request->user()?->sucursal_id)?->stock_actual ?? 0),
+                fn () => Cantidad::numero($this->stock->firstWhere('sucursal_id', $request->user()?->sucursal_id)?->stock_actual ?? 0),
             ),
         ];
     }

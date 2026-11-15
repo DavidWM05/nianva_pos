@@ -2,8 +2,10 @@
 
 namespace App\Modules\Tpv\Http\Requests;
 
+use App\Modules\Inventario\Support\ReglasCantidad;
 use App\Modules\Inventario\Support\ReglasVariante;
 use App\Modules\Nucleo\Http\Requests\SolicitudNegocio;
+use App\Modules\Nucleo\Support\Cantidad;
 use App\Modules\Nucleo\Support\ReglasTenant;
 use App\Modules\Tpv\Dtos\CrearVentaDto;
 use App\Modules\Tpv\Dtos\LineaVentaDto;
@@ -22,7 +24,7 @@ class CrearVentaRequest extends SolicitudNegocio
             'cliente_id' => ['required', 'integer', ReglasTenant::existe('clientes', $tenantId)],
             'items' => ['required', 'array', 'min:1'],
             'items.*.variante_id' => ['required', 'integer', ReglasVariante::delTenant($tenantId)],
-            'items.*.cantidad' => ['required', 'integer', 'min:1'],
+            'items.*.cantidad' => ['required', ...ReglasCantidad::paraVariante($tenantId)],
             'pagos' => ['required', 'array', 'min:1'],
             'pagos.*.metodo_pago_id' => ['required', 'integer', ReglasTenant::existeGlobalODelTenant('metodos_pago', $tenantId)],
             'pagos.*.monto' => ['required', 'numeric', 'min:0.01'],
@@ -43,7 +45,7 @@ class CrearVentaRequest extends SolicitudNegocio
 
                 return new LineaVentaDto(
                     varianteId: (int) $item['variante_id'],
-                    cantidad: (int) $item['cantidad'],
+                    cantidad: Cantidad::numero($item['cantidad']),
                 );
             },
             (array) ($v['items'] ?? []),
@@ -70,5 +72,10 @@ class CrearVentaRequest extends SolicitudNegocio
             giftCardCodigo: isset($v['gift_card_codigo']) ? (string) $v['gift_card_codigo'] : null,
             notaCreditoId: isset($v['nota_credito_id']) ? (int) $v['nota_credito_id'] : null,
         );
+    }
+
+    public function messages(): array
+    {
+        return ReglasCantidad::mensajes(['items.*.cantidad']);
     }
 }

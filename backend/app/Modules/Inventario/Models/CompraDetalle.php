@@ -3,6 +3,7 @@
 namespace App\Modules\Inventario\Models;
 
 use App\Modules\Inventario\Database\Factories\CompraDetalleFactory;
+use App\Modules\Nucleo\Casts\CantidadDecimal;
 use App\Modules\Nucleo\Models\Concerns\BelongsToTenantViaRelacion;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -27,7 +28,7 @@ class CompraDetalle extends Model
 
     protected function casts(): array
     {
-        return [
+        return ['cantidad' => CantidadDecimal::class,
             'precio_compra' => 'decimal:2',
             'subtotal' => 'decimal:2',
         ];

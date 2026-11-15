@@ -2,6 +2,8 @@
 
 namespace App\Modules\Produccion\Models;
 
+use App\Modules\Nucleo\Casts\CantidadDecimal;
+use App\Modules\Nucleo\Casts\CantidadNullable;
 use App\Modules\Nucleo\Models\Concerns\BelongsToSucursal;
 use App\Modules\Nucleo\Models\Concerns\BelongsToTenant;
 use App\Modules\Nucleo\Models\Sucursal;
@@ -26,7 +28,7 @@ class OrdenProduccion extends Model
 
     protected function casts(): array
     {
-        return ['cantidad_programada' => 'integer', 'cantidad_producida' => 'integer', 'fecha_programada' => 'date', 'fecha_completada' => 'datetime'];
+        return ['cantidad_programada' => CantidadDecimal::class, 'cantidad_producida' => CantidadNullable::class, 'fecha_programada' => 'date', 'fecha_completada' => 'datetime'];
     }
 
     public function tenant(): BelongsTo

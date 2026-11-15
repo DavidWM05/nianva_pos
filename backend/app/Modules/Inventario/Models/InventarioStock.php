@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\Inventario\Models;
 
 use App\Modules\Inventario\Database\Factories\InventarioStockFactory;
+use App\Modules\Nucleo\Casts\CantidadDecimal;
 use App\Modules\Nucleo\Models\Concerns\BelongsToTenantViaRelacion;
 use App\Modules\Nucleo\Models\Sucursal;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
@@ -46,5 +47,10 @@ class InventarioStock extends Model
     public function variante(): BelongsTo
     {
         return $this->belongsTo(ProductoVariante::class, 'variante_id');
+    }
+
+    protected function casts(): array
+    {
+        return ['stock_actual' => CantidadDecimal::class, 'stock_minimo' => CantidadDecimal::class];
     }
 }

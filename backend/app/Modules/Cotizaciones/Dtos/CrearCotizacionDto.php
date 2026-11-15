@@ -18,7 +18,7 @@ final readonly class CrearCotizacionDto
     ) {}
 
     /**
-     * @return list<array{variante_id:int, cantidad:int, precio_unitario:float, descuento:float}>
+     * @return list<array{variante_id:int, cantidad:int|float, precio_unitario:float, descuento:float}>
      */
     public function itemsParaServicio(): array
     {

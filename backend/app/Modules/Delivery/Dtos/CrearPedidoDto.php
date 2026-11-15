@@ -19,7 +19,7 @@ final readonly class CrearPedidoDto
     ) {}
 
     /**
-     * @return list<array{variante_id:int, cantidad:int, precio_unitario:float}>
+     * @return list<array{variante_id:int, cantidad:int|float, precio_unitario:float}>
      */
     public function itemsParaServicio(): array
     {

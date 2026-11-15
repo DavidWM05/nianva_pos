@@ -2,6 +2,7 @@
 
 namespace App\Modules\Produccion\Models;
 
+use App\Modules\Nucleo\Casts\CantidadFormateadaNullable;
 use App\Modules\Nucleo\Models\Concerns\BelongsToTenant;
 use App\Modules\Nucleo\Models\Tenant;
 use App\Modules\Produccion\Database\Factories\InsumoFactory;
@@ -23,7 +24,7 @@ class Insumo extends Model
 
     protected function casts(): array
     {
-        return ['costo' => 'decimal:4', 'stock_minimo' => 'decimal:2', 'activo' => 'boolean'];
+        return ['costo' => 'decimal:4', 'stock_minimo' => CantidadFormateadaNullable::class.':2', 'activo' => 'boolean'];
     }
 
     public function tenant(): BelongsTo

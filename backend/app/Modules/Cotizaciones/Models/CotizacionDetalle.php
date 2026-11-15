@@ -4,6 +4,7 @@ namespace App\Modules\Cotizaciones\Models;
 
 use App\Modules\Cotizaciones\Database\Factories\CotizacionDetalleFactory;
 use App\Modules\Inventario\Models\ProductoVariante;
+use App\Modules\Nucleo\Casts\CantidadDecimal;
 use App\Modules\Nucleo\Models\Concerns\BelongsToTenantViaRelacion;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -25,7 +26,7 @@ class CotizacionDetalle extends Model
     protected function casts(): array
     {
         return [
-            'cantidad' => 'integer',
+            'cantidad' => CantidadDecimal::class,
             'precio_unitario' => 'decimal:2',
             'descuento' => 'decimal:2',
             'subtotal' => 'decimal:2',

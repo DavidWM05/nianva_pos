@@ -78,6 +78,11 @@ final readonly class Dinero
         return self::porcentajeDe($this->aCadena(), $tasa);
     }
 
+    public function multiplicarPorcentaje(string|int $cantidad, string|int $tasa): self
+    {
+        return self::porcentajeDe(self::productoDecimal($this->aCadena(), $cantidad, 0), $tasa);
+    }
+
     public function comparar(self $otro): int
     {
         return $this->centavos <=> $otro->centavos;
@@ -122,11 +127,16 @@ final readonly class Dinero
 
     private static function producto(string|int $importe, string|int $factor, int $escalaExtra): self
     {
+        return self::redondear(self::productoDecimal($importe, $factor, $escalaExtra));
+    }
+
+    private static function productoDecimal(string|int $importe, string|int $factor, int $escalaExtra): string
+    {
         [$negativoA, $a, $escalaA] = self::partes($importe);
         [$negativoB, $b, $escalaB] = self::partes($factor);
         $digitos = self::multiplicarDigitos($a, $b);
 
-        return self::redondear(self::decimal($digitos, $escalaA + $escalaB + $escalaExtra, $negativoA !== $negativoB));
+        return self::decimal($digitos, $escalaA + $escalaB + $escalaExtra, $negativoA !== $negativoB);
     }
 
     private static function decimal(string $digitos, int $escala, bool $negativo): string

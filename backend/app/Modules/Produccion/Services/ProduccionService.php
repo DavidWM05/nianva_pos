@@ -7,6 +7,7 @@ namespace App\Modules\Produccion\Services;
 use App\Modules\Inventario\Exceptions\StockInsuficienteException;
 use App\Modules\Inventario\Models\InventarioStock;
 use App\Modules\Inventario\Services\InventarioService;
+use App\Modules\Nucleo\Support\Cantidad;
 use App\Modules\Produccion\Exceptions\OrdenProduccionNoCompletableException;
 use App\Modules\Produccion\Exceptions\StockInsumosInsuficienteException;
 use App\Modules\Produccion\Models\Insumo;
@@ -75,7 +76,7 @@ class ProduccionService
     }
 
     /** @param array<int, list<InsumoStock>> $lotes */
-    public function completarOrdenConBloqueos(OrdenProduccion $orden, Receta $receta, array $lotes, InventarioStock $terminado, int $cantidadProducida): OrdenProduccion
+    public function completarOrdenConBloqueos(OrdenProduccion $orden, Receta $receta, array $lotes, InventarioStock $terminado, int|float $cantidadProducida): OrdenProduccion
     {
         $this->exigirTransaccion();
         if (! in_array($orden->getAttribute('estado'), ['pendiente', 'en_proceso'], true)) {
@@ -92,7 +93,7 @@ class ProduccionService
                 }
                 $aDeducir = min($porDeducir, (float) $lote->getAttribute('cantidad'));
                 $lote->decrement('cantidad', $aDeducir);
-                $porDeducir -= $aDeducir;
+                $porDeducir = Cantidad::restar($porDeducir, $aDeducir);
             }
         }
         // El producto terminado entra por el mismo núcleo de inventario que las demás entradas.
@@ -107,10 +108,10 @@ class ProduccionService
     {
         $this->exigirTransaccion();
         if ((float) $origen->getAttribute('stock_actual') < (float) $data['cantidad_origen']) {
-            throw new StockInsuficienteException($data['variante_origen_id'], $data['sucursal_id'], (int) $data['cantidad_origen'], (int) $origen->getAttribute('stock_actual'));
+            throw new StockInsuficienteException($data['variante_origen_id'], $data['sucursal_id'], Cantidad::numero($data['cantidad_origen']), Cantidad::numero($origen->getAttribute('stock_actual')));
         }
-        $this->inventarioService->registrarMovimientoConStock($origen, 'salida', (int) $data['cantidad_origen'], 'merma', $data['usuario_id'], 'transformaciones');
-        $this->inventarioService->registrarMovimientoConStock($destino, 'entrada', (int) $data['cantidad_destino'], 'ajuste', $data['usuario_id'], 'transformaciones');
+        $this->inventarioService->registrarMovimientoConStock($origen, 'salida', Cantidad::numero($data['cantidad_origen']), 'merma', $data['usuario_id'], 'transformaciones');
+        $this->inventarioService->registrarMovimientoConStock($destino, 'entrada', Cantidad::numero($data['cantidad_destino']), 'ajuste', $data['usuario_id'], 'transformaciones');
 
         return TransformacionProducto::query()->create([
             'tenant_id' => $data['tenant_id'], 'sucursal_id' => $data['sucursal_id'],
@@ -140,7 +141,7 @@ class ProduccionService
         return $orden;
     }
 
-    /** @return array<int, float> */
+    /** @return array<int, int|float> */
     private function necesidades(Receta $receta, float $factor): array
     {
         $necesidades = [];
@@ -149,11 +150,11 @@ class ProduccionService
             $necesidades[$id] = ($necesidades[$id] ?? 0.0) + (float) $ingrediente->getAttribute('cantidad') * $factor;
         }
 
-        return $necesidades;
+        return array_map(static fn (float $cantidad): int|float => Cantidad::numero($cantidad), $necesidades);
     }
 
     /**
-     * @param  array<int, float>  $necesidades
+     * @param  array<int, int|float>  $necesidades
      * @param  array<int, list<InsumoStock>>  $lotes
      */
     private function verificarInsumos(array $necesidades, array $lotes): void

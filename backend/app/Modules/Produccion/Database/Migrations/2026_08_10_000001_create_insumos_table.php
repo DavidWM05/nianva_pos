@@ -15,7 +15,7 @@ return new class extends Migration
             $table->string('sku', 50)->nullable();
             $table->foreignId('unidad_medida_id')->constrained('unidades_medida')->restrictOnDelete();
             $table->decimal('costo', 12, 4)->default(0);
-            $table->decimal('stock_minimo', 10, 2)->default(0);
+            $table->decimal('stock_minimo', 14, 3)->default(0);
             $table->boolean('activo')->default(true);
             $table->dateTime('created_at')->useCurrent();
             $table->dateTime('updated_at')->useCurrent()->useCurrentOnUpdate();

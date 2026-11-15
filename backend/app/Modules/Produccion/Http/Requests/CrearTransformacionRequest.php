@@ -2,6 +2,7 @@
 
 namespace App\Modules\Produccion\Http\Requests;
 
+use App\Modules\Inventario\Support\ReglasCantidad;
 use App\Modules\Inventario\Support\ReglasVariante;
 use App\Modules\Nucleo\Http\Requests\SolicitudNegocio;
 use App\Modules\Produccion\Dtos\CrearTransformacionDto;
@@ -18,8 +19,8 @@ class CrearTransformacionRequest extends SolicitudNegocio
         return [
             'variante_origen_id' => ['required', 'integer', ReglasVariante::delTenant($tenantId)],
             'variante_destino_id' => ['required', 'integer', ReglasVariante::delTenant($tenantId)],
-            'cantidad_origen' => 'required|numeric|min:0.01',
-            'cantidad_destino' => 'required|numeric|min:0.01',
+            'cantidad_origen' => ['required', ...ReglasCantidad::paraVariante($tenantId, campoVariante: 'variante_origen_id')],
+            'cantidad_destino' => ['required', ...ReglasCantidad::paraVariante($tenantId, campoVariante: 'variante_destino_id')],
             'notas' => 'nullable|string|max:1000',
         ];
     }
@@ -35,5 +36,10 @@ class CrearTransformacionRequest extends SolicitudNegocio
             cantidadDestino: (float) $v['cantidad_destino'],
             notas: isset($v['notas']) ? (string) $v['notas'] : null,
         );
+    }
+
+    public function messages(): array
+    {
+        return ReglasCantidad::mensajes(['cantidad_origen', 'cantidad_destino']);
     }
 }

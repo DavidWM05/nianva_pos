@@ -13,7 +13,7 @@ final readonly class LineaPrecio
      */
     public function __construct(
         public int $varianteId,
-        public int $cantidad,
+        public int|float $cantidad,
         public float $precioBase,
         public ?int $listaAplicada,
         public array $reglas,

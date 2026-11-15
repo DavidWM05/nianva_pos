@@ -12,6 +12,8 @@ use App\Modules\Inventario\Models\Kardex;
 use App\Modules\Inventario\Models\ProductoVariante;
 use App\Modules\Nucleo\Models\Sucursal;
 use App\Modules\Nucleo\Scopes\TenantScopeViaRelacion;
+use App\Modules\Nucleo\Support\Cantidad;
+use App\Modules\Nucleo\Support\Dinero;
 use Illuminate\Support\Facades\DB;
 use InvalidArgumentException;
 
@@ -35,7 +37,7 @@ class InventarioService
     public function registrarMovimientoConStock(
         InventarioStock $stock,
         string $tipo,
-        int $cantidad,
+        int|float $cantidad,
         string $motivo,
         int $usuarioId,
         ?string $referenciaTabla = null,
@@ -47,14 +49,14 @@ class InventarioService
         $sucursalId = (int) $stock->getAttribute('sucursal_id');
         $this->verificarMismoTenant($varianteId, $sucursalId);
 
-        $stockActual = (int) $stock->getAttribute('stock_actual');
+        $stockActual = Cantidad::numero($stock->getAttribute('stock_actual'));
         if ($tipo === 'salida' && $stockActual < $cantidad) {
             throw new StockInsuficienteException($varianteId, $sucursalId, $cantidad, $stockActual);
         }
 
         $stockResultante = $tipo === 'entrada'
-            ? $stockActual + $cantidad
-            : $stockActual - $cantidad;
+            ? Cantidad::sumar($stockActual, $cantidad)
+            : Cantidad::restar($stockActual, $cantidad);
 
         $stock->update(['stock_actual' => $stockResultante]);
 
@@ -73,7 +75,7 @@ class InventarioService
 
     /**
      * @param  array{tenant_id:int, proveedor_id:int, sucursal_id:int, usuario_id:int, numero_comprobante?:?string, comprobante_url?:?string}  $datosCompra
-     * @param  list<array{variante_id:int, cantidad:int, precio_compra:float|string}>  $items
+     * @param  list<array{variante_id:int, cantidad:int|float, precio_compra:float|string}>  $items
      * @param  array<int, InventarioStock>  $stocks
      */
     public function registrarCompraConStocks(array $datosCompra, array $items, array $stocks): Compra
@@ -83,10 +85,10 @@ class InventarioService
             throw new InvalidArgumentException('Una compra necesita al menos una linea.');
         }
 
-        $total = array_sum(array_map(
-            fn (array $item) => $item['cantidad'] * $item['precio_compra'],
-            $items,
-        ));
+        $total = Dinero::desde(0);
+        foreach ($items as $item) {
+            $total = $total->sumar(Dinero::desdeProducto((string) $item['precio_compra'], Cantidad::cadena($item['cantidad'])));
+        }
 
         $compra = Compra::query()->create([
             'tenant_id' => $datosCompra['tenant_id'],
@@ -95,7 +97,7 @@ class InventarioService
             'usuario_id' => $datosCompra['usuario_id'],
             'numero_comprobante' => $datosCompra['numero_comprobante'] ?? null,
             'comprobante_url' => $datosCompra['comprobante_url'] ?? null,
-            'total' => $total,
+            'total' => $total->aCadena(),
         ]);
 
         foreach ($items as $item) {
@@ -104,7 +106,7 @@ class InventarioService
                 'variante_id' => $item['variante_id'],
                 'cantidad' => $item['cantidad'],
                 'precio_compra' => $item['precio_compra'],
-                'subtotal' => $item['cantidad'] * $item['precio_compra'],
+                'subtotal' => Dinero::desdeProducto((string) $item['precio_compra'], Cantidad::cadena($item['cantidad']))->aCadena(),
             ]);
 
             $this->registrarMovimientoConStock(
@@ -154,7 +156,7 @@ class InventarioService
         }
     }
 
-    private function validarMovimiento(string $tipo, int $cantidad, string $motivo): void
+    private function validarMovimiento(string $tipo, int|float $cantidad, string $motivo): void
     {
         if (! in_array($tipo, self::TIPOS_VALIDOS, true)) {
             throw new InvalidArgumentException("Tipo de movimiento invalido: {$tipo}");
@@ -162,6 +164,10 @@ class InventarioService
 
         if (! in_array($motivo, self::MOTIVOS_VALIDOS, true)) {
             throw new InvalidArgumentException("Motivo de movimiento invalido: {$motivo}");
+        }
+
+        if (Cantidad::numero($cantidad) != $cantidad) {
+            throw new InvalidArgumentException('La cantidad admite como máximo tres decimales.');
         }
 
         if ($cantidad <= 0) {

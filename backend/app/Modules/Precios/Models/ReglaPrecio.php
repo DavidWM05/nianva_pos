@@ -5,6 +5,7 @@ namespace App\Modules\Precios\Models;
 use App\Modules\Inventario\Models\Categoria;
 use App\Modules\Inventario\Models\Producto;
 use App\Modules\Inventario\Models\ProductoVariante;
+use App\Modules\Nucleo\Casts\CantidadNullable;
 use App\Modules\Nucleo\Models\Concerns\BelongsToTenant;
 use App\Modules\Nucleo\Models\Tenant;
 use App\Modules\Precios\Database\Factories\ReglaPrecioFactory;
@@ -31,7 +32,7 @@ class ReglaPrecio extends Model
 
     protected function casts(): array
     {
-        return [
+        return ['cantidad_compra' => CantidadNullable::class, 'cantidad_paga' => CantidadNullable::class,
             'valor' => 'decimal:2',
             'precio_bundle' => 'decimal:2',
             'fecha_inicio' => 'date',

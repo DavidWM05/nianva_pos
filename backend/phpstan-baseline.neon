@@ -1060,18 +1060,6 @@ parameters:
 			path: app/Modules/Cotizaciones/Services/CotizacionService.php
 
 		-
-			message: '#^Offset ''descuento'' on array\{variante_id\: int, cantidad\: int\<1, max\>, precio_unitario\: float, descuento\: float\} on left side of \?\? always exists and is not nullable\.$#'
-			identifier: nullCoalesce.offset
-			count: 1
-			path: app/Modules/Cotizaciones/Services/CotizacionService.php
-
-		-
-			message: '#^Offset ''precio_unitario'' on array\{variante_id\: int, cantidad\: int\<1, max\>, precio_unitario\: float, descuento\: float\} on left side of \?\? always exists and is not nullable\.$#'
-			identifier: nullCoalesce.offset
-			count: 1
-			path: app/Modules/Cotizaciones/Services/CotizacionService.php
-
-		-
 			message: '#^Offset ''validez_dias'' on array\{tenant_id\: int, sucursal_id\: int, usuario_id\: int, cliente_id\: int\|null, validez_dias\: int, descuento\: float, observaciones\: string\|null, uso_cfdi\: string\|null\} on left side of \?\? always exists and is not nullable\.$#'
 			identifier: nullCoalesce.offset
 			count: 1
@@ -3586,12 +3574,6 @@ parameters:
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$tenant_id\.$#'
 			identifier: property.notFound
 			count: 1
-			path: app/Modules/Inventario/Services/InventarioService.php
-
-		-
-			message: '#^Binary operation "\*" between int and float\|string results in an error\.$#'
-			identifier: binaryOp.invalid
-			count: 2
 			path: app/Modules/Inventario/Services/InventarioService.php
 
 		-

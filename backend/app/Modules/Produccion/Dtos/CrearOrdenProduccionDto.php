@@ -6,7 +6,7 @@ final readonly class CrearOrdenProduccionDto
 {
     public function __construct(
         public int $recetaId,
-        public int $cantidadProgramada,
+        public int|float $cantidadProgramada,
         public ?string $fechaProgramada,
         public ?string $notas,
     ) {}

@@ -9,8 +9,8 @@ class DevolucionExcedeCantidadVendidaException extends ExcepcionNegocio
     public function __construct(
         public readonly int $ventaId,
         public readonly int $varianteId,
-        public readonly int $solicitado,
-        public readonly int $vendido,
+        public readonly int|float $solicitado,
+        public readonly int|float $vendido,
     ) {
         parent::__construct(
             "No se pueden devolver {$solicitado} unidades de la variante {$varianteId}: ".

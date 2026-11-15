@@ -38,8 +38,8 @@ class DevolucionService
     ) {}
 
     /**
-     * @param  list<array{variante_id:int, cantidad:int, va_a_merma?:bool}>  $itemsDevueltos
-     * @param  list<array{variante_id:int, cantidad:int}>  $itemsNuevos  Solo se usa si $tipo === 'cambio'.
+     * @param  list<array{variante_id:int, cantidad:int|float, va_a_merma?:bool}>  $itemsDevueltos
+     * @param  list<array{variante_id:int, cantidad:int|float}>  $itemsNuevos  Solo se usa si $tipo === 'cambio'.
      * @param  list<array{metodo_pago_id:int, monto:float}>  $pagos  Liquida la diferencia (abs(diferencia)), no el total de la devolucion.
      * @param  array<int, InventarioStock>  $stocks
      *
@@ -216,8 +216,8 @@ class DevolucionService
      * exigiria sumar devolucion_items historicos por variante) -- fuera del
      * alcance pedido; se documenta aqui para que quede explicito.
      *
-     * @param  list<array{variante_id:int, cantidad:int, va_a_merma?:bool}>  $itemsDevueltos
-     * @return array{0: list<array{variante_id:int, cantidad:int, precio_unitario:float, subtotal:float, va_a_merma:bool}>, 1: float}
+     * @param  list<array{variante_id:int, cantidad:int|float, va_a_merma?:bool}>  $itemsDevueltos
+     * @return array{0: list<array{variante_id:int, cantidad:int|float, precio_unitario:float, subtotal:float, va_a_merma:bool}>, 1: float}
      */
     private function resolverItemsDevueltos(Venta $ventaOrigen, array $itemsDevueltos): array
     {

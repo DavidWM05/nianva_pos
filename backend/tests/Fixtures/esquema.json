@@ -411,7 +411,7 @@
             },
             {
                 "nombre": "cantidad",
-                "tipo": "integer",
+                "tipo": "numeric",
                 "nullable": false,
                 "default": null
             },
@@ -1145,7 +1145,7 @@
         "columnas": [
             {
                 "nombre": "cantidad",
-                "tipo": "integer",
+                "tipo": "numeric",
                 "nullable": false,
                 "default": null
             },
@@ -1519,7 +1519,7 @@
         "columnas": [
             {
                 "nombre": "cantidad",
-                "tipo": "integer",
+                "tipo": "numeric",
                 "nullable": false,
                 "default": null
             },
@@ -2481,7 +2481,7 @@
         "columnas": [
             {
                 "nombre": "cantidad",
-                "tipo": "integer",
+                "tipo": "numeric",
                 "nullable": false,
                 "default": null
             },
@@ -3647,13 +3647,13 @@
             },
             {
                 "nombre": "stock_actual",
-                "tipo": "integer",
+                "tipo": "numeric",
                 "nullable": false,
                 "default": "'0'"
             },
             {
                 "nombre": "stock_minimo",
-                "tipo": "integer",
+                "tipo": "numeric",
                 "nullable": false,
                 "default": "'0'"
             },
@@ -3861,7 +3861,7 @@
         "columnas": [
             {
                 "nombre": "cantidad",
-                "tipo": "integer",
+                "tipo": "numeric",
                 "nullable": false,
                 "default": null
             },
@@ -3897,7 +3897,7 @@
             },
             {
                 "nombre": "stock_resultante",
-                "tipo": "integer",
+                "tipo": "numeric",
                 "nullable": false,
                 "default": null
             },
@@ -4860,13 +4860,13 @@
         "columnas": [
             {
                 "nombre": "cantidad_producida",
-                "tipo": "integer",
+                "tipo": "numeric",
                 "nullable": true,
                 "default": null
             },
             {
                 "nombre": "cantidad_programada",
-                "tipo": "integer",
+                "tipo": "numeric",
                 "nullable": false,
                 "default": null
             },
@@ -5061,7 +5061,7 @@
         "columnas": [
             {
                 "nombre": "cantidad",
-                "tipo": "integer",
+                "tipo": "numeric",
                 "nullable": false,
                 "default": null
             },
@@ -6074,6 +6074,12 @@
                 "default": "CURRENT_TIMESTAMP"
             },
             {
+                "nombre": "es_granel",
+                "tipo": "tinyint",
+                "nullable": false,
+                "default": "'0'"
+            },
+            {
                 "nombre": "id",
                 "tipo": "integer",
                 "nullable": false,
@@ -6600,13 +6606,13 @@
             },
             {
                 "nombre": "cantidad_compra",
-                "tipo": "integer",
+                "tipo": "numeric",
                 "nullable": true,
                 "default": null
             },
             {
                 "nombre": "cantidad_paga",
-                "tipo": "integer",
+                "tipo": "numeric",
                 "nullable": true,
                 "default": null
             },
@@ -7575,7 +7581,7 @@
         "columnas": [
             {
                 "nombre": "cantidad",
-                "tipo": "integer",
+                "tipo": "numeric",
                 "nullable": false,
                 "default": null
             },

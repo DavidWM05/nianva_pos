@@ -12,7 +12,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('receta_id')->constrained('recetas')->cascadeOnDelete();
             $table->foreignId('insumo_id')->constrained('insumos')->restrictOnDelete();
-            $table->decimal('cantidad', 10, 4);
+            $table->decimal('cantidad', 14, 3);
             $table->foreignId('unidad_medida_id')->constrained('unidades_medida')->restrictOnDelete();
             $table->index('receta_id');
             $table->index('insumo_id');
