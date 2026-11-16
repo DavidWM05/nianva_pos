@@ -103,6 +103,9 @@ class PricingServiceTest extends TestCase
         foreach ($esperado['lineas'] as &$linea) {
             $linea['tasaImpuesto'] = '0.0000';
             $linea['exento'] = false;
+            $linea['presentacionId'] = null;
+            $linea['presentacionNombre'] = null;
+            $linea['factor'] = '1.000';
             foreach (['precioBase', 'descuento', 'impuesto', 'total'] as $campo) {
                 $linea[$campo] = (float) $linea[$campo];
             }

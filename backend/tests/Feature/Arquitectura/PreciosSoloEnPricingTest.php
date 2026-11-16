@@ -11,6 +11,12 @@ class PreciosSoloEnPricingTest extends TestCase
 {
     /** @var array<string, string> Catálogo: declarar, editar o mostrar un precio no es cobrarlo. */
     private const CATALOGO = [
+        'Modules/Inventario/Models/Presentacion.php' => 'Precio opcional del catálogo de presentaciones, sin calcular cobros.',
+        'Modules/Inventario/Database/Factories/PresentacionFactory.php' => 'Precio opcional del catálogo de presentaciones, sin calcular cobros.',
+        'Modules/Inventario/Database/Migrations/2026_07_21_000010_create_presentaciones_table.php' => 'Precio opcional del catálogo de presentaciones, sin calcular cobros.',
+        'Modules/Inventario/Dtos/GuardarPresentacionDto.php' => 'Precio opcional del catálogo de presentaciones, sin calcular cobros.',
+        'Modules/Inventario/Http/Requests/GuardarPresentacionRequest.php' => 'Precio opcional del catálogo de presentaciones, sin calcular cobros.',
+        'Modules/Inventario/Http/Resources/PresentacionResource.php' => 'Precio opcional del catálogo de presentaciones, sin calcular cobros.',
         'Modules/Inventario/Models/ProductoVariante.php' => 'Precio propio opcional del catálogo de variantes; no calcula cobros.',
         'Modules/Inventario/Dtos/ProductoVarianteDto.php' => 'Precio propio opcional del catálogo de variantes; no calcula cobros.',
         'Modules/Inventario/Http/Requests/GuardarProductoVarianteRequest.php' => 'Precio propio opcional del catálogo de variantes; no calcula cobros.',

@@ -8,5 +8,6 @@ final readonly class ItemDevueltoDto
         public int $varianteId,
         public int|float $cantidad,
         public bool $vaAMerma,
+        public ?int $ventaDetalleId = null,
     ) {}
 }

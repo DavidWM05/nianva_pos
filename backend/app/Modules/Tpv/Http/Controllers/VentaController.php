@@ -17,6 +17,7 @@ use App\Modules\Tpv\Dtos\LineaVentaDto;
 use App\Modules\Tpv\Http\Requests\AnularVentaRequest;
 use App\Modules\Tpv\Http\Requests\CotizarVentaRequest;
 use App\Modules\Tpv\Http\Requests\CrearVentaRequest;
+use App\Modules\Tpv\Http\Resources\CotizacionVentaLineaResource;
 use App\Modules\Tpv\Http\Resources\VentaResource;
 use App\Modules\Tpv\Models\Venta;
 use App\Modules\Tpv\Models\VentaDetalle;
@@ -136,6 +137,7 @@ class VentaController extends Controller
         $items = array_map(
             fn (LineaVentaDto $item) => [
                 'variante_id' => $item->varianteId,
+                ...($item->presentacionId === null ? [] : ['presentacion_id' => $item->presentacionId]),
                 'cantidad' => $item->cantidad,
             ],
             $dto->items,
@@ -151,14 +153,7 @@ class VentaController extends Controller
 
         $itemsCotizados = [];
         foreach ($lineas as $linea) {
-            $itemsCotizados[] = [
-                'variante_id' => (int) $linea['variante_id'],
-                'regla_precio_id' => $linea['regla_precio_id'] === null ? null : (int) $linea['regla_precio_id'],
-                'cantidad' => DecimalApi::cantidad($linea['cantidad']),
-                'precio_unitario' => DecimalApi::dinero($linea['precio_unitario']),
-                'descuento_aplicado' => DecimalApi::dinero($linea['descuento_aplicado']),
-                'subtotal' => DecimalApi::dinero($linea['subtotal']),
-            ];
+            $itemsCotizados[] = new CotizacionVentaLineaResource($linea);
         }
 
         return response()->json(['data' => ['items' => $itemsCotizados, 'subtotal' => DecimalApi::dinero($subtotal)]]);

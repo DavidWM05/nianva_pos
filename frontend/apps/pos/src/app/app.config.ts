@@ -1,3 +1,4 @@
+import { PresentacionBuscadorService } from './modules/inventario/presentacion-buscador.service';
 import { ListaPrecioBuscadorService } from './modules/precios/lista-precio-buscador.service';
 import { provideHttpClient, withFetch, withInterceptors } from '@angular/common/http';
 import { ApplicationConfig, inject, provideAppInitializer, provideBrowserGlobalErrorListeners } from '@angular/core';
@@ -23,6 +24,7 @@ import {
   BUSCADOR_LISTA_PRECIO,
   BUSCADOR_INSUMO,
   BUSCADOR_PRODUCTO,
+  BUSCADOR_PRESENTACION,
   BUSCADOR_RECETA,
   BUSCADOR_UNIDAD_MEDIDA,
   BUSCADOR_USUARIO,
@@ -61,6 +63,7 @@ export const appConfig: ApplicationConfig = {
     // Inventario. Un modulo futuro "buscable" (ej. Cliente para CRM/TPV)
     // se conecta agregando su propio token + provider aqui, sin que
     // Precios/TPV necesiten importar el servicio concreto.
+    { provide: BUSCADOR_PRESENTACION, useExisting: PresentacionBuscadorService },
     { provide: BUSCADOR_PRODUCTO, useExisting: ProductoBuscadorService },
     { provide: BUSCADOR_VARIANTE_DE_PRODUCTO, useExisting: VariantesDeProductoBuscadorService },
     { provide: BUSCADOR_CATEGORIA, useExisting: CategoriaBuscadorService },

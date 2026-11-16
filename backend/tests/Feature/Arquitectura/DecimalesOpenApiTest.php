@@ -50,10 +50,10 @@ class DecimalesOpenApiTest extends TestCase
         'components/schemas/VentaResource/properties/descuento_manual',
         'components/schemas/VentaResource/properties/abono_previo',
         'components/schemas/VentaResource/properties/metodos_pago/items/properties/monto',
-        'components/schemas/VentaResource/properties/detalles/items/properties/cantidad',
-        'components/schemas/VentaResource/properties/detalles/items/properties/precio_unitario',
-        'components/schemas/VentaResource/properties/detalles/items/properties/descuento_aplicado',
-        'components/schemas/VentaResource/properties/detalles/items/properties/subtotal',
+        'components/schemas/VentaLineaResource/properties/cantidad',
+        'components/schemas/VentaLineaResource/properties/precio_unitario',
+        'components/schemas/VentaLineaResource/properties/descuento_aplicado',
+        'components/schemas/VentaLineaResource/properties/subtotal',
         'paths//apartados/{apartado}/cancelar/patch/responses/200/content/application/json/schema/properties/meta/properties/monto_abonado_pendiente',
         'paths//caja/actual/get/responses/200/content/application/json/schema/properties/meta/properties/resumen/properties/total_ventas',
         'paths//caja/actual/get/responses/200/content/application/json/schema/properties/meta/properties/resumen/properties/total_gastos',
@@ -72,10 +72,10 @@ class DecimalesOpenApiTest extends TestCase
         'paths//producto-variantes/{variante}/kardex/get/responses/200/content/application/json/schema/properties/data/items/properties/cantidad',
         'paths//producto-variantes/{variante}/kardex/get/responses/200/content/application/json/schema/properties/data/items/properties/stock_resultante',
         'paths//ventas/cotizar/post/responses/200/content/application/json/schema/properties/data/properties/subtotal',
-        'paths//ventas/cotizar/post/responses/200/content/application/json/schema/properties/data/properties/items/items/properties/cantidad',
-        'paths//ventas/cotizar/post/responses/200/content/application/json/schema/properties/data/properties/items/items/properties/precio_unitario',
-        'paths//ventas/cotizar/post/responses/200/content/application/json/schema/properties/data/properties/items/items/properties/descuento_aplicado',
-        'paths//ventas/cotizar/post/responses/200/content/application/json/schema/properties/data/properties/items/items/properties/subtotal',
+        'components/schemas/CotizacionVentaLineaResource/properties/cantidad',
+        'components/schemas/CotizacionVentaLineaResource/properties/precio_unitario',
+        'components/schemas/CotizacionVentaLineaResource/properties/descuento_aplicado',
+        'components/schemas/CotizacionVentaLineaResource/properties/subtotal',
         'paths//ventas/reporte/get/responses/200/content/application/json/schema/properties/data/properties/total_ventas',
         'paths//ventas/reporte/get/responses/200/content/application/json/schema/properties/data/properties/ticket_promedio',
         'paths//ventas/reporte/get/responses/200/content/application/json/schema/properties/data/properties/por_sucursal/items/properties/total',
@@ -99,7 +99,11 @@ class DecimalesOpenApiTest extends TestCase
             $this->assertSame('string', $api['components']['schemas']['ProductoResource']['properties'][$campo]['type']);
         }
         $this->assertSame('string', $api['components']['schemas']['ApartadoResource']['properties']['total_abonado']['type']);
-        $linea = $api['paths']['/ventas/cotizar']['post']['responses']['200']['content']['application/json']['schema']['properties']['data']['properties']['items']['items']['properties'];
+        $esquemaLinea = $api['paths']['/ventas/cotizar']['post']['responses']['200']['content']['application/json']['schema']['properties']['data']['properties']['items']['items'];
+        if (isset($esquemaLinea['$ref'])) {
+            $esquemaLinea = $api['components']['schemas'][substr($esquemaLinea['$ref'], strlen('#/components/schemas/'))];
+        }
+        $linea = $esquemaLinea['properties'];
         $this->assertSame('integer', $linea['variante_id']['type']);
         $tiposRegla = $linea['regla_precio_id']['type'];
         sort($tiposRegla);

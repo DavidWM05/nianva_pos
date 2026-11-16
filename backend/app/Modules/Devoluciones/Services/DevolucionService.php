@@ -14,9 +14,12 @@ use App\Modules\Devoluciones\Models\DevolucionPago;
 use App\Modules\Inventario\Models\InventarioStock;
 use App\Modules\Inventario\Services\InventarioService;
 use App\Modules\Nucleo\Models\Sucursal;
+use App\Modules\Nucleo\Support\Cantidad;
+use App\Modules\Nucleo\Support\Dinero;
 use App\Modules\Tpv\Exceptions\CajaSesionNoAbiertaException;
 use App\Modules\Tpv\Models\CajaSesion;
 use App\Modules\Tpv\Models\Venta;
+use App\Modules\Tpv\Models\VentaDetalle;
 use App\Modules\Tpv\Services\VentaService;
 use Illuminate\Support\Facades\DB;
 use InvalidArgumentException;
@@ -38,7 +41,7 @@ class DevolucionService
     ) {}
 
     /**
-     * @param  list<array{variante_id:int, cantidad:int|float, va_a_merma?:bool}>  $itemsDevueltos
+     * @param  list<array{variante_id:int, cantidad:int|float, va_a_merma?:bool, venta_detalle_id?:int}>  $itemsDevueltos
      * @param  list<array{variante_id:int, cantidad:int|float}>  $itemsNuevos  Solo se usa si $tipo === 'cambio'.
      * @param  list<array{metodo_pago_id:int, monto:float}>  $pagos  Liquida la diferencia (abs(diferencia)), no el total de la devolucion.
      * @param  array<int, InventarioStock>  $stocks
@@ -165,7 +168,7 @@ class DevolucionService
             $this->inventarioService->registrarMovimientoConStock(
                 stock: $stocks[$linea['variante_id']],
                 tipo: 'entrada',
-                cantidad: $linea['cantidad'],
+                cantidad: Cantidad::multiplicar($linea['cantidad'], $linea['factor']),
                 motivo: 'devolucion',
                 usuarioId: $usuarioId,
                 referenciaTabla: 'devoluciones',
@@ -209,6 +212,8 @@ class DevolucionService
      * Valora cada item devuelto al precio_unitario con el que se vendio
      * realmente (venta_detalles de la venta origen) -- nunca una cotizacion
      * nueva de PricingService, que podria haber cambiado desde la venta.
+     * Las presentaciones prorratean el subtotal original para conservar el
+     * redondeo de la línea al devolver cantidades fraccionarias.
      *
      * Limitacion conocida y deliberada: solo valida que la cantidad
      * devuelta en ESTA transaccion no exceda lo vendido en esa linea. No
@@ -216,8 +221,8 @@ class DevolucionService
      * exigiria sumar devolucion_items historicos por variante) -- fuera del
      * alcance pedido; se documenta aqui para que quede explicito.
      *
-     * @param  list<array{variante_id:int, cantidad:int|float, va_a_merma?:bool}>  $itemsDevueltos
-     * @return array{0: list<array{variante_id:int, cantidad:int|float, precio_unitario:float, subtotal:float, va_a_merma:bool}>, 1: float}
+     * @param  list<array{variante_id:int, cantidad:int|float, va_a_merma?:bool, venta_detalle_id?:int}>  $itemsDevueltos
+     * @return array{0: list<array{variante_id:int, cantidad:int|float, precio_unitario:float, subtotal:float, va_a_merma:bool, factor:string}>, 1: float}
      */
     private function resolverItemsDevueltos(Venta $ventaOrigen, array $itemsDevueltos): array
     {
@@ -230,26 +235,30 @@ class DevolucionService
                 throw new InvalidArgumentException('La cantidad de cada item devuelto debe ser mayor a cero.');
             }
 
-            $detalleOriginal = $detallesOriginales->firstWhere('variante_id', $item['variante_id']);
+            $candidatos = $detallesOriginales->where('variante_id', $item['variante_id']);
+            $detalleOriginal = isset($item['venta_detalle_id']) ? $candidatos->firstWhere('id', $item['venta_detalle_id']) : $candidatos->first();
 
-            if ($detalleOriginal === null) {
+            if (! $detalleOriginal instanceof VentaDetalle) {
                 throw new DevolucionVarianteNoVendidaException($ventaOrigen->id, $item['variante_id']);
             }
 
-            if ($item['cantidad'] > $detalleOriginal->cantidad) {
+            if ($item['cantidad'] > $detalleOriginal->getAttribute('cantidad')) {
                 throw new DevolucionExcedeCantidadVendidaException(
                     $ventaOrigen->id,
                     $item['variante_id'],
                     $item['cantidad'],
-                    $detalleOriginal->cantidad,
+                    $detalleOriginal->getAttribute('cantidad'),
                 );
             }
 
-            $precioUnitario = (float) $detalleOriginal->precio_unitario;
-            $subtotal = round($precioUnitario * $item['cantidad'], 2);
+            $precioUnitario = (float) $detalleOriginal->getAttribute('precio_unitario');
+            $subtotal = $detalleOriginal->getAttribute('presentacion_nombre') !== null
+                ? (float) Dinero::desde((string) $detalleOriginal->getAttribute('subtotal'))->proporcion(Cantidad::milesimas($item['cantidad']), Cantidad::milesimas($detalleOriginal->getAttribute('cantidad')))->aCadena()
+                : round($precioUnitario * $item['cantidad'], 2);
 
             $lineas[] = [
                 'variante_id' => $item['variante_id'],
+                'factor' => (string) $detalleOriginal->getAttribute('factor'),
                 'cantidad' => $item['cantidad'],
                 'precio_unitario' => $precioUnitario,
                 'subtotal' => $subtotal,

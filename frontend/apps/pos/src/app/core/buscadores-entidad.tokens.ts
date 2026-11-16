@@ -48,3 +48,6 @@ export const BUSCADOR_VENTA = new InjectionToken<BuscadorEntidad>('BUSCADOR_VENT
 
 /** Selección de listas de precio activas para una operación de venta. */
 export const BUSCADOR_LISTA_PRECIO = new InjectionToken<BuscadorEntidad>('BUSCADOR_LISTA_PRECIO');
+
+export interface PresentacionBuscable extends EntidadBuscable { factor: string; }
+export const BUSCADOR_PRESENTACION = new InjectionToken<BuscadorDeHijos<PresentacionBuscable>>('BUSCADOR_PRESENTACION');

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\Tpv\Http\Requests;
 
+use App\Modules\Inventario\Support\PresentacionDeVariante;
 use App\Modules\Inventario\Support\ReglasCantidad;
 use App\Modules\Inventario\Support\ReglasVariante;
 use App\Modules\Nucleo\Http\Requests\SolicitudNegocio;
@@ -26,6 +27,7 @@ class CrearVentaRequest extends SolicitudNegocio
             'lista_precio_id' => ['nullable', 'integer', ReglasTenant::existe('listas_precio', $tenantId)->where('activo', true)],
             'cliente_id' => ['required', 'integer', ReglasTenant::existe('clientes', $tenantId)],
             'items' => ['required', 'array', 'min:1'],
+            'items.*.presentacion_id' => ['nullable', 'integer', new PresentacionDeVariante($tenantId)],
             'items.*.variante_id' => ['required', 'integer', ReglasVariante::delTenant($tenantId)],
             'items.*.cantidad' => ['required', ...ReglasCantidad::paraVariante($tenantId)],
             'pagos' => ['required', 'array', 'min:1'],
@@ -48,6 +50,7 @@ class CrearVentaRequest extends SolicitudNegocio
 
                 return new LineaVentaDto(
                     varianteId: (int) $item['variante_id'],
+                    presentacionId: isset($item['presentacion_id']) ? (int) $item['presentacion_id'] : null,
                     cantidad: Cantidad::numero($item['cantidad']),
                 );
             },

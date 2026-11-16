@@ -1,6 +1,9 @@
 <div class="lineas-producto">
   <section class="lineas-producto__seccion">
     <h3>Agregar producto</h3>
+    @if (presentacionesHabilitadas) {
+      <ui-campo #campoCodigo etiqueta="Código de barras"><input #codigo [id]="campoCodigo.controlId()" type="text" autocomplete="off" (keydown.enter)="$event.preventDefault(); escanearCodigo(codigo.value); codigo.value=''" /></ui-campo>
+    }
     <nucleo-entidad-selector
       [buscador]="buscadorProducto"
       [buscadorHijos]="buscadorVarianteDeProducto"
@@ -12,6 +15,9 @@
       (hijoSeleccionado)="onVarianteSeleccionada($event)"
     />
 
+    @if (presentacionesHabilitadas && varianteSeleccionadaId() !== null) {
+      <nucleo-selector-presentacion [varianteId]="varianteSeleccionadaId()!" (seleccionado)="presentacionSeleccionada.set($event)" />
+    }
     @if (varianteSeleccionadaId() !== null && stockVarianteSeleccionada() !== null) {
       <p class="lineas-producto__stock" [class.lineas-producto__stock--agotado]="stockVarianteSeleccionada() === 0">
         @if (stockVarianteSeleccionada() === 0) {

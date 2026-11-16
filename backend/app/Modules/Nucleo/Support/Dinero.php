@@ -73,6 +73,11 @@ final readonly class Dinero
         return self::desdeProducto($this->aCadena(), $cantidad);
     }
 
+    public function precioPorFactor(string|int $factor): string
+    {
+        return self::productoDecimal($this->aCadena(), $factor, 0);
+    }
+
     public function porcentaje(string|int $tasa): self
     {
         return self::porcentajeDe($this->aCadena(), $tasa);

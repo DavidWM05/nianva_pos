@@ -18,6 +18,7 @@
         Registrar compra
       </button>
     }
+    <button matButton="text" type="button" (click)="presentaciones.emit(variante)">Presentaciones</button>
     <ui-row-actions
       [acciones]="acciones(variante)"
       (accion)="onAccion(variante, $event)"

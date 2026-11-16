@@ -1,0 +1,10 @@
+<ui-page [estado]="estado()" forma="listado" (reintentar)="cargar()">
+<ui-tabla [filas]="filas()" [columnas]="columnas" mensajeVacio="No hay presentaciones." (accion)="accion($event.fila,$event.accion.tipo)" />
+@if (!soloLectura) {<h3>{{editando() === null ? 'Nueva presentación' : 'Editar presentación'}}</h3><form [formGroup]="form" (ngSubmit)="guardar()">
+<ui-campo #nombre etiqueta="Nombre" [requerido]="true"><input [id]="nombre.controlId()" formControlName="nombre" /></ui-campo>
+<ui-campo etiqueta="Factor en unidades base" [requerido]="true"><ui-input-cantidad formControlName="factor" /></ui-campo>
+<ui-campo #codigo etiqueta="Código de barras"><input [id]="codigo.controlId()" formControlName="codigo_barras" /></ui-campo>
+<ui-campo etiqueta="Precio propio (opcional)"><ui-input-dinero formControlName="precio_venta" [min]="0" /></ui-campo><p>Vacío: precio unitario resuelto × factor.</p>
+<ui-form-actions><ui-btn-enviar etiqueta="Guardar presentación" [enviando]="enviando()" [deshabilitado]="form.invalid" /></ui-form-actions>
+</form>}
+</ui-page>

@@ -65,6 +65,7 @@ export interface DevolucionesPagina {
 }
 
 export interface DevolucionItemDevueltoPayload {
+  venta_detalle_id?: number;
   variante_id: number;
   cantidad: number;
   va_a_merma: boolean;

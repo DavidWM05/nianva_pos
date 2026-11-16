@@ -49,6 +49,7 @@ class RegistrarVenta
         $items = array_map(
             fn (LineaVentaDto $linea) => [
                 'variante_id' => $linea->varianteId,
+                ...($linea->presentacionId === null ? [] : ['presentacion_id' => $linea->presentacionId]),
                 'cantidad' => $linea->cantidad,
             ],
             $dto->items,
@@ -89,7 +90,7 @@ class RegistrarVenta
                 throw new \InvalidArgumentException('La cantidad de cada linea debe ser mayor a cero.');
             }
         }
-        $cotizacion = $this->pricingService->cotizar(new Carrito(array_map(static fn (array $item): LineaCarrito => new LineaCarrito($item['variante_id'], $item['cantidad']), $items), $cuponId && ! empty($cuponCodigo) ? $cuponCodigo : null), new ContextoPrecio($tenantId, $sucursalContextoId === null ? null : (int) $sucursalContextoId, $clienteId, CarbonImmutable::now(), $dto->listaPrecioId));
+        $cotizacion = $this->pricingService->cotizar(new Carrito(array_map(static fn (array $item): LineaCarrito => new LineaCarrito($item['variante_id'], $item['cantidad'], $item['presentacion_id'] ?? null), $items), $cuponId && ! empty($cuponCodigo) ? $cuponCodigo : null), new ContextoPrecio($tenantId, $sucursalContextoId === null ? null : (int) $sucursalContextoId, $clienteId, CarbonImmutable::now(), $dto->listaPrecioId));
         $subtotal = $cotizacion->subtotal;
         $descuentoCupon = $cotizacion->cupon->descuento ?? 0.0;
 

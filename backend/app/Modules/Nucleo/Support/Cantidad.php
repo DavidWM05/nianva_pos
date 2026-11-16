@@ -55,6 +55,38 @@ final class Cantidad
         return ($milesimas < 0 ? '-' : '').intdiv($absoluto, 1000).'.'.str_pad((string) ($absoluto % 1000), 3, '0', STR_PAD_LEFT);
     }
 
+    public static function multiplicar(int|float|string $a, int|float|string $b): int|float
+    {
+        $a = self::milesimas($a);
+        $b = self::milesimas($b);
+        $negativo = ($a < 0) !== ($b < 0);
+        $a = abs($a);
+        $b = abs($b);
+        $divisor = 1000;
+        $factores = [$a, $b];
+        foreach ($factores as &$factor) {
+            $valor = $factor;
+            $mcd = $divisor;
+            while ($mcd !== 0) {
+                $resto = $valor % $mcd;
+                $valor = $mcd;
+                $mcd = $resto;
+            }
+            $factor = intdiv($factor, $valor);
+            $divisor = intdiv($divisor, $valor);
+        }
+        unset($factor);
+        [$a, $b] = $factores;
+        if ($divisor !== 1) {
+            throw new InvalidArgumentException('La cantidad en unidad base admite como máximo tres decimales.');
+        }
+        if ($b > 0 && $a > intdiv(self::MAXIMO_MILESIMAS, $b)) {
+            throw new OverflowException('La cantidad en unidad base excede decimal(14,3).');
+        }
+
+        return self::desdeMilesimas(($negativo ? -1 : 1) * $a * $b);
+    }
+
     public static function sumar(int|float|string $a, int|float|string $b): int|float
     {
         return self::desdeMilesimas(self::milesimas($a) + self::milesimas($b));

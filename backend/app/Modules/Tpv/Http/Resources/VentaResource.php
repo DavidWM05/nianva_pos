@@ -45,20 +45,7 @@ class VentaResource extends JsonResource
                 'nombre' => $pago->metodoPago?->nombre,
                 'monto' => DecimalApi::dinero($pago->monto),
             ])),
-            'detalles' => $this->whenLoaded('detalles', fn () => $this->detalles->map(fn ($detalle) => [
-                'id' => $detalle->id,
-                'variante_id' => $detalle->variante_id,
-                'variante' => $detalle->variante ? [
-                    'id' => $detalle->variante->id,
-                    'talla' => $detalle->variante->talla,
-                    'color' => $detalle->variante->color,
-                    'producto_nombre' => $detalle->variante->producto?->nombre,
-                ] : null,
-                'cantidad' => DecimalApi::cantidad($detalle->cantidad),
-                'precio_unitario' => DecimalApi::dinero($detalle->precio_unitario),
-                'descuento_aplicado' => DecimalApi::dinero($detalle->descuento_aplicado),
-                'subtotal' => DecimalApi::dinero($detalle->subtotal),
-            ])),
+            'detalles' => $this->whenLoaded('detalles', fn () => VentaLineaResource::collection($this->detalles)),
         ];
     }
 }
