@@ -9,7 +9,7 @@ final readonly class LineaPrecio
     /**
      * @param  list<ReglaAplicada>  $reglas
      * @param  null  $listaAplicada  Sin listas de precio todavía; llegan en ARQ-05c.
-     * @param  float  $impuesto  Siempre 0.0: los impuestos llegan en una etapa posterior.
+     * @param  float  $impuesto  IVA incluido, después de descuentos y reparto del cupón.
      */
     public function __construct(
         public int $varianteId,
@@ -20,5 +20,7 @@ final readonly class LineaPrecio
         public float $descuento,
         public float $impuesto,
         public float $total,
+        public string $tasaImpuesto = '0.0000',
+        public bool $exento = false,
     ) {}
 }

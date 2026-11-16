@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Modules\Inventario\Models;
 
 use App\Modules\Inventario\Database\Factories\ProductoFactory;
@@ -12,9 +14,13 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
+/**
+ * @property string|null $tasa_iva
+ * @property bool $exento_iva
+ */
 #[Fillable([
     'tenant_id', 'categoria_id', 'departamento_id', 'nombre', 'descripcion',
-    'precio_compra', 'precio_venta', 'imagen_url', 'no_resurtible', 'sin_descuento', 'activo',
+    'tasa_iva', 'exento_iva', 'precio_compra', 'precio_venta', 'imagen_url', 'no_resurtible', 'sin_descuento', 'activo',
 ])]
 class Producto extends Model
 {
@@ -28,6 +34,8 @@ class Producto extends Model
     protected function casts(): array
     {
         return [
+            'tasa_iva' => 'decimal:4',
+            'exento_iva' => 'boolean',
             'precio_compra' => 'decimal:2',
             'precio_venta' => 'decimal:2',
             'no_resurtible' => 'boolean',

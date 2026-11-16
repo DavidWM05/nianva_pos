@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Modules\Inventario\Http\Resources;
 
 use App\Modules\Inventario\Models\Producto;
@@ -28,6 +30,8 @@ class ProductoResource extends JsonResource
             ),
             'precio_compra' => DecimalApi::dinero($this->precio_compra),
             'precio_venta' => DecimalApi::dinero($this->precio_venta),
+            'tasa_iva' => $this->tasa_iva === null ? null : DecimalApi::tasa($this->tasa_iva),
+            'exento_iva' => $this->exento_iva,
             'imagen_url' => $this->imagen_url,
             'no_resurtible' => $this->no_resurtible,
             'sin_descuento' => $this->sin_descuento,

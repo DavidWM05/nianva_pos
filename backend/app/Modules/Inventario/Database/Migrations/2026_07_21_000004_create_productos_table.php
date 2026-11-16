@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -17,6 +19,8 @@ return new class extends Migration
             $table->text('descripcion')->nullable();
             $table->decimal('precio_compra', 12, 2)->default(0);
             $table->decimal('precio_venta', 12, 2)->default(0);
+            $table->decimal('tasa_iva', 7, 4)->nullable();
+            $table->boolean('exento_iva')->default(false);
             $table->string('imagen_url', 500)->nullable();
             $table->boolean('no_resurtible')->default(false);
             $table->boolean('sin_descuento')->default(false);

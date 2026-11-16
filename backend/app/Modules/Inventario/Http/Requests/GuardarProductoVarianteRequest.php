@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Modules\Inventario\Http\Requests;
 
 use App\Modules\Inventario\Dtos\ProductoVarianteDto;
@@ -20,6 +22,8 @@ class GuardarProductoVarianteRequest extends SolicitudNegocio
         return [
             'talla' => ['nullable', 'string', 'max:30'],
             'color' => ['nullable', 'string', 'max:30'],
+            'precio_venta' => ['nullable', 'numeric', 'decimal:0,2', 'min:0', 'max:9999999999.99'],
+            'costo' => ['nullable', 'numeric', 'decimal:0,2', 'min:0', 'max:9999999999.99'],
             'codigo_barras' => [
                 'nullable', 'string', 'max:50',
                 Rule::unique('producto_variantes', 'codigo_barras')
@@ -38,6 +42,8 @@ class GuardarProductoVarianteRequest extends SolicitudNegocio
             color: isset($v['color']) ? (string) $v['color'] : null,
             codigoBarras: isset($v['codigo_barras']) ? (string) $v['codigo_barras'] : null,
             presentes: array_keys($v),
+            precioVenta: isset($v['precio_venta']) ? (string) $v['precio_venta'] : null,
+            costo: isset($v['costo']) ? (string) $v['costo'] : null,
         );
     }
 }

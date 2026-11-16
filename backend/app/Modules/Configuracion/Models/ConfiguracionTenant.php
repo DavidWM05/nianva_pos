@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Modules\Configuracion\Models;
 
 use App\Modules\Configuracion\Database\Factories\ConfiguracionTenantFactory;
@@ -12,13 +14,14 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
+ * @property string $tasa_iva_default
  * @property string $moneda
  * @property string $zona_horaria
  */
 #[Fillable([
     'tenant_id', 'moneda', 'zona_horaria', 'mensaje_ticket', 'logo_url', 'mostrar_rfc',
     'mostrar_telefono', 'mostrar_correo', 'backup_auto', 'backup_frecuencia', 'backup_ultimo',
-    'codigo_barras_automatico', 'modulos_activos',
+    'codigo_barras_automatico', 'modulos_activos', 'tasa_iva_default',
 ])]
 class ConfiguracionTenant extends Model
 {
@@ -34,6 +37,7 @@ class ConfiguracionTenant extends Model
     protected function casts(): array
     {
         return [
+            'tasa_iva_default' => 'decimal:4',
             'mostrar_rfc' => 'boolean',
             'mostrar_telefono' => 'boolean',
             'mostrar_correo' => 'boolean',

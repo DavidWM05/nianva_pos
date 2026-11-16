@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -11,6 +13,7 @@ return new class extends Migration
         Schema::create('configuracion_tenant', function (Blueprint $table) {
             $table->id();
             $table->foreignId('tenant_id')->unique()->constrained('tenants')->cascadeOnDelete();
+            $table->decimal('tasa_iva_default', 7, 4)->default('16.0000');
             $table->string('moneda', 5)->default('$');
             $table->string('zona_horaria', 64)->default('America/Mexico_City');
             $table->text('mensaje_ticket')->nullable();

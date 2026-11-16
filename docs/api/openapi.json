@@ -9947,6 +9947,10 @@
             "ActualizarConfiguracionRequest": {
                 "type": "object",
                 "properties": {
+                    "tasa_iva_default": {
+                        "type": "number",
+                        "pattern": "^(?:0|8|16)(?:\\.0{1,4})?$"
+                    },
                     "moneda": {
                         "type": "string",
                         "maxLength": 5
@@ -10697,6 +10701,10 @@
             "ConfiguracionTenantResource": {
                 "type": "object",
                 "properties": {
+                    "tasa_iva_default": {
+                        "type": "string",
+                        "pattern": "^-?[0-9]+\\.[0-9]{4}$"
+                    },
                     "moneda": {
                         "type": "string"
                     },
@@ -10742,6 +10750,7 @@
                     }
                 },
                 "required": [
+                    "tasa_iva_default",
                     "moneda",
                     "zona_horaria",
                     "mensaje_ticket",
@@ -12911,6 +12920,16 @@
                         ],
                         "minimum": 0
                     },
+                    "tasa_iva": {
+                        "type": [
+                            "number",
+                            "null"
+                        ],
+                        "pattern": "^(?:0|8|16)(?:\\.0{1,4})?$"
+                    },
+                    "exento_iva": {
+                        "type": "boolean"
+                    },
                     "imagen_url": {
                         "type": [
                             "string",
@@ -12952,6 +12971,22 @@
                             "null"
                         ],
                         "maxLength": 30
+                    },
+                    "precio_venta": {
+                        "type": [
+                            "number",
+                            "null"
+                        ],
+                        "minimum": 0,
+                        "maximum": 9999999999.99
+                    },
+                    "costo": {
+                        "type": [
+                            "number",
+                            "null"
+                        ],
+                        "minimum": 0,
+                        "maximum": 9999999999.99
                     },
                     "codigo_barras": {
                         "type": [
@@ -14266,6 +14301,16 @@
                         "type": "string",
                         "pattern": "^-?[0-9]+\\.[0-9]{2}$"
                     },
+                    "tasa_iva": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "pattern": "^-?[0-9]+\\.[0-9]{4}$"
+                    },
+                    "exento_iva": {
+                        "type": "boolean"
+                    },
                     "imagen_url": {
                         "type": [
                             "string",
@@ -14299,6 +14344,8 @@
                     "descripcion",
                     "precio_compra",
                     "precio_venta",
+                    "tasa_iva",
+                    "exento_iva",
                     "imagen_url",
                     "no_resurtible",
                     "sin_descuento",
@@ -14332,6 +14379,20 @@
                             "string",
                             "null"
                         ]
+                    },
+                    "precio_venta": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "pattern": "^-?[0-9]+\\.[0-9]{2}$"
+                    },
+                    "costo": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "pattern": "^-?[0-9]+\\.[0-9]{2}$"
                     },
                     "activo": {
                         "type": "boolean"
@@ -14377,6 +14438,8 @@
                     "talla",
                     "color",
                     "codigo_barras",
+                    "precio_venta",
+                    "costo",
                     "activo"
                 ],
                 "title": "ProductoVarianteResource"

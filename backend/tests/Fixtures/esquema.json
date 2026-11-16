@@ -1472,6 +1472,12 @@
                 "default": "'1'"
             },
             {
+                "nombre": "tasa_iva_default",
+                "tipo": "numeric",
+                "nullable": false,
+                "default": "'16.0000'"
+            },
+            {
                 "nombre": "tenant_id",
                 "tipo": "integer",
                 "nullable": false,
@@ -6074,6 +6080,12 @@
                 "default": null
             },
             {
+                "nombre": "costo",
+                "tipo": "numeric",
+                "nullable": true,
+                "default": null
+            },
+            {
                 "nombre": "created_at",
                 "tipo": "datetime",
                 "nullable": false,
@@ -6089,6 +6101,12 @@
                 "nombre": "id",
                 "tipo": "integer",
                 "nullable": false,
+                "default": null
+            },
+            {
+                "nombre": "precio_venta",
+                "tipo": "numeric",
+                "nullable": true,
                 "default": null
             },
             {
@@ -6211,6 +6229,12 @@
                 "default": null
             },
             {
+                "nombre": "exento_iva",
+                "tipo": "tinyint",
+                "nullable": false,
+                "default": "'0'"
+            },
+            {
                 "nombre": "id",
                 "tipo": "integer",
                 "nullable": false,
@@ -6251,6 +6275,12 @@
                 "tipo": "tinyint",
                 "nullable": false,
                 "default": "'0'"
+            },
+            {
+                "nombre": "tasa_iva",
+                "tipo": "numeric",
+                "nullable": true,
+                "default": null
             },
             {
                 "nombre": "tenant_id",

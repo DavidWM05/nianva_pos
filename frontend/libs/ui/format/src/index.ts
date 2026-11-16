@@ -6,3 +6,5 @@ export * from './lib/fecha.pipe';
 export * from './lib/fecha-hora.pipe';
 export * from './lib/centavos';
 export * from './lib/cantidades';
+
+export * from './lib/tasas';

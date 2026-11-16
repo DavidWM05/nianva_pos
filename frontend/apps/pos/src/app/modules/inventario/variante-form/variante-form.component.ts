@@ -8,6 +8,18 @@ import {
   Output,
   ViewChild,
 } from '@angular/core';
+import {
+  FormControl,
+  FormGroup,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
+import {
+  CampoComponent,
+  InputDineroComponent,
+  aplicarErroresServidor,
+} from '@nianva/ui-forms';
+import { aCentavos } from '@nianva/ui-format';
 import { DynamicFormComponent, DynamicFormField } from '@nianva/ui-shared';
 
 import { VarianteFormPayload } from '../producto.service';
@@ -22,7 +34,12 @@ import { ProductoVariante } from '../producto.types';
 @Component({
   selector: 'nucleo-variante-form',
   standalone: true,
-  imports: [DynamicFormComponent],
+  imports: [
+    DynamicFormComponent,
+    ReactiveFormsModule,
+    CampoComponent,
+    InputDineroComponent,
+  ],
   templateUrl: './variante-form.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -45,6 +62,17 @@ export class VarianteFormComponent implements OnChanges {
 
   @ViewChild(DynamicFormComponent) private formComponent!: DynamicFormComponent;
 
+  protected readonly importes = new FormGroup({
+    precio_venta: new FormControl<number | null>(null, [
+      Validators.min(0),
+      Validators.max(9999999999.99),
+    ]),
+    costo: new FormControl<number | null>(null, [
+      Validators.min(0),
+      Validators.max(9999999999.99),
+    ]),
+  });
+
   protected fields: DynamicFormField[] = [];
 
   ngOnChanges(cambios?: SimpleChanges): void {
@@ -55,6 +83,16 @@ export class VarianteFormComponent implements OnChanges {
       !cambios['codigoBarrasAutomatico']
     )
       return;
+    this.importes.reset({
+      precio_venta:
+        this.valorInicial?.precio_venta == null
+          ? null
+          : aCentavos(this.valorInicial.precio_venta) / 100,
+      costo:
+        this.valorInicial?.costo == null
+          ? null
+          : aCentavos(this.valorInicial.costo) / 100,
+    });
     this.fields = [
       {
         name: 'talla',
@@ -86,7 +124,9 @@ export class VarianteFormComponent implements OnChanges {
   }
 
   onSubmit(value: Record<string, unknown>): void {
+    if (this.importes.invalid) return;
     this.guardar.emit({
+      ...this.importes.getRawValue(),
       talla: value['talla'] as string | null,
       color: value['color'] as string | null,
       codigo_barras: value['codigo_barras'] as string | null,
@@ -95,5 +135,6 @@ export class VarianteFormComponent implements OnChanges {
 
   setServerErrors(errors: Record<string, string | string[]>): void {
     this.formComponent.setServerErrors(errors);
+    aplicarErroresServidor(this.importes, { error: { errors } });
   }
 }

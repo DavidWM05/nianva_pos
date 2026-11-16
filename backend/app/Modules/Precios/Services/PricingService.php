@@ -4,11 +4,13 @@ declare(strict_types=1);
 
 namespace App\Modules\Precios\Services;
 
+use App\Modules\Configuracion\Models\ConfiguracionTenant;
 use App\Modules\Inventario\Models\Producto;
 use App\Modules\Inventario\Models\ProductoVariante;
 use App\Modules\Nucleo\Scopes\TenantScope;
 use App\Modules\Nucleo\Scopes\TenantScopeViaRelacion;
 use App\Modules\Nucleo\Support\Cantidad;
+use App\Modules\Nucleo\Support\DecimalApi;
 use App\Modules\Nucleo\Support\Dinero;
 use App\Modules\Precios\Exceptions\CuponInvalidoException;
 use App\Modules\Precios\Models\Cupon;
@@ -41,13 +43,16 @@ final class PricingService
     {
         $lineas = [];
         $subtotal = Dinero::desde(0);
+        $tasas = [];
+        $configuracion = ConfiguracionTenant::sinTenant()->where('tenant_id', $contexto->tenantId)->firstOrFail();
         foreach ($carrito->lineas as $linea) {
             $variante = ProductoVariante::query()->withoutGlobalScope(TenantScopeViaRelacion::class)->findOrFail($linea->varianteId);
             $producto = Producto::query()->withoutGlobalScope(TenantScope::class)->findOrFail((int) $variante->getAttribute('producto_id'));
             if ((int) $producto->getAttribute('tenant_id') !== $contexto->tenantId) {
                 throw new InvalidArgumentException("La variante {$linea->varianteId} no pertenece al tenant {$contexto->tenantId}.");
             }
-            $precioBase = Dinero::desde((string) $producto->getAttribute('precio_venta'));
+            $precioBase = Dinero::desde((string) ($variante->getAttribute('precio_venta') ?? $producto->getAttribute('precio_venta')));
+            $tasas[] = [DecimalApi::tasa($producto->getAttribute('tasa_iva') ?? $configuracion->getAttribute('tasa_iva_default')), (bool) $producto->getAttribute('exento_iva')];
             $regla = $this->reglaAplicable($variante, $producto, $contexto);
             $descuento = $regla === null ? Dinero::desde(0) : $this->calcularDescuentoPorTipo($regla, $precioBase, $linea->cantidad);
             $reglas = [];
@@ -68,7 +73,19 @@ final class PricingService
         $cupon = $cotizacionCupon === null ? null : new CuponAplicado((int) $cotizacionCupon['modelo']->getKey(), (float) $descuentoCupon->aCadena(), $cotizacionCupon['modelo']);
         $total = Dinero::desdeResta($importeSubtotal, $descuentoCupon->aCadena());
 
-        return new CotizacionPrecio($lineas, $carrito->subtotalReferencia ?? (float) $subtotal->aCadena(), $cupon, (float) $total->aCadena());
+        $impuestos = Dinero::desde(0);
+        if ($lineas !== []) {
+            $pesos = array_map(static fn (LineaPrecio $linea): Dinero => Dinero::desde((string) $linea->total), $lineas);
+            $reparto = $descuentoCupon->repartir($pesos);
+            foreach ($lineas as $indice => $linea) {
+                [$tasa, $exento] = $tasas[$indice];
+                $impuesto = $exento ? Dinero::desde(0) : $pesos[$indice]->restar($reparto[$indice])->impuestoIncluido($tasa);
+                $impuestos = $impuestos->sumar($impuesto);
+                $lineas[$indice] = new LineaPrecio($linea->varianteId, $linea->cantidad, $linea->precioBase, $linea->listaAplicada, $linea->reglas, $linea->descuento, (float) $impuesto->aCadena(), $linea->total, $tasa, $exento);
+            }
+        }
+
+        return new CotizacionPrecio($lineas, $carrito->subtotalReferencia ?? (float) $subtotal->aCadena(), $cupon, (float) $total->aCadena(), (float) $impuestos->aCadena());
     }
 
     /**

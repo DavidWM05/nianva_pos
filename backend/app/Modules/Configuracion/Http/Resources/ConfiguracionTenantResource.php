@@ -1,8 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Modules\Configuracion\Http\Resources;
 
 use App\Modules\Configuracion\Models\ConfiguracionTenant;
+use App\Modules\Nucleo\Support\DecimalApi;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -14,6 +17,7 @@ class ConfiguracionTenantResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
+            'tasa_iva_default' => DecimalApi::tasa($this->tasa_iva_default),
             'moneda' => $this->moneda,
             'zona_horaria' => $this->zona_horaria,
             'mensaje_ticket' => $this->mensaje_ticket,

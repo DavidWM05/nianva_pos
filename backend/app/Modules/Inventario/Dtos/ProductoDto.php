@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Modules\Inventario\Dtos;
 
 final readonly class ProductoDto
@@ -18,6 +20,8 @@ final readonly class ProductoDto
         public ?bool $noResurtible,
         public ?bool $sinDescuento,
         private array $presentes,
+        public ?string $tasaIva = null,
+        public ?bool $exentoIva = null,
     ) {}
 
     /**
@@ -61,6 +65,14 @@ final readonly class ProductoDto
         }
         if (in_array('sin_descuento', $this->presentes, true)) {
             $datos['sin_descuento'] = $this->sinDescuento;
+        }
+
+        if (in_array('tasa_iva', $this->presentes, true)) {
+            $datos['tasa_iva'] = $this->tasaIva;
+        }
+
+        if (in_array('exento_iva', $this->presentes, true)) {
+            $datos['exento_iva'] = $this->exentoIva;
         }
 
         return $datos;

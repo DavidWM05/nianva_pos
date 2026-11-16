@@ -12,6 +12,7 @@ describe('ConfiguracionFormComponent', () => {
   let dynamicForm: DynamicFormComponent;
 
   const valorInicial: ConfiguracionTenant = {
+    tasa_iva_default: '0.0000',
     moneda: '$',
     mensaje_ticket: 'Gracias por su compra',
     logo_url: null,
@@ -59,6 +60,7 @@ describe('ConfiguracionFormComponent', () => {
     dynamicForm.onSubmit();
 
     expect(emitido).toEqual({
+      tasa_iva_default: 0,
       moneda: 'USD',
       mensaje_ticket: 'Gracias por su compra',
       logo_url: null,

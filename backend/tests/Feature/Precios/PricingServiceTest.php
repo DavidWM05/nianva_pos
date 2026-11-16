@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Precios;
 
+use App\Modules\Configuracion\Models\ConfiguracionTenant;
 use App\Modules\Inventario\Models\Categoria;
 use App\Modules\Inventario\Models\Producto;
 use App\Modules\Inventario\Models\ProductoVariante;
@@ -31,6 +32,7 @@ class PricingServiceTest extends TestCase
     public function test_cotiza_el_resultado_completo_de_cada_linea_y_del_carrito(array $caso): void
     {
         $tenant = Tenant::factory()->create();
+        ConfiguracionTenant::factory()->create(['tenant_id' => $tenant->id, 'tasa_iva_default' => '0.0000']);
         $otro = Tenant::factory()->create();
         app(TenantContext::class)->set($tenant);
         $sucursal = Sucursal::factory()->create(['tenant_id' => $tenant->id]);
@@ -90,12 +92,15 @@ class PricingServiceTest extends TestCase
         }, $resultado->lineas);
         $actual['cupon'] = $resultado->cupon === null ? null : get_object_vars($resultado->cupon);
         $esperado = $caso['esperado'];
+        $esperado['totalImpuestos'] = 0.0;
         array_walk_recursive($esperado, static function (&$valor) use ($ids): void {
             if (is_string($valor) && isset($ids[$valor])) {
                 $valor = $ids[$valor];
             }
         });
         foreach ($esperado['lineas'] as &$linea) {
+            $linea['tasaImpuesto'] = '0.0000';
+            $linea['exento'] = false;
             foreach (['precioBase', 'descuento', 'impuesto', 'total'] as $campo) {
                 $linea[$campo] = (float) $linea[$campo];
             }

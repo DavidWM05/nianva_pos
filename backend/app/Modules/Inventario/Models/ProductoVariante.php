@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Modules\Inventario\Models;
 
 use App\Modules\Inventario\Database\Factories\ProductoVarianteFactory;
@@ -12,11 +14,14 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use InvalidArgumentException;
 
 /**
+ * @property string|null $precio_venta
+ * @property string|null $costo
+ *
  * Conserva BelongsToTenantViaRelacion para las consultas (el scope sigue
  * resolviendose via producto.tenant_id). tenant_id se copia del producto al
  * crear la variante y sirve para el UNIQUE(tenant_id, codigo_barras).
  */
-#[Fillable(['tenant_id', 'producto_id', 'talla', 'color', 'codigo_barras', 'activo', 'unidad_medida_id', 'es_granel'])]
+#[Fillable(['tenant_id', 'producto_id', 'talla', 'color', 'codigo_barras', 'activo', 'unidad_medida_id', 'es_granel', 'precio_venta', 'costo'])]
 class ProductoVariante extends Model
 {
     use BelongsToTenantViaRelacion;
@@ -28,11 +33,13 @@ class ProductoVariante extends Model
 
     protected $table = 'producto_variantes';
 
+    protected $attributes = ['precio_venta' => null, 'costo' => null];
+
     protected $hidden = ['es_granel'];
 
     protected function casts(): array
     {
-        return ['activo' => 'boolean', 'es_granel' => 'boolean'];
+        return ['activo' => 'boolean', 'es_granel' => 'boolean', 'precio_venta' => 'decimal:2', 'costo' => 'decimal:2'];
     }
 
     protected static function booted(): void

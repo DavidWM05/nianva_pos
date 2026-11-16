@@ -83,6 +83,75 @@ final readonly class Dinero
         return self::porcentajeDe(self::productoDecimal($this->aCadena(), $cantidad, 0), $tasa);
     }
 
+    public function impuestoIncluido(string|int $tasa): self
+    {
+        [$negativo, $digitos, $escala] = self::partes($tasa);
+        if ($negativo || $escala > 4 || self::compararDigitos($digitos, '100'.str_repeat('0', $escala)) > 0) {
+            throw new InvalidArgumentException('La tasa debe estar entre cero y cien, con hasta cuatro decimales.');
+        }
+        $unidades = (int) ($digitos.str_repeat('0', 4 - $escala));
+        $denominador = (string) (1000000 + $unidades);
+        [$centavos, $resto] = self::dividirDigitos(self::multiplicarDigitos(ltrim((string) $this->centavos, '-'), (string) $unidades), $denominador);
+        [$decimal] = self::dividirDigitos($resto.'0', $denominador);
+
+        return self::redondear(self::decimal($centavos.$decimal, 3, $this->centavos < 0));
+    }
+
+    /**
+     * @param  list<self>  $pesos
+     * @return list<self>
+     */
+    public function repartir(array $pesos): array
+    {
+        $suma = self::desde(0);
+        foreach ($pesos as $peso) {
+            if ($peso->centavos < 0) {
+                throw new InvalidArgumentException('El reparto requiere importes no negativos.');
+            }
+            $suma = $suma->sumar($peso);
+        }
+        if ($this->centavos < 0 || $this->centavos > $suma->centavos) {
+            throw new InvalidArgumentException('El reparto no puede exceder la suma de sus pesos.');
+        }
+        if ($suma->centavos === 0) {
+            return array_map(static fn (self $peso): self => self::desde(0), $pesos);
+        }
+        $reparto = [];
+        $restos = [];
+        $pendientes = $this->centavos;
+        foreach ($pesos as $indice => $peso) {
+            [$centavos, $resto] = self::dividirDigitos(self::multiplicarDigitos((string) $this->centavos, (string) $peso->centavos), (string) $suma->centavos);
+            $reparto[$indice] = new self((int) $centavos);
+            $restos[$indice] = (int) $resto;
+            $pendientes -= (int) $centavos;
+        }
+        $indices = array_keys($restos);
+        usort($indices, static fn (int $a, int $b): int => ($restos[$b] <=> $restos[$a]) ?: ($a <=> $b));
+        foreach (array_slice($indices, 0, $pendientes) as $indice) {
+            $reparto[$indice] = $reparto[$indice]->sumar(new self(1));
+        }
+
+        return array_values($reparto);
+    }
+
+    /** @return array{string, string} */
+    private static function dividirDigitos(string $dividendo, string $divisor): array
+    {
+        $cociente = '';
+        $resto = '0';
+        foreach (str_split($dividendo) as $digito) {
+            $resto = ltrim($resto.$digito, '0') ?: '0';
+            $unidad = 0;
+            while (self::compararDigitos($resto, $divisor) >= 0) {
+                $resto = self::restarDigitos($resto, $divisor);
+                $unidad++;
+            }
+            $cociente .= (string) $unidad;
+        }
+
+        return [ltrim($cociente, '0') ?: '0', $resto];
+    }
+
     public function comparar(self $otro): int
     {
         return $this->centavos <=> $otro->centavos;

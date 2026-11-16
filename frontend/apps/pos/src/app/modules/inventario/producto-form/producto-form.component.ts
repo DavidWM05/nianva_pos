@@ -1,4 +1,4 @@
-import { aCentavos } from '@nianva/ui-format';
+import { aCentavos, tasaANumero } from '@nianva/ui-format';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -121,6 +121,24 @@ export class ProductoFormComponent implements OnInit, OnChanges {
   private construirCampos(): void {
     this.fields = [
       {
+        name: 'tasa_iva',
+        label: 'Tasa de IVA',
+        type: 'select',
+        options: [
+          { label: 'Usar la del tenant', value: null },
+          { label: '16 %', value: '16.0000' },
+          { label: '8 %', value: '8.0000' },
+          { label: '0 %', value: '0.0000' },
+        ],
+        defaultValue: this.valorInicial?.tasa_iva ?? null,
+      },
+      {
+        name: 'exento_iva',
+        label: 'Exento de IVA',
+        type: 'checkbox',
+        defaultValue: this.valorInicial?.exento_iva ?? false,
+      },
+      {
         name: 'nombre',
         label: 'Nombre',
         type: 'text',
@@ -169,6 +187,14 @@ export class ProductoFormComponent implements OnInit, OnChanges {
   onSubmit(value: Record<string, unknown>): void {
     this.guardar.emit({
       ...value,
+      ...(value['tasa_iva'] === undefined
+        ? {}
+        : {
+            tasa_iva:
+              value['tasa_iva'] === null
+                ? null
+                : tasaANumero(String(value['tasa_iva'])),
+          }),
       nombre: value['nombre'] as string,
       ...this.numericos.getRawValue(),
     });

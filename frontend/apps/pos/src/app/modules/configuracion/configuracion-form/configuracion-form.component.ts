@@ -1,14 +1,28 @@
-import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnChanges, Output, ViewChild } from '@angular/core';
+import { tasaANumero } from '@nianva/ui-format';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  EventEmitter,
+  Input,
+  OnChanges,
+  Output,
+  ViewChild,
+} from '@angular/core';
 import { Validators } from '@angular/forms';
 import { DynamicFormComponent, DynamicFormField } from '@nianva/ui-shared';
 
-import { ConfiguracionTenant, ConfiguracionTenantFormPayload, FrecuenciaBackup } from '../configuracion.types';
+import {
+  ConfiguracionTenant,
+  ConfiguracionTenantFormPayload,
+  FrecuenciaBackup,
+} from '../configuracion.types';
 
-const OPCIONES_BACKUP_FRECUENCIA: { label: string; value: FrecuenciaBackup }[] = [
-  { label: 'Diario', value: 'diario' },
-  { label: 'Semanal', value: 'semanal' },
-  { label: 'Mensual', value: 'mensual' },
-];
+const OPCIONES_BACKUP_FRECUENCIA: { label: string; value: FrecuenciaBackup }[] =
+  [
+    { label: 'Diario', value: 'diario' },
+    { label: 'Semanal', value: 'semanal' },
+    { label: 'Mensual', value: 'mensual' },
+  ];
 
 /**
  * Un solo formulario, sin campos condicionales -- moneda/mensaje de
@@ -37,6 +51,18 @@ export class ConfiguracionFormComponent implements OnChanges {
 
   ngOnChanges(): void {
     this.fields = [
+      {
+        name: 'tasa_iva_default',
+        label: 'Tasa de IVA por defecto',
+        type: 'select',
+        required: true,
+        options: [
+          { label: '16 %', value: '16.0000' },
+          { label: '8 %', value: '8.0000' },
+          { label: '0 %', value: '0.0000' },
+        ],
+        defaultValue: this.valorInicial.tasa_iva_default ?? '16.0000',
+      },
       {
         name: 'moneda',
         label: 'Moneda',
@@ -103,6 +129,7 @@ export class ConfiguracionFormComponent implements OnChanges {
 
   onSubmit(value: Record<string, unknown>): void {
     this.guardar.emit({
+      tasa_iva_default: tasaANumero(String(value['tasa_iva_default'])),
       moneda: String(value['moneda']),
       mensaje_ticket: (value['mensaje_ticket'] as string) || null,
       logo_url: (value['logo_url'] as string) || null,
