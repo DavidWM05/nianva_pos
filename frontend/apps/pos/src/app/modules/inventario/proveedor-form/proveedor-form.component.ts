@@ -7,9 +7,13 @@ import {
   Output,
   ViewChild,
 } from '@angular/core';
+import { limitesDe } from '@nianva/api-contrato';
 import { DynamicFormComponent, DynamicFormField } from '@nianva/ui-shared';
 
 import { ProveedorFormPayload } from '../compra.service';
+
+/** Límites del cuerpo de la petición, leídos del contrato (UI-11b). */
+const LIMITES = limitesDe('/proveedores', 'post');
 
 /**
  * Alta rapida de proveedor -- solo razon_social (unico campo obligatorio
@@ -39,8 +43,7 @@ export class ProveedorFormComponent implements OnInit {
         name: 'razon_social',
         label: 'Razón social',
         type: 'text',
-        required: true,
-        maxLength: 200,
+        limite: LIMITES.razon_social,
       },
     ];
   }

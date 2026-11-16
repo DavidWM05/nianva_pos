@@ -7,12 +7,15 @@ import {
   Output,
   ViewChild,
 } from '@angular/core';
-import { Validators } from '@angular/forms';
+import { limitesDe } from '@nianva/api-contrato';
 import { DynamicFormComponent, DynamicFormField } from '@nianva/ui-shared';
 
 import { CuponFormPayload } from '../cupon.service';
 import { Cupon } from '../cupon.types';
 import { numeroONulo } from '../numero-o-nulo';
+
+/** Límites del cuerpo de la petición, leídos del contrato (UI-11b). */
+const LIMITES = limitesDe('/cupones', 'post');
 
 /**
  * Campos condicionales solo para el valor: porcentaje con tipo porcentaje y
@@ -44,17 +47,15 @@ export class CuponFormComponent implements OnChanges {
         name: 'codigo',
         label: 'Código',
         type: 'text',
-        required: true,
         defaultValue: this.valorInicial?.codigo ?? '',
-        maxLength: 50,
+        limite: LIMITES.codigo,
       },
       {
         name: 'nombre',
         label: 'Nombre',
         type: 'text',
-        required: true,
         defaultValue: this.valorInicial?.nombre ?? '',
-        maxLength: 120,
+        limite: LIMITES.nombre,
       },
       {
         name: 'tipo',
@@ -71,32 +72,32 @@ export class CuponFormComponent implements OnChanges {
         name: 'porcentaje',
         label: 'Valor (%)',
         type: 'number',
+        limite: LIMITES.porcentaje,
         required: true,
         dependsOn: { field: 'tipo', values: ['porcentaje'] },
-        validators: [Validators.min(0), Validators.max(100)],
         defaultValue: numeroONulo(this.valorInicial?.porcentaje),
       },
       {
         name: 'monto',
         label: 'Valor ($)',
         type: 'number',
+        limite: LIMITES.monto,
         required: true,
         dependsOn: { field: 'tipo', values: ['monto_fijo'] },
-        validators: [Validators.min(0)],
         defaultValue: numeroONulo(this.valorInicial?.monto),
       },
       {
         name: 'uso_maximo',
         label: 'Uso máximo (total)',
         type: 'number',
-        validators: [Validators.min(1)],
+        limite: LIMITES.uso_maximo,
         defaultValue: this.valorInicial?.uso_maximo ?? null,
       },
       {
         name: 'uso_maximo_por_cliente',
         label: 'Uso máximo por cliente',
         type: 'number',
-        validators: [Validators.min(1)],
+        limite: LIMITES.uso_maximo_por_cliente,
         defaultValue: this.valorInicial?.uso_maximo_por_cliente ?? null,
       },
       {

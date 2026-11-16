@@ -6,7 +6,7 @@
       matInput
       type="text"
       [id]="campo50l1.controlId() ?? 'insumo-form-campo50l1'"
-      maxlength="200"
+      [maxlength]="limites.nombre.maxLength"
       [ngModel]="nombre()"
       (ngModelChange)="nombre.set($event)"
     />
@@ -16,7 +16,7 @@
       matInput
       type="text"
       [id]="campo50l2.controlId() ?? 'insumo-form-campo50l2'"
-      maxlength="50"
+      [maxlength]="limites.sku.maxLength"
       [ngModel]="sku()"
       (ngModelChange)="sku.set($event)"
     />

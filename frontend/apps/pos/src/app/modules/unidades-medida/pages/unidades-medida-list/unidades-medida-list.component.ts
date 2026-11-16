@@ -3,6 +3,7 @@ import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal } 
 import { FormsModule } from '@angular/forms';
 import { MatButton } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import { limitesDe } from '@nianva/api-contrato';
 import { BotonCrearComponent } from '@nianva/ui-actions';
 import { EstadoPagina, PageComponent, PageHeaderComponent } from '@nianva/ui-layout';
 import { ToastService } from '@nianva/ui-feedback';
@@ -52,6 +53,8 @@ interface UnidadVista extends UnidadMedida {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class UnidadesMedidaListComponent implements OnInit {
+  /** Límites del cuerpo de la petición, leídos del contrato (UI-11b). */
+  protected readonly limites = limitesDe('/unidades-medida', 'post');
   private readonly unidadMedidaService = inject(UnidadMedidaService);
   private readonly confirmDialog = inject(ConfirmDialogService);
   private readonly toast = inject(ToastService);

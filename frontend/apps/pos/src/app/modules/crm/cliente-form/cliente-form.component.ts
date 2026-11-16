@@ -8,10 +8,14 @@ import {
   ViewChild,
 } from '@angular/core';
 import { Validators } from '@angular/forms';
+import { limitesDe } from '@nianva/api-contrato';
 import { DynamicFormComponent, DynamicFormField } from '@nianva/ui-shared';
 
 import { ClienteFormPayload } from '../cliente.service';
 import { Cliente } from '../cliente.types';
+
+/** Límites del cuerpo de la petición, leídos del contrato (UI-11b). */
+const LIMITES = limitesDe('/clientes', 'post');
 
 /**
  * Reutilizado por la vista de creacion (sin valorInicial, ver
@@ -45,23 +49,22 @@ export class ClienteFormComponent implements OnChanges {
         name: 'nombre',
         label: 'Nombre',
         type: 'text',
-        required: true,
         defaultValue: this.valorInicial?.nombre ?? '',
-        maxLength: 200,
+        limite: LIMITES.nombre,
       },
       {
         name: 'documento_fiscal',
         label: 'Documento fiscal',
         type: 'text',
         defaultValue: this.valorInicial?.documento_fiscal ?? '',
-        maxLength: 30,
+        limite: LIMITES.documento_fiscal,
       },
       {
         name: 'telefono',
         label: 'Teléfono',
         type: 'text',
         defaultValue: this.valorInicial?.telefono ?? '',
-        maxLength: 20,
+        limite: LIMITES.telefono,
       },
       {
         name: 'correo',
@@ -69,7 +72,7 @@ export class ClienteFormComponent implements OnChanges {
         type: 'text',
         validators: [Validators.email],
         defaultValue: this.valorInicial?.correo ?? '',
-        maxLength: 150,
+        limite: LIMITES.correo,
       },
       {
         name: 'direccion',

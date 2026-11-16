@@ -1,3 +1,4 @@
+import { limitesDe } from '@nianva/api-contrato';
 import { aCentavos, tasaANumero } from '@nianva/ui-format';
 import {
   ChangeDetectionStrategy,
@@ -29,6 +30,9 @@ import { DynamicFormComponent, DynamicFormField } from '@nianva/ui-shared';
 
 import { ProductoFormPayload, ProductoService } from '../producto.service';
 import { CatalogoSimple, Producto } from '../producto.types';
+
+/** Límites del cuerpo de la petición, leídos del contrato (UI-11b). */
+const LIMITES = limitesDe('/productos', 'post');
 
 /**
  * Reutilizado por la vista de creacion (sin valorInicial, ver
@@ -68,8 +72,8 @@ export class ProductoFormComponent implements OnInit, OnChanges {
   @ViewChild(DynamicFormComponent) private formComponent!: DynamicFormComponent;
 
   protected readonly numericos = new FormGroup({
-    precio_compra: new FormControl<number | null>(null, [Validators.min(0)]),
-    precio_venta: new FormControl<number | null>(null, [Validators.min(0)]),
+    precio_compra: new FormControl<number | null>(null, [Validators.min(LIMITES.precio_compra.minimum)]),
+    precio_venta: new FormControl<number | null>(null, [Validators.min(LIMITES.precio_venta.minimum)]),
   });
 
   protected readonly estadoCatalogos = signal<'cargando' | 'listo' | 'error'>(
@@ -142,9 +146,8 @@ export class ProductoFormComponent implements OnInit, OnChanges {
         name: 'nombre',
         label: 'Nombre',
         type: 'text',
-        required: true,
         defaultValue: this.valorInicial?.nombre ?? '',
-        maxLength: 200,
+        limite: LIMITES.nombre,
       },
       {
         name: 'categoria_id',

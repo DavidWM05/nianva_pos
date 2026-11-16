@@ -8,10 +8,14 @@ import {
   Output,
   ViewChild,
 } from '@angular/core';
+import { limitesDe } from '@nianva/api-contrato';
 import { DynamicFormComponent, DynamicFormField } from '@nianva/ui-shared';
 
 import { CategoriaFormPayload } from '../categoria.service';
 import { Categoria } from '../categoria.types';
+
+/** Límites del cuerpo de la petición, leídos del contrato (UI-11b). */
+const LIMITES = limitesDe('/categorias', 'post');
 
 /**
  * Reutilizado por la vista de creacion (sin valorInicial, ver
@@ -46,9 +50,8 @@ export class CategoriaFormComponent implements OnChanges {
         name: 'nombre',
         label: 'Nombre',
         type: 'text',
-        required: true,
         defaultValue: this.valorInicial?.nombre ?? '',
-        maxLength: 120,
+        limite: LIMITES.nombre,
       },
       {
         name: 'descripcion',

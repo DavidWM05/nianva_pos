@@ -9,6 +9,7 @@ import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { MatButton } from '@angular/material/button';
 import { MatInput } from '@angular/material/input';
+import { limitesDe } from '@nianva/api-contrato';
 import { EntidadSelectorComponent, ToastService } from '@nianva/ui-shared';
 import { CampoComponent, BtnEnviarComponent } from '@nianva/ui-forms';
 import { PageHeaderComponent, PageComponent } from '@nianva/ui-layout';
@@ -33,6 +34,8 @@ import { InsumoService } from '../../insumo.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class InsumoFormComponent {
+  /** Límites del cuerpo de la petición, leídos del contrato (UI-11b). */
+  protected readonly limites = limitesDe('/insumos', 'post');
   private readonly insumoService = inject(InsumoService);
   private readonly router = inject(Router);
   private readonly toast = inject(ToastService);

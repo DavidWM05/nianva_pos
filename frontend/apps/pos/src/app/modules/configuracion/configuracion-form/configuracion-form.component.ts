@@ -9,6 +9,7 @@ import {
   ViewChild,
 } from '@angular/core';
 import { Validators } from '@angular/forms';
+import { limitesDe } from '@nianva/api-contrato';
 import { DynamicFormComponent, DynamicFormField } from '@nianva/ui-shared';
 
 import {
@@ -16,6 +17,9 @@ import {
   ConfiguracionTenantFormPayload,
   FrecuenciaBackup,
 } from '../configuracion.types';
+
+/** Límites del cuerpo de la petición, leídos del contrato (UI-11b). */
+const LIMITES = limitesDe('/configuracion', 'put');
 
 const OPCIONES_BACKUP_FRECUENCIA: { label: string; value: FrecuenciaBackup }[] =
   [
@@ -74,9 +78,8 @@ export class ConfiguracionFormComponent implements OnChanges {
         name: 'moneda',
         label: 'Moneda',
         type: 'text',
-        required: true,
         defaultValue: this.valorInicial.moneda,
-        maxLength: 5,
+        limite: LIMITES.moneda,
       },
       {
         name: 'mensaje_ticket',
@@ -91,7 +94,7 @@ export class ConfiguracionFormComponent implements OnChanges {
         placeholder: 'https://...',
         defaultValue: this.valorInicial.logo_url ?? '',
         validators: [Validators.pattern(/^https?:\/\/.+/)],
-        maxLength: 500,
+        limite: LIMITES.logo_url,
       },
       {
         name: 'mostrar_rfc',
