@@ -24,6 +24,7 @@ class CrearCotizacionRequest extends SolicitudNegocio
         $tenantId = $this->tenantId();
 
         return [
+            'lista_precio_id' => ['nullable', 'integer', ReglasTenant::existe('listas_precio', $tenantId)->where('activo', true)],
             'cliente_id' => ['nullable', 'integer', ReglasTenant::existe('clientes', $tenantId)],
             'sucursal_id' => ['nullable', 'integer', ReglasTenant::existe('sucursales', $tenantId)],
             'validez_dias' => ['nullable', 'integer', 'min:1', 'max:365'],
@@ -53,10 +54,11 @@ class CrearCotizacionRequest extends SolicitudNegocio
         $items = app(ResolverPreciosCotizacion::class)->resolver(
             (array) ($v['items'] ?? []),
             $precioManual,
-            new ContextoPrecio((int) $this->tenantId(), $sucursalId, isset($v['cliente_id']) ? (int) $v['cliente_id'] : null, CarbonImmutable::now()),
+            new ContextoPrecio((int) $this->tenantId(), $sucursalId, isset($v['cliente_id']) ? (int) $v['cliente_id'] : null, CarbonImmutable::now(), isset($v['lista_precio_id']) ? (int) $v['lista_precio_id'] : null),
         );
 
         return new CrearCotizacionDto(
+            listaPrecioId: isset($v['lista_precio_id']) ? (int) $v['lista_precio_id'] : null,
             clienteId: isset($v['cliente_id']) ? (int) $v['cliente_id'] : null,
             sucursalId: $sucursalId,
             validezDias: (int) ($v['validez_dias'] ?? 15),

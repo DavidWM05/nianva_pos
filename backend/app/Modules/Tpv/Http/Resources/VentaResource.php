@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Modules\Tpv\Http\Resources;
 
 use App\Modules\Nucleo\Support\DecimalApi;
@@ -22,6 +24,7 @@ class VentaResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
+            'lista_precio_id' => $this->resource->getAttribute('lista_precio_id') === null ? null : (int) $this->resource->getAttribute('lista_precio_id'),
             'id' => $this->id,
             'fecha' => $this->fecha,
             'cliente' => $this->whenLoaded(

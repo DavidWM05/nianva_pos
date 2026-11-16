@@ -55,8 +55,8 @@ export class VentaService {
    * calculado en el frontend -- se llama cada vez que la pantalla de
    * venta agrega o cambia la cantidad de una linea.
    */
-  cotizar(items: VentaItemPayload[]): Observable<VentaCotizacion> {
-    const cuerpo: CuerpoDe<'/ventas/cotizar', 'post'> = { items };
+  cotizar(items: VentaItemPayload[], contexto: Pick<CuerpoDe<'/ventas/cotizar', 'post'>, 'cliente_id' | 'lista_precio_id'> = {}): Observable<VentaCotizacion> {
+    const cuerpo: CuerpoDe<'/ventas/cotizar', 'post'> = { items, ...contexto };
 
     return this.http
       .post<RespuestaDe<'/ventas/cotizar', 'post'>>(urlApi(`/ventas/cotizar`), cuerpo)

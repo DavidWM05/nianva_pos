@@ -13,6 +13,7 @@ use App\Modules\Nucleo\Models\Tenant;
 use App\Modules\Nucleo\Services\TenantContext;
 use App\Modules\Precios\Exceptions\CuponInvalidoException;
 use App\Modules\Precios\Models\Cupon;
+use App\Modules\Precios\Models\ListaPrecio;
 use App\Modules\Precios\Models\ReglaPrecio;
 use App\Modules\Precios\Services\PricingService;
 use App\Modules\Precios\Support\Carrito;
@@ -35,6 +36,7 @@ class PricingServiceTest extends TestCase
         ConfiguracionTenant::factory()->create(['tenant_id' => $tenant->id, 'tasa_iva_default' => '0.0000']);
         $otro = Tenant::factory()->create();
         app(TenantContext::class)->set($tenant);
+        ListaPrecio::factory()->create(['id' => 987, 'tenant_id' => $tenant->id]);
         $sucursal = Sucursal::factory()->create(['tenant_id' => $tenant->id]);
         $categoria = Categoria::factory()->create(['tenant_id' => $tenant->id]);
         $producto = Producto::factory()->create(['tenant_id' => $tenant->id, 'categoria_id' => $categoria->id, 'precio_venta' => 100]);

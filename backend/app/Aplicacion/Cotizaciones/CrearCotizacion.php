@@ -20,7 +20,7 @@ final class CrearCotizacion
         $operacion = function () use ($dto, $usuario) {
             Tenant::query()->whereKey((int) $usuario->getAttribute('tenant_id'))->lockForUpdate()->firstOrFail();
 
-            return $this->service->crear(['tenant_id' => (int) $usuario->getAttribute('tenant_id'), 'sucursal_id' => $dto->sucursalId, 'usuario_id' => $usuario->id, 'cliente_id' => $dto->clienteId, 'validez_dias' => $dto->validezDias, 'descuento' => $dto->descuento, 'observaciones' => $dto->observaciones, 'uso_cfdi' => $dto->usoCfdi], $dto->itemsParaServicio());
+            return $this->service->crear(['tenant_id' => (int) $usuario->getAttribute('tenant_id'), 'sucursal_id' => $dto->sucursalId, 'usuario_id' => $usuario->id, 'cliente_id' => $dto->clienteId, 'lista_precio_id' => $dto->listaPrecioId, 'validez_dias' => $dto->validezDias, 'descuento' => $dto->descuento, 'observaciones' => $dto->observaciones, 'uso_cfdi' => $dto->usoCfdi], $dto->itemsParaServicio());
         };
 
         return DB::transactionLevel() > 0 ? $operacion() : DB::transaction($operacion);

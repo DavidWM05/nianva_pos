@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use App\Modules\Apartados\Http\Controllers\ApartadoController;
 use App\Modules\Auditoria\Http\Controllers\AuditoriaController;
 use App\Modules\Configuracion\Http\Controllers\ConfiguracionController;
@@ -35,7 +37,9 @@ use App\Modules\Nucleo\Http\Controllers\UsuarioController;
 use App\Modules\Nucleo\Http\Resources\UsuarioResource;
 use App\Modules\Payroll\Http\Controllers\PayrollController;
 use App\Modules\Precios\Http\Controllers\CuponController;
+use App\Modules\Precios\Http\Controllers\ListaPrecioController;
 use App\Modules\Precios\Http\Controllers\ReglaPrecioController;
+use App\Modules\Precios\Http\Middleware\SeleccionarListaPrecio;
 use App\Modules\Prestamos\Http\Controllers\PrestamoController;
 use App\Modules\Produccion\Http\Controllers\ProduccionController;
 use App\Modules\Tpv\Http\Controllers\CajaController;
@@ -190,6 +194,18 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/compras', [CompraController::class, 'store'])->middleware('permiso:compras.crear');
 
         // Precios y Promociones: tercer modulo real.
+        Route::get('/precios/listas', [ListaPrecioController::class, 'index'])->middleware('permiso:listas_precio.ver');
+        Route::get('/precios/listas/disponibles', [ListaPrecioController::class, 'disponibles'])->middleware('permiso:precios.elegir_lista');
+        Route::post('/precios/listas', [ListaPrecioController::class, 'store'])->middleware('permiso:listas_precio.crear');
+        Route::get('/precios/listas/{lista}', [ListaPrecioController::class, 'show'])->middleware('permiso:listas_precio.ver');
+        Route::put('/precios/listas/{lista}', [ListaPrecioController::class, 'update'])->middleware('permiso:listas_precio.editar');
+        Route::patch('/precios/listas/{lista}/desactivar', [ListaPrecioController::class, 'desactivar'])->middleware('permiso:listas_precio.eliminar');
+        Route::post('/precios/listas/{lista}/items', [ListaPrecioController::class, 'guardarItem'])->middleware('permiso:listas_precio.editar');
+        Route::put('/precios/listas/{lista}/items/{item}', [ListaPrecioController::class, 'actualizarItem'])->middleware('permiso:listas_precio.editar');
+        Route::delete('/precios/listas/{lista}/items/{item}', [ListaPrecioController::class, 'quitarItem'])->middleware('permiso:listas_precio.editar');
+        Route::post('/precios/listas/{lista}/clientes', [ListaPrecioController::class, 'asignarCliente'])->middleware('permiso:listas_precio.editar');
+        Route::delete('/precios/listas/{lista}/clientes/{asignacion}', [ListaPrecioController::class, 'quitarCliente'])->middleware('permiso:listas_precio.editar');
+
         Route::get('/reglas-precio', [ReglaPrecioController::class, 'index'])->middleware('permiso:reglas_precio.ver');
         Route::get('/reglas-precio/{regla}', [ReglaPrecioController::class, 'show'])->middleware('permiso:reglas_precio.ver');
         Route::post('/reglas-precio', [ReglaPrecioController::class, 'store'])->middleware('permiso:reglas_precio.crear');
@@ -225,8 +241,8 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::patch('/caja/{cajaSesion}/cerrar', [CajaController::class, 'cerrar'])->middleware('permiso:caja.cerrar');
 
         Route::get('/ventas', [VentaController::class, 'index'])->middleware('permiso:ventas.ver');
-        Route::post('/ventas', [VentaController::class, 'store'])->middleware('permiso:ventas.crear');
-        Route::post('/ventas/cotizar', [VentaController::class, 'cotizar'])->middleware('permiso:ventas.crear');
+        Route::post('/ventas', [VentaController::class, 'store'])->middleware(['permiso:ventas.crear', SeleccionarListaPrecio::class]);
+        Route::post('/ventas/cotizar', [VentaController::class, 'cotizar'])->middleware(['permiso:ventas.crear', SeleccionarListaPrecio::class]);
         Route::get('/ventas/reporte', [VentaController::class, 'reporte'])->middleware('permiso:reportes.ver');
         Route::get('/ventas/{venta}', [VentaController::class, 'show'])->middleware('permiso:ventas.ver');
         Route::patch('/ventas/{venta}/anular', [VentaController::class, 'anular'])->middleware('permiso:ventas.anular');
@@ -238,7 +254,7 @@ Route::middleware('auth:sanctum')->group(function () {
         // en esencia, cobrar el saldo final, el mismo gesto que abonar) para
         // que un vendedor pueda cerrar un apartado sin ser admin.
         Route::get('/apartados', [ApartadoController::class, 'index'])->middleware('permiso:apartados.ver');
-        Route::post('/apartados', [ApartadoController::class, 'store'])->middleware('permiso:apartados.crear');
+        Route::post('/apartados', [ApartadoController::class, 'store'])->middleware(['permiso:apartados.crear', SeleccionarListaPrecio::class]);
         Route::get('/apartados/{apartado}', [ApartadoController::class, 'show'])->middleware('permiso:apartados.ver');
         Route::post('/apartados/{apartado}/abonos', [ApartadoController::class, 'registrarAbono'])
             ->middleware('permiso:apartados.abonar');
@@ -281,9 +297,9 @@ Route::middleware('auth:sanctum')->group(function () {
         // Cotizaciones / Presupuestos
         Route::middleware('modulo:cotizaciones')->group(function () {
             Route::get('/cotizaciones', [CotizacionController::class, 'index'])->middleware('permiso:cotizaciones.ver');
-            Route::post('/cotizaciones', [CotizacionController::class, 'store'])->middleware('permiso:cotizaciones.crear');
+            Route::post('/cotizaciones', [CotizacionController::class, 'store'])->middleware(['permiso:cotizaciones.crear', SeleccionarListaPrecio::class]);
             Route::get('/cotizaciones/{cotizacion}', [CotizacionController::class, 'show'])->middleware('permiso:cotizaciones.ver');
-            Route::put('/cotizaciones/{id}', [CotizacionController::class, 'update'])->middleware('permiso:cotizaciones.editar');
+            Route::put('/cotizaciones/{id}', [CotizacionController::class, 'update'])->middleware(['permiso:cotizaciones.editar', SeleccionarListaPrecio::class]);
             Route::delete('/cotizaciones/{id}', [CotizacionController::class, 'destroy'])->middleware('permiso:cotizaciones.eliminar');
             Route::post('/cotizaciones/{id}/convertir', [CotizacionController::class, 'convertir'])->middleware('permiso:cotizaciones.convertir');
         });

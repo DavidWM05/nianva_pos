@@ -1,22 +1,56 @@
+import { SesionActualService } from '../../../../auth/sesion-actual.service';
+import { SelectorListaPrecioComponent } from '../../selector-lista-precio/selector-lista-precio.component';
 import { HttpErrorResponse } from '@angular/common/http';
-import { ChangeDetectionStrategy, Component, HostListener, OnInit, ViewChild, computed, inject, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  HostListener,
+  OnInit,
+  ViewChild,
+  computed,
+  inject,
+  signal,
+} from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatButton } from '@angular/material/button';
 import { RouterLink } from '@angular/router';
 import { SkeletonComponent } from '@nianva/ui-feedback';
-import { BtnEnviarComponent, CampoComponent, SelectFiltroComponent, SelectFiltroOpcion } from '@nianva/ui-forms';
+import {
+  BtnEnviarComponent,
+  CampoComponent,
+  SelectFiltroComponent,
+  SelectFiltroOpcion,
+} from '@nianva/ui-forms';
 import { aCentavos, DineroPipe } from '@nianva/ui-format';
-import { EntidadSelectorComponent, ToastService, mensajeError } from '@nianva/ui-shared';
+import {
+  EntidadSelectorComponent,
+  ToastService,
+  mensajeError,
+} from '@nianva/ui-shared';
 
 import { BUSCADOR_CLIENTE } from '../../../../core/buscadores-entidad.tokens';
 import { NotaCreditoService } from '../../../notas-credito/nota-credito.service';
 import { NotaCredito } from '../../../notas-credito/nota-credito.types';
 import { CajaService } from '../../caja.service';
 import { CajaSesion } from '../../caja.types';
-import { CuponValidacion, CuponValidacionService } from '../../cupon-validacion.service';
-import { LineasPagoCambio, LineasPagoComponent } from '../../lineas-pago/lineas-pago.component';
-import { LineasProductoCambio, LineasProductoComponent } from '../../lineas-producto/lineas-producto.component';
-import { Venta, VentaFormPayload, VentaItemPayload, VentaPagoPayload } from '../../venta.types';
+import {
+  CuponValidacion,
+  CuponValidacionService,
+} from '../../cupon-validacion.service';
+import {
+  LineasPagoCambio,
+  LineasPagoComponent,
+} from '../../lineas-pago/lineas-pago.component';
+import {
+  LineasProductoCambio,
+  LineasProductoComponent,
+} from '../../lineas-producto/lineas-producto.component';
+import {
+  Venta,
+  VentaFormPayload,
+  VentaItemPayload,
+  VentaPagoPayload,
+} from '../../venta.types';
 import { VentaService } from '../../venta.service';
 
 /**
@@ -39,6 +73,7 @@ import { VentaService } from '../../venta.service';
   standalone: true,
   imports: [
     FormsModule,
+    SelectorListaPrecioComponent,
     RouterLink,
     EntidadSelectorComponent,
     LineasProductoComponent,
@@ -63,12 +98,20 @@ export class VentaComponent implements OnInit {
 
   protected readonly buscadorCliente = inject(BUSCADOR_CLIENTE);
 
-  @ViewChild(LineasProductoComponent) private lineasProductoRef!: LineasProductoComponent;
+  @ViewChild(LineasProductoComponent)
+  private lineasProductoRef!: LineasProductoComponent;
   @ViewChild(LineasPagoComponent) private lineasPagoRef!: LineasPagoComponent;
 
   protected readonly cargandoCaja = signal(true);
   protected readonly cajaAbierta = signal<CajaSesion | null>(null);
 
+  private readonly sesionActual = inject(SesionActualService);
+  protected readonly puedeElegirLista = computed(
+    () =>
+      this.sesionActual.sesion()?.permisos.includes('precios.elegir_lista') ??
+      false,
+  );
+  protected readonly listaPrecioId = signal<number | null>(null);
   protected readonly clienteId = signal<number | null>(null);
 
   // -- Carrito (delegado a LineasProductoComponent) --
@@ -104,26 +147,48 @@ export class VentaComponent implements OnInit {
   protected readonly notasCreditoDisponibles = signal<NotaCredito[]>([]);
   protected readonly notaCreditoSeleccionadaId = signal<number | null>(null);
   protected readonly notasCreditoOpciones = computed(() =>
-    this.notasCreditoDisponibles().map((n) => ({ id: n.id, label: `$${n.saldo_disponible} disponibles (nota #${n.id})` })),
+    this.notasCreditoDisponibles().map((n) => ({
+      id: n.id,
+      label: `$${n.saldo_disponible} disponibles (nota #${n.id})`,
+    })),
   );
   // Sin nota de credito es una opcion mas: el select de libs/ui no tiene boton de limpiar.
-  protected readonly opcionesNotaCredito = computed<SelectFiltroOpcion[]>(() => [
-    { label: 'Sin nota de crédito', value: null },
-    ...this.notasCreditoOpciones().map((opcion) => ({ label: opcion.label, value: opcion.id })),
-  ]);
+  protected readonly opcionesNotaCredito = computed<SelectFiltroOpcion[]>(
+    () => [
+      { label: 'Sin nota de crédito', value: null },
+      ...this.notasCreditoOpciones().map((opcion) => ({
+        label: opcion.label,
+        value: opcion.id,
+      })),
+    ],
+  );
   protected readonly montoNotaCredito = computed(() => {
-    const nota = this.notasCreditoDisponibles().find((n) => n.id === this.notaCreditoSeleccionadaId());
+    const nota = this.notasCreditoDisponibles().find(
+      (n) => n.id === this.notaCreditoSeleccionadaId(),
+    );
 
-    return nota ? Math.min(aCentavos(nota.saldo_disponible), aCentavos(this.total())) / 100 : 0;
+    return nota
+      ? Math.min(aCentavos(nota.saldo_disponible), aCentavos(this.total())) /
+          100
+      : 0;
   });
 
   // Lo que le queda por cubrir a LineasPagoComponent (efectivo/tarjeta/etc)
   // despues de restar lo que se espera cubrir con gift card + nota de
   // credito.
   protected readonly montoObjetivoPago = computed(() => {
-    const giftCardEstimado = this.giftCardCodigo().trim() ? (this.giftCardMontoEstimado() ?? 0) : 0;
+    const giftCardEstimado = this.giftCardCodigo().trim()
+      ? (this.giftCardMontoEstimado() ?? 0)
+      : 0;
 
-    return Math.max(0, aCentavos(this.total()) - aCentavos(giftCardEstimado) - aCentavos(this.montoNotaCredito())) / 100;
+    return (
+      Math.max(
+        0,
+        aCentavos(this.total()) -
+          aCentavos(giftCardEstimado) -
+          aCentavos(this.montoNotaCredito()),
+      ) / 100
+    );
   });
 
   // -- Pagos (delegado a LineasPagoComponent) --
@@ -141,12 +206,17 @@ export class VentaComponent implements OnInit {
   // explica cual falta mientras el usuario captura (regla de "feedback en
   // caliente", no solo al someter).
   protected readonly puedeRegistrar = computed(
-    () => this.pagoCuadra() && this.clienteId() !== null && this.itemsActuales().length > 0,
+    () =>
+      this.pagoCuadra() &&
+      this.clienteId() !== null &&
+      this.itemsActuales().length > 0,
   );
 
   protected readonly mensajeBloqueo = computed<string | null>(() => {
-    if (this.itemsActuales().length === 0) return 'Agrega al menos un producto al carrito.';
-    if (this.clienteId() === null) return 'Selecciona un cliente para continuar.';
+    if (this.itemsActuales().length === 0)
+      return 'Agrega al menos un producto al carrito.';
+    if (this.clienteId() === null)
+      return 'Selecciona un cliente para continuar.';
     if (!this.pagoCuadra()) return 'El pago todavía no cuadra con el total.';
 
     return null;
@@ -168,7 +238,8 @@ export class VentaComponent implements OnInit {
     // defecto") -- si por lo que sea no aparece, el campo queda vacio y
     // el usuario debe elegir un cliente a mano.
     this.buscadorCliente.buscar('Publico General').subscribe((resultados) => {
-      const publicoGeneral = resultados.find((r) => r.nombre === 'Publico General') ?? resultados[0];
+      const publicoGeneral =
+        resultados.find((r) => r.nombre === 'Publico General') ?? resultados[0];
       if (publicoGeneral && this.clienteId() === null) {
         this.onClienteSeleccionado(publicoGeneral.id);
       }
@@ -203,7 +274,8 @@ export class VentaComponent implements OnInit {
    */
   @HostListener('window:keydown', ['$event'])
   protected onAtajoTeclado(event: KeyboardEvent): void {
-    if (this.cargandoCaja() || !this.cajaAbierta() || this.ventaRegistrada()) return;
+    if (this.cargandoCaja() || !this.cajaAbierta() || this.ventaRegistrada())
+      return;
 
     switch (event.key) {
       case 'F2':
@@ -281,6 +353,9 @@ export class VentaComponent implements OnInit {
 
     const payload: VentaFormPayload = {
       cliente_id: clienteId,
+      ...(this.listaPrecioId() !== null
+        ? { lista_precio_id: this.listaPrecioId() }
+        : {}),
       items: this.itemsActuales(),
       pagos: this.pagosActuales(),
       cupon_codigo: this.cuponAplicado()?.cupon.codigo ?? null,
@@ -302,6 +377,7 @@ export class VentaComponent implements OnInit {
   }
 
   nuevaVenta(): void {
+    this.listaPrecioId.set(null);
     this.ventaRegistrada.set(null);
   }
 
@@ -316,5 +392,4 @@ export class VentaComponent implements OnInit {
     this.giftCardMontoEstimado.set(null);
     this.notaCreditoSeleccionadaId.set(null);
   }
-
 }

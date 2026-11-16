@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Modules\Tpv\Dtos;
 
 final readonly class CrearVentaDto
@@ -16,5 +18,6 @@ final readonly class CrearVentaDto
         public float $descuentoManual,
         public ?string $giftCardCodigo,
         public ?int $notaCreditoId,
+        public ?int $listaPrecioId = null,
     ) {}
 }

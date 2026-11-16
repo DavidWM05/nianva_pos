@@ -70,7 +70,7 @@ class ApartadoService
     ) {}
 
     /**
-     * @param  array{tenant_id:int, sucursal_id:int, cliente_id:int, usuario_id:int, fecha_vencimiento?:?string, notas?:?string}  $datosApartado
+     * @param  array{tenant_id:int, sucursal_id:int, lista_precio_id?:?int, cliente_id:int, usuario_id:int, fecha_vencimiento?:?string, notas?:?string}  $datosApartado
      * @param  list<array{variante_id:int, cantidad:int|float}>  $items
      * @param  array<int, InventarioStock>  $stocks
      */
@@ -86,9 +86,10 @@ class ApartadoService
 
         $this->verificarPertenencia($tenantId, $sucursalId, $datosApartado['cliente_id']);
 
-        [$lineas, $total] = $this->resolverLineas($tenantId, $items, new ContextoPrecio($tenantId, $sucursalId, $datosApartado['cliente_id'], CarbonImmutable::now()));
+        [$lineas, $total] = $this->resolverLineas($tenantId, $items, new ContextoPrecio($tenantId, $sucursalId, $datosApartado['cliente_id'], CarbonImmutable::now(), $datosApartado['lista_precio_id'] ?? null));
 
         $apartado = Apartado::query()->create([
+            'lista_precio_id' => $datosApartado['lista_precio_id'] ?? null,
             'tenant_id' => $tenantId,
             'sucursal_id' => $sucursalId,
             'cliente_id' => $datosApartado['cliente_id'],
@@ -228,6 +229,7 @@ class ApartadoService
                 'sucursal_id' => $apartado->sucursal_id,
                 'usuario_id' => $usuarioId,
                 'cliente_id' => $apartado->cliente_id,
+                'lista_precio_id' => $apartado->getAttribute('lista_precio_id'),
                 'abono_previo' => (float) $apartado->total_abonado,
             ],
             items: $items,

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Modules\Apartados\Models;
 
 use App\Modules\Apartados\Database\Factories\ApartadoFactory;
@@ -17,6 +19,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 #[Fillable([
+    'lista_precio_id',
     'tenant_id', 'sucursal_id', 'cliente_id', 'usuario_id', 'venta_id',
     'total', 'total_abonado', 'estado', 'fecha_vencimiento', 'fecha_completado',
     'fecha_cancelado', 'usuario_cancelacion_id', 'motivo_cancelacion', 'notas',
@@ -38,6 +41,7 @@ class Apartado extends Model
     protected function casts(): array
     {
         return [
+            'lista_precio_id' => 'integer',
             'total' => 'decimal:2',
             'total_abonado' => 'decimal:2',
             'fecha_creacion' => 'datetime',

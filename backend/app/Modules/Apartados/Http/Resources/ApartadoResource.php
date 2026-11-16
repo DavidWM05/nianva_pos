@@ -24,6 +24,7 @@ class ApartadoResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
+            'lista_precio_id' => $this->resource->getAttribute('lista_precio_id') === null ? null : (int) $this->resource->getAttribute('lista_precio_id'),
             'id' => $this->id,
             'fecha_creacion' => $this->fecha_creacion,
             'cliente' => $this->whenLoaded(

@@ -43,6 +43,7 @@ Generado con `php artisan errores:catalogo` desde las excepciones de negocio y e
 | `gift_card_saldo_insuficiente` | 422 | `App\Modules\GiftCards\Exceptions\GiftCardSaldoInsuficienteException` | GiftCards | — |
 | `gift_card_sin_saldo` | 422 | `App\Modules\GiftCards\Exceptions\GiftCardSinSaldoException` | GiftCards | — |
 | `gift_card_ya_cancelada` | 422 | `App\Modules\GiftCards\Exceptions\GiftCardYaCanceladaException` | GiftCards | — |
+| `lista_precio_no_disponible` | 422 | `App\Modules\Precios\Exceptions\ListaPrecioNoDisponibleException` | Precios | lista_precio_id |
 | `metodo_no_permitido` | 405 | `App\Modules\Nucleo\Support\MapaErroresHttp` | Nucleo | - |
 | `modulo_no_activo` | 403 | `App\Modules\Nucleo\Exceptions\ModuloNoActivoException` | Nucleo | — |
 | `monto_invalido` | 422 | `App\Modules\GiftCards\Exceptions\MontoInvalidoException` | GiftCards | — |

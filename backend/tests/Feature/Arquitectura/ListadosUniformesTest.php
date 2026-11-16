@@ -8,6 +8,7 @@ use App\Modules\Nucleo\Models\Sucursal;
 use App\Modules\Nucleo\Models\Tenant;
 use App\Modules\Nucleo\Models\Usuario;
 use App\Modules\Nucleo\Services\TenantContext;
+use App\Modules\Precios\Models\ListaPrecio;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Route;
 use Tests\TestCase;
@@ -140,7 +141,7 @@ class ListadosUniformesTest extends TestCase
         ]);
         $ids = [];
 
-        foreach (['roles.ver', 'usuarios.ver'] as $nombre) {
+        foreach (['roles.ver', 'usuarios.ver', 'listas_precio.ver'] as $nombre) {
             [$modulo, $accion] = explode('.', $nombre);
             $ids[] = Permiso::firstOrCreate(
                 ['nombre' => $nombre],
@@ -183,6 +184,9 @@ class ListadosUniformesTest extends TestCase
                 'correo' => sprintf('usuario-%03d@test.com', $i),
             ]);
         }
+
+        ListaPrecio::factory()->create(['tenant_id' => $tenant->id, 'nombre' => 'Lista '.$token]);
+        ListaPrecio::factory()->create(['tenant_id' => $tenant->id, 'nombre' => 'Lista general']);
 
         app(TenantContext::class)->set($tenant);
         $this->actingAs($auth);

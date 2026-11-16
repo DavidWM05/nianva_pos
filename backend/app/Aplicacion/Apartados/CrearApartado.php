@@ -32,7 +32,7 @@ final class CrearApartado
 
             return $this->service->crearApartadoConStocks([
                 'tenant_id' => (int) $usuario->getAttribute('tenant_id'), 'sucursal_id' => $sucursalId,
-                'usuario_id' => $usuario->id, 'cliente_id' => $dto->clienteId,
+                'usuario_id' => $usuario->id, 'cliente_id' => $dto->clienteId, 'lista_precio_id' => $dto->listaPrecioId,
                 'fecha_vencimiento' => $dto->fechaVencimiento, 'notas' => $dto->notas,
             ], $items, $stocks);
         };

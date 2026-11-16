@@ -40,6 +40,7 @@ export const CODIGOS_ERROR = [
   'gift_card_saldo_insuficiente',
   'gift_card_sin_saldo',
   'gift_card_ya_cancelada',
+  'lista_precio_no_disponible',
   'metodo_no_permitido',
   'modulo_no_activo',
   'monto_invalido',

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Modules\Apartados\Dtos;
 
 final readonly class CrearApartadoDto
@@ -12,5 +14,6 @@ final readonly class CrearApartadoDto
         public array $items,
         public ?string $fechaVencimiento,
         public ?string $notas,
+        public ?int $listaPrecioId = null,
     ) {}
 }

@@ -237,6 +237,29 @@ export const appRoutes: Route[] = [
         data: { breadcrumb: 'Precios y promociones' },
         children: [
           {
+            path: 'listas/nuevo',
+            title: 'Núcleo · Nueva lista de precio',
+            loadComponent: () =>
+              import('./modules/precios/pages/lista-precio-registro/lista-precio-registro.component').then(
+                (m) => m.ListaPrecioRegistroComponent,
+              ),
+          },
+          {
+            path: 'listas/:id',
+            title: 'Núcleo · Lista de precio',
+            loadComponent: () =>
+              import('./modules/precios/pages/lista-precio-registro/lista-precio-registro.component').then(
+                (m) => m.ListaPrecioRegistroComponent,
+              ),
+          },
+          {
+            path: 'listas',
+            loadComponent: () =>
+              import('./modules/precios/pages/listas-precio-listado/listas-precio-listado.component').then(
+                (m) => m.ListasPrecioListadoComponent,
+              ),
+          },
+          {
             path: '',
             loadComponent: () =>
               import('./modules/precios/pages/precios/precios.component').then((m) => m.PreciosComponent),

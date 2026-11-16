@@ -8,7 +8,7 @@ final readonly class LineaPrecio
 {
     /**
      * @param  list<ReglaAplicada>  $reglas
-     * @param  null  $listaAplicada  Sin listas de precio todavía; llegan en ARQ-05c.
+     * @param  int|null  $listaAplicada  Lista cuyo item fijó el precio; null si no hubo item aplicable.
      * @param  float  $impuesto  IVA incluido, después de descuentos y reparto del cupón.
      */
     public function __construct(

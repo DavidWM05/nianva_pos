@@ -1,3 +1,4 @@
+import { ListaPrecioBuscadorService } from './modules/precios/lista-precio-buscador.service';
 import { provideHttpClient, withFetch, withInterceptors } from '@angular/common/http';
 import { ApplicationConfig, inject, provideAppInitializer, provideBrowserGlobalErrorListeners } from '@angular/core';
 import { TitleStrategy, provideRouter } from '@angular/router';
@@ -19,6 +20,7 @@ import { provideFormatoRegionalDeSesion } from './auth/formato-regional-de-sesio
 import {
   BUSCADOR_CATEGORIA,
   BUSCADOR_CLIENTE,
+  BUSCADOR_LISTA_PRECIO,
   BUSCADOR_INSUMO,
   BUSCADOR_PRODUCTO,
   BUSCADOR_RECETA,
@@ -62,6 +64,7 @@ export const appConfig: ApplicationConfig = {
     { provide: BUSCADOR_PRODUCTO, useExisting: ProductoBuscadorService },
     { provide: BUSCADOR_VARIANTE_DE_PRODUCTO, useExisting: VariantesDeProductoBuscadorService },
     { provide: BUSCADOR_CATEGORIA, useExisting: CategoriaBuscadorService },
+    { provide: BUSCADOR_LISTA_PRECIO, useExisting: ListaPrecioBuscadorService },
     { provide: BUSCADOR_CLIENTE, useExisting: ClienteBuscadorService },
     { provide: BUSCADOR_USUARIO, useExisting: UsuarioBuscadorService },
     { provide: BUSCADOR_UNIDAD_MEDIDA, useExisting: UnidadMedidaBuscadorService },

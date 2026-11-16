@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Modules\Cotizaciones\Dtos;
 
 final readonly class ActualizarCotizacionDto
@@ -16,6 +18,7 @@ final readonly class ActualizarCotizacionDto
         public ?string $observaciones,
         public array $items,
         private array $presentes,
+        public ?int $listaPrecioId = null,
     ) {}
 
     /**
@@ -47,6 +50,10 @@ final readonly class ActualizarCotizacionDto
         }
         if (in_array('observaciones', $this->presentes, true)) {
             $datos['observaciones'] = $this->observaciones;
+        }
+
+        if (in_array('lista_precio_id', $this->presentes, true)) {
+            $datos['lista_precio_id'] = $this->listaPrecioId;
         }
 
         return $datos;

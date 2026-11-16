@@ -14,7 +14,11 @@ use App\Modules\Nucleo\Support\DecimalApi;
 use App\Modules\Nucleo\Support\Dinero;
 use App\Modules\Precios\Exceptions\CuponInvalidoException;
 use App\Modules\Precios\Exceptions\CuponNoCombinableException;
+use App\Modules\Precios\Exceptions\ListaPrecioNoDisponibleException;
 use App\Modules\Precios\Models\Cupon;
+use App\Modules\Precios\Models\ListaPrecio;
+use App\Modules\Precios\Models\ListaPrecioCliente;
+use App\Modules\Precios\Models\ListaPrecioItem;
 use App\Modules\Precios\Models\ReglaPrecio;
 use App\Modules\Precios\Support\Carrito;
 use App\Modules\Precios\Support\ContextoPrecio;
@@ -43,6 +47,8 @@ final class PricingService
         $lineas = [];
         $subtotal = Dinero::desde(0);
         $tasas = [];
+        $lista = null;
+        $listaConsultada = false;
         $configuracion = ConfiguracionTenant::sinTenant()->where('tenant_id', $contexto->tenantId)->firstOrFail();
         foreach ($carrito->lineas as $linea) {
             $variante = ProductoVariante::query()->withoutGlobalScope(TenantScopeViaRelacion::class)->findOrFail($linea->varianteId);
@@ -51,6 +57,11 @@ final class PricingService
                 throw new InvalidArgumentException("La variante {$linea->varianteId} no pertenece al tenant {$contexto->tenantId}.");
             }
             $precioBase = Dinero::desde((string) ($variante->getAttribute('precio_venta') ?? $producto->getAttribute('precio_venta')));
+            if (! $listaConsultada) {
+                $lista = $this->listaAplicable($contexto);
+                $listaConsultada = true;
+            }
+            [$precioBase, $listaAplicada] = $this->precioDeLista($lista, $variante, $producto, $precioBase, $contexto);
             $tasas[] = [DecimalApi::tasa($producto->getAttribute('tasa_iva') ?? $configuracion->getAttribute('tasa_iva_default')), (bool) $producto->getAttribute('exento_iva')];
             $aplicables = $this->reglasAplicables($variante, $producto, $contexto);
             $descuento = Dinero::desde(0);
@@ -69,7 +80,7 @@ final class PricingService
                 $descuento = $descuento->sumar($descuentoRegla);
                 $reglas[] = new ReglaAplicada((int) $regla->getKey(), (string) $regla->getAttribute('tipo'), (int) $regla->getAttribute('prioridad'), $combinable, (float) $descuentoRegla->aCadena());
             }
-            $lineas[] = new LineaPrecio($linea->varianteId, $linea->cantidad, (float) $precioBase->aCadena(), null, $reglas, (float) $descuento->aCadena(), 0.0, (float) $totalLinea->aCadena());
+            $lineas[] = new LineaPrecio($linea->varianteId, $linea->cantidad, (float) $precioBase->aCadena(), $listaAplicada, $reglas, (float) $descuento->aCadena(), 0.0, (float) $totalLinea->aCadena());
             $subtotal = $subtotal->sumar($totalLinea);
         }
         $importeSubtotal = $carrito->subtotalReferencia === null ? $subtotal->aCadena() : $this->referenciaDecimal($carrito->subtotalReferencia);
@@ -105,6 +116,36 @@ final class PricingService
         }
 
         return new CotizacionPrecio($lineas, $carrito->subtotalReferencia ?? (float) $subtotal->aCadena(), $cupon, (float) $total->aCadena(), (float) $impuestos->aCadena());
+    }
+
+    private function listaAplicable(ContextoPrecio $contexto): ?ListaPrecio
+    {
+        $id = $contexto->listaPrecioId;
+        if ($id === null && $contexto->clienteId !== null) {
+            $id = ListaPrecioCliente::query()->withoutGlobalScope(TenantScope::class)->where('tenant_id', $contexto->tenantId)->where('cliente_id', $contexto->clienteId)->value('lista_precio_id');
+        }
+        if ($id === null) {
+            return null;
+        }
+        $lista = ListaPrecio::query()->withoutGlobalScope(TenantScope::class)->where('tenant_id', $contexto->tenantId)->where('activo', true)->whereKey((int) $id)->first();
+        if ($lista === null) {
+            throw new ListaPrecioNoDisponibleException((int) $id);
+        }
+
+        return $lista;
+    }
+
+    /** @return array{Dinero, int|null} */
+    private function precioDeLista(?ListaPrecio $lista, ProductoVariante $variante, Producto $producto, Dinero $resuelto, ContextoPrecio $contexto): array
+    {
+        if ($lista === null) {
+            return [$resuelto, null];
+        }
+        $items = ListaPrecioItem::query()->withoutGlobalScope(TenantScope::class)->where('tenant_id', $contexto->tenantId)->where('lista_precio_id', $lista->getKey());
+        $item = (clone $items)->where('variante_id', $variante->getKey())->first()
+            ?? $items->where('producto_id', $producto->getKey())->first();
+
+        return $item === null ? [$resuelto, null] : [Dinero::desde((string) $item->getAttribute('precio')), (int) $lista->getKey()];
     }
 
     /**

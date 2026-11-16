@@ -28,7 +28,10 @@
     </section>
 
     <section class="venta__seccion">
-      <nucleo-lineas-producto (cambio)="onLineasCambio($event)" />
+      @if (puedeElegirLista()) {
+        <nucleo-selector-lista-precio [valorInicial]="listaPrecioId()" (seleccionado)="listaPrecioId.set($event)" />
+      }
+      <nucleo-lineas-producto [clienteId]="clienteId()" [listaPrecioId]="listaPrecioId()" (cambio)="onLineasCambio($event)" />
     </section>
 
     <section class="venta__seccion">

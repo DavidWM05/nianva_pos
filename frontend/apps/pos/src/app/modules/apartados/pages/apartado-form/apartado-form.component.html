@@ -17,7 +17,7 @@
   </ui-section>
 
   <ui-section titulo="Resumen">
-    <nucleo-lineas-producto (cambio)="onLineasCambio($event)" />
+    <nucleo-lineas-producto [clienteId]="clienteId()" (cambio)="onLineasCambio($event)" />
   </ui-section>
 
   <ui-section titulo="Resumen">

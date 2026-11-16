@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use App\Modules\Apartados\Models\Apartado;
 use App\Modules\Cotizaciones\Models\Cotizacion;
 use App\Modules\Crm\Models\Cliente;
@@ -22,6 +24,9 @@ use App\Modules\Nucleo\Models\UsuarioRol;
 use App\Modules\Payroll\Models\Empleado;
 use App\Modules\Payroll\Models\Nomina;
 use App\Modules\Precios\Models\Cupon;
+use App\Modules\Precios\Models\ListaPrecio;
+use App\Modules\Precios\Models\ListaPrecioCliente;
+use App\Modules\Precios\Models\ListaPrecioItem;
 use App\Modules\Precios\Models\ReglaPrecio;
 use App\Modules\Prestamos\Models\Prestamo;
 use App\Modules\Produccion\Models\Insumo;
@@ -130,6 +135,9 @@ return [
         ProductoVariante::class,
         Compra::class,
         ReglaPrecio::class,
+        ListaPrecio::class,
+        ListaPrecioItem::class,
+        ListaPrecioCliente::class,
         Cupon::class,
         Cliente::class,
         PlanPagoCliente::class,

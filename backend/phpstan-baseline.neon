@@ -73,24 +73,6 @@ parameters:
 			path: app/Aplicacion/Ventas/RegistrarVenta.php
 
 		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 3
-			path: app/Aplicacion/Ventas/RegistrarVenta.php
-
-		-
-			message: '#^Parameter \#1 \$value of function collect contains unresolvable type\.$#'
-			identifier: argument.unresolvableType
-			count: 1
-			path: app/Aplicacion/Ventas/RegistrarVenta.php
-
-		-
-			message: '#^Return type of call to function collect contains unresolvable type\.$#'
-			identifier: function.unresolvableReturnType
-			count: 1
-			path: app/Aplicacion/Ventas/RegistrarVenta.php
-
-		-
 			message: '#^Variable \$cuponCodigo in empty\(\) always exists and is not falsy\.$#'
 			identifier: empty.variable
 			count: 1
@@ -325,12 +307,6 @@ parameters:
 			path: app/Modules/Apartados/Models/Apartado.php
 
 		-
-			message: '#^Method App\\Modules\\Apartados\\Models\\Apartado\:\:sinTenant\(\) return type with generic class Illuminate\\Database\\Eloquent\\Builder does not specify its types\: TModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Modules/Apartados/Models/Apartado.php
-
-		-
 			message: '#^Method App\\Modules\\Apartados\\Models\\Apartado\:\:sucursal\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
 			identifier: missingType.generics
 			count: 1
@@ -462,7 +438,6 @@ parameters:
 			count: 2
 			path: app/Modules/Apartados/Services/ApartadoService.php
 
-
 		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$producto\.$#'
 			identifier: property.notFound
@@ -470,17 +445,10 @@ parameters:
 			path: app/Modules/Apartados/Services/ApartadoService.php
 
 		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$tenant_id\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Modules/Apartados/Services/ApartadoService.php
-
-		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$variante_id\.$#'
 			identifier: property.notFound
 			count: 2
 			path: app/Modules/Apartados/Services/ApartadoService.php
-
 
 		-
 			message: '#^Access to an undefined property App\\Modules\\Auditoria\\Models\\Auditoria\:\:\$accion\.$#'
@@ -559,12 +527,6 @@ parameters:
 			identifier: method.unresolvableReturnType
 			count: 1
 			path: app/Modules/Auditoria/Http/Controllers/AuditoriaController.php
-
-		-
-			message: '#^Method App\\Modules\\Auditoria\\Models\\Auditoria\:\:sinTenant\(\) return type with generic class Illuminate\\Database\\Eloquent\\Builder does not specify its types\: TModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Modules/Auditoria/Models/Auditoria.php
 
 		-
 			message: '#^Method App\\Modules\\Auditoria\\Models\\Auditoria\:\:tenant\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
@@ -711,12 +673,6 @@ parameters:
 			path: app/Modules/Configuracion/Http/Resources/ConfiguracionTenantResource.php
 
 		-
-			message: '#^Method App\\Modules\\Configuracion\\Models\\ConfiguracionTenant\:\:sinTenant\(\) return type with generic class Illuminate\\Database\\Eloquent\\Builder does not specify its types\: TModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Modules/Configuracion/Models/ConfiguracionTenant.php
-
-		-
 			message: '#^Method App\\Modules\\Configuracion\\Models\\ConfiguracionTenant\:\:tenant\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
 			identifier: missingType.generics
 			count: 1
@@ -849,12 +805,6 @@ parameters:
 			path: app/Modules/Cotizaciones/Http/Resources/CotizacionResource.php
 
 		-
-			message: '#^Access to an undefined property App\\Modules\\Cotizaciones\\Http\\Resources\\CotizacionResource\:\:\$numero_cotizacion\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Modules/Cotizaciones/Http/Resources/CotizacionResource.php
-
-		-
 			message: '#^Access to an undefined property App\\Modules\\Cotizaciones\\Http\\Resources\\CotizacionResource\:\:\$observaciones\.$#'
 			identifier: property.notFound
 			count: 1
@@ -916,12 +866,6 @@ parameters:
 
 		-
 			message: '#^Method App\\Modules\\Cotizaciones\\Models\\Cotizacion\:\:detalles\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\HasMany does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Modules/Cotizaciones/Models/Cotizacion.php
-
-		-
-			message: '#^Method App\\Modules\\Cotizaciones\\Models\\Cotizacion\:\:sinTenant\(\) return type with generic class Illuminate\\Database\\Eloquent\\Builder does not specify its types\: TModel$#'
 			identifier: missingType.generics
 			count: 1
 			path: app/Modules/Cotizaciones/Models/Cotizacion.php
@@ -1028,43 +972,17 @@ parameters:
 			count: 1
 			path: app/Modules/Cotizaciones/Services/CotizacionService.php
 
-
-
 		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$cantidad\.$#'
 			identifier: property.notFound
 			count: 1
 			path: app/Modules/Cotizaciones/Services/CotizacionService.php
 
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$numero_cotizacion\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Modules/Cotizaciones/Services/CotizacionService.php
-
-
 		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$variante_id\.$#'
 			identifier: property.notFound
 			count: 1
 			path: app/Modules/Cotizaciones/Services/CotizacionService.php
-
-
-
-
-		-
-			message: '#^Offset ''descuento'' on array\{tenant_id\: int, sucursal_id\: int, usuario_id\: int, cliente_id\: int\|null, validez_dias\: int, descuento\: float, observaciones\: string\|null, uso_cfdi\: string\|null\} on left side of \?\? always exists and is not nullable\.$#'
-			identifier: nullCoalesce.offset
-			count: 1
-			path: app/Modules/Cotizaciones/Services/CotizacionService.php
-
-		-
-			message: '#^Offset ''validez_dias'' on array\{tenant_id\: int, sucursal_id\: int, usuario_id\: int, cliente_id\: int\|null, validez_dias\: int, descuento\: float, observaciones\: string\|null, uso_cfdi\: string\|null\} on left side of \?\? always exists and is not nullable\.$#'
-			identifier: nullCoalesce.offset
-			count: 1
-			path: app/Modules/Cotizaciones/Services/CotizacionService.php
-
 
 		-
 			message: '#^Access to an undefined property App\\Modules\\Crm\\Models\\Cliente\:\:\$es_sistema\.$#'
@@ -1163,12 +1081,6 @@ parameters:
 			path: app/Modules/Crm/Http/Resources/ClienteResource.php
 
 		-
-			message: '#^Method App\\Modules\\Crm\\Models\\Cliente\:\:sinTenant\(\) return type with generic class Illuminate\\Database\\Eloquent\\Builder does not specify its types\: TModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Modules/Crm/Models/Cliente.php
-
-		-
 			message: '#^Method App\\Modules\\Crm\\Models\\Cliente\:\:tenant\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
 			identifier: missingType.generics
 			count: 1
@@ -1251,8 +1163,6 @@ parameters:
 			identifier: missingType.return
 			count: 1
 			path: app/Modules/CrmAvanzado/Http/Controllers/CrmAvanzadoController.php
-
-
 
 		-
 			message: '#^Method App\\Modules\\CrmAvanzado\\Http\\Controllers\\CrmAvanzadoController\:\:reporte\(\) has no return type specified\.$#'
@@ -1351,12 +1261,6 @@ parameters:
 			path: app/Modules/CrmAvanzado/Http/Resources/CrmInteraccionResource.php
 
 		-
-			message: '#^Method App\\Modules\\CrmAvanzado\\Models\\CrmCampana\:\:sinTenant\(\) return type with generic class Illuminate\\Database\\Eloquent\\Builder does not specify its types\: TModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Modules/CrmAvanzado/Models/CrmCampana.php
-
-		-
 			message: '#^Method App\\Modules\\CrmAvanzado\\Models\\CrmCampana\:\:tenant\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
 			identifier: missingType.generics
 			count: 1
@@ -1370,12 +1274,6 @@ parameters:
 
 		-
 			message: '#^Method App\\Modules\\CrmAvanzado\\Models\\CrmInteraccion\:\:cliente\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Modules/CrmAvanzado/Models/CrmInteraccion.php
-
-		-
-			message: '#^Method App\\Modules\\CrmAvanzado\\Models\\CrmInteraccion\:\:sinTenant\(\) return type with generic class Illuminate\\Database\\Eloquent\\Builder does not specify its types\: TModel$#'
 			identifier: missingType.generics
 			count: 1
 			path: app/Modules/CrmAvanzado/Models/CrmInteraccion.php
@@ -1399,12 +1297,6 @@ parameters:
 			path: app/Modules/CrmAvanzado/Models/LoyaltyTransaccion.php
 
 		-
-			message: '#^Method App\\Modules\\CrmAvanzado\\Models\\LoyaltyTransaccion\:\:sinTenant\(\) return type with generic class Illuminate\\Database\\Eloquent\\Builder does not specify its types\: TModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Modules/CrmAvanzado/Models/LoyaltyTransaccion.php
-
-		-
 			message: '#^Method App\\Modules\\CrmAvanzado\\Models\\LoyaltyTransaccion\:\:tenant\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
 			identifier: missingType.generics
 			count: 1
@@ -1412,12 +1304,6 @@ parameters:
 
 		-
 			message: '#^Access to an undefined property App\\Modules\\Crm\\Models\\Cliente\:\:\$puntos_loyalty\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Modules/CrmAvanzado/Services/CrmAvanzadoService.php
-
-		-
-			message: '#^Access to an undefined property App\\Modules\\Crm\\Models\\Cliente\:\:\$tenant_id\.$#'
 			identifier: property.notFound
 			count: 2
 			path: app/Modules/CrmAvanzado/Services/CrmAvanzadoService.php
@@ -1535,8 +1421,6 @@ parameters:
 			identifier: missingType.return
 			count: 1
 			path: app/Modules/CuentasCobrar/Http/Controllers/CuentaCobrarController.php
-
-
 
 		-
 			message: '#^Method App\\Modules\\CuentasCobrar\\Http\\Controllers\\CuentaCobrarController\:\:registrarAbono\(\) has no return type specified\.$#'
@@ -1695,12 +1579,6 @@ parameters:
 			path: app/Modules/CuentasCobrar/Models/CuentaCobrar.php
 
 		-
-			message: '#^Method App\\Modules\\CuentasCobrar\\Models\\CuentaCobrar\:\:sinTenant\(\) return type with generic class Illuminate\\Database\\Eloquent\\Builder does not specify its types\: TModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Modules/CuentasCobrar/Models/CuentaCobrar.php
-
-		-
 			message: '#^Method App\\Modules\\CuentasCobrar\\Models\\CuentaCobrar\:\:tenant\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
 			identifier: missingType.generics
 			count: 1
@@ -1742,7 +1620,6 @@ parameters:
 			count: 2
 			path: app/Modules/CuentasCobrar/Services/CuentasCobrarService.php
 
-
 		-
 			message: '#^Method App\\Modules\\CuentasCobrar\\Services\\CuentasCobrarService\:\:obtenerResumenPorCliente\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
@@ -1754,7 +1631,6 @@ parameters:
 			identifier: missingType.generics
 			count: 1
 			path: app/Modules/CuentasCobrar/Services/CuentasCobrarService.php
-
 
 		-
 			message: '#^Call to an undefined method Illuminate\\Database\\Schema\\ForeignKeyDefinition\:\:comment\(\)\.$#'
@@ -1827,8 +1703,6 @@ parameters:
 			identifier: missingType.return
 			count: 1
 			path: app/Modules/CuentasPagar/Http/Controllers/CuentaPagarController.php
-
-
 
 		-
 			message: '#^Method App\\Modules\\CuentasPagar\\Http\\Controllers\\CuentaPagarController\:\:registrarPago\(\) has no return type specified\.$#'
@@ -1993,12 +1867,6 @@ parameters:
 			path: app/Modules/CuentasPagar/Models/CuentaPagar.php
 
 		-
-			message: '#^Method App\\Modules\\CuentasPagar\\Models\\CuentaPagar\:\:sinTenant\(\) return type with generic class Illuminate\\Database\\Eloquent\\Builder does not specify its types\: TModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Modules/CuentasPagar/Models/CuentaPagar.php
-
-		-
 			message: '#^Method App\\Modules\\CuentasPagar\\Models\\CuentaPagar\:\:tenant\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
 			identifier: missingType.generics
 			count: 1
@@ -2033,8 +1901,6 @@ parameters:
 			identifier: property.notFound
 			count: 2
 			path: app/Modules/CuentasPagar/Services/CuentasPagarService.php
-
-
 
 		-
 			message: '#^Cannot call method tienePermiso\(\) on App\\Modules\\Nucleo\\Models\\Usuario\|null\.$#'
@@ -2139,12 +2005,6 @@ parameters:
 			path: app/Modules/Delivery/Http/Resources/PedidoResource.php
 
 		-
-			message: '#^Access to an undefined property App\\Modules\\Delivery\\Http\\Resources\\PedidoResource\:\:\$numero_pedido\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Modules/Delivery/Http/Resources/PedidoResource.php
-
-		-
 			message: '#^Access to an undefined property App\\Modules\\Delivery\\Http\\Resources\\PedidoResource\:\:\$referencia\.$#'
 			identifier: property.notFound
 			count: 1
@@ -2188,12 +2048,6 @@ parameters:
 
 		-
 			message: '#^Method App\\Modules\\Delivery\\Models\\Pedido\:\:repartidor\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Modules/Delivery/Models/Pedido.php
-
-		-
-			message: '#^Method App\\Modules\\Delivery\\Models\\Pedido\:\:sinTenant\(\) return type with generic class Illuminate\\Database\\Eloquent\\Builder does not specify its types\: TModel$#'
 			identifier: missingType.generics
 			count: 1
 			path: app/Modules/Delivery/Models/Pedido.php
@@ -2254,12 +2108,6 @@ parameters:
 
 		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Collection\<int, Illuminate\\Database\\Eloquent\\Model\>\|Illuminate\\Database\\Eloquent\\Model\:\:\$producto\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Modules/Delivery/Services/PedidoService.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$numero_pedido\.$#'
 			identifier: property.notFound
 			count: 1
 			path: app/Modules/Delivery/Services/PedidoService.php
@@ -2511,12 +2359,6 @@ parameters:
 			path: app/Modules/Devoluciones/Models/Devolucion.php
 
 		-
-			message: '#^Method App\\Modules\\Devoluciones\\Models\\Devolucion\:\:sinTenant\(\) return type with generic class Illuminate\\Database\\Eloquent\\Builder does not specify its types\: TModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Modules/Devoluciones/Models/Devolucion.php
-
-		-
 			message: '#^Method App\\Modules\\Devoluciones\\Models\\Devolucion\:\:sucursal\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
 			identifier: missingType.generics
 			count: 1
@@ -2625,12 +2467,6 @@ parameters:
 			path: app/Modules/Devoluciones/Services/DevolucionService.php
 
 		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$tenant_id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Modules/Devoluciones/Services/DevolucionService.php
-
-		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$variante_id\.$#'
 			identifier: property.notFound
 			count: 1
@@ -2708,7 +2544,6 @@ parameters:
 			count: 1
 			path: app/Modules/GiftCards/Database/Migrations/2026_08_10_000003_add_caja_sesion_id_to_gift_card_recargas_table.php
 
-
 		-
 			message: '#^Cannot call method tienePermiso\(\) on App\\Modules\\Nucleo\\Models\\Usuario\|null\.$#'
 			identifier: method.nonObject
@@ -2726,8 +2561,6 @@ parameters:
 			identifier: missingType.return
 			count: 1
 			path: app/Modules/GiftCards/Http/Controllers/GiftCardController.php
-
-
 
 		-
 			message: '#^Method App\\Modules\\GiftCards\\Http\\Controllers\\GiftCardController\:\:recargar\(\) has no return type specified\.$#'
@@ -2850,12 +2683,6 @@ parameters:
 			path: app/Modules/GiftCards/Models/GiftCard.php
 
 		-
-			message: '#^Method App\\Modules\\GiftCards\\Models\\GiftCard\:\:sinTenant\(\) return type with generic class Illuminate\\Database\\Eloquent\\Builder does not specify its types\: TModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Modules/GiftCards/Models/GiftCard.php
-
-		-
 			message: '#^Method App\\Modules\\GiftCards\\Models\\GiftCard\:\:tenant\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
 			identifier: missingType.generics
 			count: 1
@@ -2908,7 +2735,6 @@ parameters:
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Modules/GiftCards/Services/GiftCardService.php
-
 
 		-
 			message: '#^Method App\\Modules\\Inventario\\Exceptions\\StockInsuficienteException\:\:contexto\(\) return type has no value type specified in iterable type array\.$#'
@@ -3343,12 +3169,6 @@ parameters:
 			path: app/Modules/Inventario/Models/Categoria.php
 
 		-
-			message: '#^Method App\\Modules\\Inventario\\Models\\Categoria\:\:sinTenant\(\) return type with generic class Illuminate\\Database\\Eloquent\\Builder does not specify its types\: TModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Modules/Inventario/Models/Categoria.php
-
-		-
 			message: '#^Method App\\Modules\\Inventario\\Models\\Categoria\:\:tenant\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
 			identifier: missingType.generics
 			count: 1
@@ -3362,12 +3182,6 @@ parameters:
 
 		-
 			message: '#^Method App\\Modules\\Inventario\\Models\\Compra\:\:proveedor\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Modules/Inventario/Models/Compra.php
-
-		-
-			message: '#^Method App\\Modules\\Inventario\\Models\\Compra\:\:sinTenant\(\) return type with generic class Illuminate\\Database\\Eloquent\\Builder does not specify its types\: TModel$#'
 			identifier: missingType.generics
 			count: 1
 			path: app/Modules/Inventario/Models/Compra.php
@@ -3410,12 +3224,6 @@ parameters:
 
 		-
 			message: '#^Method App\\Modules\\Inventario\\Models\\Departamento\:\:productos\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\HasMany does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Modules/Inventario/Models/Departamento.php
-
-		-
-			message: '#^Method App\\Modules\\Inventario\\Models\\Departamento\:\:sinTenant\(\) return type with generic class Illuminate\\Database\\Eloquent\\Builder does not specify its types\: TModel$#'
 			identifier: missingType.generics
 			count: 1
 			path: app/Modules/Inventario/Models/Departamento.php
@@ -3481,12 +3289,6 @@ parameters:
 			path: app/Modules/Inventario/Models/Producto.php
 
 		-
-			message: '#^Method App\\Modules\\Inventario\\Models\\Producto\:\:sinTenant\(\) return type with generic class Illuminate\\Database\\Eloquent\\Builder does not specify its types\: TModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Modules/Inventario/Models/Producto.php
-
-		-
 			message: '#^Method App\\Modules\\Inventario\\Models\\Producto\:\:tenant\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
 			identifier: missingType.generics
 			count: 1
@@ -3499,6 +3301,12 @@ parameters:
 			path: app/Modules/Inventario/Models/Producto.php
 
 		-
+			message: '#^Access to an undefined property App\\Modules\\Inventario\\Models\\Producto\:\:\$tenant_id\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Modules/Inventario/Models/ProductoVariante.php
+
+		-
 			message: '#^Access to an undefined property App\\Modules\\Inventario\\Models\\ProductoVariante\:\:\$producto_id\.$#'
 			identifier: property.notFound
 			count: 2
@@ -3508,18 +3316,6 @@ parameters:
 			message: '#^Access to an undefined property App\\Modules\\Inventario\\Models\\ProductoVariante\:\:\$tenant_id\.$#'
 			identifier: property.notFound
 			count: 1
-			path: app/Modules/Inventario/Models/ProductoVariante.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Collection\<int, Illuminate\\Database\\Eloquent\\Model\>\|Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Modules/Inventario/Models/ProductoVariante.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Collection\<int, Illuminate\\Database\\Eloquent\\Model\>\|Illuminate\\Database\\Eloquent\\Model\:\:\$tenant_id\.$#'
-			identifier: property.notFound
-			count: 2
 			path: app/Modules/Inventario/Models/ProductoVariante.php
 
 		-
@@ -3553,12 +3349,6 @@ parameters:
 			path: app/Modules/Inventario/Models/Proveedor.php
 
 		-
-			message: '#^Method App\\Modules\\Inventario\\Models\\Proveedor\:\:sinTenant\(\) return type with generic class Illuminate\\Database\\Eloquent\\Builder does not specify its types\: TModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Modules/Inventario/Models/Proveedor.php
-
-		-
 			message: '#^Method App\\Modules\\Inventario\\Models\\Proveedor\:\:tenant\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
 			identifier: missingType.generics
 			count: 1
@@ -3566,12 +3356,6 @@ parameters:
 
 		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$producto\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Modules/Inventario/Services/InventarioService.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$tenant_id\.$#'
 			identifier: property.notFound
 			count: 1
 			path: app/Modules/Inventario/Services/InventarioService.php
@@ -3599,8 +3383,6 @@ parameters:
 			identifier: missingType.return
 			count: 1
 			path: app/Modules/NotasCredito/Http/Controllers/NotaCreditoController.php
-
-
 
 		-
 			message: '#^Method App\\Modules\\NotasCredito\\Http\\Controllers\\NotaCreditoController\:\:show\(\) has no return type specified\.$#'
@@ -3670,12 +3452,6 @@ parameters:
 
 		-
 			message: '#^Method App\\Modules\\NotasCredito\\Models\\NotaCredito\:\:devolucion\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Modules/NotasCredito/Models/NotaCredito.php
-
-		-
-			message: '#^Method App\\Modules\\NotasCredito\\Models\\NotaCredito\:\:sinTenant\(\) return type with generic class Illuminate\\Database\\Eloquent\\Builder does not specify its types\: TModel$#'
 			identifier: missingType.generics
 			count: 1
 			path: app/Modules/NotasCredito/Models/NotaCredito.php
@@ -3789,31 +3565,25 @@ parameters:
 			path: app/Modules/Nucleo/Http/Controllers/AuthController.php
 
 		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$activo\.$#'
+			message: '#^Access to an undefined property App\\Modules\\Nucleo\\Models\\Usuario\:\:\$activo\.$#'
 			identifier: property.notFound
 			count: 1
 			path: app/Modules/Nucleo/Http/Controllers/AuthController.php
 
 		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
+			message: '#^Access to an undefined property App\\Modules\\Nucleo\\Models\\Usuario\:\:\$password\.$#'
 			identifier: property.notFound
 			count: 1
 			path: app/Modules/Nucleo/Http/Controllers/AuthController.php
 
 		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$password\.$#'
+			message: '#^Access to an undefined property App\\Modules\\Nucleo\\Models\\Usuario\:\:\$tenant_id\.$#'
 			identifier: property.notFound
 			count: 1
 			path: app/Modules/Nucleo/Http/Controllers/AuthController.php
 
 		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$tenant_id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Modules/Nucleo/Http/Controllers/AuthController.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$two_factor_confirmed_at\.$#'
+			message: '#^Access to an undefined property App\\Modules\\Nucleo\\Models\\Usuario\:\:\$two_factor_confirmed_at\.$#'
 			identifier: property.notFound
 			count: 1
 			path: app/Modules/Nucleo/Http/Controllers/AuthController.php
@@ -3827,18 +3597,6 @@ parameters:
 		-
 			message: '#^Method App\\Modules\\Nucleo\\Http\\Controllers\\AuthController\:\:logout\(\) has no return type specified\.$#'
 			identifier: missingType.return
-			count: 1
-			path: app/Modules/Nucleo/Http/Controllers/AuthController.php
-
-		-
-			message: '#^Parameter \#2 \$usuario of method App\\Modules\\Nucleo\\Http\\Controllers\\AuthController\:\:autenticar\(\) expects App\\Modules\\Nucleo\\Models\\Usuario, Illuminate\\Database\\Eloquent\\Model given\.$#'
-			identifier: argument.type
-			count: 2
-			path: app/Modules/Nucleo/Http/Controllers/AuthController.php
-
-		-
-			message: '#^Parameter \#2 \$usuario of method App\\Modules\\Nucleo\\Services\\TrustedDeviceService\:\:esDispositivoConfiable\(\) expects App\\Modules\\Nucleo\\Models\\Usuario, Illuminate\\Database\\Eloquent\\Model given\.$#'
-			identifier: argument.type
 			count: 1
 			path: app/Modules/Nucleo/Http/Controllers/AuthController.php
 
@@ -4125,25 +3883,25 @@ parameters:
 			path: app/Modules/Nucleo/Http/Controllers/TwoFactorController.php
 
 		-
-			message: '#^Parameter \#1 \$usuario of method App\\Modules\\Nucleo\\Http\\Controllers\\TwoFactorController\:\:intentarConCodigoDeRecuperacion\(\) expects App\\Modules\\Nucleo\\Models\\Usuario, Illuminate\\Database\\Eloquent\\Collection\<int, Illuminate\\Database\\Eloquent\\Model\>\|Illuminate\\Database\\Eloquent\\Model given\.$#'
+			message: '#^Parameter \#1 \$usuario of method App\\Modules\\Nucleo\\Http\\Controllers\\TwoFactorController\:\:intentarConCodigoDeRecuperacion\(\) expects App\\Modules\\Nucleo\\Models\\Usuario, App\\Modules\\Nucleo\\Models\\Usuario\|Illuminate\\Database\\Eloquent\\Collection\<int, App\\Modules\\Nucleo\\Models\\Usuario\> given\.$#'
 			identifier: argument.type
 			count: 1
 			path: app/Modules/Nucleo/Http/Controllers/TwoFactorController.php
 
 		-
-			message: '#^Parameter \#1 \$usuario of method App\\Modules\\Nucleo\\Http\\Controllers\\TwoFactorController\:\:intentarConCodigoTotp\(\) expects App\\Modules\\Nucleo\\Models\\Usuario, Illuminate\\Database\\Eloquent\\Collection\<int, Illuminate\\Database\\Eloquent\\Model\>\|Illuminate\\Database\\Eloquent\\Model given\.$#'
+			message: '#^Parameter \#1 \$usuario of method App\\Modules\\Nucleo\\Http\\Controllers\\TwoFactorController\:\:intentarConCodigoTotp\(\) expects App\\Modules\\Nucleo\\Models\\Usuario, App\\Modules\\Nucleo\\Models\\Usuario\|Illuminate\\Database\\Eloquent\\Collection\<int, App\\Modules\\Nucleo\\Models\\Usuario\> given\.$#'
 			identifier: argument.type
 			count: 1
 			path: app/Modules/Nucleo/Http/Controllers/TwoFactorController.php
 
 		-
-			message: '#^Parameter \#2 \$usuario of method App\\Modules\\Nucleo\\Services\\TrustedDeviceService\:\:generarYAlmacenar\(\) expects App\\Modules\\Nucleo\\Models\\Usuario, Illuminate\\Database\\Eloquent\\Collection\<int, Illuminate\\Database\\Eloquent\\Model\>\|Illuminate\\Database\\Eloquent\\Model given\.$#'
+			message: '#^Parameter \#2 \$usuario of method App\\Modules\\Nucleo\\Services\\TrustedDeviceService\:\:generarYAlmacenar\(\) expects App\\Modules\\Nucleo\\Models\\Usuario, App\\Modules\\Nucleo\\Models\\Usuario\|Illuminate\\Database\\Eloquent\\Collection\<int, App\\Modules\\Nucleo\\Models\\Usuario\> given\.$#'
 			identifier: argument.type
 			count: 1
 			path: app/Modules/Nucleo/Http/Controllers/TwoFactorController.php
 
 		-
-			message: '#^Parameter \#2 \$usuario of static method App\\Modules\\Nucleo\\Http\\Controllers\\AuthController\:\:autenticar\(\) expects App\\Modules\\Nucleo\\Models\\Usuario, Illuminate\\Database\\Eloquent\\Collection\<int, Illuminate\\Database\\Eloquent\\Model\>\|Illuminate\\Database\\Eloquent\\Model given\.$#'
+			message: '#^Parameter \#2 \$usuario of static method App\\Modules\\Nucleo\\Http\\Controllers\\AuthController\:\:autenticar\(\) expects App\\Modules\\Nucleo\\Models\\Usuario, App\\Modules\\Nucleo\\Models\\Usuario\|Illuminate\\Database\\Eloquent\\Collection\<int, App\\Modules\\Nucleo\\Models\\Usuario\> given\.$#'
 			identifier: argument.type
 			count: 1
 			path: app/Modules/Nucleo/Http/Controllers/TwoFactorController.php
@@ -4479,12 +4237,6 @@ parameters:
 			path: app/Modules/Nucleo/Http/Resources/UsuarioResource.php
 
 		-
-			message: '#^Method App\\Modules\\Nucleo\\Models\\ConfiguracionSeguridad\:\:sinTenant\(\) return type with generic class Illuminate\\Database\\Eloquent\\Builder does not specify its types\: TModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Modules/Nucleo/Models/ConfiguracionSeguridad.php
-
-		-
 			message: '#^Method App\\Modules\\Nucleo\\Models\\ConfiguracionSeguridad\:\:tenant\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
 			identifier: missingType.generics
 			count: 1
@@ -4509,22 +4261,10 @@ parameters:
 			path: app/Modules/Nucleo/Models/LicenciaLocal.php
 
 		-
-			message: '#^Method App\\Modules\\Nucleo\\Models\\LicenciaLocal\:\:sinTenant\(\) return type with generic class Illuminate\\Database\\Eloquent\\Builder does not specify its types\: TModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Modules/Nucleo/Models/LicenciaLocal.php
-
-		-
 			message: '#^Method App\\Modules\\Nucleo\\Models\\LicenciaLocal\:\:tenant\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
 			identifier: missingType.generics
 			count: 1
 			path: app/Modules/Nucleo/Models/LicenciaLocal.php
-
-		-
-			message: '#^Method App\\Modules\\Nucleo\\Models\\MetodoPago\:\:sinTenant\(\) return type with generic class Illuminate\\Database\\Eloquent\\Builder does not specify its types\: TModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Modules/Nucleo/Models/MetodoPago.php
 
 		-
 			message: '#^Method App\\Modules\\Nucleo\\Models\\MetodoPago\:\:tenant\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
@@ -4551,12 +4291,6 @@ parameters:
 			path: app/Modules/Nucleo/Models/Rol.php
 
 		-
-			message: '#^Method App\\Modules\\Nucleo\\Models\\Rol\:\:sinTenant\(\) return type with generic class Illuminate\\Database\\Eloquent\\Builder does not specify its types\: TModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Modules/Nucleo/Models/Rol.php
-
-		-
 			message: '#^Method App\\Modules\\Nucleo\\Models\\Rol\:\:tenant\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
 			identifier: missingType.generics
 			count: 1
@@ -4567,12 +4301,6 @@ parameters:
 			identifier: missingType.generics
 			count: 1
 			path: app/Modules/Nucleo/Models/Rol.php
-
-		-
-			message: '#^Method App\\Modules\\Nucleo\\Models\\Sucursal\:\:sinTenant\(\) return type with generic class Illuminate\\Database\\Eloquent\\Builder does not specify its types\: TModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Modules/Nucleo/Models/Sucursal.php
 
 		-
 			message: '#^Method App\\Modules\\Nucleo\\Models\\Sucursal\:\:tenant\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
@@ -4630,12 +4358,6 @@ parameters:
 
 		-
 			message: '#^Method App\\Modules\\Nucleo\\Models\\Usuario\:\:roles\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsToMany does not specify its types\: TRelatedModel, TDeclaringModel, TPivotModel, TAccessor \(2\-4 required\)$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Modules/Nucleo/Models/Usuario.php
-
-		-
-			message: '#^Method App\\Modules\\Nucleo\\Models\\Usuario\:\:sinTenant\(\) return type with generic class Illuminate\\Database\\Eloquent\\Builder does not specify its types\: TModel$#'
 			identifier: missingType.generics
 			count: 1
 			path: app/Modules/Nucleo/Models/Usuario.php
@@ -4929,12 +4651,6 @@ parameters:
 			path: app/Modules/Payroll/Http/Resources/NominaResource.php
 
 		-
-			message: '#^Method App\\Modules\\Payroll\\Models\\Empleado\:\:sinTenant\(\) return type with generic class Illuminate\\Database\\Eloquent\\Builder does not specify its types\: TModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Modules/Payroll/Models/Empleado.php
-
-		-
 			message: '#^Method App\\Modules\\Payroll\\Models\\Empleado\:\:sucursal\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
 			identifier: missingType.generics
 			count: 1
@@ -4954,12 +4670,6 @@ parameters:
 
 		-
 			message: '#^Method App\\Modules\\Payroll\\Models\\Nomina\:\:detalles\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\HasMany does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Modules/Payroll/Models/Nomina.php
-
-		-
-			message: '#^Method App\\Modules\\Payroll\\Models\\Nomina\:\:sinTenant\(\) return type with generic class Illuminate\\Database\\Eloquent\\Builder does not specify its types\: TModel$#'
 			identifier: missingType.generics
 			count: 1
 			path: app/Modules/Payroll/Models/Nomina.php
@@ -5271,12 +4981,6 @@ parameters:
 			path: app/Modules/Precios/Http/Resources/ReglaPrecioResource.php
 
 		-
-			message: '#^Method App\\Modules\\Precios\\Models\\Cupon\:\:sinTenant\(\) return type with generic class Illuminate\\Database\\Eloquent\\Builder does not specify its types\: TModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Modules/Precios/Models/Cupon.php
-
-		-
 			message: '#^Method App\\Modules\\Precios\\Models\\Cupon\:\:tenant\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
 			identifier: missingType.generics
 			count: 1
@@ -5295,12 +4999,6 @@ parameters:
 			path: app/Modules/Precios/Models/ReglaPrecio.php
 
 		-
-			message: '#^Method App\\Modules\\Precios\\Models\\ReglaPrecio\:\:sinTenant\(\) return type with generic class Illuminate\\Database\\Eloquent\\Builder does not specify its types\: TModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Modules/Precios/Models/ReglaPrecio.php
-
-		-
 			message: '#^Method App\\Modules\\Precios\\Models\\ReglaPrecio\:\:tenant\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
 			identifier: missingType.generics
 			count: 1
@@ -5311,16 +5009,6 @@ parameters:
 			identifier: missingType.generics
 			count: 1
 			path: app/Modules/Precios/Models/ReglaPrecio.php
-
-
-
-
-
-
-
-
-
-
 
 		-
 			message: '#^Method App\\Modules\\Prestamos\\Exceptions\\PagoExcedeSaldoPrestamoException\:\:contexto\(\) return type has no value type specified in iterable type array\.$#'
@@ -5339,8 +5027,6 @@ parameters:
 			identifier: missingType.return
 			count: 1
 			path: app/Modules/Prestamos/Http/Controllers/PrestamoController.php
-
-
 
 		-
 			message: '#^Method App\\Modules\\Prestamos\\Http\\Controllers\\PrestamoController\:\:registrarPago\(\) has no return type specified\.$#'
@@ -5440,12 +5126,6 @@ parameters:
 
 		-
 			message: '#^Method App\\Modules\\Prestamos\\Models\\Prestamo\:\:proveedor\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Modules/Prestamos/Models/Prestamo.php
-
-		-
-			message: '#^Method App\\Modules\\Prestamos\\Models\\Prestamo\:\:sinTenant\(\) return type with generic class Illuminate\\Database\\Eloquent\\Builder does not specify its types\: TModel$#'
 			identifier: missingType.generics
 			count: 1
 			path: app/Modules/Prestamos/Models/Prestamo.php
@@ -5775,12 +5455,6 @@ parameters:
 			path: app/Modules/Produccion/Http/Resources/TransformacionResource.php
 
 		-
-			message: '#^Method App\\Modules\\Produccion\\Models\\Insumo\:\:sinTenant\(\) return type with generic class Illuminate\\Database\\Eloquent\\Builder does not specify its types\: TModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Modules/Produccion/Models/Insumo.php
-
-		-
 			message: '#^Method App\\Modules\\Produccion\\Models\\Insumo\:\:tenant\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
 			identifier: missingType.generics
 			count: 1
@@ -5817,12 +5491,6 @@ parameters:
 			path: app/Modules/Produccion/Models/OrdenProduccion.php
 
 		-
-			message: '#^Method App\\Modules\\Produccion\\Models\\OrdenProduccion\:\:sinTenant\(\) return type with generic class Illuminate\\Database\\Eloquent\\Builder does not specify its types\: TModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Modules/Produccion/Models/OrdenProduccion.php
-
-		-
 			message: '#^Method App\\Modules\\Produccion\\Models\\OrdenProduccion\:\:sucursal\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
 			identifier: missingType.generics
 			count: 1
@@ -5842,12 +5510,6 @@ parameters:
 
 		-
 			message: '#^Method App\\Modules\\Produccion\\Models\\Receta\:\:ingredientes\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\HasMany does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Modules/Produccion/Models/Receta.php
-
-		-
-			message: '#^Method App\\Modules\\Produccion\\Models\\Receta\:\:sinTenant\(\) return type with generic class Illuminate\\Database\\Eloquent\\Builder does not specify its types\: TModel$#'
 			identifier: missingType.generics
 			count: 1
 			path: app/Modules/Produccion/Models/Receta.php
@@ -5889,12 +5551,6 @@ parameters:
 			path: app/Modules/Produccion/Models/RecetaIngrediente.php
 
 		-
-			message: '#^Method App\\Modules\\Produccion\\Models\\TransformacionProducto\:\:sinTenant\(\) return type with generic class Illuminate\\Database\\Eloquent\\Builder does not specify its types\: TModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Modules/Produccion/Models/TransformacionProducto.php
-
-		-
 			message: '#^Method App\\Modules\\Produccion\\Models\\TransformacionProducto\:\:sucursal\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
 			identifier: missingType.generics
 			count: 1
@@ -5924,16 +5580,11 @@ parameters:
 			count: 1
 			path: app/Modules/Produccion/Models/TransformacionProducto.php
 
-
-
-
 		-
 			message: '#^Access to an undefined property App\\Modules\\Produccion\\Models\\Receta\:\:\$rendimiento\.$#'
 			identifier: property.notFound
 			count: 1
 			path: app/Modules/Produccion/Services/ProduccionService.php
-
-
 
 		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$cantidad\.$#'
@@ -5947,21 +5598,11 @@ parameters:
 			count: 1
 			path: app/Modules/Produccion/Services/ProduccionService.php
 
-
-
-
-
-
-
-
-
 		-
 			message: '#^Method App\\Modules\\Produccion\\Services\\ProduccionService\:\:crearReceta\(\) has parameter \$data with no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Modules/Produccion/Services/ProduccionService.php
-
-
 
 		-
 			message: '#^Method App\\Modules\\Tpv\\Exceptions\\CajaSesionNoAbiertaException\:\:contexto\(\) return type has no value type specified in iterable type array\.$#'
@@ -6426,12 +6067,6 @@ parameters:
 			path: app/Modules/Tpv/Models/Venta.php
 
 		-
-			message: '#^Method App\\Modules\\Tpv\\Models\\Venta\:\:sinTenant\(\) return type with generic class Illuminate\\Database\\Eloquent\\Builder does not specify its types\: TModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Modules/Tpv/Models/Venta.php
-
-		-
 			message: '#^Method App\\Modules\\Tpv\\Models\\Venta\:\:sucursal\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
 			identifier: missingType.generics
 			count: 1
@@ -6510,6 +6145,12 @@ parameters:
 			path: app/Modules/Tpv/Services/CajaService.php
 
 		-
+			message: '#^Access to an undefined property App\\Modules\\Precios\\Models\\Cupon\:\:\$tenant_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/Tpv/Services/VentaService.php
+
+		-
 			message: '#^Access to an undefined property App\\Modules\\Tpv\\Models\\Venta\:\:\$estado\.$#'
 			identifier: property.notFound
 			count: 1
@@ -6521,8 +6162,6 @@ parameters:
 			count: 1
 			path: app/Modules/Tpv/Services/VentaService.php
 
-
-
 		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$producto\.$#'
 			identifier: property.notFound
@@ -6530,17 +6169,10 @@ parameters:
 			path: app/Modules/Tpv/Services/VentaService.php
 
 		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$tenant_id\.$#'
-			identifier: property.notFound
-			count: 3
-			path: app/Modules/Tpv/Services/VentaService.php
-
-		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$variante_id\.$#'
 			identifier: property.notFound
 			count: 1
 			path: app/Modules/Tpv/Services/VentaService.php
-
 
 		-
 			message: '#^Call to an undefined method Illuminate\\Database\\Schema\\ForeignKeyDefinition\:\:comment\(\)\.$#'
@@ -6621,12 +6253,6 @@ parameters:
 			path: app/Modules/UnidadesMedida/Models/UnidadMedida.php
 
 		-
-			message: '#^Method App\\Modules\\UnidadesMedida\\Models\\UnidadMedida\:\:sinTenant\(\) return type with generic class Illuminate\\Database\\Eloquent\\Builder does not specify its types\: TModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Modules/UnidadesMedida/Models/UnidadMedida.php
-
-		-
 			message: '#^Method App\\Modules\\UnidadesMedida\\Models\\UnidadMedida\:\:tenant\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
 			identifier: missingType.generics
 			count: 1
@@ -6655,8 +6281,6 @@ parameters:
 			identifier: property.notFound
 			count: 1
 			path: app/Modules/UnidadesMedida/Services/UnidadMedidaService.php
-
-
 
 		-
 			message: '#^Method App\\Modules\\UnidadesMedida\\Services\\UnidadMedidaService\:\:crear\(\) has parameter \$data with no value type specified in iterable type array\.$#'
@@ -6809,12 +6433,6 @@ parameters:
 			path: app/Modules/VentasPlazos/Models/PlanPagoCliente.php
 
 		-
-			message: '#^Method App\\Modules\\VentasPlazos\\Models\\PlanPagoCliente\:\:sinTenant\(\) return type with generic class Illuminate\\Database\\Eloquent\\Builder does not specify its types\: TModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Modules/VentasPlazos/Models/PlanPagoCliente.php
-
-		-
 			message: '#^Method App\\Modules\\VentasPlazos\\Models\\PlanPagoCliente\:\:tenant\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
 			identifier: missingType.generics
 			count: 1
@@ -6885,8 +6503,6 @@ parameters:
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Modules/VentasPlazos/Services/VentasPlazosService.php
-
-
 
 		-
 			message: '#^Parameter \#2 \$timestamp of function date expects int\|null, int\|false given\.$#'

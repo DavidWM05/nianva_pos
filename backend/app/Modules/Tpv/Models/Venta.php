@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Modules\Tpv\Models;
 
 use App\Modules\Crm\Models\Cliente;
@@ -17,6 +19,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 #[Fillable([
+    'lista_precio_id',
     'tenant_id', 'sucursal_id', 'caja_sesion_id', 'usuario_id', 'cliente_id', 'cupon_id',
     'total', 'descuento_cupon', 'descuento_manual', 'abono_previo', 'es_venta_sombra',
     'estado', 'motivo_anulacion', 'fecha_anulacion', 'usuario_anulacion_id',
@@ -38,6 +41,7 @@ class Venta extends Model
     protected function casts(): array
     {
         return [
+            'lista_precio_id' => 'integer',
             'total' => 'decimal:2',
             'descuento_cupon' => 'decimal:2',
             'descuento_manual' => 'decimal:2',

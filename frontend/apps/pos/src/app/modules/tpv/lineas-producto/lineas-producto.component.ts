@@ -1,11 +1,25 @@
-import { ChangeDetectionStrategy, Component, EventEmitter, Output, ViewChild, computed, inject, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  EventEmitter,
+  Input,
+  OnChanges,
+  Output,
+  ViewChild,
+  computed,
+  inject,
+  signal,
+} from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { EntidadBuscable, EntidadSelectorComponent } from '@nianva/ui-shared';
 import { MatButton, MatIconButton } from '@angular/material/button';
 import { CampoComponent } from '@nianva/ui-forms';
 import { aCentavos, CantidadPipe, DineroPipe } from '@nianva/ui-format';
 
-import { BUSCADOR_PRODUCTO, BUSCADOR_VARIANTE_DE_PRODUCTO } from '../../../core/buscadores-entidad.tokens';
+import {
+  BUSCADOR_PRODUCTO,
+  BUSCADOR_VARIANTE_DE_PRODUCTO,
+} from '../../../core/buscadores-entidad.tokens';
 import { VentaItemPayload } from '../venta.types';
 import { VentaService } from '../venta.service';
 
@@ -51,25 +65,44 @@ export interface LineasProductoCambio {
 @Component({
   selector: 'nucleo-lineas-producto',
   standalone: true,
-  imports: [FormsModule, EntidadSelectorComponent, MatButton, MatIconButton, CampoComponent, CantidadPipe, DineroPipe],
+  imports: [
+    FormsModule,
+    EntidadSelectorComponent,
+    MatButton,
+    MatIconButton,
+    CampoComponent,
+    CantidadPipe,
+    DineroPipe,
+  ],
   templateUrl: './lineas-producto.component.html',
   styleUrl: './lineas-producto.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class LineasProductoComponent {
+export class LineasProductoComponent implements OnChanges {
+  @Input() clienteId: number | null = null;
+  @Input() listaPrecioId: number | null = null;
+  private versionCotizacion = 0;
+  ngOnChanges(): void {
+    if (this.lineas().length > 0) this.recotizar();
+  }
   private readonly ventaService = inject(VentaService);
 
   protected readonly buscadorProducto = inject(BUSCADOR_PRODUCTO);
-  protected readonly buscadorVarianteDeProducto = inject(BUSCADOR_VARIANTE_DE_PRODUCTO);
+  protected readonly buscadorVarianteDeProducto = inject(
+    BUSCADOR_VARIANTE_DE_PRODUCTO,
+  );
 
-  @ViewChild(EntidadSelectorComponent) private selectorProductoRef!: EntidadSelectorComponent;
+  @ViewChild(EntidadSelectorComponent)
+  private selectorProductoRef!: EntidadSelectorComponent;
 
   @Output() cambio = new EventEmitter<LineasProductoCambio>();
 
   protected readonly productoSeleccionadoId = signal<number | null>(null);
   protected readonly productoSeleccionadoNombre = signal<string | null>(null);
   protected readonly varianteSeleccionadaId = signal<number | null>(null);
-  protected readonly variantesDelProductoSeleccionado = signal<EntidadBuscable[]>([]);
+  protected readonly variantesDelProductoSeleccionado = signal<
+    EntidadBuscable[]
+  >([]);
   protected readonly cantidadNueva = signal(1);
 
   protected readonly lineas = signal<LineaCarrito[]>([]);
@@ -81,7 +114,10 @@ export class LineasProductoComponent {
     const id = this.varianteSeleccionadaId();
     if (id === null) return null;
 
-    return this.variantesDelProductoSeleccionado().find((v) => v.id === id)?.stock_actual ?? null;
+    return (
+      this.variantesDelProductoSeleccionado().find((v) => v.id === id)
+        ?.stock_actual ?? null
+    );
   });
 
   protected readonly cantidadExcedeStock = computed(() => {
@@ -98,10 +134,16 @@ export class LineasProductoComponent {
 
     if (id === null) return;
 
-    this.buscadorProducto.obtener(id).subscribe((producto) => this.productoSeleccionadoNombre.set(producto.nombre));
+    this.buscadorProducto
+      .obtener(id)
+      .subscribe((producto) =>
+        this.productoSeleccionadoNombre.set(producto.nombre),
+      );
     this.buscadorVarianteDeProducto
       .hijosDe(id)
-      .subscribe((variantes) => this.variantesDelProductoSeleccionado.set(variantes));
+      .subscribe((variantes) =>
+        this.variantesDelProductoSeleccionado.set(variantes),
+      );
   }
 
   onVarianteSeleccionada(id: number | null): void {
@@ -111,14 +153,22 @@ export class LineasProductoComponent {
   agregarLinea(): void {
     const varianteId = this.varianteSeleccionadaId();
     const cantidad = this.cantidadNueva();
-    if (varianteId === null || cantidad <= 0 || this.cantidadExcedeStock()) return;
+    if (varianteId === null || cantidad <= 0 || this.cantidadExcedeStock())
+      return;
 
-    const varianteElegida = this.variantesDelProductoSeleccionado().find((v) => v.id === varianteId);
+    const varianteElegida = this.variantesDelProductoSeleccionado().find(
+      (v) => v.id === varianteId,
+    );
     const etiqueta = `${this.productoSeleccionadoNombre() ?? ''} (${varianteElegida?.nombre ?? ''})`;
 
     this.lineas.update((actuales) => [
       ...actuales,
-      { variante_id: varianteId, cantidad, etiqueta, stockDisponible: varianteElegida?.stock_actual },
+      {
+        variante_id: varianteId,
+        cantidad,
+        etiqueta,
+        stockDisponible: varianteElegida?.stock_actual,
+      },
     ]);
 
     this.onProductoSeleccionado(null);
@@ -156,7 +206,10 @@ export class LineasProductoComponent {
       actuales.map((linea, i) => {
         if (i !== indice) return linea;
 
-        const cantidadValida = linea.stockDisponible !== undefined ? Math.min(cantidad, linea.stockDisponible) : cantidad;
+        const cantidadValida =
+          linea.stockDisponible !== undefined
+            ? Math.min(cantidad, linea.stockDisponible)
+            : cantidad;
 
         return { ...linea, cantidad: cantidadValida };
       }),
@@ -166,12 +219,15 @@ export class LineasProductoComponent {
 
   /** Limpia el carrito -- lo llama el padre (via ViewChild) tras registrar con exito. */
   reiniciar(): void {
+    this.versionCotizacion++;
+    this.cotizando.set(false);
     this.lineas.set([]);
     this.subtotal.set(0);
     this.emitirCambio();
   }
 
   private recotizar(): void {
+    const version = ++this.versionCotizacion;
     const items = this.itemsActuales();
 
     if (items.length === 0) {
@@ -182,8 +238,16 @@ export class LineasProductoComponent {
     }
 
     this.cotizando.set(true);
-    this.ventaService.cotizar(items).subscribe({
+    const peticion =
+      this.clienteId === null && this.listaPrecioId === null
+        ? this.ventaService.cotizar(items)
+        : this.ventaService.cotizar(items, {
+            cliente_id: this.clienteId,
+            lista_precio_id: this.listaPrecioId,
+          });
+    peticion.subscribe({
       next: (cotizacion) => {
+        if (version !== this.versionCotizacion) return;
         this.lineas.update((actuales) =>
           actuales.map((linea, i) => ({
             ...linea,
@@ -196,15 +260,23 @@ export class LineasProductoComponent {
         this.cotizando.set(false);
         this.emitirCambio();
       },
-      error: () => this.cotizando.set(false),
+      error: () => {
+        if (version === this.versionCotizacion) this.cotizando.set(false);
+      },
     });
   }
 
   private itemsActuales(): VentaItemPayload[] {
-    return this.lineas().map((linea) => ({ variante_id: linea.variante_id, cantidad: linea.cantidad }));
+    return this.lineas().map((linea) => ({
+      variante_id: linea.variante_id,
+      cantidad: linea.cantidad,
+    }));
   }
 
   private emitirCambio(): void {
-    this.cambio.emit({ items: this.itemsActuales(), subtotal: this.subtotal() });
+    this.cambio.emit({
+      items: this.itemsActuales(),
+      subtotal: this.subtotal(),
+    });
   }
 }
