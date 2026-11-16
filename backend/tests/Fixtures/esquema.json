@@ -3694,6 +3694,12 @@
     "inventario_stock": {
         "columnas": [
             {
+                "nombre": "costo_promedio",
+                "tipo": "numeric",
+                "nullable": false,
+                "default": "'0'"
+            },
+            {
                 "nombre": "id",
                 "tipo": "integer",
                 "nullable": false,
@@ -3715,6 +3721,12 @@
                 "nombre": "sucursal_id",
                 "tipo": "integer",
                 "nullable": false,
+                "default": null
+            },
+            {
+                "nombre": "ultimo_costo",
+                "tipo": "numeric",
+                "nullable": true,
                 "default": null
             },
             {

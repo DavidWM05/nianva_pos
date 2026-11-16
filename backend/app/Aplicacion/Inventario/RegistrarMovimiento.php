@@ -21,7 +21,7 @@ final class RegistrarMovimiento
         $operacion = function () use ($dto): Kardex {
             $stock = $this->bloquearStock($dto);
 
-            return $this->inventarioService->registrarMovimientoConStock($stock, $dto->tipo, $dto->cantidad, $dto->motivo, $dto->usuarioId, $dto->referenciaTabla, $dto->referenciaId);
+            return $this->inventarioService->registrarMovimientoConStock($stock, $dto->tipo, $dto->cantidad, $dto->motivo, $dto->usuarioId, $dto->referenciaTabla, $dto->referenciaId, $dto->costoUnitario);
         };
 
         return DB::transactionLevel() > 0 ? $operacion() : DB::transaction($operacion);

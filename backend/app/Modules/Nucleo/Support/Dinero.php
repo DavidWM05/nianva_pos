@@ -94,6 +94,27 @@ final readonly class Dinero
         return self::redondear(self::decimal($centavos.$decimal, 3, $this->centavos < 0));
     }
 
+    public function promediarEntrada(string|int $existencia, self $costoEntrada, string|int $cantidad): self
+    {
+        $previa = Cantidad::milesimas($existencia);
+        $entrada = Cantidad::milesimas($cantidad);
+        if ($entrada <= 0 || $costoEntrada->centavos < 0 || ($previa > 0 && $this->centavos < 0)) {
+            throw new InvalidArgumentException('El promedio requiere una entrada positiva y costos no negativos.');
+        }
+        if ($previa <= 0) {
+            return $costoEntrada;
+        }
+        $valor = self::sumarDigitos(
+            self::multiplicarDigitos((string) $this->centavos, (string) $previa),
+            self::multiplicarDigitos((string) $costoEntrada->centavos, (string) $entrada),
+        );
+        $denominador = (string) ($previa + $entrada);
+        [$centavos, $resto] = self::dividirDigitos($valor, $denominador);
+        [$decimal] = self::dividirDigitos($resto.'0', $denominador);
+
+        return self::redondear(self::decimal($centavos.$decimal, 3, false));
+    }
+
     public function impuestoIncluido(string|int $tasa): self
     {
         [$negativo, $digitos, $escala] = self::partes($tasa);

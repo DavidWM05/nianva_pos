@@ -14,6 +14,8 @@ return new class extends Migration
             $table->foreignId('variante_id')->constrained('producto_variantes')->cascadeOnDelete();
             $table->decimal('stock_actual', 14, 3)->default(0);
             $table->decimal('stock_minimo', 14, 3)->default(0);
+            $table->decimal('costo_promedio', 12, 2)->default(0);
+            $table->decimal('ultimo_costo', 12, 2)->nullable();
             $table->dateTime('updated_at')->useCurrent()->useCurrentOnUpdate();
 
             $table->unique(['sucursal_id', 'variante_id'], 'uq_inventario_stock_sucursal_variante');

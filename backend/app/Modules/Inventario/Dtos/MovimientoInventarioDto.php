@@ -16,5 +16,6 @@ final readonly class MovimientoInventarioDto
         public int $usuarioId,
         public ?string $referenciaTabla = null,
         public ?int $referenciaId = null,
+        public string|int|float|null $costoUnitario = null,
     ) {}
 }
