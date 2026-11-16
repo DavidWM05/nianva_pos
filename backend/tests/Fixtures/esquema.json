@@ -677,6 +677,155 @@
             }
         ]
     },
+    "atributo_valores": {
+        "columnas": [
+            {
+                "nombre": "atributo_id",
+                "tipo": "integer",
+                "nullable": false,
+                "default": null
+            },
+            {
+                "nombre": "created_at",
+                "tipo": "datetime",
+                "nullable": false,
+                "default": "CURRENT_TIMESTAMP"
+            },
+            {
+                "nombre": "id",
+                "tipo": "integer",
+                "nullable": false,
+                "default": null
+            },
+            {
+                "nombre": "orden",
+                "tipo": "integer",
+                "nullable": false,
+                "default": "'0'"
+            },
+            {
+                "nombre": "tenant_id",
+                "tipo": "integer",
+                "nullable": false,
+                "default": null
+            },
+            {
+                "nombre": "valor",
+                "tipo": "varchar",
+                "nullable": false,
+                "default": null
+            }
+        ],
+        "indices": [
+            {
+                "nombre": "atributo_valores_tenant_id_atributo_id_valor_unique",
+                "columnas": [
+                    "tenant_id",
+                    "atributo_id",
+                    "valor"
+                ],
+                "unico": true
+            },
+            {
+                "nombre": "primary",
+                "columnas": [
+                    "id"
+                ],
+                "unico": true
+            }
+        ],
+        "llaves_foraneas": [
+            {
+                "nombre": null,
+                "columnas": [
+                    "atributo_id"
+                ],
+                "tabla_foranea": "atributos",
+                "columnas_foraneas": [
+                    "id"
+                ],
+                "on_update": "no action",
+                "on_delete": "cascade"
+            },
+            {
+                "nombre": null,
+                "columnas": [
+                    "tenant_id"
+                ],
+                "tabla_foranea": "tenants",
+                "columnas_foraneas": [
+                    "id"
+                ],
+                "on_update": "no action",
+                "on_delete": "cascade"
+            }
+        ]
+    },
+    "atributos": {
+        "columnas": [
+            {
+                "nombre": "created_at",
+                "tipo": "datetime",
+                "nullable": false,
+                "default": "CURRENT_TIMESTAMP"
+            },
+            {
+                "nombre": "id",
+                "tipo": "integer",
+                "nullable": false,
+                "default": null
+            },
+            {
+                "nombre": "nombre",
+                "tipo": "varchar",
+                "nullable": false,
+                "default": null
+            },
+            {
+                "nombre": "orden",
+                "tipo": "integer",
+                "nullable": false,
+                "default": "'0'"
+            },
+            {
+                "nombre": "tenant_id",
+                "tipo": "integer",
+                "nullable": false,
+                "default": null
+            }
+        ],
+        "indices": [
+            {
+                "nombre": "atributos_tenant_id_nombre_unique",
+                "columnas": [
+                    "tenant_id",
+                    "nombre"
+                ],
+                "unico": true
+            },
+            {
+                "nombre": "primary",
+                "columnas": [
+                    "id"
+                ],
+                "unico": true
+            }
+        ],
+        "llaves_foraneas": [
+            {
+                "nombre": null,
+                "columnas": [
+                    "tenant_id"
+                ],
+                "tabla_foranea": "tenants",
+                "columnas_foraneas": [
+                    "id"
+                ],
+                "on_update": "no action",
+                "on_delete": "cascade"
+            }
+        ]
+    },
     "auditoria": {
         "columnas": [
             {
@@ -1502,6 +1651,12 @@
                 "tipo": "tinyint",
                 "nullable": false,
                 "default": "'1'"
+            },
+            {
+                "nombre": "perfil_giro",
+                "tipo": "varchar",
+                "nullable": false,
+                "default": "'generico'"
             },
             {
                 "nombre": "tasa_iva_default",
@@ -8081,6 +8236,89 @@
                     "tenant_id"
                 ],
                 "tabla_foranea": "tenants",
+                "columnas_foraneas": [
+                    "id"
+                ],
+                "on_update": "no action",
+                "on_delete": "cascade"
+            }
+        ]
+    },
+    "variante_atributo_valores": {
+        "columnas": [
+            {
+                "nombre": "atributo_id",
+                "tipo": "integer",
+                "nullable": false,
+                "default": null
+            },
+            {
+                "nombre": "atributo_valor_id",
+                "tipo": "integer",
+                "nullable": false,
+                "default": null
+            },
+            {
+                "nombre": "id",
+                "tipo": "integer",
+                "nullable": false,
+                "default": null
+            },
+            {
+                "nombre": "variante_id",
+                "tipo": "integer",
+                "nullable": false,
+                "default": null
+            }
+        ],
+        "indices": [
+            {
+                "nombre": "primary",
+                "columnas": [
+                    "id"
+                ],
+                "unico": true
+            },
+            {
+                "nombre": "variante_atributo_valores_variante_id_atributo_id_unique",
+                "columnas": [
+                    "variante_id",
+                    "atributo_id"
+                ],
+                "unico": true
+            }
+        ],
+        "llaves_foraneas": [
+            {
+                "nombre": null,
+                "columnas": [
+                    "atributo_id"
+                ],
+                "tabla_foranea": "atributos",
+                "columnas_foraneas": [
+                    "id"
+                ],
+                "on_update": "no action",
+                "on_delete": "restrict"
+            },
+            {
+                "nombre": null,
+                "columnas": [
+                    "atributo_valor_id"
+                ],
+                "tabla_foranea": "atributo_valores",
+                "columnas_foraneas": [
+                    "id"
+                ],
+                "on_update": "no action",
+                "on_delete": "restrict"
+            },
+            {
+                "nombre": null,
+                "columnas": [
+                    "variante_id"
+                ],
+                "tabla_foranea": "producto_variantes",
                 "columnas_foraneas": [
                     "id"
                 ],

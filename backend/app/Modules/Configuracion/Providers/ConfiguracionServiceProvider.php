@@ -2,6 +2,7 @@
 
 namespace App\Modules\Configuracion\Providers;
 
+use App\Modules\Configuracion\Console\Commands\AplicarPerfilGiroCommand;
 use App\Modules\Configuracion\Observers\TenantObserver;
 use App\Modules\Nucleo\Models\Tenant;
 use Illuminate\Support\ServiceProvider;
@@ -13,5 +14,9 @@ class ConfiguracionServiceProvider extends ServiceProvider
         $this->loadMigrationsFrom(__DIR__.'/../Database/Migrations');
 
         Tenant::observe(TenantObserver::class);
+
+        if ($this->app->runningInConsole()) {
+            $this->commands([AplicarPerfilGiroCommand::class]);
+        }
     }
 }

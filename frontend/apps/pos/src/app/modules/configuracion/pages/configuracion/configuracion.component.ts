@@ -8,6 +8,7 @@ import { FechaHoraPipe, FechaPipe } from '@nianva/ui-format';
 import { ConfiguracionFormComponent } from '../../configuracion-form/configuracion-form.component';
 import { ConfiguracionSeguridadFormComponent } from '../../configuracion-seguridad-form/configuracion-seguridad-form.component';
 import { ConfiguracionService } from '../../configuracion.service';
+import { PerfilGiroComponent } from '../../perfil-giro/perfil-giro.component';
 import {
   ConfiguracionSeguridad,
   ConfiguracionTenant,
@@ -33,7 +34,7 @@ import {
 @Component({
   selector: 'nucleo-configuracion',
   standalone: true,
-  imports: [AlertComponent, BadgeComponent, ConfiguracionFormComponent, DatosComponent, ConfiguracionSeguridadFormComponent, FechaHoraPipe, FechaPipe, PageComponent, PageHeaderComponent, RecordTabsComponent, SectionComponent, SkeletonComponent],
+  imports: [AlertComponent, BadgeComponent, ConfiguracionFormComponent, DatosComponent, ConfiguracionSeguridadFormComponent, FechaHoraPipe, FechaPipe, PageComponent, PageHeaderComponent, PerfilGiroComponent, RecordTabsComponent, SectionComponent, SkeletonComponent],
   templateUrl: './configuracion.component.html',
   styleUrl: './configuracion.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -48,6 +49,7 @@ export class ConfiguracionComponent implements OnInit {
   protected readonly tabs: RecordTabConfig[] = [
     { label: 'Empresa', icon: 'pi pi-briefcase' },
     { label: 'Licencia', icon: 'pi pi-verified' },
+    { label: 'Giro', icon: 'pi pi-shop' },
   ];
 
   protected readonly cargando = signal(true);

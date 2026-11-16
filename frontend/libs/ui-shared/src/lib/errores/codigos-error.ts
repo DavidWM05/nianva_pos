@@ -6,6 +6,7 @@ export const CODIGOS_ERROR = [
   'ajuste_puntos_invalido',
   'apartado_estado_invalido',
   'apartado_saldo_insuficiente',
+  'atributo_en_uso',
   'caja_no_abierta',
   'caja_ya_abierta',
   'caja_ya_cerrada',

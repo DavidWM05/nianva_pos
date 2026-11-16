@@ -84,4 +84,37 @@ class ProductoVariante extends Model
     {
         return $this->hasMany(Kardex::class, 'variante_id');
     }
+
+    /**
+     * ARQ-07: los valores de atributo de la variante (a lo mas uno por atributo).
+     *
+     * @return HasMany<VarianteAtributoValor, $this>
+     */
+    public function valoresAtributo(): HasMany
+    {
+        return $this->hasMany(VarianteAtributoValor::class, 'variante_id');
+    }
+
+    /**
+     * ARQ-07: nombre de la variante con los valores de sus atributos, unidos y en el orden del
+     * atributo ("M / Rojo"). Sin atributos, se arma con talla y color mientras existan (se
+     * retiran en ARQ-07b). Null si no hay nada que mostrar. Pide valoresAtributo.valor.atributo
+     * cargado (modelos estrictos, DAT-14).
+     */
+    public function nombreDeAtributos(): ?string
+    {
+        $partes = $this->valoresAtributo
+            ->filter(fn (VarianteAtributoValor $fila) => $fila->valor !== null && $fila->valor->atributo !== null)
+            ->sortBy(fn (VarianteAtributoValor $fila) => [$fila->valor?->atributo->orden ?? 0, $fila->atributo_id])
+            ->map(fn (VarianteAtributoValor $fila) => $fila->valor?->valor)
+            ->filter()
+            ->values()
+            ->all();
+
+        if ($partes === []) {
+            $partes = array_values(array_filter([$this->getAttribute('talla'), $this->getAttribute('color')], fn ($parte) => $parte !== null && $parte !== ''));
+        }
+
+        return $partes === [] ? null : implode(' / ', array_map('strval', $partes));
+    }
 }

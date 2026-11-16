@@ -1,6 +1,7 @@
 import { Route } from '@angular/router';
 
 import { authGuard, requiereSesionGuard } from './auth/auth.guard';
+import { atributosDeVarianteResolver } from './modules/inventario/atributos-de-variante.resolver';
 
 /**
  * Cada modulo se carga con loadComponent (import() dinamico con ruta
@@ -171,6 +172,7 @@ export const appRoutes: Route[] = [
             path: 'productos/:id',
             title: 'Núcleo · Detalle de producto',
             data: { breadcrumb: 'Detalle' },
+            resolve: { atributos: atributosDeVarianteResolver },
             loadComponent: () =>
               import('./modules/inventario/pages/producto-detalle/producto-detalle.component').then(
                 (m) => m.ProductoDetalleComponent,
@@ -219,6 +221,33 @@ export const appRoutes: Route[] = [
             loadComponent: () =>
               import('./modules/inventario/pages/departamento-crear/departamento-crear.component').then(
                 (m) => m.DepartamentoCrearComponent,
+              ),
+          },
+          {
+            path: 'atributos',
+            data: { breadcrumb: 'Atributos' },
+            loadComponent: () =>
+              import('./modules/inventario/pages/atributos-listado/atributos-listado.component').then(
+                (m) => m.AtributosListadoComponent,
+              ),
+          },
+          {
+            // Ruta estatica ANTES de atributos/:id -- mismo motivo que productos/nuevo.
+            path: 'atributos/nuevo',
+            title: 'Núcleo · Nuevo atributo',
+            data: { breadcrumb: 'Nuevo atributo' },
+            loadComponent: () =>
+              import('./modules/inventario/pages/atributo-registro/atributo-registro.component').then(
+                (m) => m.AtributoRegistroComponent,
+              ),
+          },
+          {
+            path: 'atributos/:id',
+            title: 'Núcleo · Detalle de atributo',
+            data: { breadcrumb: 'Detalle' },
+            loadComponent: () =>
+              import('./modules/inventario/pages/atributo-registro/atributo-registro.component').then(
+                (m) => m.AtributoRegistroComponent,
               ),
           },
           {

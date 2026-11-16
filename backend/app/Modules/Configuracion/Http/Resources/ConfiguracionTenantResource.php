@@ -30,6 +30,7 @@ class ConfiguracionTenantResource extends JsonResource
             'backup_frecuencia' => $this->backup_frecuencia,
             'backup_ultimo' => $this->backup_ultimo,
             'codigo_barras_automatico' => $this->codigo_barras_automatico,
+            'perfil_giro' => $this->perfil_giro,
         ];
     }
 }

@@ -62,6 +62,7 @@ export const NUCLEO_NAV_GROUPS: NucleoNavGroup[] = [
       { key: 'inventario', label: 'Productos', path: 'inventario/productos', icon: 'pi pi-box', permiso: 'inventario.ver' },
       { key: 'categorias', label: 'Categorías', path: 'inventario/categorias', icon: 'pi pi-sitemap', permiso: 'inventario.ver' },
       { key: 'departamentos', label: 'Departamentos', path: 'inventario/departamentos', icon: 'pi pi-building', permiso: 'inventario.ver' },
+      { key: 'atributos', label: 'Atributos de variante', path: 'inventario/atributos', icon: 'pi pi-tags', permiso: 'inventario.ver' },
       { key: 'unidades-medida', label: 'Unidades de medida', path: 'unidades-medida', icon: 'pi pi-arrows-h', permiso: 'inventario.ver' },
       { key: 'precios', label: 'Precios y promociones', path: 'precios', icon: 'pi pi-tags', permiso: 'reglas_precio.ver' },
       { key: 'crm', label: 'Clientes', path: 'crm/clientes', icon: 'pi pi-users', permiso: 'clientes.ver' },

@@ -33,6 +33,8 @@ export interface VarianteFormPayload {
   talla?: string | null;
   color?: string | null;
   codigo_barras?: string | null;
+  /** ARQ-07: ids de valores de atributo, uno por atributo; si llega, reemplaza los de la variante. */
+  valores?: number[];
 }
 
 @Injectable({ providedIn: 'root' })

@@ -38,7 +38,10 @@ class ProductoController extends Controller
             ->with(['categoria:id,nombre', 'departamento:id,nombre']);
 
         if ($nombre = $request->query('filtro_nombre')) {
-            $query->where('nombre', 'like', "%{$nombre}%");
+            // ARQ-07: tambien por el valor de atributo de alguna variante ("M", "Rojo", "1/2 pulgada").
+            $query->where(fn ($q) => $q
+                ->where('nombre', 'like', "%{$nombre}%")
+                ->orWhereHas('variantes.valoresAtributo.valor', fn ($v) => $v->where('valor', 'like', "%{$nombre}%")));
         }
 
         if ($categoriaId = $request->query('filtro_categoria_id')) {
@@ -77,6 +80,7 @@ class ProductoController extends Controller
             'categoria:id,nombre',
             'departamento:id,nombre',
             'variantes.stock.sucursal:id,nombre',
+            'variantes.valoresAtributo.valor.atributo',
         ]);
 
         $usuario = $request->user();

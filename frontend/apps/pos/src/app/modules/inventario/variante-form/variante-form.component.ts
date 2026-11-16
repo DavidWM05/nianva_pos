@@ -11,13 +11,17 @@ import {
 import {
   FormControl,
   FormGroup,
+  FormRecord,
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
 import { limitesDe } from '@nianva/api-contrato';
+import type { Atributo } from '@nianva/domain-inventario';
 import {
   CampoComponent,
   InputDineroComponent,
+  SelectFiltroComponent,
+  SelectFiltroOpcion,
   aplicarErroresServidor,
 } from '@nianva/ui-forms';
 import { aCentavos } from '@nianva/ui-format';
@@ -43,6 +47,7 @@ const LIMITES = limitesDe('/productos/{producto}/variantes', 'post');
     ReactiveFormsModule,
     CampoComponent,
     InputDineroComponent,
+    SelectFiltroComponent,
   ],
   templateUrl: './variante-form.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -62,6 +67,13 @@ export class VarianteFormComponent implements OnChanges {
 
   @Input() enviando = false;
 
+  /**
+   * ARQ-07: atributos del catálogo con sus valores (los carga la ruta del detalle). Uno por
+   * selector; "Sin valor" deja la variante sin ese atributo. Va junto a talla y color hasta que
+   * ARQ-07b los retire.
+   */
+  @Input() atributos: Atributo[] = [];
+
   @Output() guardar = new EventEmitter<VarianteFormPayload>();
 
   @ViewChild(DynamicFormComponent) private formComponent!: DynamicFormComponent;
@@ -77,9 +89,15 @@ export class VarianteFormComponent implements OnChanges {
     ]),
   });
 
+  /** Un control por atributo, con la clave del id del atributo y el id del valor elegido. */
+  protected readonly valoresElegidos = new FormRecord<FormControl<number | null>>({});
+
   protected fields: DynamicFormField[] = [];
 
   ngOnChanges(cambios?: SimpleChanges): void {
+    if (!cambios || cambios['atributos'] || cambios['valorInicial']) {
+      this.armarValores();
+    }
     if (
       cambios &&
       this.fields.length > 0 &&
@@ -134,7 +152,41 @@ export class VarianteFormComponent implements OnChanges {
       talla: value['talla'] as string | null,
       color: value['color'] as string | null,
       codigo_barras: value['codigo_barras'] as string | null,
+      // Sin atributos en el catálogo no se manda `valores`: el backend conserva los de la variante.
+      ...(this.atributos.length > 0 ? { valores: this.idsElegidos() } : {}),
     });
+  }
+
+  protected opcionesDe(atributo: Atributo): SelectFiltroOpcion[] {
+    return [
+      { label: 'Sin valor', value: null },
+      ...(atributo.valores ?? []).map((valor) => ({ label: valor.nombre, value: valor.id })),
+    ];
+  }
+
+  protected controlDe(atributo: Atributo): FormControl<number | null> {
+    return this.valoresElegidos.controls[String(atributo.id)];
+  }
+
+  private armarValores(): void {
+    const actuales = new Map(
+      (this.valorInicial?.atributos ?? []).map((a) => [a.atributo_id, a.valor_id]),
+    );
+    for (const clave of Object.keys(this.valoresElegidos.controls)) {
+      this.valoresElegidos.removeControl(clave);
+    }
+    for (const atributo of this.atributos) {
+      this.valoresElegidos.addControl(
+        String(atributo.id),
+        new FormControl<number | null>(actuales.get(atributo.id) ?? null),
+      );
+    }
+  }
+
+  private idsElegidos(): number[] {
+    return Object.values(this.valoresElegidos.getRawValue()).filter(
+      (id): id is number => id !== null,
+    );
   }
 
   setServerErrors(errors: Record<string, string | string[]>): void {

@@ -18,6 +18,8 @@
     "paths": {
       "@nianva/api-contrato": ["./libs/api-contrato/src/index.ts"],
       "@nianva/core-http": ["./libs/core/http/src/index.ts"],
+      "@nianva/domain-configuracion": ["./libs/domain/configuracion/src/index.ts"],
+      "@nianva/domain-inventario": ["./libs/domain/inventario/src/index.ts"],
       "@nianva/domain-ventas-plazos": ["./libs/domain/ventas-plazos/src/index.ts"],
       "@nianva/domain-notas-credito": ["./libs/domain/notas-credito/src/index.ts"],
       "@nianva/domain-gift-cards": ["./libs/domain/gift-cards/src/index.ts"],

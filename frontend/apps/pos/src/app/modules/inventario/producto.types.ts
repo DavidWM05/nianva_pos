@@ -18,6 +18,14 @@ export interface StockPorSucursal {
   stock_minimo: string;
 }
 
+/** Valor de atributo de una variante, como lo publica ProductoVarianteResource (ARQ-07). */
+export interface VarianteAtributo {
+  atributo_id: number;
+  atributo: string;
+  valor_id: number;
+  valor_nombre: string;
+}
+
 export interface ProductoVariante {
   precio_venta?: string | null;
   costo?: string | null;
@@ -27,6 +35,9 @@ export interface ProductoVariante {
   color: string | null;
   codigo_barras: string | null;
   activo: boolean;
+  /** ARQ-07: con los valores de atributo cargados (show()), el nombre armado y cada valor. */
+  nombre?: string | null;
+  atributos?: VarianteAtributo[];
   /** Solo presente cuando show() carga producto.variantes.stock. */
   stock?: StockPorSucursal[];
   /**

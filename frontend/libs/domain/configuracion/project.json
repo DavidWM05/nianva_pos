@@ -1,0 +1,19 @@
+{
+  "name": "domain-configuracion",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/domain/configuracion/src",
+  "projectType": "library",
+  "tags": ["type:domain", "scope:configuracion"],
+  "targets": {
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    },
+    "test": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": ["tsc -p libs/domain/configuracion/tsconfig.json --noEmit"],
+        "cwd": "{workspaceRoot}"
+      }
+    }
+  }
+}

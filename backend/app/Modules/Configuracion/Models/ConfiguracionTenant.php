@@ -18,11 +18,13 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property string $tasa_iva_default
  * @property string $moneda
  * @property string $zona_horaria
+ * @property string $perfil_giro clave de app/Modules/Configuracion/PerfilesGiro (ARQ-07)
  */
 #[Fillable([
     'tenant_id', 'moneda', 'zona_horaria', 'mensaje_ticket', 'logo_url', 'mostrar_rfc',
     'mostrar_telefono', 'mostrar_correo', 'backup_auto', 'backup_frecuencia', 'backup_ultimo',
     'codigo_barras_automatico', 'modulos_activos', 'tasa_iva_default', 'cupon_combinable_con_promociones',
+    'perfil_giro',
 ])]
 class ConfiguracionTenant extends Model
 {

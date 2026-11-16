@@ -1,0 +1,19 @@
+{
+  "name": "domain-inventario",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/domain/inventario/src",
+  "projectType": "library",
+  "tags": ["type:domain", "scope:inventario"],
+  "targets": {
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    },
+    "test": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": ["tsc -p libs/domain/inventario/tsconfig.json --noEmit"],
+        "cwd": "{workspaceRoot}"
+      }
+    }
+  }
+}

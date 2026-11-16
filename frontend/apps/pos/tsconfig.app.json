@@ -14,6 +14,9 @@
       "path": "../../libs/domain/nucleo"
     },
     {
+      "path": "../../libs/domain/inventario"
+    },
+    {
       "path": "../../libs/domain/ventas-plazos"
     },
     {
@@ -27,6 +30,9 @@
     },
     {
       "path": "../../libs/domain/cuentas-cobrar"
+    },
+    {
+      "path": "../../libs/domain/configuracion"
     },
     {
       "path": "../../libs/domain/auditoria"

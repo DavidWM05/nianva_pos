@@ -8,6 +8,7 @@ final readonly class ProductoVarianteDto
 {
     /**
      * @param  list<string>  $presentes
+     * @param  list<int>|null  $valores
      */
     public function __construct(
         public ?string $talla,
@@ -16,6 +17,8 @@ final readonly class ProductoVarianteDto
         private array $presentes,
         public ?string $precioVenta = null,
         public ?string $costo = null,
+        /** ARQ-07: ids de atributo_valores; null = no llego (se conservan los de la variante). */
+        public ?array $valores = null,
     ) {}
 
     /**

@@ -5,6 +5,7 @@ declare(strict_types=1);
 use App\Modules\Apartados\Http\Controllers\ApartadoController;
 use App\Modules\Auditoria\Http\Controllers\AuditoriaController;
 use App\Modules\Configuracion\Http\Controllers\ConfiguracionController;
+use App\Modules\Configuracion\Http\Controllers\PerfilGiroController;
 use App\Modules\Cotizaciones\Http\Controllers\CotizacionController;
 use App\Modules\Crm\Http\Controllers\ClienteController;
 use App\Modules\CrmAvanzado\Http\Controllers\CrmAvanzadoController;
@@ -14,6 +15,8 @@ use App\Modules\Delivery\Http\Controllers\PedidoController;
 use App\Modules\Devoluciones\Http\Controllers\DevolucionController;
 use App\Modules\Gastos\Http\Controllers\GastoController;
 use App\Modules\GiftCards\Http\Controllers\GiftCardController;
+use App\Modules\Inventario\Http\Controllers\AtributoController;
+use App\Modules\Inventario\Http\Controllers\AtributoValorController;
 use App\Modules\Inventario\Http\Controllers\CategoriaController;
 use App\Modules\Inventario\Http\Controllers\CompraController;
 use App\Modules\Inventario\Http\Controllers\DepartamentoController;
@@ -155,6 +158,16 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::patch('/categorias/{categoria}/desactivar', [CategoriaController::class, 'desactivar'])
             ->middleware('permiso:inventario.eliminar');
 
+        // ARQ-07: atributos genericos de variante y sus valores (sub-recurso).
+        Route::get('/atributos', [AtributoController::class, 'index'])->middleware('permiso:inventario.ver');
+        Route::get('/atributos/{atributo}', [AtributoController::class, 'show'])->middleware('permiso:inventario.ver');
+        Route::post('/atributos', [AtributoController::class, 'store'])->middleware('permiso:inventario.crear');
+        Route::put('/atributos/{atributo}', [AtributoController::class, 'update'])->middleware('permiso:inventario.editar');
+        Route::delete('/atributos/{atributo}', [AtributoController::class, 'destroy'])->middleware('permiso:inventario.eliminar');
+        Route::post('/atributos/{atributo}/valores', [AtributoValorController::class, 'store'])->middleware('permiso:inventario.editar');
+        Route::put('/atributo-valores/{valor}', [AtributoValorController::class, 'update'])->middleware('permiso:inventario.editar');
+        Route::delete('/atributo-valores/{valor}', [AtributoValorController::class, 'destroy'])->middleware('permiso:inventario.editar');
+
         Route::get('/departamentos', [DepartamentoController::class, 'index'])->middleware('permiso:inventario.ver');
         Route::get('/departamentos/{departamento}', [DepartamentoController::class, 'show'])
             ->middleware('permiso:inventario.ver');
@@ -293,6 +306,9 @@ Route::middleware('auth:sanctum')->group(function () {
         // estos ajustes.
         Route::get('/configuracion', [ConfiguracionController::class, 'show'])->middleware('permiso:configuracion.editar');
         Route::put('/configuracion', [ConfiguracionController::class, 'update'])->middleware('permiso:configuracion.editar');
+        // ARQ-07: perfiles de giro (datos) y aplicar uno al tenant.
+        Route::get('/perfiles-giro', [PerfilGiroController::class, 'catalogo'])->middleware('permiso:configuracion.editar');
+        Route::put('/configuracion/perfil-giro', [PerfilGiroController::class, 'update'])->middleware('permiso:configuracion.editar');
         // Sin permiso dedicado a proposito -- ver el docblock de publica().
         Route::get('/configuracion/publica', [ConfiguracionController::class, 'publica']);
 

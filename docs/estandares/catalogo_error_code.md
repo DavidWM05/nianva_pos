@@ -9,6 +9,7 @@ Generado con `php artisan errores:catalogo` desde las excepciones de negocio y e
 | `ajuste_puntos_invalido` | 422 | `App\Modules\CrmAvanzado\Exceptions\AjustePuntosInvalidoException` | CrmAvanzado | — |
 | `apartado_estado_invalido` | 422 | `App\Modules\Apartados\Exceptions\ApartadoEstadoInvalidoException` | Apartados | apartado_id, estado_actual, accion |
 | `apartado_saldo_insuficiente` | 422 | `App\Modules\Apartados\Exceptions\ApartadoSaldoInsuficienteException` | Apartados | apartado_id, total, total_abonado |
+| `atributo_en_uso` | 422 | `App\Modules\Inventario\Exceptions\AtributoEnUsoException` | Inventario | tipo, id |
 | `caja_no_abierta` | 422 | `App\Modules\Tpv\Exceptions\CajaSesionNoAbiertaException` | Tpv | sucursal_id |
 | `caja_ya_abierta` | 422 | `App\Modules\Tpv\Exceptions\CajaYaAbiertaException` | Tpv | sucursal_id |
 | `caja_ya_cerrada` | 422 | `App\Modules\Tpv\Exceptions\CajaYaCerradaException` | Tpv | caja_sesion_id |

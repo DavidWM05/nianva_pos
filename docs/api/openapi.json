@@ -429,6 +429,512 @@
                 }
             }
         },
+        "/atributos": {
+            "get": {
+                "operationId": "atributo.index",
+                "summary": "Listado uniforme; con `con_valores=1`, la lista completa con valores para el formulario de variante",
+                "tags": [
+                    "Atributo"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Array of `AtributoResource`\n\nArray of `AtributoResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "anyOf": [
+                                        {
+                                            "type": "object",
+                                            "properties": {
+                                                "data": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "$ref": "#/components/schemas/AtributoResource"
+                                                    }
+                                                },
+                                                "meta": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "total": {
+                                                            "type": "integer"
+                                                        },
+                                                        "page": {
+                                                            "type": "integer"
+                                                        },
+                                                        "rows": {},
+                                                        "filtros_aplicados": {
+                                                            "type": "object",
+                                                            "properties": {
+                                                                "q": {
+                                                                    "type": "string"
+                                                                }
+                                                            },
+                                                            "required": [
+                                                                "q"
+                                                            ]
+                                                        },
+                                                        "permisos": {
+                                                            "type": "object",
+                                                            "properties": {
+                                                                "crear": {
+                                                                    "type": "boolean"
+                                                                },
+                                                                "editar": {
+                                                                    "type": "boolean"
+                                                                },
+                                                                "eliminar": {
+                                                                    "type": "boolean"
+                                                                }
+                                                            },
+                                                            "required": [
+                                                                "crear",
+                                                                "editar",
+                                                                "eliminar"
+                                                            ]
+                                                        }
+                                                    },
+                                                    "required": [
+                                                        "total",
+                                                        "page",
+                                                        "rows",
+                                                        "filtros_aplicados",
+                                                        "permisos"
+                                                    ]
+                                                }
+                                            },
+                                            "required": [
+                                                "data",
+                                                "meta"
+                                            ]
+                                        },
+                                        {
+                                            "type": "object",
+                                            "properties": {
+                                                "data": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "allOf": [
+                                                            {
+                                                                "$ref": "#/components/schemas/AtributoResource"
+                                                            },
+                                                            {
+                                                                "type": "object",
+                                                                "required": [
+                                                                    "valores"
+                                                                ]
+                                                            }
+                                                        ]
+                                                    }
+                                                }
+                                            },
+                                            "required": [
+                                                "data"
+                                            ]
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            },
+            "post": {
+                "operationId": "atributo.store",
+                "tags": [
+                    "Atributo"
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/GuardarAtributoRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "`AtributoResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "allOf": [
+                                                {
+                                                    "$ref": "#/components/schemas/AtributoResource"
+                                                },
+                                                {
+                                                    "type": "object",
+                                                    "required": [
+                                                        "valores"
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    }
+                }
+            }
+        },
+        "/atributos/{atributo}": {
+            "get": {
+                "operationId": "atributo.show",
+                "tags": [
+                    "Atributo"
+                ],
+                "parameters": [
+                    {
+                        "name": "atributo",
+                        "in": "path",
+                        "required": true,
+                        "description": "The atributo ID",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "`AtributoResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "allOf": [
+                                                {
+                                                    "$ref": "#/components/schemas/AtributoResource"
+                                                },
+                                                {
+                                                    "type": "object",
+                                                    "required": [
+                                                        "valores"
+                                                    ]
+                                                }
+                                            ]
+                                        },
+                                        "meta": {
+                                            "type": "object",
+                                            "properties": {
+                                                "permisos": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "crear": {
+                                                            "type": "boolean"
+                                                        },
+                                                        "editar": {
+                                                            "type": "boolean"
+                                                        },
+                                                        "eliminar": {
+                                                            "type": "boolean"
+                                                        }
+                                                    },
+                                                    "required": [
+                                                        "crear",
+                                                        "editar",
+                                                        "eliminar"
+                                                    ]
+                                                }
+                                            },
+                                            "required": [
+                                                "permisos"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data",
+                                        "meta"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            },
+            "put": {
+                "operationId": "atributo.update",
+                "tags": [
+                    "Atributo"
+                ],
+                "parameters": [
+                    {
+                        "name": "atributo",
+                        "in": "path",
+                        "required": true,
+                        "description": "The atributo ID",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/GuardarAtributoRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "`AtributoResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "allOf": [
+                                                {
+                                                    "$ref": "#/components/schemas/AtributoResource"
+                                                },
+                                                {
+                                                    "type": "object",
+                                                    "required": [
+                                                        "valores"
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    }
+                }
+            },
+            "delete": {
+                "operationId": "atributo.destroy",
+                "tags": [
+                    "Atributo"
+                ],
+                "parameters": [
+                    {
+                        "name": "atributo",
+                        "in": "path",
+                        "required": true,
+                        "description": "The atributo ID",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No content"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
+        "/atributos/{atributo}/valores": {
+            "post": {
+                "operationId": "atributoValor.store",
+                "tags": [
+                    "AtributoValor"
+                ],
+                "parameters": [
+                    {
+                        "name": "atributo",
+                        "in": "path",
+                        "required": true,
+                        "description": "The atributo ID",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/GuardarAtributoValorRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "`AtributoResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "allOf": [
+                                                {
+                                                    "$ref": "#/components/schemas/AtributoResource"
+                                                },
+                                                {
+                                                    "type": "object",
+                                                    "required": [
+                                                        "valores"
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    }
+                }
+            }
+        },
+        "/atributo-valores/{valor}": {
+            "put": {
+                "operationId": "atributoValor.update",
+                "tags": [
+                    "AtributoValor"
+                ],
+                "parameters": [
+                    {
+                        "name": "valor",
+                        "in": "path",
+                        "required": true,
+                        "description": "The valor ID",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/GuardarAtributoValorRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "`AtributoResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "allOf": [
+                                                {
+                                                    "$ref": "#/components/schemas/AtributoResource"
+                                                },
+                                                {
+                                                    "type": "object",
+                                                    "required": [
+                                                        "valores"
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    }
+                }
+            },
+            "delete": {
+                "operationId": "atributoValor.destroy",
+                "tags": [
+                    "AtributoValor"
+                ],
+                "parameters": [
+                    {
+                        "name": "valor",
+                        "in": "path",
+                        "required": true,
+                        "description": "The valor ID",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No content"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
         "/auditoria": {
             "get": {
                 "operationId": "auditoria.index",
@@ -6695,6 +7201,134 @@
                 }
             }
         },
+        "/perfiles-giro": {
+            "get": {
+                "operationId": "perfilGiro.catalogo",
+                "summary": "Catalogo fijo de perfiles (no es un listado paginado de registros)",
+                "tags": [
+                    "PerfilGiro"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Array of `PerfilGiroResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/PerfilGiroResource"
+                                            }
+                                        },
+                                        "meta": {
+                                            "type": "object",
+                                            "properties": {
+                                                "actual": {
+                                                    "type": "string"
+                                                }
+                                            },
+                                            "required": [
+                                                "actual"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data",
+                                        "meta"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
+        "/configuracion/perfil-giro": {
+            "put": {
+                "operationId": "perfilGiro.update",
+                "summary": "Siembra lo que falte del perfil y lo deja como el perfil del tenant",
+                "tags": [
+                    "PerfilGiro"
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/AplicarPerfilGiroRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "`PerfilGiroResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/PerfilGiroResource"
+                                        },
+                                        "meta": {
+                                            "type": "object",
+                                            "properties": {
+                                                "actual": {
+                                                    "type": "string"
+                                                },
+                                                "creados": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "atributos": {
+                                                            "type": "integer"
+                                                        },
+                                                        "valores": {
+                                                            "type": "integer"
+                                                        },
+                                                        "categorias": {
+                                                            "type": "integer"
+                                                        },
+                                                        "unidades": {
+                                                            "type": "integer"
+                                                        }
+                                                    },
+                                                    "required": [
+                                                        "atributos",
+                                                        "valores",
+                                                        "categorias",
+                                                        "unidades"
+                                                    ]
+                                                }
+                                            },
+                                            "required": [
+                                                "actual",
+                                                "creados"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data",
+                                        "meta"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    }
+                }
+            }
+        },
         "/permisos": {
             "get": {
                 "operationId": "permiso.index",
@@ -8348,7 +8982,17 @@
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/components/schemas/ProductoVarianteResource"
+                                            "allOf": [
+                                                {
+                                                    "$ref": "#/components/schemas/ProductoVarianteResource"
+                                                },
+                                                {
+                                                    "type": "object",
+                                                    "required": [
+                                                        "atributos"
+                                                    ]
+                                                }
+                                            ]
                                         }
                                     },
                                     "required": [
@@ -8405,7 +9049,17 @@
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/components/schemas/ProductoVarianteResource"
+                                            "allOf": [
+                                                {
+                                                    "$ref": "#/components/schemas/ProductoVarianteResource"
+                                                },
+                                                {
+                                                    "type": "object",
+                                                    "required": [
+                                                        "atributos"
+                                                    ]
+                                                }
+                                            ]
                                         }
                                     },
                                     "required": [
@@ -11300,6 +11954,24 @@
                 ],
                 "title": "ApartadoResource"
             },
+            "AplicarPerfilGiroRequest": {
+                "type": "object",
+                "properties": {
+                    "perfil": {
+                        "type": "string",
+                        "enum": [
+                            "generico",
+                            "abarrotes",
+                            "ferreteria",
+                            "ropa-calzado"
+                        ]
+                    }
+                },
+                "required": [
+                    "perfil"
+                ],
+                "title": "AplicarPerfilGiroRequest"
+            },
             "App.Modules.CuentasCobrar.Http.Requests.RegistrarAbonoRequest": {
                 "type": "object",
                 "properties": {
@@ -11347,6 +12019,48 @@
                     "repartidor_id"
                 ],
                 "title": "AsignarRepartidorRequest"
+            },
+            "AtributoResource": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer"
+                    },
+                    "nombre": {
+                        "type": "string"
+                    },
+                    "orden": {
+                        "type": "integer"
+                    },
+                    "valores": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "id": {
+                                    "type": "integer"
+                                },
+                                "nombre": {
+                                    "type": "string"
+                                },
+                                "orden": {
+                                    "type": "integer"
+                                }
+                            },
+                            "required": [
+                                "id",
+                                "nombre",
+                                "orden"
+                            ]
+                        }
+                    }
+                },
+                "required": [
+                    "id",
+                    "nombre",
+                    "orden"
+                ],
+                "title": "AtributoResource"
             },
             "CajaSesionResource": {
                 "type": "object",
@@ -11739,6 +12453,9 @@
                     },
                     "codigo_barras_automatico": {
                         "type": "boolean"
+                    },
+                    "perfil_giro": {
+                        "type": "string"
                     }
                 },
                 "required": [
@@ -11754,7 +12471,8 @@
                     "backup_auto",
                     "backup_frecuencia",
                     "backup_ultimo",
-                    "codigo_barras_automatico"
+                    "codigo_barras_automatico",
+                    "perfil_giro"
                 ],
                 "title": "ConfiguracionTenantResource"
             },
@@ -13786,6 +14504,50 @@
                 ],
                 "title": "GiftCardResource"
             },
+            "GuardarAtributoRequest": {
+                "type": "object",
+                "properties": {
+                    "nombre": {
+                        "type": "string",
+                        "maxLength": 60
+                    },
+                    "orden": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ],
+                        "minimum": 0,
+                        "maximum": 65535
+                    }
+                },
+                "required": [
+                    "nombre"
+                ],
+                "title": "GuardarAtributoRequest"
+            },
+            "GuardarAtributoValorRequest": {
+                "type": "object",
+                "description": "Alta (con {atributo} en la ruta) y edicion (con {valor}) de un valor de atributo.",
+                "properties": {
+                    "nombre": {
+                        "type": "string",
+                        "description": "En la API el texto del valor es `nombre`; en la tabla, `valor`.",
+                        "maxLength": 60
+                    },
+                    "orden": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ],
+                        "minimum": 0,
+                        "maximum": 65535
+                    }
+                },
+                "required": [
+                    "nombre"
+                ],
+                "title": "GuardarAtributoValorRequest"
+            },
             "GuardarCategoriaRequest": {
                 "type": "object",
                 "properties": {
@@ -14194,6 +14956,14 @@
                             "null"
                         ],
                         "maxLength": 50
+                    },
+                    "valores": {
+                        "type": "array",
+                        "description": "ARQ-07: ids de atributo_valores, a lo mas uno por atributo. Si llega, reemplaza los\nvalores de la variante; si no llega, se conservan.",
+                        "items": {
+                            "type": "integer"
+                        },
+                        "uniqueItems": true
                     }
                 },
                 "title": "GuardarProductoVarianteRequest"
@@ -15190,6 +15960,65 @@
                 ],
                 "title": "PedidoResource"
             },
+            "PerfilGiroResource": {
+                "type": "object",
+                "properties": {
+                    "clave": {
+                        "type": "string"
+                    },
+                    "nombre": {
+                        "type": "string"
+                    },
+                    "atributos": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "nombre": {
+                                    "type": "string"
+                                },
+                                "valores": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "string"
+                                    }
+                                }
+                            },
+                            "required": [
+                                "nombre",
+                                "valores"
+                            ]
+                        }
+                    },
+                    "unidades": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    },
+                    "categorias": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    },
+                    "modulos_sugeridos": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "required": [
+                    "clave",
+                    "nombre",
+                    "atributos",
+                    "unidades",
+                    "categorias",
+                    "modulos_sugeridos"
+                ],
+                "title": "PerfilGiroResource"
+            },
             "Permiso": {
                 "type": "object",
                 "properties": {
@@ -15739,6 +16568,39 @@
                     },
                     "activo": {
                         "type": "boolean"
+                    },
+                    "nombre": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "description": "ARQ-07: con los valores de atributo cargados, el nombre armado y cada valor."
+                    },
+                    "atributos": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "atributo_id": {
+                                    "type": "integer"
+                                },
+                                "atributo": {
+                                    "type": "string"
+                                },
+                                "valor_id": {
+                                    "type": "integer"
+                                },
+                                "valor_nombre": {
+                                    "type": "string"
+                                }
+                            },
+                            "required": [
+                                "atributo_id",
+                                "atributo",
+                                "valor_id",
+                                "valor_nombre"
+                            ]
+                        }
                     },
                     "stock": {
                         "type": "array",
