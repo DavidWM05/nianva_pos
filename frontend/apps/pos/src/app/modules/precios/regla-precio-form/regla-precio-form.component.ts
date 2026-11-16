@@ -9,7 +9,7 @@ import {
   inject,
   signal,
 } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, Validators } from '@angular/forms';
 import {
   DynamicFormComponent,
   DynamicFormField,
@@ -99,6 +99,24 @@ export class ReglaPrecioFormComponent implements OnChanges {
     this.varianteId.set(this.valorInicial?.variante?.id ?? null);
 
     this.fields = [
+      {
+        name: 'prioridad',
+        label: 'Prioridad',
+        type: 'number',
+        required: true,
+        defaultValue: this.valorInicial?.prioridad ?? 0,
+        validators: [
+          Validators.min(0),
+          Validators.max(65535),
+          Validators.pattern(/^\d+$/),
+        ],
+      },
+      {
+        name: 'combinable',
+        label: 'Combinable con otras reglas',
+        type: 'checkbox',
+        defaultValue: this.valorInicial?.combinable ?? false,
+      },
       {
         name: 'nombre',
         label: 'Nombre',
@@ -199,9 +217,12 @@ export class ReglaPrecioFormComponent implements OnChanges {
 
     // Solo el campo del tipo: el otro va null aunque el formulario conserve lo escrito.
     this.guardar.emit({
+      prioridad: numeroONulo(value['prioridad']) ?? 0,
+      combinable: Boolean(value['combinable']),
       nombre: String(value['nombre'] ?? ''),
       tipo,
-      porcentaje: tipo === 'porcentaje' ? numeroONulo(value['porcentaje']) : null,
+      porcentaje:
+        tipo === 'porcentaje' ? numeroONulo(value['porcentaje']) : null,
       monto: tipo === 'monto_fijo' ? numeroONulo(value['monto']) : null,
       cantidad_compra: value['cantidad_compra'] as number | null,
       cantidad_paga: value['cantidad_paga'] as number | null,

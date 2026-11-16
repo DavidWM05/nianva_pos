@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Modules\Precios\Dtos;
 
 final readonly class ReglaPrecioDto
@@ -18,6 +20,8 @@ final readonly class ReglaPrecioDto
         public ?int $varianteId,
         public ?string $fechaInicio,
         public ?string $fechaFin,
+        public ?int $prioridad = null,
+        public ?bool $combinable = null,
     ) {}
 
     /**
@@ -39,6 +43,8 @@ final readonly class ReglaPrecioDto
             'variante_id' => $this->varianteId,
             'fecha_inicio' => $this->fechaInicio,
             'fecha_fin' => $this->fechaFin,
+            ...($this->prioridad === null ? [] : ['prioridad' => $this->prioridad]),
+            ...($this->combinable === null ? [] : ['combinable' => $this->combinable]),
         ];
     }
 }

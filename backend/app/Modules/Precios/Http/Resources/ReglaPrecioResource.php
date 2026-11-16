@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Modules\Precios\Http\Resources;
 
 use App\Modules\Nucleo\Support\DecimalApi;
@@ -17,6 +19,8 @@ class ReglaPrecioResource extends JsonResource
         return [
             'id' => $this->id,
             'nombre' => $this->nombre,
+            'prioridad' => $this->prioridad,
+            'combinable' => $this->combinable,
             'tipo' => $this->tipo,
             'porcentaje' => $this->resource->getAttribute('porcentaje') === null ? null : DecimalApi::tasa((string) $this->resource->getAttribute('porcentaje')),
             'monto' => $this->resource->getAttribute('monto') === null ? null : DecimalApi::dinero((string) $this->resource->getAttribute('monto')),

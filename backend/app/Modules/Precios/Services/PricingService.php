@@ -13,6 +13,7 @@ use App\Modules\Nucleo\Support\Cantidad;
 use App\Modules\Nucleo\Support\DecimalApi;
 use App\Modules\Nucleo\Support\Dinero;
 use App\Modules\Precios\Exceptions\CuponInvalidoException;
+use App\Modules\Precios\Exceptions\CuponNoCombinableException;
 use App\Modules\Precios\Models\Cupon;
 use App\Modules\Precios\Models\ReglaPrecio;
 use App\Modules\Precios\Support\Carrito;
@@ -25,11 +26,9 @@ use Illuminate\Database\Eloquent\Builder;
 use InvalidArgumentException;
 
 /**
- * Resuelve reglas_precio (por item, cascada variante > producto > categoria
- * > todo) y cupones (sobre el total del carrito) -- dos mecanismos
- * deliberadamente separados, nunca mezclados. cotizar() jamas
- * aplica mas de una regla de item a la vez: la cascada se detiene en el
- * primer nivel con una regla activa y vigente.
+ * Resuelve reglas por prioridad configurable, nivel de cascada e id.
+ * Solo combina una regla siguiente si ella y la primera son combinables;
+ * el cupón se calcula después sobre las líneas elegibles según el tenant.
  */
 final class PricingService
 {
@@ -53,33 +52,53 @@ final class PricingService
             }
             $precioBase = Dinero::desde((string) ($variante->getAttribute('precio_venta') ?? $producto->getAttribute('precio_venta')));
             $tasas[] = [DecimalApi::tasa($producto->getAttribute('tasa_iva') ?? $configuracion->getAttribute('tasa_iva_default')), (bool) $producto->getAttribute('exento_iva')];
-            $regla = $this->reglaAplicable($variante, $producto, $contexto);
-            $descuento = $regla === null ? Dinero::desde(0) : $this->calcularDescuentoPorTipo($regla, $precioBase, $linea->cantidad);
+            $aplicables = $this->reglasAplicables($variante, $producto, $contexto);
+            $descuento = Dinero::desde(0);
+            $totalLinea = $precioBase->multiplicar(Cantidad::cadena($linea->cantidad));
             $reglas = [];
-            if ($regla !== null) {
-                $prioridad = match ($regla->getAttribute('aplica_a')) {
-                    'variante' => 1, 'producto' => 2, 'categoria' => 3, default => 4,
-                };
-                $reglas[] = new ReglaAplicada((int) $regla->getKey(), (string) $regla->getAttribute('tipo'), $prioridad, false);
+            $primeraCombinable = (bool) (($aplicables[0] ?? null)?->getAttribute('combinable') ?? false);
+            foreach ($aplicables as $indice => $regla) {
+                $combinable = (bool) $regla->getAttribute('combinable');
+                if ($indice > 0 && (! $primeraCombinable || ! $combinable)) {
+                    continue;
+                }
+                $descuentoRegla = $this->menor($indice === 0
+                    ? $this->calcularDescuentoPorTipo($regla, $precioBase, $linea->cantidad)
+                    : $this->descuentoSecuencial($regla, $totalLinea, $linea->cantidad), $totalLinea);
+                $totalLinea = $totalLinea->restar($descuentoRegla);
+                $descuento = $descuento->sumar($descuentoRegla);
+                $reglas[] = new ReglaAplicada((int) $regla->getKey(), (string) $regla->getAttribute('tipo'), (int) $regla->getAttribute('prioridad'), $combinable, (float) $descuentoRegla->aCadena());
             }
-            $totalLinea = $precioBase->multiplicar(Cantidad::cadena($linea->cantidad))->restar($descuento);
             $lineas[] = new LineaPrecio($linea->varianteId, $linea->cantidad, (float) $precioBase->aCadena(), null, $reglas, (float) $descuento->aCadena(), 0.0, (float) $totalLinea->aCadena());
             $subtotal = $subtotal->sumar($totalLinea);
         }
         $importeSubtotal = $carrito->subtotalReferencia === null ? $subtotal->aCadena() : $this->referenciaDecimal($carrito->subtotalReferencia);
-        $cotizacionCupon = $carrito->codigoCupon === null ? null : $this->cotizarCupon($carrito->codigoCupon, $importeSubtotal, $contexto);
+        $combinaCupon = (bool) $configuracion->getAttribute('cupon_combinable_con_promociones');
+        $elegibles = array_values(array_filter($lineas, static fn (LineaPrecio $linea): bool => $combinaCupon || $linea->reglas === []));
+        $baseCupon = $importeSubtotal;
+        if (! $combinaCupon && $lineas !== []) {
+            $base = Dinero::desde(0);
+            foreach ($elegibles as $linea) {
+                $base = $base->sumar(Dinero::desde((string) $linea->total));
+            }
+            $baseCupon = $base->aCadena();
+        }
+        $cotizacionCupon = $carrito->codigoCupon === null ? null : $this->cotizarCupon($carrito->codigoCupon, $baseCupon, $contexto);
+        if ($carrito->codigoCupon !== null && $lineas !== [] && $elegibles === []) {
+            throw new CuponNoCombinableException($carrito->codigoCupon);
+        }
 
         $descuentoCupon = $cotizacionCupon['descuento'] ?? Dinero::desde(0);
         $cupon = $cotizacionCupon === null ? null : new CuponAplicado((int) $cotizacionCupon['modelo']->getKey(), (float) $descuentoCupon->aCadena(), $cotizacionCupon['modelo']);
-        $total = Dinero::desdeResta($importeSubtotal, $descuentoCupon->aCadena());
+        $total = Dinero::desde($importeSubtotal)->restar($descuentoCupon);
 
         $impuestos = Dinero::desde(0);
         if ($lineas !== []) {
-            $pesos = array_map(static fn (LineaPrecio $linea): Dinero => Dinero::desde((string) $linea->total), $lineas);
+            $pesos = array_map(static fn (LineaPrecio $linea): Dinero => Dinero::desde(! $combinaCupon && $linea->reglas !== [] ? '0' : (string) $linea->total), $lineas);
             $reparto = $descuentoCupon->repartir($pesos);
             foreach ($lineas as $indice => $linea) {
                 [$tasa, $exento] = $tasas[$indice];
-                $impuesto = $exento ? Dinero::desde(0) : $pesos[$indice]->restar($reparto[$indice])->impuestoIncluido($tasa);
+                $impuesto = $exento ? Dinero::desde(0) : Dinero::desde((string) $linea->total)->restar($reparto[$indice])->impuestoIncluido($tasa);
                 $impuestos = $impuestos->sumar($impuesto);
                 $lineas[$indice] = new LineaPrecio($linea->varianteId, $linea->cantidad, $linea->precioBase, $linea->listaAplicada, $linea->reglas, $linea->descuento, (float) $impuesto->aCadena(), $linea->total, $tasa, $exento);
             }
@@ -89,9 +108,9 @@ final class PricingService
     }
 
     /**
-     * Aplica un cupon sobre el total del carrito. Independiente por
-     * completo de la cascada de reglas -- no recibe variante ni cantidad,
-     * solo el total ya calculado.
+     * Aplica un cupón al importe elegible ya calculado; no recibe variante
+     * ni cantidad. Conserva la referencia sin redondear para calcular el
+     * porcentaje y acota el descuento al importe redondeado.
      *
      * @return array{modelo: Cupon, descuento: Dinero}
      *
@@ -112,46 +131,67 @@ final class PricingService
             ? Dinero::porcentajeDe($totalCarrito, (string) $cupon->getAttribute('porcentaje'))
             : $this->menor(Dinero::desde((string) $cupon->getAttribute('monto')), Dinero::desde($totalCarrito));
 
-        return ['modelo' => $cupon, 'descuento' => $descuento];
+        return ['modelo' => $cupon, 'descuento' => $this->menor($descuento, Dinero::desde($totalCarrito))];
     }
 
     /**
-     * Cascada de prioridad: variante > producto > categoria > todo. Se
-     * detiene en el primer nivel con una regla activa y vigente -- nunca
-     * combina reglas de dos niveles distintos.
-     */
-    private function reglaAplicable(ProductoVariante $variante, Producto $producto, ContextoPrecio $contexto): ?ReglaPrecio
-    {
-        if ($regla = $this->reglaPorNivel('variante', ['variante_id' => (int) $variante->getKey()], $contexto)) {
-            return $regla;
-        }
-
-        if ($regla = $this->reglaPorNivel('producto', ['producto_id' => (int) $producto->getKey()], $contexto)) {
-            return $regla;
-        }
-
-        if ($producto->getAttribute('categoria_id') !== null) {
-            if ($regla = $this->reglaPorNivel('categoria', ['categoria_id' => (int) $producto->getAttribute('categoria_id')], $contexto)) {
-                return $regla;
-            }
-        }
-
-        return $this->reglaPorNivel('todo', [], $contexto);
-    }
-
-    /**
-     * @param  array<string, int>  $condiciones
+     * Reúne la cascada completa; la prioridad configurable se compara antes
+     * del nivel variante > producto > categoría > todo.
+     * Si dos reglas comparten prioridad y nivel, gana el id más alto
+     * (la configurada más recientemente).
      *
-     * Si mas de una regla activa y vigente compite en el MISMO nivel, gana
-     * la de id mas alto (la configurada mas recientemente). No especificado
-     * por el documento -- criterio de desempate propio, documentado aqui.
+     * @return list<ReglaPrecio>
      */
-    private function reglaPorNivel(string $aplicaA, array $condiciones, ContextoPrecio $contexto): ?ReglaPrecio
+    private function reglasAplicables(ProductoVariante $variante, Producto $producto, ContextoPrecio $contexto): array
     {
-        return $this->vigentes(
-            ReglaPrecio::query()->withoutGlobalScope(TenantScope::class)->where('aplica_a', $aplicaA)->where($condiciones),
-            $contexto,
-        )->orderByDesc('id')->first();
+        $query = ReglaPrecio::query()->withoutGlobalScope(TenantScope::class)->where(function (Builder $query) use ($variante, $producto): void {
+            $query->where('aplica_a', 'todo')
+                ->orWhere(fn (Builder $q) => $q->where('aplica_a', 'variante')->where('variante_id', $variante->getKey()))
+                ->orWhere(fn (Builder $q) => $q->where('aplica_a', 'producto')->where('producto_id', $producto->getKey()));
+            if ($producto->getAttribute('categoria_id') !== null) {
+                $query->orWhere(fn (Builder $q) => $q->where('aplica_a', 'categoria')->where('categoria_id', $producto->getAttribute('categoria_id')));
+            }
+        });
+        $reglas = $this->vigentes($query, $contexto)->get()->all();
+        $orden = static fn (ReglaPrecio $regla): array => [-(int) $regla->getAttribute('prioridad'), match ($regla->getAttribute('aplica_a')) {
+            'variante' => 1, 'producto' => 2, 'categoria' => 3, default => 4,
+        }, -(int) $regla->getKey()];
+        usort($reglas, static fn (ReglaPrecio $a, ReglaPrecio $b): int => $orden($a) <=> $orden($b));
+
+        return $reglas;
+    }
+
+    private function descuentoSecuencial(ReglaPrecio $regla, Dinero $total, int|float $cantidad): Dinero
+    {
+        $tipo = $regla->getAttribute('tipo');
+        if ($tipo === 'porcentaje') {
+            return $total->porcentaje((string) ($regla->getAttribute('porcentaje') ?? '0'));
+        }
+        if ($tipo === 'monto_fijo') {
+            return $this->menor(Dinero::desdeProducto((string) ($regla->getAttribute('monto') ?? '0'), Cantidad::cadena($cantidad)), $total);
+        }
+        $milesimas = Cantidad::milesimas($cantidad);
+        $compra = Cantidad::milesimas($regla->getAttribute('cantidad_compra') ?? 0);
+        if ($milesimas <= 0 || $compra <= 0) {
+            return Dinero::desde(0);
+        }
+        $grupos = intdiv($milesimas, $compra);
+        if ($tipo === 'nxm') {
+            $paga = Cantidad::milesimas($regla->getAttribute('cantidad_paga') ?? 0);
+
+            return $paga <= 0 || $paga >= $compra ? Dinero::desde(0) : $total->proporcion($grupos * ($compra - $paga), $milesimas);
+        }
+        if ($tipo === 'bundle') {
+            $precio = Dinero::desde((string) ($regla->getAttribute('precio_bundle') ?? '0'));
+            if ($precio->centavos <= 0) {
+                return Dinero::desde(0);
+            }
+            $conBundle = $precio->multiplicar($grupos)->sumar($total->proporcion($milesimas % $compra, $milesimas));
+
+            return $conBundle->comparar($total) >= 0 ? Dinero::desde(0) : $total->restar($conBundle);
+        }
+
+        return Dinero::desde(0);
     }
 
     /**

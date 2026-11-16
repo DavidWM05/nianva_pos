@@ -1424,6 +1424,12 @@
                 "default": "'0'"
             },
             {
+                "nombre": "cupon_combinable_con_promociones",
+                "tipo": "tinyint",
+                "nullable": false,
+                "default": "'1'"
+            },
+            {
                 "nombre": "id",
                 "tipo": "integer",
                 "nullable": false,
@@ -6659,6 +6665,12 @@
                 "default": null
             },
             {
+                "nombre": "combinable",
+                "tipo": "tinyint",
+                "nullable": false,
+                "default": "'0'"
+            },
+            {
                 "nombre": "created_at",
                 "tipo": "datetime",
                 "nullable": false,
@@ -6705,6 +6717,12 @@
                 "tipo": "numeric",
                 "nullable": true,
                 "default": null
+            },
+            {
+                "nombre": "prioridad",
+                "tipo": "integer",
+                "nullable": false,
+                "default": "'0'"
             },
             {
                 "nombre": "producto_id",

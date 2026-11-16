@@ -14,6 +14,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
+ * @property bool $cupon_combinable_con_promociones
  * @property string $tasa_iva_default
  * @property string $moneda
  * @property string $zona_horaria
@@ -21,7 +22,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 #[Fillable([
     'tenant_id', 'moneda', 'zona_horaria', 'mensaje_ticket', 'logo_url', 'mostrar_rfc',
     'mostrar_telefono', 'mostrar_correo', 'backup_auto', 'backup_frecuencia', 'backup_ultimo',
-    'codigo_barras_automatico', 'modulos_activos', 'tasa_iva_default',
+    'codigo_barras_automatico', 'modulos_activos', 'tasa_iva_default', 'cupon_combinable_con_promociones',
 ])]
 class ConfiguracionTenant extends Model
 {
@@ -37,6 +38,7 @@ class ConfiguracionTenant extends Model
     protected function casts(): array
     {
         return [
+            'cupon_combinable_con_promociones' => 'boolean',
             'tasa_iva_default' => 'decimal:4',
             'mostrar_rfc' => 'boolean',
             'mostrar_telefono' => 'boolean',

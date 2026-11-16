@@ -83,6 +83,17 @@ final readonly class Dinero
         return self::porcentajeDe(self::productoDecimal($this->aCadena(), $cantidad, 0), $tasa);
     }
 
+    public function proporcion(int $numerador, int $denominador): self
+    {
+        if ($numerador < 0 || $denominador <= 0) {
+            throw new InvalidArgumentException('La proporción requiere numerador no negativo y denominador positivo.');
+        }
+        [$centavos, $resto] = self::dividirDigitos(self::multiplicarDigitos(ltrim((string) $this->centavos, '-'), (string) $numerador), (string) $denominador);
+        [$decimal] = self::dividirDigitos($resto.'0', (string) $denominador);
+
+        return self::redondear(self::decimal($centavos.$decimal, 3, $this->centavos < 0));
+    }
+
     public function impuestoIncluido(string|int $tasa): self
     {
         [$negativo, $digitos, $escala] = self::partes($tasa);

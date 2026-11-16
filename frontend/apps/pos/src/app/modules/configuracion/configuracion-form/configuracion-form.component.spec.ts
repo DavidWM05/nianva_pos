@@ -12,6 +12,7 @@ describe('ConfiguracionFormComponent', () => {
   let dynamicForm: DynamicFormComponent;
 
   const valorInicial: ConfiguracionTenant = {
+    cupon_combinable_con_promociones: false,
     tasa_iva_default: '0.0000',
     moneda: '$',
     mensaje_ticket: 'Gracias por su compra',
@@ -60,6 +61,7 @@ describe('ConfiguracionFormComponent', () => {
     dynamicForm.onSubmit();
 
     expect(emitido).toEqual({
+      cupon_combinable_con_promociones: false,
       tasa_iva_default: 0,
       moneda: 'USD',
       mensaje_ticket: 'Gracias por su compra',

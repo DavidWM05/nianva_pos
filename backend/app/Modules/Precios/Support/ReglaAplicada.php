@@ -6,6 +6,6 @@ namespace App\Modules\Precios\Support;
 
 final readonly class ReglaAplicada
 {
-    /** Prioridad de cascada: 1 variante, 2 producto, 3 categoría, 4 todo. */
-    public function __construct(public int $id, public string $tipo, public int $prioridad, public bool $combinable = false) {}
+    /** Prioridad configurable de negocio; el nivel de cascada solo desempata. */
+    public function __construct(public int $id, public string $tipo, public int $prioridad, public bool $combinable = false, public float $descuento = 0.0) {}
 }

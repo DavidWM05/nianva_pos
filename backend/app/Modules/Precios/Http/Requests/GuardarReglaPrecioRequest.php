@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Modules\Precios\Http\Requests;
 
 use App\Modules\Inventario\Support\ReglasCantidad;
@@ -24,6 +26,8 @@ class GuardarReglaPrecioRequest extends SolicitudNegocio
         $tenantId = $this->tenantId();
 
         return [
+            'prioridad' => ['sometimes', 'integer', 'min:0', 'max:65535'],
+            'combinable' => ['sometimes', 'boolean'],
             'nombre' => ['required', 'string', 'max:120'],
             'tipo' => ['required', Rule::in(['porcentaje', 'monto_fijo', 'nxm', 'bundle'])],
             'porcentaje' => ReglasPorcentajeMonto::porcentaje(),
@@ -92,6 +96,8 @@ class GuardarReglaPrecioRequest extends SolicitudNegocio
         $v['variante_id'] = $aplicaA === 'variante' ? $v['variante_id'] : null;
 
         return new ReglaPrecioDto(
+            prioridad: isset($v['prioridad']) ? (int) $v['prioridad'] : null,
+            combinable: isset($v['combinable']) ? (bool) $v['combinable'] : null,
             nombre: (string) $v['nombre'],
             tipo: $tipo,
             porcentaje: ReglasPorcentajeMonto::porcentajeDelTipo($tipo, $v['porcentaje']),

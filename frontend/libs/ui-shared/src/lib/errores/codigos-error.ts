@@ -24,6 +24,7 @@ export const CODIGOS_ERROR = [
   'cuenta_ya_pagada',
   'cuota_ya_pagada',
   'cupon_invalido',
+  'cupon_no_combinable',
   'datos_invalidos',
   'demasiadas_solicitudes',
   'desactivar_propio_usuario',

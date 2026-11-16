@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -24,6 +26,8 @@ return new class extends Migration
             $table->foreignId('variante_id')->nullable()->constrained('producto_variantes')->cascadeOnDelete();
             $table->date('fecha_inicio')->nullable();
             $table->date('fecha_fin')->nullable();
+            $table->unsignedSmallInteger('prioridad')->default(0);
+            $table->boolean('combinable')->default(false);
             $table->boolean('activo')->default(true);
             $table->dateTime('created_at')->useCurrent();
         });

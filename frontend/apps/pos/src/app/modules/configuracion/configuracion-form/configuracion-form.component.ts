@@ -52,6 +52,13 @@ export class ConfiguracionFormComponent implements OnChanges {
   ngOnChanges(): void {
     this.fields = [
       {
+        name: 'cupon_combinable_con_promociones',
+        label: 'Combinar cupones con promociones',
+        type: 'checkbox',
+        defaultValue:
+          this.valorInicial.cupon_combinable_con_promociones ?? true,
+      },
+      {
         name: 'tasa_iva_default',
         label: 'Tasa de IVA por defecto',
         type: 'select',
@@ -129,6 +136,9 @@ export class ConfiguracionFormComponent implements OnChanges {
 
   onSubmit(value: Record<string, unknown>): void {
     this.guardar.emit({
+      cupon_combinable_con_promociones: Boolean(
+        value['cupon_combinable_con_promociones'],
+      ),
       tasa_iva_default: tasaANumero(String(value['tasa_iva_default'])),
       moneda: String(value['moneda']),
       mensaje_ticket: (value['mensaje_ticket'] as string) || null,
