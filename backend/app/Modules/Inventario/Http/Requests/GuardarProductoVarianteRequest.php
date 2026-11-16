@@ -6,6 +6,7 @@ namespace App\Modules\Inventario\Http\Requests;
 
 use App\Modules\Inventario\Dtos\ProductoVarianteDto;
 use App\Modules\Inventario\Models\ProductoVariante;
+use App\Modules\Inventario\Support\CodigoEnOtroCatalogo;
 use App\Modules\Nucleo\Http\Requests\SolicitudNegocio;
 use Illuminate\Validation\Rule;
 
@@ -26,6 +27,7 @@ class GuardarProductoVarianteRequest extends SolicitudNegocio
             'costo' => ['nullable', 'numeric', 'decimal:0,2', 'min:0', 'max:9999999999.99'],
             'codigo_barras' => [
                 'nullable', 'string', 'max:50',
+                new CodigoEnOtroCatalogo('presentaciones', $this->tenantId()),
                 Rule::unique('producto_variantes', 'codigo_barras')
                     ->where('tenant_id', $this->tenantId())
                     ->ignore($varianteId),

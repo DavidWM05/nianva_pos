@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\Precios\Services;
 
 use App\Modules\Configuracion\Models\ConfiguracionTenant;
+use App\Modules\Inventario\Models\Presentacion;
 use App\Modules\Inventario\Models\Producto;
 use App\Modules\Inventario\Models\ProductoVariante;
 use App\Modules\Nucleo\Scopes\TenantScope;
@@ -62,10 +63,28 @@ final class PricingService
                 $listaConsultada = true;
             }
             [$precioBase, $listaAplicada] = $this->precioDeLista($lista, $variante, $producto, $precioBase, $contexto);
+            $precioUnitarioResuelto = $precioBase;
+            $precioHeredado = false;
+            $cantidadBase = $linea->cantidad;
+            $presentacion = null;
+            if ($linea->presentacionId !== null) {
+                $presentacion = Presentacion::query()->withoutGlobalScope(TenantScope::class)->where('tenant_id', $contexto->tenantId)->where('variante_id', $linea->varianteId)->whereKey($linea->presentacionId)->first();
+                if ($presentacion === null) {
+                    throw new InvalidArgumentException('La presentación no pertenece a la variante o al tenant.');
+                }
+                $cantidadBase = Cantidad::multiplicar($linea->cantidad, $presentacion->getAttribute('factor'));
+                if ($presentacion->getAttribute('precio_venta') !== null) {
+                    $precioBase = Dinero::desde((string) $presentacion->getAttribute('precio_venta'));
+                    $listaAplicada = null;
+                } else {
+                    $precioHeredado = true;
+                    $precioBase = $precioBase->multiplicar((string) $presentacion->getAttribute('factor'));
+                }
+            }
             $tasas[] = [DecimalApi::tasa($producto->getAttribute('tasa_iva') ?? $configuracion->getAttribute('tasa_iva_default')), (bool) $producto->getAttribute('exento_iva')];
             $aplicables = $this->reglasAplicables($variante, $producto, $contexto);
             $descuento = Dinero::desde(0);
-            $totalLinea = $precioBase->multiplicar(Cantidad::cadena($linea->cantidad));
+            $totalLinea = $precioHeredado ? $precioUnitarioResuelto->multiplicar(Cantidad::cadena($cantidadBase)) : $precioBase->multiplicar(Cantidad::cadena($linea->cantidad));
             $reglas = [];
             $primeraCombinable = (bool) (($aplicables[0] ?? null)?->getAttribute('combinable') ?? false);
             foreach ($aplicables as $indice => $regla) {
@@ -74,13 +93,13 @@ final class PricingService
                     continue;
                 }
                 $descuentoRegla = $this->menor($indice === 0
-                    ? $this->calcularDescuentoPorTipo($regla, $precioBase, $linea->cantidad)
+                    ? ($precioHeredado ? $this->descuentoDePresentacion($regla, $precioUnitarioResuelto, $linea->cantidad, (string) $presentacion->getAttribute('factor'), $totalLinea) : $this->calcularDescuentoPorTipo($regla, $precioBase, $linea->cantidad))
                     : $this->descuentoSecuencial($regla, $totalLinea, $linea->cantidad), $totalLinea);
                 $totalLinea = $totalLinea->restar($descuentoRegla);
                 $descuento = $descuento->sumar($descuentoRegla);
                 $reglas[] = new ReglaAplicada((int) $regla->getKey(), (string) $regla->getAttribute('tipo'), (int) $regla->getAttribute('prioridad'), $combinable, (float) $descuentoRegla->aCadena());
             }
-            $lineas[] = new LineaPrecio($linea->varianteId, $linea->cantidad, (float) $precioBase->aCadena(), $listaAplicada, $reglas, (float) $descuento->aCadena(), 0.0, (float) $totalLinea->aCadena());
+            $lineas[] = new LineaPrecio($linea->varianteId, $linea->cantidad, (float) ($precioHeredado ? $precioUnitarioResuelto->precioPorFactor((string) $presentacion->getAttribute('factor')) : $precioBase->aCadena()), $listaAplicada, $reglas, (float) $descuento->aCadena(), 0.0, (float) $totalLinea->aCadena(), presentacionId: $presentacion === null ? null : (int) $presentacion->getKey(), presentacionNombre: $presentacion?->getAttribute('nombre'), factor: $presentacion === null ? '1.000' : (string) $presentacion->getAttribute('factor'));
             $subtotal = $subtotal->sumar($totalLinea);
         }
         $importeSubtotal = $carrito->subtotalReferencia === null ? $subtotal->aCadena() : $this->referenciaDecimal($carrito->subtotalReferencia);
@@ -111,7 +130,7 @@ final class PricingService
                 [$tasa, $exento] = $tasas[$indice];
                 $impuesto = $exento ? Dinero::desde(0) : Dinero::desde((string) $linea->total)->restar($reparto[$indice])->impuestoIncluido($tasa);
                 $impuestos = $impuestos->sumar($impuesto);
-                $lineas[$indice] = new LineaPrecio($linea->varianteId, $linea->cantidad, $linea->precioBase, $linea->listaAplicada, $linea->reglas, $linea->descuento, (float) $impuesto->aCadena(), $linea->total, $tasa, $exento);
+                $lineas[$indice] = new LineaPrecio($linea->varianteId, $linea->cantidad, $linea->precioBase, $linea->listaAplicada, $linea->reglas, $linea->descuento, (float) $impuesto->aCadena(), $linea->total, $tasa, $exento, $linea->presentacionId, $linea->presentacionNombre, $linea->factor);
             }
         }
 
@@ -306,6 +325,43 @@ final class PricingService
         $descuento = $totalSinDescuento->restar($totalConBundle);
 
         return $descuento->comparar(Dinero::desde(0)) > 0 ? $descuento : Dinero::desde(0);
+    }
+
+    private function descuentoDePresentacion(ReglaPrecio $regla, Dinero $unitario, int|float $cantidad, string $factor, Dinero $total): Dinero
+    {
+        $tipo = $regla->getAttribute('tipo');
+        if ($tipo === 'porcentaje') {
+            return $unitario->multiplicarPorcentaje(Cantidad::cadena(Cantidad::multiplicar($cantidad, $factor)), (string) ($regla->getAttribute('porcentaje') ?? '0'));
+        }
+        if ($tipo === 'monto_fijo') {
+            return Dinero::desdeProducto((string) ($regla->getAttribute('monto') ?? '0'), Cantidad::cadena($cantidad));
+        }
+        $compra = Cantidad::milesimas($regla->getAttribute('cantidad_compra') ?? 0);
+        if ($compra <= 0) {
+            return Dinero::desde(0);
+        }
+        $milesimas = Cantidad::milesimas($cantidad);
+        $grupos = intdiv($milesimas, $compra);
+        if ($tipo === 'nxm') {
+            $paga = Cantidad::milesimas($regla->getAttribute('cantidad_paga') ?? 0);
+            if ($paga <= 0 || $paga >= $compra) {
+                return Dinero::desde(0);
+            }
+
+            return $unitario->multiplicar(Cantidad::cadena(Cantidad::multiplicar(Cantidad::desdeMilesimas($grupos * ($compra - $paga)), $factor)));
+        }
+        if ($tipo === 'bundle') {
+            $precio = Dinero::desde((string) ($regla->getAttribute('precio_bundle') ?? '0'));
+            if ($precio->centavos <= 0) {
+                return Dinero::desde(0);
+            }
+            $resto = Cantidad::multiplicar(Cantidad::desdeMilesimas($milesimas % $compra), $factor);
+            $conBundle = $precio->multiplicar($grupos)->sumar($unitario->multiplicar(Cantidad::cadena($resto)));
+
+            return $conBundle->comparar($total) >= 0 ? Dinero::desde(0) : $total->restar($conBundle);
+        }
+
+        return Dinero::desde(0);
     }
 
     private function menor(Dinero $a, Dinero $b): Dinero

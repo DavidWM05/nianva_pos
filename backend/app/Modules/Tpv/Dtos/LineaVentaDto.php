@@ -7,5 +7,6 @@ final readonly class LineaVentaDto
     public function __construct(
         public int $varianteId,
         public int|float $cantidad,
+        public ?int $presentacionId = null,
     ) {}
 }

@@ -13,6 +13,7 @@ use App\Modules\Devoluciones\Models\Devolucion;
 use App\Modules\Gastos\Models\Gasto;
 use App\Modules\GiftCards\Models\GiftCard;
 use App\Modules\Inventario\Models\Compra;
+use App\Modules\Inventario\Models\Presentacion;
 use App\Modules\Inventario\Models\Producto;
 use App\Modules\Inventario\Models\ProductoVariante;
 use App\Modules\NotasCredito\Models\NotaCredito;
@@ -129,6 +130,7 @@ return [
     ],
 
     'auditables' => [
+        Presentacion::class,
         Usuario::class,
         Rol::class,
         Producto::class,

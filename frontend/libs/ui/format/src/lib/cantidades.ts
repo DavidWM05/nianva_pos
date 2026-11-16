@@ -26,3 +26,17 @@ export function sumarCantidades(...cantidades: CantidadDecimal[]): string {
 export function compararCantidades(a: CantidadDecimal, b: CantidadDecimal): number {
   return Math.sign(aMilesimas(a) - aMilesimas(b));
 }
+
+export function multiplicarCantidades(a: CantidadDecimal, b: CantidadDecimal): string {
+  const producto = BigInt(aMilesimas(a)) * BigInt(aMilesimas(b));
+  if (producto % 1000n !== 0n) throw new Error('La cantidad base admite hasta tres decimales.');
+  const resultado = producto / 1000n;
+  const absoluto = resultado < 0n ? -resultado : resultado;
+  if (absoluto > 99999999999999n) throw new Error('La cantidad base excede decimal(14,3).');
+  return (resultado < 0n ? '-' : '') + String(absoluto / 1000n) + '.' + String(absoluto % 1000n).padStart(3, '0');
+}
+export function maximoEnPresentaciones(stock: CantidadDecimal, factor: CantidadDecimal): number {
+  const divisor = BigInt(aMilesimas(factor));
+  if (divisor <= 0n) throw new Error('El factor debe ser positivo.');
+  return Math.max(0, Number(BigInt(aMilesimas(stock)) * 1000n / divisor) / 1000);
+}

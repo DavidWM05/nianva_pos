@@ -6182,6 +6182,107 @@
         ],
         "llaves_foraneas": []
     },
+    "presentaciones": {
+        "columnas": [
+            {
+                "nombre": "codigo_barras",
+                "tipo": "varchar",
+                "nullable": true,
+                "default": null
+            },
+            {
+                "nombre": "created_at",
+                "tipo": "datetime",
+                "nullable": true,
+                "default": null
+            },
+            {
+                "nombre": "factor",
+                "tipo": "numeric",
+                "nullable": false,
+                "default": null
+            },
+            {
+                "nombre": "id",
+                "tipo": "integer",
+                "nullable": false,
+                "default": null
+            },
+            {
+                "nombre": "nombre",
+                "tipo": "varchar",
+                "nullable": false,
+                "default": null
+            },
+            {
+                "nombre": "precio_venta",
+                "tipo": "numeric",
+                "nullable": true,
+                "default": null
+            },
+            {
+                "nombre": "tenant_id",
+                "tipo": "integer",
+                "nullable": false,
+                "default": null
+            },
+            {
+                "nombre": "updated_at",
+                "tipo": "datetime",
+                "nullable": true,
+                "default": null
+            },
+            {
+                "nombre": "variante_id",
+                "tipo": "integer",
+                "nullable": false,
+                "default": null
+            }
+        ],
+        "indices": [
+            {
+                "nombre": "presentaciones_tenant_id_codigo_barras_unique",
+                "columnas": [
+                    "tenant_id",
+                    "codigo_barras"
+                ],
+                "unico": true
+            },
+            {
+                "nombre": "primary",
+                "columnas": [
+                    "id"
+                ],
+                "unico": true
+            }
+        ],
+        "llaves_foraneas": [
+            {
+                "nombre": null,
+                "columnas": [
+                    "tenant_id"
+                ],
+                "tabla_foranea": "tenants",
+                "columnas_foraneas": [
+                    "id"
+                ],
+                "on_update": "no action",
+                "on_delete": "cascade"
+            },
+            {
+                "nombre": null,
+                "columnas": [
+                    "variante_id"
+                ],
+                "tabla_foranea": "producto_variantes",
+                "columnas_foraneas": [
+                    "id"
+                ],
+                "on_update": "no action",
+                "on_delete": "cascade"
+            }
+        ]
+    },
     "prestamo_pagos": {
         "columnas": [
             {
@@ -7995,6 +8096,12 @@
                 "default": "'0'"
             },
             {
+                "nombre": "factor",
+                "tipo": "numeric",
+                "nullable": false,
+                "default": "'1'"
+            },
+            {
                 "nombre": "id",
                 "tipo": "integer",
                 "nullable": false,
@@ -8004,6 +8111,18 @@
                 "nombre": "precio_unitario",
                 "tipo": "numeric",
                 "nullable": false,
+                "default": null
+            },
+            {
+                "nombre": "presentacion_id",
+                "tipo": "integer",
+                "nullable": true,
+                "default": null
+            },
+            {
+                "nombre": "presentacion_nombre",
+                "tipo": "varchar",
+                "nullable": true,
                 "default": null
             },
             {
@@ -8041,6 +8160,18 @@
             }
         ],
         "llaves_foraneas": [
+            {
+                "nombre": null,
+                "columnas": [
+                    "presentacion_id"
+                ],
+                "tabla_foranea": "presentaciones",
+                "columnas_foraneas": [
+                    "id"
+                ],
+                "on_update": "no action",
+                "on_delete": "set null"
+            },
             {
                 "nombre": null,
                 "columnas": [

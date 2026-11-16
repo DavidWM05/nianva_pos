@@ -1,3 +1,7 @@
+import { SelectorPresentacionComponent } from '../selector-presentacion/selector-presentacion.component';
+import { PresentacionBuscable } from '../../../core/buscadores-entidad.tokens';
+import { maximoEnPresentaciones } from '@nianva/ui-format';
+import { ToastService, mensajeError } from '@nianva/ui-shared';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -24,6 +28,7 @@ import { VentaItemPayload } from '../venta.types';
 import { VentaService } from '../venta.service';
 
 interface LineaCarrito {
+  presentacion_id?: number;
   variante_id: number;
   cantidad: number;
   etiqueta: string;
@@ -67,6 +72,7 @@ export interface LineasProductoCambio {
   standalone: true,
   imports: [
     FormsModule,
+    SelectorPresentacionComponent,
     EntidadSelectorComponent,
     MatButton,
     MatIconButton,
@@ -79,6 +85,9 @@ export interface LineasProductoCambio {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LineasProductoComponent implements OnChanges {
+  @Input() presentacionesHabilitadas = false;
+  protected readonly presentacionSeleccionada = signal<PresentacionBuscable | null>(null);
+  private readonly toast = inject(ToastService);
   @Input() clienteId: number | null = null;
   @Input() listaPrecioId: number | null = null;
   private versionCotizacion = 0;
@@ -114,10 +123,8 @@ export class LineasProductoComponent implements OnChanges {
     const id = this.varianteSeleccionadaId();
     if (id === null) return null;
 
-    return (
-      this.variantesDelProductoSeleccionado().find((v) => v.id === id)
-        ?.stock_actual ?? null
-    );
+    const base = this.variantesDelProductoSeleccionado().find((v) => v.id === id)?.stock_actual;
+    return base === undefined ? null : maximoEnPresentaciones(base, this.presentacionSeleccionada()?.factor ?? '1.000');
   });
 
   protected readonly cantidadExcedeStock = computed(() => {
@@ -129,6 +136,7 @@ export class LineasProductoComponent implements OnChanges {
   onProductoSeleccionado(id: number | null): void {
     this.productoSeleccionadoId.set(id);
     this.varianteSeleccionadaId.set(null);
+    this.presentacionSeleccionada.set(null);
     this.variantesDelProductoSeleccionado.set([]);
     this.productoSeleccionadoNombre.set(null);
 
@@ -148,6 +156,7 @@ export class LineasProductoComponent implements OnChanges {
 
   onVarianteSeleccionada(id: number | null): void {
     this.varianteSeleccionadaId.set(id);
+    this.presentacionSeleccionada.set(null);
   }
 
   agregarLinea(): void {
@@ -159,15 +168,17 @@ export class LineasProductoComponent implements OnChanges {
     const varianteElegida = this.variantesDelProductoSeleccionado().find(
       (v) => v.id === varianteId,
     );
-    const etiqueta = `${this.productoSeleccionadoNombre() ?? ''} (${varianteElegida?.nombre ?? ''})`;
+    const presentacion = this.presentacionSeleccionada();
+    const etiqueta = `${this.productoSeleccionadoNombre() ?? ''} (${varianteElegida?.nombre ?? ''})${presentacion ? ' — ' + presentacion.nombre : ''}`;
 
     this.lineas.update((actuales) => [
       ...actuales,
       {
         variante_id: varianteId,
+        ...(presentacion ? { presentacion_id: presentacion.id } : {}),
         cantidad,
         etiqueta,
-        stockDisponible: varianteElegida?.stock_actual,
+        stockDisponible: this.stockVarianteSeleccionada() ?? undefined,
       },
     ]);
 
@@ -266,9 +277,20 @@ export class LineasProductoComponent implements OnChanges {
     });
   }
 
+  escanearCodigo(codigo: string): void {
+    if (!this.presentacionesHabilitadas || !codigo.trim()) return;
+    this.ventaService.resolverCodigo(codigo.trim()).subscribe({next: dato => {
+      const disponible = maximoEnPresentaciones(dato.stock_actual, dato.factor);
+      if (disponible < 1) { this.toast.warn('No hay stock suficiente para esta presentación.'); return; }
+      this.lineas.update(lineas=>[...lineas,{variante_id:dato.variante_id,...(dato.presentacion_id === null ? {} : {presentacion_id:dato.presentacion_id}),cantidad:1,etiqueta:dato.producto_nombre+(dato.presentacion_nombre?' — '+dato.presentacion_nombre:''),stockDisponible:disponible}]);
+      this.recotizar();
+    },error: error=>this.toast.error(mensajeError(error,'No se encontró el código de barras.'))});
+  }
+
   private itemsActuales(): VentaItemPayload[] {
     return this.lineas().map((linea) => ({
       variante_id: linea.variante_id,
+      ...(linea.presentacion_id === undefined ? {} : { presentacion_id: linea.presentacion_id }),
       cantidad: linea.cantidad,
     }));
   }

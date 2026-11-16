@@ -316,6 +316,22 @@ export interface paths {
         patch: operations["cliente.desactivar"];
         trace?: never;
     };
+    "/ventas/codigo": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["tpv.codigoVenta"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/compras": {
         parameters: {
             query?: never;
@@ -1492,6 +1508,38 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/producto-variantes/{variante}/presentaciones": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["presentacion.listar"];
+        put?: never;
+        post: operations["presentacion.store"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/producto-variantes/{variante}/presentaciones/{presentacion}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put: operations["presentacion.update"];
+        post?: never;
+        delete: operations["presentacion.destroy"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/prestamos": {
         parameters: {
             query?: never;
@@ -2363,6 +2411,15 @@ export interface components {
             /** Format: date-time */
             fecha_registro: string;
         };
+        /** CodigoVentaResource */
+        CodigoVentaResource: {
+            variante_id: number;
+            producto_nombre: string;
+            presentacion_id: number | null;
+            presentacion_nombre: string | null;
+            factor: string;
+            stock_actual: string;
+        };
         /** ConfiguracionSeguridadResource */
         ConfiguracionSeguridadResource: {
             dias_dispositivo_normal: number;
@@ -2436,11 +2493,24 @@ export interface components {
             /** Format: date-time */
             updated_at: string;
         };
+        /** CotizacionVentaLineaResource */
+        CotizacionVentaLineaResource: {
+            variante_id: number;
+            regla_precio_id: number | null;
+            cantidad: string;
+            precio_unitario: string;
+            descuento_aplicado: string;
+            subtotal: string;
+            presentacion_id?: number;
+            presentacion_nombre?: string;
+            factor?: string;
+        };
         /** CotizarVentaRequest */
         CotizarVentaRequest: {
             lista_precio_id?: number | null;
             cliente_id?: number | null;
             items: {
+                presentacion_id?: number | null;
                 variante_id: number;
                 cantidad: number;
             }[];
@@ -2479,6 +2549,7 @@ export interface components {
             /** @enum {string} */
             tipo: "devolucion" | "cambio";
             items_devueltos: {
+                venta_detalle_id?: number | null;
                 variante_id: number;
                 cantidad: number;
                 va_a_merma?: boolean | null;
@@ -2604,6 +2675,7 @@ export interface components {
             lista_precio_id?: number | null;
             cliente_id: number;
             items: {
+                presentacion_id?: number | null;
                 variante_id: number;
                 cantidad: number;
             }[];
@@ -2900,6 +2972,13 @@ export interface components {
             /** @enum {string} */
             tipo: "efectivo" | "tarjeta" | "transferencia" | "digital" | "otro";
             incluir_en_financiero: boolean;
+        };
+        /** GuardarPresentacionRequest */
+        GuardarPresentacionRequest: {
+            nombre: string;
+            factor: number;
+            codigo_barras?: string | null;
+            precio_venta?: number | null;
         };
         /** GuardarProductoRequest */
         GuardarProductoRequest: {
@@ -3235,6 +3314,15 @@ export interface components {
             /** Format: date-time */
             created_at: string;
         };
+        /** PresentacionResource */
+        PresentacionResource: {
+            id: number;
+            variante_id: number;
+            nombre: string;
+            factor: string;
+            codigo_barras: string | null;
+            precio_venta: string | null;
+        };
         /** PrestamoPago */
         PrestamoPago: {
             id: number;
@@ -3569,6 +3657,24 @@ export interface components {
             metodo_pago_sat: string | null;
             uso_cfdi: string | null;
         };
+        /** VentaLineaResource */
+        VentaLineaResource: {
+            id: number;
+            variante_id: number;
+            variante: {
+                id: number;
+                talla: string | null;
+                color: string | null;
+                producto_nombre: string;
+            } | null;
+            cantidad: string;
+            precio_unitario: string;
+            descuento_aplicado: string;
+            subtotal: string;
+            presentacion_id?: number | null;
+            presentacion_nombre?: string;
+            factor?: string;
+        };
         /** VentaResource */
         VentaResource: {
             lista_precio_id: number | null;
@@ -3594,20 +3700,7 @@ export interface components {
                 nombre: string;
                 monto: string;
             }[];
-            detalles?: {
-                id: number;
-                variante_id: number;
-                variante: {
-                    id: number;
-                    talla: string | null;
-                    color: string | null;
-                    producto_nombre: string;
-                } | null;
-                cantidad: string;
-                precio_unitario: string;
-                descuento_aplicado: string;
-                subtotal: string;
-            }[];
+            detalles?: components["schemas"]["VentaLineaResource"][];
         };
     };
     responses: {
@@ -3680,12 +3773,14 @@ export type Categoria = components['schemas']['Categoria'];
 export type CategoriaResource = components['schemas']['CategoriaResource'];
 export type CerrarCajaRequest = components['schemas']['CerrarCajaRequest'];
 export type ClienteResource = components['schemas']['ClienteResource'];
+export type CodigoVentaResource = components['schemas']['CodigoVentaResource'];
 export type ConfiguracionSeguridadResource = components['schemas']['ConfiguracionSeguridadResource'];
 export type ConfiguracionTenantResource = components['schemas']['ConfiguracionTenantResource'];
 export type ConfirmTwoFactorRequest = components['schemas']['ConfirmTwoFactorRequest'];
 export type ConvertirCotizacionRequest = components['schemas']['ConvertirCotizacionRequest'];
 export type CotizacionDetalleResource = components['schemas']['CotizacionDetalleResource'];
 export type CotizacionResource = components['schemas']['CotizacionResource'];
+export type CotizacionVentaLineaResource = components['schemas']['CotizacionVentaLineaResource'];
 export type CotizarVentaRequest = components['schemas']['CotizarVentaRequest'];
 export type CrearApartadoRequest = components['schemas']['CrearApartadoRequest'];
 export type CrearCotizacionRequest = components['schemas']['CrearCotizacionRequest'];
@@ -3725,6 +3820,7 @@ export type GuardarInsumoStockRequest = components['schemas']['GuardarInsumoStoc
 export type GuardarListaPrecioItemRequest = components['schemas']['GuardarListaPrecioItemRequest'];
 export type GuardarListaPrecioRequest = components['schemas']['GuardarListaPrecioRequest'];
 export type GuardarMetodoPagoRequest = components['schemas']['GuardarMetodoPagoRequest'];
+export type GuardarPresentacionRequest = components['schemas']['GuardarPresentacionRequest'];
 export type GuardarProductoRequest = components['schemas']['GuardarProductoRequest'];
 export type GuardarProductoVarianteRequest = components['schemas']['GuardarProductoVarianteRequest'];
 export type GuardarReglaPrecioRequest = components['schemas']['GuardarReglaPrecioRequest'];
@@ -3751,6 +3847,7 @@ export type Permiso = components['schemas']['Permiso'];
 export type PlanPagoCliente = components['schemas']['PlanPagoCliente'];
 export type PlanPagoClienteCuota = components['schemas']['PlanPagoClienteCuota'];
 export type PlanPagoResource = components['schemas']['PlanPagoResource'];
+export type PresentacionResource = components['schemas']['PresentacionResource'];
 export type PrestamoPago = components['schemas']['PrestamoPago'];
 export type PrestamoResource = components['schemas']['PrestamoResource'];
 export type ProductoResource = components['schemas']['ProductoResource'];
@@ -3774,6 +3871,7 @@ export type UsuarioAdminResource = components['schemas']['UsuarioAdminResource']
 export type UsuarioResource = components['schemas']['UsuarioResource'];
 export type ValidarCuponRequest = components['schemas']['ValidarCuponRequest'];
 export type Venta = components['schemas']['Venta'];
+export type VentaLineaResource = components['schemas']['VentaLineaResource'];
 export type VentaResource = components['schemas']['VentaResource'];
 export type ResponseAuthenticationException = components['responses']['AuthenticationException'];
 export type ResponseValidationException = components['responses']['ValidationException'];
@@ -4456,6 +4554,32 @@ export interface operations {
             };
             401: components["responses"]["AuthenticationException"];
             404: components["responses"]["ModelNotFoundException"];
+        };
+    };
+    "tpv.codigoVenta": {
+        parameters: {
+            query: {
+                codigo: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description `CodigoVentaResource` */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["CodigoVentaResource"];
+                    };
+                };
+            };
+            401: components["responses"]["AuthenticationException"];
+            422: components["responses"]["ValidationException"];
         };
     };
     "compra.store": {
@@ -7175,6 +7299,124 @@ export interface operations {
             422: components["responses"]["ValidationException"];
         };
     };
+    "presentacion.listar": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The variante ID */
+                variante: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Array of `PresentacionResource` */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["PresentacionResource"][];
+                    };
+                };
+            };
+            401: components["responses"]["AuthenticationException"];
+            404: components["responses"]["ModelNotFoundException"];
+        };
+    };
+    "presentacion.store": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The variante ID */
+                variante: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["GuardarPresentacionRequest"];
+            };
+        };
+        responses: {
+            /** @description `PresentacionResource` */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["PresentacionResource"];
+                    };
+                };
+            };
+            401: components["responses"]["AuthenticationException"];
+            404: components["responses"]["ModelNotFoundException"];
+            422: components["responses"]["ValidationException"];
+        };
+    };
+    "presentacion.update": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The variante ID */
+                variante: number;
+                /** @description The presentacion ID */
+                presentacion: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["GuardarPresentacionRequest"];
+            };
+        };
+        responses: {
+            /** @description `PresentacionResource` */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["PresentacionResource"];
+                    };
+                };
+            };
+            401: components["responses"]["AuthenticationException"];
+            404: components["responses"]["ModelNotFoundException"];
+            422: components["responses"]["ValidationException"];
+        };
+    };
+    "presentacion.destroy": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The variante ID */
+                variante: number;
+                /** @description The presentacion ID */
+                presentacion: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            401: components["responses"]["AuthenticationException"];
+            404: components["responses"]["ModelNotFoundException"];
+        };
+    };
     "prestamo.index": {
         parameters: {
             query?: {
@@ -8827,14 +9069,7 @@ export interface operations {
                 content: {
                     "application/json": {
                         data: {
-                            items: {
-                                variante_id: number;
-                                regla_precio_id: number | null;
-                                cantidad: string;
-                                precio_unitario: string;
-                                descuento_aplicado: string;
-                                subtotal: string;
-                            }[];
+                            items: components["schemas"]["CotizacionVentaLineaResource"][];
                             subtotal: string;
                         };
                     };

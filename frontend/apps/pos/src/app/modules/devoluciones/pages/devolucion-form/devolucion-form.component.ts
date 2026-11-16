@@ -1,4 +1,5 @@
-import { cantidadANumero, sumarCantidades, aCentavos, sumarDinero, restarDinero, multiplicarDinero, DineroPipe, CantidadPipe } from '@nianva/ui-format';
+import { multiplicarCantidades } from '@nianva/ui-format';
+import { cantidadANumero, sumarCantidades, aCentavos, sumarDinero, restarDinero, multiplicarDinero, proporcionarDinero, DineroPipe, CantidadPipe } from '@nianva/ui-format';
 import { MatButton } from '@angular/material/button';
 import { BtnEnviarComponent, CampoComponent, InputCantidadComponent, aplicarErroresServidor } from '@nianva/ui-forms';
 import { AlertComponent, conUmbral } from '@nianva/ui-feedback';
@@ -20,12 +21,15 @@ import { DevolucionFormPayload, TipoDevolucion, TipoReembolso } from '../../devo
 
 
 interface LineaDevuelta {
+  venta_detalle_id?: number;
+  factor: string;
   variante_id: number;
   etiqueta: string;
   cantidadMaxima: number;
   cantidad: number;
   vaAMerma: boolean;
   precioUnitario: string;
+  subtotalPresentacion?: string;
 }
 
 
@@ -78,7 +82,7 @@ export class DevolucionFormComponent implements OnInit {
   protected readonly registrando = signal(false);
 
   protected readonly montoDevolucionEstimado = computed(() =>
-    aCentavos(sumarDinero(...this.lineasDevueltas().filter(l => l.cantidad > 0).map(l => multiplicarDinero(l.precioUnitario, l.cantidad)))) / 100,
+    aCentavos(sumarDinero(...this.lineasDevueltas().filter(l => l.cantidad > 0).map(l => l.subtotalPresentacion !== undefined ? proporcionarDinero(l.subtotalPresentacion, l.cantidad, l.cantidadMaxima) : multiplicarDinero(l.precioUnitario, l.cantidad)))) / 100,
   );
 
   /** Estimacion solo para feedback en vivo -- la diferencia real la calcula el backend al registrar. */
@@ -88,11 +92,11 @@ export class DevolucionFormComponent implements OnInit {
 
   /** Una linea va_a_merma=true NUNCA cuenta aqui -- ver DevolucionService, que ni siquiera la toca en InventarioService. */
   protected readonly unidadesRegresanAStock = computed(() =>
-    cantidadANumero(sumarCantidades(...this.lineasDevueltas().filter(l => l.cantidad > 0 && !l.vaAMerma).map(l => l.cantidad))),
+    cantidadANumero(sumarCantidades(...this.lineasDevueltas().filter(l => l.cantidad > 0 && !l.vaAMerma).map(l => multiplicarCantidades(l.cantidad,l.factor)))),
   );
 
   protected readonly unidadesMerma = computed(() =>
-    cantidadANumero(sumarCantidades(...this.lineasDevueltas().filter(l => l.cantidad > 0 && l.vaAMerma).map(l => l.cantidad))),
+    cantidadANumero(sumarCantidades(...this.lineasDevueltas().filter(l => l.cantidad > 0 && l.vaAMerma).map(l => multiplicarCantidades(l.cantidad,l.factor)))),
   );
 
   protected readonly pagoNecesario = computed(() => aCentavos(this.diferenciaEstimada()) !== 0);
@@ -130,11 +134,14 @@ export class DevolucionFormComponent implements OnInit {
         this.lineasDevueltas.set(
           (venta.detalles ?? []).map((detalle) => ({
             variante_id: detalle.variante_id,
-            etiqueta: `${detalle.variante?.producto_nombre ?? ''} (${[detalle.variante?.talla, detalle.variante?.color].filter((v) => !!v).join(' / ')})`,
+            ...((venta.detalles ?? []).some(d => d.presentacion_nombre !== undefined) ? { venta_detalle_id: detalle.id } : {}),
+            factor: detalle.factor ?? '1.000',
+            etiqueta: `${detalle.variante?.producto_nombre ?? ''} (${[detalle.variante?.talla, detalle.variante?.color].filter((v) => !!v).join(' / ')})${detalle.presentacion_nombre ? ' — '+detalle.presentacion_nombre : ''}`,
             cantidadMaxima: cantidadANumero(detalle.cantidad),
             cantidad: 0,
             vaAMerma: false,
             precioUnitario: detalle.precio_unitario,
+            ...(detalle.presentacion_nombre ? { subtotalPresentacion: detalle.subtotal } : {}),
           })),
         );
         this.gruposLineas.clear({ emitEvent: false });
@@ -220,7 +227,7 @@ export class DevolucionFormComponent implements OnInit {
       tipo: this.tipo(),
       items_devueltos: this.lineasDevueltas()
         .filter((l) => l.cantidad > 0)
-        .map((l) => ({ variante_id: l.variante_id, cantidad: l.cantidad, va_a_merma: l.vaAMerma })),
+        .map((l) => ({ variante_id: l.variante_id, ...(l.venta_detalle_id === undefined ? {} : { venta_detalle_id: l.venta_detalle_id }), cantidad: l.cantidad, va_a_merma: l.vaAMerma })),
       items_nuevos: this.tipo() === 'cambio' ? this.itemsNuevosActuales() : undefined,
       pagos: this.pagoNecesario() ? this.pagosActuales() : [],
       motivo: this.motivo().trim() || null,

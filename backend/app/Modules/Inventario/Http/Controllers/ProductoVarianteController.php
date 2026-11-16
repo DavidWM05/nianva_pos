@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Modules\Configuracion\Models\ConfiguracionTenant;
 use App\Modules\Inventario\Http\Requests\GuardarProductoVarianteRequest;
 use App\Modules\Inventario\Http\Resources\ProductoVarianteResource;
+use App\Modules\Inventario\Models\Presentacion;
 use App\Modules\Inventario\Models\Producto;
 use App\Modules\Inventario\Models\ProductoVariante;
 
@@ -68,7 +69,7 @@ class ProductoVarianteController extends Controller
     {
         do {
             $codigo = (string) random_int(10 ** (self::LONGITUD_CODIGO_AUTOGENERADO - 1), (10 ** self::LONGITUD_CODIGO_AUTOGENERADO) - 1);
-        } while (ProductoVariante::where('tenant_id', $tenantId)->where('codigo_barras', $codigo)->exists());
+        } while (ProductoVariante::where('tenant_id', $tenantId)->where('codigo_barras', $codigo)->exists() || Presentacion::where('tenant_id', $tenantId)->where('codigo_barras', $codigo)->exists());
 
         return $codigo;
     }

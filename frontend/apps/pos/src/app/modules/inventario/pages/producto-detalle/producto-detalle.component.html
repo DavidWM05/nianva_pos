@@ -38,6 +38,7 @@
             [puedeRegistrarCompra]="puedeRegistrarCompra()"
             (editar)="abrirEdicionVariante($event)"
             (desactivar)="onDesactivarVariante($event)"
+            (presentaciones)="variantePresentaciones.set($event)"
             (verKardex)="seleccionarVariante($event.id)"
             (registrarCompra)="abrirModalCompra($event)"
         /></ui-section> </ng-template
@@ -123,4 +124,8 @@
       (guardar)="onGuardarProveedor($event)"
     />
   }
+</ui-modal>
+
+<ui-modal titulo="Presentaciones de variante" [visible]="variantePresentaciones() !== null" (visibleChange)="!$event && variantePresentaciones.set(null)">
+@if (variantePresentaciones(); as variante) { <nucleo-presentaciones [varianteId]="variante.id" [soloLectura]="!puedeEditar()" /> }
 </ui-modal>

@@ -22,6 +22,9 @@ export interface VentaDetalleVariante {
 }
 
 export interface VentaDetalle {
+  presentacion_id?: number | null;
+  presentacion_nombre?: string;
+  factor?: string;
   id: number;
   variante_id: number;
   variante: VentaDetalleVariante | null;
@@ -65,6 +68,7 @@ export type VentaCotizacionItem = RespuestaDe<'/ventas/cotizar', 'post'>['data']
 export type VentaCotizacion = RespuestaDe<'/ventas/cotizar', 'post'>['data'];
 
 export interface VentaItemPayload {
+  presentacion_id?: number | null;
   variante_id: number;
   cantidad: number;
 }

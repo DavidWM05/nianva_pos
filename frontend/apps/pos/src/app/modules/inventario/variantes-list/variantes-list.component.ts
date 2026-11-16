@@ -61,6 +61,7 @@ export class VariantesListComponent {
   @Input() puedeDesactivar = false;
   @Input() puedeRegistrarCompra = false;
 
+  @Output() presentaciones = new EventEmitter<ProductoVariante>();
   @Output() editar = new EventEmitter<ProductoVariante>();
   @Output() desactivar = new EventEmitter<ProductoVariante>();
   @Output() verKardex = new EventEmitter<ProductoVariante>();

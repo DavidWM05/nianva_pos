@@ -22,5 +22,8 @@ final readonly class LineaPrecio
         public float $total,
         public string $tasaImpuesto = '0.0000',
         public bool $exento = false,
+        public ?int $presentacionId = null,
+        public ?string $presentacionNombre = null,
+        public string $factor = '1.000',
     ) {}
 }

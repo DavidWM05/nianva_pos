@@ -16,7 +16,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * Sin tenant_id propio: el aislamiento se resuelve via BelongsToTenantViaRelacion
  * consultando venta.tenant_id (ver tenantRelacion()).
  */
-#[Fillable(['venta_id', 'variante_id', 'regla_precio_id', 'cantidad', 'precio_unitario', 'descuento_aplicado', 'subtotal'])]
+#[Fillable(['presentacion_id', 'presentacion_nombre', 'factor', 'venta_id', 'variante_id', 'regla_precio_id', 'cantidad', 'precio_unitario', 'descuento_aplicado', 'subtotal'])]
 class VentaDetalle extends Model
 {
     use BelongsToTenantViaRelacion;
@@ -28,9 +28,11 @@ class VentaDetalle extends Model
 
     protected $table = 'venta_detalles';
 
+    protected $attributes = ['factor' => '1.000', 'presentacion_id' => null, 'presentacion_nombre' => null];
+
     protected function casts(): array
     {
-        return ['cantidad' => CantidadDecimal::class,
+        return ['factor' => 'decimal:3', 'cantidad' => CantidadDecimal::class,
             'precio_unitario' => 'decimal:2',
             'descuento_aplicado' => 'decimal:2',
             'subtotal' => 'decimal:2',

@@ -18,6 +18,7 @@ use App\Modules\Inventario\Http\Controllers\CategoriaController;
 use App\Modules\Inventario\Http\Controllers\CompraController;
 use App\Modules\Inventario\Http\Controllers\DepartamentoController;
 use App\Modules\Inventario\Http\Controllers\KardexController;
+use App\Modules\Inventario\Http\Controllers\PresentacionController;
 use App\Modules\Inventario\Http\Controllers\ProductoController;
 use App\Modules\Inventario\Http\Controllers\ProductoVarianteController;
 use App\Modules\Inventario\Http\Controllers\ProveedorController;
@@ -43,6 +44,7 @@ use App\Modules\Precios\Http\Middleware\SeleccionarListaPrecio;
 use App\Modules\Prestamos\Http\Controllers\PrestamoController;
 use App\Modules\Produccion\Http\Controllers\ProduccionController;
 use App\Modules\Tpv\Http\Controllers\CajaController;
+use App\Modules\Tpv\Http\Controllers\CodigoVentaController;
 use App\Modules\Tpv\Http\Controllers\VentaController;
 use App\Modules\UnidadesMedida\Http\Controllers\UnidadMedidaController;
 use App\Modules\VentasPlazos\Http\Controllers\PlanPagoController;
@@ -169,6 +171,11 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::patch('/productos/{producto}/desactivar', [ProductoController::class, 'desactivar'])
             ->middleware('permiso:inventario.eliminar');
 
+        Route::get('/producto-variantes/{variante}/presentaciones', [PresentacionController::class, 'listar'])->middleware('permiso:inventario.ver');
+        Route::post('/producto-variantes/{variante}/presentaciones', [PresentacionController::class, 'store'])->middleware('permiso:inventario.editar');
+        Route::put('/producto-variantes/{variante}/presentaciones/{presentacion}', [PresentacionController::class, 'update'])->middleware('permiso:inventario.editar');
+        Route::delete('/producto-variantes/{variante}/presentaciones/{presentacion}', [PresentacionController::class, 'destroy'])->middleware('permiso:inventario.editar');
+
         Route::post('/productos/{producto}/variantes', [ProductoVarianteController::class, 'store'])
             ->middleware('permiso:inventario.crear');
         Route::put('/producto-variantes/{variante}', [ProductoVarianteController::class, 'update'])
@@ -242,6 +249,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
         Route::get('/ventas', [VentaController::class, 'index'])->middleware('permiso:ventas.ver');
         Route::post('/ventas', [VentaController::class, 'store'])->middleware(['permiso:ventas.crear', SeleccionarListaPrecio::class]);
+        Route::get('/ventas/codigo', CodigoVentaController::class)->middleware('permiso:ventas.crear');
         Route::post('/ventas/cotizar', [VentaController::class, 'cotizar'])->middleware(['permiso:ventas.crear', SeleccionarListaPrecio::class]);
         Route::get('/ventas/reporte', [VentaController::class, 'reporte'])->middleware('permiso:reportes.ver');
         Route::get('/ventas/{venta}', [VentaController::class, 'show'])->middleware('permiso:ventas.ver');

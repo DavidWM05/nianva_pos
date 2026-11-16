@@ -11,6 +11,10 @@ import { ReporteVentas, ReporteVentasFiltros, Venta, VentaCotizacion, VentaFormP
 export class VentaService {
   private readonly http = inject(HttpClient);
 
+  resolverCodigo(codigo: string) {
+    return this.http.get<RespuestaDe<'/ventas/codigo', 'get'>>(urlApi('/ventas/codigo'), {params:{codigo}}).pipe(map(r=>r.data));
+  }
+
   /** Mismo contrato que ClienteService/ProductoService.listar(). */
   listar(evento: DataTableLazyEvent, busqueda: string): Observable<VentasPagina> {
     const rows = evento.rows || 25;

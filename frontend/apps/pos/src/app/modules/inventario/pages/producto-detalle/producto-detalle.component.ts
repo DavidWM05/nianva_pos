@@ -1,3 +1,4 @@
+import { PresentacionesComponent } from '../../presentaciones/presentaciones.component';
 import { BotonCrearComponent } from '@nianva/ui-actions';
 import { CampoComponent, SelectFiltroComponent } from '@nianva/ui-forms';
 import {
@@ -71,6 +72,7 @@ import { VariantesListComponent } from '../../variantes-list/variantes-list.comp
   standalone: true,
   imports: [
     FormsModule,
+    PresentacionesComponent,
     RecordTabsComponent,
     ProductoFormComponent,
     VariantesListComponent,
@@ -135,6 +137,7 @@ export class ProductoDetalleComponent implements OnInit {
     })),
   );
 
+  protected readonly variantePresentaciones = signal<ProductoVariante | null>(null);
   protected readonly mostrarFormularioVariante = signal(false);
   protected readonly varianteEnEdicion = signal<ProductoVariante | null>(null);
   protected readonly codigoBarrasAutomatico = signal(false);

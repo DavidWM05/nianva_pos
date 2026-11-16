@@ -46,6 +46,7 @@ class RegistrarDevolucion
                 'variante_id' => $item->varianteId,
                 'cantidad' => $item->cantidad,
                 'va_a_merma' => $item->vaAMerma,
+                ...($item->ventaDetalleId === null ? [] : ['venta_detalle_id' => $item->ventaDetalleId]),
             ],
             $dto->itemsDevueltos,
         );

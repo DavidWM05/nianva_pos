@@ -12,6 +12,7 @@ use App\Modules\Inventario\Services\InventarioService;
 use App\Modules\Nucleo\Models\Sucursal;
 use App\Modules\Nucleo\Models\Usuario;
 use App\Modules\Nucleo\Scopes\TenantScope;
+use App\Modules\Nucleo\Support\Cantidad;
 use App\Modules\Precios\Models\Cupon;
 use App\Modules\Precios\Services\PricingService;
 use App\Modules\Precios\Support\Carrito;
@@ -48,7 +49,7 @@ class VentaService
 
     /**
      * @param  array{tenant_id:int, sucursal_id:int, lista_precio_id?:?int, usuario_id:int, cliente_id:int, cupon_id?:?int, descuento_manual?:float, abono_previo?:float, es_venta_sombra?:bool}  $datosVenta
-     * @param  list<array{variante_id:int, cantidad:int|float}>  $items
+     * @param  list<array{variante_id:int, cantidad:int|float, presentacion_id?:int|null}>  $items
      * @param  list<array{metodo_pago_id:int, monto:float}>  $pagos
      * @param  array<int, InventarioStock>  $stocks
      *
@@ -117,6 +118,9 @@ class VentaService
         foreach ($lineas as $linea) {
             VentaDetalle::create([
                 'venta_id' => $venta->id,
+                'presentacion_id' => $linea['presentacion_id'] ?? null,
+                'presentacion_nombre' => $linea['presentacion_nombre'] ?? null,
+                'factor' => isset($linea['presentacion_id']) ? $linea['factor'] : '1.000',
                 'variante_id' => $linea['variante_id'],
                 'regla_precio_id' => $linea['regla_precio_id'],
                 'cantidad' => $linea['cantidad'],
@@ -131,7 +135,7 @@ class VentaService
             $this->inventarioService->registrarMovimientoConStock(
                 stock: $stocks[$linea['variante_id']],
                 tipo: 'salida',
-                cantidad: $linea['cantidad'],
+                cantidad: Cantidad::multiplicar($linea['cantidad'], isset($linea['presentacion_id']) ? $linea['factor'] : '1.000'),
                 motivo: 'venta',
                 usuarioId: $datosVenta['usuario_id'],
                 referenciaTabla: 'ventas',
@@ -170,7 +174,7 @@ class VentaService
             $this->inventarioService->registrarMovimientoConStock(
                 stock: $stocks[$detalle->variante_id],
                 tipo: 'entrada',
-                cantidad: $detalle->cantidad,
+                cantidad: Cantidad::multiplicar($detalle->cantidad, $detalle->getAttribute('factor')),
                 motivo: 'ajuste',
                 usuarioId: $usuario->id,
                 referenciaTabla: 'ventas',
@@ -203,8 +207,8 @@ class VentaService
      * calcular un total sin duplicar la logica de precios ni el
      * InvalidArgumentException de tenant/variante inconsistente.
      *
-     * @param  array<int|string, array{variante_id:int|string, cantidad:int|float}>  $items
-     * @return array{0: list<array{variante_id:int, regla_precio_id:?int, cantidad:int|float, precio_unitario:float, descuento_aplicado:float, subtotal:float}>, 1: float}
+     * @param  array<int|string, array{variante_id:int|string, cantidad:int|float, presentacion_id?:int|null}>  $items
+     * @return array{0: list<array{variante_id:int, regla_precio_id:?int, cantidad:int|float, precio_unitario:float, descuento_aplicado:float, subtotal:float}|array{variante_id:int, regla_precio_id:?int, cantidad:int|float, precio_unitario:float, descuento_aplicado:float, subtotal:float, presentacion_id:int, presentacion_nombre:string, factor:string}>, 1: float}
      */
     public function cotizarItems(int $tenantId, array $items, ?ContextoPrecio $contexto = null): array
     {
@@ -214,8 +218,8 @@ class VentaService
     }
 
     /**
-     * @param  array<int|string, array{variante_id:int|string, cantidad:int|float}>  $items
-     * @return array{0: list<array{variante_id:int, regla_precio_id:?int, cantidad:int|float, precio_unitario:float, descuento_aplicado:float, subtotal:float}>, 1: float, 2: float}
+     * @param  array<int|string, array{variante_id:int|string, cantidad:int|float, presentacion_id?:int|null}>  $items
+     * @return array{0: list<array{variante_id:int, regla_precio_id:?int, cantidad:int|float, precio_unitario:float, descuento_aplicado:float, subtotal:float}|array{variante_id:int, regla_precio_id:?int, cantidad:int|float, precio_unitario:float, descuento_aplicado:float, subtotal:float, presentacion_id:int, presentacion_nombre:string, factor:string}>, 1: float, 2: float}
      */
     private function resolverLineas(int $tenantId, array $items, ?ContextoPrecio $contexto = null, ?int $cuponId = null): array
     {
@@ -233,11 +237,19 @@ class VentaService
 
         }
         $codigo = $cuponId === null ? null : (string) Cupon::query()->withoutGlobalScope(TenantScope::class)->findOrFail($cuponId)->getAttribute('codigo');
-        $cotizacion = $this->pricingService->cotizar(new Carrito(array_map(static fn (array $item): LineaCarrito => new LineaCarrito((int) $item['variante_id'], $item['cantidad']), $items), $codigo), $contexto ?? new ContextoPrecio($tenantId, null, null, CarbonImmutable::now()));
+        $cotizacion = $this->pricingService->cotizar(new Carrito(array_map(static fn (array $item): LineaCarrito => new LineaCarrito((int) $item['variante_id'], $item['cantidad'], $item['presentacion_id'] ?? null), $items), $codigo), $contexto ?? new ContextoPrecio($tenantId, null, null, CarbonImmutable::now()));
         $lineas = [];
         foreach ($items as $indice => $item) {
             $linea = $cotizacion->lineas[$indice];
+            $metadatos = [];
+            if ($linea->presentacionId !== null) {
+                if ($linea->presentacionNombre === null) {
+                    throw new \LogicException('La presentación cotizada requiere su nombre.');
+                }
+                $metadatos = ['presentacion_id' => $linea->presentacionId, 'presentacion_nombre' => $linea->presentacionNombre, 'factor' => $linea->factor];
+            }
             $lineas[] = [
+                ...$metadatos,
                 'variante_id' => (int) $linea->varianteId,
                 'regla_precio_id' => $linea->reglas[0]->id ?? null,
                 'cantidad' => $item['cantidad'],

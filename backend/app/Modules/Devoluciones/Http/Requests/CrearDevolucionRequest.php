@@ -6,6 +6,7 @@ use App\Modules\Devoluciones\Dtos\CrearDevolucionDto;
 use App\Modules\Devoluciones\Dtos\ItemDevueltoDto;
 use App\Modules\Devoluciones\Dtos\ItemNuevoDto;
 use App\Modules\Devoluciones\Dtos\PagoDevolucionDto;
+use App\Modules\Devoluciones\Support\DetalleDevueltoDeVenta;
 use App\Modules\Inventario\Support\ReglasCantidad;
 use App\Modules\Inventario\Support\ReglasVariante;
 use App\Modules\Nucleo\Http\Requests\SolicitudNegocio;
@@ -26,6 +27,7 @@ class CrearDevolucionRequest extends SolicitudNegocio
             'venta_id' => ['required', 'integer', ReglasTenant::existe('ventas', $tenantId)],
             'tipo' => ['required', Rule::in(['devolucion', 'cambio'])],
             'items_devueltos' => ['required', 'array', 'min:1'],
+            'items_devueltos.*.venta_detalle_id' => ['nullable', 'integer', new DetalleDevueltoDeVenta($tenantId)],
             'items_devueltos.*.variante_id' => ['required', 'integer', ReglasVariante::delTenant($tenantId)],
             'items_devueltos.*.cantidad' => ['required', ...ReglasCantidad::paraVariante($tenantId)],
             'items_devueltos.*.va_a_merma' => ['nullable', 'boolean'],
@@ -52,6 +54,7 @@ class CrearDevolucionRequest extends SolicitudNegocio
                     varianteId: (int) $item['variante_id'],
                     cantidad: Cantidad::numero($item['cantidad']),
                     vaAMerma: (bool) ($item['va_a_merma'] ?? false),
+                    ventaDetalleId: isset($item['venta_detalle_id']) ? (int) $item['venta_detalle_id'] : null,
                 );
             },
             (array) ($v['items_devueltos'] ?? []),

@@ -1,3 +1,5 @@
+import { aMilesimas } from './cantidades';
+
 export type ImporteDecimal = string | number;
 
 export function aCentavos(valor: ImporteDecimal): number {
@@ -47,5 +49,16 @@ export function multiplicarDinero(
   const producto = BigInt(aCentavos(importe)) * milesimas - BigInt(aCentavos(descuento)) * 1000n;
   const absoluto = producto < 0n ? -producto : producto;
   const redondeado = (absoluto + 500n) / 1000n;
+  return desdeCentavos(Number(producto < 0n ? -redondeado : redondeado));
+}
+
+export function proporcionarDinero(importe: ImporteDecimal, cantidad: string | number, total: string | number): string {
+  const numerador = BigInt(aMilesimas(cantidad));
+  const denominador = BigInt(aMilesimas(total));
+  if (numerador < 0n || denominador <= 0n) throw new Error('La proporción requiere cantidades no negativas y un total positivo.');
+  const producto = BigInt(aCentavos(importe)) * numerador;
+  const absoluto = producto < 0n ? -producto : producto;
+  const cociente = absoluto / denominador;
+  const redondeado = cociente + (absoluto % denominador * 2n >= denominador ? 1n : 0n);
   return desdeCentavos(Number(producto < 0n ? -redondeado : redondeado));
 }

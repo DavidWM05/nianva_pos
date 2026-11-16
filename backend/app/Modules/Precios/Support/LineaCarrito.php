@@ -6,5 +6,5 @@ namespace App\Modules\Precios\Support;
 
 final readonly class LineaCarrito
 {
-    public function __construct(public int $varianteId, public int|float $cantidad) {}
+    public function __construct(public int $varianteId, public int|float $cantidad, public ?int $presentacionId = null) {}
 }
