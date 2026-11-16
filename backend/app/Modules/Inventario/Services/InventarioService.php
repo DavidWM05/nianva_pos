@@ -42,6 +42,7 @@ class InventarioService
         int $usuarioId,
         ?string $referenciaTabla = null,
         ?int $referenciaId = null,
+        string|int|float|null $costoUnitario = null,
     ): Kardex {
         $this->exigirTransaccion();
         $this->validarMovimiento($tipo, $cantidad, $motivo);
@@ -58,7 +59,16 @@ class InventarioService
             ? Cantidad::sumar($stockActual, $cantidad)
             : Cantidad::restar($stockActual, $cantidad);
 
-        $stock->update(['stock_actual' => $stockResultante]);
+        $actualizacion = ['stock_actual' => $stockResultante];
+        if ($tipo === 'entrada' && $costoUnitario !== null) {
+            $costo = Dinero::desde((string) $costoUnitario);
+            $actualizacion['costo_promedio'] = Dinero::desde((string) $stock->getAttribute('costo_promedio'))
+                ->promediarEntrada(Cantidad::cadena($stockActual), $costo, Cantidad::cadena($cantidad))->aCadena();
+            if ($motivo === 'compra') {
+                $actualizacion['ultimo_costo'] = $costo->aCadena();
+            }
+        }
+        $stock->update($actualizacion);
 
         return Kardex::query()->withoutGlobalScope(TenantScopeViaRelacion::class)->create([
             'variante_id' => $varianteId,
@@ -117,6 +127,7 @@ class InventarioService
                 usuarioId: $datosCompra['usuario_id'],
                 referenciaTabla: 'compras',
                 referenciaId: $compra->id,
+                costoUnitario: $item['precio_compra'],
             );
         }
 

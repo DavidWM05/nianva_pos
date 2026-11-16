@@ -22,7 +22,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * InventarioService::registrarMovimientoConStock(), que actualiza esta tabla y
  * kardex en una sola transaccion atomica.
  */
-#[Fillable(['sucursal_id', 'variante_id', 'stock_actual', 'stock_minimo'])]
+#[Fillable(['sucursal_id', 'variante_id', 'stock_actual', 'stock_minimo', 'costo_promedio', 'ultimo_costo'])]
 class InventarioStock extends Model
 {
     use BelongsToTenantViaRelacion;
@@ -33,6 +33,8 @@ class InventarioStock extends Model
     const CREATED_AT = null;
 
     protected $table = 'inventario_stock';
+
+    protected $attributes = ['costo_promedio' => '0.00', 'ultimo_costo' => null];
 
     public static function tenantRelacion(): string
     {
@@ -51,6 +53,6 @@ class InventarioStock extends Model
 
     protected function casts(): array
     {
-        return ['stock_actual' => CantidadDecimal::class, 'stock_minimo' => CantidadDecimal::class];
+        return ['stock_actual' => CantidadDecimal::class, 'stock_minimo' => CantidadDecimal::class, 'costo_promedio' => 'decimal:2', 'ultimo_costo' => 'decimal:2'];
     }
 }
