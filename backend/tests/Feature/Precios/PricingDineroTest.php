@@ -9,6 +9,7 @@ use App\Modules\Inventario\Models\ProductoVariante;
 use App\Modules\Nucleo\Models\Tenant;
 use App\Modules\Nucleo\Services\TenantContext;
 use App\Modules\Precios\Models\Cupon;
+use App\Modules\Precios\Models\ListaPrecio;
 use App\Modules\Precios\Models\ReglaPrecio;
 use App\Modules\Precios\Services\PricingService;
 use App\Modules\Precios\Support\Carrito;
@@ -28,6 +29,7 @@ class PricingDineroTest extends TestCase
     {
         $tenant = Tenant::factory()->create();
         app(TenantContext::class)->set($tenant);
+        ListaPrecio::factory()->create(['id' => 1, 'tenant_id' => $tenant->id]);
         $producto = Producto::factory()->create(['tenant_id' => $tenant->id, 'precio_venta' => $precio]);
         $variante = ProductoVariante::factory()->create(['producto_id' => $producto->id]);
         ReglaPrecio::factory()->create(array_merge([

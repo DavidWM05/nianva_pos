@@ -5,12 +5,10 @@ app/Modules/Apartados/Database/Factories/ApartadoAbonoFactory.php
 app/Modules/Apartados/Database/Factories/ApartadoAbonoPagoFactory.php
 app/Modules/Apartados/Database/Factories/ApartadoDetalleFactory.php
 app/Modules/Apartados/Database/Factories/ApartadoFactory.php
-app/Modules/Apartados/Database/Migrations/2026_07_25_000001_create_apartados_table.php
 app/Modules/Apartados/Database/Migrations/2026_07_25_000002_create_apartado_detalles_table.php
 app/Modules/Apartados/Database/Migrations/2026_07_25_000003_create_apartado_abonos_table.php
 app/Modules/Apartados/Database/Migrations/2026_07_25_000004_create_apartado_abono_pagos_table.php
 app/Modules/Apartados/Dtos/CancelarApartadoDto.php
-app/Modules/Apartados/Dtos/CrearApartadoDto.php
 app/Modules/Apartados/Dtos/LineaApartadoDto.php
 app/Modules/Apartados/Dtos/PagoApartadoDto.php
 app/Modules/Apartados/Dtos/RegistrarAbonoApartadoDto.php
@@ -18,9 +16,7 @@ app/Modules/Apartados/Exceptions/AbonoPagoNoCuadraException.php
 app/Modules/Apartados/Exceptions/ApartadoEstadoInvalidoException.php
 app/Modules/Apartados/Exceptions/ApartadoSaldoInsuficienteException.php
 app/Modules/Apartados/Http/Requests/CancelarApartadoRequest.php
-app/Modules/Apartados/Http/Requests/CrearApartadoRequest.php
 app/Modules/Apartados/Http/Requests/RegistrarAbonoRequest.php
-app/Modules/Apartados/Models/Apartado.php
 app/Modules/Apartados/Models/ApartadoAbono.php
 app/Modules/Apartados/Models/ApartadoAbonoPago.php
 app/Modules/Apartados/Models/ApartadoDetalle.php
@@ -48,11 +44,8 @@ app/Modules/Configuracion/Observers/TenantObserver.php
 app/Modules/Configuracion/Providers/ConfiguracionServiceProvider.php
 app/Modules/Cotizaciones/Database/Factories/CotizacionDetalleFactory.php
 app/Modules/Cotizaciones/Database/Factories/CotizacionFactory.php
-app/Modules/Cotizaciones/Database/Migrations/2026_08_10_000001_create_cotizaciones_table.php
 app/Modules/Cotizaciones/Database/Migrations/2026_08_10_000002_create_cotizacion_detalles_table.php
-app/Modules/Cotizaciones/Dtos/ActualizarCotizacionDto.php
 app/Modules/Cotizaciones/Dtos/ConvertirCotizacionDto.php
-app/Modules/Cotizaciones/Dtos/CrearCotizacionDto.php
 app/Modules/Cotizaciones/Dtos/LineaCotizacionDto.php
 app/Modules/Cotizaciones/Exceptions/CotizacionNoEditableException.php
 app/Modules/Cotizaciones/Exceptions/CotizacionTotalNegativoException.php
@@ -62,8 +55,6 @@ app/Modules/Cotizaciones/Exceptions/SinClienteException.php
 app/Modules/Cotizaciones/Http/Controllers/CotizacionController.php
 app/Modules/Cotizaciones/Http/Requests/ConvertirCotizacionRequest.php
 app/Modules/Cotizaciones/Http/Resources/CotizacionDetalleResource.php
-app/Modules/Cotizaciones/Http/Resources/CotizacionResource.php
-app/Modules/Cotizaciones/Models/Cotizacion.php
 app/Modules/Cotizaciones/Models/CotizacionDetalle.php
 app/Modules/Cotizaciones/Providers/CotizacionesServiceProvider.php
 app/Modules/Crm/Database/Factories/ClienteFactory.php
@@ -290,7 +281,6 @@ app/Modules/Nucleo/Database/Migrations/2026_07_30_000003_create_instalacion_nucl
 app/Modules/Nucleo/Database/Migrations/2026_07_30_000004_make_token_firmado_nullable_en_licencia_local_table.php
 app/Modules/Nucleo/Database/Seeders/DesarrolloSeeder.php
 app/Modules/Nucleo/Database/Seeders/MetodosPagoSeeder.php
-app/Modules/Nucleo/Database/Seeders/NucleoRolesPermisosSeeder.php
 app/Modules/Nucleo/Dtos/CambiarPasswordDto.php
 app/Modules/Nucleo/Dtos/CodigoTwoFactorDto.php
 app/Modules/Nucleo/Dtos/ConfiguracionSeguridadDto.php
@@ -464,15 +454,12 @@ app/Modules/Tpv/Database/Factories/VentaDetalleFactory.php
 app/Modules/Tpv/Database/Factories/VentaFactory.php
 app/Modules/Tpv/Database/Factories/VentaPagoFactory.php
 app/Modules/Tpv/Database/Migrations/2026_07_24_000001_create_caja_sesiones_table.php
-app/Modules/Tpv/Database/Migrations/2026_07_24_000002_create_ventas_table.php
 app/Modules/Tpv/Database/Migrations/2026_07_24_000003_create_venta_pagos_table.php
 app/Modules/Tpv/Database/Migrations/2026_07_24_000004_create_venta_detalles_table.php
 app/Modules/Tpv/Database/Migrations/2026_08_10_000003_add_fiscal_to_ventas_table.php
 app/Modules/Tpv/Dtos/AbrirCajaDto.php
 app/Modules/Tpv/Dtos/AnularVentaDto.php
 app/Modules/Tpv/Dtos/CerrarCajaDto.php
-app/Modules/Tpv/Dtos/CotizarVentaDto.php
-app/Modules/Tpv/Dtos/CrearVentaDto.php
 app/Modules/Tpv/Dtos/LineaVentaDto.php
 app/Modules/Tpv/Dtos/PagoDto.php
 app/Modules/Tpv/Exceptions/CajaSesionNoAbiertaException.php
@@ -484,12 +471,8 @@ app/Modules/Tpv/Exceptions/VentaYaAnuladaException.php
 app/Modules/Tpv/Http/Requests/AbrirCajaRequest.php
 app/Modules/Tpv/Http/Requests/AnularVentaRequest.php
 app/Modules/Tpv/Http/Requests/CerrarCajaRequest.php
-app/Modules/Tpv/Http/Requests/CotizarVentaRequest.php
-app/Modules/Tpv/Http/Requests/CrearVentaRequest.php
 app/Modules/Tpv/Http/Resources/CajaSesionResource.php
-app/Modules/Tpv/Http/Resources/VentaResource.php
 app/Modules/Tpv/Models/CajaSesion.php
-app/Modules/Tpv/Models/Venta.php
 app/Modules/Tpv/Models/VentaDetalle.php
 app/Modules/Tpv/Models/VentaPago.php
 app/Modules/Tpv/Providers/TpvServiceProvider.php
@@ -534,6 +517,5 @@ database/seeders/Escenarios/EscenarioMultiSucursalSeeder.php
 database/seeders/Escenarios/EscenarioRopaSeeder.php
 database/seeders/Escenarios/EscenarioSeederBase.php
 database/seeders/Escenarios/EscenariosSeeder.php
-routes/api.php
 routes/console.php
 routes/web.php

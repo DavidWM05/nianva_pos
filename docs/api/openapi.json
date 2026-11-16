@@ -4789,6 +4789,668 @@
                 }
             }
         },
+        "/precios/listas": {
+            "get": {
+                "operationId": "listaPrecio.index",
+                "tags": [
+                    "ListaPrecio"
+                ],
+                "parameters": [
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer",
+                            "minimum": 1
+                        }
+                    },
+                    {
+                        "name": "rows",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer",
+                            "minimum": 1,
+                            "maximum": 100
+                        }
+                    },
+                    {
+                        "name": "sort_field",
+                        "in": "query",
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "id",
+                                "nombre",
+                                "activo"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "sort_order",
+                        "in": "query",
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "asc",
+                                "desc"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "q",
+                        "in": "query",
+                        "schema": {
+                            "type": [
+                                "string",
+                                "null"
+                            ],
+                            "maxLength": 120
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Array of `ListaPrecioResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/ListaPrecioResource"
+                                            }
+                                        },
+                                        "meta": {
+                                            "type": "object",
+                                            "properties": {
+                                                "total": {
+                                                    "type": "integer"
+                                                },
+                                                "page": {
+                                                    "type": "integer"
+                                                },
+                                                "rows": {
+                                                    "type": "integer"
+                                                },
+                                                "filtros_aplicados": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "q": {
+                                                            "type": "string"
+                                                        }
+                                                    },
+                                                    "required": [
+                                                        "q"
+                                                    ]
+                                                },
+                                                "permisos": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "crear": {
+                                                            "type": "boolean"
+                                                        },
+                                                        "editar": {
+                                                            "type": "boolean"
+                                                        },
+                                                        "eliminar": {
+                                                            "type": "boolean"
+                                                        }
+                                                    },
+                                                    "required": [
+                                                        "crear",
+                                                        "editar",
+                                                        "eliminar"
+                                                    ]
+                                                }
+                                            },
+                                            "required": [
+                                                "total",
+                                                "page",
+                                                "rows",
+                                                "filtros_aplicados",
+                                                "permisos"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data",
+                                        "meta"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    }
+                }
+            },
+            "post": {
+                "operationId": "listaPrecio.store",
+                "tags": [
+                    "ListaPrecio"
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/GuardarListaPrecioRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "`ListaPrecioResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/ListaPrecioResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    }
+                }
+            }
+        },
+        "/precios/listas/disponibles": {
+            "get": {
+                "operationId": "listaPrecio.disponibles",
+                "tags": [
+                    "ListaPrecio"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Array of `ListaPrecioResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/ListaPrecioResource"
+                                            }
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
+        "/precios/listas/{lista}": {
+            "get": {
+                "operationId": "listaPrecio.show",
+                "tags": [
+                    "ListaPrecio"
+                ],
+                "parameters": [
+                    {
+                        "name": "lista",
+                        "in": "path",
+                        "required": true,
+                        "description": "The lista ID",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "`ListaPrecioResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "allOf": [
+                                                {
+                                                    "$ref": "#/components/schemas/ListaPrecioResource"
+                                                },
+                                                {
+                                                    "type": "object",
+                                                    "required": [
+                                                        "items",
+                                                        "clientes"
+                                                    ]
+                                                }
+                                            ]
+                                        },
+                                        "meta": {
+                                            "type": "object",
+                                            "properties": {
+                                                "permisos": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "crear": {
+                                                            "type": "boolean"
+                                                        },
+                                                        "editar": {
+                                                            "type": "boolean"
+                                                        },
+                                                        "eliminar": {
+                                                            "type": "boolean"
+                                                        }
+                                                    },
+                                                    "required": [
+                                                        "crear",
+                                                        "editar",
+                                                        "eliminar"
+                                                    ]
+                                                }
+                                            },
+                                            "required": [
+                                                "permisos"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data",
+                                        "meta"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            },
+            "put": {
+                "operationId": "listaPrecio.update",
+                "tags": [
+                    "ListaPrecio"
+                ],
+                "parameters": [
+                    {
+                        "name": "lista",
+                        "in": "path",
+                        "required": true,
+                        "description": "The lista ID",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/GuardarListaPrecioRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "`ListaPrecioResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/ListaPrecioResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    }
+                }
+            }
+        },
+        "/precios/listas/{lista}/desactivar": {
+            "patch": {
+                "operationId": "listaPrecio.desactivar",
+                "tags": [
+                    "ListaPrecio"
+                ],
+                "parameters": [
+                    {
+                        "name": "lista",
+                        "in": "path",
+                        "required": true,
+                        "description": "The lista ID",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "`ListaPrecioResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/ListaPrecioResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
+        "/precios/listas/{lista}/items": {
+            "post": {
+                "operationId": "listaPrecio.guardarItem",
+                "tags": [
+                    "ListaPrecio"
+                ],
+                "parameters": [
+                    {
+                        "name": "lista",
+                        "in": "path",
+                        "required": true,
+                        "description": "The lista ID",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/GuardarListaPrecioItemRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "`ListaPrecioItemResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/ListaPrecioItemResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    }
+                }
+            }
+        },
+        "/precios/listas/{lista}/items/{item}": {
+            "put": {
+                "operationId": "listaPrecio.actualizarItem",
+                "tags": [
+                    "ListaPrecio"
+                ],
+                "parameters": [
+                    {
+                        "name": "lista",
+                        "in": "path",
+                        "required": true,
+                        "description": "The lista ID",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "item",
+                        "in": "path",
+                        "required": true,
+                        "description": "The item ID",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/GuardarListaPrecioItemRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "`ListaPrecioItemResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/ListaPrecioItemResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    }
+                }
+            },
+            "delete": {
+                "operationId": "listaPrecio.quitarItem",
+                "tags": [
+                    "ListaPrecio"
+                ],
+                "parameters": [
+                    {
+                        "name": "lista",
+                        "in": "path",
+                        "required": true,
+                        "description": "The lista ID",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "item",
+                        "in": "path",
+                        "required": true,
+                        "description": "The item ID",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No content"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
+        "/precios/listas/{lista}/clientes": {
+            "post": {
+                "operationId": "listaPrecio.asignarCliente",
+                "tags": [
+                    "ListaPrecio"
+                ],
+                "parameters": [
+                    {
+                        "name": "lista",
+                        "in": "path",
+                        "required": true,
+                        "description": "The lista ID",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/AsignarListaPrecioClienteRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "`ListaPrecioClienteResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/ListaPrecioClienteResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    }
+                }
+            }
+        },
+        "/precios/listas/{lista}/clientes/{asignacion}": {
+            "delete": {
+                "operationId": "listaPrecio.quitarCliente",
+                "tags": [
+                    "ListaPrecio"
+                ],
+                "parameters": [
+                    {
+                        "name": "lista",
+                        "in": "path",
+                        "required": true,
+                        "description": "The lista ID",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "asignacion",
+                        "in": "path",
+                        "required": true,
+                        "description": "The asignacion ID",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No content"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
         "/metodos-pago": {
             "get": {
                 "operationId": "metodoPago.index",
@@ -10039,6 +10701,12 @@
             "ActualizarCotizacionRequest": {
                 "type": "object",
                 "properties": {
+                    "lista_precio_id": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ]
+                    },
                     "cliente_id": {
                         "type": [
                             "integer",
@@ -10150,6 +10818,12 @@
             "ApartadoResource": {
                 "type": "object",
                 "properties": {
+                    "lista_precio_id": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ]
+                    },
                     "id": {
                         "type": "integer"
                     },
@@ -10353,6 +11027,7 @@
                     }
                 },
                 "required": [
+                    "lista_precio_id",
                     "id",
                     "fecha_creacion",
                     "total",
@@ -10390,6 +11065,18 @@
                     "metodo_pago_id"
                 ],
                 "title": "App.Modules.CuentasCobrar.Http.Requests.RegistrarAbonoRequest"
+            },
+            "AsignarListaPrecioClienteRequest": {
+                "type": "object",
+                "properties": {
+                    "cliente_id": {
+                        "type": "integer"
+                    }
+                },
+                "required": [
+                    "cliente_id"
+                ],
+                "title": "AsignarListaPrecioClienteRequest"
             },
             "AsignarRepartidorRequest": {
                 "type": "object",
@@ -10850,6 +11537,12 @@
             "CotizacionResource": {
                 "type": "object",
                 "properties": {
+                    "lista_precio_id": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ]
+                    },
                     "id": {
                         "type": "integer"
                     },
@@ -10947,6 +11640,7 @@
                     }
                 },
                 "required": [
+                    "lista_precio_id",
                     "id",
                     "numero_cotizacion",
                     "total",
@@ -10965,6 +11659,18 @@
             "CotizarVentaRequest": {
                 "type": "object",
                 "properties": {
+                    "lista_precio_id": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ]
+                    },
+                    "cliente_id": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ]
+                    },
                     "items": {
                         "type": "array",
                         "items": {
@@ -10995,6 +11701,12 @@
             "CrearApartadoRequest": {
                 "type": "object",
                 "properties": {
+                    "lista_precio_id": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ]
+                    },
                     "cliente_id": {
                         "type": "integer"
                     },
@@ -11042,6 +11754,12 @@
             "CrearCotizacionRequest": {
                 "type": "object",
                 "properties": {
+                    "lista_precio_id": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ]
+                    },
                     "cliente_id": {
                         "type": [
                             "integer",
@@ -11701,6 +12419,12 @@
             "CrearVentaRequest": {
                 "type": "object",
                 "properties": {
+                    "lista_precio_id": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ]
+                    },
                     "cliente_id": {
                         "type": "integer"
                     },
@@ -12860,6 +13584,48 @@
                 ],
                 "title": "GuardarInsumoStockRequest"
             },
+            "GuardarListaPrecioItemRequest": {
+                "type": "object",
+                "properties": {
+                    "producto_id": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ]
+                    },
+                    "variante_id": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ]
+                    },
+                    "precio": {
+                        "type": "number",
+                        "minimum": 0,
+                        "maximum": 9999999999.99
+                    }
+                },
+                "required": [
+                    "precio"
+                ],
+                "title": "GuardarListaPrecioItemRequest"
+            },
+            "GuardarListaPrecioRequest": {
+                "type": "object",
+                "properties": {
+                    "nombre": {
+                        "type": "string",
+                        "maxLength": 120
+                    },
+                    "activo": {
+                        "type": "boolean"
+                    }
+                },
+                "required": [
+                    "nombre"
+                ],
+                "title": "GuardarListaPrecioRequest"
+            },
             "GuardarMetodoPagoRequest": {
                 "type": "object",
                 "properties": {
@@ -13308,6 +14074,85 @@
                     "en_periodo_gracia"
                 ],
                 "title": "LicenciaLocalResource"
+            },
+            "ListaPrecioClienteResource": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer"
+                    },
+                    "cliente_id": {
+                        "type": "integer"
+                    }
+                },
+                "required": [
+                    "id",
+                    "cliente_id"
+                ],
+                "title": "ListaPrecioClienteResource"
+            },
+            "ListaPrecioItemResource": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer"
+                    },
+                    "producto_id": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ]
+                    },
+                    "variante_id": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ]
+                    },
+                    "precio": {
+                        "type": "string",
+                        "pattern": "^-?[0-9]+\\.[0-9]{2}$"
+                    }
+                },
+                "required": [
+                    "id",
+                    "producto_id",
+                    "variante_id",
+                    "precio"
+                ],
+                "title": "ListaPrecioItemResource"
+            },
+            "ListaPrecioResource": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer"
+                    },
+                    "nombre": {
+                        "type": "string"
+                    },
+                    "activo": {
+                        "type": "boolean"
+                    },
+                    "items": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/ListaPrecioItemResource"
+                        }
+                    },
+                    "clientes": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/ListaPrecioClienteResource"
+                        }
+                    }
+                },
+                "required": [
+                    "id",
+                    "nombre",
+                    "activo"
+                ],
+                "title": "ListaPrecioResource"
             },
             "LoyaltyTransaccion": {
                 "type": "object",
@@ -15352,6 +16197,12 @@
                     "id": {
                         "type": "integer"
                     },
+                    "lista_precio_id": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ]
+                    },
                     "tenant_id": {
                         "type": "integer"
                     },
@@ -15451,6 +16302,7 @@
                 },
                 "required": [
                     "id",
+                    "lista_precio_id",
                     "tenant_id",
                     "sucursal_id",
                     "caja_sesion_id",
@@ -15478,6 +16330,12 @@
             "VentaResource": {
                 "type": "object",
                 "properties": {
+                    "lista_precio_id": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ]
+                    },
                     "id": {
                         "type": "integer"
                     },
@@ -15638,6 +16496,7 @@
                     }
                 },
                 "required": [
+                    "lista_precio_id",
                     "id",
                     "fecha",
                     "total",

@@ -74,6 +74,14 @@ export const NUCLEO_NAV_GROUPS: NucleoNavGroup[] = [
         permiso: 'crm_campanas.enviar',
         modulo: 'crm_avanzado',
       },
+      {
+        key: 'listas-precio',
+        label: 'Listas de precio',
+        path: 'precios/listas',
+        icon: 'pi pi-list',
+        permiso: 'listas_precio.ver',
+      },
+
     ],
   },
   {

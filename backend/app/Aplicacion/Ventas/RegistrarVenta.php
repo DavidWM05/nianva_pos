@@ -89,7 +89,7 @@ class RegistrarVenta
                 throw new \InvalidArgumentException('La cantidad de cada linea debe ser mayor a cero.');
             }
         }
-        $cotizacion = $this->pricingService->cotizar(new Carrito(array_map(static fn (array $item): LineaCarrito => new LineaCarrito($item['variante_id'], $item['cantidad']), $items), $cuponId && ! empty($cuponCodigo) ? $cuponCodigo : null), new ContextoPrecio($tenantId, $sucursalContextoId === null ? null : (int) $sucursalContextoId, $clienteId, CarbonImmutable::now()));
+        $cotizacion = $this->pricingService->cotizar(new Carrito(array_map(static fn (array $item): LineaCarrito => new LineaCarrito($item['variante_id'], $item['cantidad']), $items), $cuponId && ! empty($cuponCodigo) ? $cuponCodigo : null), new ContextoPrecio($tenantId, $sucursalContextoId === null ? null : (int) $sucursalContextoId, $clienteId, CarbonImmutable::now(), $dto->listaPrecioId));
         $subtotal = $cotizacion->subtotal;
         $descuentoCupon = $cotizacion->cupon->descuento ?? 0.0;
 
@@ -107,6 +107,7 @@ class RegistrarVenta
             $metodoPagoGiftCard,
             $metodoPagoNotaCredito,
             $subtotal,
+            $dto,
         ) {
             $caja = CajaSesion::query()->withoutGlobalScope(TenantScopeViaRelacion::class)->where('sucursal_id', (int) $usuario->getAttribute('sucursal_id'))->where('estado', 'abierta')->latest('id')->lockForUpdate()->first();
             $notaCredito = null;
@@ -143,6 +144,7 @@ class RegistrarVenta
                     'sucursal_id' => $usuario->sucursal_id,
                     'usuario_id' => $usuario->id,
                     'cliente_id' => $clienteId,
+                    'lista_precio_id' => $dto->listaPrecioId,
                     'cupon_id' => $cuponId,
                     'descuento_manual' => $descuentoManual,
                 ],

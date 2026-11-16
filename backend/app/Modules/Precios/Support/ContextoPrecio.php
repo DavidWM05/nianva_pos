@@ -8,9 +8,9 @@ use Carbon\CarbonImmutable;
 
 /**
  * Contexto de una cotización: tenant, sucursal, cliente y fecha de vigencia.
- * Todavía no hay listas de precio; llegan en ARQ-05c.
+ * La lista explícita prevalece sobre la asignada al cliente.
  * sucursalId es null cuando la operación no tiene sucursal. Hoy el precio
- * no depende de ella; se usará con las listas de precio en ARQ-05c.
+ * no depende de ella: las listas actuales tienen alcance de tenant.
  */
 final readonly class ContextoPrecio
 {

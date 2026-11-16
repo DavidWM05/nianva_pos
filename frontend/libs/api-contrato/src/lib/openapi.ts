@@ -1007,6 +1007,134 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/precios/listas": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["listaPrecio.index"];
+        put?: never;
+        post: operations["listaPrecio.store"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/precios/listas/disponibles": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["listaPrecio.disponibles"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/precios/listas/{lista}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["listaPrecio.show"];
+        put: operations["listaPrecio.update"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/precios/listas/{lista}/desactivar": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch: operations["listaPrecio.desactivar"];
+        trace?: never;
+    };
+    "/precios/listas/{lista}/items": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["listaPrecio.guardarItem"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/precios/listas/{lista}/items/{item}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put: operations["listaPrecio.actualizarItem"];
+        post?: never;
+        delete: operations["listaPrecio.quitarItem"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/precios/listas/{lista}/clientes": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["listaPrecio.asignarCliente"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/precios/listas/{lista}/clientes/{asignacion}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete: operations["listaPrecio.quitarCliente"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/metodos-pago": {
         parameters: {
             query?: never;
@@ -2079,6 +2207,7 @@ export interface components {
         };
         /** ActualizarCotizacionRequest */
         ActualizarCotizacionRequest: {
+            lista_precio_id?: number | null;
             cliente_id?: number | null;
             validez_dias?: number | null;
             descuento?: number | null;
@@ -2102,6 +2231,7 @@ export interface components {
         };
         /** ApartadoResource */
         ApartadoResource: {
+            lista_precio_id: number | null;
             id: number;
             /** Format: date-time */
             fecha_creacion: string;
@@ -2153,6 +2283,10 @@ export interface components {
             monto: number;
             metodo_pago_id: number;
             referencia?: string | null;
+        };
+        /** AsignarListaPrecioClienteRequest */
+        AsignarListaPrecioClienteRequest: {
+            cliente_id: number;
         };
         /** AsignarRepartidorRequest */
         AsignarRepartidorRequest: {
@@ -2275,6 +2409,7 @@ export interface components {
         };
         /** CotizacionResource */
         CotizacionResource: {
+            lista_precio_id: number | null;
             id: number;
             numero_cotizacion: string;
             cliente?: {
@@ -2303,6 +2438,8 @@ export interface components {
         };
         /** CotizarVentaRequest */
         CotizarVentaRequest: {
+            lista_precio_id?: number | null;
+            cliente_id?: number | null;
             items: {
                 variante_id: number;
                 cantidad: number;
@@ -2310,6 +2447,7 @@ export interface components {
         };
         /** CrearApartadoRequest */
         CrearApartadoRequest: {
+            lista_precio_id?: number | null;
             cliente_id: number;
             items: {
                 variante_id: number;
@@ -2321,6 +2459,7 @@ export interface components {
         };
         /** CrearCotizacionRequest */
         CrearCotizacionRequest: {
+            lista_precio_id?: number | null;
             cliente_id?: number | null;
             sucursal_id?: number | null;
             validez_dias?: number | null;
@@ -2462,6 +2601,7 @@ export interface components {
         };
         /** CrearVentaRequest */
         CrearVentaRequest: {
+            lista_precio_id?: number | null;
             cliente_id: number;
             items: {
                 variante_id: number;
@@ -2743,6 +2883,17 @@ export interface components {
             /** Format: date-time */
             fecha_vencimiento?: string | null;
         };
+        /** GuardarListaPrecioItemRequest */
+        GuardarListaPrecioItemRequest: {
+            producto_id?: number | null;
+            variante_id?: number | null;
+            precio: number;
+        };
+        /** GuardarListaPrecioRequest */
+        GuardarListaPrecioRequest: {
+            nombre: string;
+            activo?: boolean;
+        };
         /** GuardarMetodoPagoRequest */
         GuardarMetodoPagoRequest: {
             nombre: string;
@@ -2848,6 +2999,26 @@ export interface components {
              *     todavia "en funcionamiento").
              */
             en_periodo_gracia: boolean;
+        };
+        /** ListaPrecioClienteResource */
+        ListaPrecioClienteResource: {
+            id: number;
+            cliente_id: number;
+        };
+        /** ListaPrecioItemResource */
+        ListaPrecioItemResource: {
+            id: number;
+            producto_id: number | null;
+            variante_id: number | null;
+            precio: string;
+        };
+        /** ListaPrecioResource */
+        ListaPrecioResource: {
+            id: number;
+            nombre: string;
+            activo: boolean;
+            items?: components["schemas"]["ListaPrecioItemResource"][];
+            clientes?: components["schemas"]["ListaPrecioClienteResource"][];
         };
         /** LoyaltyTransaccion */
         LoyaltyTransaccion: {
@@ -3373,6 +3544,7 @@ export interface components {
         /** Venta */
         Venta: {
             id: number;
+            lista_precio_id: number | null;
             tenant_id: number;
             sucursal_id: number;
             caja_sesion_id: number;
@@ -3399,6 +3571,7 @@ export interface components {
         };
         /** VentaResource */
         VentaResource: {
+            lista_precio_id: number | null;
             id: number;
             /** Format: date-time */
             fecha: string;
@@ -3496,6 +3669,7 @@ export type AjustarPuntosRequest = components['schemas']['AjustarPuntosRequest']
 export type AnularVentaRequest = components['schemas']['AnularVentaRequest'];
 export type ApartadoResource = components['schemas']['ApartadoResource'];
 export type AppModulesCuentasCobrarHttpRequestsRegistrarAbonoRequest = components['schemas']['App.Modules.CuentasCobrar.Http.Requests.RegistrarAbonoRequest'];
+export type AsignarListaPrecioClienteRequest = components['schemas']['AsignarListaPrecioClienteRequest'];
 export type AsignarRepartidorRequest = components['schemas']['AsignarRepartidorRequest'];
 export type CajaSesionResource = components['schemas']['CajaSesionResource'];
 export type CambiarEstadoOrdenRequest = components['schemas']['CambiarEstadoOrdenRequest'];
@@ -3548,6 +3722,8 @@ export type GuardarClienteRequest = components['schemas']['GuardarClienteRequest
 export type GuardarCuponRequest = components['schemas']['GuardarCuponRequest'];
 export type GuardarDepartamentoRequest = components['schemas']['GuardarDepartamentoRequest'];
 export type GuardarInsumoStockRequest = components['schemas']['GuardarInsumoStockRequest'];
+export type GuardarListaPrecioItemRequest = components['schemas']['GuardarListaPrecioItemRequest'];
+export type GuardarListaPrecioRequest = components['schemas']['GuardarListaPrecioRequest'];
 export type GuardarMetodoPagoRequest = components['schemas']['GuardarMetodoPagoRequest'];
 export type GuardarProductoRequest = components['schemas']['GuardarProductoRequest'];
 export type GuardarProductoVarianteRequest = components['schemas']['GuardarProductoVarianteRequest'];
@@ -3557,6 +3733,9 @@ export type GuardarUnidadMedidaRequest = components['schemas']['GuardarUnidadMed
 export type InsumoResource = components['schemas']['InsumoResource'];
 export type InsumoStock = components['schemas']['InsumoStock'];
 export type LicenciaLocalResource = components['schemas']['LicenciaLocalResource'];
+export type ListaPrecioClienteResource = components['schemas']['ListaPrecioClienteResource'];
+export type ListaPrecioItemResource = components['schemas']['ListaPrecioItemResource'];
+export type ListaPrecioResource = components['schemas']['ListaPrecioResource'];
 export type LoyaltyTransaccion = components['schemas']['LoyaltyTransaccion'];
 export type MetodoPago = components['schemas']['MetodoPago'];
 export type MetodoPagoResource = components['schemas']['MetodoPagoResource'];
@@ -5910,6 +6089,341 @@ export interface operations {
                         data: components["schemas"]["LicenciaLocalResource"];
                     };
                 };
+            };
+            401: components["responses"]["AuthenticationException"];
+            404: components["responses"]["ModelNotFoundException"];
+        };
+    };
+    "listaPrecio.index": {
+        parameters: {
+            query?: {
+                page?: number;
+                rows?: number;
+                sort_field?: "id" | "nombre" | "activo";
+                sort_order?: "asc" | "desc";
+                q?: string | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Array of `ListaPrecioResource` */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["ListaPrecioResource"][];
+                        meta: {
+                            total: number;
+                            page: number;
+                            rows: number;
+                            filtros_aplicados: {
+                                q: string;
+                            };
+                            permisos: {
+                                crear: boolean;
+                                editar: boolean;
+                                eliminar: boolean;
+                            };
+                        };
+                    };
+                };
+            };
+            401: components["responses"]["AuthenticationException"];
+            422: components["responses"]["ValidationException"];
+        };
+    };
+    "listaPrecio.store": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["GuardarListaPrecioRequest"];
+            };
+        };
+        responses: {
+            /** @description `ListaPrecioResource` */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["ListaPrecioResource"];
+                    };
+                };
+            };
+            401: components["responses"]["AuthenticationException"];
+            422: components["responses"]["ValidationException"];
+        };
+    };
+    "listaPrecio.disponibles": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Array of `ListaPrecioResource` */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["ListaPrecioResource"][];
+                    };
+                };
+            };
+            401: components["responses"]["AuthenticationException"];
+        };
+    };
+    "listaPrecio.show": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The lista ID */
+                lista: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description `ListaPrecioResource` */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["ListaPrecioResource"] & Record<string, never>;
+                        meta: {
+                            permisos: {
+                                crear: boolean;
+                                editar: boolean;
+                                eliminar: boolean;
+                            };
+                        };
+                    };
+                };
+            };
+            401: components["responses"]["AuthenticationException"];
+            404: components["responses"]["ModelNotFoundException"];
+        };
+    };
+    "listaPrecio.update": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The lista ID */
+                lista: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["GuardarListaPrecioRequest"];
+            };
+        };
+        responses: {
+            /** @description `ListaPrecioResource` */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["ListaPrecioResource"];
+                    };
+                };
+            };
+            401: components["responses"]["AuthenticationException"];
+            404: components["responses"]["ModelNotFoundException"];
+            422: components["responses"]["ValidationException"];
+        };
+    };
+    "listaPrecio.desactivar": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The lista ID */
+                lista: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description `ListaPrecioResource` */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["ListaPrecioResource"];
+                    };
+                };
+            };
+            401: components["responses"]["AuthenticationException"];
+            404: components["responses"]["ModelNotFoundException"];
+        };
+    };
+    "listaPrecio.guardarItem": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The lista ID */
+                lista: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["GuardarListaPrecioItemRequest"];
+            };
+        };
+        responses: {
+            /** @description `ListaPrecioItemResource` */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["ListaPrecioItemResource"];
+                    };
+                };
+            };
+            401: components["responses"]["AuthenticationException"];
+            404: components["responses"]["ModelNotFoundException"];
+            422: components["responses"]["ValidationException"];
+        };
+    };
+    "listaPrecio.actualizarItem": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The lista ID */
+                lista: number;
+                /** @description The item ID */
+                item: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["GuardarListaPrecioItemRequest"];
+            };
+        };
+        responses: {
+            /** @description `ListaPrecioItemResource` */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["ListaPrecioItemResource"];
+                    };
+                };
+            };
+            401: components["responses"]["AuthenticationException"];
+            404: components["responses"]["ModelNotFoundException"];
+            422: components["responses"]["ValidationException"];
+        };
+    };
+    "listaPrecio.quitarItem": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The lista ID */
+                lista: number;
+                /** @description The item ID */
+                item: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            401: components["responses"]["AuthenticationException"];
+            404: components["responses"]["ModelNotFoundException"];
+        };
+    };
+    "listaPrecio.asignarCliente": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The lista ID */
+                lista: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AsignarListaPrecioClienteRequest"];
+            };
+        };
+        responses: {
+            /** @description `ListaPrecioClienteResource` */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["ListaPrecioClienteResource"];
+                    };
+                };
+            };
+            401: components["responses"]["AuthenticationException"];
+            404: components["responses"]["ModelNotFoundException"];
+            422: components["responses"]["ValidationException"];
+        };
+    };
+    "listaPrecio.quitarCliente": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The lista ID */
+                lista: number;
+                /** @description The asignacion ID */
+                asignacion: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
             401: components["responses"]["AuthenticationException"];
             404: components["responses"]["ModelNotFoundException"];

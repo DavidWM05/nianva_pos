@@ -47,7 +47,7 @@ class VentaService
     ) {}
 
     /**
-     * @param  array{tenant_id:int, sucursal_id:int, usuario_id:int, cliente_id:int, cupon_id?:?int, descuento_manual?:float, abono_previo?:float, es_venta_sombra?:bool}  $datosVenta
+     * @param  array{tenant_id:int, sucursal_id:int, lista_precio_id?:?int, usuario_id:int, cliente_id:int, cupon_id?:?int, descuento_manual?:float, abono_previo?:float, es_venta_sombra?:bool}  $datosVenta
      * @param  list<array{variante_id:int, cantidad:int|float}>  $items
      * @param  list<array{metodo_pago_id:int, monto:float}>  $pagos
      * @param  array<int, InventarioStock>  $stocks
@@ -82,7 +82,7 @@ class VentaService
 
         $this->verificarPertenencia($tenantId, $sucursalId, $datosVenta['cliente_id'], $cuponId);
 
-        [$lineas, $subtotalItems, $descuentoCupon] = $this->resolverLineas($tenantId, $items, new ContextoPrecio($tenantId, $sucursalId, $datosVenta['cliente_id'], CarbonImmutable::now()), $cuponId);
+        [$lineas, $subtotalItems, $descuentoCupon] = $this->resolverLineas($tenantId, $items, new ContextoPrecio($tenantId, $sucursalId, $datosVenta['cliente_id'], CarbonImmutable::now(), $datosVenta['lista_precio_id'] ?? null), $cuponId);
 
         $descuentoManual = round((float) ($datosVenta['descuento_manual'] ?? 0), 2);
         $total = round($subtotalItems - $descuentoCupon - $descuentoManual, 2);
@@ -100,6 +100,7 @@ class VentaService
         $this->verificarPagos($pagos, $montoACobrar);
 
         $venta = Venta::query()->create([
+            'lista_precio_id' => $datosVenta['lista_precio_id'] ?? null,
             'tenant_id' => $tenantId,
             'sucursal_id' => $sucursalId,
             'caja_sesion_id' => $cajaSesion->id,
@@ -205,9 +206,9 @@ class VentaService
      * @param  array<int|string, array{variante_id:int|string, cantidad:int|float}>  $items
      * @return array{0: list<array{variante_id:int, regla_precio_id:?int, cantidad:int|float, precio_unitario:float, descuento_aplicado:float, subtotal:float}>, 1: float}
      */
-    public function cotizarItems(int $tenantId, array $items): array
+    public function cotizarItems(int $tenantId, array $items, ?ContextoPrecio $contexto = null): array
     {
-        $cotizado = $this->resolverLineas($tenantId, $items);
+        $cotizado = $this->resolverLineas($tenantId, $items, $contexto);
 
         return [$cotizado[0], $cotizado[1]];
     }

@@ -1,0 +1,112 @@
+<ui-page-header
+  clave="listas-precio"
+  [subtitulo]="nuevo ? 'Nueva lista de precio' : 'Detalle de lista de precio'"
+/>
+<ui-page [estado]="estado()" forma="detalle" (reintentar)="cargar()">
+  @if (nuevo) {
+    <nucleo-lista-precio-form
+      [readonly]="!puedeGuardar()"
+      [enviando]="guardando()"
+      (guardar)="guardar($event)"
+    />
+  } @else if (lista(); as actual) {
+    <h2>{{ actual.nombre }}</h2>
+    <nucleo-record-tabs [tabs]="tabs">
+      <ng-template
+        ><nucleo-lista-precio-form
+          [valorInicial]="actual"
+          [readonly]="!puedeGuardar()"
+          [enviando]="guardando()"
+          (guardar)="guardar($event)"
+      /></ng-template>
+      <ng-template>
+        <ui-tabla
+          [columnas]="columnasItems"
+          [filas]="items()"
+          (accion)="accionItem($event.fila, $event.accion.tipo)"
+          mensajeVacio="No hay precios en esta lista."
+        />
+        @if (permisos().editar) {
+          <form (ngSubmit)="guardarPrecio()">
+            @if (editando(); as item) {
+              <p>Editar precio: {{ referencia(item) }}</p>
+            } @else {
+              <ui-campo etiqueta="Tipo de precio"
+                ><ui-select-filtro
+                  [todas]="false"
+                  [opciones]="opcionesTipo"
+                  [ngModel]="tipo()"
+                  [ngModelOptions]="{ standalone: true }"
+                  (ngModelChange)="cambiarTipo($event)"
+              /></ui-campo>
+              @if (tipo() === 'producto') {
+                <nucleo-entidad-selector
+                  [buscador]="buscadorProducto"
+                  label="Producto"
+                  [valorInicial]="productoId()"
+                  (seleccionado)="productoId.set($event)"
+                />
+              } @else {
+                <nucleo-entidad-selector
+                  [buscador]="buscadorProducto"
+                  [buscadorHijos]="buscadorVariantes"
+                  label="Producto"
+                  labelHijos="Variante"
+                  [valorInicial]="productoId()"
+                  [valorInicialHijo]="varianteId()"
+                  (seleccionado)="productoId.set($event); varianteId.set(null)"
+                  (hijoSeleccionado)="varianteId.set($event)"
+                />
+              }
+            }
+            <ui-campo etiqueta="Precio" [requerido]="true"
+              ><ui-input-dinero [min]="0" [formControl]="precio"
+            /></ui-campo>
+            <ui-btn-enviar
+              etiqueta="Guardar precio"
+              [enviando]="enviandoItem()"
+              [deshabilitado]="
+                precio.invalid ||
+                (tipo() === 'producto'
+                  ? productoId() === null
+                  : varianteId() === null)
+              "
+            />
+          </form>
+        }
+      </ng-template>
+      <ng-template>
+        <ui-tabla
+          [columnas]="columnasClientes"
+          [filas]="clientes()"
+          (accion)="quitarCliente($event.fila)"
+          mensajeVacio="No hay clientes asignados."
+        />
+        @if (permisos().editar) {
+          <form (ngSubmit)="asignarCliente()">
+            <nucleo-entidad-selector
+              [buscador]="buscadorCliente"
+              label="Cliente"
+              [valorInicial]="clienteId()"
+              (seleccionado)="clienteId.set($event)"
+            /><ui-btn-enviar
+              etiqueta="Asignar cliente"
+              [enviando]="enviandoCliente()"
+              [deshabilitado]="clienteId() === null"
+            />
+          </form>
+        }
+      </ng-template>
+      <ng-template>
+        @defer (on viewport) {
+          <nucleo-audit-log-viewer
+            tabla="listas_precio"
+            [registroId]="actual.id"
+          />
+        } @placeholder {
+          <ui-skeleton forma="texto" />
+        }
+      </ng-template>
+    </nucleo-record-tabs>
+  }
+</ui-page>

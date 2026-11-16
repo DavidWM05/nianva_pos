@@ -521,6 +521,12 @@
                 "default": null
             },
             {
+                "nombre": "lista_precio_id",
+                "tipo": "integer",
+                "nullable": true,
+                "default": null
+            },
+            {
                 "nombre": "motivo_cancelacion",
                 "tipo": "text",
                 "nullable": true,
@@ -596,6 +602,18 @@
                 ],
                 "on_update": "no action",
                 "on_delete": "restrict"
+            },
+            {
+                "nombre": null,
+                "columnas": [
+                    "lista_precio_id"
+                ],
+                "tabla_foranea": "listas_precio",
+                "columnas_foraneas": [
+                    "id"
+                ],
+                "on_update": "no action",
+                "on_delete": "set null"
             },
             {
                 "nombre": null,
@@ -1661,6 +1679,12 @@
                 "default": null
             },
             {
+                "nombre": "lista_precio_id",
+                "tipo": "integer",
+                "nullable": true,
+                "default": null
+            },
+            {
                 "nombre": "numero_cotizacion",
                 "tipo": "varchar",
                 "nullable": false,
@@ -1766,6 +1790,18 @@
                     "cliente_id"
                 ],
                 "tabla_foranea": "clientes",
+                "columnas_foraneas": [
+                    "id"
+                ],
+                "on_update": "no action",
+                "on_delete": "set null"
+            },
+            {
+                "nombre": null,
+                "columnas": [
+                    "lista_precio_id"
+                ],
+                "tabla_foranea": "listas_precio",
                 "columnas_foraneas": [
                     "id"
                 ],
@@ -4099,6 +4135,301 @@
                 "on_update": "no action",
                 "on_delete": "set null"
             },
+            {
+                "nombre": null,
+                "columnas": [
+                    "tenant_id"
+                ],
+                "tabla_foranea": "tenants",
+                "columnas_foraneas": [
+                    "id"
+                ],
+                "on_update": "no action",
+                "on_delete": "cascade"
+            }
+        ]
+    },
+    "lista_precio_clientes": {
+        "columnas": [
+            {
+                "nombre": "cliente_id",
+                "tipo": "integer",
+                "nullable": false,
+                "default": null
+            },
+            {
+                "nombre": "created_at",
+                "tipo": "datetime",
+                "nullable": true,
+                "default": null
+            },
+            {
+                "nombre": "id",
+                "tipo": "integer",
+                "nullable": false,
+                "default": null
+            },
+            {
+                "nombre": "lista_precio_id",
+                "tipo": "integer",
+                "nullable": false,
+                "default": null
+            },
+            {
+                "nombre": "tenant_id",
+                "tipo": "integer",
+                "nullable": false,
+                "default": null
+            },
+            {
+                "nombre": "updated_at",
+                "tipo": "datetime",
+                "nullable": true,
+                "default": null
+            }
+        ],
+        "indices": [
+            {
+                "nombre": "lista_precio_clientes_tenant_id_cliente_id_unique",
+                "columnas": [
+                    "tenant_id",
+                    "cliente_id"
+                ],
+                "unico": true
+            },
+            {
+                "nombre": "primary",
+                "columnas": [
+                    "id"
+                ],
+                "unico": true
+            }
+        ],
+        "llaves_foraneas": [
+            {
+                "nombre": null,
+                "columnas": [
+                    "cliente_id"
+                ],
+                "tabla_foranea": "clientes",
+                "columnas_foraneas": [
+                    "id"
+                ],
+                "on_update": "no action",
+                "on_delete": "cascade"
+            },
+            {
+                "nombre": null,
+                "columnas": [
+                    "lista_precio_id"
+                ],
+                "tabla_foranea": "listas_precio",
+                "columnas_foraneas": [
+                    "id"
+                ],
+                "on_update": "no action",
+                "on_delete": "cascade"
+            },
+            {
+                "nombre": null,
+                "columnas": [
+                    "tenant_id"
+                ],
+                "tabla_foranea": "tenants",
+                "columnas_foraneas": [
+                    "id"
+                ],
+                "on_update": "no action",
+                "on_delete": "cascade"
+            }
+        ]
+    },
+    "lista_precio_items": {
+        "columnas": [
+            {
+                "nombre": "created_at",
+                "tipo": "datetime",
+                "nullable": true,
+                "default": null
+            },
+            {
+                "nombre": "id",
+                "tipo": "integer",
+                "nullable": false,
+                "default": null
+            },
+            {
+                "nombre": "lista_precio_id",
+                "tipo": "integer",
+                "nullable": false,
+                "default": null
+            },
+            {
+                "nombre": "precio",
+                "tipo": "numeric",
+                "nullable": false,
+                "default": null
+            },
+            {
+                "nombre": "producto_id",
+                "tipo": "integer",
+                "nullable": true,
+                "default": null
+            },
+            {
+                "nombre": "tenant_id",
+                "tipo": "integer",
+                "nullable": false,
+                "default": null
+            },
+            {
+                "nombre": "updated_at",
+                "tipo": "datetime",
+                "nullable": true,
+                "default": null
+            },
+            {
+                "nombre": "variante_id",
+                "tipo": "integer",
+                "nullable": true,
+                "default": null
+            }
+        ],
+        "indices": [
+            {
+                "nombre": "lista_precio_items_tenant_id_lista_precio_id_producto_id_unique",
+                "columnas": [
+                    "tenant_id",
+                    "lista_precio_id",
+                    "producto_id"
+                ],
+                "unico": true
+            },
+            {
+                "nombre": "lista_precio_items_tenant_id_lista_precio_id_variante_id_unique",
+                "columnas": [
+                    "tenant_id",
+                    "lista_precio_id",
+                    "variante_id"
+                ],
+                "unico": true
+            },
+            {
+                "nombre": "primary",
+                "columnas": [
+                    "id"
+                ],
+                "unico": true
+            }
+        ],
+        "llaves_foraneas": [
+            {
+                "nombre": null,
+                "columnas": [
+                    "lista_precio_id"
+                ],
+                "tabla_foranea": "listas_precio",
+                "columnas_foraneas": [
+                    "id"
+                ],
+                "on_update": "no action",
+                "on_delete": "cascade"
+            },
+            {
+                "nombre": null,
+                "columnas": [
+                    "producto_id"
+                ],
+                "tabla_foranea": "productos",
+                "columnas_foraneas": [
+                    "id"
+                ],
+                "on_update": "no action",
+                "on_delete": "cascade"
+            },
+            {
+                "nombre": null,
+                "columnas": [
+                    "tenant_id"
+                ],
+                "tabla_foranea": "tenants",
+                "columnas_foraneas": [
+                    "id"
+                ],
+                "on_update": "no action",
+                "on_delete": "cascade"
+            },
+            {
+                "nombre": null,
+                "columnas": [
+                    "variante_id"
+                ],
+                "tabla_foranea": "producto_variantes",
+                "columnas_foraneas": [
+                    "id"
+                ],
+                "on_update": "no action",
+                "on_delete": "cascade"
+            }
+        ]
+    },
+    "listas_precio": {
+        "columnas": [
+            {
+                "nombre": "activo",
+                "tipo": "tinyint",
+                "nullable": false,
+                "default": "'1'"
+            },
+            {
+                "nombre": "created_at",
+                "tipo": "datetime",
+                "nullable": true,
+                "default": null
+            },
+            {
+                "nombre": "id",
+                "tipo": "integer",
+                "nullable": false,
+                "default": null
+            },
+            {
+                "nombre": "nombre",
+                "tipo": "varchar",
+                "nullable": false,
+                "default": null
+            },
+            {
+                "nombre": "tenant_id",
+                "tipo": "integer",
+                "nullable": false,
+                "default": null
+            },
+            {
+                "nombre": "updated_at",
+                "tipo": "datetime",
+                "nullable": true,
+                "default": null
+            }
+        ],
+        "indices": [
+            {
+                "nombre": "listas_precio_tenant_id_nombre_unique",
+                "columnas": [
+                    "tenant_id",
+                    "nombre"
+                ],
+                "unico": true
+            },
+            {
+                "nombre": "primary",
+                "columnas": [
+                    "id"
+                ],
+                "unico": true
+            }
+        ],
+        "llaves_foraneas": [
             {
                 "nombre": null,
                 "columnas": [
@@ -7880,6 +8211,12 @@
                 "default": null
             },
             {
+                "nombre": "lista_precio_id",
+                "tipo": "integer",
+                "nullable": true,
+                "default": null
+            },
+            {
                 "nombre": "metodo_pago_sat",
                 "tipo": "varchar",
                 "nullable": true,
@@ -7974,6 +8311,18 @@
                     "cupon_id"
                 ],
                 "tabla_foranea": "cupones",
+                "columnas_foraneas": [
+                    "id"
+                ],
+                "on_update": "no action",
+                "on_delete": "set null"
+            },
+            {
+                "nombre": null,
+                "columnas": [
+                    "lista_precio_id"
+                ],
+                "tabla_foranea": "listas_precio",
                 "columnas_foraneas": [
                     "id"
                 ],

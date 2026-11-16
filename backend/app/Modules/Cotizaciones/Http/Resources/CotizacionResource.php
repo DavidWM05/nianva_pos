@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Modules\Cotizaciones\Http\Resources;
 
 use App\Modules\Cotizaciones\Models\Cotizacion;
@@ -15,6 +17,7 @@ class CotizacionResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
+            'lista_precio_id' => $this->resource->getAttribute('lista_precio_id') === null ? null : (int) $this->resource->getAttribute('lista_precio_id'),
             'id' => $this->id,
             'numero_cotizacion' => $this->numero_cotizacion,
             'cliente' => $this->whenLoaded('cliente', fn () => [

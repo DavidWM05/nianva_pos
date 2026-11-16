@@ -12,6 +12,7 @@ use App\Modules\Nucleo\Models\Sucursal;
 use App\Modules\Nucleo\Services\TenantContext;
 use App\Modules\Nucleo\Support\DecimalApi;
 use App\Modules\Nucleo\Support\SucursalOperacion;
+use App\Modules\Precios\Support\ContextoPrecio;
 use App\Modules\Tpv\Dtos\LineaVentaDto;
 use App\Modules\Tpv\Http\Requests\AnularVentaRequest;
 use App\Modules\Tpv\Http\Requests\CotizarVentaRequest;
@@ -21,6 +22,7 @@ use App\Modules\Tpv\Models\Venta;
 use App\Modules\Tpv\Models\VentaDetalle;
 use App\Modules\Tpv\Models\VentaPago;
 use App\Modules\Tpv\Services\VentaService;
+use Carbon\CarbonImmutable;
 use Illuminate\Http\Request;
 
 /**
@@ -130,12 +132,13 @@ class VentaController extends Controller
             abort(401);
         }
 
+        $dto = $request->toDto();
         $items = array_map(
             fn (LineaVentaDto $item) => [
                 'variante_id' => $item->varianteId,
                 'cantidad' => $item->cantidad,
             ],
-            $request->toDto()->items,
+            $dto->items,
         );
 
         $tenantId = app(TenantContext::class)->id();
@@ -144,7 +147,7 @@ class VentaController extends Controller
             abort(500);
         }
 
-        [$lineas, $subtotal] = $ventaService->cotizarItems($tenantId, $items);
+        [$lineas, $subtotal] = $ventaService->cotizarItems($tenantId, $items, new ContextoPrecio($tenantId, $usuario->getAttribute('sucursal_id') === null ? null : (int) $usuario->getAttribute('sucursal_id'), $dto->clienteId, CarbonImmutable::now(), $dto->listaPrecioId));
 
         $itemsCotizados = [];
         foreach ($lineas as $linea) {

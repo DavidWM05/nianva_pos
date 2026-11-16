@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Modules\Apartados\Http\Requests;
 
 use App\Modules\Apartados\Dtos\CrearApartadoDto;
@@ -20,6 +22,7 @@ class CrearApartadoRequest extends SolicitudNegocio
         $tenantId = $this->tenantId();
 
         return [
+            'lista_precio_id' => ['nullable', 'integer', ReglasTenant::existe('listas_precio', $tenantId)->where('activo', true)],
             'cliente_id' => ['required', 'integer', ReglasTenant::existe('clientes', $tenantId)],
             'items' => ['required', 'array', 'min:1'],
             'items.*.variante_id' => ['required', 'integer', ReglasVariante::delTenant($tenantId)],
@@ -46,6 +49,7 @@ class CrearApartadoRequest extends SolicitudNegocio
         ));
 
         return new CrearApartadoDto(
+            listaPrecioId: isset($v['lista_precio_id']) ? (int) $v['lista_precio_id'] : null,
             clienteId: (int) $v['cliente_id'],
             items: $items,
             fechaVencimiento: isset($v['fecha_vencimiento']) ? (string) $v['fecha_vencimiento'] : null,

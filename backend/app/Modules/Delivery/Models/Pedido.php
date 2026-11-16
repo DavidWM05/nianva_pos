@@ -16,6 +16,9 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
+/**
+ * @property string $numero_pedido
+ */
 #[Fillable([
     'tenant_id', 'sucursal_id', 'venta_id', 'cliente_id', 'usuario_id', 'repartidor_id',
     'numero_pedido', 'direccion_entrega', 'referencia', 'costo_delivery',

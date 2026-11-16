@@ -45,7 +45,7 @@ class ProductoVariante extends Model
     protected static function booted(): void
     {
         static::creating(function (self $variante): void {
-            $producto = Producto::sinTenant()->find($variante->producto_id);
+            $producto = Producto::sinTenant()->whereKey($variante->producto_id)->first();
 
             if ($producto === null) {
                 throw new InvalidArgumentException("El producto {$variante->producto_id} no existe.");

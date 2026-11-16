@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Modules\Nucleo\Database\Seeders;
 
 use App\Modules\Nucleo\Models\Permiso;
@@ -42,6 +44,8 @@ class NucleoRolesPermisosSeeder extends Seeder
         'apartados' => ['ver', 'crear', 'abonar', 'cancelar'],
         'devoluciones' => ['ver', 'crear'],
         'gastos' => ['ver', 'crear'],
+        'listas_precio' => ['ver', 'crear', 'editar', 'eliminar'],
+        'precios' => ['elegir_lista'],
         'reglas_precio' => ['ver', 'crear', 'editar', 'eliminar'],
         'cupones' => ['ver', 'crear', 'editar', 'eliminar'],
         'configuracion' => ['ver', 'editar'],

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Modules\Tpv\Http\Requests;
 
 use App\Modules\Inventario\Support\ReglasCantidad;
@@ -21,6 +23,7 @@ class CrearVentaRequest extends SolicitudNegocio
         $tenantId = $this->tenantId();
 
         return [
+            'lista_precio_id' => ['nullable', 'integer', ReglasTenant::existe('listas_precio', $tenantId)->where('activo', true)],
             'cliente_id' => ['required', 'integer', ReglasTenant::existe('clientes', $tenantId)],
             'items' => ['required', 'array', 'min:1'],
             'items.*.variante_id' => ['required', 'integer', ReglasVariante::delTenant($tenantId)],
@@ -64,6 +67,7 @@ class CrearVentaRequest extends SolicitudNegocio
         ));
 
         return new CrearVentaDto(
+            listaPrecioId: isset($v['lista_precio_id']) ? (int) $v['lista_precio_id'] : null,
             clienteId: (int) $v['cliente_id'],
             items: $items,
             pagos: $pagos,

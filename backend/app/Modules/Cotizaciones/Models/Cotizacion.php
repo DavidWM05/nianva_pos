@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Modules\Cotizaciones\Models;
 
 use App\Modules\Cotizaciones\Database\Factories\CotizacionFactory;
@@ -16,7 +18,11 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
+/**
+ * @property string $numero_cotizacion
+ */
 #[Fillable([
+    'lista_precio_id',
     'tenant_id', 'sucursal_id', 'cliente_id', 'usuario_id', 'numero_cotizacion',
     'total', 'descuento', 'validez_dias', 'estado', 'venta_id',
     'observaciones', 'fecha_vencimiento', 'uso_cfdi',
@@ -34,6 +40,7 @@ class Cotizacion extends Model
     protected function casts(): array
     {
         return [
+            'lista_precio_id' => 'integer',
             'total' => 'decimal:2',
             'descuento' => 'decimal:2',
             'validez_dias' => 'integer',

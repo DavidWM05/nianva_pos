@@ -113,6 +113,7 @@ export interface ReporteVentasFiltros {
 }
 
 export interface VentaFormPayload {
+  lista_precio_id?: number | null;
   cliente_id: number;
   items: VentaItemPayload[];
   pagos: VentaPagoPayload[];

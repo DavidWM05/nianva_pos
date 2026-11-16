@@ -24,6 +24,7 @@ trait BelongsToTenant
         static::addGlobalScope(new TenantScope);
     }
 
+    /** @return Builder<self> */
     public static function sinTenant(): Builder
     {
         return static::withoutGlobalScope(TenantScope::class);

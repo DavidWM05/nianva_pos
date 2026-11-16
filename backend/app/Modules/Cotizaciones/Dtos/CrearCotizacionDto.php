@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Modules\Cotizaciones\Dtos;
 
 final readonly class CrearCotizacionDto
@@ -15,6 +17,7 @@ final readonly class CrearCotizacionDto
         public ?string $usoCfdi,
         public ?string $observaciones,
         public array $items,
+        public ?int $listaPrecioId = null,
     ) {}
 
     /**

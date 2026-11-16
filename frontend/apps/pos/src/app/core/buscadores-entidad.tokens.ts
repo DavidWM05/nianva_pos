@@ -45,3 +45,6 @@ export const BUSCADOR_RECETA = new InjectionToken<BuscadorEntidad>('BUSCADOR_REC
  * la venta sobre la que se arma un plan de pago).
  */
 export const BUSCADOR_VENTA = new InjectionToken<BuscadorEntidad>('BUSCADOR_VENTA');
+
+/** Selección de listas de precio activas para una operación de venta. */
+export const BUSCADOR_LISTA_PRECIO = new InjectionToken<BuscadorEntidad>('BUSCADOR_LISTA_PRECIO');

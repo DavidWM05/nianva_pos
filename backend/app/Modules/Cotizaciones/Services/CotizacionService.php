@@ -15,9 +15,11 @@ use App\Modules\Inventario\Exceptions\StockInsuficienteException;
 use App\Modules\Inventario\Models\InventarioStock;
 use App\Modules\Inventario\Models\ProductoVariante;
 use App\Modules\Nucleo\Scopes\TenantScopeViaRelacion;
+use App\Modules\Precios\Support\ContextoPrecio;
 use App\Modules\Tpv\Models\CajaSesion;
 use App\Modules\Tpv\Models\Venta;
 use App\Modules\Tpv\Services\VentaService;
+use Carbon\CarbonImmutable;
 use Illuminate\Support\Facades\DB;
 use InvalidArgumentException;
 
@@ -43,7 +45,7 @@ class CotizacionService
     /**
      * Crea cotizacion con sus items. No modifica stock.
      *
-     * @param  array{tenant_id:int, sucursal_id:int, usuario_id:int, cliente_id:?int, validez_dias:int, descuento:float, observaciones:?string, uso_cfdi:?string}  $data
+     * @param  array{tenant_id:int, sucursal_id:int, usuario_id:int, cliente_id:?int, lista_precio_id?:?int, validez_dias?:int, descuento?:float, observaciones:?string, uso_cfdi:?string}  $data
      * @param  list<array{variante_id:int, cantidad:int|float, precio_unitario?:float, descuento?:float}>  $items
      *
      * @throws InvalidArgumentException si cantidad <= 0 o variante no existe
@@ -101,6 +103,7 @@ class CotizacionService
         }
 
         $cotizacion = Cotizacion::create([
+            'lista_precio_id' => $data['lista_precio_id'] ?? null,
             'tenant_id' => $tenantId,
             'sucursal_id' => $data['sucursal_id'],
             'cliente_id' => $data['cliente_id'] ?? null,
@@ -189,6 +192,7 @@ class CotizacionService
         }
 
         $cotizacion->update([
+            ...(array_key_exists('lista_precio_id', $data) ? ['lista_precio_id' => $data['lista_precio_id']] : []),
             'cliente_id' => $data['cliente_id'] ?? $cotizacion->cliente_id,
             'total' => $total,
             'descuento' => $descuentoGlobal,
@@ -276,7 +280,7 @@ class CotizacionService
         // PricingService; una cotizacion con precio manual no debe fijar
         // el pago de la venta resultante.
         $tenantId = (int) $cotizacion->getAttribute('tenant_id');
-        [, $totalVenta] = $this->ventaService->cotizarItems($tenantId, $items);
+        [, $totalVenta] = $this->ventaService->cotizarItems($tenantId, $items, new ContextoPrecio($tenantId, (int) $cotizacion->getAttribute('sucursal_id'), (int) $cotizacion->getAttribute('cliente_id'), CarbonImmutable::now(), $cotizacion->getAttribute('lista_precio_id')));
 
         $pagos = [[
             'metodo_pago_id' => $dataVenta['metodo_pago_id'],
@@ -289,6 +293,7 @@ class CotizacionService
                 'sucursal_id' => $cotizacion->sucursal_id,
                 'usuario_id' => $dataVenta['usuario_id'],
                 'cliente_id' => $cotizacion->cliente_id,
+                'lista_precio_id' => $cotizacion->getAttribute('lista_precio_id'),
             ],
             $items,
             $pagos,
