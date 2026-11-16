@@ -4,6 +4,7 @@ import type { ConfiguracionSeguridadResource } from '@nianva/api-contrato';
 export type FrecuenciaBackup = 'diario' | 'semanal' | 'mensual';
 
 export interface ConfiguracionTenant {
+  tasa_iva_default?: string;
   moneda: string;
   mensaje_ticket: string | null;
   /** Solo texto (URL) por ahora -- sin subida de archivo, ver el reporte. */
@@ -18,7 +19,10 @@ export interface ConfiguracionTenant {
   codigo_barras_automatico: boolean;
 }
 
-export type ConfiguracionTenantFormPayload = Omit<ConfiguracionTenant, 'backup_ultimo'>;
+export type ConfiguracionTenantFormPayload = Omit<
+  ConfiguracionTenant,
+  'backup_ultimo' | 'tasa_iva_default'
+> & { tasa_iva_default?: number };
 
 /**
  * Espejo de ConfiguracionSeguridadController::show()/update() -- dias de

@@ -15,6 +15,8 @@ import {
 } from './producto.types';
 
 export interface ProductoFormPayload {
+  tasa_iva?: number | null;
+  exento_iva?: boolean;
   nombre: string;
   descripcion?: string | null;
   categoria_id?: number | null;
@@ -26,6 +28,8 @@ export interface ProductoFormPayload {
 }
 
 export interface VarianteFormPayload {
+  precio_venta?: number | null;
+  costo?: number | null;
   talla?: string | null;
   color?: string | null;
   codigo_barras?: string | null;

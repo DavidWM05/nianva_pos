@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Modules\Inventario\Http\Requests;
 
 use App\Modules\Inventario\Dtos\ProductoDto;
@@ -22,6 +24,8 @@ class GuardarProductoRequest extends SolicitudNegocio
             'departamento_id' => ['nullable', 'integer', ReglasTenant::existe('departamentos', $tenantId)],
             'precio_compra' => ['nullable', 'numeric', 'min:0'],
             'precio_venta' => ['nullable', 'numeric', 'min:0'],
+            'tasa_iva' => ['nullable', 'numeric', 'decimal:0,4', 'regex:/\A(?:0|8|16)(?:\.0{1,4})?\z/'],
+            'exento_iva' => ['sometimes', 'boolean'],
             'imagen_url' => ['nullable', 'string', 'max:500'],
             'no_resurtible' => ['nullable', 'boolean'],
             'sin_descuento' => ['nullable', 'boolean'],
@@ -43,6 +47,8 @@ class GuardarProductoRequest extends SolicitudNegocio
             noResurtible: isset($v['no_resurtible']) ? (bool) $v['no_resurtible'] : null,
             sinDescuento: isset($v['sin_descuento']) ? (bool) $v['sin_descuento'] : null,
             presentes: array_keys($v),
+            tasaIva: isset($v['tasa_iva']) ? (string) $v['tasa_iva'] : null,
+            exentoIva: isset($v['exento_iva']) ? (bool) $v['exento_iva'] : null,
         );
     }
 }

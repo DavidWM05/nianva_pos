@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Modules\Configuracion\Dtos;
 
 final readonly class ConfiguracionTenantDto
@@ -19,6 +21,7 @@ final readonly class ConfiguracionTenantDto
         public string $backupFrecuencia,
         public bool $codigoBarrasAutomatico,
         private array $presentes,
+        public ?string $tasaIvaDefault = null,
     ) {}
 
     /**
@@ -65,6 +68,10 @@ final readonly class ConfiguracionTenantDto
         }
         if (in_array('codigo_barras_automatico', $this->presentes, true)) {
             $datos['codigo_barras_automatico'] = $this->codigoBarrasAutomatico;
+        }
+
+        if (in_array('tasa_iva_default', $this->presentes, true)) {
+            $datos['tasa_iva_default'] = $this->tasaIvaDefault;
         }
 
         return $datos;

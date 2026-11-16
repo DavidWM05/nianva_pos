@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Modules\Configuracion\Http\Requests;
 
 use App\Modules\Configuracion\Dtos\ConfiguracionTenantDto;
@@ -28,6 +30,7 @@ class ActualizarConfiguracionRequest extends SolicitudNegocio
     public function rules(): array
     {
         return [
+            'tasa_iva_default' => ['sometimes', 'numeric', 'decimal:0,4', 'regex:/\A(?:0|8|16)(?:\.0{1,4})?\z/'],
             'moneda' => ['required', 'string', 'max:5'],
             'zona_horaria' => ['sometimes', 'string', 'timezone:all'],
             'mensaje_ticket' => ['nullable', 'string'],
@@ -66,6 +69,7 @@ class ActualizarConfiguracionRequest extends SolicitudNegocio
             backupFrecuencia: (string) $v['backup_frecuencia'],
             codigoBarrasAutomatico: (bool) $v['codigo_barras_automatico'],
             presentes: array_keys($v),
+            tasaIvaDefault: isset($v['tasa_iva_default']) ? (string) $v['tasa_iva_default'] : null,
         );
     }
 }

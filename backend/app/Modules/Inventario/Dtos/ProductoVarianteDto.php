@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Modules\Inventario\Dtos;
 
 final readonly class ProductoVarianteDto
@@ -12,6 +14,8 @@ final readonly class ProductoVarianteDto
         public ?string $color,
         public ?string $codigoBarras,
         private array $presentes,
+        public ?string $precioVenta = null,
+        public ?string $costo = null,
     ) {}
 
     /**
@@ -39,6 +43,14 @@ final readonly class ProductoVarianteDto
 
         if (in_array('codigo_barras', $this->presentes, true)) {
             $datos['codigo_barras'] = $this->codigoBarras;
+        }
+
+        if (in_array('precio_venta', $this->presentes, true)) {
+            $datos['precio_venta'] = $this->precioVenta;
+        }
+
+        if (in_array('costo', $this->presentes, true)) {
+            $datos['costo'] = $this->costo;
         }
 
         return $datos;

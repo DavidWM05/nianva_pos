@@ -19,6 +19,8 @@ export interface StockPorSucursal {
 }
 
 export interface ProductoVariante {
+  precio_venta?: string | null;
+  costo?: string | null;
   id: number;
   producto_id: number;
   talla: string | null;
@@ -38,6 +40,8 @@ export interface ProductoVariante {
 
 /** Espejo de ProductoResource. */
 export interface Producto {
+  tasa_iva?: string | null;
+  exento_iva?: boolean;
   id: number;
   nombre: string;
   descripcion: string | null;

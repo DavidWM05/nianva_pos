@@ -3,4 +3,11 @@
   [fields]="fields"
   [submitLabel]="submitLabel"
   (formSubmit)="onSubmit($event)"
-/>
+>
+  <ui-campo etiqueta="Precio de venta" ayuda="vacío = usa el del producto">
+    <ui-input-dinero [min]="0" [formControl]="importes.controls.precio_venta" />
+  </ui-campo>
+  <ui-campo etiqueta="Costo" ayuda="vacío = usa el del producto">
+    <ui-input-dinero [min]="0" [formControl]="importes.controls.costo" />
+  </ui-campo>
+</nucleo-dynamic-form>

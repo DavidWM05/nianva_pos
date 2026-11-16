@@ -2056,6 +2056,7 @@ export interface components {
         };
         /** ActualizarConfiguracionRequest */
         ActualizarConfiguracionRequest: {
+            tasa_iva_default?: number;
             moneda: string;
             zona_horaria?: string;
             mensaje_ticket?: string | null;
@@ -2235,6 +2236,7 @@ export interface components {
         };
         /** ConfiguracionTenantResource */
         ConfiguracionTenantResource: {
+            tasa_iva_default: string;
             moneda: string;
             zona_horaria: string;
             mensaje_ticket: string | null;
@@ -2754,6 +2756,8 @@ export interface components {
             departamento_id?: number | null;
             precio_compra?: number | null;
             precio_venta?: number | null;
+            tasa_iva?: number | null;
+            exento_iva?: boolean;
             imagen_url?: string | null;
             no_resurtible?: boolean | null;
             sin_descuento?: boolean | null;
@@ -2762,6 +2766,8 @@ export interface components {
         GuardarProductoVarianteRequest: {
             talla?: string | null;
             color?: string | null;
+            precio_venta?: number | null;
+            costo?: number | null;
             codigo_barras?: string | null;
         };
         /** GuardarReglaPrecioRequest */
@@ -3097,6 +3103,8 @@ export interface components {
             } | null;
             precio_compra: string;
             precio_venta: string;
+            tasa_iva: string | null;
+            exento_iva: boolean;
             imagen_url: string | null;
             no_resurtible: boolean;
             sin_descuento: boolean;
@@ -3118,6 +3126,8 @@ export interface components {
             talla: string | null;
             color: string | null;
             codigo_barras: string | null;
+            precio_venta: string | null;
+            costo: string | null;
             activo: boolean;
             /**
              * @description Solo las filas que YA existen en inventario_stock -- una

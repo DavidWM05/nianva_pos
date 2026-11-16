@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Modules\Inventario\Http\Resources;
 
 use App\Modules\Inventario\Models\ProductoVariante;
@@ -20,6 +22,8 @@ class ProductoVarianteResource extends JsonResource
             'talla' => $this->talla,
             'color' => $this->color,
             'codigo_barras' => $this->codigo_barras,
+            'precio_venta' => $this->precio_venta === null ? null : DecimalApi::dinero($this->precio_venta),
+            'costo' => $this->costo === null ? null : DecimalApi::dinero($this->costo),
             'activo' => $this->activo,
             // Solo las filas que YA existen en inventario_stock -- una
             // sucursal sin movimientos registrados todavia simplemente no
