@@ -4,6 +4,7 @@ import type { ConfiguracionSeguridadResource } from '@nianva/api-contrato';
 export type FrecuenciaBackup = 'diario' | 'semanal' | 'mensual';
 
 export interface ConfiguracionTenant {
+  cupon_combinable_con_promociones?: boolean;
   tasa_iva_default?: string;
   moneda: string;
   mensaje_ticket: string | null;

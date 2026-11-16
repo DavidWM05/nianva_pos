@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Modules\Precios\Models;
 
 use App\Modules\Inventario\Models\Categoria;
@@ -14,10 +16,14 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+/**
+ * @property int $prioridad
+ * @property bool $combinable
+ */
 #[Fillable([
     'tenant_id', 'nombre', 'tipo', 'porcentaje', 'monto', 'cantidad_compra', 'cantidad_paga',
     'precio_bundle', 'aplica_a', 'categoria_id', 'producto_id', 'variante_id',
-    'fecha_inicio', 'fecha_fin', 'activo',
+    'fecha_inicio', 'fecha_fin', 'activo', 'prioridad', 'combinable',
 ])]
 class ReglaPrecio extends Model
 {
@@ -28,11 +34,15 @@ class ReglaPrecio extends Model
 
     const UPDATED_AT = null;
 
+    protected $attributes = ['prioridad' => 0, 'combinable' => false];
+
     protected $table = 'reglas_precio';
 
     protected function casts(): array
     {
         return ['cantidad_compra' => CantidadNullable::class, 'cantidad_paga' => CantidadNullable::class,
+            'prioridad' => 'integer',
+            'combinable' => 'boolean',
             'porcentaje' => 'decimal:4',
             'monto' => 'decimal:2',
             'precio_bundle' => 'decimal:2',

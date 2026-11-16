@@ -30,6 +30,7 @@ class ActualizarConfiguracionRequest extends SolicitudNegocio
     public function rules(): array
     {
         return [
+            'cupon_combinable_con_promociones' => ['sometimes', 'boolean'],
             'tasa_iva_default' => ['sometimes', 'numeric', 'decimal:0,4', 'regex:/\A(?:0|8|16)(?:\.0{1,4})?\z/'],
             'moneda' => ['required', 'string', 'max:5'],
             'zona_horaria' => ['sometimes', 'string', 'timezone:all'],
@@ -69,6 +70,7 @@ class ActualizarConfiguracionRequest extends SolicitudNegocio
             backupFrecuencia: (string) $v['backup_frecuencia'],
             codigoBarrasAutomatico: (bool) $v['codigo_barras_automatico'],
             presentes: array_keys($v),
+            cuponCombinableConPromociones: isset($v['cupon_combinable_con_promociones']) ? (bool) $v['cupon_combinable_con_promociones'] : null,
             tasaIvaDefault: isset($v['tasa_iva_default']) ? (string) $v['tasa_iva_default'] : null,
         );
     }

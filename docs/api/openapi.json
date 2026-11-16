@@ -9947,6 +9947,9 @@
             "ActualizarConfiguracionRequest": {
                 "type": "object",
                 "properties": {
+                    "cupon_combinable_con_promociones": {
+                        "type": "boolean"
+                    },
                     "tasa_iva_default": {
                         "type": "number",
                         "pattern": "^(?:0|8|16)(?:\\.0{1,4})?$"
@@ -10701,6 +10704,9 @@
             "ConfiguracionTenantResource": {
                 "type": "object",
                 "properties": {
+                    "cupon_combinable_con_promociones": {
+                        "type": "boolean"
+                    },
                     "tasa_iva_default": {
                         "type": "string",
                         "pattern": "^-?[0-9]+\\.[0-9]{4}$"
@@ -10750,6 +10756,7 @@
                     }
                 },
                 "required": [
+                    "cupon_combinable_con_promociones",
                     "tasa_iva_default",
                     "moneda",
                     "zona_horaria",
@@ -13001,6 +13008,14 @@
             "GuardarReglaPrecioRequest": {
                 "type": "object",
                 "properties": {
+                    "prioridad": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 65535
+                    },
+                    "combinable": {
+                        "type": "boolean"
+                    },
                     "nombre": {
                         "type": "string",
                         "maxLength": 120
@@ -14774,6 +14789,12 @@
                     "nombre": {
                         "type": "string"
                     },
+                    "prioridad": {
+                        "type": "integer"
+                    },
+                    "combinable": {
+                        "type": "boolean"
+                    },
                     "tipo": {
                         "type": "string"
                     },
@@ -14905,6 +14926,8 @@
                 "required": [
                     "id",
                     "nombre",
+                    "prioridad",
+                    "combinable",
                     "tipo",
                     "porcentaje",
                     "monto",

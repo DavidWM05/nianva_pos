@@ -14,6 +14,8 @@ import {
 } from './regla-precio.types';
 
 export interface ReglaPrecioFormPayload {
+  prioridad?: number;
+  combinable?: boolean;
   nombre: string;
   tipo: TipoReglaPrecio;
   porcentaje?: CuerpoDe<'/reglas-precio', 'post'>['porcentaje'];

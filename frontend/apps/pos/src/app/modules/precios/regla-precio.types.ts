@@ -5,6 +5,8 @@ export type AplicaA = 'todo' | 'categoria' | 'producto' | 'variante';
 
 /** Espejo de ReglaPrecioResource. */
 export interface ReglaPrecio {
+  prioridad?: number;
+  combinable?: boolean;
   id: number;
   nombre: string;
   tipo: TipoReglaPrecio;
@@ -16,7 +18,12 @@ export interface ReglaPrecio {
   aplica_a: AplicaA;
   categoria: { id: number; nombre: string } | null;
   producto: { id: number; nombre: string } | null;
-  variante: { id: number; talla: string | null; color: string | null; producto_nombre: string | null } | null;
+  variante: {
+    id: number;
+    talla: string | null;
+    color: string | null;
+    producto_nombre: string | null;
+  } | null;
   fecha_inicio: string | null;
   fecha_fin: string | null;
   activo: boolean;

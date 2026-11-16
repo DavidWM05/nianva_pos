@@ -22,6 +22,7 @@ final readonly class ConfiguracionTenantDto
         public bool $codigoBarrasAutomatico,
         private array $presentes,
         public ?string $tasaIvaDefault = null,
+        public ?bool $cuponCombinableConPromociones = null,
     ) {}
 
     /**
@@ -72,6 +73,10 @@ final readonly class ConfiguracionTenantDto
 
         if (in_array('tasa_iva_default', $this->presentes, true)) {
             $datos['tasa_iva_default'] = $this->tasaIvaDefault;
+        }
+
+        if (in_array('cupon_combinable_con_promociones', $this->presentes, true)) {
+            $datos['cupon_combinable_con_promociones'] = $this->cuponCombinableConPromociones;
         }
 
         return $datos;

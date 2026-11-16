@@ -2056,6 +2056,7 @@ export interface components {
         };
         /** ActualizarConfiguracionRequest */
         ActualizarConfiguracionRequest: {
+            cupon_combinable_con_promociones?: boolean;
             tasa_iva_default?: number;
             moneda: string;
             zona_horaria?: string;
@@ -2236,6 +2237,7 @@ export interface components {
         };
         /** ConfiguracionTenantResource */
         ConfiguracionTenantResource: {
+            cupon_combinable_con_promociones: boolean;
             tasa_iva_default: string;
             moneda: string;
             zona_horaria: string;
@@ -2772,6 +2774,8 @@ export interface components {
         };
         /** GuardarReglaPrecioRequest */
         GuardarReglaPrecioRequest: {
+            prioridad?: number;
+            combinable?: boolean;
             nombre: string;
             /** @enum {string} */
             tipo: "porcentaje" | "monto_fijo" | "nxm" | "bundle";
@@ -3232,6 +3236,8 @@ export interface components {
         ReglaPrecioResource: {
             id: number;
             nombre: string;
+            prioridad: number;
+            combinable: boolean;
             tipo: string;
             porcentaje: string | null;
             monto: string | null;

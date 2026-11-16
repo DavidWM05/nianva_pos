@@ -27,6 +27,7 @@ Generado con `php artisan errores:catalogo` desde las excepciones de negocio y e
 | `cuenta_ya_pagada` | 422 | `App\Modules\CuentasCobrar\Exceptions\CuentaYaPagadaException` | CuentasCobrar | — |
 | `cuota_ya_pagada` | 422 | `App\Modules\VentasPlazos\Exceptions\CuotaYaPagadaException` | VentasPlazos | plan_pago_id, cuota_id |
 | `cupon_invalido` | 422 | `App\Modules\Precios\Exceptions\CuponInvalidoException` | Precios | codigo |
+| `cupon_no_combinable` | 422 | `App\Modules\Precios\Exceptions\CuponNoCombinableException` | Precios | codigo |
 | `datos_invalidos` | 422 | `App\Modules\Nucleo\Support\MapaErroresHttp` | Nucleo | - |
 | `demasiadas_solicitudes` | 429 | `App\Modules\Nucleo\Support\MapaErroresHttp` | Nucleo | - |
 | `desactivar_propio_usuario` | 403 | `App\Modules\Nucleo\Exceptions\DesactivarPropioUsuarioException` | Nucleo | usuario_id |

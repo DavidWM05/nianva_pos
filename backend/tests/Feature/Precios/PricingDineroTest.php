@@ -76,8 +76,8 @@ class PricingDineroTest extends TestCase
     {
         return [
             'porcentaje antes de redondear la referencia' => [1.005, 'porcentaje', '50', 0.50, 0.51],
-            'resta antes de redondear la referencia' => [0.005, 'porcentaje', '100', 0.01, -0.01],
-            'monto fijo acotado' => [0.005, 'monto_fijo', '1', 0.01, -0.01],
+            'resta antes de redondear la referencia' => [0.005, 'porcentaje', '100', 0.01, 0.00],
+            'monto fijo acotado' => [0.005, 'monto_fijo', '1', 0.01, 0.00],
             'referencia cientifica pequena' => [0.0000001, 'porcentaje', '10', 0.0, 0.0],
             'referencia cientifica cero' => [0.0, 'monto_fijo', '1', 0.0, 0.0],
         ];

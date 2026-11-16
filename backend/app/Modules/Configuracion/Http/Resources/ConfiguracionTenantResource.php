@@ -17,6 +17,7 @@ class ConfiguracionTenantResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
+            'cupon_combinable_con_promociones' => $this->cupon_combinable_con_promociones,
             'tasa_iva_default' => DecimalApi::tasa($this->tasa_iva_default),
             'moneda' => $this->moneda,
             'zona_horaria' => $this->zona_horaria,
