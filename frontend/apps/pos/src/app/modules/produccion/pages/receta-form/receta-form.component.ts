@@ -17,6 +17,7 @@ import {
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
+import { limitesDe } from '@nianva/api-contrato';
 import { EntidadSelectorComponent, ToastService } from '@nianva/ui-shared';
 import { forkJoin } from 'rxjs';
 
@@ -59,6 +60,8 @@ interface IngredienteEnLista extends RecetaIngredientePayload {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class RecetaFormComponent {
+  /** Límites del cuerpo de la petición, leídos del contrato (UI-11b). */
+  protected readonly limites = limitesDe('/recetas', 'post');
   private readonly recetaService = inject(RecetaService);
   private readonly router = inject(Router);
   private readonly toast = inject(ToastService);

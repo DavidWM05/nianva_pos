@@ -117,8 +117,34 @@ export class DynamicFormComponent implements OnChanges {
     return field.dependsOn.values.includes(valorActual);
   }
 
+  /**
+   * UI-11b: los limites del contrato (`field.limite`) se vuelven las propiedades de siempre del
+   * campo, sin pisar las que el campo ya declara. Asi la plantilla y `errorFor()` no cambian.
+   */
+  private conLimite(field: DynamicFormField): DynamicFormField {
+    const limite = field.limite;
+    if (!limite) {
+      return field;
+    }
+
+    return {
+      ...field,
+      required: field.required ?? limite.requerido,
+      maxLength: field.maxLength ?? limite.maxLength,
+      min: field.min ?? limite.minimum,
+      max: field.max ?? limite.maximum,
+      decimales: field.decimales ?? limite.decimales,
+    };
+  }
+
+  /** `step` del input numerico: 0.01 para 2 decimales; sin decimales declarados, el del navegador. */
+  protected pasoDe(field: DynamicFormField): string | null {
+    return field.decimales === undefined ? null : field.decimales === 0 ? '1' : `0.${'0'.repeat(field.decimales - 1)}1`;
+  }
+
   private buildForm(): void {
     const controls: Record<string, unknown> = {};
+    this.fields = this.fields.map((field) => this.conLimite(field));
 
     for (const field of this.fields) {
       const validators = [...(field.validators ?? [])];
@@ -131,6 +157,15 @@ export class DynamicFormComponent implements OnChanges {
       if (field.maxLength !== undefined) {
         validators.push(Validators.maxLength(field.maxLength));
       }
+      if (field.min !== undefined) {
+        validators.push(Validators.min(field.min));
+      }
+      if (field.max !== undefined) {
+        validators.push(Validators.max(field.max));
+      }
+      if (field.decimales !== undefined) {
+        validators.push(DynamicFormComponent.maximoDecimales(field.decimales));
+      }
       controls[field.name] = [
         { value: field.defaultValue ?? null, disabled: this.readonly || field.readonly === true },
         validators,
@@ -139,6 +174,19 @@ export class DynamicFormComponent implements OnChanges {
 
     this.form = this.fb.group(controls);
     this.revalidarDependientesAlCambiar();
+  }
+
+  /** Error `decimales` si el numero trae mas cifras decimales de las que acepta el campo. */
+  private static maximoDecimales(decimales: number): ValidatorFn {
+    return (control) => {
+      const valor: unknown = control.value;
+      if (valor === null || valor === undefined || valor === '') {
+        return null;
+      }
+      const fraccion = String(valor).split('.')[1] ?? '';
+
+      return fraccion.length > decimales ? { decimales: { decimales } } : null;
+    };
   }
 
   private requeridoSiVisible(field: DynamicFormField): ValidatorFn {
@@ -194,6 +242,9 @@ export class DynamicFormComponent implements OnChanges {
     }
     if (control.hasError('max')) {
       return `Debe ser menor o igual a ${control.getError('max').max}.`;
+    }
+    if (control.hasError('decimales')) {
+      return `Admite como máximo ${control.getError('decimales').decimales} decimales.`;
     }
     return 'Valor invalido.';
   }

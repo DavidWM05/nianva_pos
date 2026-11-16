@@ -14,6 +14,7 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
+import { limitesDe } from '@nianva/api-contrato';
 import {
   CampoComponent,
   InputDineroComponent,
@@ -24,6 +25,9 @@ import { DynamicFormComponent, DynamicFormField } from '@nianva/ui-shared';
 
 import { VarianteFormPayload } from '../producto.service';
 import { ProductoVariante } from '../producto.types';
+
+/** Límites del cuerpo de la petición, leídos del contrato (UI-11b). */
+const LIMITES = limitesDe('/productos/{producto}/variantes', 'post');
 
 /**
  * Talla/color/codigo_barras -- usado para crear una variante nueva
@@ -64,12 +68,12 @@ export class VarianteFormComponent implements OnChanges {
 
   protected readonly importes = new FormGroup({
     precio_venta: new FormControl<number | null>(null, [
-      Validators.min(0),
-      Validators.max(9999999999.99),
+      Validators.min(LIMITES.precio_venta.minimum),
+      Validators.max(LIMITES.precio_venta.maximum),
     ]),
     costo: new FormControl<number | null>(null, [
-      Validators.min(0),
-      Validators.max(9999999999.99),
+      Validators.min(LIMITES.costo.minimum),
+      Validators.max(LIMITES.costo.maximum),
     ]),
   });
 
@@ -99,14 +103,14 @@ export class VarianteFormComponent implements OnChanges {
         label: 'Talla',
         type: 'text',
         defaultValue: this.valorInicial?.talla ?? '',
-        maxLength: 30,
+        limite: LIMITES.talla,
       },
       {
         name: 'color',
         label: 'Color',
         type: 'text',
         defaultValue: this.valorInicial?.color ?? '',
-        maxLength: 30,
+        limite: LIMITES.color,
       },
       {
         name: 'codigo_barras',
@@ -117,7 +121,7 @@ export class VarianteFormComponent implements OnChanges {
             ? 'Se genera al guardar'
             : undefined,
         defaultValue: this.valorInicial?.codigo_barras ?? '',
-        maxLength: 50,
+        limite: LIMITES.codigo_barras,
         readonly: this.codigoBarrasAutomatico,
       },
     ];

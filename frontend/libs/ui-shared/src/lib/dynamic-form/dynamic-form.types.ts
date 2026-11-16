@@ -37,4 +37,28 @@ export interface DynamicFormField {
    * cualquier formulario futuro con el mismo patron.
    */
   dependsOn?: { field: string; values: unknown[] };
+  /**
+   * Solo para 'number': valor minimo y maximo (atributos `min`/`max` y
+   * Validators.min/max) y decimales que acepta (atributo `step` y error si
+   * trae de mas).
+   */
+  min?: number;
+  max?: number;
+  decimales?: number;
+  /**
+   * Limites del campo tal como los da el contrato (`limitesDe()` de
+   * @nianva/api-contrato, UI-11b): `requerido`, `maxLength`, `minimum`,
+   * `maximum` y `decimales`. Cada uno aplica solo si el campo no declara el
+   * suyo (`required`, `maxLength`, `min`, `max`, `decimales`).
+   */
+  limite?: DynamicFormLimite;
+}
+
+/** Forma de un limite del contrato; estructural para no depender de @nianva/api-contrato. */
+export interface DynamicFormLimite {
+  readonly requerido: boolean;
+  readonly maxLength?: number;
+  readonly minimum?: number;
+  readonly maximum?: number;
+  readonly decimales?: number;
 }

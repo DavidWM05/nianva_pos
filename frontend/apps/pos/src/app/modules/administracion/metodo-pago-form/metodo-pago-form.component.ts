@@ -1,8 +1,12 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnChanges, Output, ViewChild } from '@angular/core';
+import { limitesDe } from '@nianva/api-contrato';
 import { DynamicFormComponent, DynamicFormField } from '@nianva/ui-shared';
 
 import { MetodoPagoFormPayload } from '../metodo-pago-admin.service';
 import { MetodoPagoAdmin } from '../metodo-pago.types';
+
+/** Límites del cuerpo de la petición, leídos del contrato (UI-11b). */
+const LIMITES = limitesDe('/metodos-pago', 'post');
 
 const OPCIONES_TIPO: { label: string; value: string }[] = [
   { label: 'Efectivo', value: 'efectivo' },
@@ -44,9 +48,8 @@ export class MetodoPagoFormComponent implements OnChanges {
         name: 'nombre',
         label: 'Nombre',
         type: 'text',
-        required: true,
         defaultValue: this.valorInicial?.nombre ?? '',
-        maxLength: 80,
+        limite: LIMITES.nombre,
       },
       {
         name: 'tipo',

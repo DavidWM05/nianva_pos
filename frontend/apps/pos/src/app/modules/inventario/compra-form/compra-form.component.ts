@@ -20,9 +20,13 @@ import {
   InputCantidadComponent,
   aplicarErroresServidor,
 } from '@nianva/ui-forms';
+import { limitesDe } from '@nianva/api-contrato';
 import { DynamicFormComponent, DynamicFormField } from '@nianva/ui-shared';
 
 import { ProveedorSimple } from '../producto.types';
+
+/** Límites del cuerpo de la petición, leídos del contrato (UI-11b). */
+const LIMITES = limitesDe('/compras', 'post');
 
 export interface CompraFormValue {
   proveedor_id: number;
@@ -93,7 +97,7 @@ export class CompraFormComponent implements OnChanges {
         name: 'numero_comprobante',
         label: 'N° de comprobante (opcional)',
         type: 'text',
-        maxLength: 60,
+        limite: LIMITES.numero_comprobante,
       },
     ];
   }

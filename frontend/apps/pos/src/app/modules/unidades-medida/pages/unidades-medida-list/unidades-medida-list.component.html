@@ -20,11 +20,11 @@
   [titulo]="unidadEnEdicion() ? 'Editar unidad de medida' : 'Nueva unidad de medida'"
   tamano="sm"
 >
-  <ui-campo etiqueta="Nombre" [requerido]="true">
-    <input type="text" aria-label="Nombre" maxlength="50" [ngModel]="nombre()" (ngModelChange)="nombre.set($event)" />
+  <ui-campo etiqueta="Nombre" [requerido]="limites.nombre.requerido">
+    <input type="text" aria-label="Nombre" [maxlength]="limites.nombre.maxLength" [ngModel]="nombre()" (ngModelChange)="nombre.set($event)" />
   </ui-campo>
-  <ui-campo etiqueta="Abreviatura" [requerido]="true">
-    <input type="text" aria-label="Abreviatura" maxlength="10" [ngModel]="abreviatura()" (ngModelChange)="abreviatura.set($event)" />
+  <ui-campo etiqueta="Abreviatura" [requerido]="limites.abreviatura.requerido">
+    <input type="text" aria-label="Abreviatura" [maxlength]="limites.abreviatura.maxLength" [ngModel]="abreviatura()" (ngModelChange)="abreviatura.set($event)" />
   </ui-campo>
   <ui-campo etiqueta="Tipo" [requerido]="true">
     <ui-select-filtro [opciones]="tipos" [ngModel]="tipo()" ariaLabel="Tipo" (ngModelChange)="tipo.set($event)" />

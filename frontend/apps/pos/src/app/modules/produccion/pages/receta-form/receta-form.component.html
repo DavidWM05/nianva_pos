@@ -25,7 +25,7 @@
           matInput
           type="text"
           [id]="campo50l1.controlId() ?? 'receta-form-campo50l1'"
-          maxlength="200"
+          [maxlength]="limites.nombre.maxLength"
           [ngModel]="nombre()"
           (ngModelChange)="nombre.set($event)"
         />

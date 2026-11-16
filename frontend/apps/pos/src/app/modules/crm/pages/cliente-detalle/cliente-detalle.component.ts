@@ -1,5 +1,6 @@
 import { NgTemplateOutlet } from '@angular/common';
 import { MatButton } from '@angular/material/button';
+import { limitesDe } from '@nianva/api-contrato';
 import { BotonCrearComponent } from '@nianva/ui-actions';
 import {
   CambioListado,
@@ -115,6 +116,9 @@ const TIPOS_INTERACCION: { label: string; value: TipoInteraccion }[] = [
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ClienteDetalleComponent implements OnInit {
+  /** Límites de los cuerpos de interacción y ajuste de puntos, leídos del contrato (UI-11b). */
+  protected readonly limitesInteraccion = limitesDe('/clientes/{cliente}/interacciones', 'post');
+  protected readonly limitesAjuste = limitesDe('/clientes/{cliente}/loyalty/ajustar', 'post');
   private readonly route = inject(ActivatedRoute);
   private readonly clienteService = inject(ClienteService);
   private readonly crmAvanzadoService = inject(CrmAvanzadoService);

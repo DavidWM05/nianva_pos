@@ -168,7 +168,7 @@
   <ui-campo #campoObservacion etiqueta="Observación">
     <textarea
       rows="3"
-      maxlength="5000"
+      [maxlength]="limitesInteraccion.observacion.maxLength"
       [id]="campoObservacion.controlId()"
       [attr.aria-invalid]="campoObservacion.invalido()"
       [attr.aria-describedby]="
@@ -214,7 +214,7 @@
   <ui-campo #campoMotivo etiqueta="Motivo">
     <textarea
       rows="3"
-      maxlength="500"
+      [maxlength]="limitesAjuste.motivo.maxLength"
       [id]="campoMotivo.controlId()"
       [attr.aria-invalid]="campoMotivo.invalido()"
       [attr.aria-describedby]="

@@ -15,6 +15,7 @@ import {
   DynamicFormField,
   EntidadSelectorComponent,
 } from '@nianva/ui-shared';
+import { limitesDe } from '@nianva/api-contrato';
 import { CampoComponent, SelectFiltroComponent } from '@nianva/ui-forms';
 
 import {
@@ -25,6 +26,9 @@ import {
 import { ReglaPrecioFormPayload } from '../regla-precio.service';
 import { AplicaA, ReglaPrecio, TipoReglaPrecio } from '../regla-precio.types';
 import { numeroONulo } from '../numero-o-nulo';
+
+/** Límites del cuerpo de la petición, leídos del contrato (UI-11b). */
+const LIMITES = limitesDe('/reglas-precio', 'post');
 
 const OPCIONES_APLICA_A: { label: string; value: AplicaA }[] = [
   { label: 'Todo el catálogo', value: 'todo' },
@@ -103,13 +107,10 @@ export class ReglaPrecioFormComponent implements OnChanges {
         name: 'prioridad',
         label: 'Prioridad',
         type: 'number',
+        limite: LIMITES.prioridad,
         required: true,
         defaultValue: this.valorInicial?.prioridad ?? 0,
-        validators: [
-          Validators.min(0),
-          Validators.max(65535),
-          Validators.pattern(/^\d+$/),
-        ],
+        validators: [Validators.pattern(/^\d+$/)],
       },
       {
         name: 'combinable',
@@ -121,9 +122,8 @@ export class ReglaPrecioFormComponent implements OnChanges {
         name: 'nombre',
         label: 'Nombre',
         type: 'text',
-        required: true,
         defaultValue: this.valorInicial?.nombre ?? '',
-        maxLength: 120,
+        limite: LIMITES.nombre,
       },
       {
         name: 'tipo',
@@ -143,6 +143,7 @@ export class ReglaPrecioFormComponent implements OnChanges {
         name: 'porcentaje',
         label: 'Valor (%)',
         type: 'number',
+        limite: LIMITES.porcentaje,
         required: true,
         dependsOn: { field: 'tipo', values: ['porcentaje'] },
         defaultValue: numeroONulo(this.valorInicial?.porcentaje),
@@ -151,6 +152,7 @@ export class ReglaPrecioFormComponent implements OnChanges {
         name: 'monto',
         label: 'Valor ($)',
         type: 'number',
+        limite: LIMITES.monto,
         required: true,
         dependsOn: { field: 'tipo', values: ['monto_fijo'] },
         defaultValue: numeroONulo(this.valorInicial?.monto),
@@ -159,6 +161,7 @@ export class ReglaPrecioFormComponent implements OnChanges {
         name: 'cantidad_compra',
         label: 'Cantidad que compra',
         type: 'number',
+        limite: LIMITES.cantidad_compra,
         required: true,
         dependsOn: { field: 'tipo', values: ['nxm', 'bundle'] },
         defaultValue: this.valorInicial?.cantidad_compra ?? null,
@@ -167,6 +170,7 @@ export class ReglaPrecioFormComponent implements OnChanges {
         name: 'cantidad_paga',
         label: 'Cantidad que paga',
         type: 'number',
+        limite: LIMITES.cantidad_paga,
         required: true,
         dependsOn: { field: 'tipo', values: ['nxm'] },
         defaultValue: this.valorInicial?.cantidad_paga ?? null,
@@ -175,6 +179,7 @@ export class ReglaPrecioFormComponent implements OnChanges {
         name: 'precio_bundle',
         label: 'Precio del bundle',
         type: 'number',
+        limite: LIMITES.precio_bundle,
         required: true,
         dependsOn: { field: 'tipo', values: ['bundle'] },
         defaultValue: this.valorInicial?.precio_bundle ?? null,

@@ -3,6 +3,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
+import { limitesDe } from '@nianva/api-contrato';
 import { aplicarErroresServidor } from '@nianva/ui-forms';
 import { DynamicFormComponent, DynamicFormField } from '@nianva/ui-shared';
 
@@ -11,6 +12,9 @@ import { RolService } from '../rol.service';
 import { SucursalService, SucursalSimple } from '../sucursal.service';
 import { UsuarioFormPayload } from '../usuario-admin.service';
 import { UsuarioAdmin } from '../usuario.types';
+
+/** Límites del cuerpo de la petición, leídos del contrato (UI-11b). */
+const LIMITES = limitesDe('/usuarios', 'post');
 
 /**
  * Reutilizado por la vista de creacion (sin valorInicial, ver
@@ -80,31 +84,29 @@ export class UsuarioFormComponent implements OnInit, OnChanges {
         name: 'nombre',
         label: 'Nombre',
         type: 'text',
-        required: true,
         defaultValue: this.valorInicial?.nombre ?? '',
-        maxLength: 150,
+        limite: LIMITES.nombre,
       },
       {
         name: 'apellido',
         label: 'Apellido',
         type: 'text',
         defaultValue: this.valorInicial?.apellido ?? '',
-        maxLength: 150,
+        limite: LIMITES.apellido,
       },
       {
         name: 'alias',
         label: 'Alias',
         type: 'text',
         defaultValue: this.valorInicial?.alias ?? '',
-        maxLength: 50,
+        limite: LIMITES.alias,
       },
       {
         name: 'correo',
         label: 'Correo',
         type: 'text',
-        required: true,
         defaultValue: this.valorInicial?.correo ?? '',
-        maxLength: 150,
+        limite: LIMITES.correo,
       },
       {
         name: 'password',
@@ -118,7 +120,7 @@ export class UsuarioFormComponent implements OnInit, OnChanges {
         label: 'Teléfono',
         type: 'text',
         defaultValue: this.valorInicial?.telefono ?? '',
-        maxLength: 20,
+        limite: LIMITES.telefono,
       },
     ];
   }

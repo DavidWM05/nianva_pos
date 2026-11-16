@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnChanges, OnInit, Output, ViewChild, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { limitesDe } from '@nianva/api-contrato';
 import { ChecklistAgrupadoComponent, GrupoChecklist, IdOpcionChecklist } from '@nianva/ui-forms';
 import { DynamicFormComponent, DynamicFormField } from '@nianva/ui-shared';
 
@@ -7,6 +8,9 @@ import { GrupoPermisos } from '../permiso.types';
 import { PermisoService } from '../permiso.service';
 import { RolFormPayload } from '../rol.service';
 import { Rol } from '../rol.types';
+
+/** Límites del cuerpo de la petición, leídos del contrato (UI-11b). */
+const LIMITES = limitesDe('/roles', 'post');
 
 /** 'cuentas_cobrar' -> 'Cuentas cobrar'. */
 function legible(texto: string): string {
@@ -65,9 +69,8 @@ export class RolFormComponent implements OnInit, OnChanges {
         name: 'nombre',
         label: 'Nombre',
         type: 'text',
-        required: true,
         defaultValue: this.valorInicial?.nombre ?? '',
-        maxLength: 80,
+        limite: LIMITES.nombre,
       },
       {
         name: 'descripcion',
