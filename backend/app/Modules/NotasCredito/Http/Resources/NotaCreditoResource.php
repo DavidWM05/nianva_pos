@@ -3,6 +3,7 @@
 namespace App\Modules\NotasCredito\Http\Resources;
 
 use App\Modules\NotasCredito\Models\NotaCredito;
+use App\Modules\NotasCredito\Models\NotaCreditoUso;
 use App\Modules\Nucleo\Support\DecimalApi;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -21,7 +22,19 @@ class NotaCreditoResource extends JsonResource
             'fecha_expiracion' => $this->fecha_expiracion,
             /** @var 'activa'|'usada_parcial'|'usada_total'|'expirada'|'cancelada' */
             'estado' => $this->estado,
-            'usos' => $this->whenLoaded('usos'),
+            // Campos explicitos (ARQ-12b): el modelo crudo no documentaba la venta que carga show().
+            'usos' => $this->whenLoaded('usos', fn () => $this->usos->map(fn (NotaCreditoUso $uso) => [
+                'id' => $uso->id,
+                'venta_id' => $uso->venta_id,
+                'monto_usado' => DecimalApi::dinero($uso->monto_usado),
+                'created_at' => $uso->created_at,
+                'venta' => $uso->relationLoaded('venta') && $uso->venta !== null ? [
+                    'id' => (int) $uso->venta->getKey(),
+                    /** @var string */
+                    'fecha' => $uso->venta->getAttribute('fecha'),
+                    'total' => DecimalApi::dinero((string) $uso->venta->getAttribute('total')),
+                ] : null,
+            ])),
             'created_at' => $this->created_at,
         ];
     }

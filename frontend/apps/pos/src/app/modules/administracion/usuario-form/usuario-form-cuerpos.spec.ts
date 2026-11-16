@@ -5,10 +5,7 @@ import { DynamicFormComponent } from '@nianva/ui-shared';
 import { of } from 'rxjs';
 import { describe, expect, it, vi } from 'vitest';
 
-import { RolService } from '../rol.service';
-import { SucursalService } from '../sucursal.service';
-import { UsuarioFormPayload, esAltaUsuario } from '../usuario-admin.service';
-import { UsuarioAdmin } from '../usuario.types';
+import { esAltaUsuario, RolService, SucursalService, UsuarioAdmin, UsuarioFormPayload } from '@nianva/domain-administracion';
 import { UsuarioFormComponent } from './usuario-form.component';
 
 // API-08b: en alta el formulario emite un cuerpo de alta (password y roles); en edicion la

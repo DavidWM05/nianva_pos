@@ -7,8 +7,7 @@ import { PageHeaderComponent, SectionComponent } from '@nianva/ui-layout';
 
 import { CajaActual } from '../../../tpv/caja.types';
 import { CajaService } from '../../../tpv/caja.service';
-import { ApartadoPorVencer, InicioResumen } from '../../inicio.types';
-import { InicioService } from '../../inicio.service';
+import { ApartadoPorVencer, InicioResumen, InicioService } from '@nianva/domain-nucleo';
 
 /**
  * Reemplaza el placeholder de "Núcleo" (ver el reporte de Fase C, punto

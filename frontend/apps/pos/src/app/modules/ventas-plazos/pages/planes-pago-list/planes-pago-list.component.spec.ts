@@ -5,8 +5,7 @@ import { provideRouter } from '@angular/router';
 import { of } from 'rxjs';
 import { describe, expect, it, vi } from 'vitest';
 
-import { PlanPagoService, PlanesPagoPagina } from '../../plan-pago.service';
-import { PlanPago } from '../../plan-pago.types';
+import { PlanesPagoPagina, PlanPago, PlanPagoService } from '@nianva/domain-ventas-plazos';
 import { PlanesPagoListComponent } from './planes-pago-list.component';
 
 describe('PlanesPagoListComponent', () => {

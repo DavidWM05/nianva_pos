@@ -2745,7 +2745,7 @@ export interface components {
             fecha_vencimiento: string | null;
             /** @enum {string} */
             estado: "pendiente" | "pagada" | "anulada";
-            dias_vencida: unknown;
+            dias_vencida: number;
             abonos?: components["schemas"]["AbonoCuentaResource"][];
             /** Format: date-time */
             created_at: string;
@@ -2892,7 +2892,7 @@ export interface components {
             cliente?: {
                 id: number;
                 nombre: string;
-            };
+            } | null;
             codigo: string;
             saldo_inicial: string;
             saldo_actual: string;
@@ -3126,7 +3126,8 @@ export interface components {
         MetodoPagoResource: {
             id: number;
             nombre: string;
-            tipo: string;
+            /** @enum {string} */
+            tipo: "efectivo" | "tarjeta" | "transferencia" | "digital" | "otro";
             incluir_en_financiero: boolean;
             activo: boolean;
             /**
@@ -3181,16 +3182,19 @@ export interface components {
             fecha_expiracion: string | null;
             /** @enum {string} */
             estado: "activa" | "usada_parcial" | "usada_total" | "expirada" | "cancelada";
-            usos?: components["schemas"]["NotaCreditoUso"][];
+            /** @description Campos explicitos (ARQ-12b): el modelo crudo no documentaba la venta que carga show(). */
+            usos?: {
+                id: number;
+                venta_id: number;
+                monto_usado: string;
+                created_at: string;
+                venta: {
+                    id: number;
+                    fecha: string;
+                    total: string;
+                } | null;
+            }[];
             /** Format: date-time */
-            created_at: string;
-        };
-        /** NotaCreditoUso */
-        NotaCreditoUso: {
-            id: number;
-            nota_credito_id: number;
-            venta_id: number;
-            monto_usado: string;
             created_at: string;
         };
         /** OrdenProduccionResource */
@@ -3260,23 +3264,6 @@ export interface components {
             /** Format: date-time */
             created_at: string;
         };
-        /** PlanPagoCliente */
-        PlanPagoCliente: {
-            id: number;
-            tenant_id: number;
-            cliente_id: number;
-            concepto: string;
-            monto_total: string;
-            /** Format: date-time */
-            fecha_inicio: string;
-            /** Format: date-time */
-            created_at: string;
-            venta_id: number | null;
-            interes_total: string;
-            tasa_interes: string | null;
-            numero_cuotas: number;
-            periodicidad: string;
-        };
         /** PlanPagoClienteCuota */
         PlanPagoClienteCuota: {
             id: number;
@@ -3307,10 +3294,24 @@ export interface components {
             interes_total: string;
             tasa_interes: string | null;
             numero_cuotas: number;
-            periodicidad: string;
+            /** @enum {string} */
+            periodicidad: "semanal" | "quincenal" | "mensual";
             /** Format: date-time */
             fecha_inicio: string;
-            cuotas?: components["schemas"]["PlanPagoClienteCuota"][];
+            /** @description Campos explicitos (ARQ-12b): el modelo crudo no documentaba el estado como enum. */
+            cuotas?: {
+                id: number;
+                numero_cuota: number;
+                monto: string;
+                monto_capital: string;
+                monto_interes: string;
+                /** Format: date-time */
+                fecha_vencimiento: string;
+                /** Format: date-time */
+                fecha_pago: string | null;
+                /** @enum {string} */
+                estado: "pendiente" | "pagada" | "vencida";
+            }[];
             /** Format: date-time */
             created_at: string;
         };
@@ -3535,7 +3536,7 @@ export interface components {
             descripcion: string | null;
             es_sistema: boolean;
             usuarios_count?: number;
-            permisos?: unknown[];
+            permisos?: number[];
         };
         /** SesionResource */
         SesionResource: {
@@ -3838,13 +3839,11 @@ export type MetodoPagoResource = components['schemas']['MetodoPagoResource'];
 export type NominaDetalleResource = components['schemas']['NominaDetalleResource'];
 export type NominaResource = components['schemas']['NominaResource'];
 export type NotaCreditoResource = components['schemas']['NotaCreditoResource'];
-export type NotaCreditoUso = components['schemas']['NotaCreditoUso'];
 export type OrdenProduccionResource = components['schemas']['OrdenProduccionResource'];
 export type PagarCuotaRequest = components['schemas']['PagarCuotaRequest'];
 export type PedidoItemResource = components['schemas']['PedidoItemResource'];
 export type PedidoResource = components['schemas']['PedidoResource'];
 export type Permiso = components['schemas']['Permiso'];
-export type PlanPagoCliente = components['schemas']['PlanPagoCliente'];
 export type PlanPagoClienteCuota = components['schemas']['PlanPagoClienteCuota'];
 export type PlanPagoResource = components['schemas']['PlanPagoResource'];
 export type PresentacionResource = components['schemas']['PresentacionResource'];
@@ -4128,13 +4127,18 @@ export interface operations {
                             accion: "create" | "update" | "delete";
                             usuario_id: number | null;
                             usuario_nombre: string | null;
-                            cambios: unknown[] | null;
+                            cambios: {
+                                [key: string]: {
+                                    antes: unknown;
+                                    despues: unknown;
+                                };
+                            } | null;
                             /** Format: date-time */
                             fecha: string;
                         }[];
                         meta: {
                             total: number;
-                            tablas: unknown[];
+                            tablas: string[];
                         };
                     };
                 };
@@ -5166,7 +5170,7 @@ export interface operations {
                             };
                             por_cliente: {
                                 cliente_id: number;
-                                cliente_nombre: string;
+                                cliente_nombre: string | null;
                                 saldo_pendiente: string;
                                 cuentas_pendientes: number;
                             }[];
@@ -5230,7 +5234,8 @@ export interface operations {
                             cuenta: {
                                 id: number;
                                 saldo_pendiente: string;
-                                estado: string;
+                                /** @enum {string} */
+                                estado: "pendiente" | "pagada" | "anulada";
                             };
                         };
                         /** @constant */
@@ -5325,7 +5330,7 @@ export interface operations {
                             };
                             por_proveedor: {
                                 proveedor_id: number;
-                                proveedor_nombre: string;
+                                proveedor_nombre: string | null;
                                 saldo_pendiente: string;
                                 cuentas_pendientes: number;
                             }[];
@@ -5389,7 +5394,8 @@ export interface operations {
                             cuenta: {
                                 id: number;
                                 saldo_pendiente: string;
-                                estado: string;
+                                /** @enum {string} */
+                                estado: "pendiente" | "pagada" | "anulada";
                             };
                         };
                         /** @constant */
@@ -6145,9 +6151,9 @@ export interface operations {
                             };
                             apartados_por_vencer: {
                                 id: number;
-                                cliente_nombre: string;
+                                cliente_nombre: string | null;
                                 /** Format: date-time */
-                                fecha_vencimiento: string | null;
+                                fecha_vencimiento: string;
                                 total: string;
                                 total_abonado: string;
                             }[];
@@ -7253,13 +7259,14 @@ export interface operations {
             };
         };
         responses: {
+            /** @description `PlanPagoResource` */
             201: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
                     "application/json": {
-                        data: components["schemas"]["PlanPagoCliente"];
+                        data: components["schemas"]["PlanPagoResource"] & Record<string, never>;
                     };
                 };
             };

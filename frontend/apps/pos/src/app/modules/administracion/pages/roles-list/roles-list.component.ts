@@ -10,8 +10,7 @@ import { EstadoPagina, PageComponent, PageHeaderComponent } from '@nianva/ui-lay
 import { ConfirmDialogService, DataTableLazyEvent, ToastService, esErrorNegocio, mensajeError } from '@nianva/ui-shared';
 import { Subject, debounceTime } from 'rxjs';
 
-import { RolService } from '../../rol.service';
-import { Rol, RolesPermisos } from '../../rol.types';
+import { Rol, RolesPermisos, RolService } from '@nianva/domain-administracion';
 
 const PERMISOS_VACIOS: RolesPermisos = { crear: false, editar: false, eliminar: false };
 

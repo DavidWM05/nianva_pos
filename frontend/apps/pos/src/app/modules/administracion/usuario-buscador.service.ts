@@ -2,8 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { BuscadorEntidad } from '@nianva/ui-shared';
 import { Observable, map } from 'rxjs';
 
-import { UsuarioAdminService } from './usuario-admin.service';
-import { UsuarioAdmin } from './usuario.types';
+import { UsuarioAdmin, UsuarioAdminService } from '@nianva/domain-administracion';
 
 /**
  * Adapta UsuarioAdminService (paginado, con `evento`/`busqueda` propios de

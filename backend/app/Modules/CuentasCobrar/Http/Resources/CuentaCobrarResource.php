@@ -26,6 +26,7 @@ class CuentaCobrarResource extends JsonResource
             'fecha_vencimiento' => $this->fecha_vencimiento,
             /** @var 'pendiente'|'pagada'|'anulada' */
             'estado' => $this->estado,
+            /** @var int */
             'dias_vencida' => $this->fecha_vencimiento
                 ? max(0, now()->diffInDays($this->fecha_vencimiento, false))
                 : 0,

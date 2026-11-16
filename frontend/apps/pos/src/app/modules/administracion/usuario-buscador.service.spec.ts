@@ -2,8 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { of } from 'rxjs';
 import { describe, expect, it, vi } from 'vitest';
 
-import { UsuarioAdmin } from './usuario.types';
-import { UsuarioAdminService } from './usuario-admin.service';
+import { UsuarioAdmin, UsuarioAdminService } from '@nianva/domain-administracion';
 import { UsuarioBuscadorService } from './usuario-buscador.service';
 
 describe('UsuarioBuscadorService', () => {

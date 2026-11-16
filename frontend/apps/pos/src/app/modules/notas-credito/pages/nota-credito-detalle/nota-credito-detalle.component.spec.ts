@@ -19,8 +19,7 @@ if (typeof globalThis.ResizeObserver === 'undefined') {
 }
 /* eslint-enable @typescript-eslint/no-empty-function */
 
-import { NotaCreditoService } from '../../nota-credito.service';
-import { NotaCredito } from '../../nota-credito.types';
+import { NotaCredito, NotaCreditoService } from '@nianva/domain-notas-credito';
 import { NotaCreditoDetalleComponent } from './nota-credito-detalle.component';
 
 describe('NotaCreditoDetalleComponent', () => {

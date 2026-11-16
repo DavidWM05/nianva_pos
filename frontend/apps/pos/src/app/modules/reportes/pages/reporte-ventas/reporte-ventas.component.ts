@@ -5,7 +5,7 @@ import { SkeletonComponent } from '@nianva/ui-feedback';
 import { CampoComponent, SelectFiltroComponent, SelectFiltroOpcion } from '@nianva/ui-forms';
 import { CantidadPipe, DineroPipe } from '@nianva/ui-format';
 
-import { SucursalService, SucursalSimple } from '../../../administracion/sucursal.service';
+import { SucursalService, SucursalSimple } from '@nianva/domain-administracion';
 import { VentaService } from '../../../tpv/venta.service';
 import { ReporteVentas } from '../../../tpv/venta.types';
 

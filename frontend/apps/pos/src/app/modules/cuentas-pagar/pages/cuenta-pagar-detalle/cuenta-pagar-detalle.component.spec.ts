@@ -21,8 +21,7 @@ if (typeof globalThis.ResizeObserver === 'undefined') {
 /* eslint-enable @typescript-eslint/no-empty-function */
 
 import { MetodoPagoService } from '../../../tpv/metodo-pago.service';
-import { CuentaPagarService } from '../../cuenta-pagar.service';
-import { CuentaPagar } from '../../cuenta-pagar.types';
+import { CuentaPagar, CuentaPagarService } from '@nianva/domain-cuentas-pagar';
 import { CuentaPagarDetalleComponent } from './cuenta-pagar-detalle.component';
 
 describe('CuentaPagarDetalleComponent', () => {

@@ -6,8 +6,7 @@ import { proveedoresDePantalla } from '../../../../testing/proveedores-pantalla'
 import { of } from 'rxjs';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
-import { UsuarioAdminService } from '../../usuario-admin.service';
-import { UsuarioAdmin, UsuariosPagina } from '../../usuario.types';
+import { UsuarioAdmin, UsuarioAdminService, UsuariosPagina } from '@nianva/domain-administracion';
 import { UsuariosListComponent } from './usuarios-list.component';
 
 describe('UsuariosListComponent', () => {

@@ -5,7 +5,7 @@ import { PageComponent, PageHeaderComponent } from '@nianva/ui-layout';
 import { ToastService } from '@nianva/ui-shared';
 
 import { MetodoPagoFormComponent } from '../../metodo-pago-form/metodo-pago-form.component';
-import { MetodoPagoAdminService, MetodoPagoFormPayload } from '../../metodo-pago-admin.service';
+import { MetodoPagoAdminService, MetodoPagoFormPayload } from '@nianva/domain-administracion';
 
 /**
  * Vista dedicada, no modal (ver el reporte de Fase B/C): metodo de pago

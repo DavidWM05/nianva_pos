@@ -60,7 +60,7 @@ class RespuestasConResourceTest extends TestCase
         'app/Modules/Tpv/Http/Controllers/CajaController.php' => 2,
         'app/Modules/Tpv/Http/Controllers/VentaController.php' => 4,
         'app/Modules/UnidadesMedida/Http/Controllers/UnidadMedidaController.php' => 2,
-        'app/Modules/VentasPlazos/Http/Controllers/PlanPagoController.php' => 3,
+        'app/Modules/VentasPlazos/Http/Controllers/PlanPagoController.php' => 2,
     ];
 
     /** @var array<string, string> */

@@ -53,7 +53,7 @@ class PlanPagoController extends Controller
     {
         $plan = $action->ejecutar($request->toDto(), $venta->id);
 
-        return response()->json(['data' => $plan], 201);
+        return (new PlanPagoResource($plan))->response()->setStatusCode(201);
     }
 
     public function pagarCuota(PagarCuotaRequest $request, PlanPagoCliente $plan, PagarCuota $action)

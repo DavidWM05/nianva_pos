@@ -5,8 +5,7 @@ import { describe, expect, it, vi } from 'vitest';
 
 import { CajaActual } from '../../../tpv/caja.types';
 import { CajaService } from '../../../tpv/caja.service';
-import { InicioResumen } from '../../inicio.types';
-import { InicioService } from '../../inicio.service';
+import { InicioResumen, InicioService } from '@nianva/domain-nucleo';
 import { proveedoresDePantalla } from '../../../../testing/proveedores-pantalla';
 import { InicioComponent } from './inicio.component';
 

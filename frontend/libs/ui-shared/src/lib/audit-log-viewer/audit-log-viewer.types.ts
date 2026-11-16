@@ -11,7 +11,7 @@ export interface AuditLogEntry {
   registro_id: number;
   accion: 'create' | 'update' | 'delete';
   usuario_id: number | null;
-  usuario_nombre?: string;
+  usuario_nombre?: string | null;
   cambios: Record<string, { antes: unknown; despues: unknown }> | null;
   fecha: string;
 }

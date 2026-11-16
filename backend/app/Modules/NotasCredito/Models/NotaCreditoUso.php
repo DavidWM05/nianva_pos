@@ -11,6 +11,12 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+/**
+ * @property int $id
+ * @property int $venta_id
+ * @property string $monto_usado
+ * @property string $created_at
+ */
 #[Fillable(['nota_credito_id', 'venta_id', 'monto_usado'])]
 class NotaCreditoUso extends Model
 {
@@ -41,6 +47,7 @@ class NotaCreditoUso extends Model
         return $this->belongsTo(NotaCredito::class);
     }
 
+    /** @return BelongsTo<Venta, $this> */
     public function venta(): BelongsTo
     {
         return $this->belongsTo(Venta::class);

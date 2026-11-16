@@ -6,8 +6,7 @@ import { of } from 'rxjs';
 import { describe, expect, it, vi } from 'vitest';
 
 import { BUSCADOR_CLIENTE } from '../../../../core/buscadores-entidad.tokens';
-import { NotaCreditoService, NotasCreditoPagina } from '../../nota-credito.service';
-import { NotaCredito } from '../../nota-credito.types';
+import { NotaCredito, NotaCreditoService, NotasCreditoPagina } from '@nianva/domain-notas-credito';
 import { NotasCreditoListComponent } from './notas-credito-list.component';
 
 describe('NotasCreditoListComponent', () => {

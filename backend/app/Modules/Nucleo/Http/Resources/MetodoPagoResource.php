@@ -16,6 +16,7 @@ class MetodoPagoResource extends JsonResource
         return [
             'id' => $this->id,
             'nombre' => $this->nombre,
+            /** @var 'efectivo'|'tarjeta'|'transferencia'|'digital'|'otro' */
             'tipo' => $this->tipo,
             'incluir_en_financiero' => $this->incluir_en_financiero,
             'activo' => $this->activo,

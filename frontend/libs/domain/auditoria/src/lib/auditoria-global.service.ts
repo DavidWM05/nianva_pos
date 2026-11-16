@@ -1,0 +1,52 @@
+import { HttpClient, HttpParams } from '@angular/common/http';
+import type { RespuestaDe } from '@nianva/api-contrato';
+import { ConsultaPagina, urlApi } from '@nianva/core-http';
+import { Injectable, inject } from '@angular/core';
+import { Observable, map } from 'rxjs';
+
+import { AuditoriaGlobalFiltros, EntradaAuditoria } from './auditoria-global.types';
+
+export interface AuditoriaGlobalPagina {
+  data: EntradaAuditoria[];
+  total: number;
+  tablas: string[];
+}
+
+/**
+ * Navegador global de auditoria (Fase C, punto 5) -- NO reutiliza
+ * AuditLogSource/AuditoriaService (core/auditoria.service.ts): esa
+ * abstraccion esta atada a la firma por-registro (tabla+registroId) que
+ * pide AuditLogViewerComponent, y forzarla a soportar tambien un modo
+ * "listar todo, paginado, con filtros" la hubiera vuelto confusa para su
+ * unico consumidor real (el widget embebido). Este es un servicio nuevo
+ * y separado, mismo GET /api/auditoria/global del backend.
+ */
+@Injectable({ providedIn: 'root' })
+export class AuditoriaGlobalService {
+  private readonly http = inject(HttpClient);
+
+  listar(evento: ConsultaPagina, filtros: AuditoriaGlobalFiltros): Observable<AuditoriaGlobalPagina> {
+    const rows = evento.rows || 25;
+    const page = Math.floor(evento.first / rows) + 1;
+
+    let params = new HttpParams().set('page', page).set('rows', rows);
+    if (filtros.tabla) {
+      params = params.set('tabla', filtros.tabla);
+    }
+    if (filtros.usuario_id) {
+      params = params.set('usuario_id', filtros.usuario_id);
+    }
+    if (filtros.fecha_desde) {
+      params = params.set('fecha_desde', filtros.fecha_desde);
+    }
+    if (filtros.fecha_hasta) {
+      params = params.set('fecha_hasta', filtros.fecha_hasta);
+    }
+
+    return this.http
+      .get<RespuestaDe<'/auditoria/global', 'get'>>(urlApi(`/auditoria/global`), {
+        params,
+      })
+      .pipe(map((r) => ({ data: r.data, total: r.meta.total, tablas: r.meta.tablas as string[] })));
+  }
+}

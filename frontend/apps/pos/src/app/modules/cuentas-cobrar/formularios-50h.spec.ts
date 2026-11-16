@@ -10,9 +10,9 @@ import {
 } from '../../core/buscadores-entidad.tokens';
 import { proveedoresDePantalla } from '../../testing/proveedores-pantalla';
 import { GiftCardFormComponent } from '../gift-cards/pages/gift-card-form/gift-card-form.component';
-import { GiftCardService } from '../gift-cards/gift-card.service';
+import { GiftCardService } from '@nianva/domain-gift-cards';
 import { PlanPagoFormComponent } from '../ventas-plazos/pages/plan-pago-form/plan-pago-form.component';
-import { PlanPagoService } from '../ventas-plazos/plan-pago.service';
+import { PlanPagoService } from '@nianva/domain-ventas-plazos';
 
 for (const pantalla of [
   {

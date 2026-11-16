@@ -638,10 +638,20 @@
                                                     },
                                                     "cambios": {
                                                         "type": [
-                                                            "array",
+                                                            "object",
                                                             "null"
                                                         ],
-                                                        "items": {}
+                                                        "additionalProperties": {
+                                                            "type": "object",
+                                                            "properties": {
+                                                                "antes": {},
+                                                                "despues": {}
+                                                            },
+                                                            "required": [
+                                                                "antes",
+                                                                "despues"
+                                                            ]
+                                                        }
                                                     },
                                                     "fecha": {
                                                         "type": "string",
@@ -668,7 +678,9 @@
                                                 },
                                                 "tablas": {
                                                     "type": "array",
-                                                    "items": {}
+                                                    "items": {
+                                                        "type": "string"
+                                                    }
                                                 }
                                             },
                                             "required": [
@@ -2675,7 +2687,10 @@
                                                                 "type": "integer"
                                                             },
                                                             "cliente_nombre": {
-                                                                "type": "string"
+                                                                "type": [
+                                                                    "string",
+                                                                    "null"
+                                                                ]
                                                             },
                                                             "saldo_pendiente": {
                                                                 "type": "string",
@@ -2822,7 +2837,12 @@
                                                             "pattern": "^-?[0-9]+\\.[0-9]{2}$"
                                                         },
                                                         "estado": {
-                                                            "type": "string"
+                                                            "type": "string",
+                                                            "enum": [
+                                                                "pendiente",
+                                                                "pagada",
+                                                                "anulada"
+                                                            ]
                                                         }
                                                     },
                                                     "required": [
@@ -3032,7 +3052,10 @@
                                                                 "type": "integer"
                                                             },
                                                             "proveedor_nombre": {
-                                                                "type": "string"
+                                                                "type": [
+                                                                    "string",
+                                                                    "null"
+                                                                ]
                                                             },
                                                             "saldo_pendiente": {
                                                                 "type": "string",
@@ -3179,7 +3202,12 @@
                                                             "pattern": "^-?[0-9]+\\.[0-9]{2}$"
                                                         },
                                                         "estado": {
-                                                            "type": "string"
+                                                            "type": "string",
+                                                            "enum": [
+                                                                "pendiente",
+                                                                "pagada",
+                                                                "anulada"
+                                                            ]
                                                         }
                                                     },
                                                     "required": [
@@ -4666,13 +4694,13 @@
                                                                 "type": "integer"
                                                             },
                                                             "cliente_nombre": {
-                                                                "type": "string"
-                                                            },
-                                                            "fecha_vencimiento": {
                                                                 "type": [
                                                                     "string",
                                                                     "null"
-                                                                ],
+                                                                ]
+                                                            },
+                                                            "fecha_vencimiento": {
+                                                                "type": "string",
                                                                 "format": "date-time"
                                                             },
                                                             "total": {
@@ -6853,14 +6881,24 @@
                 },
                 "responses": {
                     "201": {
-                        "description": "",
+                        "description": "`PlanPagoResource`",
                         "content": {
                             "application/json": {
                                 "schema": {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/components/schemas/PlanPagoCliente"
+                                            "allOf": [
+                                                {
+                                                    "$ref": "#/components/schemas/PlanPagoResource"
+                                                },
+                                                {
+                                                    "type": "object",
+                                                    "required": [
+                                                        "cuotas"
+                                                    ]
+                                                }
+                                            ]
                                         }
                                     },
                                     "required": [
@@ -13050,7 +13088,9 @@
                             "anulada"
                         ]
                     },
-                    "dias_vencida": {},
+                    "dias_vencida": {
+                        "type": "integer"
+                    },
                     "abonos": {
                         "type": "array",
                         "items": {
@@ -13643,7 +13683,10 @@
                         "type": "integer"
                     },
                     "cliente": {
-                        "type": "object",
+                        "type": [
+                            "object",
+                            "null"
+                        ],
                         "properties": {
                             "id": {
                                 "type": "integer"
@@ -14642,7 +14685,14 @@
                         "type": "string"
                     },
                     "tipo": {
-                        "type": "string"
+                        "type": "string",
+                        "enum": [
+                            "efectivo",
+                            "tarjeta",
+                            "transferencia",
+                            "digital",
+                            "otro"
+                        ]
                     },
                     "incluir_en_financiero": {
                         "type": "boolean"
@@ -14837,8 +14887,54 @@
                     },
                     "usos": {
                         "type": "array",
+                        "description": "Campos explicitos (ARQ-12b): el modelo crudo no documentaba la venta que carga show().",
                         "items": {
-                            "$ref": "#/components/schemas/NotaCreditoUso"
+                            "type": "object",
+                            "properties": {
+                                "id": {
+                                    "type": "integer"
+                                },
+                                "venta_id": {
+                                    "type": "integer"
+                                },
+                                "monto_usado": {
+                                    "type": "string",
+                                    "pattern": "^-?[0-9]+\\.[0-9]{2}$"
+                                },
+                                "created_at": {
+                                    "type": "string"
+                                },
+                                "venta": {
+                                    "type": [
+                                        "object",
+                                        "null"
+                                    ],
+                                    "properties": {
+                                        "id": {
+                                            "type": "integer"
+                                        },
+                                        "fecha": {
+                                            "type": "string"
+                                        },
+                                        "total": {
+                                            "type": "string",
+                                            "pattern": "^-?[0-9]+\\.[0-9]{2}$"
+                                        }
+                                    },
+                                    "required": [
+                                        "id",
+                                        "fecha",
+                                        "total"
+                                    ]
+                                }
+                            },
+                            "required": [
+                                "id",
+                                "venta_id",
+                                "monto_usado",
+                                "created_at",
+                                "venta"
+                            ]
                         }
                     },
                     "created_at": {
@@ -14856,35 +14952,6 @@
                     "created_at"
                 ],
                 "title": "NotaCreditoResource"
-            },
-            "NotaCreditoUso": {
-                "type": "object",
-                "properties": {
-                    "id": {
-                        "type": "integer"
-                    },
-                    "nota_credito_id": {
-                        "type": "integer"
-                    },
-                    "venta_id": {
-                        "type": "integer"
-                    },
-                    "monto_usado": {
-                        "type": "string",
-                        "pattern": "^-?[0-9]+\\.[0-9]{2}$"
-                    },
-                    "created_at": {
-                        "type": "string"
-                    }
-                },
-                "required": [
-                    "id",
-                    "nota_credito_id",
-                    "venta_id",
-                    "monto_usado",
-                    "created_at"
-                ],
-                "title": "NotaCreditoUso"
             },
             "OrdenProduccionResource": {
                 "type": "object",
@@ -15159,73 +15226,6 @@
                 ],
                 "title": "Permiso"
             },
-            "PlanPagoCliente": {
-                "type": "object",
-                "properties": {
-                    "id": {
-                        "type": "integer"
-                    },
-                    "tenant_id": {
-                        "type": "integer"
-                    },
-                    "cliente_id": {
-                        "type": "integer"
-                    },
-                    "concepto": {
-                        "type": "string"
-                    },
-                    "monto_total": {
-                        "type": "string",
-                        "pattern": "^-?[0-9]+\\.[0-9]{2}$"
-                    },
-                    "fecha_inicio": {
-                        "type": "string",
-                        "format": "date-time"
-                    },
-                    "created_at": {
-                        "type": "string",
-                        "format": "date-time"
-                    },
-                    "venta_id": {
-                        "type": [
-                            "integer",
-                            "null"
-                        ]
-                    },
-                    "interes_total": {
-                        "type": "string",
-                        "pattern": "^-?[0-9]+\\.[0-9]{2}$"
-                    },
-                    "tasa_interes": {
-                        "type": [
-                            "string",
-                            "null"
-                        ],
-                        "pattern": "^-?[0-9]+\\.[0-9]{2}$"
-                    },
-                    "numero_cuotas": {
-                        "type": "integer"
-                    },
-                    "periodicidad": {
-                        "type": "string"
-                    }
-                },
-                "required": [
-                    "id",
-                    "tenant_id",
-                    "cliente_id",
-                    "concepto",
-                    "monto_total",
-                    "fecha_inicio",
-                    "created_at",
-                    "venta_id",
-                    "interes_total",
-                    "tasa_interes",
-                    "numero_cuotas",
-                    "periodicidad"
-                ],
-                "title": "PlanPagoCliente"
-            },
             "PlanPagoClienteCuota": {
                 "type": "object",
                 "properties": {
@@ -15339,7 +15339,12 @@
                         "type": "integer"
                     },
                     "periodicidad": {
-                        "type": "string"
+                        "type": "string",
+                        "enum": [
+                            "semanal",
+                            "quincenal",
+                            "mensual"
+                        ]
                     },
                     "fecha_inicio": {
                         "type": "string",
@@ -15347,8 +15352,58 @@
                     },
                     "cuotas": {
                         "type": "array",
+                        "description": "Campos explicitos (ARQ-12b): el modelo crudo no documentaba el estado como enum.",
                         "items": {
-                            "$ref": "#/components/schemas/PlanPagoClienteCuota"
+                            "type": "object",
+                            "properties": {
+                                "id": {
+                                    "type": "integer"
+                                },
+                                "numero_cuota": {
+                                    "type": "integer"
+                                },
+                                "monto": {
+                                    "type": "string",
+                                    "pattern": "^-?[0-9]+\\.[0-9]{2}$"
+                                },
+                                "monto_capital": {
+                                    "type": "string",
+                                    "pattern": "^-?[0-9]+\\.[0-9]{2}$"
+                                },
+                                "monto_interes": {
+                                    "type": "string",
+                                    "pattern": "^-?[0-9]+\\.[0-9]{2}$"
+                                },
+                                "fecha_vencimiento": {
+                                    "type": "string",
+                                    "format": "date-time"
+                                },
+                                "fecha_pago": {
+                                    "type": [
+                                        "string",
+                                        "null"
+                                    ],
+                                    "format": "date-time"
+                                },
+                                "estado": {
+                                    "type": "string",
+                                    "enum": [
+                                        "pendiente",
+                                        "pagada",
+                                        "vencida"
+                                    ]
+                                }
+                            },
+                            "required": [
+                                "id",
+                                "numero_cuota",
+                                "monto",
+                                "monto_capital",
+                                "monto_interes",
+                                "fecha_vencimiento",
+                                "fecha_pago",
+                                "estado"
+                            ]
                         }
                     },
                     "created_at": {
@@ -16238,7 +16293,9 @@
                     },
                     "permisos": {
                         "type": "array",
-                        "items": {}
+                        "items": {
+                            "type": "integer"
+                        }
                     }
                 },
                 "required": [

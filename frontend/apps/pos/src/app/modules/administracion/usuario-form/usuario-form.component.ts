@@ -7,11 +7,7 @@ import { limitesDe } from '@nianva/api-contrato';
 import { aplicarErroresServidor } from '@nianva/ui-forms';
 import { DynamicFormComponent, DynamicFormField } from '@nianva/ui-shared';
 
-import { Rol } from '../rol.types';
-import { RolService } from '../rol.service';
-import { SucursalService, SucursalSimple } from '../sucursal.service';
-import { UsuarioFormPayload } from '../usuario-admin.service';
-import { UsuarioAdmin } from '../usuario.types';
+import { Rol, RolService, SucursalService, SucursalSimple, UsuarioAdmin, UsuarioFormPayload } from '@nianva/domain-administracion';
 
 /** Límites del cuerpo de la petición, leídos del contrato (UI-11b). */
 const LIMITES = limitesDe('/usuarios', 'post');
@@ -70,7 +66,7 @@ export class UsuarioFormComponent implements OnInit, OnChanges {
 
   ngOnChanges(): void {
     this.sucursalId.set(this.valorInicial?.sucursal?.id ?? null);
-    this.rolesControl.reset(this.valorInicial?.roles.map((rol) => rol.id) ?? []);
+    this.rolesControl.reset(this.valorInicial?.roles?.map((rol) => rol.id) ?? []);
     if (this.readonly) {
       this.rolesControl.disable();
     } else {

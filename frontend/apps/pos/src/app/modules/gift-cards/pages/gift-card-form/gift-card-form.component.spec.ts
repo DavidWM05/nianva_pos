@@ -7,8 +7,7 @@ import { of } from 'rxjs';
 import { describe, expect, it, vi } from 'vitest';
 
 import { BUSCADOR_CLIENTE } from '../../../../core/buscadores-entidad.tokens';
-import { GiftCardService } from '../../gift-card.service';
-import { GiftCard } from '../../gift-card.types';
+import { GiftCard, GiftCardService } from '@nianva/domain-gift-cards';
 import { GiftCardFormComponent } from './gift-card-form.component';
 
 describe('GiftCardFormComponent', () => {

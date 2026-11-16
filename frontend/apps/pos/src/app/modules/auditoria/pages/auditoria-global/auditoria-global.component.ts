@@ -7,10 +7,8 @@ import { CampoComponent, SelectFiltroComponent } from '@nianva/ui-forms';
 import { EstadoPagina, PageComponent, PageHeaderComponent } from '@nianva/ui-layout';
 import { ModalComponent } from '@nianva/ui-overlays';
 
-import { UsuarioAdmin } from '../../../administracion/usuario.types';
-import { UsuarioAdminService } from '../../../administracion/usuario-admin.service';
-import { AuditoriaGlobalFiltros } from '../../auditoria-global.types';
-import { AuditoriaGlobalService } from '../../auditoria-global.service';
+import { UsuarioAdmin, UsuarioAdminService } from '@nianva/domain-administracion';
+import { AuditoriaGlobalFiltros, AuditoriaGlobalService } from '@nianva/domain-auditoria';
 
 interface FilaAuditoria extends AuditLogEntry {
   usuarioTexto: string;

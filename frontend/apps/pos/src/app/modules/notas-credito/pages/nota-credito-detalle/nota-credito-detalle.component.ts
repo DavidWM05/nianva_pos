@@ -27,8 +27,7 @@ import {
   RecordTabsComponent,
 } from '@nianva/ui-shared';
 
-import { NotaCreditoService } from '../../nota-credito.service';
-import { NotaCredito } from '../../nota-credito.types';
+import { NotaCredito, NotaCreditoService } from '@nianva/domain-notas-credito';
 
 /**
  * Vista de registro (RecordTabsComponent, obligatorio -- CLAUDE.md §4).

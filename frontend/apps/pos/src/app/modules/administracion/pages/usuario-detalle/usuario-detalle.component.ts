@@ -9,8 +9,7 @@ import { AuditLogViewerComponent, RecordTabConfig, RecordTabsComponent, ToastSer
 import { AuthStateService } from '../../../../auth/auth-state.service';
 import { TwoFactorCodeInputComponent } from '../../../../auth/two-factor-code-input/two-factor-code-input.component';
 import { UsuarioFormComponent } from '../../usuario-form/usuario-form.component';
-import { UsuarioAdminService, UsuarioFormPayload } from '../../usuario-admin.service';
-import { UsuarioAdmin } from '../../usuario.types';
+import { UsuarioAdmin, UsuarioAdminService, UsuarioFormPayload } from '@nianva/domain-administracion';
 
 /**
  * Vista de registro de Usuario -- General (formulario, `readonly` sin

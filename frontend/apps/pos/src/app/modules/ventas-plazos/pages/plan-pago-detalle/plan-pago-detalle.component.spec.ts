@@ -19,8 +19,7 @@ if (typeof globalThis.ResizeObserver === 'undefined') {
 }
 /* eslint-enable @typescript-eslint/no-empty-function */
 
-import { PlanPagoService } from '../../plan-pago.service';
-import { PlanPago } from '../../plan-pago.types';
+import { PlanPago, PlanPagoService } from '@nianva/domain-ventas-plazos';
 import { PlanPagoDetalleComponent } from './plan-pago-detalle.component';
 
 describe('PlanPagoDetalleComponent', () => {

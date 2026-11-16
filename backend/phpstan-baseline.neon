@@ -13,12 +13,6 @@ parameters:
 			path: app/Aplicacion/Devoluciones/RegistrarDevolucion.php
 
 		-
-			message: '#^Access to an undefined property App\\Modules\\Apartados\\Models\\Apartado\:\:\$fecha_vencimiento\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Aplicacion/Inicio/ObtenerResumenInicio.php
-
-		-
 			message: '#^Access to an undefined property App\\Modules\\Apartados\\Models\\Apartado\:\:\$total\.$#'
 			identifier: property.notFound
 			count: 1
@@ -3463,12 +3457,6 @@ parameters:
 			path: app/Modules/NotasCredito/Models/NotaCredito.php
 
 		-
-			message: '#^Method App\\Modules\\NotasCredito\\Models\\NotaCredito\:\:usos\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\HasMany does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Modules/NotasCredito/Models/NotaCredito.php
-
-		-
 			message: '#^Method App\\Modules\\NotasCredito\\Models\\NotaCreditoUso\:\:notaCredito\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
 			identifier: missingType.generics
 			count: 1
@@ -3476,12 +3464,6 @@ parameters:
 
 		-
 			message: '#^Method App\\Modules\\NotasCredito\\Models\\NotaCreditoUso\:\:sinTenant\(\) return type with generic class Illuminate\\Database\\Eloquent\\Builder does not specify its types\: TModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Modules/NotasCredito/Models/NotaCreditoUso.php
-
-		-
-			message: '#^Method App\\Modules\\NotasCredito\\Models\\NotaCreditoUso\:\:venta\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
 			identifier: missingType.generics
 			count: 1
 			path: app/Modules/NotasCredito/Models/NotaCreditoUso.php
@@ -6391,12 +6373,6 @@ parameters:
 			path: app/Modules/VentasPlazos/Models/PlanPagoCliente.php
 
 		-
-			message: '#^Method App\\Modules\\VentasPlazos\\Models\\PlanPagoCliente\:\:cuotas\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\HasMany does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Modules/VentasPlazos/Models/PlanPagoCliente.php
-
-		-
 			message: '#^Method App\\Modules\\VentasPlazos\\Models\\PlanPagoCliente\:\:tenant\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
 			identifier: missingType.generics
 			count: 1
@@ -6448,12 +6424,6 @@ parameters:
 			message: '#^Access to an undefined property App\\Modules\\Tpv\\Models\\Venta\:\:\$total\.$#'
 			identifier: property.notFound
 			count: 1
-			path: app/Modules/VentasPlazos/Services/VentasPlazosService.php
-
-		-
-			message: '#^Access to an undefined property App\\Modules\\VentasPlazos\\Models\\PlanPagoClienteCuota\:\:\$monto\.$#'
-			identifier: property.notFound
-			count: 3
 			path: app/Modules/VentasPlazos/Services/VentasPlazosService.php
 
 		-

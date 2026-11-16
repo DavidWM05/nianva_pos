@@ -5,8 +5,7 @@ import { Router, provideRouter } from '@angular/router';
 import { of } from 'rxjs';
 import { describe, expect, it, vi } from 'vitest';
 
-import { CuentaPagarService, CuentasPagarPagina } from '../../cuenta-pagar.service';
-import { CuentaPagar } from '../../cuenta-pagar.types';
+import { CuentaPagar, CuentaPagarService, CuentasPagarPagina } from '@nianva/domain-cuentas-pagar';
 import { CuentasPagarListComponent } from './cuentas-pagar-list.component';
 
 describe('CuentasPagarListComponent', () => {

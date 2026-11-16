@@ -21,8 +21,7 @@ import {
 } from '@nianva/ui-shared';
 
 import { BUSCADOR_CLIENTE } from '../../../../core/buscadores-entidad.tokens';
-import { NotaCreditoService } from '../../nota-credito.service';
-import { NotaCredito } from '../../nota-credito.types';
+import { NotaCredito, NotaCreditoService } from '@nianva/domain-notas-credito';
 
 /**
  * Solo lectura -- ver el docblock de NotaCreditoService. No hay boton

@@ -6,8 +6,7 @@ import { of } from 'rxjs';
 import { describe, expect, it, vi } from 'vitest';
 
 import { BUSCADOR_CLIENTE } from '../../../../core/buscadores-entidad.tokens';
-import { GiftCardService, GiftCardsPagina } from '../../gift-card.service';
-import { GiftCard } from '../../gift-card.types';
+import { GiftCard, GiftCardService, GiftCardsPagina } from '@nianva/domain-gift-cards';
 import { GiftCardsListComponent } from './gift-cards-list.component';
 
 describe('GiftCardsListComponent', () => {

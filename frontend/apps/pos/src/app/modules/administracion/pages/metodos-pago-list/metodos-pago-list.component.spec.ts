@@ -6,8 +6,7 @@ import { ConfirmDialogService, ToastService } from '@nianva/ui-shared';
 import { of } from 'rxjs';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
-import { MetodoPagoAdminService } from '../../metodo-pago-admin.service';
-import { MetodoPagoAdmin, MetodosPagoPagina } from '../../metodo-pago.types';
+import { MetodoPagoAdmin, MetodoPagoAdminService, MetodosPagoPagina } from '@nianva/domain-administracion';
 import { MetodosPagoListComponent } from './metodos-pago-list.component';
 
 describe('MetodosPagoListComponent', () => {

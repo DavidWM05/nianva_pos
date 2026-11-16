@@ -29,8 +29,7 @@ import {
 } from '@nianva/ui-shared';
 
 import { BUSCADOR_CLIENTE } from '../../../../core/buscadores-entidad.tokens';
-import { NotaCreditoService } from '../../../notas-credito/nota-credito.service';
-import { NotaCredito } from '../../../notas-credito/nota-credito.types';
+import { NotaCredito, NotaCreditoService } from '@nianva/domain-notas-credito';
 import { CajaService } from '../../caja.service';
 import { CajaSesion } from '../../caja.types';
 import {

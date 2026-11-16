@@ -9,10 +9,7 @@ import { describe, expect, it, vi } from 'vitest';
 
 import { AuthStateService } from '../../auth/auth-state.service';
 import { proveedoresDePantalla } from '../../testing/proveedores-pantalla';
-import { RolService } from './rol.service';
-import { SucursalService } from './sucursal.service';
-import { UsuarioAdminService } from './usuario-admin.service';
-import { UsuarioAdmin } from './usuario.types';
+import { RolService, SucursalService, UsuarioAdmin, UsuarioAdminService } from '@nianva/domain-administracion';
 import { RolesListComponent } from './pages/roles-list/roles-list.component';
 import { UsuarioDetalleComponent } from './pages/usuario-detalle/usuario-detalle.component';
 import { UsuariosListComponent } from './pages/usuarios-list/usuarios-list.component';

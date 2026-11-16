@@ -8,7 +8,7 @@ import { VentaService } from './venta.service';
 import { CajaService } from './caja.service';
 import { MetodoPagoService } from './metodo-pago.service';
 import { CuponValidacionService } from './cupon-validacion.service';
-import { NotaCreditoService } from '../notas-credito/nota-credito.service';
+import { NotaCreditoService } from '@nianva/domain-notas-credito';
 import { SesionActualService } from '../../auth/sesion-actual.service';
 import {
   BUSCADOR_CLIENTE,

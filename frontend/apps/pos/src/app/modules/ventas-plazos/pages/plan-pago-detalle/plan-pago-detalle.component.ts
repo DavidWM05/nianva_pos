@@ -42,8 +42,7 @@ import {
   mensajeError,
 } from '@nianva/ui-shared';
 
-import { PlanPagoService } from '../../plan-pago.service';
-import { PlanPago, PlanPagoCuota } from '../../plan-pago.types';
+import { PlanPago, PlanPagoCuota, PlanPagoService } from '@nianva/domain-ventas-plazos';
 
 /**
  * Vista de registro (RecordTabsComponent, obligatorio -- CLAUDE.md §4).

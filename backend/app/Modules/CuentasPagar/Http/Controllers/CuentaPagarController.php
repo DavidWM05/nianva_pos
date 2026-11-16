@@ -78,6 +78,7 @@ class CuentaPagarController extends Controller
                 'cuenta' => [
                     'id' => $cuenta->id,
                     'saldo_pendiente' => DecimalApi::dinero($cuenta->saldo_pendiente),
+                    /** @var 'pendiente'|'pagada'|'anulada' */
                     'estado' => $cuenta->estado,
                 ],
             ],
@@ -127,6 +128,7 @@ class CuentaPagarController extends Controller
             }
         }
 
+        // proveedor_nombre sin `?->`: con el operador nullsafe Scramble lo documentaba como string (ARQ-12b).
         $porProveedor = (clone $base)
             ->selectRaw('proveedor_id, sum(saldo_pendiente) as saldo_pendiente, count(*) as cuentas_pendientes')
             ->with('proveedor:id,razon_social')
@@ -136,7 +138,7 @@ class CuentaPagarController extends Controller
             ->get()
             ->map(fn ($r) => [
                 'proveedor_id' => $r->proveedor_id,
-                'proveedor_nombre' => $r->proveedor?->razon_social,
+                'proveedor_nombre' => $r->proveedor === null ? null : $r->proveedor->razon_social,
                 'saldo_pendiente' => DecimalApi::dinero($r->saldo_pendiente),
                 'cuentas_pendientes' => (int) $r->cuentas_pendientes,
             ]);

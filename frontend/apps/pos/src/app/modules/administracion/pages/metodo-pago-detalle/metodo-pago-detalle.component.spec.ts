@@ -18,8 +18,7 @@ if (typeof globalThis.ResizeObserver === 'undefined') {
 }
 /* eslint-enable @typescript-eslint/no-empty-function */
 
-import { MetodoPagoAdminService } from '../../metodo-pago-admin.service';
-import { MetodoPagoAdmin } from '../../metodo-pago.types';
+import { MetodoPagoAdmin, MetodoPagoAdminService } from '@nianva/domain-administracion';
 import { MetodoPagoDetalleComponent } from './metodo-pago-detalle.component';
 
 describe('MetodoPagoDetalleComponent', () => {

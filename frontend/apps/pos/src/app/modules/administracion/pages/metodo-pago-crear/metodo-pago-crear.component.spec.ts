@@ -6,7 +6,7 @@ import { ToastService } from '@nianva/ui-shared';
 import { of, throwError } from 'rxjs';
 import { describe, expect, it, vi } from 'vitest';
 
-import { MetodoPagoAdminService } from '../../metodo-pago-admin.service';
+import { MetodoPagoAdminService } from '@nianva/domain-administracion';
 import { MetodoPagoCrearComponent } from './metodo-pago-crear.component';
 
 describe('MetodoPagoCrearComponent', () => {
