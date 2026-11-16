@@ -10,8 +10,7 @@ import { ConfirmDialogService, DataTableLazyEvent, ToastService, esErrorNegocio,
 import { Subject, debounceTime } from 'rxjs';
 
 import { AuthStateService } from '../../../../auth/auth-state.service';
-import { UsuarioAdminService } from '../../usuario-admin.service';
-import { UsuarioAdmin, UsuariosPermisos } from '../../usuario.types';
+import { UsuarioAdmin, UsuarioAdminService, UsuariosPermisos } from '@nianva/domain-administracion';
 
 const PERMISOS_VACIOS: UsuariosPermisos = { crear: false, editar: false, eliminar: false };
 
@@ -155,7 +154,8 @@ export class UsuariosListComponent {
   }
 
   protected etiquetaRoles(usuario: UsuarioAdmin): string {
-    return usuario.roles.length === 0 ? '—' : usuario.roles.map((rol) => rol.nombre).join(', ');
+    const roles = usuario.roles ?? [];
+    return roles.length === 0 ? '—' : roles.map((rol) => rol.nombre).join(', ');
   }
 
   irADetalle(usuario: UsuarioAdmin): void {

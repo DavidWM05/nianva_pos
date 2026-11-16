@@ -1,0 +1,19 @@
+{
+  "name": "domain-cuentas-pagar",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/domain/cuentas-pagar/src",
+  "projectType": "library",
+  "tags": ["type:domain", "scope:cuentas-pagar"],
+  "targets": {
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    },
+    "test": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": ["tsc -p libs/domain/cuentas-pagar/tsconfig.json --noEmit"],
+        "cwd": "{workspaceRoot}"
+      }
+    }
+  }
+}

@@ -20,8 +20,7 @@ if (typeof globalThis.ResizeObserver === 'undefined') {
 }
 /* eslint-enable @typescript-eslint/no-empty-function */
 
-import { GiftCardService } from '../../gift-card.service';
-import { GiftCard } from '../../gift-card.types';
+import { GiftCard, GiftCardService } from '@nianva/domain-gift-cards';
 import { GiftCardDetalleComponent } from './gift-card-detalle.component';
 
 describe('GiftCardDetalleComponent', () => {

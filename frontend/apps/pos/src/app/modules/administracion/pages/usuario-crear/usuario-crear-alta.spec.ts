@@ -5,9 +5,7 @@ import { of } from 'rxjs';
 import { describe, expect, it, vi } from 'vitest';
 
 import { proveedoresDePantalla } from '../../../../testing/proveedores-pantalla';
-import { RolService } from '../../rol.service';
-import { SucursalService } from '../../sucursal.service';
-import { UsuarioAdminService } from '../../usuario-admin.service';
+import { RolService, SucursalService, UsuarioAdminService } from '@nianva/domain-administracion';
 import { UsuarioCrearComponent } from './usuario-crear.component';
 
 // API-08b: la pagina de alta solo llama al servicio con un cuerpo de alta (esAltaUsuario).

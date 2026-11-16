@@ -64,11 +64,13 @@ class AuditoriaController extends Controller
                 'accion' => $entrada->accion,
                 'usuario_id' => $entrada->usuario_id,
                 'usuario_nombre' => $entrada->usuario?->nombre,
+                /** @var array<string, array{antes: mixed, despues: mixed}>|null */
                 'cambios' => $entrada->cambios,
                 'fecha' => $entrada->created_at,
             ]),
             'meta' => [
                 'total' => $paginador->total(),
+                /** @var list<string> */
                 'tablas' => Auditoria::query()->distinct()->orderBy('tabla_afectada')->pluck('tabla_afectada'),
             ],
         ]);

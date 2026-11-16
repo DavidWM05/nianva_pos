@@ -59,6 +59,7 @@ class NotaCredito extends Model
         return $this->belongsTo(Devolucion::class);
     }
 
+    /** @return HasMany<NotaCreditoUso, $this> */
     public function usos(): HasMany
     {
         return $this->hasMany(NotaCreditoUso::class);

@@ -57,6 +57,7 @@ class PlanPagoCliente extends Model
         return $this->belongsTo(Venta::class);
     }
 
+    /** @return HasMany<PlanPagoClienteCuota, $this> */
     public function cuotas(): HasMany
     {
         return $this->hasMany(PlanPagoClienteCuota::class);

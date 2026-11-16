@@ -3,7 +3,7 @@ import { TestBed } from '@angular/core/testing';
 import { of } from 'rxjs';
 import { describe, expect, it, vi } from 'vitest';
 
-import { UsuarioAdminService, UsuarioAltaPayload, UsuarioEdicionPayload, esAltaUsuario } from './usuario-admin.service';
+import { UsuarioAdminService, UsuarioAltaPayload, UsuarioEdicionPayload, esAltaUsuario } from '@nianva/domain-administracion';
 
 // API-08b: el alta y la edicion de usuario tienen cuerpos distintos. El alta exige password y
 // roles (CuerpoDe<'/usuarios', 'post'>); la edicion es parcial y no exige password.

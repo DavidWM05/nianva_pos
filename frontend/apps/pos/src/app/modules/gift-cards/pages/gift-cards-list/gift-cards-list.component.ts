@@ -26,8 +26,7 @@ import {
 import { Subject, debounceTime } from 'rxjs';
 
 import { BUSCADOR_CLIENTE } from '../../../../core/buscadores-entidad.tokens';
-import { GiftCardService } from '../../gift-card.service';
-import { EstadoGiftCard, GiftCard } from '../../gift-card.types';
+import { EstadoGiftCard, GiftCard, GiftCardService } from '@nianva/domain-gift-cards';
 
 const ESTADOS: { label: string; value: EstadoGiftCard | null }[] = [
   { label: 'Activas', value: 'activa' },

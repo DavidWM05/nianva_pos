@@ -1,14 +1,15 @@
 import { HttpContextToken, HttpErrorResponse, HttpInterceptorFn } from '@angular/common/http';
 import { inject } from '@angular/core';
+import { ERROR_EN_PANTALLA } from '@nianva/core-http';
 import { ToastService } from '@nianva/ui-feedback';
 import { CodigoError, leerErrorNegocio, mensajeError } from '@nianva/ui-shared';
 import { catchError, throwError } from 'rxjs';
 
 import { esUrlBackend } from './api-config';
 
-/** Marca una peticion cuyos errores tecnicos maneja la pantalla. */
-export const ERROR_EN_PANTALLA = new HttpContextToken<boolean>(() => false);
-// Tambien calla el toast de negocio: la pantalla muestra todos los errores de esa peticion.
+// ERROR_EN_PANTALLA (marca una peticion cuyos errores maneja la pantalla, tambien los de
+// negocio) vive en @nianva/core-http para que la usen los servicios de libs/domain/* (ARQ-12b).
+export { ERROR_EN_PANTALLA };
 
 /**
  * Codigos de negocio que la pantalla maneja con su propio mensaje: el interceptor no muestra

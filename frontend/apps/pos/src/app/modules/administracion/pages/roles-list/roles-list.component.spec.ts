@@ -6,8 +6,7 @@ import { proveedoresDePantalla } from '../../../../testing/proveedores-pantalla'
 import { of } from 'rxjs';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
-import { RolService } from '../../rol.service';
-import { Rol, RolesPagina } from '../../rol.types';
+import { Rol, RolesPagina, RolService } from '@nianva/domain-administracion';
 import { RolesListComponent } from './roles-list.component';
 
 describe('RolesListComponent', () => {

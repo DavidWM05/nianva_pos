@@ -14,6 +14,7 @@ class GiftCardResource extends JsonResource
     {
         return [
             'id' => $this->id,
+            /** @var array{id: int, nombre: string}|null */
             'cliente' => $this->whenLoaded('cliente', fn () => ['id' => $this->cliente->id, 'nombre' => $this->cliente->nombre]),
             'codigo' => $this->codigo,
             'saldo_inicial' => DecimalApi::dinero($this->saldo_inicial),

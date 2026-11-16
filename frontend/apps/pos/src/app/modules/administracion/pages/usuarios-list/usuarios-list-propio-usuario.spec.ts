@@ -8,8 +8,7 @@ import { describe, expect, it, vi } from 'vitest';
 
 import { AuthStateService } from '../../../../auth/auth-state.service';
 import { proveedoresDePantalla } from '../../../../testing/proveedores-pantalla';
-import { UsuarioAdminService } from '../../usuario-admin.service';
-import { UsuarioAdmin } from '../../usuario.types';
+import { UsuarioAdmin, UsuarioAdminService } from '@nianva/domain-administracion';
 import { UsuariosListComponent } from './usuarios-list.component';
 
 /**

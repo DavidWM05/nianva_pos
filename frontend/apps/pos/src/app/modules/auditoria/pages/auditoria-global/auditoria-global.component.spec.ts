@@ -5,8 +5,8 @@ import { proveedoresDePantalla } from '../../../../testing/proveedores-pantalla'
 import { Observable, Subject, of } from 'rxjs';
 import { describe, expect, it, vi } from 'vitest';
 
-import { UsuarioAdminService } from '../../../administracion/usuario-admin.service';
-import { AuditoriaGlobalService } from '../../auditoria-global.service';
+import { UsuarioAdminService } from '@nianva/domain-administracion';
+import { AuditoriaGlobalService } from '@nianva/domain-auditoria';
 import { AuditoriaGlobalComponent } from './auditoria-global.component';
 
 describe('AuditoriaGlobalComponent', () => {

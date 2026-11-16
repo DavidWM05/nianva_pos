@@ -5,7 +5,7 @@ import { PageComponent, PageHeaderComponent } from '@nianva/ui-layout';
 import { ToastService } from '@nianva/ui-shared';
 
 import { UsuarioFormComponent } from '../../usuario-form/usuario-form.component';
-import { UsuarioAdminService, UsuarioFormPayload, esAltaUsuario } from '../../usuario-admin.service';
+import { UsuarioAdminService, UsuarioFormPayload, esAltaUsuario } from '@nianva/domain-administracion';
 
 /**
  * Vista dedicada, no modal (ver el reporte de Fase B/C): usuario es una

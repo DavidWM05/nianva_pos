@@ -6,8 +6,7 @@ import { of } from 'rxjs';
 import { describe, expect, it, vi } from 'vitest';
 
 import { BUSCADOR_CLIENTE, BUSCADOR_PRODUCTO, BUSCADOR_VARIANTE_DE_PRODUCTO } from '../../../../core/buscadores-entidad.tokens';
-import { NotaCreditoService } from '../../../notas-credito/nota-credito.service';
-import { NotaCredito } from '../../../notas-credito/nota-credito.types';
+import { NotaCredito, NotaCreditoService } from '@nianva/domain-notas-credito';
 import { CajaService } from '../../caja.service';
 import { CajaActual } from '../../caja.types';
 import { CuponValidacionService } from '../../cupon-validacion.service';

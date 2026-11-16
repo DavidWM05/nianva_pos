@@ -5,10 +5,7 @@ import { DynamicFormComponent } from '@nianva/ui-shared';
 import { of } from 'rxjs';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { RolService } from '../rol.service';
-import { SucursalService } from '../sucursal.service';
-import { UsuarioFormPayload } from '../usuario-admin.service';
-import { UsuarioAdmin } from '../usuario.types';
+import { RolService, SucursalService, UsuarioAdmin, UsuarioFormPayload } from '@nianva/domain-administracion';
 import { UsuarioFormComponent } from './usuario-form.component';
 
 const USUARIO: UsuarioAdmin = {

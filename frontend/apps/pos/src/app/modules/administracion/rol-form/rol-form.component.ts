@@ -4,10 +4,7 @@ import { limitesDe } from '@nianva/api-contrato';
 import { ChecklistAgrupadoComponent, GrupoChecklist, IdOpcionChecklist } from '@nianva/ui-forms';
 import { DynamicFormComponent, DynamicFormField } from '@nianva/ui-shared';
 
-import { GrupoPermisos } from '../permiso.types';
-import { PermisoService } from '../permiso.service';
-import { RolFormPayload } from '../rol.service';
-import { Rol } from '../rol.types';
+import { GrupoPermisos, PermisoService, Rol, RolFormPayload } from '@nianva/domain-administracion';
 
 /** Límites del cuerpo de la petición, leídos del contrato (UI-11b). */
 const LIMITES = limitesDe('/roles', 'post');

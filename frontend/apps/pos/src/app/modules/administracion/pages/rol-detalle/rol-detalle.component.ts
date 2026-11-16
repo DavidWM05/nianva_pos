@@ -6,8 +6,7 @@ import { PageComponent, PageHeaderComponent } from '@nianva/ui-layout';
 import { AuditLogViewerComponent, RecordTabConfig, RecordTabsComponent, ToastService } from '@nianva/ui-shared';
 
 import { RolFormComponent } from '../../rol-form/rol-form.component';
-import { RolFormPayload, RolService } from '../../rol.service';
-import { Rol } from '../../rol.types';
+import { Rol, RolFormPayload, RolService } from '@nianva/domain-administracion';
 
 /**
  * Vista de registro de Rol -- General (formulario, `readonly` si falta

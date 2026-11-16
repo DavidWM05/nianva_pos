@@ -4,8 +4,7 @@ import type { CuerpoDe, RespuestaDe } from '@nianva/api-contrato';
 import { of } from 'rxjs';
 import { describe, expect, it, vi } from 'vitest';
 
-import { MetodoPagoAdminService } from './metodo-pago-admin.service';
-import { MetodosPagoPermisos } from './metodo-pago.types';
+import { MetodoPagoAdminService, MetodosPagoPermisos } from '@nianva/domain-administracion';
 
 // Huecos del contrato que quedaron de API-08b: el PUT de usuarios sale del OpenAPI con
 // password y roles opcionales (sin redefinirlos a mano) y meta.permisos de metodos de pago

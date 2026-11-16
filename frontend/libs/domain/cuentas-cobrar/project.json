@@ -1,0 +1,19 @@
+{
+  "name": "domain-cuentas-cobrar",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/domain/cuentas-cobrar/src",
+  "projectType": "library",
+  "tags": ["type:domain", "scope:cuentas-cobrar"],
+  "targets": {
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    },
+    "test": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": ["tsc -p libs/domain/cuentas-cobrar/tsconfig.json --noEmit"],
+        "cwd": "{workspaceRoot}"
+      }
+    }
+  }
+}

@@ -43,8 +43,7 @@ import {
 
 import { MetodoPago } from '../../../tpv/metodo-pago.types';
 import { MetodoPagoService } from '../../../tpv/metodo-pago.service';
-import { CuentaCobrarService } from '../../cuenta-cobrar.service';
-import { CuentaCobrar } from '../../cuenta-cobrar.types';
+import { CuentaCobrar, CuentaCobrarService } from '@nianva/domain-cuentas-cobrar';
 
 /**
  * Vista de registro (RecordTabsComponent, obligatorio -- CLAUDE.md §4).

@@ -1,0 +1,19 @@
+{
+  "name": "domain-ventas-plazos",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/domain/ventas-plazos/src",
+  "projectType": "library",
+  "tags": ["type:domain", "scope:ventas-plazos"],
+  "targets": {
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    },
+    "test": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": ["tsc -p libs/domain/ventas-plazos/tsconfig.json --noEmit"],
+        "cwd": "{workspaceRoot}"
+      }
+    }
+  }
+}

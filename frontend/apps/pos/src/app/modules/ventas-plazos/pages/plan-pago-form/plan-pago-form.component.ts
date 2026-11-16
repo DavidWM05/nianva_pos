@@ -28,8 +28,7 @@ import {
 } from '@nianva/ui-shared';
 
 import { BUSCADOR_VENTA } from '../../../../core/buscadores-entidad.tokens';
-import { PlanPagoService } from '../../plan-pago.service';
-import { Periodicidad } from '../../plan-pago.types';
+import { Periodicidad, PlanPagoService } from '@nianva/domain-ventas-plazos';
 
 const PERIODICIDADES: { label: string; value: Periodicidad }[] = [
   { label: 'Mensual', value: 'mensual' },

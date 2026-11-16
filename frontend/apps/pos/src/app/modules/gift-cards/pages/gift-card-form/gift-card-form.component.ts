@@ -24,7 +24,7 @@ import { Router, RouterLink } from '@angular/router';
 import { EntidadSelectorComponent, ToastService } from '@nianva/ui-shared';
 
 import { BUSCADOR_CLIENTE } from '../../../../core/buscadores-entidad.tokens';
-import { GiftCardService } from '../../gift-card.service';
+import { GiftCardService } from '@nianva/domain-gift-cards';
 
 /**
  * Solo "emitir" (POST /api/gift-cards) -- GiftCardController no tiene

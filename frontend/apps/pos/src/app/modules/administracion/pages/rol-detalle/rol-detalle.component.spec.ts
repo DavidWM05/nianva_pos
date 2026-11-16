@@ -19,9 +19,7 @@ if (typeof globalThis.ResizeObserver === 'undefined') {
 }
 /* eslint-enable @typescript-eslint/no-empty-function */
 
-import { PermisoService } from '../../permiso.service';
-import { RolService } from '../../rol.service';
-import { Rol } from '../../rol.types';
+import { PermisoService, Rol, RolService } from '@nianva/domain-administracion';
 import { RolDetalleComponent } from './rol-detalle.component';
 
 describe('RolDetalleComponent', () => {

@@ -40,8 +40,7 @@ import {
   mensajeError,
 } from '@nianva/ui-shared';
 
-import { GiftCardService } from '../../gift-card.service';
-import { GiftCard } from '../../gift-card.types';
+import { GiftCard, GiftCardService } from '@nianva/domain-gift-cards';
 
 /**
  * Vista de registro (RecordTabsComponent, obligatorio -- CLAUDE.md §4).

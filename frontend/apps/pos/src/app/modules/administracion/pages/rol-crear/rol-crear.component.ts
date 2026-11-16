@@ -5,7 +5,7 @@ import { PageComponent, PageHeaderComponent } from '@nianva/ui-layout';
 import { ToastService } from '@nianva/ui-shared';
 
 import { RolFormComponent } from '../../rol-form/rol-form.component';
-import { RolFormPayload, RolService } from '../../rol.service';
+import { RolFormPayload, RolService } from '@nianva/domain-administracion';
 
 /**
  * Vista dedicada, no modal (ver el reporte de Fase B/C): rol es una

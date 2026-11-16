@@ -22,8 +22,7 @@ import { Router } from '@angular/router';
 import { DataTableLazyEvent } from '@nianva/ui-shared';
 import { Subject, debounceTime } from 'rxjs';
 
-import { CuentaCobrarService } from '../../cuenta-cobrar.service';
-import { CuentaCobrar, EstadoCuentaCobrar } from '../../cuenta-cobrar.types';
+import { CuentaCobrar, CuentaCobrarService, EstadoCuentaCobrar } from '@nianva/domain-cuentas-cobrar';
 
 const ESTADOS: { label: string; value: EstadoCuentaCobrar | null }[] = [
   { label: 'Pendientes', value: 'pendiente' },

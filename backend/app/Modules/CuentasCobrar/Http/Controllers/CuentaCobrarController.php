@@ -89,6 +89,7 @@ class CuentaCobrarController extends Controller
                 'cuenta' => [
                     'id' => $cuenta->id,
                     'saldo_pendiente' => DecimalApi::dinero($cuenta->saldo_pendiente),
+                    /** @var 'pendiente'|'pagada'|'anulada' */
                     'estado' => $cuenta->estado,
                 ],
             ],
@@ -138,6 +139,7 @@ class CuentaCobrarController extends Controller
             }
         }
 
+        // cliente_nombre sin `?->`: con el operador nullsafe Scramble lo documentaba como string (ARQ-12b).
         $porCliente = (clone $base)
             ->selectRaw('cliente_id, sum(saldo_pendiente) as saldo_pendiente, count(*) as cuentas_pendientes')
             ->with('cliente:id,nombre')
@@ -147,7 +149,7 @@ class CuentaCobrarController extends Controller
             ->get()
             ->map(fn ($r) => [
                 'cliente_id' => $r->cliente_id,
-                'cliente_nombre' => $r->cliente?->nombre,
+                'cliente_nombre' => $r->cliente === null ? null : $r->cliente->nombre,
                 'saldo_pendiente' => DecimalApi::dinero($r->saldo_pendiente),
                 'cuentas_pendientes' => (int) $r->cuentas_pendientes,
             ]);

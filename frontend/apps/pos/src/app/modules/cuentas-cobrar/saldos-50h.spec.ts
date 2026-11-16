@@ -5,15 +5,15 @@ import { describe, expect, it, vi } from 'vitest';
 import { BUSCADOR_CLIENTE } from '../../core/buscadores-entidad.tokens';
 import { proveedoresDePantalla } from '../../testing/proveedores-pantalla';
 import { CuentasCobrarListComponent } from '../cuentas-cobrar/pages/cuentas-cobrar-list/cuentas-cobrar-list.component';
-import { CuentaCobrarService } from '../cuentas-cobrar/cuenta-cobrar.service';
+import { CuentaCobrarService } from '@nianva/domain-cuentas-cobrar';
 import { CuentasPagarListComponent } from '../cuentas-pagar/pages/cuentas-pagar-list/cuentas-pagar-list.component';
-import { CuentaPagarService } from '../cuentas-pagar/cuenta-pagar.service';
+import { CuentaPagarService } from '@nianva/domain-cuentas-pagar';
 import { GiftCardsListComponent } from '../gift-cards/pages/gift-cards-list/gift-cards-list.component';
-import { GiftCardService } from '../gift-cards/gift-card.service';
+import { GiftCardService } from '@nianva/domain-gift-cards';
 import { NotasCreditoListComponent } from '../notas-credito/pages/notas-credito-list/notas-credito-list.component';
-import { NotaCreditoService } from '../notas-credito/nota-credito.service';
+import { NotaCreditoService } from '@nianva/domain-notas-credito';
 import { PlanesPagoListComponent } from '../ventas-plazos/pages/planes-pago-list/planes-pago-list.component';
-import { PlanPagoService } from '../ventas-plazos/plan-pago.service';
+import { PlanPagoService } from '@nianva/domain-ventas-plazos';
 
 const pantallas = [
   {

@@ -9,11 +9,19 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Carbon;
 
 /**
  * Sin tenant_id propio: el aislamiento se resuelve via BelongsToTenantViaRelacion
  * consultando planPagoCliente.tenant_id (ver tenantRelacion()).
  *
+ * @property int $id
+ * @property int $numero_cuota
+ * @property string $monto
+ * @property string $monto_capital
+ * @property string $monto_interes
+ * @property Carbon $fecha_vencimiento
+ * @property Carbon|null $fecha_pago
  * @property 'pendiente'|'pagada'|'vencida' $estado
  */
 #[Fillable([

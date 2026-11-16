@@ -9,8 +9,7 @@ import { EstadoPagina, PageComponent, PageHeaderComponent } from '@nianva/ui-lay
 import { ConfirmDialogService, DataTableLazyEvent, ToastService } from '@nianva/ui-shared';
 import { Subject, debounceTime } from 'rxjs';
 
-import { MetodoPagoAdminService } from '../../metodo-pago-admin.service';
-import { MetodoPagoAdmin, MetodosPagoPermisos } from '../../metodo-pago.types';
+import { MetodoPagoAdmin, MetodoPagoAdminService, MetodosPagoPermisos } from '@nianva/domain-administracion';
 
 const PERMISOS_VACIOS: MetodosPagoPermisos = { crear: false, editar: false, eliminar: false };
 

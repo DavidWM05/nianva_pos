@@ -3,7 +3,7 @@ import { provideAnimationsAsync } from '@angular/platform-browser/animations/asy
 import { of } from 'rxjs';
 import { describe, expect, it, vi } from 'vitest';
 
-import { SucursalService } from '../../../administracion/sucursal.service';
+import { SucursalService } from '@nianva/domain-administracion';
 import { VentaService } from '../../../tpv/venta.service';
 import { ReporteVentas } from '../../../tpv/venta.types';
 import { ReporteVentasComponent } from './reporte-ventas.component';

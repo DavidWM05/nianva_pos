@@ -6,8 +6,7 @@ import { proveedoresDePantalla } from '../../../../testing/proveedores-pantalla'
 import { of, throwError } from 'rxjs';
 import { describe, expect, it, vi } from 'vitest';
 
-import { PermisoService } from '../../permiso.service';
-import { RolService } from '../../rol.service';
+import { PermisoService, RolService } from '@nianva/domain-administracion';
 import { RolCrearComponent } from './rol-crear.component';
 
 describe('RolCrearComponent', () => {

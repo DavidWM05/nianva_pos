@@ -14,6 +14,10 @@ class ObtenerResumenInicio
     private const DIAS_ALERTA_VENCIMIENTO = 7;
 
     /**
+     * cliente_nombre sin `?->`: con el operador nullsafe Scramble lo documentaba como string, y
+     * un apartado sin cliente lo deja en null. fecha_vencimiento nunca es null aqui (la consulta
+     * filtra whereNotNull); el `?? throw` se lo dice al contrato (ARQ-12b).
+     *
      * @return array{ventas_hoy: array{cantidad: int, total: float}, apartados_por_vencer: mixed}
      */
     public function ejecutar(?int $sucursalId): array
@@ -39,8 +43,8 @@ class ObtenerResumenInicio
             ],
             'apartados_por_vencer' => $apartadosPorVencer->map(fn (Apartado $apartado) => [
                 'id' => $apartado->id,
-                'cliente_nombre' => $apartado->cliente?->nombre,
-                'fecha_vencimiento' => $apartado->fecha_vencimiento,
+                'cliente_nombre' => $apartado->cliente === null ? null : $apartado->cliente->nombre,
+                'fecha_vencimiento' => $apartado->fecha_vencimiento ?? throw new \LogicException('Apartado por vencer sin fecha de vencimiento.'),
                 'total' => $apartado->total,
                 'total_abonado' => $apartado->total_abonado,
             ]),

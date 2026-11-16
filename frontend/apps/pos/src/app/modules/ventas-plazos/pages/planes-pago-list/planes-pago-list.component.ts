@@ -17,8 +17,7 @@ import {
 import { Router } from '@angular/router';
 import { DataTableLazyEvent } from '@nianva/ui-shared';
 
-import { PlanPagoService, PlanesPagoPermisos } from '../../plan-pago.service';
-import { PlanPago } from '../../plan-pago.types';
+import { PlanesPagoPermisos, PlanPago, PlanPagoService } from '@nianva/domain-ventas-plazos';
 
 const PERMISOS_VACIOS: PlanesPagoPermisos = { crear: false };
 

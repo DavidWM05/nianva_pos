@@ -2,8 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { of } from 'rxjs';
 import { describe, expect, it, vi } from 'vitest';
 
-import { CuentaCobrarService } from '../../../cuentas-cobrar/cuenta-cobrar.service';
-import { ReporteCuentasCobrar } from '../../../cuentas-cobrar/cuenta-cobrar.types';
+import { CuentaCobrarService, ReporteCuentasCobrar } from '@nianva/domain-cuentas-cobrar';
 import { ReporteCuentasCobrarComponent } from './reporte-cuentas-cobrar.component';
 
 describe('ReporteCuentasCobrarComponent', () => {

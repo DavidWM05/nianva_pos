@@ -6,8 +6,7 @@ import { SkeletonComponent } from '@nianva/ui-feedback';
 import { AuditLogViewerComponent, RecordTabConfig, RecordTabsComponent, ToastService } from '@nianva/ui-shared';
 
 import { MetodoPagoFormComponent } from '../../metodo-pago-form/metodo-pago-form.component';
-import { MetodoPagoAdminService, MetodoPagoFormPayload } from '../../metodo-pago-admin.service';
-import { MetodoPagoAdmin } from '../../metodo-pago.types';
+import { MetodoPagoAdmin, MetodoPagoAdminService, MetodoPagoFormPayload } from '@nianva/domain-administracion';
 
 /**
  * Vista de registro de Metodo de pago -- General (formulario, `readonly`

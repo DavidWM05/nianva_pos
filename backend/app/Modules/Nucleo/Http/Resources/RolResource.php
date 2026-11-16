@@ -19,6 +19,7 @@ class RolResource extends JsonResource
             'descripcion' => $this->descripcion,
             'es_sistema' => $this->es_sistema,
             'usuarios_count' => $this->whenCounted('usuarios'),
+            /** @var list<int> */
             'permisos' => $this->whenLoaded('permisos', fn () => $this->permisos->pluck('id')),
         ];
     }

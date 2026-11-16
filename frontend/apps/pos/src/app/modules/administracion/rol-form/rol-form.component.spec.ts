@@ -5,10 +5,7 @@ import { DynamicFormComponent } from '@nianva/ui-shared';
 import { of } from 'rxjs';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { GrupoPermisos } from '../permiso.types';
-import { PermisoService } from '../permiso.service';
-import { RolFormPayload } from '../rol.service';
-import { Rol } from '../rol.types';
+import { GrupoPermisos, PermisoService, Rol, RolFormPayload } from '@nianva/domain-administracion';
 import { RolFormComponent } from './rol-form.component';
 
 const GRUPOS: GrupoPermisos[] = [

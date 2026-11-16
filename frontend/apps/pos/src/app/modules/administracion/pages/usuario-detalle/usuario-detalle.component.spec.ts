@@ -21,10 +21,7 @@ if (typeof globalThis.ResizeObserver === 'undefined') {
 
 import { AuthStateService } from '../../../../auth/auth-state.service';
 import { Usuario } from '../../../../auth/usuario.types';
-import { RolService } from '../../rol.service';
-import { SucursalService } from '../../sucursal.service';
-import { UsuarioAdminService } from '../../usuario-admin.service';
-import { UsuarioAdmin } from '../../usuario.types';
+import { RolService, SucursalService, UsuarioAdmin, UsuarioAdminService } from '@nianva/domain-administracion';
 import { UsuarioDetalleComponent } from './usuario-detalle.component';
 
 describe('UsuarioDetalleComponent', () => {

@@ -2,8 +2,7 @@ import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@ang
 import { SkeletonComponent } from '@nianva/ui-feedback';
 import { DineroPipe } from '@nianva/ui-format';
 
-import { CuentaPagarService } from '../../../cuentas-pagar/cuenta-pagar.service';
-import { ReporteCuentasPagar } from '../../../cuentas-pagar/cuenta-pagar.types';
+import { CuentaPagarService, ReporteCuentasPagar } from '@nianva/domain-cuentas-pagar';
 
 /**
  * Reporte de antigüedad de saldos -- solo lectura, sin paginar (top-N por

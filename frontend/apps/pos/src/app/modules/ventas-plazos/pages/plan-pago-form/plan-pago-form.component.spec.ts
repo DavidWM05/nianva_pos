@@ -8,8 +8,7 @@ import { of, throwError } from 'rxjs';
 import { describe, expect, it, vi } from 'vitest';
 
 import { BUSCADOR_VENTA } from '../../../../core/buscadores-entidad.tokens';
-import { PlanPagoService } from '../../plan-pago.service';
-import { PlanPago } from '../../plan-pago.types';
+import { PlanPago, PlanPagoService } from '@nianva/domain-ventas-plazos';
 import { PlanPagoFormComponent } from './plan-pago-form.component';
 
 describe('PlanPagoFormComponent', () => {
