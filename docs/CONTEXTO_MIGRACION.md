@@ -96,6 +96,20 @@ Un solo POS funcional y adaptable:
      cupón se suma a las promociones;
    - **`valor` separado (DAT-02):** `reglas_precio.valor` y `cupones.valor` se parten en
      porcentaje (`decimal(7,4)`) y monto (`decimal(12,2)`).
+10. **Resto de la Fase 3 (2026-11-15),** que destraba ARQ-05c, el resto de DAT-01 y ARQ-07:
+    - **presentaciones:** una presentación (por ejemplo, caja de 12) puede tener precio
+      propio, opcional; si no lo tiene, cuesta el precio unitario resuelto × factor. El
+      stock y el libro siempre van en la unidad base;
+    - **listas de precio:** el cliente puede tener una lista asignada y el cajero con
+      permiso puede elegir otra en la venta; sin lista, rige el precio resuelto. Las reglas
+      aplican después, sobre el precio de lista;
+    - **cupón no combinable:** si el tenant configura que el cupón no se suma a las
+      promociones, el cupón descuenta solo sobre las líneas sin regla aplicada; si todas
+      tienen promoción, se rechaza con su `error_code`;
+    - **perfiles de giro iniciales (ARQ-07):** genérico (sin atributos), ropa/calzado
+      (Talla y Color; pieza), abarrotes (sin atributos; pieza, kg y l) y ferretería
+      (Medida y Material; pieza, metro y kg). Son datos, no código; agregar otro es un
+      archivo más.
 
 ## 4. Fases
 
