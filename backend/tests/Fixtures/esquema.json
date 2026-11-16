@@ -1002,6 +1002,14 @@
         ],
         "indices": [
             {
+                "nombre": "categorias_tenant_id_nombre_unique",
+                "columnas": [
+                    "tenant_id",
+                    "nombre"
+                ],
+                "unico": true
+            },
+            {
                 "nombre": "primary",
                 "columnas": [
                     "id"

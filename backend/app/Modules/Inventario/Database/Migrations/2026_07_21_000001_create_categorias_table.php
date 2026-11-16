@@ -15,6 +15,7 @@ return new class extends Migration
             $table->text('descripcion')->nullable();
             $table->boolean('activo')->default(true);
             $table->dateTime('created_at')->useCurrent();
+            $table->unique(['tenant_id', 'nombre']);
         });
     }
 
