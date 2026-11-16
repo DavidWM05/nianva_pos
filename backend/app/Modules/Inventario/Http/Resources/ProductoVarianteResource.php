@@ -25,6 +25,17 @@ class ProductoVarianteResource extends JsonResource
             'precio_venta' => $this->precio_venta === null ? null : DecimalApi::dinero($this->precio_venta),
             'costo' => $this->costo === null ? null : DecimalApi::dinero($this->costo),
             'activo' => $this->activo,
+            // ARQ-07: con los valores de atributo cargados, el nombre armado y cada valor.
+            'nombre' => $this->when($this->relationLoaded('valoresAtributo'), fn () => $this->nombreDeAtributos()),
+            'atributos' => $this->whenLoaded('valoresAtributo', fn () => $this->valoresAtributo
+                ->sortBy(fn ($fila) => [$fila->valor?->atributo->orden ?? 0, $fila->atributo_id])
+                ->values()
+                ->map(fn ($fila) => [
+                    'atributo_id' => (int) $fila->atributo_id,
+                    'atributo' => (string) $fila->valor?->atributo?->nombre,
+                    'valor_id' => (int) $fila->atributo_valor_id,
+                    'valor_nombre' => (string) $fila->valor?->valor,
+                ])),
             // Solo las filas que YA existen en inventario_stock -- una
             // sucursal sin movimientos registrados todavia simplemente no
             // aparece, no se sintetiza una fila en cero (ver

@@ -10,4 +10,13 @@
   <ui-campo etiqueta="Costo" ayuda="vacío = usa el del producto">
     <ui-input-dinero [min]="0" [formControl]="importes.controls.costo" />
   </ui-campo>
+  @for (atributo of atributos; track atributo.id) {
+    <ui-campo [etiqueta]="atributo.nombre">
+      <ui-select-filtro
+        [todas]="false"
+        [opciones]="opcionesDe(atributo)"
+        [formControl]="controlDe(atributo)"
+      />
+    </ui-campo>
+  }
 </nucleo-dynamic-form>

@@ -2,6 +2,7 @@
 
 namespace App\Modules\Inventario\Http\Controllers;
 
+use App\Aplicacion\Inventario\AsignarAtributosVariante;
 use App\Http\Controllers\Controller;
 use App\Modules\Configuracion\Models\ConfiguracionTenant;
 use App\Modules\Inventario\Http\Requests\GuardarProductoVarianteRequest;
@@ -27,10 +28,11 @@ class ProductoVarianteController extends Controller
 {
     private const LONGITUD_CODIGO_AUTOGENERADO = 12;
 
-    public function store(GuardarProductoVarianteRequest $request, Producto $producto)
+    public function store(GuardarProductoVarianteRequest $request, Producto $producto, AsignarAtributosVariante $asignarAtributos)
     {
         $tenantId = $producto->tenant_id;
-        $datos = $request->toDto()->datosPresentes();
+        $dto = $request->toDto();
+        $datos = $dto->datosPresentes();
         $datos['producto_id'] = $producto->id;
         $datos['activo'] = true;
 
@@ -39,13 +41,18 @@ class ProductoVarianteController extends Controller
         }
 
         $variante = ProductoVariante::create($datos);
+        $variante = $asignarAtributos->ejecutar($variante, $dto->valores ?? []);
 
         return (new ProductoVarianteResource($variante))->response()->setStatusCode(201);
     }
 
-    public function update(GuardarProductoVarianteRequest $request, ProductoVariante $variante)
+    public function update(GuardarProductoVarianteRequest $request, ProductoVariante $variante, AsignarAtributosVariante $asignarAtributos)
     {
-        $variante->update($request->toDto()->datosPresentes());
+        $dto = $request->toDto();
+        $variante->update($dto->datosPresentes());
+        $variante = $dto->valores === null
+            ? $variante->load('valoresAtributo.valor.atributo')
+            : $asignarAtributos->ejecutar($variante, $dto->valores);
 
         return new ProductoVarianteResource($variante);
     }

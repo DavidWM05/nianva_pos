@@ -36,6 +36,7 @@ import {
   CompraService,
   ProveedorFormPayload,
 } from '../../compra.service';
+import type { Atributo } from '@nianva/domain-inventario';
 import { ConfiguracionService } from '../../../configuracion/configuracion.service';
 import { KardexListComponent } from '../../kardex-list/kardex-list.component';
 import { ProductoFormComponent } from '../../producto-form/producto-form.component';
@@ -141,6 +142,9 @@ export class ProductoDetalleComponent implements OnInit {
   protected readonly mostrarFormularioVariante = signal(false);
   protected readonly varianteEnEdicion = signal<ProductoVariante | null>(null);
   protected readonly codigoBarrasAutomatico = signal(false);
+  /** ARQ-07: atributos con sus valores para el formulario de variante (resolver de la ruta). */
+  protected readonly atributosVariante: Atributo[] =
+    this.route.snapshot.data?.['atributos'] ?? [];
 
   protected readonly varianteSeleccionadaId = signal<number | null>(null);
   protected readonly kardex = signal<MovimientoKardex[]>([]);

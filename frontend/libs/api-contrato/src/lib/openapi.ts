@@ -119,6 +119,71 @@ export interface paths {
         patch: operations["apartado.cancelar"];
         trace?: never;
     };
+    "/atributos": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Listado uniforme; con `con_valores=1`, la lista completa con valores para el formulario de variante */
+        get: operations["atributo.index"];
+        put?: never;
+        post: operations["atributo.store"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/atributos/{atributo}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["atributo.show"];
+        put: operations["atributo.update"];
+        post?: never;
+        delete: operations["atributo.destroy"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/atributos/{atributo}/valores": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["atributoValor.store"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/atributo-valores/{valor}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put: operations["atributoValor.update"];
+        post?: never;
+        delete: operations["atributoValor.destroy"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/auditoria": {
         parameters: {
             query?: never;
@@ -1428,6 +1493,40 @@ export interface paths {
         patch: operations["pedido.asignarRepartidor"];
         trace?: never;
     };
+    "/perfiles-giro": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Catalogo fijo de perfiles (no es un listado paginado de registros) */
+        get: operations["perfilGiro.catalogo"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/configuracion/perfil-giro": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /** Siembra lo que falte del perfil y lo deja como el perfil del tenant */
+        put: operations["perfilGiro.update"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/permisos": {
         parameters: {
             query?: never;
@@ -2326,6 +2425,11 @@ export interface components {
                 }[];
             }[];
         };
+        /** AplicarPerfilGiroRequest */
+        AplicarPerfilGiroRequest: {
+            /** @enum {string} */
+            perfil: "generico" | "abarrotes" | "ferreteria" | "ropa-calzado";
+        };
         /** App.Modules.CuentasCobrar.Http.Requests.RegistrarAbonoRequest */
         "App.Modules.CuentasCobrar.Http.Requests.RegistrarAbonoRequest": {
             monto: number;
@@ -2339,6 +2443,17 @@ export interface components {
         /** AsignarRepartidorRequest */
         AsignarRepartidorRequest: {
             repartidor_id: number;
+        };
+        /** AtributoResource */
+        AtributoResource: {
+            id: number;
+            nombre: string;
+            orden: number;
+            valores?: {
+                id: number;
+                nombre: string;
+                orden: number;
+            }[];
         };
         /** CajaSesionResource */
         CajaSesionResource: {
@@ -2442,6 +2557,7 @@ export interface components {
             /** Format: date-time */
             backup_ultimo: string | null;
             codigo_barras_automatico: boolean;
+            perfil_giro: string;
         };
         /** ConfirmTwoFactorRequest */
         ConfirmTwoFactorRequest: {
@@ -2913,6 +3029,20 @@ export interface components {
             /** Format: date-time */
             created_at: string;
         };
+        /** GuardarAtributoRequest */
+        GuardarAtributoRequest: {
+            nombre: string;
+            orden?: number | null;
+        };
+        /**
+         * GuardarAtributoValorRequest
+         * @description Alta (con {atributo} en la ruta) y edicion (con {valor}) de un valor de atributo.
+         */
+        GuardarAtributoValorRequest: {
+            /** @description En la API el texto del valor es `nombre`; en la tabla, `valor`. */
+            nombre: string;
+            orden?: number | null;
+        };
         /** GuardarCategoriaRequest */
         GuardarCategoriaRequest: {
             nombre: string;
@@ -3001,6 +3131,11 @@ export interface components {
             precio_venta?: number | null;
             costo?: number | null;
             codigo_barras?: string | null;
+            /**
+             * @description ARQ-07: ids de atributo_valores, a lo mas uno por atributo. Si llega, reemplaza los
+             *     valores de la variante; si no llega, se conservan.
+             */
+            valores?: number[];
         };
         /** GuardarReglaPrecioRequest */
         GuardarReglaPrecioRequest: {
@@ -3254,6 +3389,18 @@ export interface components {
             /** Format: date-time */
             created_at: string;
         };
+        /** PerfilGiroResource */
+        PerfilGiroResource: {
+            clave: string;
+            nombre: string;
+            atributos: {
+                nombre: string;
+                valores: string[];
+            }[];
+            unidades: string[];
+            categorias: string[];
+            modulos_sugeridos: string[];
+        };
         /** Permiso */
         Permiso: {
             id: number;
@@ -3393,6 +3540,14 @@ export interface components {
             precio_venta: string | null;
             costo: string | null;
             activo: boolean;
+            /** @description ARQ-07: con los valores de atributo cargados, el nombre armado y cada valor. */
+            nombre?: string | null;
+            atributos?: {
+                atributo_id: number;
+                atributo: string;
+                valor_id: number;
+                valor_nombre: string;
+            }[];
             /**
              * @description Solo las filas que YA existen en inventario_stock -- una
              *     sucursal sin movimientos registrados todavia simplemente no
@@ -3762,9 +3917,11 @@ export type ActualizarCotizacionRequest = components['schemas']['ActualizarCotiz
 export type AjustarPuntosRequest = components['schemas']['AjustarPuntosRequest'];
 export type AnularVentaRequest = components['schemas']['AnularVentaRequest'];
 export type ApartadoResource = components['schemas']['ApartadoResource'];
+export type AplicarPerfilGiroRequest = components['schemas']['AplicarPerfilGiroRequest'];
 export type AppModulesCuentasCobrarHttpRequestsRegistrarAbonoRequest = components['schemas']['App.Modules.CuentasCobrar.Http.Requests.RegistrarAbonoRequest'];
 export type AsignarListaPrecioClienteRequest = components['schemas']['AsignarListaPrecioClienteRequest'];
 export type AsignarRepartidorRequest = components['schemas']['AsignarRepartidorRequest'];
+export type AtributoResource = components['schemas']['AtributoResource'];
 export type CajaSesionResource = components['schemas']['CajaSesionResource'];
 export type CambiarEstadoOrdenRequest = components['schemas']['CambiarEstadoOrdenRequest'];
 export type CambiarEstadoPedidoRequest = components['schemas']['CambiarEstadoPedidoRequest'];
@@ -3813,6 +3970,8 @@ export type EnviarCampanaRequest = components['schemas']['EnviarCampanaRequest']
 export type GastoResource = components['schemas']['GastoResource'];
 export type GenerarNominaRequest = components['schemas']['GenerarNominaRequest'];
 export type GiftCardResource = components['schemas']['GiftCardResource'];
+export type GuardarAtributoRequest = components['schemas']['GuardarAtributoRequest'];
+export type GuardarAtributoValorRequest = components['schemas']['GuardarAtributoValorRequest'];
 export type GuardarCategoriaRequest = components['schemas']['GuardarCategoriaRequest'];
 export type GuardarClienteRequest = components['schemas']['GuardarClienteRequest'];
 export type GuardarCuponRequest = components['schemas']['GuardarCuponRequest'];
@@ -3843,6 +4002,7 @@ export type OrdenProduccionResource = components['schemas']['OrdenProduccionReso
 export type PagarCuotaRequest = components['schemas']['PagarCuotaRequest'];
 export type PedidoItemResource = components['schemas']['PedidoItemResource'];
 export type PedidoResource = components['schemas']['PedidoResource'];
+export type PerfilGiroResource = components['schemas']['PerfilGiroResource'];
 export type Permiso = components['schemas']['Permiso'];
 export type PlanPagoClienteCuota = components['schemas']['PlanPagoClienteCuota'];
 export type PlanPagoResource = components['schemas']['PlanPagoResource'];
@@ -4059,6 +4219,252 @@ export interface operations {
             401: components["responses"]["AuthenticationException"];
             404: components["responses"]["ModelNotFoundException"];
             422: components["responses"]["ValidationException"];
+        };
+    };
+    "atributo.index": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /**
+             * @description Array of `AtributoResource`
+             *
+             *     Array of `AtributoResource`
+             */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["AtributoResource"][];
+                        meta: {
+                            total: number;
+                            page: number;
+                            rows: unknown;
+                            filtros_aplicados: {
+                                q: string;
+                            };
+                            permisos: {
+                                crear: boolean;
+                                editar: boolean;
+                                eliminar: boolean;
+                            };
+                        };
+                    } | {
+                        data: (components["schemas"]["AtributoResource"] & Record<string, never>)[];
+                    };
+                };
+            };
+            401: components["responses"]["AuthenticationException"];
+        };
+    };
+    "atributo.store": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["GuardarAtributoRequest"];
+            };
+        };
+        responses: {
+            /** @description `AtributoResource` */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["AtributoResource"] & Record<string, never>;
+                    };
+                };
+            };
+            401: components["responses"]["AuthenticationException"];
+            422: components["responses"]["ValidationException"];
+        };
+    };
+    "atributo.show": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The atributo ID */
+                atributo: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description `AtributoResource` */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["AtributoResource"] & Record<string, never>;
+                        meta: {
+                            permisos: {
+                                crear: boolean;
+                                editar: boolean;
+                                eliminar: boolean;
+                            };
+                        };
+                    };
+                };
+            };
+            401: components["responses"]["AuthenticationException"];
+            404: components["responses"]["ModelNotFoundException"];
+        };
+    };
+    "atributo.update": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The atributo ID */
+                atributo: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["GuardarAtributoRequest"];
+            };
+        };
+        responses: {
+            /** @description `AtributoResource` */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["AtributoResource"] & Record<string, never>;
+                    };
+                };
+            };
+            401: components["responses"]["AuthenticationException"];
+            404: components["responses"]["ModelNotFoundException"];
+            422: components["responses"]["ValidationException"];
+        };
+    };
+    "atributo.destroy": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The atributo ID */
+                atributo: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            401: components["responses"]["AuthenticationException"];
+            404: components["responses"]["ModelNotFoundException"];
+        };
+    };
+    "atributoValor.store": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The atributo ID */
+                atributo: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["GuardarAtributoValorRequest"];
+            };
+        };
+        responses: {
+            /** @description `AtributoResource` */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["AtributoResource"] & Record<string, never>;
+                    };
+                };
+            };
+            401: components["responses"]["AuthenticationException"];
+            404: components["responses"]["ModelNotFoundException"];
+            422: components["responses"]["ValidationException"];
+        };
+    };
+    "atributoValor.update": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The valor ID */
+                valor: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["GuardarAtributoValorRequest"];
+            };
+        };
+        responses: {
+            /** @description `AtributoResource` */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["AtributoResource"] & Record<string, never>;
+                    };
+                };
+            };
+            401: components["responses"]["AuthenticationException"];
+            404: components["responses"]["ModelNotFoundException"];
+            422: components["responses"]["ValidationException"];
+        };
+    };
+    "atributoValor.destroy": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The valor ID */
+                valor: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            401: components["responses"]["AuthenticationException"];
+            404: components["responses"]["ModelNotFoundException"];
         };
     };
     "auditoria.index": {
@@ -7164,6 +7570,69 @@ export interface operations {
             422: components["responses"]["ValidationException"];
         };
     };
+    "perfilGiro.catalogo": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Array of `PerfilGiroResource` */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["PerfilGiroResource"][];
+                        meta: {
+                            actual: string;
+                        };
+                    };
+                };
+            };
+            401: components["responses"]["AuthenticationException"];
+        };
+    };
+    "perfilGiro.update": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AplicarPerfilGiroRequest"];
+            };
+        };
+        responses: {
+            /** @description `PerfilGiroResource` */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["PerfilGiroResource"];
+                        meta: {
+                            actual: string;
+                            creados: {
+                                atributos: number;
+                                valores: number;
+                                categorias: number;
+                                unidades: number;
+                            };
+                        };
+                    };
+                };
+            };
+            401: components["responses"]["AuthenticationException"];
+            422: components["responses"]["ValidationException"];
+        };
+    };
     "permiso.index": {
         parameters: {
             query?: never;
@@ -8041,7 +8510,7 @@ export interface operations {
                 };
                 content: {
                     "application/json": {
-                        data: components["schemas"]["ProductoVarianteResource"];
+                        data: components["schemas"]["ProductoVarianteResource"] & Record<string, never>;
                     };
                 };
             };
@@ -8073,7 +8542,7 @@ export interface operations {
                 };
                 content: {
                     "application/json": {
-                        data: components["schemas"]["ProductoVarianteResource"];
+                        data: components["schemas"]["ProductoVarianteResource"] & Record<string, never>;
                     };
                 };
             };

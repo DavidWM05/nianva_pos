@@ -61,5 +61,24 @@
         </ui-section>
       </div>
     </ng-template>
+
+    <ng-template>
+      <div class="configuracion__tab">
+        <ui-section titulo="Giro del negocio">
+          <small>
+            El perfil de giro agrega al catálogo los atributos de variante, unidades y categorías habituales del giro.
+          </small>
+          @if (visible()) {
+            @defer (on viewport) {
+              <nucleo-perfil-giro />
+            } @placeholder {
+              <ui-skeleton forma="bloque" />
+            }
+          } @else {
+            <p class="configuracion__aviso">No tienes permiso para ver esta sección.</p>
+          }
+        </ui-section>
+      </div>
+    </ng-template>
   </nucleo-record-tabs>
 </ui-page>

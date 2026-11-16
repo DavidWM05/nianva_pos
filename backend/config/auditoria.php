@@ -12,6 +12,8 @@ use App\Modules\Delivery\Models\Pedido;
 use App\Modules\Devoluciones\Models\Devolucion;
 use App\Modules\Gastos\Models\Gasto;
 use App\Modules\GiftCards\Models\GiftCard;
+use App\Modules\Inventario\Models\Atributo;
+use App\Modules\Inventario\Models\AtributoValor;
 use App\Modules\Inventario\Models\Compra;
 use App\Modules\Inventario\Models\Presentacion;
 use App\Modules\Inventario\Models\Producto;
@@ -135,6 +137,8 @@ return [
         Rol::class,
         Producto::class,
         ProductoVariante::class,
+        Atributo::class,
+        AtributoValor::class,
         Compra::class,
         ReglaPrecio::class,
         ListaPrecio::class,

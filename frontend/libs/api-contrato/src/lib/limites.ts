@@ -42,6 +42,58 @@ export const LIMITES = {
       }
     }
   },
+  "/atributos": {
+    "post": {
+      "nombre": {
+        "requerido": true,
+        "maxLength": 60
+      },
+      "orden": {
+        "requerido": false,
+        "minimum": 0,
+        "maximum": 65535
+      }
+    }
+  },
+  "/atributos/{atributo}": {
+    "put": {
+      "nombre": {
+        "requerido": true,
+        "maxLength": 60
+      },
+      "orden": {
+        "requerido": false,
+        "minimum": 0,
+        "maximum": 65535
+      }
+    }
+  },
+  "/atributos/{atributo}/valores": {
+    "post": {
+      "nombre": {
+        "requerido": true,
+        "maxLength": 60
+      },
+      "orden": {
+        "requerido": false,
+        "minimum": 0,
+        "maximum": 65535
+      }
+    }
+  },
+  "/atributo-valores/{valor}": {
+    "put": {
+      "nombre": {
+        "requerido": true,
+        "maxLength": 60
+      },
+      "orden": {
+        "requerido": false,
+        "minimum": 0,
+        "maximum": 65535
+      }
+    }
+  },
   "/caja/abrir": {
     "post": {
       "monto_apertura": {
@@ -703,6 +755,13 @@ export const LIMITES = {
       }
     }
   },
+  "/configuracion/perfil-giro": {
+    "put": {
+      "perfil": {
+        "requerido": true
+      }
+    }
+  },
   "/ventas/{venta}/plan-pago": {
     "post": {
       "numero_cuotas": {
@@ -1066,6 +1125,9 @@ export const LIMITES = {
       "codigo_barras": {
         "requerido": false,
         "maxLength": 50
+      },
+      "valores": {
+        "requerido": false
       }
     }
   },
@@ -1094,6 +1156,9 @@ export const LIMITES = {
       "codigo_barras": {
         "requerido": false,
         "maxLength": 50
+      },
+      "valores": {
+        "requerido": false
       }
     }
   },

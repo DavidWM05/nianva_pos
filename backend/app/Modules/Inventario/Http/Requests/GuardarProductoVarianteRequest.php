@@ -5,10 +5,13 @@ declare(strict_types=1);
 namespace App\Modules\Inventario\Http\Requests;
 
 use App\Modules\Inventario\Dtos\ProductoVarianteDto;
+use App\Modules\Inventario\Models\AtributoValor;
 use App\Modules\Inventario\Models\ProductoVariante;
 use App\Modules\Inventario\Support\CodigoEnOtroCatalogo;
+use App\Modules\Inventario\Support\ReglasAtributo;
 use App\Modules\Nucleo\Http\Requests\SolicitudNegocio;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\ValidationException;
 
 class GuardarProductoVarianteRequest extends SolicitudNegocio
 {
@@ -32,6 +35,10 @@ class GuardarProductoVarianteRequest extends SolicitudNegocio
                     ->where('tenant_id', $this->tenantId())
                     ->ignore($varianteId),
             ],
+            // ARQ-07: ids de atributo_valores, a lo mas uno por atributo. Si llega, reemplaza los
+            // valores de la variante; si no llega, se conservan.
+            'valores' => ['sometimes', 'array'],
+            'valores.*' => ['integer', 'distinct', ReglasAtributo::valorDelTenant($this->tenantId())],
         ];
     }
 
@@ -39,13 +46,23 @@ class GuardarProductoVarianteRequest extends SolicitudNegocio
     {
         $v = $this->validated();
 
+        $valores = null;
+        if (array_key_exists('valores', $v)) {
+            $valores = array_values(array_map('intval', (array) $v['valores']));
+            $atributos = AtributoValor::query()->whereIn('id', $valores)->pluck('atributo_id');
+            if ($atributos->count() !== $atributos->unique()->count()) {
+                throw ValidationException::withMessages(['valores' => ['Elige un solo valor por atributo.']]);
+            }
+        }
+
         return new ProductoVarianteDto(
             talla: isset($v['talla']) ? (string) $v['talla'] : null,
             color: isset($v['color']) ? (string) $v['color'] : null,
             codigoBarras: isset($v['codigo_barras']) ? (string) $v['codigo_barras'] : null,
-            presentes: array_keys($v),
+            presentes: array_values(array_diff(array_keys($v), ['valores'])),
             precioVenta: isset($v['precio_venta']) ? (string) $v['precio_venta'] : null,
             costo: isset($v['costo']) ? (string) $v['costo'] : null,
+            valores: $valores,
         );
     }
 }

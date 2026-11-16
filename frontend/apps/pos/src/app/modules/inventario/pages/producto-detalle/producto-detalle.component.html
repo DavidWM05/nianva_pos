@@ -82,6 +82,7 @@
     <nucleo-variante-form
       [valorInicial]="varianteEnEdicion()"
       [codigoBarrasAutomatico]="codigoBarrasAutomatico()"
+      [atributos]="atributosVariante"
       [enviando]="guardandoVariante()"
       [submitLabel]="varianteEnEdicion() ? 'Guardar cambios' : 'Crear variante'"
       (guardar)="onGuardarVariante($event)"

@@ -1,0 +1,49 @@
+@switch (estado()) {
+  @case ('cargando') {
+    <ui-skeleton forma="bloque" etiqueta="Cargando perfiles de giro" />
+  }
+  @case ('error') {
+    <p>No se pudieron cargar los perfiles de giro.</p>
+  }
+  @default {
+    @if (nombreActual(); as nombre) {
+      <p>Perfil actual: <strong>{{ nombre }}</strong></p>
+    }
+    <form (ngSubmit)="aplicar()">
+      <ui-campo etiqueta="Giro del negocio">
+        <ui-select-filtro
+          [todas]="false"
+          [opciones]="opciones()"
+          [ngModel]="elegido()"
+          [ngModelOptions]="{ standalone: true }"
+          (ngModelChange)="elegido.set($event)"
+        />
+      </ui-campo>
+
+      @if (perfilElegido(); as perfil) {
+        <dl uiDatos>
+          <dt>Atributos de variante</dt>
+          <dd>
+            @for (atributo of perfil.atributos; track atributo.nombre) {
+              <div>{{ atributo.nombre }}: {{ valoresDe(atributo) }}</div>
+            } @empty {
+              Ninguno
+            }
+          </dd>
+          <dt>Unidades</dt>
+          <dd>{{ perfil.unidades.length ? perfil.unidades.join(', ') : 'Ninguna' }}</dd>
+          <dt>Categorías</dt>
+          <dd>{{ perfil.categorias.length ? perfil.categorias.join(', ') : 'Ninguna' }}</dd>
+          <dt>Módulos sugeridos</dt>
+          <dd>{{ perfil.modulos_sugeridos.length ? perfil.modulos_sugeridos.join(', ') : 'Ninguno' }}</dd>
+        </dl>
+      }
+
+      <ui-btn-enviar
+        etiqueta="Aplicar perfil"
+        [enviando]="aplicando()"
+        [deshabilitado]="perfilElegido() === null"
+      />
+    </form>
+  }
+}

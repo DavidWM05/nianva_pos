@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Arquitectura;
 
+use App\Modules\Inventario\Models\Atributo;
 use App\Modules\Nucleo\Models\Permiso;
 use App\Modules\Nucleo\Models\Rol;
 use App\Modules\Nucleo\Models\Sucursal;
@@ -141,7 +142,7 @@ class ListadosUniformesTest extends TestCase
         ]);
         $ids = [];
 
-        foreach (['roles.ver', 'usuarios.ver', 'listas_precio.ver'] as $nombre) {
+        foreach (['roles.ver', 'usuarios.ver', 'listas_precio.ver', 'inventario.ver'] as $nombre) {
             [$modulo, $accion] = explode('.', $nombre);
             $ids[] = Permiso::firstOrCreate(
                 ['nombre' => $nombre],
@@ -164,6 +165,7 @@ class ListadosUniformesTest extends TestCase
             'nombre' => 'Rol '.$token,
             'es_sistema' => false,
         ]);
+        Atributo::factory()->create(['tenant_id' => $tenant->id, 'nombre' => 'Atributo '.$token]);
         Usuario::factory()->create([
             'tenant_id' => $tenant->id,
             'sucursal_id' => $sucursal->id,
