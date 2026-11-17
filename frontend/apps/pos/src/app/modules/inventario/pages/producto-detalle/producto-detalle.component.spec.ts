@@ -55,8 +55,8 @@ describe('ProductoDetalleComponent', () => {
       {
         id: 10,
         producto_id: 5,
-        talla: 'M',
-        color: 'Negro',
+        nombre: 'M / Negro',
+        atributos: [{ atributo_id: 1, atributo: 'Talla', valor_id: 1, valor_nombre: 'M' }, { atributo_id: 2, atributo: 'Color', valor_id: 2, valor_nombre: 'Negro' }],
         codigo_barras: null,
         activo: true,
         stock: [{ sucursal_id: 1, sucursal_nombre: 'Centro', stock_actual: '4.000', stock_minimo: '1.000' }],

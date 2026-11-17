@@ -4,6 +4,10 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Inventario;
 
+use App\Modules\Apartados\Models\Apartado;
+use App\Modules\Apartados\Models\ApartadoDetalle;
+use App\Modules\Devoluciones\Models\Devolucion;
+use App\Modules\Devoluciones\Models\DevolucionItem;
 use App\Modules\Inventario\Models\Atributo;
 use App\Modules\Inventario\Models\AtributoValor;
 use App\Modules\Inventario\Models\Producto;
@@ -14,6 +18,9 @@ use App\Modules\Nucleo\Models\Rol;
 use App\Modules\Nucleo\Models\Tenant;
 use App\Modules\Nucleo\Models\Usuario;
 use App\Modules\Nucleo\Services\TenantContext;
+use App\Modules\Precios\Models\ReglaPrecio;
+use App\Modules\Tpv\Models\Venta;
+use App\Modules\Tpv\Models\VentaDetalle;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -142,14 +149,39 @@ class AtributosTest extends TestCase
             ->assertJsonPath('data.nombre', 'Rojo / M');
     }
 
-    public function test_sin_atributos_el_nombre_sigue_con_talla_y_color(): void
+    /**
+     * ARQ-07b: sin atributos, `nombre` es null (nunca cadena vacia ni el nombre del producto) en
+     * cada Resource que lo publica: variante, linea de venta, top del reporte, apartado,
+     * devolucion y regla de precio.
+     */
+    public function test_sin_atributos_el_nombre_es_null_en_los_resources_que_lo_publican(): void
     {
-        $producto = Producto::factory()->create(['tenant_id' => $this->tenant->id]);
+        $t = $this->tenant->id;
+        $usuario = Usuario::factory()->create(['tenant_id' => $t]);
+        $rol = Rol::factory()->create(['tenant_id' => $t]);
+        foreach (['inventario.ver', 'ventas.ver', 'reportes.ver', 'apartados.ver', 'devoluciones.ver', 'reglas_precio.ver', 'sucursales.todas'] as $nombre) {
+            [$modulo, $accion] = explode('.', $nombre);
+            $rol->permisos()->attach(Permiso::firstOrCreate(['nombre' => $nombre], ['modulo' => $modulo, 'accion' => $accion])->id);
+        }
+        $usuario->roles()->attach($rol->id);
+        $this->actingAs($usuario);
 
-        $this->postJson("/api/v1/productos/{$producto->id}/variantes", ['talla' => 'L', 'color' => 'Azul'])
-            ->assertCreated()
-            ->assertJsonPath('data.nombre', 'L / Azul')
-            ->assertJsonPath('data.atributos', []);
+        $producto = Producto::factory()->create(['tenant_id' => $t, 'nombre' => 'Sin atributos']);
+        $variante = ProductoVariante::create(['producto_id' => $producto->id]);
+        $venta = Venta::factory()->create(['tenant_id' => $t]);
+        VentaDetalle::factory()->create(['venta_id' => $venta->id, 'variante_id' => $variante->id]);
+        $apartado = Apartado::factory()->create(['tenant_id' => $t]);
+        ApartadoDetalle::factory()->create(['apartado_id' => $apartado->id, 'variante_id' => $variante->id]);
+        $devolucion = Devolucion::factory()->create(['venta_id' => $venta->id]);
+        DevolucionItem::factory()->create(['devolucion_id' => $devolucion->id, 'variante_id' => $variante->id]);
+        $regla = ReglaPrecio::factory()->create(['tenant_id' => $t, 'aplica_a' => 'variante', 'variante_id' => $variante->id]);
+
+        $this->getJson("/api/v1/productos/{$producto->id}")->assertOk()->assertJsonPath('data.variantes.0.nombre', null);
+        $this->getJson("/api/v1/ventas/{$venta->id}")->assertOk()->assertJsonPath('data.detalles.0.variante.nombre', null);
+        $this->getJson('/api/v1/ventas/reporte')->assertOk()->assertJsonPath('data.top_productos.0.nombre', null);
+        $this->getJson("/api/v1/apartados/{$apartado->id}")->assertOk()->assertJsonPath('data.detalles.0.variante.nombre', null);
+        $this->getJson("/api/v1/devoluciones/{$devolucion->id}")->assertOk()->assertJsonPath('data.items.0.variante.nombre', null);
+        $this->getJson("/api/v1/reglas-precio/{$regla->id}")->assertOk()->assertJsonPath('data.variante.nombre', null);
     }
 
     public function test_un_solo_valor_por_atributo_y_solo_del_tenant(): void
@@ -202,7 +234,7 @@ class AtributosTest extends TestCase
     {
         ['m' => $m] = $this->tallaYColor();
         $producto = Producto::factory()->create(['tenant_id' => $this->tenant->id]);
-        $variante = ProductoVariante::factory()->create(['producto_id' => $producto->id, 'talla' => null, 'color' => null]);
+        $variante = ProductoVariante::factory()->conAtributos([])->create(['producto_id' => $producto->id]);
         VarianteAtributoValor::factory()->create(['variante_id' => $variante->id, 'atributo_valor_id' => $m->id]);
 
         $this->getJson("/api/v1/productos/{$producto->id}")

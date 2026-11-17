@@ -6,10 +6,9 @@ import { Observable, map } from 'rxjs';
 import { ProductoService } from './producto.service';
 
 /**
- * "Hijos" de un producto = sus variantes. ProductoVariante no tiene un
- * campo `nombre` (el dominio usa talla/color) -- este adapter arma la
- * etiqueta ("talla / color", o "Variante #id" si no tiene ninguno de
- * los dos) antes de exponerla como EntidadBuscable, para que
+ * "Hijos" de un producto = sus variantes. La etiqueta es el `nombre` armado
+ * por sus atributos (ARQ-07), o "Variante #id" si no tiene, y se expone
+ * como EntidadBuscable, para que
  * EntidadSelectorComponent (generico) no necesite saber nada de
  * producto-variantes.
  */
@@ -22,16 +21,10 @@ export class VariantesDeProductoBuscadorService extends BuscadorDeHijos<EntidadB
       map(({ producto }) =>
         (producto.variantes ?? []).map((variante) => ({
           id: variante.id,
-          nombre: this.etiqueta(variante.talla, variante.color, variante.id),
+          nombre: variante.nombre ?? `Variante #${variante.id}`,
           stock_actual: variante.stock_actual === undefined ? undefined : cantidadANumero(variante.stock_actual),
         })),
       ),
     );
-  }
-
-  private etiqueta(talla: string | null, color: string | null, id: number): string {
-    const partes = [talla, color].filter((v) => !!v);
-
-    return partes.length > 0 ? partes.join(' / ') : `Variante #${id}`;
   }
 }

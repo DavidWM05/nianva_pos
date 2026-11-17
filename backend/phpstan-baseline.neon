@@ -3085,19 +3085,7 @@ parameters:
 			path: app/Modules/Inventario/Http/Resources/ProductoVarianteResource.php
 
 		-
-			message: '#^Access to an undefined property App\\Modules\\Inventario\\Http\\Resources\\ProductoVarianteResource\:\:\$color\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Modules/Inventario/Http/Resources/ProductoVarianteResource.php
-
-		-
 			message: '#^Access to an undefined property App\\Modules\\Inventario\\Http\\Resources\\ProductoVarianteResource\:\:\$producto_id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Modules/Inventario/Http/Resources/ProductoVarianteResource.php
-
-		-
-			message: '#^Access to an undefined property App\\Modules\\Inventario\\Http\\Resources\\ProductoVarianteResource\:\:\$talla\.$#'
 			identifier: property.notFound
 			count: 1
 			path: app/Modules/Inventario/Http/Resources/ProductoVarianteResource.php
@@ -4927,12 +4915,6 @@ parameters:
 			path: app/Modules/Precios/Http/Resources/ReglaPrecioResource.php
 
 		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$color\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Modules/Precios/Http/Resources/ReglaPrecioResource.php
-
-		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
 			identifier: property.notFound
 			count: 3
@@ -4946,12 +4928,6 @@ parameters:
 
 		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$producto\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Modules/Precios/Http/Resources/ReglaPrecioResource.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$talla\.$#'
 			identifier: property.notFound
 			count: 1
 			path: app/Modules/Precios/Http/Resources/ReglaPrecioResource.php
@@ -5689,12 +5665,6 @@ parameters:
 			path: app/Modules/Tpv/Http/Controllers/VentaController.php
 
 		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$color\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Modules/Tpv/Http/Controllers/VentaController.php
-
-		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$nombre\.$#'
 			identifier: property.notFound
 			count: 1
@@ -5702,12 +5672,6 @@ parameters:
 
 		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$producto\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Modules/Tpv/Http/Controllers/VentaController.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$talla\.$#'
 			identifier: property.notFound
 			count: 1
 			path: app/Modules/Tpv/Http/Controllers/VentaController.php

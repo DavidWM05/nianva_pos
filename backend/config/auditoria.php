@@ -18,6 +18,7 @@ use App\Modules\Inventario\Models\Compra;
 use App\Modules\Inventario\Models\Presentacion;
 use App\Modules\Inventario\Models\Producto;
 use App\Modules\Inventario\Models\ProductoVariante;
+use App\Modules\Inventario\Models\VarianteAtributoValor;
 use App\Modules\NotasCredito\Models\NotaCredito;
 use App\Modules\Nucleo\Models\MetodoPago;
 use App\Modules\Nucleo\Models\Rol;
@@ -53,7 +54,7 @@ return [
     | modelo de un modulo futuro es solo agregar su FQCN aqui -- no
     | requiere tocar ni el modelo ni el modulo Auditoria.
     |
-    | ProductoVariante SI se incluye: un cambio de sus datos (talla, color,
+    | ProductoVariante SI se incluye: un cambio de sus datos (atributos,
     | codigo de barras) es una operacion sensible de catalogo. InventarioStock
     | y kardex no se incluyen por volumen, su historial es el kardex.
     |
@@ -128,6 +129,16 @@ return [
             'relacion' => 'roles',
             'campo' => 'roles',
             'relacion_clave' => 'rol_id',
+        ],
+        // ARQ-07b: los valores de atributo de una variante se auditan en la variante (antes y
+        // despues como ids de atributo_valores), igual que los permisos de un rol.
+        VarianteAtributoValor::class => [
+            'tabla' => 'producto_variantes',
+            'padre' => ProductoVariante::class,
+            'clave' => 'variante_id',
+            'relacion' => 'valoresAtributo',
+            'campo' => 'valores',
+            'relacion_clave' => 'atributo_valor_id',
         ],
     ],
 

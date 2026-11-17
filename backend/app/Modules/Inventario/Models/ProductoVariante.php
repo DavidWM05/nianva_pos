@@ -21,7 +21,7 @@ use InvalidArgumentException;
  * resolviendose via producto.tenant_id). tenant_id se copia del producto al
  * crear la variante y sirve para el UNIQUE(tenant_id, codigo_barras).
  */
-#[Fillable(['tenant_id', 'producto_id', 'talla', 'color', 'codigo_barras', 'activo', 'unidad_medida_id', 'es_granel', 'precio_venta', 'costo'])]
+#[Fillable(['tenant_id', 'producto_id', 'codigo_barras', 'activo', 'unidad_medida_id', 'es_granel', 'precio_venta', 'costo'])]
 class ProductoVariante extends Model
 {
     use BelongsToTenantViaRelacion;
@@ -97,8 +97,7 @@ class ProductoVariante extends Model
 
     /**
      * ARQ-07: nombre de la variante con los valores de sus atributos, unidos y en el orden del
-     * atributo ("M / Rojo"). Sin atributos, se arma con talla y color mientras existan (se
-     * retiran en ARQ-07b). Null si no hay nada que mostrar. Pide valoresAtributo.valor.atributo
+     * atributo ("M / Rojo"). Null si la variante no tiene atributos. Pide valoresAtributo.valor.atributo
      * cargado (modelos estrictos, DAT-14).
      */
     public function nombreDeAtributos(): ?string
@@ -110,10 +109,6 @@ class ProductoVariante extends Model
             ->filter()
             ->values()
             ->all();
-
-        if ($partes === []) {
-            $partes = array_values(array_filter([$this->getAttribute('talla'), $this->getAttribute('color')], fn ($parte) => $parte !== null && $parte !== ''));
-        }
 
         return $partes === [] ? null : implode(' / ', array_map('strval', $partes));
     }

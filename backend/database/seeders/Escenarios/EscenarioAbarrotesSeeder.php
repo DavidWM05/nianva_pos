@@ -63,8 +63,7 @@ class EscenarioAbarrotesSeeder extends EscenarioSeederBase
                     'producto' => $producto,
                     'variante' => $this->crearVariante(
                         $producto,
-                        null,
-                        null,
+                        [],
                         $unidadAbreviatura === 'kg' ? $kilogramo : $unidad,
                     ),
                 ];

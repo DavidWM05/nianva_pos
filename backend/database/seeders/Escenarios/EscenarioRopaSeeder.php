@@ -56,8 +56,8 @@ class EscenarioRopaSeeder extends EscenarioSeederBase
                 $productos[] = [
                     'producto' => $producto,
                     'variantes' => [
-                        $this->crearVariante($producto, 'S', 'Negro', $unidad),
-                        $this->crearVariante($producto, 'M', 'Azul', $unidad),
+                        $this->crearVariante($producto, ['Talla' => 'S', 'Color' => 'Negro'], $unidad),
+                        $this->crearVariante($producto, ['Talla' => 'M', 'Color' => 'Azul'], $unidad),
                     ],
                 ];
             }

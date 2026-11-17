@@ -8,6 +8,7 @@ use App\Aplicacion\Ventas\AnularVenta;
 use App\Aplicacion\Ventas\RegistrarVenta;
 use App\Http\Controllers\Controller;
 use App\Modules\Crm\Models\Cliente;
+use App\Modules\Inventario\Models\ProductoVariante;
 use App\Modules\Nucleo\Models\Sucursal;
 use App\Modules\Nucleo\Services\TenantContext;
 use App\Modules\Nucleo\Support\DecimalApi;
@@ -90,7 +91,7 @@ class VentaController extends Controller
 
     public function show(Venta $venta)
     {
-        return new VentaResource($venta->load(['cliente', 'pagos.metodoPago', 'detalles.variante.producto']));
+        return new VentaResource($venta->load(['cliente', 'pagos.metodoPago', 'detalles.variante.producto', 'detalles.variante.valoresAtributo.valor.atributo']));
     }
 
     /**
@@ -106,7 +107,7 @@ class VentaController extends Controller
 
         $venta = $registrarVenta->ejecutar($request->toDto(), $usuario);
 
-        $venta->load(['cliente', 'pagos.metodoPago', 'detalles.variante.producto']);
+        $venta->load(['cliente', 'pagos.metodoPago', 'detalles.variante.producto', 'detalles.variante.valoresAtributo.valor.atributo']);
 
         return (new VentaResource($venta))->response()->setStatusCode(201);
     }
@@ -120,7 +121,7 @@ class VentaController extends Controller
         }
 
         $venta = $anularVenta->ejecutar($request->toDto(), $venta, $usuario);
-        $venta->load(['cliente', 'pagos.metodoPago', 'detalles.variante.producto']);
+        $venta->load(['cliente', 'pagos.metodoPago', 'detalles.variante.producto', 'detalles.variante.valoresAtributo.valor.atributo']);
 
         return new VentaResource($venta);
     }
@@ -228,13 +229,12 @@ class VentaController extends Controller
             ->groupBy('variante_id')
             ->orderByDesc('cantidad_vendida')
             ->limit(10)
-            ->with('variante.producto')
+            ->with(['variante.producto', 'variante.valoresAtributo.valor.atributo'])
             ->get()
             ->map(fn ($r) => [
                 'variante_id' => $r->variante_id,
                 'producto_nombre' => $r->variante?->producto?->nombre,
-                'talla' => $r->variante?->talla,
-                'color' => $r->variante?->color,
+                'nombre' => $r->variante instanceof ProductoVariante ? $r->variante->nombreDeAtributos() : null,
                 'cantidad_vendida' => DecimalApi::cantidad($r->cantidad_vendida),
                 'total_vendido' => DecimalApi::dinero($r->total_vendido),
             ]);

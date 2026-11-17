@@ -14,8 +14,8 @@ describe('VariantesListComponent', () => {
     {
       id: 1,
       producto_id: 1,
-      talla: 'M',
-      color: 'Azul',
+      nombre: 'M / Azul',
+      atributos: [{ atributo_id: 1, atributo: 'Talla', valor_id: 1, valor_nombre: 'M' }, { atributo_id: 2, atributo: 'Color', valor_id: 2, valor_nombre: 'Azul' }],
       codigo_barras: 'COD-001',
       activo: true,
       stock: [
@@ -26,8 +26,8 @@ describe('VariantesListComponent', () => {
     {
       id: 2,
       producto_id: 1,
-      talla: 'L',
-      color: 'Azul',
+      nombre: 'L / Azul',
+      atributos: [{ atributo_id: 1, atributo: 'Talla', valor_id: 1, valor_nombre: 'L' }, { atributo_id: 2, atributo: 'Color', valor_id: 2, valor_nombre: 'Azul' }],
       codigo_barras: null,
       activo: true,
       stock: [],

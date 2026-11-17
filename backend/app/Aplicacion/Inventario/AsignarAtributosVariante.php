@@ -20,7 +20,8 @@ final class AsignarAtributosVariante
     public function ejecutar(ProductoVariante $variante, array $valores): ProductoVariante
     {
         DB::transaction(function () use ($variante, $valores): void {
-            VarianteAtributoValor::query()->where('variante_id', $variante->id)->delete();
+            // Fila por fila: cada delete dispara su evento y la auditoria de la variante guarda el antes.
+            VarianteAtributoValor::query()->where('variante_id', $variante->id)->get()->each->delete();
 
             foreach (AtributoValor::query()->whereIn('id', $valores)->get(['id', 'atributo_id']) as $valor) {
                 VarianteAtributoValor::create([

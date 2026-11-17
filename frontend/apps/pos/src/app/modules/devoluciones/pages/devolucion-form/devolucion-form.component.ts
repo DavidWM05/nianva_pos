@@ -136,7 +136,7 @@ export class DevolucionFormComponent implements OnInit {
             variante_id: detalle.variante_id,
             ...((venta.detalles ?? []).some(d => d.presentacion_nombre !== undefined) ? { venta_detalle_id: detalle.id } : {}),
             factor: detalle.factor ?? '1.000',
-            etiqueta: `${detalle.variante?.producto_nombre ?? ''} (${[detalle.variante?.talla, detalle.variante?.color].filter((v) => !!v).join(' / ')})${detalle.presentacion_nombre ? ' — '+detalle.presentacion_nombre : ''}`,
+            etiqueta: `${detalle.variante?.producto_nombre ?? ''} (${detalle.variante?.nombre ?? ''})${detalle.presentacion_nombre ? ' — '+detalle.presentacion_nombre : ''}`,
             cantidadMaxima: cantidadANumero(detalle.cantidad),
             cantidad: 0,
             vaAMerma: false,

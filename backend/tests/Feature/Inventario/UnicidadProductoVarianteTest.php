@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Inventario;
 
+use App\Modules\Inventario\Database\Factories\ProductoVarianteFactory;
 use App\Modules\Inventario\Models\ProductoVariante;
 use App\Modules\Nucleo\Services\TenantContext;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -26,7 +27,7 @@ class UnicidadProductoVarianteTest extends TestCase
 
         $this->postJson("/api/v1/productos/{$this->producto->id}/variantes", [
             'codigo_barras' => 'DUP-001',
-            'talla' => 'S',
+            'valores' => ProductoVarianteFactory::idsDeValores($this->tenant->id, ['Talla' => 'S']),
         ])->assertCreated();
 
         app(TenantContext::class)->set($this->tenantB);
@@ -34,7 +35,7 @@ class UnicidadProductoVarianteTest extends TestCase
 
         $this->postJson("/api/v1/productos/{$this->productoB->id}/variantes", [
             'codigo_barras' => 'DUP-001',
-            'talla' => 'S',
+            'valores' => ProductoVarianteFactory::idsDeValores($this->tenantB->id, ['Talla' => 'S']),
         ])->assertCreated();
 
         app(TenantContext::class)->set($this->tenant);
@@ -42,7 +43,7 @@ class UnicidadProductoVarianteTest extends TestCase
 
         $this->postJson("/api/v1/productos/{$this->producto->id}/variantes", [
             'codigo_barras' => 'DUP-001',
-            'talla' => 'M',
+            'valores' => ProductoVarianteFactory::idsDeValores($this->tenant->id, ['Talla' => 'M']),
         ])->assertStatus(422)->assertJsonValidationErrors(['codigo_barras']);
     }
 

@@ -1102,14 +1102,6 @@ export const LIMITES = {
   },
   "/productos/{producto}/variantes": {
     "post": {
-      "talla": {
-        "requerido": false,
-        "maxLength": 30
-      },
-      "color": {
-        "requerido": false,
-        "maxLength": 30
-      },
       "precio_venta": {
         "requerido": false,
         "minimum": 0,
@@ -1133,14 +1125,6 @@ export const LIMITES = {
   },
   "/producto-variantes/{variante}": {
     "put": {
-      "talla": {
-        "requerido": false,
-        "maxLength": 30
-      },
-      "color": {
-        "requerido": false,
-        "maxLength": 30
-      },
       "precio_venta": {
         "requerido": false,
         "minimum": 0,

@@ -4,9 +4,8 @@ import { Observable } from 'rxjs';
  * Forma minima que EntidadSelectorComponent necesita para mostrar una
  * entidad en el autocomplete o en el select en cascada. Cada modulo que
  * expone una entidad "buscable" adapta su propio modelo de dominio a
- * esta forma (por ejemplo, ProductoVariante no tiene `nombre` -- el
- * adapter de Inventario arma la etiqueta "talla / color" antes de
- * devolverla).
+ * esta forma (por ejemplo, una variante sin atributos no tiene `nombre`
+ * -- el adapter de Inventario pone "Variante #id" antes de devolverla).
  */
 export interface EntidadBuscable {
   id: number;

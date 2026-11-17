@@ -184,7 +184,7 @@ export class ApartadoDetalleComponent implements OnInit {
   }
 
   protected readonly paginaLineas = signal<CambioListado>({ page: 1, rows: 25, sortField: null, sortOrder: null });
-  protected readonly todasLineas = computed(() => (this.apartado()?.detalles ?? []).map(d => ({ ...d, productoTexto: (d.variante?.producto_nombre ?? '') + (d.variante?.talla || d.variante?.color ? ' (' + (d.variante?.talla ?? '') + ' / ' + (d.variante?.color ?? '') + ')' : '') })));
+  protected readonly todasLineas = computed(() => (this.apartado()?.detalles ?? []).map(d => ({ ...d, productoTexto: (d.variante?.producto_nombre ?? '') + (d.variante?.nombre ? ' (' + d.variante.nombre + ')' : '') })));
   protected readonly filasLineas = computed(() => this.todasLineas().slice((this.paginaLineas().page - 1) * this.paginaLineas().rows, this.paginaLineas().page * this.paginaLineas().rows));
   protected readonly metaLineas = computed<MetaListado>(() => ({ total: this.todasLineas().length, page: this.paginaLineas().page, rows: this.paginaLineas().rows, filtros_aplicados: {}, permisos: {} }));
   protected readonly columnasLineas: ColumnaListado<ReturnType<typeof this.todasLineas>[number]>[] = [{ tipo: 'principal', campo: 'productoTexto', encabezado: 'Producto' },{ tipo: 'cantidad', campo: 'cantidad', encabezado: 'Cantidad', unidad: 'unidad(es)' },{ tipo: 'dinero', campo: 'precio_unitario', encabezado: 'Precio' },{ tipo: 'dinero', campo: 'subtotal', encabezado: 'Subtotal' }];

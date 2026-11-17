@@ -3,6 +3,7 @@
 namespace Tests\Feature\Inventario;
 
 use App\Modules\Configuracion\Models\ConfiguracionTenant;
+use App\Modules\Inventario\Database\Factories\ProductoVarianteFactory;
 use App\Modules\Inventario\Models\Categoria;
 use App\Modules\Inventario\Models\InventarioStock;
 use App\Modules\Inventario\Models\Producto;
@@ -58,13 +59,13 @@ class ProductoTest extends TestCase
         $categoria = Categoria::create(['tenant_id' => $tenant->id, 'nombre' => 'Playeras']);
 
         $productoA = Producto::create(['tenant_id' => $tenant->id, 'categoria_id' => $categoria->id, 'nombre' => 'Playera Basica']);
-        $varianteA1 = ProductoVariante::create(['producto_id' => $productoA->id, 'talla' => 'M']);
-        $varianteA2 = ProductoVariante::create(['producto_id' => $productoA->id, 'talla' => 'L']);
+        $varianteA1 = ProductoVarianteFactory::asignarAtributos(ProductoVariante::create(['producto_id' => $productoA->id]), ['Talla' => 'M']);
+        $varianteA2 = ProductoVarianteFactory::asignarAtributos(ProductoVariante::create(['producto_id' => $productoA->id]), ['Talla' => 'L']);
         InventarioStock::create(['sucursal_id' => $sucursal->id, 'variante_id' => $varianteA1->id, 'stock_actual' => 5]);
         InventarioStock::create(['sucursal_id' => $sucursal->id, 'variante_id' => $varianteA2->id, 'stock_actual' => 3]);
 
         $productoB = Producto::create(['tenant_id' => $tenant->id, 'nombre' => 'Pantalon Cargo']);
-        ProductoVariante::create(['producto_id' => $productoB->id, 'talla' => 'Unica']);
+        ProductoVarianteFactory::asignarAtributos(ProductoVariante::create(['producto_id' => $productoB->id]), ['Talla' => 'Unica']);
         // Sin fila de inventario_stock -- stock_total debe ser 0, no null.
 
         $this->actingAs($usuario);
@@ -132,7 +133,7 @@ class ProductoTest extends TestCase
     {
         ['tenant' => $tenant, 'sucursal' => $sucursal, 'usuario' => $usuario] = $this->crearUsuarioConPermisos(['inventario.ver']);
         $producto = Producto::create(['tenant_id' => $tenant->id, 'nombre' => 'Gorra']);
-        $variante = ProductoVariante::create(['producto_id' => $producto->id, 'talla' => 'Unica', 'color' => 'Negro']);
+        $variante = ProductoVarianteFactory::asignarAtributos(ProductoVariante::create(['producto_id' => $producto->id]), ['Talla' => 'Unica', 'Color' => 'Negro']);
         InventarioStock::create(['sucursal_id' => $sucursal->id, 'variante_id' => $variante->id, 'stock_actual' => 12, 'stock_minimo' => 2]);
 
         $this->actingAs($usuario);
@@ -140,7 +141,7 @@ class ProductoTest extends TestCase
         $respuesta = $this->getJson("/api/v1/productos/{$producto->id}");
 
         $respuesta->assertOk();
-        $respuesta->assertJsonPath('data.variantes.0.color', 'Negro');
+        $respuesta->assertJsonPath('data.variantes.0.nombre', 'Unica / Negro');
         $respuesta->assertJsonPath('data.variantes.0.stock.0.sucursal_nombre', 'Centro');
         $respuesta->assertJsonPath('data.variantes.0.stock.0.stock_actual', '12.000');
         $respuesta->assertJsonPath('data.variantes.0.stock_actual', '12.000');
@@ -158,11 +159,11 @@ class ProductoTest extends TestCase
         $otraSucursal = Sucursal::create(['tenant_id' => $tenant->id, 'nombre' => 'Norte']);
 
         $producto = Producto::create(['tenant_id' => $tenant->id, 'nombre' => 'Bufanda']);
-        $conStock = ProductoVariante::create(['producto_id' => $producto->id, 'talla' => 'Unica']);
+        $conStock = ProductoVarianteFactory::asignarAtributos(ProductoVariante::create(['producto_id' => $producto->id]), ['Talla' => 'Unica']);
         InventarioStock::create(['sucursal_id' => $sucursal->id, 'variante_id' => $conStock->id, 'stock_actual' => 7]);
         InventarioStock::create(['sucursal_id' => $otraSucursal->id, 'variante_id' => $conStock->id, 'stock_actual' => 99]);
 
-        $sinFila = ProductoVariante::create(['producto_id' => $producto->id, 'talla' => 'Chica']);
+        $sinFila = ProductoVarianteFactory::asignarAtributos(ProductoVariante::create(['producto_id' => $producto->id]), ['Talla' => 'Chica']);
         // Sin ninguna fila de inventario_stock -- stock_actual debe ser 0, no null.
 
         $this->actingAs($usuario);
@@ -182,14 +183,14 @@ class ProductoTest extends TestCase
         $this->actingAs($usuario);
 
         $creada = $this->postJson("/api/v1/productos/{$producto->id}/variantes", [
-            'talla' => '27', 'color' => 'Blanco', 'codigo_barras' => 'ABC123',
+            'valores' => ProductoVarianteFactory::idsDeValores($tenant->id, ['Talla' => '27', 'Color' => 'Blanco']), 'codigo_barras' => 'ABC123',
         ]);
-        $creada->assertCreated()->assertJsonPath('data.talla', '27');
+        $creada->assertCreated()->assertJsonPath('data.nombre', '27 / Blanco');
         $varianteId = $creada->json('data.id');
 
-        $this->putJson("/api/v1/producto-variantes/{$varianteId}", ['talla' => '28', 'color' => 'Blanco'])
+        $this->putJson("/api/v1/producto-variantes/{$varianteId}", ['valores' => ProductoVarianteFactory::idsDeValores($tenant->id, ['Talla' => '28', 'Color' => 'Blanco'])])
             ->assertOk()
-            ->assertJsonPath('data.talla', '28');
+            ->assertJsonPath('data.nombre', '28 / Blanco');
 
         $this->patchJson("/api/v1/producto-variantes/{$varianteId}/desactivar")
             ->assertOk()
@@ -209,7 +210,7 @@ class ProductoTest extends TestCase
 
         $this->actingAs($usuario);
 
-        $respuesta = $this->postJson("/api/v1/productos/{$producto->id}/variantes", ['talla' => 'Unica']);
+        $respuesta = $this->postJson("/api/v1/productos/{$producto->id}/variantes", ['valores' => ProductoVarianteFactory::idsDeValores($tenant->id, ['Talla' => 'Unica'])]);
 
         $respuesta->assertCreated();
         $codigo = $respuesta->json('data.codigo_barras');
@@ -226,7 +227,7 @@ class ProductoTest extends TestCase
         $this->actingAs($usuario);
 
         $respuesta = $this->postJson("/api/v1/productos/{$producto->id}/variantes", [
-            'talla' => 'Unica', 'codigo_barras' => 'MANUAL-1',
+            'valores' => ProductoVarianteFactory::idsDeValores($tenant->id, ['Talla' => 'Unica']), 'codigo_barras' => 'MANUAL-1',
         ]);
 
         $respuesta->assertCreated()->assertJsonPath('data.codigo_barras', 'MANUAL-1');
@@ -239,7 +240,7 @@ class ProductoTest extends TestCase
 
         $this->actingAs($usuario);
 
-        $respuesta = $this->postJson("/api/v1/productos/{$producto->id}/variantes", ['talla' => 'Unica']);
+        $respuesta = $this->postJson("/api/v1/productos/{$producto->id}/variantes", ['valores' => ProductoVarianteFactory::idsDeValores($tenant->id, ['Talla' => 'Unica'])]);
 
         $respuesta->assertCreated()->assertJsonPath('data.codigo_barras', null);
     }
@@ -248,7 +249,7 @@ class ProductoTest extends TestCase
     {
         ['tenant' => $tenant, 'sucursal' => $sucursal, 'usuario' => $usuario] = $this->crearUsuarioConPermisos(['inventario.ver']);
         $producto = Producto::create(['tenant_id' => $tenant->id, 'nombre' => 'Bufanda']);
-        $variante = ProductoVariante::create(['producto_id' => $producto->id, 'talla' => 'Unica']);
+        $variante = ProductoVarianteFactory::asignarAtributos(ProductoVariante::create(['producto_id' => $producto->id]), ['Talla' => 'Unica']);
 
         $servicio = app(InventarioService::class);
         $servicio->registrarMovimientoConStock(Bloqueos04e::stock($variante->id, $sucursal->id), 'entrada', 10, 'compra', $usuario->id);

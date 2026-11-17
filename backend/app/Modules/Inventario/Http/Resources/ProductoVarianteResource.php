@@ -19,8 +19,6 @@ class ProductoVarianteResource extends JsonResource
         return [
             'id' => $this->id,
             'producto_id' => $this->producto_id,
-            'talla' => $this->talla,
-            'color' => $this->color,
             'codigo_barras' => $this->codigo_barras,
             'precio_venta' => $this->precio_venta === null ? null : DecimalApi::dinero($this->precio_venta),
             'costo' => $this->costo === null ? null : DecimalApi::dinero($this->costo),

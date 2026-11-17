@@ -35,7 +35,7 @@ describe('DevolucionFormComponent', () => {
       {
         id: 1,
         variante_id: 5,
-        variante: { id: 5, talla: 'M', color: null, producto_nombre: 'Camisa' },
+        variante: { id: 5, nombre: 'M', producto_nombre: 'Camisa' },
         cantidad: '2.000',
         precio_unitario: '120.00',
         descuento_aplicado: '0.00',
@@ -44,7 +44,7 @@ describe('DevolucionFormComponent', () => {
       {
         id: 2,
         variante_id: 6,
-        variante: { id: 6, talla: 'Unica', color: null, producto_nombre: 'Corbata' },
+        variante: { id: 6, nombre: 'Unica', producto_nombre: 'Corbata' },
         cantidad: '1.000',
         precio_unitario: '60.00',
         descuento_aplicado: '0.00',

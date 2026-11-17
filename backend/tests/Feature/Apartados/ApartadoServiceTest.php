@@ -11,6 +11,7 @@ use App\Modules\Apartados\Models\ApartadoAbonoPago;
 use App\Modules\Apartados\Models\ApartadoDetalle;
 use App\Modules\Apartados\Services\ApartadoService;
 use App\Modules\Crm\Models\Cliente;
+use App\Modules\Inventario\Database\Factories\ProductoVarianteFactory;
 use App\Modules\Inventario\Models\Categoria;
 use App\Modules\Inventario\Models\InventarioStock;
 use App\Modules\Inventario\Models\Kardex;
@@ -77,12 +78,12 @@ class ApartadoServiceTest extends TestCase
             'tenant_id' => $tenant->id, 'categoria_id' => $categoria->id,
             'nombre' => 'Sudadera', 'precio_compra' => 100, 'precio_venta' => 200,
         ]);
-        $varianteC = ProductoVariante::create(['producto_id' => $productoC->id, 'talla' => 'L']);
+        $varianteC = ProductoVarianteFactory::asignarAtributos(ProductoVariante::create(['producto_id' => $productoC->id]), ['Talla' => 'L']);
         $productoD = Producto::create([
             'tenant_id' => $tenant->id, 'categoria_id' => $categoria->id,
             'nombre' => 'Bufanda', 'precio_compra' => 40, 'precio_venta' => 80,
         ]);
-        $varianteD = ProductoVariante::create(['producto_id' => $productoD->id, 'talla' => 'Unica']);
+        $varianteD = ProductoVarianteFactory::asignarAtributos(ProductoVariante::create(['producto_id' => $productoD->id]), ['Talla' => 'Unica']);
         $proveedor = Proveedor::create(['tenant_id' => $tenant->id, 'razon_social' => 'Textiles del Norte']);
 
         $datos04e2 = ['tenant_id' => $tenant->id, 'proveedor_id' => $proveedor->id, 'sucursal_id' => $sucursal->id, 'usuario_id' => $usuario->id];

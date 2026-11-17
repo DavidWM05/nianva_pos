@@ -30,8 +30,6 @@ export interface ProductoFormPayload {
 export interface VarianteFormPayload {
   precio_venta?: number | null;
   costo?: number | null;
-  talla?: string | null;
-  color?: string | null;
   codigo_barras?: string | null;
   /** ARQ-07: ids de valores de atributo, uno por atributo; si llega, reemplaza los de la variante. */
   valores?: number[];

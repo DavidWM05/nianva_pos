@@ -7,6 +7,7 @@ use App\Modules\Cotizaciones\Exceptions\SinClienteException;
 use App\Modules\Cotizaciones\Models\Cotizacion;
 use App\Modules\Cotizaciones\Services\CotizacionService;
 use App\Modules\Crm\Models\Cliente;
+use App\Modules\Inventario\Database\Factories\ProductoVarianteFactory;
 use App\Modules\Inventario\Models\Categoria;
 use App\Modules\Inventario\Models\InventarioStock;
 use App\Modules\Inventario\Models\Producto;
@@ -66,8 +67,8 @@ class CotizacionServiceTest extends TestCase
             'tenant_id' => $tenant->id, 'categoria_id' => $categoria->id,
             'nombre' => 'Producto Test', 'precio_compra' => 50, 'precio_venta' => 100,
         ]);
-        $varianteA = ProductoVariante::create(['producto_id' => $producto->id, 'talla' => 'M']);
-        $varianteB = ProductoVariante::create(['producto_id' => $producto->id, 'talla' => 'L']);
+        $varianteA = ProductoVarianteFactory::asignarAtributos(ProductoVariante::create(['producto_id' => $producto->id]), ['Talla' => 'M']);
+        $varianteB = ProductoVarianteFactory::asignarAtributos(ProductoVariante::create(['producto_id' => $producto->id]), ['Talla' => 'L']);
 
         $proveedor = Proveedor::create(['tenant_id' => $tenant->id, 'razon_social' => 'Proveedor Test']);
 

@@ -8,7 +8,7 @@ import { Venta } from '../tpv/venta.types';
 /**
  * Venta no tiene `nombre` -- arma la etiqueta "Venta #id - cliente - $total"
  * antes de exponerla como EntidadBuscable, mismo criterio que
- * VariantesDeProductoBuscadorService con talla/color. Solo ofrece ventas
+ * VariantesDeProductoBuscadorService con la variante. Solo ofrece ventas
  * `completada` (una anulada no tiene sentido ponerla a plazos) -- filtro de
  * UI, el backend no lo valida.
  */

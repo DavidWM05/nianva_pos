@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Precios;
 
+use App\Modules\Inventario\Database\Factories\ProductoVarianteFactory;
 use App\Modules\Inventario\Models\Categoria;
 use App\Modules\Inventario\Models\Producto;
 use App\Modules\Inventario\Models\ProductoVariante;
@@ -196,7 +197,7 @@ class ReglaPrecioTest extends TestCase
     {
         ['tenant' => $tenant, 'usuario' => $usuario] = $this->crearUsuarioConPermisos(['reglas_precio.ver']);
         $producto = Producto::create(['tenant_id' => $tenant->id, 'nombre' => 'Gorra']);
-        $variante = ProductoVariante::create(['producto_id' => $producto->id, 'talla' => 'Unica']);
+        $variante = ProductoVarianteFactory::asignarAtributos(ProductoVariante::create(['producto_id' => $producto->id]), ['Talla' => 'Unica']);
         ReglaPrecio::create([
             'tenant_id' => $tenant->id, 'nombre' => 'Descuento gorra', 'tipo' => 'monto_fijo',
             'monto' => 20, 'aplica_a' => 'variante', 'variante_id' => $variante->id, 'activo' => true,

@@ -30,7 +30,7 @@ class VentaLineaResource extends JsonResource
             'factor' => $this->when($detalle->getAttribute('presentacion_nombre') !== null, fn () => DecimalApi::cantidad($detalle->getAttribute('factor')))];
     }
 
-    /** @return array{id:int, talla:?string, color:?string, producto_nombre:string} */
+    /** @return array{id:int, nombre:?string, producto_nombre:string} */
     private function datosVariante(ProductoVariante $variante): array
     {
         $producto = $variante->getRelationValue('producto');
@@ -38,6 +38,6 @@ class VentaLineaResource extends JsonResource
             throw new \LogicException('La variante de venta requiere su producto.');
         }
 
-        return ['id' => (int) $variante->getKey(), 'talla' => $variante->getAttribute('talla') === null ? null : (string) $variante->getAttribute('talla'), 'color' => $variante->getAttribute('color') === null ? null : (string) $variante->getAttribute('color'), 'producto_nombre' => (string) $producto->getAttribute('nombre')];
+        return ['id' => (int) $variante->getKey(), 'nombre' => $variante->nombreDeAtributos(), 'producto_nombre' => (string) $producto->getAttribute('nombre')];
     }
 }

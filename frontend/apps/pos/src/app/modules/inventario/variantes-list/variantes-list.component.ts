@@ -124,9 +124,7 @@ export class VariantesListComponent {
   }
 
   protected etiquetaVariante(variante: ProductoVariante): string {
-    const partes = [variante.talla, variante.color].filter((valor) => !!valor);
-
-    return partes.length > 0 ? partes.join(' / ') : `Variante #${variante.id}`;
+    return variante.nombre ?? `Variante #${variante.id}`;
   }
 
   async onDesactivar(variante: ProductoVariante): Promise<void> {

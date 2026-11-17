@@ -47,7 +47,7 @@ describe('ReglasPrecioListComponent', () => {
       aplica_a: 'variante',
       categoria: null,
       producto: null,
-      variante: { id: 9, talla: 'Unica', color: 'Negro', producto_nombre: 'Gorra' },
+      variante: { id: 9, nombre: 'Unica / Negro', producto_nombre: 'Gorra' },
       fecha_inicio: null,
       fecha_fin: null,
       activo: true,

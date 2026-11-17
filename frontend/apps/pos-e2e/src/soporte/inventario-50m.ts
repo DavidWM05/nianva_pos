@@ -39,3 +39,40 @@ export function prepararStockBajo50m(productoId: number): void {
     },
   });
 }
+
+/**
+ * ARQ-07b: la variante ya no tiene talla ni color como texto; se eligen valores de atributo que
+ * existen. Siembra en el tenant del vendedor de abarrotes los atributos Talla y Color con los
+ * valores que usa el flujo de inventario. Repetible: no duplica lo que ya existe.
+ */
+export function prepararAtributos50m(): void {
+  const backend = path.resolve(__dirname, '../../../../../backend');
+  const codigo = [
+    'require ' +
+      JSON.stringify(path.join(backend, 'vendor/autoload.php')) +
+      ';',
+    '$app = require ' +
+      JSON.stringify(path.join(backend, 'bootstrap/app.php')) +
+      ';',
+    String.raw`$app->make(Illuminate\Contracts\Console\Kernel::class)->bootstrap();`,
+    String.raw`$u = App\Modules\Nucleo\Models\Usuario::sinTenant()->where('correo', 'vendedor@abarrotes.test')->firstOrFail();`,
+    String.raw`App\Modules\Inventario\Database\Factories\ProductoVarianteFactory::idsDeValores((int) $u->tenant_id, ['Talla' => 'Unidad 50m', 'Color' => 'Azul']);`,
+    String.raw`App\Modules\Inventario\Database\Factories\ProductoVarianteFactory::idsDeValores((int) $u->tenant_id, ['Talla' => 'Extra 50m']);`,
+  ].join('\n');
+  execFileSync('php', ['-r', codigo], {
+    cwd: backend,
+    encoding: 'utf8',
+    env: {
+      ...process.env,
+      APP_ENV: 'local',
+      APP_KEY: 'base64:' + Buffer.alloc(32, 7).toString('base64'),
+      DB_CONNECTION: 'sqlite',
+      DB_DATABASE: path.join(
+        backend,
+        'storage/framework/testing/pos-e2e.sqlite',
+      ),
+      CACHE_STORE: 'array',
+      QUEUE_CONNECTION: 'sync',
+    },
+  });
+}

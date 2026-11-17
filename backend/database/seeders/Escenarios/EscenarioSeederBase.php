@@ -208,16 +208,16 @@ abstract class EscenarioSeederBase extends Seeder
         ]);
     }
 
+    /**
+     * @param  array<string, string>  $atributos  valores de atributo por nombre (ARQ-07), vacio si no tiene
+     */
     protected function crearVariante(
         Producto $producto,
-        ?string $talla,
-        ?string $color,
+        array $atributos,
         int $unidadMedidaId,
     ): ProductoVariante {
-        return ProductoVariante::factory()->create([
+        return ProductoVariante::factory()->conAtributos($atributos)->create([
             'producto_id' => $producto->id,
-            'talla' => $talla,
-            'color' => $color,
             'unidad_medida_id' => $unidadMedidaId,
         ]);
     }

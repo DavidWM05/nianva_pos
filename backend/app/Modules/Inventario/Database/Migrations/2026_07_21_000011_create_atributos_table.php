@@ -7,7 +7,7 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
 /**
- * ARQ-07: atributos genericos de variante (Talla, Color, Medida...). El giro los define como
+ * ARQ-07: atributos genericos de variante (cada giro trae los suyos). El giro los define como
  * datos (perfil de giro), nunca como columnas.
  */
 return new class extends Migration

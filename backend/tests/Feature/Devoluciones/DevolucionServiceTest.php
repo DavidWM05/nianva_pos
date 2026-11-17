@@ -10,6 +10,7 @@ use App\Modules\Devoluciones\Models\Devolucion;
 use App\Modules\Devoluciones\Models\DevolucionItem;
 use App\Modules\Devoluciones\Models\DevolucionPago;
 use App\Modules\Devoluciones\Services\DevolucionService;
+use App\Modules\Inventario\Database\Factories\ProductoVarianteFactory;
 use App\Modules\Inventario\Models\Categoria;
 use App\Modules\Inventario\Models\InventarioStock;
 use App\Modules\Inventario\Models\Kardex;
@@ -76,11 +77,11 @@ class DevolucionServiceTest extends TestCase
 
         $categoria = Categoria::create(['tenant_id' => $tenant->id, 'nombre' => 'Ropa']);
         $productoE = Producto::create(['tenant_id' => $tenant->id, 'categoria_id' => $categoria->id, 'nombre' => 'Camisa', 'precio_compra' => 60, 'precio_venta' => 120]);
-        $varianteE = ProductoVariante::create(['producto_id' => $productoE->id, 'talla' => 'M']);
+        $varianteE = ProductoVarianteFactory::asignarAtributos(ProductoVariante::create(['producto_id' => $productoE->id]), ['Talla' => 'M']);
         $productoF = Producto::create(['tenant_id' => $tenant->id, 'categoria_id' => $categoria->id, 'nombre' => 'Corbata', 'precio_compra' => 30, 'precio_venta' => 60]);
-        $varianteF = ProductoVariante::create(['producto_id' => $productoF->id, 'talla' => 'Unica']);
+        $varianteF = ProductoVarianteFactory::asignarAtributos(ProductoVariante::create(['producto_id' => $productoF->id]), ['Talla' => 'Unica']);
         $productoG = Producto::create(['tenant_id' => $tenant->id, 'categoria_id' => $categoria->id, 'nombre' => 'Saco', 'precio_compra' => 200, 'precio_venta' => 400]);
-        $varianteG = ProductoVariante::create(['producto_id' => $productoG->id, 'talla' => 'L']);
+        $varianteG = ProductoVarianteFactory::asignarAtributos(ProductoVariante::create(['producto_id' => $productoG->id]), ['Talla' => 'L']);
         $proveedor = Proveedor::create(['tenant_id' => $tenant->id, 'razon_social' => 'Textiles del Norte']);
 
         $datos04e2 = ['tenant_id' => $tenant->id, 'proveedor_id' => $proveedor->id, 'sucursal_id' => $sucursal->id, 'usuario_id' => $usuario->id];

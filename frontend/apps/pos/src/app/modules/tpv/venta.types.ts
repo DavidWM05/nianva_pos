@@ -16,8 +16,8 @@ export interface VentaMetodoPagoResumen {
 
 export interface VentaDetalleVariante {
   id: number;
-  talla: string | null;
-  color: string | null;
+  /** ARQ-07: nombre armado por atributos ("M / Rojo"), o null. */
+  nombre: string | null;
   producto_nombre: string | null;
 }
 
@@ -94,8 +94,7 @@ export interface ReporteVentasPorMetodoPago {
 export interface ReporteVentasProducto {
   variante_id: number;
   producto_nombre: string | null;
-  talla: string | null;
-  color: string | null;
+  nombre: string | null;
   cantidad_vendida: string;
   total_vendido: string;
 }

@@ -19,7 +19,7 @@ describe('ReporteVentasComponent', () => {
     ticket_promedio: '367.65',
     por_sucursal: [{ sucursal_id: 1, sucursal_nombre: 'Centro', total: '80000.00', numero_ventas: 210 }],
     por_metodo_pago: [{ metodo_pago_id: 1, metodo_pago_nombre: 'Efectivo', total: '70000.00' }],
-    top_productos: [{ variante_id: 12, producto_nombre: 'Playera básica', talla: 'M', color: 'Negro', cantidad_vendida: '45.000', total_vendido: '6750.00' }],
+    top_productos: [{ variante_id: 12, producto_nombre: 'Playera básica', nombre: 'M / Negro', cantidad_vendida: '45.000', total_vendido: '6750.00' }],
   };
 
   async function crearComponente(): Promise<void> {

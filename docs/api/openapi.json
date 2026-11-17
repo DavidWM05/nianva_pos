@@ -11158,13 +11158,7 @@
                                                             "producto_nombre": {
                                                                 "type": "string"
                                                             },
-                                                            "talla": {
-                                                                "type": [
-                                                                    "string",
-                                                                    "null"
-                                                                ]
-                                                            },
-                                                            "color": {
+                                                            "nombre": {
                                                                 "type": [
                                                                     "string",
                                                                     "null"
@@ -11182,8 +11176,7 @@
                                                         "required": [
                                                             "variante_id",
                                                             "producto_nombre",
-                                                            "talla",
-                                                            "color",
+                                                            "nombre",
                                                             "cantidad_vendida",
                                                             "total_vendido"
                                                         ]
@@ -11836,13 +11829,7 @@
                                         "id": {
                                             "type": "integer"
                                         },
-                                        "talla": {
-                                            "type": [
-                                                "string",
-                                                "null"
-                                            ]
-                                        },
-                                        "color": {
+                                        "nombre": {
                                             "type": [
                                                 "string",
                                                 "null"
@@ -11854,8 +11841,7 @@
                                     },
                                     "required": [
                                         "id",
-                                        "talla",
-                                        "color",
+                                        "nombre",
                                         "producto_nombre"
                                     ]
                                 },
@@ -14125,13 +14111,7 @@
                                         "id": {
                                             "type": "integer"
                                         },
-                                        "talla": {
-                                            "type": [
-                                                "string",
-                                                "null"
-                                            ]
-                                        },
-                                        "color": {
+                                        "nombre": {
                                             "type": [
                                                 "string",
                                                 "null"
@@ -14143,8 +14123,7 @@
                                     },
                                     "required": [
                                         "id",
-                                        "talla",
-                                        "color",
+                                        "nombre",
                                         "producto_nombre"
                                     ]
                                 },
@@ -14918,20 +14897,6 @@
             "GuardarProductoVarianteRequest": {
                 "type": "object",
                 "properties": {
-                    "talla": {
-                        "type": [
-                            "string",
-                            "null"
-                        ],
-                        "maxLength": 30
-                    },
-                    "color": {
-                        "type": [
-                            "string",
-                            "null"
-                        ],
-                        "maxLength": 30
-                    },
                     "precio_venta": {
                         "type": [
                             "number",
@@ -16534,18 +16499,6 @@
                     "producto_id": {
                         "type": "integer"
                     },
-                    "talla": {
-                        "type": [
-                            "string",
-                            "null"
-                        ]
-                    },
-                    "color": {
-                        "type": [
-                            "string",
-                            "null"
-                        ]
-                    },
                     "codigo_barras": {
                         "type": [
                             "string",
@@ -16640,8 +16593,6 @@
                 "required": [
                     "id",
                     "producto_id",
-                    "talla",
-                    "color",
                     "codigo_barras",
                     "precio_venta",
                     "costo",
@@ -17073,13 +17024,7 @@
                             "id": {
                                 "type": "integer"
                             },
-                            "talla": {
-                                "type": [
-                                    "string",
-                                    "null"
-                                ]
-                            },
-                            "color": {
+                            "nombre": {
                                 "type": [
                                     "string",
                                     "null"
@@ -17091,8 +17036,7 @@
                         },
                         "required": [
                             "id",
-                            "talla",
-                            "color",
+                            "nombre",
                             "producto_nombre"
                         ]
                     },
@@ -17693,13 +17637,7 @@
                             "id": {
                                 "type": "integer"
                             },
-                            "talla": {
-                                "type": [
-                                    "string",
-                                    "null"
-                                ]
-                            },
-                            "color": {
+                            "nombre": {
                                 "type": [
                                     "string",
                                     "null"
@@ -17711,8 +17649,7 @@
                         },
                         "required": [
                             "id",
-                            "talla",
-                            "color",
+                            "nombre",
                             "producto_nombre"
                         ]
                     },

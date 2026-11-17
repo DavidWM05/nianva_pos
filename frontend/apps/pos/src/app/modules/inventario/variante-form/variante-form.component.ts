@@ -34,7 +34,7 @@ import { ProductoVariante } from '../producto.types';
 const LIMITES = limitesDe('/productos/{producto}/variantes', 'post');
 
 /**
- * Talla/color/codigo_barras -- usado para crear una variante nueva
+ * Atributos/codigo_barras -- usado para crear una variante nueva
  * (modal, sin valorInicial) y para editar una existente. El codigo de
  * barras se maneja como texto plano (ver decision en el reporte: no se
  * renderiza un codigo visual real para no sumar una libreria nueva).
@@ -69,8 +69,7 @@ export class VarianteFormComponent implements OnChanges {
 
   /**
    * ARQ-07: atributos del catálogo con sus valores (los carga la ruta del detalle). Uno por
-   * selector; "Sin valor" deja la variante sin ese atributo. Va junto a talla y color hasta que
-   * ARQ-07b los retire.
+   * selector; "Sin valor" deja la variante sin ese atributo.
    */
   @Input() atributos: Atributo[] = [];
 
@@ -117,20 +116,6 @@ export class VarianteFormComponent implements OnChanges {
     });
     this.fields = [
       {
-        name: 'talla',
-        label: 'Talla',
-        type: 'text',
-        defaultValue: this.valorInicial?.talla ?? '',
-        limite: LIMITES.talla,
-      },
-      {
-        name: 'color',
-        label: 'Color',
-        type: 'text',
-        defaultValue: this.valorInicial?.color ?? '',
-        limite: LIMITES.color,
-      },
-      {
         name: 'codigo_barras',
         label: 'Código de barras',
         type: 'text',
@@ -149,8 +134,6 @@ export class VarianteFormComponent implements OnChanges {
     if (this.importes.invalid) return;
     this.guardar.emit({
       ...this.importes.getRawValue(),
-      talla: value['talla'] as string | null,
-      color: value['color'] as string | null,
       codigo_barras: value['codigo_barras'] as string | null,
       // Sin atributos en el catálogo no se manda `valores`: el backend conserva los de la variante.
       ...(this.atributos.length > 0 ? { valores: this.idsElegidos() } : {}),

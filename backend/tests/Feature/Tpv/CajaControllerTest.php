@@ -4,6 +4,7 @@ namespace Tests\Feature\Tpv;
 
 use App\Modules\Crm\Models\Cliente;
 use App\Modules\Gastos\Services\GastoService;
+use App\Modules\Inventario\Database\Factories\ProductoVarianteFactory;
 use App\Modules\Inventario\Models\Categoria;
 use App\Modules\Inventario\Models\Producto;
 use App\Modules\Inventario\Models\ProductoVariante;
@@ -85,7 +86,7 @@ class CajaControllerTest extends TestCase
         $efectivo = MetodoPago::create(['tenant_id' => $tenant->id, 'nombre' => 'Efectivo', 'tipo' => 'efectivo']);
         $categoria = Categoria::create(['tenant_id' => $tenant->id, 'nombre' => 'Ropa']);
         $producto = Producto::create(['tenant_id' => $tenant->id, 'categoria_id' => $categoria->id, 'nombre' => 'Playera', 'precio_compra' => 50, 'precio_venta' => 100]);
-        $variante = ProductoVariante::create(['producto_id' => $producto->id, 'talla' => 'M']);
+        $variante = ProductoVarianteFactory::asignarAtributos(ProductoVariante::create(['producto_id' => $producto->id]), ['Talla' => 'M']);
         $proveedor = Proveedor::create(['tenant_id' => $tenant->id, 'razon_social' => 'Textiles del Norte']);
         $datos04e6 = ['tenant_id' => $tenant->id, 'proveedor_id' => $proveedor->id, 'sucursal_id' => $sucursal->id, 'usuario_id' => $usuario->id];
         $items04e6 = [['variante_id' => $variante->id, 'cantidad' => 5, 'precio_compra' => 50]];

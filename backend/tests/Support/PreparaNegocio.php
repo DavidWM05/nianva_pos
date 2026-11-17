@@ -8,6 +8,7 @@ use App\Modules\Cotizaciones\Services\CotizacionService;
 use App\Modules\Crm\Models\Cliente;
 use App\Modules\CuentasCobrar\Models\CuentaCobrar;
 use App\Modules\Devoluciones\Models\Devolucion;
+use App\Modules\Inventario\Database\Factories\ProductoVarianteFactory;
 use App\Modules\Inventario\Models\Categoria;
 use App\Modules\Inventario\Models\Compra;
 use App\Modules\Inventario\Models\Departamento;
@@ -129,8 +130,8 @@ trait PreparaNegocio
             'precio_compra' => 50,
             'precio_venta' => 100,
         ]);
-        $this->variante = ProductoVariante::create(['producto_id' => $this->producto->id, 'talla' => 'M']);
-        $this->varianteExtra = ProductoVariante::create(['producto_id' => $this->producto->id, 'talla' => 'L']);
+        $this->variante = ProductoVarianteFactory::asignarAtributos(ProductoVariante::create(['producto_id' => $this->producto->id]), ['Talla' => 'M']);
+        $this->varianteExtra = ProductoVarianteFactory::asignarAtributos(ProductoVariante::create(['producto_id' => $this->producto->id]), ['Talla' => 'L']);
 
         $this->metodoPago = MetodoPago::create([
             'tenant_id' => $this->tenant->id,
@@ -181,7 +182,7 @@ trait PreparaNegocio
             'precio_compra' => 50,
             'precio_venta' => 100,
         ]);
-        $this->varianteB = ProductoVariante::create(['producto_id' => $this->productoB->id, 'talla' => 'M']);
+        $this->varianteB = ProductoVarianteFactory::asignarAtributos(ProductoVariante::create(['producto_id' => $this->productoB->id]), ['Talla' => 'M']);
         $this->clienteB = Cliente::sinTenant()
             ->where('tenant_id', $this->tenantB->id)
             ->where('nombre', 'Publico General')
