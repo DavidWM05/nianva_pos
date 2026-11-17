@@ -17,7 +17,7 @@ describe('ReporteVentasComponent formato por pipe', () => {
       ticket_promedio: '367.60',
       por_sucursal: [{ sucursal_id: 1, sucursal_nombre: 'Centro', total: '80000.50', numero_ventas: 210 }],
       por_metodo_pago: [{ metodo_pago_id: 1, metodo_pago_nombre: 'Efectivo', total: '70000.00' }],
-      top_productos: [{ variante_id: 12, producto_nombre: 'Playera', talla: 'M', color: 'Negro', cantidad_vendida: '1250.500', total_vendido: '6750.00' }],
+      top_productos: [{ variante_id: 12, producto_nombre: 'Playera', nombre: 'M / Negro', cantidad_vendida: '1250.500', total_vendido: '6750.00' }],
     };
 
     await TestBed.configureTestingModule({

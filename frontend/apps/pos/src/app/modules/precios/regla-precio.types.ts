@@ -20,8 +20,7 @@ export interface ReglaPrecio {
   producto: { id: number; nombre: string } | null;
   variante: {
     id: number;
-    talla: string | null;
-    color: string | null;
+    nombre: string | null;
     producto_nombre: string | null;
   } | null;
   fecha_inicio: string | null;

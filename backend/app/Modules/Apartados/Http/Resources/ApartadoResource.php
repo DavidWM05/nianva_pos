@@ -46,8 +46,7 @@ class ApartadoResource extends JsonResource
                 'variante_id' => $detalle->variante_id,
                 'variante' => $detalle->variante ? [
                     'id' => $detalle->variante->id,
-                    'talla' => $detalle->variante->talla,
-                    'color' => $detalle->variante->color,
+                    'nombre' => $detalle->variante->nombreDeAtributos(),
                     'producto_nombre' => $detalle->variante->producto?->nombre,
                 ] : null,
                 'cantidad' => DecimalApi::cantidad($detalle->cantidad),

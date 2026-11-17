@@ -24,7 +24,7 @@ export function prepararDatos50l(): Datos50l {
     '$sufijo = uniqid(); $nombres = [];',
     'foreach (["Origen", "Destino"] as $nombre) {',
     '$p = App\\Modules\\Inventario\\Models\\Producto::factory()->create(["tenant_id"=>$u->tenant_id, "nombre"=>$nombre." 50l ".$sufijo, "precio_compra"=>5, "precio_venta"=>10]);',
-    '$v = App\\Modules\\Inventario\\Models\\ProductoVariante::factory()->create(["producto_id"=>$p->id, "talla"=>"Unidad 50l", "color"=>null, "unidad_medida_id"=>$unidad->id]);',
+    '$v = App\\Modules\\Inventario\\Models\\ProductoVariante::factory()->conAtributos(["Talla"=>"Unidad 50l"])->create(["producto_id"=>$p->id, "unidad_medida_id"=>$unidad->id]);',
     'App\\Modules\\Inventario\\Models\\InventarioStock::factory()->create(["sucursal_id"=>$u->sucursal_id, "variante_id"=>$v->id, "stock_actual"=>100]);',
     '$nombres[] = $p->nombre; }',
     '$e = App\\Modules\\Nucleo\\Models\\Usuario::factory()->create(["tenant_id"=>$u->tenant_id, "sucursal_id"=>$u->sucursal_id, "nombre"=>"Empleado 50l ".$sufijo, "apellido"=>"Prueba"]);',

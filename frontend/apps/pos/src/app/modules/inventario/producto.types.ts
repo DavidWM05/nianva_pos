@@ -31,8 +31,6 @@ export interface ProductoVariante {
   costo?: string | null;
   id: number;
   producto_id: number;
-  talla: string | null;
-  color: string | null;
   codigo_barras: string | null;
   activo: boolean;
   /** ARQ-07: con los valores de atributo cargados (show()), el nombre armado y cada valor. */

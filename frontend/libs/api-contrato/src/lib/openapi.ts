@@ -2404,8 +2404,7 @@ export interface components {
                 variante_id: number;
                 variante: {
                     id: number;
-                    talla: string | null;
-                    color: string | null;
+                    nombre: string | null;
                     producto_nombre: string;
                 } | null;
                 cantidad: string;
@@ -2940,8 +2939,7 @@ export interface components {
                 variante_id: number;
                 variante: {
                     id: number;
-                    talla: string | null;
-                    color: string | null;
+                    nombre: string | null;
                     producto_nombre: string;
                 } | null;
                 cantidad: string;
@@ -3126,8 +3124,6 @@ export interface components {
         };
         /** GuardarProductoVarianteRequest */
         GuardarProductoVarianteRequest: {
-            talla?: string | null;
-            color?: string | null;
             precio_venta?: number | null;
             costo?: number | null;
             codigo_barras?: string | null;
@@ -3534,8 +3530,6 @@ export interface components {
         ProductoVarianteResource: {
             id: number;
             producto_id: number;
-            talla: string | null;
-            color: string | null;
             codigo_barras: string | null;
             precio_venta: string | null;
             costo: string | null;
@@ -3674,8 +3668,7 @@ export interface components {
             } | null;
             variante?: {
                 id: number;
-                talla: string | null;
-                color: string | null;
+                nombre: string | null;
                 producto_nombre: string;
             } | null;
             /** Format: date-time */
@@ -3819,8 +3812,7 @@ export interface components {
             variante_id: number;
             variante: {
                 id: number;
-                talla: string | null;
-                color: string | null;
+                nombre: string | null;
                 producto_nombre: string;
             } | null;
             cantidad: string;
@@ -9607,8 +9599,7 @@ export interface operations {
                             top_productos: {
                                 variante_id: number;
                                 producto_nombre: string;
-                                talla: string | null;
-                                color: string | null;
+                                nombre: string | null;
                                 cantidad_vendida: string;
                                 total_vendido: string;
                             }[];

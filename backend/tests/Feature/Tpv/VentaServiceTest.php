@@ -3,6 +3,7 @@
 namespace Tests\Feature\Tpv;
 
 use App\Modules\Crm\Models\Cliente;
+use App\Modules\Inventario\Database\Factories\ProductoVarianteFactory;
 use App\Modules\Inventario\Exceptions\StockInsuficienteException;
 use App\Modules\Inventario\Models\Categoria;
 use App\Modules\Inventario\Models\InventarioStock;
@@ -78,12 +79,12 @@ class VentaServiceTest extends TestCase
             'tenant_id' => $tenant->id, 'categoria_id' => $categoria->id,
             'nombre' => 'Playera', 'precio_compra' => 50, 'precio_venta' => 100,
         ]);
-        $varianteA = ProductoVariante::create(['producto_id' => $productoA->id, 'talla' => 'M']);
+        $varianteA = ProductoVarianteFactory::asignarAtributos(ProductoVariante::create(['producto_id' => $productoA->id]), ['Talla' => 'M']);
         $productoB = Producto::create([
             'tenant_id' => $tenant->id, 'categoria_id' => $categoria->id,
             'nombre' => 'Pantalon', 'precio_compra' => 25, 'precio_venta' => 50,
         ]);
-        $varianteB = ProductoVariante::create(['producto_id' => $productoB->id, 'talla' => '32']);
+        $varianteB = ProductoVarianteFactory::asignarAtributos(ProductoVariante::create(['producto_id' => $productoB->id]), ['Talla' => '32']);
         $proveedor = Proveedor::create(['tenant_id' => $tenant->id, 'razon_social' => 'Textiles del Norte']);
 
         $datos04e7 = ['tenant_id' => $tenant->id, 'proveedor_id' => $proveedor->id, 'sucursal_id' => $sucursal->id, 'usuario_id' => $usuario->id];

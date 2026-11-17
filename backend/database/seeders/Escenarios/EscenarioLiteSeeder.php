@@ -59,7 +59,7 @@ class EscenarioLiteSeeder extends EscenarioSeederBase
 
                 $productos[] = [
                     'producto' => $producto,
-                    'variante' => $this->crearVariante($producto, 'Unica', 'Natural', $unidad),
+                    'variante' => $this->crearVariante($producto, ['Talla' => 'Unica', 'Color' => 'Natural'], $unidad),
                 ];
             }
 

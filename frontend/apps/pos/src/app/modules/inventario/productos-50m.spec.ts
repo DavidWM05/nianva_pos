@@ -192,8 +192,8 @@ describe('50m productos', () => {
       variantes: [
         {
           id: 8,
-          talla: 'M',
-          color: 'Azul',
+          nombre: 'M / Azul',
+          atributos: [{ atributo_id: 1, atributo: 'Talla', valor_id: 1, valor_nombre: 'M' }, { atributo_id: 2, atributo: 'Color', valor_id: 2, valor_nombre: 'Azul' }],
           activo: true,
           stock: [
             {
@@ -214,7 +214,7 @@ for (const formulario of [
   { componente: ProductoFormComponent, campo: 'nombre', inputs: {} },
   {
     componente: VarianteFormComponent,
-    campo: 'talla',
+    campo: 'codigo_barras',
     inputs: { valorInicial: null },
   },
   {
@@ -321,7 +321,7 @@ it('agrupa todas las sucursales de stock bajo en un solo aviso por variante', as
     variantes: [
       {
         id: 8,
-        talla: 'M',
+        nombre: 'M', atributos: [{ atributo_id: 1, atributo: 'Talla', valor_id: 1, valor_nombre: 'M' }],
         activo: true,
         stock: [
           {

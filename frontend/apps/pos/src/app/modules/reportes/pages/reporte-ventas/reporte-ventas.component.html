@@ -99,7 +99,7 @@
             @for (fila of r.top_productos; track fila.variante_id) {
               <tr>
                 <td>{{ fila.producto_nombre ?? ('Producto #' + fila.variante_id) }}</td>
-                <td>{{ fila.talla ?? '—' }} / {{ fila.color ?? '—' }}</td>
+                <td>{{ fila.nombre ?? '—' }}</td>
                 <td>{{ fila.cantidad_vendida | cantidad }}</td>
                 <td>{{ fila.total_vendido | dinero }}</td>
               </tr>

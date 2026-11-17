@@ -3,6 +3,7 @@
 namespace Tests\Feature\Tpv;
 
 use App\Modules\Crm\Models\Cliente;
+use App\Modules\Inventario\Database\Factories\ProductoVarianteFactory;
 use App\Modules\Inventario\Models\Categoria;
 use App\Modules\Inventario\Models\Producto;
 use App\Modules\Inventario\Models\ProductoVariante;
@@ -73,7 +74,7 @@ class VentaReporteTest extends TestCase
             'tenant_id' => $this->tenant->id, 'categoria_id' => $categoria->id,
             'nombre' => 'Playera', 'precio_compra' => 50, 'precio_venta' => 100,
         ]);
-        $this->variante = ProductoVariante::create(['producto_id' => $producto->id, 'talla' => 'M', 'color' => 'Negro']);
+        $this->variante = ProductoVarianteFactory::asignarAtributos(ProductoVariante::create(['producto_id' => $producto->id]), ['Talla' => 'M', 'Color' => 'Negro']);
         $proveedor = Proveedor::create(['tenant_id' => $this->tenant->id, 'razon_social' => 'Textiles']);
 
         $inventarioService = app(InventarioService::class);
@@ -146,8 +147,7 @@ class VentaReporteTest extends TestCase
         $this->assertCount(1, $top);
         $this->assertSame($this->variante->id, $top[0]['variante_id']);
         $this->assertSame('Playera', $top[0]['producto_nombre']);
-        $this->assertSame('M', $top[0]['talla']);
-        $this->assertSame('Negro', $top[0]['color']);
+        $this->assertSame('M / Negro', $top[0]['nombre']);
         $this->assertSame('3.000', $top[0]['cantidad_vendida']);
         $this->assertEquals(300.0, $top[0]['total_vendido']);
     }
@@ -173,7 +173,7 @@ class VentaReporteTest extends TestCase
 
     public function test_reporte_top_productos_con_varias_variantes_trae_sus_nombres(): void
     {
-        $otra = ProductoVariante::create(['producto_id' => $this->variante->producto_id, 'talla' => 'L', 'color' => 'Blanco']);
+        $otra = ProductoVarianteFactory::asignarAtributos(ProductoVariante::create(['producto_id' => $this->variante->producto_id]), ['Talla' => 'L', 'Color' => 'Blanco']);
         $datos04e2 = ['tenant_id' => $this->tenant->id, 'proveedor_id' => Proveedor::firstOrFail()->id, 'sucursal_id' => $this->sucursal->id, 'usuario_id' => $this->usuario->id];
         $items04e2 = [['variante_id' => $otra->id, 'cantidad' => 10, 'precio_compra' => 50]];
         app(InventarioService::class)->registrarCompraConStocks($datos04e2, $items04e2, Bloqueos04e::stocks((int) $datos04e2['sucursal_id'], array_column($items04e2, 'variante_id')));
@@ -190,7 +190,6 @@ class VentaReporteTest extends TestCase
             ->keyBy('variante_id');
 
         $this->assertSame('Playera', $top[$this->variante->id]['producto_nombre']);
-        $this->assertSame('L', $top[$otra->id]['talla']);
-        $this->assertSame('Blanco', $top[$otra->id]['color']);
+        $this->assertSame('L / Blanco', $top[$otra->id]['nombre']);
     }
 }

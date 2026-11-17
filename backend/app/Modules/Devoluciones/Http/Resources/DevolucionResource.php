@@ -45,8 +45,7 @@ class DevolucionResource extends JsonResource
                 'variante_id' => $item->variante_id,
                 'variante' => $item->variante ? [
                     'id' => $item->variante->id,
-                    'talla' => $item->variante->talla,
-                    'color' => $item->variante->color,
+                    'nombre' => $item->variante->nombreDeAtributos(),
                     'producto_nombre' => $item->variante->producto?->nombre,
                 ] : null,
                 'cantidad' => DecimalApi::cantidad($item->cantidad),

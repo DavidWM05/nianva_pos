@@ -66,7 +66,7 @@ class ApartadoController extends Controller
         $usuario = $request->user();
 
         return response()->json([
-            'data' => new ApartadoResource($apartado->load(['cliente', 'detalles.variante.producto', 'abonos.pagos.metodoPago'])),
+            'data' => new ApartadoResource($apartado->load(['cliente', 'detalles.variante.producto', 'detalles.variante.valoresAtributo.valor.atributo', 'abonos.pagos.metodoPago'])),
             'meta' => [
                 'permisos' => [
                     'abonar' => $usuario->tienePermiso('apartados.abonar'),
@@ -86,7 +86,7 @@ class ApartadoController extends Controller
 
         $apartado = $crearApartado->ejecutar($request->toDto(), $usuario);
 
-        $apartado->refresh()->load(['cliente', 'detalles.variante.producto']);
+        $apartado->refresh()->load(['cliente', 'detalles.variante.producto', 'detalles.variante.valoresAtributo.valor.atributo']);
 
         return (new ApartadoResource($apartado))->response()->setStatusCode(201);
     }
@@ -101,7 +101,7 @@ class ApartadoController extends Controller
 
         $registrarAbonoApartado->ejecutar($request->toDto(), $apartado, $usuario);
 
-        return new ApartadoResource($apartado->fresh(['cliente', 'detalles.variante.producto', 'abonos.pagos.metodoPago']));
+        return new ApartadoResource($apartado->fresh(['cliente', 'detalles.variante.producto', 'detalles.variante.valoresAtributo.valor.atributo', 'abonos.pagos.metodoPago']));
     }
 
     public function liquidar(Request $request, Apartado $apartado, LiquidarApartado $liquidarApartado)
@@ -109,7 +109,7 @@ class ApartadoController extends Controller
         // No hay payload que validar: se conserva el Request y el contrato de esta ruta.
         $liquidarApartado->ejecutar(new LiquidarApartadoDto, $apartado, $request->user());
 
-        return new ApartadoResource($apartado->fresh(['cliente', 'detalles.variante.producto', 'abonos.pagos.metodoPago']));
+        return new ApartadoResource($apartado->fresh(['cliente', 'detalles.variante.producto', 'detalles.variante.valoresAtributo.valor.atributo', 'abonos.pagos.metodoPago']));
     }
 
     public function cancelar(CancelarApartadoRequest $request, Apartado $apartado, CancelarApartado $cancelarApartado)
@@ -123,7 +123,7 @@ class ApartadoController extends Controller
         $resultado = $cancelarApartado->ejecutar($request->toDto(), $apartado, $usuario);
 
         return response()->json([
-            'data' => new ApartadoResource($resultado->apartado->load(['cliente', 'detalles.variante.producto', 'abonos.pagos.metodoPago'])),
+            'data' => new ApartadoResource($resultado->apartado->load(['cliente', 'detalles.variante.producto', 'detalles.variante.valoresAtributo.valor.atributo', 'abonos.pagos.metodoPago'])),
             'meta' => [
                 'tiene_abonos_pendientes' => $resultado->tieneAbonosPendientes,
                 'monto_abonado_pendiente' => DecimalApi::dinero($resultado->montoAbonadoPendiente),

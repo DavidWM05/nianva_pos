@@ -133,7 +133,7 @@ export class ProductoDetalleComponent implements OnInit {
   protected readonly errorKardex = signal(false);
   protected readonly opcionesVariantes = computed(() =>
     (this.producto()?.variantes ?? []).map((v) => ({
-      label: v.talla ?? 'Variante #' + v.id,
+      label: v.nombre ?? 'Variante #' + v.id,
       value: v.id,
     })),
   );

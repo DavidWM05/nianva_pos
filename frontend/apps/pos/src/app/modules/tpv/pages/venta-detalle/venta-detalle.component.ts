@@ -93,7 +93,7 @@ export class VentaDetalleComponent implements OnInit {
     const variante = detalle.variante;
     const nombre = variante?.producto_nombre ?? '';
 
-    return variante?.talla || variante?.color ? `${nombre} (${variante.talla ?? ''} / ${variante.color ?? ''})` : nombre;
+    return variante?.nombre ? `${nombre} (${variante.nombre})` : nombre;
   }
 
   protected etiquetaMetodosPago(venta: Venta): string {

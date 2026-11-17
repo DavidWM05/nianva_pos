@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Inventario;
 
+use App\Modules\Inventario\Database\Factories\ProductoVarianteFactory;
 use App\Modules\Inventario\Models\Categoria;
 use App\Modules\Inventario\Models\Departamento;
 use App\Modules\Inventario\Models\Producto;
@@ -76,20 +77,18 @@ class EdicionesParcialesTest extends TestCase
 
     public function test_actualizar_variante_solo_con_talla_conserva_color_y_codigo(): void
     {
-        $variante = ProductoVariante::create([
+        $variante = ProductoVarianteFactory::asignarAtributos(ProductoVariante::create([
             'producto_id' => $this->producto->id,
-            'talla' => 'S',
-            'color' => 'Rojo',
             'codigo_barras' => 'PARCIAL-VARIANTE-1',
-        ]);
+        ]), ['Talla' => 'S', 'Color' => 'Rojo']);
         $this->actingAs($this->usuario);
 
-        $this->putJson("/api/v1/producto-variantes/{$variante->id}", ['talla' => 'M'])
+        $this->putJson("/api/v1/producto-variantes/{$variante->id}", ['valores' => ProductoVarianteFactory::idsDeValores($this->tenant->id, ['Talla' => 'M', 'Color' => 'Rojo'])])
             ->assertOk();
 
         $variante->refresh();
-        $this->assertSame('M', $variante->talla);
-        $this->assertSame('Rojo', $variante->color);
+        $this->assertSame('M', ProductoVarianteFactory::valorDe($variante, 'Talla'));
+        $this->assertSame('Rojo', ProductoVarianteFactory::valorDe($variante, 'Color'));
         $this->assertSame('PARCIAL-VARIANTE-1', $variante->codigo_barras);
     }
 }

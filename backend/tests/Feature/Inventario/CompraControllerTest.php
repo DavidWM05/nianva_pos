@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Inventario;
 
+use App\Modules\Inventario\Database\Factories\ProductoVarianteFactory;
 use App\Modules\Inventario\Models\Producto;
 use App\Modules\Inventario\Models\ProductoVariante;
 use App\Modules\Inventario\Models\Proveedor;
@@ -59,7 +60,7 @@ class CompraControllerTest extends TestCase
         ['tenant' => $tenant, 'sucursal' => $sucursal, 'usuario' => $usuario] = $this->crearUsuarioConPermisos(['compras.crear']);
         $proveedor = Proveedor::create(['tenant_id' => $tenant->id, 'razon_social' => 'Textiles del Norte']);
         $producto = Producto::create(['tenant_id' => $tenant->id, 'nombre' => 'Playera Básica']);
-        $variante = ProductoVariante::create(['producto_id' => $producto->id, 'talla' => 'M']);
+        $variante = ProductoVarianteFactory::asignarAtributos(ProductoVariante::create(['producto_id' => $producto->id]), ['Talla' => 'M']);
 
         $this->actingAs($usuario);
 
@@ -114,7 +115,7 @@ class CompraControllerTest extends TestCase
         ['tenant' => $tenant, 'usuario' => $usuario] = $this->crearUsuarioConPermisos(['inventario.ver']);
         $proveedor = Proveedor::create(['tenant_id' => $tenant->id, 'razon_social' => 'Textiles del Norte']);
         $producto = Producto::create(['tenant_id' => $tenant->id, 'nombre' => 'Gorra']);
-        $variante = ProductoVariante::create(['producto_id' => $producto->id, 'talla' => 'Unica']);
+        $variante = ProductoVarianteFactory::asignarAtributos(ProductoVariante::create(['producto_id' => $producto->id]), ['Talla' => 'Unica']);
 
         $this->actingAs($usuario);
 
@@ -152,7 +153,7 @@ class CompraControllerTest extends TestCase
             ->assertCreated()
             ->json('data');
 
-        $variante = $this->postJson("/api/v1/productos/{$producto['id']}/variantes", ['talla' => 'M', 'color' => 'Azul'])
+        $variante = $this->postJson("/api/v1/productos/{$producto['id']}/variantes", ['valores' => ProductoVarianteFactory::idsDeValores((int) $usuario->tenant_id, ['Talla' => 'M', 'Color' => 'Azul'])])
             ->assertCreated()
             ->json('data');
 

@@ -14,8 +14,6 @@ return new class extends Migration
             $table->id();
             $table->foreignId('tenant_id')->constrained('tenants')->cascadeOnDelete();
             $table->foreignId('producto_id')->constrained('productos')->cascadeOnDelete();
-            $table->string('talla', 30)->nullable();
-            $table->string('color', 30)->nullable();
             $table->string('codigo_barras', 50)->nullable();
             $table->decimal('precio_venta', 12, 2)->nullable();
             $table->decimal('costo', 12, 2)->nullable();

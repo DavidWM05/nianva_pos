@@ -6687,12 +6687,6 @@
                 "default": null
             },
             {
-                "nombre": "color",
-                "tipo": "varchar",
-                "nullable": true,
-                "default": null
-            },
-            {
                 "nombre": "costo",
                 "tipo": "numeric",
                 "nullable": true,
@@ -6726,12 +6720,6 @@
                 "nombre": "producto_id",
                 "tipo": "integer",
                 "nullable": false,
-                "default": null
-            },
-            {
-                "nombre": "talla",
-                "tipo": "varchar",
-                "nullable": true,
                 "default": null
             },
             {

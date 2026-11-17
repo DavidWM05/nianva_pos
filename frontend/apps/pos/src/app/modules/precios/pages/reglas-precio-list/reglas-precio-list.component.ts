@@ -222,7 +222,7 @@ export class ReglasPrecioListComponent {
       case 'variante': {
         const v = regla.variante;
         if (!v) return '—';
-        const detalle = [v.talla, v.color].filter((x) => !!x).join(' / ');
+        const detalle = v.nombre;
         return detalle
           ? `${v.producto_nombre} (${detalle})`
           : (v.producto_nombre ?? '—');

@@ -73,7 +73,7 @@ class EscenarioMultiSucursalSeeder extends EscenarioSeederBase
 
                 $productos[] = [
                     'producto' => $producto,
-                    'variante' => $this->crearVariante($producto, 'Unica', 'Negro', $unidad),
+                    'variante' => $this->crearVariante($producto, ['Talla' => 'Unica', 'Color' => 'Negro'], $unidad),
                 ];
             }
 

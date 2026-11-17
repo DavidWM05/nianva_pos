@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\Precios\Http\Resources;
 
+use App\Modules\Inventario\Models\ProductoVariante;
 use App\Modules\Nucleo\Support\DecimalApi;
 use App\Modules\Precios\Models\ReglaPrecio;
 use Illuminate\Http\Request;
@@ -40,8 +41,7 @@ class ReglaPrecioResource extends JsonResource
             ),
             'variante' => $this->whenLoaded('variante', fn () => $this->variante ? [
                 'id' => $this->variante->id,
-                'talla' => $this->variante->talla,
-                'color' => $this->variante->color,
+                'nombre' => $this->variante instanceof ProductoVariante ? $this->variante->nombreDeAtributos() : null,
                 'producto_nombre' => $this->variante->producto?->nombre,
             ] : null),
             'fecha_inicio' => $this->fecha_inicio,

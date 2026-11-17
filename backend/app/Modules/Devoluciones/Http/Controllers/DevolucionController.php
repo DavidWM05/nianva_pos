@@ -59,7 +59,7 @@ class DevolucionController extends Controller
     public function show(Devolucion $devolucion)
     {
         return new DevolucionResource(
-            $devolucion->load(['venta.cliente', 'ventaSombra', 'items.variante.producto', 'pagos.metodoPago']),
+            $devolucion->load(['venta.cliente', 'ventaSombra', 'items.variante.producto', 'items.variante.valoresAtributo.valor.atributo', 'pagos.metodoPago']),
         );
     }
 
@@ -79,7 +79,7 @@ class DevolucionController extends Controller
         $devolucion = $resultado['devolucion'];
         $nota = $resultado['nota_credito'];
 
-        $devolucion->load(['venta.cliente', 'ventaSombra', 'items.variante.producto', 'pagos.metodoPago']);
+        $devolucion->load(['venta.cliente', 'ventaSombra', 'items.variante.producto', 'items.variante.valoresAtributo.valor.atributo', 'pagos.metodoPago']);
 
         return response()->json([
             'data' => new DevolucionResource($devolucion),

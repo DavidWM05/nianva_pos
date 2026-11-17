@@ -3,6 +3,7 @@
 namespace Tests\Feature\Auditoria;
 
 use App\Modules\Auditoria\Models\Auditoria;
+use App\Modules\Inventario\Database\Factories\ProductoVarianteFactory;
 use App\Modules\Inventario\Models\Producto;
 use App\Modules\Inventario\Models\ProductoVariante;
 use App\Modules\Nucleo\Models\Permiso;
@@ -165,10 +166,10 @@ class OperacionesSensiblesTest extends TestCase
     public function test_variante_editada_deja_auditoria(): void
     {
         $producto = Producto::factory()->create(['tenant_id' => $this->tenant->id]);
-        $variante = ProductoVariante::factory()->create(['producto_id' => $producto->id, 'talla' => 'M']);
+        $variante = ProductoVariante::factory()->conAtributos(['Talla' => 'M'])->create(['producto_id' => $producto->id]);
 
         $this->actingAs($this->usuario)
-            ->putJson("/api/v1/producto-variantes/{$variante->id}", ['talla' => 'L'])
+            ->putJson("/api/v1/producto-variantes/{$variante->id}", ['valores' => ProductoVarianteFactory::idsDeValores($this->tenant->id, ['Talla' => 'L'])])
             ->assertOk();
 
         $this->assertGreaterThan(0, $this->auditoria('producto_variantes', $variante->id));

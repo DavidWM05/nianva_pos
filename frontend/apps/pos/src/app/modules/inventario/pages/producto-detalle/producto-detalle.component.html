@@ -94,7 +94,7 @@
     'Registrar compra' +
     (varianteEnCompra()
       ? ' -- ' +
-        (varianteEnCompra()!.talla ?? 'Variante #' + varianteEnCompra()!.id)
+        (varianteEnCompra()!.nombre ?? 'Variante #' + varianteEnCompra()!.id)
       : '')
   "
   [visible]="mostrarFormularioCompra()"

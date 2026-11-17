@@ -24,8 +24,6 @@ class GuardarProductoVarianteRequest extends SolicitudNegocio
         $varianteId = $variante instanceof ProductoVariante ? $variante->id : null;
 
         return [
-            'talla' => ['nullable', 'string', 'max:30'],
-            'color' => ['nullable', 'string', 'max:30'],
             'precio_venta' => ['nullable', 'numeric', 'decimal:0,2', 'min:0', 'max:9999999999.99'],
             'costo' => ['nullable', 'numeric', 'decimal:0,2', 'min:0', 'max:9999999999.99'],
             'codigo_barras' => [
@@ -56,8 +54,6 @@ class GuardarProductoVarianteRequest extends SolicitudNegocio
         }
 
         return new ProductoVarianteDto(
-            talla: isset($v['talla']) ? (string) $v['talla'] : null,
-            color: isset($v['color']) ? (string) $v['color'] : null,
             codigoBarras: isset($v['codigo_barras']) ? (string) $v['codigo_barras'] : null,
             presentes: array_values(array_diff(array_keys($v), ['valores'])),
             precioVenta: isset($v['precio_venta']) ? (string) $v['precio_venta'] : null,

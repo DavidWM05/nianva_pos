@@ -11,7 +11,7 @@ export interface CotizacionUsuarioResumen {
   nombre: string;
 }
 
-/** Solo `id`/`nombre` (nombre del producto) -- CotizacionDetalleResource no expone talla/color a diferencia de VentaDetalle/ApartadoDetalle. */
+/** Solo `id`/`nombre` (nombre del producto) -- CotizacionDetalleResource no expone el nombre de la variante a diferencia de VentaDetalle/ApartadoDetalle. */
 export interface CotizacionDetalleVariante {
   id: number;
   nombre: string | null;

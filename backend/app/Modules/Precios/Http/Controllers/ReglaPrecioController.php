@@ -21,7 +21,7 @@ class ReglaPrecioController extends Controller
 
     public function index(Request $request)
     {
-        $query = ReglaPrecio::query()->with(['categoria:id,nombre', 'producto:id,nombre', 'variante:id,talla,color,producto_id', 'variante.producto:id,nombre']);
+        $query = ReglaPrecio::query()->with(['categoria:id,nombre', 'producto:id,nombre', 'variante:id,producto_id', 'variante.producto:id,nombre', 'variante.valoresAtributo.valor.atributo']);
 
         if ($nombre = $request->query('filtro_nombre')) {
             $query->where('nombre', 'like', "%{$nombre}%");
@@ -49,7 +49,7 @@ class ReglaPrecioController extends Controller
 
     public function show(Request $request, ReglaPrecio $regla)
     {
-        $regla->load(['categoria:id,nombre', 'producto:id,nombre', 'variante:id,talla,color,producto_id', 'variante.producto:id,nombre']);
+        $regla->load(['categoria:id,nombre', 'producto:id,nombre', 'variante:id,producto_id', 'variante.producto:id,nombre', 'variante.valoresAtributo.valor.atributo']);
 
         return response()->json([
             'data' => new ReglaPrecioResource($regla),
@@ -64,7 +64,7 @@ class ReglaPrecioController extends Controller
         $datos['activo'] = true;
 
         $regla = ReglaPrecio::create($datos);
-        $regla->load(['categoria:id,nombre', 'producto:id,nombre', 'variante:id,talla,color,producto_id', 'variante.producto:id,nombre']);
+        $regla->load(['categoria:id,nombre', 'producto:id,nombre', 'variante:id,producto_id', 'variante.producto:id,nombre', 'variante.valoresAtributo.valor.atributo']);
 
         return (new ReglaPrecioResource($regla))->response()->setStatusCode(201);
     }
@@ -72,7 +72,7 @@ class ReglaPrecioController extends Controller
     public function update(GuardarReglaPrecioRequest $request, ReglaPrecio $regla)
     {
         $regla->update($request->toDto()->datos());
-        $regla->load(['categoria:id,nombre', 'producto:id,nombre', 'variante:id,talla,color,producto_id', 'variante.producto:id,nombre']);
+        $regla->load(['categoria:id,nombre', 'producto:id,nombre', 'variante:id,producto_id', 'variante.producto:id,nombre', 'variante.valoresAtributo.valor.atributo']);
 
         return new ReglaPrecioResource($regla);
     }

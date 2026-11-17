@@ -1,4 +1,4 @@
-import { prepararStockBajo50m } from '../soporte/inventario-50m';
+import { prepararAtributos50m, prepararStockBajo50m } from '../soporte/inventario-50m';
 import { capturarPantalla50m } from '../soporte/capturas-50m';
 import { expect, test } from '@playwright/test';
 import { abrirPantalla, sinErrores, vigilarErrores } from '../soporte/humo';
@@ -8,6 +8,7 @@ test('inventario productos: crear variante, registrar compra y consultar su kard
   page,
 }) => {
   test.setTimeout(360000);
+  prepararAtributos50m();
   await iniciarSesion(page, 'vendedor@abarrotes.test');
   const errores = vigilarErrores(page);
   await abrirPantalla(page, '/inventario');
@@ -33,12 +34,14 @@ test('inventario productos: crear variante, registrar compra y consultar su kard
   await capturarPantalla50m(page, 'variante-nueva');
   await page
     .locator('nucleo-variante-form')
-    .getByRole('textbox', { name: 'Talla', exact: true })
-    .fill('Unidad 50m');
+    .getByRole('combobox', { name: 'Talla', exact: true })
+    .click();
+  await page.getByRole('option', { name: 'Unidad 50m', exact: true }).click();
   await page
     .locator('nucleo-variante-form')
-    .getByRole('textbox', { name: 'Color', exact: true })
-    .fill('Azul');
+    .getByRole('combobox', { name: 'Color', exact: true })
+    .click();
+  await page.getByRole('option', { name: 'Azul', exact: true }).click();
   await capturarPantalla50m(page, 'variante-formulario');
   await page
     .getByRole('button', { name: 'Crear variante', exact: true })
@@ -57,8 +60,8 @@ test('inventario productos: crear variante, registrar compra y consultar su kard
   await expect(
     page
       .locator('nucleo-variante-form')
-      .getByRole('textbox', { name: 'Talla', exact: true }),
-  ).toHaveValue('Unidad 50m');
+      .getByRole('combobox', { name: 'Talla', exact: true }),
+  ).toHaveText('Unidad 50m');
   await capturarPantalla50m(page, 'variante-editar');
   await page
     .getByRole('dialog')
@@ -104,8 +107,9 @@ test('inventario productos: crear variante, registrar compra y consultar su kard
   await page.getByRole('button', { name: /Nueva variante$/ }).click();
   await page
     .locator('nucleo-variante-form')
-    .getByRole('textbox', { name: 'Talla', exact: true })
-    .fill('Extra 50m');
+    .getByRole('combobox', { name: 'Talla', exact: true })
+    .click();
+  await page.getByRole('option', { name: 'Extra 50m', exact: true }).click();
   await page
     .getByRole('button', { name: 'Crear variante', exact: true })
     .click();

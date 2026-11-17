@@ -4,6 +4,7 @@ namespace Tests\Feature\Apartados;
 
 use App\Modules\Apartados\Models\Apartado;
 use App\Modules\Crm\Models\Cliente;
+use App\Modules\Inventario\Database\Factories\ProductoVarianteFactory;
 use App\Modules\Inventario\Models\Categoria;
 use App\Modules\Inventario\Models\Producto;
 use App\Modules\Inventario\Models\ProductoVariante;
@@ -60,7 +61,7 @@ class ApartadoControllerTest extends TestCase
             'tenant_id' => $tenant->id, 'categoria_id' => $categoria->id,
             'nombre' => 'Sudadera', 'precio_compra' => 100, 'precio_venta' => 200,
         ]);
-        $variante = ProductoVariante::create(['producto_id' => $producto->id, 'talla' => 'L']);
+        $variante = ProductoVarianteFactory::asignarAtributos(ProductoVariante::create(['producto_id' => $producto->id]), ['Talla' => 'L']);
         $proveedor = Proveedor::create(['tenant_id' => $tenant->id, 'razon_social' => 'Textiles del Norte']);
 
         $datos04e2 = ['tenant_id' => $tenant->id, 'proveedor_id' => $proveedor->id, 'sucursal_id' => $sucursal->id, 'usuario_id' => $usuario->id];

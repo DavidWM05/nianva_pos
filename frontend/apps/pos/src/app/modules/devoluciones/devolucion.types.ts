@@ -11,8 +11,8 @@ export interface DevolucionVentaResumen {
 
 export interface DevolucionItemVariante {
   id: number;
-  talla: string | null;
-  color: string | null;
+  /** ARQ-07: nombre armado por atributos ("M / Rojo"), o null. */
+  nombre: string | null;
   producto_nombre: string | null;
 }
 
