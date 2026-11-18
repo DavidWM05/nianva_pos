@@ -9,14 +9,17 @@ use App\Modules\Inventario\Exceptions\StockInsuficienteException;
 use App\Modules\Inventario\Models\InventarioStock;
 use App\Modules\Inventario\Models\ProductoVariante;
 use App\Modules\Inventario\Services\InventarioService;
+use App\Modules\Inventario\Support\UnidadDeVariante;
 use App\Modules\Nucleo\Models\Sucursal;
 use App\Modules\Nucleo\Models\Usuario;
 use App\Modules\Nucleo\Scopes\TenantScope;
 use App\Modules\Nucleo\Support\Cantidad;
+use App\Modules\Nucleo\Support\Dinero;
 use App\Modules\Precios\Models\Cupon;
 use App\Modules\Precios\Services\PricingService;
 use App\Modules\Precios\Support\Carrito;
 use App\Modules\Precios\Support\ContextoPrecio;
+use App\Modules\Precios\Support\FotoDePrecio;
 use App\Modules\Precios\Support\LineaCarrito;
 use App\Modules\Tpv\Exceptions\CajaSesionNoAbiertaException;
 use App\Modules\Tpv\Exceptions\PagoNoCuadraException;
@@ -25,6 +28,7 @@ use App\Modules\Tpv\Exceptions\VentaYaAnuladaException;
 use App\Modules\Tpv\Models\CajaSesion;
 use App\Modules\Tpv\Models\Venta;
 use App\Modules\Tpv\Models\VentaDetalle;
+use App\Modules\Tpv\Models\VentaLineaRegla;
 use App\Modules\Tpv\Models\VentaPago;
 use Carbon\CarbonImmutable;
 use Illuminate\Support\Facades\DB;
@@ -33,7 +37,10 @@ use InvalidArgumentException;
 /**
  * Unico punto de entrada para registrar y anular ventas. Nunca acepta un
  * precio de linea calculado afuera -- siempre resuelve via
- * PricingService::cotizar(). Nunca toca inventario_stock
+ * PricingService::cotizar(), salvo al liquidar un apartado, que copia la foto
+ * de sus lineas tal como se apartaron (DAT-03, $fotosCopiadas). Cada linea
+ * guarda su foto completa: precio, descuento, lista, reglas, impuesto, unidad,
+ * factor y el costo promedio del stock bloqueado. Nunca toca inventario_stock
  * directamente -- siempre via InventarioService::registrarMovimientoConStock().
  * Todo dentro de una sola transaccion: si cualquier linea falla (stock
  * insuficiente, pago que no cuadra, tenant inconsistente), la venta
@@ -52,12 +59,13 @@ class VentaService
      * @param  list<array{variante_id:int, cantidad:int|float, presentacion_id?:int|null}>  $items
      * @param  list<array{metodo_pago_id:int, monto:float}>  $pagos
      * @param  array<int, InventarioStock>  $stocks
+     * @param  list<array<string, mixed>>|null  $fotosCopiadas  DAT-03: lineas con su foto ya fijada (liquidar un apartado); no se recotizan.
      *
      * @throws CajaSesionNoAbiertaException si la sucursal no tiene una caja abierta.
      * @throws StockInsuficienteException si alguna linea no tiene stock suficiente.
      * @throws PagoNoCuadraException si la suma de pagos no coincide con el monto a cobrar.
      */
-    public function registrarVentaConBloqueos(array $datosVenta, array $items, array $pagos, ?CajaSesion $cajaSesion, array $stocks): Venta
+    public function registrarVentaConBloqueos(array $datosVenta, array $items, array $pagos, ?CajaSesion $cajaSesion, array $stocks, ?array $fotosCopiadas = null): Venta
     {
         $this->exigirTransaccion();
         if ($items === []) {
@@ -83,7 +91,9 @@ class VentaService
 
         $this->verificarPertenencia($tenantId, $sucursalId, $datosVenta['cliente_id'], $cuponId);
 
-        [$lineas, $subtotalItems, $descuentoCupon] = $this->resolverLineas($tenantId, $items, new ContextoPrecio($tenantId, $sucursalId, $datosVenta['cliente_id'], CarbonImmutable::now(), $datosVenta['lista_precio_id'] ?? null), $cuponId);
+        [$lineas, $subtotalItems, $descuentoCupon] = $fotosCopiadas === null
+            ? $this->resolverLineas($tenantId, $items, new ContextoPrecio($tenantId, $sucursalId, $datosVenta['cliente_id'], CarbonImmutable::now(), $datosVenta['lista_precio_id'] ?? null), $cuponId)
+            : $this->lineasCopiadas($fotosCopiadas, $cuponId);
 
         $descuentoManual = round((float) ($datosVenta['descuento_manual'] ?? 0), 2);
         $total = round($subtotalItems - $descuentoCupon - $descuentoManual, 2);
@@ -116,18 +126,7 @@ class VentaService
         ]);
 
         foreach ($lineas as $linea) {
-            VentaDetalle::create([
-                'venta_id' => $venta->id,
-                'presentacion_id' => $linea['presentacion_id'] ?? null,
-                'presentacion_nombre' => $linea['presentacion_nombre'] ?? null,
-                'factor' => isset($linea['presentacion_id']) ? $linea['factor'] : '1.000',
-                'variante_id' => $linea['variante_id'],
-                'regla_precio_id' => $linea['regla_precio_id'],
-                'cantidad' => $linea['cantidad'],
-                'precio_unitario' => $linea['precio_unitario'],
-                'descuento_aplicado' => $linea['descuento_aplicado'],
-                'subtotal' => $linea['subtotal'],
-            ]);
+            $this->crearLinea($venta, $linea, $stocks[$linea['variante_id']]);
 
             // StockInsuficienteException aqui revierte TODA la venta (esta
             // linea, las anteriores, sus movimientos de kardex ya escritos):
@@ -135,7 +134,7 @@ class VentaService
             $this->inventarioService->registrarMovimientoConStock(
                 stock: $stocks[$linea['variante_id']],
                 tipo: 'salida',
-                cantidad: Cantidad::multiplicar($linea['cantidad'], isset($linea['presentacion_id']) ? $linea['factor'] : '1.000'),
+                cantidad: Cantidad::multiplicar($linea['cantidad'], $linea['factor']),
                 motivo: 'venta',
                 usuarioId: $datosVenta['usuario_id'],
                 referenciaTabla: 'ventas',
@@ -213,8 +212,15 @@ class VentaService
     public function cotizarItems(int $tenantId, array $items, ?ContextoPrecio $contexto = null): array
     {
         $cotizado = $this->resolverLineas($tenantId, $items, $contexto);
+        // La foto completa solo la escribe registrarVentaConBloqueos(); aquí se conserva la forma
+        // de siempre (precio, regla, descuento y subtotal por línea) para quien solo cotiza.
+        $lineas = array_map(static function (array $linea): array {
+            $presentacion = isset($linea['presentacion_id']) ? ['presentacion_id' => $linea['presentacion_id'], 'presentacion_nombre' => $linea['presentacion_nombre'], 'factor' => $linea['factor']] : [];
 
-        return [$cotizado[0], $cotizado[1]];
+            return [...$presentacion, 'variante_id' => $linea['variante_id'], 'regla_precio_id' => $linea['regla_precio_id'], 'cantidad' => $linea['cantidad'], 'precio_unitario' => $linea['precio_unitario'], 'descuento_aplicado' => $linea['descuento_aplicado'], 'subtotal' => $linea['subtotal']];
+        }, $cotizado[0]);
+
+        return [$lineas, $cotizado[1]];
     }
 
     /**
@@ -224,7 +230,8 @@ class VentaService
     private function resolverLineas(int $tenantId, array $items, ?ContextoPrecio $contexto = null, ?int $cuponId = null): array
     {
         $items = array_values($items);
-        foreach ($items as $item) {
+        $unidades = [];
+        foreach ($items as $indice => $item) {
             if ($item['cantidad'] <= 0) {
                 throw new InvalidArgumentException('La cantidad de cada linea debe ser mayor a cero.');
             }
@@ -235,6 +242,10 @@ class VentaService
                 throw new InvalidArgumentException("La variante {$item['variante_id']} no pertenece al tenant {$tenantId}.");
             }
 
+            if (! $variante instanceof ProductoVariante) {
+                throw new InvalidArgumentException("La variante {$item['variante_id']} no existe.");
+            }
+            $unidades[$indice] = UnidadDeVariante::idPara($variante);
         }
         $codigo = $cuponId === null ? null : (string) Cupon::query()->withoutGlobalScope(TenantScope::class)->findOrFail($cuponId)->getAttribute('codigo');
         $cotizacion = $this->pricingService->cotizar(new Carrito(array_map(static fn (array $item): LineaCarrito => new LineaCarrito((int) $item['variante_id'], $item['cantidad'], $item['presentacion_id'] ?? null), $items), $codigo), $contexto ?? new ContextoPrecio($tenantId, null, null, CarbonImmutable::now()));
@@ -248,18 +259,78 @@ class VentaService
                 }
                 $metadatos = ['presentacion_id' => $linea->presentacionId, 'presentacion_nombre' => $linea->presentacionNombre, 'factor' => $linea->factor];
             }
+            $foto = FotoDePrecio::de($linea);
             $lineas[] = [
                 ...$metadatos,
+                ...$foto,
                 'variante_id' => (int) $linea->varianteId,
-                'regla_precio_id' => $linea->reglas[0]->id ?? null,
                 'cantidad' => $item['cantidad'],
-                'precio_unitario' => $linea->precioBase,
-                'descuento_aplicado' => $linea->descuento,
+                'descuento_aplicado' => $foto['descuento'],
+                'unidad_medida_id' => $unidades[$indice],
                 'subtotal' => $linea->total,
             ];
         }
 
         return [$lineas, $cotizacion->subtotal, $cotizacion->cupon->descuento ?? 0.0];
+    }
+
+    /**
+     * DAT-03: escribe una linea con su foto completa y sus reglas combinadas. El costo es el
+     * promedio vigente del stock bloqueado por la Action (DAT-15), tambien en una liquidacion.
+     *
+     * @param  array<string, mixed>  $linea
+     */
+    private function crearLinea(Venta $venta, array $linea, InventarioStock $stock): VentaDetalle
+    {
+        $detalle = VentaDetalle::create([
+            'venta_id' => $venta->id,
+            'variante_id' => $linea['variante_id'],
+            'cantidad' => $linea['cantidad'],
+            'presentacion_id' => $linea['presentacion_id'] ?? null,
+            'presentacion_nombre' => $linea['presentacion_nombre'] ?? null,
+            'precio_unitario' => $linea['precio_unitario'],
+            'descuento_aplicado' => $linea['descuento_aplicado'],
+            'lista_precio_id' => $linea['lista_precio_id'],
+            'lista_precio_nombre' => $linea['lista_precio_nombre'],
+            'regla_precio_id' => $linea['regla_precio_id'],
+            'regla_nombre' => $linea['regla_nombre'],
+            'costo_unitario' => $stock->getAttribute('costo_promedio'),
+            'tasa_impuesto' => $linea['tasa_impuesto'],
+            'exento' => $linea['exento'],
+            'impuesto' => $linea['impuesto'],
+            'unidad_medida_id' => $linea['unidad_medida_id'],
+            'factor' => $linea['factor'],
+            'subtotal' => $linea['subtotal'],
+        ]);
+
+        /** @var list<array{regla_precio_id: int, regla_nombre: string, descuento: float|string}> $reglas */
+        $reglas = $linea['reglas'];
+        foreach ($reglas as $regla) {
+            VentaLineaRegla::create(['venta_detalle_id' => $detalle->id, ...$regla]);
+        }
+
+        return $detalle;
+    }
+
+    /**
+     * DAT-03: al liquidar un apartado la venta cobra lo acordado al apartar. Las lineas llegan con
+     * su foto (precio, descuento, reglas, lista e impuesto) y no pasan por PricingService.
+     *
+     * @param  list<array<string, mixed>>  $fotos
+     * @return array{0: list<array<string, mixed>>, 1: float, 2: float}
+     */
+    private function lineasCopiadas(array $fotos, ?int $cuponId): array
+    {
+        if ($cuponId !== null) {
+            throw new InvalidArgumentException('Una venta con lineas copiadas no admite cupon.');
+        }
+
+        $subtotal = Dinero::desde('0');
+        foreach ($fotos as $foto) {
+            $subtotal = $subtotal->sumar(Dinero::desde((string) $foto['subtotal']));
+        }
+
+        return [$fotos, (float) $subtotal->aCadena(), 0.0];
     }
 
     /**

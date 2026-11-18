@@ -2410,6 +2410,14 @@ export interface components {
                 cantidad: string;
                 precio_unitario: string;
                 subtotal: string;
+                /** @description DAT-03: la foto de la línea, nunca el catálogo actual. */
+                descuento: string;
+                lista_precio_nombre: unknown;
+                regla_nombre: unknown;
+                tasa_impuesto: string;
+                exento: boolean;
+                impuesto: string;
+                unidad_medida_id: number;
             }[];
             abonos?: {
                 id: number;
@@ -2578,6 +2586,13 @@ export interface components {
             precio_unitario: string;
             descuento: string;
             subtotal: string;
+            /** @description DAT-03: la foto de la línea, nunca el catálogo actual. */
+            lista_precio_nombre: string | null;
+            regla_nombre: string | null;
+            tasa_impuesto: string;
+            exento: boolean;
+            impuesto: string;
+            unidad_medida_id: number;
         };
         /** CotizacionResource */
         CotizacionResource: {
@@ -2945,6 +2960,14 @@ export interface components {
                 cantidad: string;
                 precio_unitario: string;
                 subtotal: string;
+                /** @description DAT-03: la foto de la línea, nunca el catálogo actual. */
+                descuento: string;
+                lista_precio_nombre: unknown;
+                regla_nombre: unknown;
+                tasa_impuesto: string;
+                exento: boolean;
+                impuesto: string;
+                unidad_medida_id: number;
                 va_a_merma: boolean;
             }[];
             pagos?: {
@@ -3819,6 +3842,13 @@ export interface components {
             precio_unitario: string;
             descuento_aplicado: string;
             subtotal: string;
+            /** @description DAT-03: la foto de la línea, nunca el catálogo actual. */
+            lista_precio_nombre: string | null;
+            regla_nombre: string | null;
+            tasa_impuesto: string;
+            exento: boolean;
+            impuesto: string;
+            unidad_medida_id: number;
             presentacion_id?: number | null;
             presentacion_nombre?: string;
             factor?: string;

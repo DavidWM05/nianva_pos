@@ -25,6 +25,11 @@ class VentaLineaResource extends JsonResource
 
         return ['id' => (int) $detalle->getKey(), 'variante_id' => (int) $detalle->getAttribute('variante_id'), 'variante' => $variante instanceof ProductoVariante ? $this->datosVariante($variante) : null,
             'cantidad' => DecimalApi::cantidad($detalle->getAttribute('cantidad')), 'precio_unitario' => DecimalApi::dinero($detalle->getAttribute('precio_unitario')), 'descuento_aplicado' => DecimalApi::dinero($detalle->getAttribute('descuento_aplicado')), 'subtotal' => DecimalApi::dinero($detalle->getAttribute('subtotal')),
+            // DAT-03: la foto de la línea, nunca el catálogo actual.
+            'lista_precio_nombre' => $detalle->getAttribute('lista_precio_nombre') === null ? null : (string) $detalle->getAttribute('lista_precio_nombre'),
+            'regla_nombre' => $detalle->getAttribute('regla_nombre') === null ? null : (string) $detalle->getAttribute('regla_nombre'),
+            'tasa_impuesto' => DecimalApi::tasa((string) $detalle->getAttribute('tasa_impuesto')), 'exento' => (bool) $detalle->getAttribute('exento'),
+            'impuesto' => DecimalApi::dinero($detalle->getAttribute('impuesto')), 'unidad_medida_id' => (int) $detalle->getAttribute('unidad_medida_id'),
             'presentacion_id' => $this->when($detalle->getAttribute('presentacion_nombre') !== null, fn () => $detalle->getAttribute('presentacion_id') === null ? null : (int) $detalle->getAttribute('presentacion_id')),
             'presentacion_nombre' => $this->when($detalle->getAttribute('presentacion_nombre') !== null, fn () => (string) $detalle->getAttribute('presentacion_nombre')),
             'factor' => $this->when($detalle->getAttribute('presentacion_nombre') !== null, fn () => DecimalApi::cantidad($detalle->getAttribute('factor')))];

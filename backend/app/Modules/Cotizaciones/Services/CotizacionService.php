@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\Cotizaciones\Services;
 
+use App\Modules\Configuracion\Models\ConfiguracionTenant;
 use App\Modules\Cotizaciones\Exceptions\CotizacionNoEditableException;
 use App\Modules\Cotizaciones\Exceptions\CotizacionTotalNegativoException;
 use App\Modules\Cotizaciones\Exceptions\CotizacionVencidaException;
@@ -11,10 +12,17 @@ use App\Modules\Cotizaciones\Exceptions\CotizacionYaConvertidaException;
 use App\Modules\Cotizaciones\Exceptions\SinClienteException;
 use App\Modules\Cotizaciones\Models\Cotizacion;
 use App\Modules\Cotizaciones\Models\CotizacionDetalle;
+use App\Modules\Cotizaciones\Models\CotizacionLineaRegla;
 use App\Modules\Inventario\Exceptions\StockInsuficienteException;
 use App\Modules\Inventario\Models\InventarioStock;
+use App\Modules\Inventario\Models\Producto;
 use App\Modules\Inventario\Models\ProductoVariante;
+use App\Modules\Inventario\Support\CostoVigente;
+use App\Modules\Inventario\Support\ImpuestoDeProducto;
+use App\Modules\Inventario\Support\UnidadDeVariante;
+use App\Modules\Nucleo\Exceptions\FotoIncompletaException;
 use App\Modules\Nucleo\Scopes\TenantScopeViaRelacion;
+use App\Modules\Nucleo\Support\Dinero;
 use App\Modules\Precios\Support\ContextoPrecio;
 use App\Modules\Tpv\Models\CajaSesion;
 use App\Modules\Tpv\Models\Venta;
@@ -46,7 +54,7 @@ class CotizacionService
      * Crea cotizacion con sus items. No modifica stock.
      *
      * @param  array{tenant_id:int, sucursal_id:int, usuario_id:int, cliente_id:?int, lista_precio_id?:?int, validez_dias?:int, descuento?:float, observaciones:?string, uso_cfdi:?string}  $data
-     * @param  list<array{variante_id:int, cantidad:int|float, precio_unitario?:float, descuento?:float}>  $items
+     * @param  list<array<string, mixed>>  $items  líneas con precio y descuento resueltos (y lista y reglas si aplicaron)
      *
      * @throws InvalidArgumentException si cantidad <= 0 o variante no existe
      */
@@ -74,25 +82,16 @@ class CotizacionService
                 throw new InvalidArgumentException('La cantidad de cada item debe ser mayor a cero.');
             }
 
-            $variante = ProductoVariante::query()->withoutGlobalScope(TenantScopeViaRelacion::class)->with('producto')->findOrFail($item['variante_id']);
+            $variante = ProductoVariante::query()->withoutGlobalScope(TenantScopeViaRelacion::class)->with('producto')->findOrFail((int) $item['variante_id']);
 
             if ((int) $variante->producto?->getAttribute('tenant_id') !== $tenantId) {
                 throw new InvalidArgumentException("La variante {$item['variante_id']} no pertenece al tenant {$tenantId}.");
             }
 
-            $precioUnitario = round((float) ($item['precio_unitario'] ?? 0), 2);
-            $descuentoLinea = round((float) ($item['descuento'] ?? 0), 2);
-            $subtotal = round($precioUnitario * $item['cantidad'] - $descuentoLinea, 2);
+            $linea = $this->lineaConFoto($item, $variante, (int) $data['sucursal_id']);
+            $lineas[] = $linea;
 
-            $lineas[] = [
-                'variante_id' => $variante->id,
-                'cantidad' => $item['cantidad'],
-                'precio_unitario' => $precioUnitario,
-                'descuento' => $descuentoLinea,
-                'subtotal' => $subtotal,
-            ];
-
-            $total += $subtotal;
+            $total += $linea['subtotal'];
         }
 
         $subtotalCotizacion = round($total, 2);
@@ -119,14 +118,7 @@ class CotizacionService
         ]);
 
         foreach ($lineas as $linea) {
-            CotizacionDetalle::create([
-                'cotizacion_id' => $cotizacion->id,
-                'variante_id' => $linea['variante_id'],
-                'cantidad' => $linea['cantidad'],
-                'precio_unitario' => $linea['precio_unitario'],
-                'descuento' => $linea['descuento'],
-                'subtotal' => $linea['subtotal'],
-            ]);
+            $this->crearDetalle($cotizacion, $linea);
         }
 
         return $cotizacion->load('detalles');
@@ -138,7 +130,7 @@ class CotizacionService
      * Solo si estado = 'pendiente'.
      *
      * @param  array<string, mixed>  $data
-     * @param  list<array{variante_id:int, cantidad:int|float, precio_unitario?:float, descuento?:float}>  $items
+     * @param  list<array<string, mixed>>  $items  líneas con precio y descuento resueltos (y lista y reglas si aplicaron)
      */
     public function actualizarConCotizacion(Cotizacion $cotizacion, array $data, array $items): Cotizacion
     {
@@ -163,25 +155,16 @@ class CotizacionService
                 throw new InvalidArgumentException('La cantidad de cada item debe ser mayor a cero.');
             }
 
-            $variante = ProductoVariante::query()->withoutGlobalScope(TenantScopeViaRelacion::class)->with('producto')->findOrFail($item['variante_id']);
+            $variante = ProductoVariante::query()->withoutGlobalScope(TenantScopeViaRelacion::class)->with('producto')->findOrFail((int) $item['variante_id']);
 
             if ((int) $variante->producto?->getAttribute('tenant_id') !== $cotizacion->tenant_id) {
                 throw new InvalidArgumentException("La variante {$item['variante_id']} no pertenece al tenant.");
             }
 
-            $precioUnitario = round((float) ($item['precio_unitario'] ?? 0), 2);
-            $descuentoLinea = round((float) ($item['descuento'] ?? 0), 2);
-            $subtotal = round($precioUnitario * $item['cantidad'] - $descuentoLinea, 2);
+            $linea = $this->lineaConFoto($item, $variante, (int) $cotizacion->getAttribute('sucursal_id'));
+            $lineas[] = $linea;
 
-            $lineas[] = [
-                'variante_id' => $variante->id,
-                'cantidad' => $item['cantidad'],
-                'precio_unitario' => $precioUnitario,
-                'descuento' => $descuentoLinea,
-                'subtotal' => $subtotal,
-            ];
-
-            $total += $subtotal;
+            $total += $linea['subtotal'];
         }
 
         $subtotalCotizacion = round($total, 2);
@@ -206,14 +189,7 @@ class CotizacionService
         $cotizacion->detalles()->delete();
 
         foreach ($lineas as $linea) {
-            CotizacionDetalle::create([
-                'cotizacion_id' => $cotizacion->id,
-                'variante_id' => $linea['variante_id'],
-                'cantidad' => $linea['cantidad'],
-                'precio_unitario' => $linea['precio_unitario'],
-                'descuento' => $linea['descuento'],
-                'subtotal' => $linea['subtotal'],
-            ]);
+            $this->crearDetalle($cotizacion, $linea);
         }
 
         return $cotizacion->refresh()->load('detalles');
@@ -328,6 +304,70 @@ class CotizacionService
         }
 
         return 'COT-'.str_pad((string) $correlativo, 6, '0', STR_PAD_LEFT);
+    }
+
+    /**
+     * DAT-03: la foto de una línea de cotización. Precio y descuento llegan ya resueltos
+     * (ResolverPreciosCotizacion); si faltan, la operación falla. La tasa es la del producto, el
+     * impuesto se desglosa del total de la línea (IVA incluido), la unidad sale de
+     * UnidadDeVariante y el costo es el promedio vigente de la sucursal, leído sin bloqueo porque
+     * la cotización no mueve stock. Lista y reglas son las que aplicaron, o null.
+     *
+     * @param  array<string, mixed>  $item
+     * @return array<string, mixed>
+     */
+    private function lineaConFoto(array $item, ProductoVariante $variante, int $sucursalId): array
+    {
+        foreach (['precio_unitario', 'descuento'] as $campo) {
+            if (! isset($item[$campo])) {
+                throw new FotoIncompletaException($campo, (int) $variante->id);
+            }
+        }
+
+        $producto = $variante->getRelationValue('producto');
+        if (! $producto instanceof Producto) {
+            throw new FotoIncompletaException('producto', (int) $variante->id);
+        }
+
+        $precioUnitario = round((float) $item['precio_unitario'], 2);
+        $descuentoLinea = round((float) $item['descuento'], 2);
+        $subtotal = round($precioUnitario * $item['cantidad'] - $descuentoLinea, 2);
+        $configuracion = ConfiguracionTenant::sinTenant()->where('tenant_id', $producto->getAttribute('tenant_id'))->firstOrFail();
+        [$tasa, $exento] = ImpuestoDeProducto::de($producto, $configuracion->getAttribute('tasa_iva_default'));
+
+        return [
+            'variante_id' => $variante->id,
+            'cantidad' => $item['cantidad'],
+            'precio_unitario' => $precioUnitario,
+            'descuento' => $descuentoLinea,
+            'lista_precio_id' => $item['lista_precio_id'] ?? null,
+            'lista_precio_nombre' => $item['lista_precio_nombre'] ?? null,
+            'regla_precio_id' => $item['regla_precio_id'] ?? null,
+            'regla_nombre' => $item['regla_nombre'] ?? null,
+            'reglas' => $item['reglas'] ?? [],
+            'costo_unitario' => CostoVigente::sinBloqueo($sucursalId, (int) $variante->id),
+            'tasa_impuesto' => $tasa,
+            'exento' => $exento,
+            'impuesto' => $exento ? '0.00' : Dinero::desde(number_format($subtotal, 2, '.', ''))->impuestoIncluido($tasa)->aCadena(),
+            'unidad_medida_id' => UnidadDeVariante::idPara($variante),
+            'factor' => '1.000',
+            'subtotal' => $subtotal,
+        ];
+    }
+
+    /** @param  array<string, mixed>  $linea */
+    private function crearDetalle(Cotizacion $cotizacion, array $linea): void
+    {
+        $detalle = CotizacionDetalle::create([
+            'cotizacion_id' => $cotizacion->id,
+            ...array_diff_key($linea, ['reglas' => true]),
+        ]);
+
+        /** @var list<array{regla_precio_id: int, regla_nombre: string, descuento: float}> $reglas */
+        $reglas = $linea['reglas'];
+        foreach ($reglas as $regla) {
+            CotizacionLineaRegla::create(['cotizacion_detalle_id' => $detalle->id, ...$regla]);
+        }
     }
 
     private function exigirTransaccion(): void

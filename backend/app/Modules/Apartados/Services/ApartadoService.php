@@ -11,22 +11,25 @@ use App\Modules\Apartados\Models\Apartado;
 use App\Modules\Apartados\Models\ApartadoAbono;
 use App\Modules\Apartados\Models\ApartadoAbonoPago;
 use App\Modules\Apartados\Models\ApartadoDetalle;
+use App\Modules\Apartados\Models\ApartadoLineaRegla;
 use App\Modules\Apartados\Support\ResultadoCancelacion;
 use App\Modules\Crm\Models\Cliente;
 use App\Modules\Inventario\Models\InventarioStock;
 use App\Modules\Inventario\Models\ProductoVariante;
 use App\Modules\Inventario\Services\InventarioService;
+use App\Modules\Inventario\Support\UnidadDeVariante;
 use App\Modules\Nucleo\Models\Sucursal;
 use App\Modules\Nucleo\Models\Usuario;
 use App\Modules\Nucleo\Support\Cantidad;
 use App\Modules\Precios\Services\PricingService;
 use App\Modules\Precios\Support\Carrito;
 use App\Modules\Precios\Support\ContextoPrecio;
+use App\Modules\Precios\Support\FotoDePrecio;
 use App\Modules\Precios\Support\LineaCarrito;
-use App\Modules\Precios\Support\LineaPrecio;
 use App\Modules\Tpv\Models\CajaSesion;
 use App\Modules\Tpv\Services\VentaService;
 use Carbon\CarbonImmutable;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use InvalidArgumentException;
 
@@ -101,13 +104,28 @@ class ApartadoService
         ]);
 
         foreach ($lineas as $linea) {
-            ApartadoDetalle::create([
+            // DAT-03: foto completa; el costo es el promedio vigente al apartar (stock bloqueado).
+            $detalle = ApartadoDetalle::create([
                 'apartado_id' => $apartado->id,
                 'variante_id' => $linea['variante_id'],
                 'cantidad' => $linea['cantidad'],
                 'precio_unitario' => $linea['precio_unitario'],
+                'descuento' => $linea['descuento'],
+                'lista_precio_id' => $linea['lista_precio_id'],
+                'lista_precio_nombre' => $linea['lista_precio_nombre'],
+                'regla_precio_id' => $linea['regla_precio_id'],
+                'regla_nombre' => $linea['regla_nombre'],
+                'costo_unitario' => $stocks[$linea['variante_id']]->getAttribute('costo_promedio'),
+                'tasa_impuesto' => $linea['tasa_impuesto'],
+                'exento' => $linea['exento'],
+                'impuesto' => $linea['impuesto'],
+                'unidad_medida_id' => $linea['unidad_medida_id'],
+                'factor' => $linea['factor'],
                 'subtotal' => $linea['subtotal'],
             ]);
+            foreach ($linea['reglas'] as $regla) {
+                ApartadoLineaRegla::create(['apartado_detalle_id' => $detalle->id, ...$regla]);
+            }
 
             // Reserva: descuenta inventario_stock igual que una venta (ver docblock de clase).
             $this->inventarioService->registrarMovimientoConStock(
@@ -204,7 +222,7 @@ class ApartadoService
             throw new ApartadoSaldoInsuficienteException($apartado->id, (float) $apartado->total, (float) $apartado->total_abonado);
         }
 
-        $detalles = $apartado->detalles;
+        $detalles = $apartado->detalles()->with('reglas')->get();
 
         foreach ($detalles as $detalle) {
             $this->inventarioService->registrarMovimientoConStock(
@@ -223,6 +241,30 @@ class ApartadoService
             'cantidad' => Cantidad::numero($detalle->getAttribute('cantidad')),
         ])->all());
 
+        // DAT-03: la venta cobra lo acordado al apartar. Copia la foto de cada linea (precio,
+        // descuento, reglas, lista e impuesto); el costo lo toma la venta del stock al liquidar.
+        $fotos = array_values($detalles->map(fn (Model $detalle): array => [
+            'variante_id' => (int) $detalle->getAttribute('variante_id'),
+            'cantidad' => Cantidad::numero($detalle->getAttribute('cantidad')),
+            'precio_unitario' => (string) $detalle->getAttribute('precio_unitario'),
+            'descuento_aplicado' => (string) $detalle->getAttribute('descuento'),
+            'lista_precio_id' => $detalle->getAttribute('lista_precio_id'),
+            'lista_precio_nombre' => $detalle->getAttribute('lista_precio_nombre'),
+            'regla_precio_id' => $detalle->getAttribute('regla_precio_id'),
+            'regla_nombre' => $detalle->getAttribute('regla_nombre'),
+            'reglas' => array_values($detalle->getRelationValue('reglas')->map(fn (Model $regla): array => [
+                'regla_precio_id' => (int) $regla->getAttribute('regla_precio_id'),
+                'regla_nombre' => (string) $regla->getAttribute('regla_nombre'),
+                'descuento' => (string) $regla->getAttribute('descuento'),
+            ])->all()),
+            'tasa_impuesto' => (string) $detalle->getAttribute('tasa_impuesto'),
+            'exento' => (bool) $detalle->getAttribute('exento'),
+            'impuesto' => (string) $detalle->getAttribute('impuesto'),
+            'unidad_medida_id' => (int) $detalle->getAttribute('unidad_medida_id'),
+            'factor' => (string) $detalle->getAttribute('factor'),
+            'subtotal' => (string) $detalle->getAttribute('subtotal'),
+        ])->all());
+
         $venta = $this->ventaService->registrarVentaConBloqueos(
             datosVenta: [
                 'tenant_id' => $apartado->tenant_id,
@@ -236,6 +278,7 @@ class ApartadoService
             pagos: [],
             cajaSesion: $caja,
             stocks: $stocks,
+            fotosCopiadas: $fotos,
         );
 
         $apartado->update([
@@ -300,11 +343,12 @@ class ApartadoService
 
     /**
      * @param  list<array{variante_id:int, cantidad:int|float}>  $items
-     * @return array{0: list<array{variante_id:int, cantidad:int|float, precio_unitario:float, subtotal:float}>, 1: float}
+     * @return array{0: list<array<string, mixed>>, 1: float}
      */
     private function resolverLineas(int $tenantId, array $items, ContextoPrecio $contexto): array
     {
-        foreach ($items as $item) {
+        $unidades = [];
+        foreach ($items as $indice => $item) {
             if ($item['cantidad'] <= 0) {
                 throw new InvalidArgumentException('La cantidad de cada linea debe ser mayor a cero.');
             }
@@ -315,12 +359,20 @@ class ApartadoService
                 throw new InvalidArgumentException("La variante {$item['variante_id']} no pertenece al tenant {$tenantId}.");
             }
 
+            if (! $variante instanceof ProductoVariante) {
+                throw new InvalidArgumentException("La variante {$item['variante_id']} no existe.");
+            }
+            $unidades[$indice] = UnidadDeVariante::idPara($variante);
         }
         $cotizacion = $this->pricingService->cotizar(new Carrito(array_map(static fn (array $item): LineaCarrito => new LineaCarrito((int) $item['variante_id'], $item['cantidad']), $items)), $contexto);
-        $lineas = array_map(static fn (LineaPrecio $linea): array => [
-            'variante_id' => $linea->varianteId, 'cantidad' => $linea->cantidad,
-            'precio_unitario' => $linea->precioBase, 'subtotal' => $linea->total,
-        ], $cotizacion->lineas);
+        $lineas = [];
+        foreach ($cotizacion->lineas as $indice => $linea) {
+            $lineas[] = [
+                ...FotoDePrecio::de($linea),
+                'variante_id' => $linea->varianteId, 'cantidad' => $linea->cantidad,
+                'unidad_medida_id' => $unidades[$indice], 'subtotal' => $linea->total,
+            ];
+        }
 
         return [$lineas, $cotizacion->subtotal];
     }

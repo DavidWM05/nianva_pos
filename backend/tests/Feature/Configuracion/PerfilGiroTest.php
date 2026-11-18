@@ -70,7 +70,7 @@ class PerfilGiroTest extends TestCase
         $this->assertSame(['Talla', 'Color'], $nombres);
         $this->assertSame(['CH', 'M', 'G', 'XG'], Atributo::query()->where('nombre', 'Talla')->firstOrFail()->valores()->pluck('valor')->all());
         $this->assertSame(['Accesorios', 'Calzado', 'Ropa'], Categoria::query()->orderBy('nombre')->pluck('nombre')->all());
-        $this->assertSame(['pz'], UnidadMedida::sinTenant()->where('tenant_id', $this->tenant->id)->pluck('abreviatura')->all());
+        $this->assertSame([], UnidadMedida::sinTenant()->where('tenant_id', $this->tenant->id)->pluck('abreviatura')->all());
         $this->assertSame('ropa-calzado', ConfiguracionTenant::sinTenant()->where('tenant_id', $this->tenant->id)->firstOrFail()->perfil_giro);
     }
 
@@ -92,8 +92,8 @@ class PerfilGiroTest extends TestCase
 
         $this->putJson('/api/v1/configuracion/perfil-giro', ['perfil' => 'abarrotes'])
             ->assertOk()
-            ->assertJsonPath('meta.creados.unidades', 1);
-        $this->assertSame(['pz'], UnidadMedida::sinTenant()->where('tenant_id', $this->tenant->id)->pluck('abreviatura')->all());
+            ->assertJsonPath('meta.creados.unidades', 0);
+        $this->assertSame([], UnidadMedida::sinTenant()->where('tenant_id', $this->tenant->id)->pluck('abreviatura')->all());
     }
 
     public function test_un_perfil_desconocido_se_rechaza(): void

@@ -733,18 +733,6 @@ parameters:
 			path: app/Modules/Cotizaciones/Http/Resources/CotizacionDetalleResource.php
 
 		-
-			message: '#^Access to an undefined property App\\Modules\\Cotizaciones\\Http\\Resources\\CotizacionDetalleResource\:\:\$descuento\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Modules/Cotizaciones/Http/Resources/CotizacionDetalleResource.php
-
-		-
-			message: '#^Access to an undefined property App\\Modules\\Cotizaciones\\Http\\Resources\\CotizacionDetalleResource\:\:\$precio_unitario\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Modules/Cotizaciones/Http/Resources/CotizacionDetalleResource.php
-
-		-
 			message: '#^Access to an undefined property App\\Modules\\Cotizaciones\\Http\\Resources\\CotizacionDetalleResource\:\:\$subtotal\.$#'
 			identifier: property.notFound
 			count: 1
@@ -2438,30 +2426,6 @@ parameters:
 
 		-
 			message: '#^Access to an undefined property App\\Modules\\Tpv\\Models\\Venta\:\:\$total\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Modules/Devoluciones/Services/DevolucionService.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$cantidad\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Modules/Devoluciones/Services/DevolucionService.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$precio_unitario\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Modules/Devoluciones/Services/DevolucionService.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$subtotal\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Modules/Devoluciones/Services/DevolucionService.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$variante_id\.$#'
 			identifier: property.notFound
 			count: 1
 			path: app/Modules/Devoluciones/Services/DevolucionService.php
@@ -6088,7 +6052,7 @@ parameters:
 			message: '#^Call to an undefined method Illuminate\\Database\\Schema\\ForeignKeyDefinition\:\:comment\(\)\.$#'
 			identifier: method.notFound
 			count: 1
-			path: app/Modules/UnidadesMedida/Database/Migrations/2026_08_09_000001_create_unidades_medida_table.php
+			path: app/Modules/UnidadesMedida/Database/Migrations/2026_07_20_000003_create_unidades_medida_table.php
 
 		-
 			message: '#^Method App\\Modules\\UnidadesMedida\\Http\\Controllers\\UnidadMedidaController\:\:destroy\(\) has no return type specified\.$#'

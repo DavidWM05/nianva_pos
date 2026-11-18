@@ -79,7 +79,7 @@ class UnidadMedidaServiceTest extends TestCase
         app(TenantContext::class)->set($tenantA);
         $activas = $this->service->listarActivas($tenantA->id);
 
-        $this->assertCount(1, $activas);
+        $this->assertCount(2, $activas);
         $this->assertSame('Kg A', $activas->first()->nombre);
     }
 
