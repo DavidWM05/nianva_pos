@@ -13,6 +13,7 @@ export const CODIGOS_ERROR = [
   'cliente_sistema',
   'conflicto',
   'contenido_demasiado_grande',
+  'costo_no_disponible',
   'cotizacion_no_editable',
   'cotizacion_total_negativo',
   'cotizacion_vencida',
@@ -36,6 +37,7 @@ export const CODIGOS_ERROR = [
   'dos_pasos_requeridos',
   'empleado_ya_existe',
   'error_interno',
+  'foto_incompleta',
   'gift_card_cancelada',
   'gift_card_expirada',
   'gift_card_saldo_insuficiente',
@@ -78,6 +80,7 @@ export const CODIGOS_ERROR = [
   'transicion_estado_invalida',
   'ultimo_admin',
   'unidad_en_uso',
+  'unidad_pieza_no_existe',
   'venta_total_negativo',
   'venta_ya_anulada',
 ] as const;

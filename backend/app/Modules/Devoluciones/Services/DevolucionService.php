@@ -10,6 +10,7 @@ use App\Modules\Devoluciones\Exceptions\DevolucionSobreVentaSombraException;
 use App\Modules\Devoluciones\Exceptions\DevolucionVarianteNoVendidaException;
 use App\Modules\Devoluciones\Models\Devolucion;
 use App\Modules\Devoluciones\Models\DevolucionItem;
+use App\Modules\Devoluciones\Models\DevolucionLineaRegla;
 use App\Modules\Devoluciones\Models\DevolucionPago;
 use App\Modules\Inventario\Models\InventarioStock;
 use App\Modules\Inventario\Services\InventarioService;
@@ -145,15 +146,8 @@ class DevolucionService
         ]);
 
         foreach ($lineasDevueltas as $linea) {
-            DevolucionItem::create([
-                'devolucion_id' => $devolucion->id,
-                'variante_id' => $linea['variante_id'],
-                'tipo' => 'devuelto',
-                'cantidad' => $linea['cantidad'],
-                'precio_unitario' => $linea['precio_unitario'],
-                'subtotal' => $linea['subtotal'],
-                'va_a_merma' => $linea['va_a_merma'],
-            ]);
+            // DAT-03: la linea devuelta copia la foto de la linea de venta original; no se recotiza.
+            $this->crearItem($devolucion, 'devuelto', $linea['detalle'], $linea['cantidad'], $linea['subtotal'], $linea['va_a_merma']);
 
             if ($linea['va_a_merma']) {
                 // Va a merma: NO regresa a inventario_stock -- se
@@ -177,16 +171,10 @@ class DevolucionService
         }
 
         if ($ventaSombra !== null) {
-            foreach ($ventaSombra->detalles as $detalle) {
-                DevolucionItem::create([
-                    'devolucion_id' => $devolucion->id,
-                    'variante_id' => $detalle->variante_id,
-                    'tipo' => 'nuevo',
-                    'cantidad' => $detalle->cantidad,
-                    'precio_unitario' => $detalle->precio_unitario,
-                    'subtotal' => $detalle->subtotal,
-                    'va_a_merma' => false,
-                ]);
+            // DAT-03: la linea nueva de un cambio copia la foto de la venta sombra, que si salio de
+            // PricingService en el momento.
+            foreach (VentaDetalle::query()->with('reglas')->where('venta_id', $ventaSombra->id)->get() as $detalle) {
+                $this->crearItem($devolucion, 'nuevo', $detalle, $detalle->getAttribute('cantidad'), (string) $detalle->getAttribute('subtotal'), false);
             }
         }
 
@@ -222,11 +210,11 @@ class DevolucionService
      * alcance pedido; se documenta aqui para que quede explicito.
      *
      * @param  list<array{variante_id:int, cantidad:int|float, va_a_merma?:bool, venta_detalle_id?:int}>  $itemsDevueltos
-     * @return array{0: list<array{variante_id:int, cantidad:int|float, precio_unitario:float, subtotal:float, va_a_merma:bool, factor:string}>, 1: float}
+     * @return array{0: list<array{detalle: VentaDetalle, variante_id:int, cantidad:int|float, precio_unitario:float, subtotal:float, va_a_merma:bool, factor:string}>, 1: float}
      */
     private function resolverItemsDevueltos(Venta $ventaOrigen, array $itemsDevueltos): array
     {
-        $detallesOriginales = $ventaOrigen->detalles;
+        $detallesOriginales = $ventaOrigen->detalles()->with('reglas')->get();
         $lineas = [];
         $total = 0.0;
 
@@ -257,6 +245,7 @@ class DevolucionService
                 : round($precioUnitario * $item['cantidad'], 2);
 
             $lineas[] = [
+                'detalle' => $detalleOriginal,
                 'variante_id' => $item['variante_id'],
                 'factor' => (string) $detalleOriginal->getAttribute('factor'),
                 'cantidad' => $item['cantidad'],
@@ -269,6 +258,51 @@ class DevolucionService
         }
 
         return [$lineas, round($total, 2)];
+    }
+
+    /**
+     * DAT-03: escribe una linea de devolucion o cambio con la foto de la linea de venta de la que
+     * sale. El precio, la lista, la regla, la tasa, el costo, la unidad y el factor se copian tal
+     * cual; el descuento, el impuesto y el descuento de cada regla se prorratean por la cantidad,
+     * como el subtotal con presentaciones.
+     */
+    private function crearItem(Devolucion $devolucion, string $tipo, VentaDetalle $origen, mixed $cantidad, float|string $subtotal, bool $vaAMerma): DevolucionItem
+    {
+        $parte = Cantidad::milesimas($cantidad);
+        $todo = Cantidad::milesimas($origen->getAttribute('cantidad'));
+        $prorrata = static fn (mixed $importe): string => Dinero::desde((string) $importe)->proporcion($parte, $todo)->aCadena();
+
+        $item = DevolucionItem::create([
+            'devolucion_id' => $devolucion->id,
+            'variante_id' => $origen->getAttribute('variante_id'),
+            'tipo' => $tipo,
+            'cantidad' => $cantidad,
+            'precio_unitario' => $origen->getAttribute('precio_unitario'),
+            'descuento' => $prorrata($origen->getAttribute('descuento_aplicado')),
+            'lista_precio_id' => $origen->getAttribute('lista_precio_id'),
+            'lista_precio_nombre' => $origen->getAttribute('lista_precio_nombre'),
+            'regla_precio_id' => $origen->getAttribute('regla_precio_id'),
+            'regla_nombre' => $origen->getAttribute('regla_nombre'),
+            'costo_unitario' => $origen->getAttribute('costo_unitario'),
+            'tasa_impuesto' => $origen->getAttribute('tasa_impuesto'),
+            'exento' => $origen->getAttribute('exento'),
+            'impuesto' => $prorrata($origen->getAttribute('impuesto')),
+            'unidad_medida_id' => $origen->getAttribute('unidad_medida_id'),
+            'factor' => $origen->getAttribute('factor'),
+            'subtotal' => $subtotal,
+            'va_a_merma' => $vaAMerma,
+        ]);
+
+        foreach ($origen->reglas as $regla) {
+            DevolucionLineaRegla::create([
+                'devolucion_item_id' => $item->id,
+                'regla_precio_id' => $regla->getAttribute('regla_precio_id'),
+                'regla_nombre' => $regla->getAttribute('regla_nombre'),
+                'descuento' => $prorrata($regla->getAttribute('descuento')),
+            ]);
+        }
+
+        return $item;
     }
 
     private function verificarSucursal(int $tenantId, int $sucursalId): void

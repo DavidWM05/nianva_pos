@@ -21,18 +21,10 @@ final readonly class CrearCotizacionDto
     ) {}
 
     /**
-     * @return list<array{variante_id:int, cantidad:int|float, precio_unitario:float, descuento:float}>
+     * @return list<array<string, mixed>>
      */
     public function itemsParaServicio(): array
     {
-        return array_map(
-            fn (LineaCotizacionDto $item) => [
-                'variante_id' => $item->varianteId,
-                'cantidad' => $item->cantidad,
-                'precio_unitario' => $item->precioUnitario,
-                'descuento' => $item->descuento,
-            ],
-            $this->items,
-        );
+        return array_map(fn (LineaCotizacionDto $item) => $item->paraServicio(), $this->items);
     }
 }

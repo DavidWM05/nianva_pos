@@ -10,6 +10,7 @@ use App\Modules\Nucleo\Support\Cantidad;
 use App\Modules\Precios\Services\PricingService;
 use App\Modules\Precios\Support\Carrito;
 use App\Modules\Precios\Support\ContextoPrecio;
+use App\Modules\Precios\Support\FotoDePrecio;
 use App\Modules\Precios\Support\LineaCarrito;
 use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -66,11 +67,21 @@ final class ResolverPreciosCotizacion
                 ? round((float) $item['descuento'], 2)
                 : $sugerido->descuento;
 
+            // DAT-03: con precio o descuento manual la línea no lleva regla; la lista es la que
+            // aplicó al precio sugerido, si aplicó.
+            $manual = $precioManual && (isset($item['precio_unitario']) || isset($item['descuento']));
+            $foto = FotoDePrecio::de($sugerido);
+
             $lineas[] = new LineaCotizacionDto(
                 varianteId: $variante->id,
                 cantidad: $cantidad,
                 precioUnitario: $precio,
                 descuento: $descuento,
+                listaPrecioId: $foto['lista_precio_id'],
+                listaPrecioNombre: $foto['lista_precio_nombre'],
+                reglaPrecioId: $manual ? null : $foto['regla_precio_id'],
+                reglaNombre: $manual ? null : $foto['regla_nombre'],
+                reglas: $manual ? [] : $foto['reglas'],
             );
         }
 

@@ -51,6 +51,14 @@ class DevolucionResource extends JsonResource
                 'cantidad' => DecimalApi::cantidad($item->cantidad),
                 'precio_unitario' => DecimalApi::dinero($item->precio_unitario),
                 'subtotal' => DecimalApi::dinero($item->subtotal),
+                // DAT-03: la foto de la línea, nunca el catálogo actual.
+                'descuento' => DecimalApi::dinero($item->getAttribute('descuento')),
+                'lista_precio_nombre' => $item->getAttribute('lista_precio_nombre'),
+                'regla_nombre' => $item->getAttribute('regla_nombre'),
+                'tasa_impuesto' => DecimalApi::tasa((string) $item->getAttribute('tasa_impuesto')),
+                'exento' => (bool) $item->getAttribute('exento'),
+                'impuesto' => DecimalApi::dinero($item->getAttribute('impuesto')),
+                'unidad_medida_id' => (int) $item->getAttribute('unidad_medida_id'),
                 'va_a_merma' => $item->va_a_merma,
             ])),
             'pagos' => $this->whenLoaded('pagos', fn () => $this->pagos->map(fn ($pago) => [

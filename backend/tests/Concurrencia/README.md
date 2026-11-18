@@ -27,7 +27,8 @@ aislado). El job **Concurrencia (MySQL)** migra su propia base con `mysql:8.4`.
 La migración completa en MySQL también comprueba el orden de las migraciones: en SQLite
 una FK hacia una tabla que se crea después no falla. Así se encontró que `insumos` se creaba
 antes que `unidades_medida` (mismo prefijo de fecha); la de `unidades_medida` pasó a
-`2026_08_09_000001` (DAT-11).
+`2026_08_09_000001` (DAT-11), y luego a `2026_07_20_000003`, antes de las líneas de compra y
+venta, que la referencian desde su foto (DAT-03).
 
 Los fixtures se construyen con factories y se confirman, sin `RefreshDatabase`: los
 procesos hijos deben verlos. Cada ejecución crea su tenant y conserva los datos para

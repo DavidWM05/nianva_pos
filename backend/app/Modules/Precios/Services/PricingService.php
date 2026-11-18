@@ -8,10 +8,10 @@ use App\Modules\Configuracion\Models\ConfiguracionTenant;
 use App\Modules\Inventario\Models\Presentacion;
 use App\Modules\Inventario\Models\Producto;
 use App\Modules\Inventario\Models\ProductoVariante;
+use App\Modules\Inventario\Support\ImpuestoDeProducto;
 use App\Modules\Nucleo\Scopes\TenantScope;
 use App\Modules\Nucleo\Scopes\TenantScopeViaRelacion;
 use App\Modules\Nucleo\Support\Cantidad;
-use App\Modules\Nucleo\Support\DecimalApi;
 use App\Modules\Nucleo\Support\Dinero;
 use App\Modules\Precios\Exceptions\CuponInvalidoException;
 use App\Modules\Precios\Exceptions\CuponNoCombinableException;
@@ -62,7 +62,7 @@ final class PricingService
                 $lista = $this->listaAplicable($contexto);
                 $listaConsultada = true;
             }
-            [$precioBase, $listaAplicada] = $this->precioDeLista($lista, $variante, $producto, $precioBase, $contexto);
+            [$precioBase, $listaAplicada, $listaNombre] = $this->precioDeLista($lista, $variante, $producto, $precioBase, $contexto);
             $precioUnitarioResuelto = $precioBase;
             $precioHeredado = false;
             $cantidadBase = $linea->cantidad;
@@ -76,12 +76,13 @@ final class PricingService
                 if ($presentacion->getAttribute('precio_venta') !== null) {
                     $precioBase = Dinero::desde((string) $presentacion->getAttribute('precio_venta'));
                     $listaAplicada = null;
+                    $listaNombre = null;
                 } else {
                     $precioHeredado = true;
                     $precioBase = $precioBase->multiplicar((string) $presentacion->getAttribute('factor'));
                 }
             }
-            $tasas[] = [DecimalApi::tasa($producto->getAttribute('tasa_iva') ?? $configuracion->getAttribute('tasa_iva_default')), (bool) $producto->getAttribute('exento_iva')];
+            $tasas[] = ImpuestoDeProducto::de($producto, $configuracion->getAttribute('tasa_iva_default'));
             $aplicables = $this->reglasAplicables($variante, $producto, $contexto);
             $descuento = Dinero::desde(0);
             $totalLinea = $precioHeredado ? $precioUnitarioResuelto->multiplicar(Cantidad::cadena($cantidadBase)) : $precioBase->multiplicar(Cantidad::cadena($linea->cantidad));
@@ -97,9 +98,9 @@ final class PricingService
                     : $this->descuentoSecuencial($regla, $totalLinea, $linea->cantidad), $totalLinea);
                 $totalLinea = $totalLinea->restar($descuentoRegla);
                 $descuento = $descuento->sumar($descuentoRegla);
-                $reglas[] = new ReglaAplicada((int) $regla->getKey(), (string) $regla->getAttribute('tipo'), (int) $regla->getAttribute('prioridad'), $combinable, (float) $descuentoRegla->aCadena());
+                $reglas[] = new ReglaAplicada((int) $regla->getKey(), (string) $regla->getAttribute('tipo'), (int) $regla->getAttribute('prioridad'), $combinable, (float) $descuentoRegla->aCadena(), (string) $regla->getAttribute('nombre'));
             }
-            $lineas[] = new LineaPrecio($linea->varianteId, $linea->cantidad, (float) ($precioHeredado ? $precioUnitarioResuelto->precioPorFactor((string) $presentacion->getAttribute('factor')) : $precioBase->aCadena()), $listaAplicada, $reglas, (float) $descuento->aCadena(), 0.0, (float) $totalLinea->aCadena(), presentacionId: $presentacion === null ? null : (int) $presentacion->getKey(), presentacionNombre: $presentacion?->getAttribute('nombre'), factor: $presentacion === null ? '1.000' : (string) $presentacion->getAttribute('factor'));
+            $lineas[] = new LineaPrecio($linea->varianteId, $linea->cantidad, (float) ($precioHeredado ? $precioUnitarioResuelto->precioPorFactor((string) $presentacion->getAttribute('factor')) : $precioBase->aCadena()), $listaAplicada, $reglas, (float) $descuento->aCadena(), 0.0, (float) $totalLinea->aCadena(), presentacionId: $presentacion === null ? null : (int) $presentacion->getKey(), presentacionNombre: $presentacion?->getAttribute('nombre'), factor: $presentacion === null ? '1.000' : (string) $presentacion->getAttribute('factor'), listaNombre: $listaNombre);
             $subtotal = $subtotal->sumar($totalLinea);
         }
         $importeSubtotal = $carrito->subtotalReferencia === null ? $subtotal->aCadena() : $this->referenciaDecimal($carrito->subtotalReferencia);
@@ -130,7 +131,7 @@ final class PricingService
                 [$tasa, $exento] = $tasas[$indice];
                 $impuesto = $exento ? Dinero::desde(0) : Dinero::desde((string) $linea->total)->restar($reparto[$indice])->impuestoIncluido($tasa);
                 $impuestos = $impuestos->sumar($impuesto);
-                $lineas[$indice] = new LineaPrecio($linea->varianteId, $linea->cantidad, $linea->precioBase, $linea->listaAplicada, $linea->reglas, $linea->descuento, (float) $impuesto->aCadena(), $linea->total, $tasa, $exento, $linea->presentacionId, $linea->presentacionNombre, $linea->factor);
+                $lineas[$indice] = new LineaPrecio($linea->varianteId, $linea->cantidad, $linea->precioBase, $linea->listaAplicada, $linea->reglas, $linea->descuento, (float) $impuesto->aCadena(), $linea->total, $tasa, $exento, $linea->presentacionId, $linea->presentacionNombre, $linea->factor, $linea->listaNombre());
             }
         }
 
@@ -154,17 +155,17 @@ final class PricingService
         return $lista;
     }
 
-    /** @return array{Dinero, int|null} */
+    /** @return array{Dinero, int|null, string|null} */
     private function precioDeLista(?ListaPrecio $lista, ProductoVariante $variante, Producto $producto, Dinero $resuelto, ContextoPrecio $contexto): array
     {
         if ($lista === null) {
-            return [$resuelto, null];
+            return [$resuelto, null, null];
         }
         $items = ListaPrecioItem::query()->withoutGlobalScope(TenantScope::class)->where('tenant_id', $contexto->tenantId)->where('lista_precio_id', $lista->getKey());
         $item = (clone $items)->where('variante_id', $variante->getKey())->first()
             ?? $items->where('producto_id', $producto->getKey())->first();
 
-        return $item === null ? [$resuelto, null] : [Dinero::desde((string) $item->getAttribute('precio')), (int) $lista->getKey()];
+        return $item === null ? [$resuelto, null, null] : [Dinero::desde((string) $item->getAttribute('precio')), (int) $lista->getKey(), (string) $lista->getAttribute('nombre')];
     }
 
     /**

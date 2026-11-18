@@ -16,6 +16,7 @@ Generado con `php artisan errores:catalogo` desde las excepciones de negocio y e
 | `cliente_sistema` | 403 | `App\Modules\Crm\Exceptions\ClienteSistemaException` | Crm | cliente_id |
 | `conflicto` | 409 | `App\Modules\Nucleo\Support\MapaErroresHttp` | Nucleo | - |
 | `contenido_demasiado_grande` | 413 | `App\Modules\Nucleo\Support\MapaErroresHttp` | Nucleo | - |
+| `costo_no_disponible` | 422 | `App\Modules\Inventario\Exceptions\CostoNoDisponibleException` | Inventario | variante_id, sucursal_id |
 | `cotizacion_no_editable` | 422 | `App\Modules\Cotizaciones\Exceptions\CotizacionNoEditableException` | Cotizaciones | — |
 | `cotizacion_total_negativo` | 422 | `App\Modules\Cotizaciones\Exceptions\CotizacionTotalNegativoException` | Cotizaciones | subtotal, descuento |
 | `cotizacion_vencida` | 422 | `App\Modules\Cotizaciones\Exceptions\CotizacionVencidaException` | Cotizaciones | — |
@@ -39,6 +40,7 @@ Generado con `php artisan errores:catalogo` desde las excepciones de negocio y e
 | `dos_pasos_requeridos` | 423 | `App\Modules\Nucleo\Support\MapaErroresHttp` | Nucleo | - |
 | `empleado_ya_existe` | 422 | `App\Modules\Payroll\Exceptions\EmpleadoYaExisteException` | Payroll | — |
 | `error_interno` | 500 | `App\Modules\Nucleo\Support\MapaErroresHttp` | Nucleo | - |
+| `foto_incompleta` | 422 | `App\Modules\Nucleo\Exceptions\FotoIncompletaException` | Nucleo | campo, variante_id |
 | `gift_card_cancelada` | 422 | `App\Modules\GiftCards\Exceptions\GiftCardCanceladaException` | GiftCards | — |
 | `gift_card_expirada` | 422 | `App\Modules\GiftCards\Exceptions\GiftCardExpiradaException` | GiftCards | — |
 | `gift_card_saldo_insuficiente` | 422 | `App\Modules\GiftCards\Exceptions\GiftCardSaldoInsuficienteException` | GiftCards | — |
@@ -81,5 +83,6 @@ Generado con `php artisan errores:catalogo` desde las excepciones de negocio y e
 | `transicion_estado_invalida` | 422 | `App\Modules\Delivery\Exceptions\TransicionEstadoInvalidaException` | Delivery | — |
 | `ultimo_admin` | 422 | `App\Modules\Nucleo\Exceptions\UltimoAdminException` | Nucleo | usuario_id |
 | `unidad_en_uso` | 422 | `App\Modules\UnidadesMedida\Exceptions\UnidadEnUsoException` | UnidadesMedida | — |
+| `unidad_pieza_no_existe` | 409 | `App\Modules\Inventario\Exceptions\UnidadPiezaNoExisteException` | Inventario | variante_id |
 | `venta_total_negativo` | 422 | `App\Modules\Tpv\Exceptions\VentaTotalNegativoException` | Tpv | subtotal, descuento_manual, descuento_cupon |
 | `venta_ya_anulada` | 422 | `App\Modules\Tpv\Exceptions\VentaYaAnuladaException` | Tpv | venta_id |

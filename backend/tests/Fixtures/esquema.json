@@ -416,9 +416,51 @@
                 "default": null
             },
             {
+                "nombre": "costo_unitario",
+                "tipo": "numeric",
+                "nullable": false,
+                "default": null
+            },
+            {
+                "nombre": "descuento",
+                "tipo": "numeric",
+                "nullable": false,
+                "default": null
+            },
+            {
+                "nombre": "exento",
+                "tipo": "tinyint",
+                "nullable": false,
+                "default": null
+            },
+            {
+                "nombre": "factor",
+                "tipo": "numeric",
+                "nullable": false,
+                "default": null
+            },
+            {
                 "nombre": "id",
                 "tipo": "integer",
                 "nullable": false,
+                "default": null
+            },
+            {
+                "nombre": "impuesto",
+                "tipo": "numeric",
+                "nullable": false,
+                "default": null
+            },
+            {
+                "nombre": "lista_precio_id",
+                "tipo": "integer",
+                "nullable": true,
+                "default": null
+            },
+            {
+                "nombre": "lista_precio_nombre",
+                "tipo": "varchar",
+                "nullable": true,
                 "default": null
             },
             {
@@ -428,8 +470,32 @@
                 "default": null
             },
             {
+                "nombre": "regla_nombre",
+                "tipo": "varchar",
+                "nullable": true,
+                "default": null
+            },
+            {
+                "nombre": "regla_precio_id",
+                "tipo": "integer",
+                "nullable": true,
+                "default": null
+            },
+            {
                 "nombre": "subtotal",
                 "tipo": "numeric",
+                "nullable": false,
+                "default": null
+            },
+            {
+                "nombre": "tasa_impuesto",
+                "tipo": "numeric",
+                "nullable": false,
+                "default": null
+            },
+            {
+                "nombre": "unidad_medida_id",
+                "tipo": "integer",
                 "nullable": false,
                 "default": null
             },
@@ -465,6 +531,18 @@
             {
                 "nombre": null,
                 "columnas": [
+                    "unidad_medida_id"
+                ],
+                "tabla_foranea": "unidades_medida",
+                "columnas_foraneas": [
+                    "id"
+                ],
+                "on_update": "no action",
+                "on_delete": "restrict"
+            },
+            {
+                "nombre": null,
+                "columnas": [
                     "variante_id"
                 ],
                 "tabla_foranea": "producto_variantes",
@@ -473,6 +551,63 @@
                 ],
                 "on_update": "no action",
                 "on_delete": "restrict"
+            }
+        ]
+    },
+    "apartado_linea_reglas": {
+        "columnas": [
+            {
+                "nombre": "apartado_detalle_id",
+                "tipo": "integer",
+                "nullable": false,
+                "default": null
+            },
+            {
+                "nombre": "descuento",
+                "tipo": "numeric",
+                "nullable": false,
+                "default": null
+            },
+            {
+                "nombre": "id",
+                "tipo": "integer",
+                "nullable": false,
+                "default": null
+            },
+            {
+                "nombre": "regla_nombre",
+                "tipo": "varchar",
+                "nullable": false,
+                "default": null
+            },
+            {
+                "nombre": "regla_precio_id",
+                "tipo": "integer",
+                "nullable": false,
+                "default": null
+            }
+        ],
+        "indices": [
+            {
+                "nombre": "primary",
+                "columnas": [
+                    "id"
+                ],
+                "unico": true
+            }
+        ],
+        "llaves_foraneas": [
+            {
+                "nombre": null,
+                "columnas": [
+                    "apartado_detalle_id"
+                ],
+                "tabla_foranea": "apartado_detalles",
+                "columnas_foraneas": [
+                    "id"
+                ],
+                "on_update": "no action",
+                "on_delete": "cascade"
             }
         ]
     },
@@ -1331,20 +1466,86 @@
                 "default": null
             },
             {
+                "nombre": "costo_unitario",
+                "tipo": "numeric",
+                "nullable": false,
+                "default": null
+            },
+            {
+                "nombre": "descuento",
+                "tipo": "numeric",
+                "nullable": false,
+                "default": null
+            },
+            {
+                "nombre": "exento",
+                "tipo": "tinyint",
+                "nullable": false,
+                "default": null
+            },
+            {
+                "nombre": "factor",
+                "tipo": "numeric",
+                "nullable": false,
+                "default": null
+            },
+            {
                 "nombre": "id",
                 "tipo": "integer",
                 "nullable": false,
                 "default": null
             },
             {
-                "nombre": "precio_compra",
+                "nombre": "impuesto",
                 "tipo": "numeric",
                 "nullable": false,
                 "default": null
             },
             {
+                "nombre": "lista_precio_id",
+                "tipo": "integer",
+                "nullable": true,
+                "default": null
+            },
+            {
+                "nombre": "lista_precio_nombre",
+                "tipo": "varchar",
+                "nullable": true,
+                "default": null
+            },
+            {
+                "nombre": "precio_unitario",
+                "tipo": "numeric",
+                "nullable": false,
+                "default": null
+            },
+            {
+                "nombre": "regla_nombre",
+                "tipo": "varchar",
+                "nullable": true,
+                "default": null
+            },
+            {
+                "nombre": "regla_precio_id",
+                "tipo": "integer",
+                "nullable": true,
+                "default": null
+            },
+            {
                 "nombre": "subtotal",
                 "tipo": "numeric",
+                "nullable": false,
+                "default": null
+            },
+            {
+                "nombre": "tasa_impuesto",
+                "tipo": "numeric",
+                "nullable": false,
+                "default": null
+            },
+            {
+                "nombre": "unidad_medida_id",
+                "tipo": "integer",
                 "nullable": false,
                 "default": null
             },
@@ -1376,6 +1577,18 @@
                 ],
                 "on_update": "no action",
                 "on_delete": "cascade"
+            },
+            {
+                "nombre": null,
+                "columnas": [
+                    "unidad_medida_id"
+                ],
+                "tabla_foranea": "unidades_medida",
+                "columnas_foraneas": [
+                    "id"
+                ],
+                "on_update": "no action",
+                "on_delete": "restrict"
             },
             {
                 "nombre": null,
@@ -1717,6 +1930,12 @@
                 "default": null
             },
             {
+                "nombre": "costo_unitario",
+                "tipo": "numeric",
+                "nullable": false,
+                "default": null
+            },
+            {
                 "nombre": "cotizacion_id",
                 "tipo": "integer",
                 "nullable": false,
@@ -1726,12 +1945,42 @@
                 "nombre": "descuento",
                 "tipo": "numeric",
                 "nullable": false,
-                "default": "'0'"
+                "default": null
+            },
+            {
+                "nombre": "exento",
+                "tipo": "tinyint",
+                "nullable": false,
+                "default": null
+            },
+            {
+                "nombre": "factor",
+                "tipo": "numeric",
+                "nullable": false,
+                "default": null
             },
             {
                 "nombre": "id",
                 "tipo": "integer",
                 "nullable": false,
+                "default": null
+            },
+            {
+                "nombre": "impuesto",
+                "tipo": "numeric",
+                "nullable": false,
+                "default": null
+            },
+            {
+                "nombre": "lista_precio_id",
+                "tipo": "integer",
+                "nullable": true,
+                "default": null
+            },
+            {
+                "nombre": "lista_precio_nombre",
+                "tipo": "varchar",
+                "nullable": true,
                 "default": null
             },
             {
@@ -1741,8 +1990,32 @@
                 "default": null
             },
             {
+                "nombre": "regla_nombre",
+                "tipo": "varchar",
+                "nullable": true,
+                "default": null
+            },
+            {
+                "nombre": "regla_precio_id",
+                "tipo": "integer",
+                "nullable": true,
+                "default": null
+            },
+            {
                 "nombre": "subtotal",
                 "tipo": "numeric",
+                "nullable": false,
+                "default": null
+            },
+            {
+                "nombre": "tasa_impuesto",
+                "tipo": "numeric",
+                "nullable": false,
+                "default": null
+            },
+            {
+                "nombre": "unidad_medida_id",
+                "tipo": "integer",
                 "nullable": false,
                 "default": null
             },
@@ -1792,6 +2065,18 @@
             {
                 "nombre": null,
                 "columnas": [
+                    "unidad_medida_id"
+                ],
+                "tabla_foranea": "unidades_medida",
+                "columnas_foraneas": [
+                    "id"
+                ],
+                "on_update": "no action",
+                "on_delete": "restrict"
+            },
+            {
+                "nombre": null,
+                "columnas": [
                     "variante_id"
                 ],
                 "tabla_foranea": "producto_variantes",
@@ -1800,6 +2085,63 @@
                 ],
                 "on_update": "no action",
                 "on_delete": "restrict"
+            }
+        ]
+    },
+    "cotizacion_linea_reglas": {
+        "columnas": [
+            {
+                "nombre": "cotizacion_detalle_id",
+                "tipo": "integer",
+                "nullable": false,
+                "default": null
+            },
+            {
+                "nombre": "descuento",
+                "tipo": "numeric",
+                "nullable": false,
+                "default": null
+            },
+            {
+                "nombre": "id",
+                "tipo": "integer",
+                "nullable": false,
+                "default": null
+            },
+            {
+                "nombre": "regla_nombre",
+                "tipo": "varchar",
+                "nullable": false,
+                "default": null
+            },
+            {
+                "nombre": "regla_precio_id",
+                "tipo": "integer",
+                "nullable": false,
+                "default": null
+            }
+        ],
+        "indices": [
+            {
+                "nombre": "primary",
+                "columnas": [
+                    "id"
+                ],
+                "unico": true
+            }
+        ],
+        "llaves_foraneas": [
+            {
+                "nombre": null,
+                "columnas": [
+                    "cotizacion_detalle_id"
+                ],
+                "tabla_foranea": "cotizacion_detalles",
+                "columnas_foraneas": [
+                    "id"
+                ],
+                "on_update": "no action",
+                "on_delete": "cascade"
             }
         ]
     },
@@ -2703,8 +3045,32 @@
                 "default": null
             },
             {
+                "nombre": "costo_unitario",
+                "tipo": "numeric",
+                "nullable": false,
+                "default": null
+            },
+            {
+                "nombre": "descuento",
+                "tipo": "numeric",
+                "nullable": false,
+                "default": null
+            },
+            {
                 "nombre": "devolucion_id",
                 "tipo": "integer",
+                "nullable": false,
+                "default": null
+            },
+            {
+                "nombre": "exento",
+                "tipo": "tinyint",
+                "nullable": false,
+                "default": null
+            },
+            {
+                "nombre": "factor",
+                "tipo": "numeric",
                 "nullable": false,
                 "default": null
             },
@@ -2715,9 +3081,39 @@
                 "default": null
             },
             {
+                "nombre": "impuesto",
+                "tipo": "numeric",
+                "nullable": false,
+                "default": null
+            },
+            {
+                "nombre": "lista_precio_id",
+                "tipo": "integer",
+                "nullable": true,
+                "default": null
+            },
+            {
+                "nombre": "lista_precio_nombre",
+                "tipo": "varchar",
+                "nullable": true,
+                "default": null
+            },
+            {
                 "nombre": "precio_unitario",
                 "tipo": "numeric",
                 "nullable": false,
+                "default": null
+            },
+            {
+                "nombre": "regla_nombre",
+                "tipo": "varchar",
+                "nullable": true,
+                "default": null
+            },
+            {
+                "nombre": "regla_precio_id",
+                "tipo": "integer",
+                "nullable": true,
                 "default": null
             },
             {
@@ -2727,8 +3123,20 @@
                 "default": null
             },
             {
+                "nombre": "tasa_impuesto",
+                "tipo": "numeric",
+                "nullable": false,
+                "default": null
+            },
+            {
                 "nombre": "tipo",
                 "tipo": "varchar",
+                "nullable": false,
+                "default": null
+            },
+            {
+                "nombre": "unidad_medida_id",
+                "tipo": "integer",
                 "nullable": false,
                 "default": null
             },
@@ -2770,6 +3178,18 @@
             {
                 "nombre": null,
                 "columnas": [
+                    "unidad_medida_id"
+                ],
+                "tabla_foranea": "unidades_medida",
+                "columnas_foraneas": [
+                    "id"
+                ],
+                "on_update": "no action",
+                "on_delete": "restrict"
+            },
+            {
+                "nombre": null,
+                "columnas": [
                     "variante_id"
                 ],
                 "tabla_foranea": "producto_variantes",
@@ -2778,6 +3198,63 @@
                 ],
                 "on_update": "no action",
                 "on_delete": "restrict"
+            }
+        ]
+    },
+    "devolucion_linea_reglas": {
+        "columnas": [
+            {
+                "nombre": "descuento",
+                "tipo": "numeric",
+                "nullable": false,
+                "default": null
+            },
+            {
+                "nombre": "devolucion_item_id",
+                "tipo": "integer",
+                "nullable": false,
+                "default": null
+            },
+            {
+                "nombre": "id",
+                "tipo": "integer",
+                "nullable": false,
+                "default": null
+            },
+            {
+                "nombre": "regla_nombre",
+                "tipo": "varchar",
+                "nullable": false,
+                "default": null
+            },
+            {
+                "nombre": "regla_precio_id",
+                "tipo": "integer",
+                "nullable": false,
+                "default": null
+            }
+        ],
+        "indices": [
+            {
+                "nombre": "primary",
+                "columnas": [
+                    "id"
+                ],
+                "unico": true
+            }
+        ],
+        "llaves_foraneas": [
+            {
+                "nombre": null,
+                "columnas": [
+                    "devolucion_item_id"
+                ],
+                "tabla_foranea": "devolucion_items",
+                "columnas_foraneas": [
+                    "id"
+                ],
+                "on_update": "no action",
+                "on_delete": "cascade"
             }
         ]
     },
@@ -8324,21 +8801,51 @@
                 "default": null
             },
             {
+                "nombre": "costo_unitario",
+                "tipo": "numeric",
+                "nullable": false,
+                "default": null
+            },
+            {
                 "nombre": "descuento_aplicado",
                 "tipo": "numeric",
                 "nullable": false,
-                "default": "'0'"
+                "default": null
+            },
+            {
+                "nombre": "exento",
+                "tipo": "tinyint",
+                "nullable": false,
+                "default": null
             },
             {
                 "nombre": "factor",
                 "tipo": "numeric",
                 "nullable": false,
-                "default": "'1'"
+                "default": null
             },
             {
                 "nombre": "id",
                 "tipo": "integer",
                 "nullable": false,
+                "default": null
+            },
+            {
+                "nombre": "impuesto",
+                "tipo": "numeric",
+                "nullable": false,
+                "default": null
+            },
+            {
+                "nombre": "lista_precio_id",
+                "tipo": "integer",
+                "nullable": true,
+                "default": null
+            },
+            {
+                "nombre": "lista_precio_nombre",
+                "tipo": "varchar",
+                "nullable": true,
                 "default": null
             },
             {
@@ -8360,6 +8867,12 @@
                 "default": null
             },
             {
+                "nombre": "regla_nombre",
+                "tipo": "varchar",
+                "nullable": true,
+                "default": null
+            },
+            {
                 "nombre": "regla_precio_id",
                 "tipo": "integer",
                 "nullable": true,
@@ -8368,6 +8881,18 @@
             {
                 "nombre": "subtotal",
                 "tipo": "numeric",
+                "nullable": false,
+                "default": null
+            },
+            {
+                "nombre": "tasa_impuesto",
+                "tipo": "numeric",
+                "nullable": false,
+                "default": null
+            },
+            {
+                "nombre": "unidad_medida_id",
+                "tipo": "integer",
                 "nullable": false,
                 "default": null
             },
@@ -8409,14 +8934,14 @@
             {
                 "nombre": null,
                 "columnas": [
-                    "regla_precio_id"
+                    "unidad_medida_id"
                 ],
-                "tabla_foranea": "reglas_precio",
+                "tabla_foranea": "unidades_medida",
                 "columnas_foraneas": [
                     "id"
                 ],
                 "on_update": "no action",
-                "on_delete": "set null"
+                "on_delete": "restrict"
             },
             {
                 "nombre": null,
@@ -8436,6 +8961,63 @@
                     "venta_id"
                 ],
                 "tabla_foranea": "ventas",
+                "columnas_foraneas": [
+                    "id"
+                ],
+                "on_update": "no action",
+                "on_delete": "cascade"
+            }
+        ]
+    },
+    "venta_linea_reglas": {
+        "columnas": [
+            {
+                "nombre": "descuento",
+                "tipo": "numeric",
+                "nullable": false,
+                "default": null
+            },
+            {
+                "nombre": "id",
+                "tipo": "integer",
+                "nullable": false,
+                "default": null
+            },
+            {
+                "nombre": "regla_nombre",
+                "tipo": "varchar",
+                "nullable": false,
+                "default": null
+            },
+            {
+                "nombre": "regla_precio_id",
+                "tipo": "integer",
+                "nullable": false,
+                "default": null
+            },
+            {
+                "nombre": "venta_detalle_id",
+                "tipo": "integer",
+                "nullable": false,
+                "default": null
+            }
+        ],
+        "indices": [
+            {
+                "nombre": "primary",
+                "columnas": [
+                    "id"
+                ],
+                "unico": true
+            }
+        ],
+        "llaves_foraneas": [
+            {
+                "nombre": null,
+                "columnas": [
+                    "venta_detalle_id"
+                ],
+                "tabla_foranea": "venta_detalles",
                 "columnas_foraneas": [
                     "id"
                 ],

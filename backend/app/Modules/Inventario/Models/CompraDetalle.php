@@ -13,8 +13,23 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 /**
  * Sin tenant_id propio: el aislamiento se resuelve via BelongsToTenantViaRelacion
  * consultando compra.tenant_id (ver tenantRelacion()).
+ *
+ * DAT-03: foto de la línea al momento de la operación.
+ *
+ * @property string $precio_unitario
+ * @property string $descuento
+ * @property int|null $lista_precio_id
+ * @property string|null $lista_precio_nombre
+ * @property int|null $regla_precio_id
+ * @property string|null $regla_nombre
+ * @property string $costo_unitario
+ * @property string $tasa_impuesto
+ * @property bool $exento
+ * @property string $impuesto
+ * @property int $unidad_medida_id
+ * @property string $factor
  */
-#[Fillable(['compra_id', 'variante_id', 'cantidad', 'precio_compra', 'subtotal'])]
+#[Fillable(['compra_id', 'variante_id', 'cantidad', 'precio_unitario', 'descuento', 'lista_precio_id', 'lista_precio_nombre', 'regla_precio_id', 'regla_nombre', 'costo_unitario', 'tasa_impuesto', 'exento', 'impuesto', 'unidad_medida_id', 'factor', 'subtotal'])]
 class CompraDetalle extends Model
 {
     use BelongsToTenantViaRelacion;
@@ -29,7 +44,13 @@ class CompraDetalle extends Model
     protected function casts(): array
     {
         return ['cantidad' => CantidadDecimal::class,
-            'precio_compra' => 'decimal:2',
+            'precio_unitario' => 'decimal:2',
+            'descuento' => 'decimal:2',
+            'costo_unitario' => 'decimal:2',
+            'tasa_impuesto' => 'decimal:4',
+            'exento' => 'boolean',
+            'impuesto' => 'decimal:2',
+            'factor' => 'decimal:3',
             'subtotal' => 'decimal:2',
         ];
     }

@@ -4,12 +4,17 @@ declare(strict_types=1);
 
 namespace App\Modules\Inventario\Services;
 
+use App\Modules\Configuracion\Models\ConfiguracionTenant;
 use App\Modules\Inventario\Exceptions\StockInsuficienteException;
 use App\Modules\Inventario\Models\Compra;
 use App\Modules\Inventario\Models\CompraDetalle;
 use App\Modules\Inventario\Models\InventarioStock;
 use App\Modules\Inventario\Models\Kardex;
+use App\Modules\Inventario\Models\Producto;
 use App\Modules\Inventario\Models\ProductoVariante;
+use App\Modules\Inventario\Support\ImpuestoDeProducto;
+use App\Modules\Inventario\Support\UnidadDeVariante;
+use App\Modules\Nucleo\Exceptions\FotoIncompletaException;
 use App\Modules\Nucleo\Models\Sucursal;
 use App\Modules\Nucleo\Scopes\TenantScopeViaRelacion;
 use App\Modules\Nucleo\Support\Cantidad;
@@ -110,13 +115,35 @@ class InventarioService
             'total' => $total->aCadena(),
         ]);
 
+        $tasaDefault = ConfiguracionTenant::sinTenant()->where('tenant_id', $datosCompra['tenant_id'])->firstOrFail()->getAttribute('tasa_iva_default');
         foreach ($items as $item) {
+            // DAT-03: en una compra el costo de la línea es lo pagado (con IVA, decisión 9) y el
+            // precio es ese mismo costo; sin descuento, lista ni regla. El impuesto se desglosa
+            // hacia atrás con la tasa del producto (o la del tenant).
+            $variante = ProductoVariante::query()->withoutGlobalScopes()->with('producto')->whereKey($item['variante_id'])->firstOrFail();
+            $producto = $variante->getRelationValue('producto');
+            if (! $producto instanceof Producto) {
+                throw new FotoIncompletaException('producto', (int) $variante->getKey());
+            }
+            [$tasa, $exento] = ImpuestoDeProducto::de($producto, $tasaDefault);
+            $subtotal = Dinero::desdeProducto((string) $item['precio_compra'], Cantidad::cadena($item['cantidad']));
             CompraDetalle::create([
                 'compra_id' => $compra->id,
                 'variante_id' => $item['variante_id'],
                 'cantidad' => $item['cantidad'],
-                'precio_compra' => $item['precio_compra'],
-                'subtotal' => Dinero::desdeProducto((string) $item['precio_compra'], Cantidad::cadena($item['cantidad']))->aCadena(),
+                'precio_unitario' => $item['precio_compra'],
+                'descuento' => '0.00',
+                'lista_precio_id' => null,
+                'lista_precio_nombre' => null,
+                'regla_precio_id' => null,
+                'regla_nombre' => null,
+                'costo_unitario' => $item['precio_compra'],
+                'tasa_impuesto' => $tasa,
+                'exento' => $exento,
+                'impuesto' => $exento ? '0.00' : $subtotal->impuestoIncluido($tasa)->aCadena(),
+                'unidad_medida_id' => UnidadDeVariante::idPara($variante),
+                'factor' => '1.000',
+                'subtotal' => $subtotal->aCadena(),
             ]);
 
             $this->registrarMovimientoConStock(

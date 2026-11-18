@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
@@ -24,6 +25,17 @@ return new class extends Migration
             $table->index('tenant_id');
             $table->unique(['tenant_id', 'abreviatura']);
         });
+
+        // DAT-03: «Pieza» global, la unidad de la foto de una variante sin unidad propia
+        // (Inventario\Support\UnidadDeVariante). Es la misma `pz` que traen los perfiles de
+        // giro: AplicarPerfilGiro respeta las unidades globales y ya no crea una por tenant.
+        DB::table('unidades_medida')->insert([
+            'tenant_id' => null,
+            'nombre' => 'Pieza',
+            'abreviatura' => 'pz',
+            'tipo' => 'entero',
+            'activo' => true,
+        ]);
     }
 
     public function down(): void
