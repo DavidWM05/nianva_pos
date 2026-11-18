@@ -36,7 +36,7 @@ class CrearDevolucionRequest extends SolicitudNegocio
             'items_nuevos.*.cantidad' => ['required_with:items_nuevos', ...ReglasCantidad::paraVariante($tenantId)],
             'pagos' => ['nullable', 'array'],
             'pagos.*.metodo_pago_id' => ['required_with:pagos', 'integer', ReglasTenant::existeGlobalODelTenant('metodos_pago', $tenantId)],
-            'pagos.*.monto' => ['required_with:pagos', 'numeric', 'min:0.01'],
+            'pagos.*.monto' => ['required_with:pagos', 'numeric', 'decimal:0,2', 'min:0.01'],
             'motivo' => ['nullable', 'string', 'max:255'],
             'tipo_reembolso' => ['nullable', Rule::in(['efectivo', 'nota_credito'])],
         ];

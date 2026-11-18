@@ -1,4 +1,5 @@
 import { MatButton } from '@angular/material/button';
+import { limitesDe } from '@nianva/api-contrato';
 import { BtnEnviarComponent, aplicarErroresServidor, CampoComponent, InputDineroComponent } from '@nianva/ui-forms';
 import { aCentavos, restarDinero, DineroPipe } from '@nianva/ui-format';
 import { FormActionsComponent, PageComponent, PageHeaderComponent, SectionComponent } from '@nianva/ui-layout';
@@ -49,6 +50,8 @@ export class CotizacionFormComponent implements OnInit {
   private readonly toast = inject(ToastService);
 
   protected readonly buscadorCliente = inject(BUSCADOR_CLIENTE);
+  /** Limites del contrato de POST /cotizaciones (UI-11b). */
+  protected readonly limites = limitesDe('/cotizaciones', 'post');
 
   protected readonly cotizacionId = signal<number | null>(null);
   protected readonly editando = computed(() => this.cotizacionId() !== null);

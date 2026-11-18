@@ -23,23 +23,10 @@ const LITERALES = [
 ];
 
 /**
- * Archivos que aún escriben límites a mano. Solo baja: al migrar uno, sale de la lista.
- * Las líneas de venta, cotización, compra y devolución son arreglos (`items.*`) que el mapa de
- * límites no cubre todavía; TPV y cotizaciones los está cambiando el tren de Codex.
+ * Archivos que aún escriben límites a mano. Solo baja; vacía desde UI-11b: las líneas de venta,
+ * cotización, compra y devolución leen sus límites del segundo nivel (`items.elemento`).
  */
-const PENDIENTES = [
-  'modules/cotizaciones/lineas-cotizacion/lineas-cotizacion.component.ts',
-  'modules/cotizaciones/pages/cotizacion-form/cotizacion-form.component.html',
-  'modules/devoluciones/pages/devolucion-form/devolucion-form.component.ts',
-  'modules/inventario/compra-form/compra-form.component.ts',
-  // Llegaron con el tren de Codex (presentaciones y listas de precio); migrarlos no cupo en el rebase.
-  'modules/inventario/presentaciones/presentaciones.component.ts',
-  'modules/precios/lista-precio-form/lista-precio-form.component.ts',
-  'modules/precios/pages/lista-precio-registro/lista-precio-registro.component.ts',
-  'modules/tpv/pages/caja/caja.component.html',
-  'modules/tpv/pages/venta/venta.component.html',
-  'modules/tpv/pages/ventas-list/ventas-list.component.html',
-];
+const PENDIENTES: string[] = [];
 
 /** Archivos fuera de la regla, cada uno con su razón. */
 const EXENTOS: Record<string, string> = {

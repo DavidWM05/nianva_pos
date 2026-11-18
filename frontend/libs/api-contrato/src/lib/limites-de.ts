@@ -9,6 +9,11 @@ export interface LimiteCampo {
   readonly maximum?: number;
   /** Decimales que acepta el campo (regla `decimal:0,N` del FormRequest). */
   readonly decimales?: number;
+  /**
+   * En un arreglo de objetos (las líneas de una venta, sus pagos), los límites de cada campo de un
+   * elemento: `limitesDe('/ventas', 'post').items.elemento.cantidad.decimales`.
+   */
+  readonly elemento?: Readonly<Record<string, LimiteCampo>>;
 }
 
 type Limites = typeof LIMITES;

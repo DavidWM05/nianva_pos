@@ -33,7 +33,7 @@
     <textarea
       [id]="motivo.controlId()"
       rows="3"
-      maxlength="255"
+      [maxlength]="limitesAnulacion.motivo.maxLength"
       [ngModel]="motivoAnulacion()"
       (ngModelChange)="motivoAnulacion.set($event)"
     ></textarea>

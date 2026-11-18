@@ -28,14 +28,14 @@ class ActualizarCotizacionRequest extends SolicitudNegocio
             'lista_precio_id' => ['nullable', 'integer', ReglasTenant::existe('listas_precio', $tenantId)->where('activo', true)],
             'cliente_id' => ['nullable', 'integer', ReglasTenant::existe('clientes', $tenantId)],
             'validez_dias' => ['nullable', 'integer', 'min:1', 'max:365'],
-            'descuento' => ['nullable', 'numeric', 'min:0'],
+            'descuento' => ['nullable', 'numeric', 'decimal:0,2', 'min:0'],
             'uso_cfdi' => ['nullable', 'string', 'max:10'],
             'observaciones' => ['nullable', 'string', 'max:1000'],
             'items' => ['required', 'array', 'min:1'],
             'items.*.variante_id' => ['required', 'integer', ReglasVariante::delTenant($tenantId)],
             'items.*.cantidad' => ['required', ...ReglasCantidad::paraVariante($tenantId)],
-            'items.*.precio_unitario' => ['nullable', 'numeric', 'min:0'],
-            'items.*.descuento' => ['nullable', 'numeric', 'min:0'],
+            'items.*.precio_unitario' => ['nullable', 'numeric', 'decimal:0,2', 'min:0'],
+            'items.*.descuento' => ['nullable', 'numeric', 'decimal:0,2', 'min:0'],
         ];
     }
 

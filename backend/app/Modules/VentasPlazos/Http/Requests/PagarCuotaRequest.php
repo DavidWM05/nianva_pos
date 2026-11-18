@@ -15,7 +15,7 @@ class PagarCuotaRequest extends SolicitudNegocio
     {
         return [
             'cuota_id' => ['required', 'integer', ReglasCuota::delTenant($this->tenantId())],
-            'monto' => 'nullable|numeric|min:0.01',
+            'monto' => 'nullable|numeric|decimal:0,2|min:0.01',
         ];
     }
 

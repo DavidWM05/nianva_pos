@@ -45,6 +45,6 @@ class DecimalesEnCuerposOpenApiTest extends TestCase
 
     public function test_un_campo_sin_regla_decimal_no_inventa_multiple_of(): void
     {
-        $this->assertArrayNotHasKey('multipleOf', $this->esquemas()['GuardarProductoRequest']['properties']['precio_venta']);
+        $this->assertArrayNotHasKey('multipleOf', $this->esquemas()['CrearPedidoRequest']['properties']['costo_delivery']);
     }
 }

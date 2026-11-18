@@ -26,6 +26,16 @@ describe('limitesDe (UI-11b)', () => {
     >();
   });
 
+  it('las líneas de un documento traen los límites de cada campo en un segundo nivel', () => {
+    const linea = limitesDe('/ventas', 'post').items.elemento;
+
+    expect(linea.cantidad.decimales).toBe(3);
+    expect(linea.variante_id.requerido).toBe(true);
+    expectTypeOf<keyof typeof linea>().toEqualTypeOf<
+      keyof NonNullable<CuerpoDe<'/ventas', 'post'>>['items'][number]
+    >();
+  });
+
   it('no compila con una ruta o un método que no existen', () => {
     // @ts-expect-error la ruta no existe en el contrato
     expect(() => limitesDe('/no-existe', 'post')).toThrow();

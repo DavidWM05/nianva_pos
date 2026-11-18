@@ -63,7 +63,7 @@
             <input
               type="number"
               id="caja-monto-fisico"
-              min="0"
+              [min]="limitesCierre.monto_fisico.minimum"
               step="0.01"
               [ngModel]="montoFisico()"
               (ngModelChange)="montoFisico.set($event)"
@@ -124,7 +124,7 @@
             <input
               type="number"
               id="caja-monto-apertura"
-              min="0"
+              [min]="limitesApertura.monto_apertura.minimum"
               step="0.01"
               [ngModel]="montoApertura()"
               (ngModelChange)="montoApertura.set($event)"
@@ -146,7 +146,7 @@
     <input
       type="text"
       [id]="descripcion.controlId()"
-      maxlength="255"
+      [maxlength]="limitesGasto.descripcion.maxLength"
       [ngModel]="descripcionGasto()"
       (ngModelChange)="descripcionGasto.set($event)"
     />
@@ -155,7 +155,7 @@
     <input
       type="number"
       [id]="monto.controlId()"
-      min="0.01"
+      [min]="limitesGasto.monto.minimum"
       step="0.01"
       [ngModel]="montoGasto()"
       (ngModelChange)="montoGasto.set($event)"

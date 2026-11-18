@@ -48,7 +48,7 @@
               type="text"
               [id]="campoCupon.controlId()"
               placeholder="Código de cupón"
-              maxlength="50"
+              [maxlength]="limitesCupon.codigo.maxLength"
               [ngModel]="cuponCodigo()"
               (ngModelChange)="cuponCodigo.set($event)"
             />
@@ -74,7 +74,7 @@
             type="text"
             [id]="giftCard.controlId()"
             placeholder="Código de la gift card"
-            maxlength="50"
+            [maxlength]="limitesVenta.gift_card_codigo.maxLength"
             [ngModel]="giftCardCodigo()"
             (ngModelChange)="giftCardCodigo.set($event)"
           />

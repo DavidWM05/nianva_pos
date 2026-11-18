@@ -32,9 +32,9 @@ class CrearVentaRequest extends SolicitudNegocio
             'items.*.cantidad' => ['required', ...ReglasCantidad::paraVariante($tenantId)],
             'pagos' => ['required', 'array', 'min:1'],
             'pagos.*.metodo_pago_id' => ['required', 'integer', ReglasTenant::existeGlobalODelTenant('metodos_pago', $tenantId)],
-            'pagos.*.monto' => ['required', 'numeric', 'min:0.01'],
+            'pagos.*.monto' => ['required', 'numeric', 'decimal:0,2', 'min:0.01'],
             'cupon_codigo' => ['nullable', 'string'],
-            'descuento_manual' => ['nullable', 'numeric', 'min:0'],
+            'descuento_manual' => ['nullable', 'numeric', 'decimal:0,2', 'min:0'],
             'gift_card_codigo' => ['nullable', 'string', 'max:50'],
             'nota_credito_id' => ['nullable', 'integer', ReglasTenant::existe('notas_credito', $tenantId)],
         ];

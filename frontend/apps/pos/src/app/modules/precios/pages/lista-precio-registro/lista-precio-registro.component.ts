@@ -35,6 +35,7 @@ import {
   mensajeError,
 } from '@nianva/ui-shared';
 import { aCentavos } from '@nianva/ui-format';
+import { limitesDe } from '@nianva/api-contrato';
 import { finalize } from 'rxjs';
 import { SesionActualService } from '@nianva/domain-sesion';
 import {
@@ -44,6 +45,10 @@ import {
 } from '../../../../core/buscadores-entidad.tokens';
 import { type ListaPrecioCliente, type ListaPrecioItem, ListaPrecioListadoService, type ListaPrecioRegistro } from '@nianva/domain-precios';
 import { ListaPrecioFormComponent } from '../../lista-precio-form/lista-precio-form.component';
+
+/** Limites del contrato de POST /precios/listas/{lista}/items (UI-11b). */
+const LIMITES_ITEM = limitesDe('/precios/listas/{lista}/items', 'post');
+
 @Component({
   selector: 'nucleo-lista-precio-registro',
   standalone: true,
@@ -110,8 +115,8 @@ export class ListaPrecioRegistroComponent implements OnInit {
   protected readonly editando = signal<ListaPrecioItem | null>(null);
   protected readonly precio = new FormControl<number | null>(null, [
     Validators.required,
-    Validators.min(0),
-    Validators.max(9999999999.99),
+    Validators.min(LIMITES_ITEM.precio.minimum),
+    Validators.max(LIMITES_ITEM.precio.maximum),
   ]);
   protected readonly opcionesTipo = [
     { value: 'producto', label: 'Producto' },

@@ -34,7 +34,7 @@ class GuardarReglaPrecioRequest extends SolicitudNegocio
             'monto' => ReglasPorcentajeMonto::monto(),
             'cantidad_compra' => ['nullable', ...ReglasCantidad::decimal()],
             'cantidad_paga' => ['nullable', ...ReglasCantidad::decimal()],
-            'precio_bundle' => ['nullable', 'numeric', 'min:0'],
+            'precio_bundle' => ['nullable', 'numeric', 'decimal:0,2', 'min:0'],
             'aplica_a' => ['required', Rule::in(['todo', 'categoria', 'producto', 'variante'])],
             'categoria_id' => ['nullable', 'integer', ReglasTenant::existe('categorias', $tenantId)],
             'producto_id' => ['nullable', 'integer', ReglasTenant::existe('productos', $tenantId)],

@@ -17,10 +17,10 @@ class RegistrarAbonoRequest extends SolicitudNegocio
         $tenantId = $this->tenantId();
 
         return [
-            'monto' => ['required', 'numeric', 'min:0.01'],
+            'monto' => ['required', 'numeric', 'decimal:0,2', 'min:0.01'],
             'pagos' => ['required', 'array', 'min:1'],
             'pagos.*.metodo_pago_id' => ['required', 'integer', ReglasTenant::existeGlobalODelTenant('metodos_pago', $tenantId)],
-            'pagos.*.monto' => ['required', 'numeric', 'min:0.01'],
+            'pagos.*.monto' => ['required', 'numeric', 'decimal:0,2', 'min:0.01'],
             'notas' => ['nullable', 'string'],
         ];
     }

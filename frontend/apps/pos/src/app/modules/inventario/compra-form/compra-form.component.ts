@@ -27,6 +27,8 @@ import { ProveedorSimple } from '@nianva/domain-inventario';
 
 /** Límites del cuerpo de la petición, leídos del contrato (UI-11b). */
 const LIMITES = limitesDe('/compras', 'post');
+/** Este formulario captura una sola linea (`items.0`): sus limites son los de cada elemento. */
+const LINEA = LIMITES.items.elemento;
 
 export interface CompraFormValue {
   proveedor_id: number;
@@ -70,13 +72,16 @@ export class CompraFormComponent implements OnChanges {
   protected readonly numericos = new FormGroup({
     cantidad: new FormControl<number | null>(null, [
       Validators.required,
-      Validators.min(1),
+      Validators.min(LINEA.cantidad.minimum),
+      Validators.max(LINEA.cantidad.maximum),
     ]),
     precio_compra: new FormControl<number | null>(null, [
       Validators.required,
-      Validators.min(0),
+      Validators.min(LINEA.precio_compra.minimum),
     ]),
   });
+
+  protected readonly linea = LINEA;
 
   protected fields: DynamicFormField[] = [];
 

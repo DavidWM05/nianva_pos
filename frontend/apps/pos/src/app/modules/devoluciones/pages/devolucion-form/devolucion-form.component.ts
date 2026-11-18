@@ -1,13 +1,14 @@
 import { multiplicarCantidades } from '@nianva/ui-format';
 import { cantidadANumero, sumarCantidades, aCentavos, sumarDinero, restarDinero, multiplicarDinero, proporcionarDinero, DineroPipe, CantidadPipe } from '@nianva/ui-format';
 import { MatButton } from '@angular/material/button';
+import { limitesDe } from '@nianva/api-contrato';
 import { BtnEnviarComponent, CampoComponent, InputCantidadComponent, aplicarErroresServidor } from '@nianva/ui-forms';
 import { AlertComponent, conUmbral } from '@nianva/ui-feedback';
 import { FormActionsComponent, PageComponent, PageHeaderComponent, SectionComponent, PantallaService } from '@nianva/ui-layout';
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
 import { HttpErrorResponse } from '@angular/common/http';
 import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal } from '@angular/core';
-import { FormArray, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import { AbstractControl, FormArray, FormControl, FormGroup, FormsModule, ReactiveFormsModule, ValidationErrors, Validators } from '@angular/forms';
 import { MatCheckbox } from '@angular/material/checkbox';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { ToastService, erroresValidacion } from '@nianva/ui-shared';
@@ -28,6 +29,19 @@ interface LineaDevuelta {
   vaAMerma: boolean;
   precioUnitario: string;
   subtotalPresentacion?: string;
+}
+
+/** Limites de cada linea devuelta del contrato de POST /devoluciones (UI-11b). */
+const LINEA_DEVUELTA = limitesDe('/devoluciones', 'post').items_devueltos.elemento;
+
+/**
+ * 0 es "esta linea no se devuelve" (no se envia); una linea que se envia pide al menos el minimo
+ * del contrato. El error es `min`, como el de Validators.min.
+ */
+function cantidadDevuelta(control: AbstractControl<number>): ValidationErrors | null {
+  const minimo = LINEA_DEVUELTA.cantidad.minimum;
+
+  return control.value === 0 || control.value >= minimo ? null : { min: { min: minimo, actual: control.value } };
 }
 
 
@@ -145,7 +159,7 @@ export class DevolucionFormComponent implements OnInit {
         this.gruposLineas.clear({ emitEvent: false });
         for (const linea of this.lineasDevueltas()) {
           const grupo = new FormGroup({
-            cantidad: new FormControl(linea.cantidad, { nonNullable: true, validators: [Validators.required, Validators.min(0), Validators.max(linea.cantidadMaxima)] }),
+            cantidad: new FormControl(linea.cantidad, { nonNullable: true, validators: [Validators.required, cantidadDevuelta, Validators.max(linea.cantidadMaxima)] }),
             va_a_merma: new FormControl(linea.vaAMerma, { nonNullable: true }),
           });
           this.gruposLineas.push(grupo, { emitEvent: false });

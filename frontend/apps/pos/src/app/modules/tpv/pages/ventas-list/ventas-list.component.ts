@@ -1,3 +1,4 @@
+import { limitesDe } from '@nianva/api-contrato';
 import { HttpErrorResponse } from '@angular/common/http';
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
@@ -64,6 +65,8 @@ export class VentasListComponent {
     },
   ];
 
+  /** Limites del contrato de PATCH /ventas/{venta}/anular (UI-11b). */
+  protected readonly limitesAnulacion = limitesDe('/ventas/{venta}/anular', 'patch');
   protected readonly ventas = signal<Venta[]>([]);
   protected readonly total = signal(0);
   protected readonly loading = signal(false);

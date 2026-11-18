@@ -2,6 +2,7 @@ import { aCentavos, cantidadANumero, compararDinero, multiplicarDinero, sumarDin
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnChanges, Output, computed, inject, signal } from '@angular/core';
 import { FormArray, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButton } from '@angular/material/button';
+import { limitesDe } from '@nianva/api-contrato';
 import { CampoComponent, InputCantidadComponent, InputDineroComponent } from '@nianva/ui-forms';
 import { EmptyComponent } from '@nianva/ui-data';
 import { FormActionsComponent, PantallaService, SectionComponent } from '@nianva/ui-layout';
@@ -20,6 +21,9 @@ interface LineaCotizacion {
   precio_unitario: number;
   descuento: number;
 }
+
+/** Limites de cada linea del contrato de POST /cotizaciones (UI-11b). */
+const LINEA = limitesDe('/cotizaciones', 'post').items.elemento;
 
 export interface LineasCotizacionCambio {
   items: CotizacionItemPayload[];
@@ -205,9 +209,9 @@ export class LineasCotizacionComponent implements OnChanges {
     while (this.gruposLineas.length < this.lineas().length) {
       const linea = this.lineas()[this.gruposLineas.length];
       const grupo = new FormGroup({
-        cantidad: new FormControl(linea.cantidad, { nonNullable: true, validators: [Validators.required, Validators.min(1)] }),
-        precio_unitario: new FormControl({ value: linea.precio_unitario, disabled: !this.precioManual }, { nonNullable: true, validators: [Validators.required, Validators.min(0)] }),
-        descuento: new FormControl({ value: linea.descuento, disabled: !this.precioManual }, { nonNullable: true, validators: [Validators.required, Validators.min(0)] }),
+        cantidad: new FormControl(linea.cantidad, { nonNullable: true, validators: [Validators.required, Validators.min(LINEA.cantidad.minimum), Validators.max(LINEA.cantidad.maximum)] }),
+        precio_unitario: new FormControl({ value: linea.precio_unitario, disabled: !this.precioManual }, { nonNullable: true, validators: [Validators.required, Validators.min(LINEA.precio_unitario.minimum)] }),
+        descuento: new FormControl({ value: linea.descuento, disabled: !this.precioManual }, { nonNullable: true, validators: [Validators.required, Validators.min(LINEA.descuento.minimum)] }),
       });
       this.gruposLineas.push(grupo, { emitEvent: false });
       grupo.controls.cantidad.valueChanges.subscribe(valor => {
