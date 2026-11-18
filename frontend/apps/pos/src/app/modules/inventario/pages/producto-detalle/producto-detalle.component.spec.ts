@@ -72,7 +72,7 @@ describe('ProductoDetalleComponent', () => {
       motivo: 'compra',
       sucursal_nombre: 'Centro',
       usuario_nombre: 'Ana',
-      stock_resultante: 4,
+      stock_despues: 4,
       fecha: '2026-07-20T10:00:00Z',
     },
   ];

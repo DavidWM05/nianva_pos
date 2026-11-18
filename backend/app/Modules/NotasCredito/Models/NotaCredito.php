@@ -62,6 +62,7 @@ class NotaCredito extends Model
     /** @return HasMany<NotaCreditoUso, $this> */
     public function usos(): HasMany
     {
-        return $this->hasMany(NotaCreditoUso::class);
+        // DAT-04: nota_credito_usos es el libro de la nota; los usos son sus renglones de tipo uso.
+        return $this->hasMany(NotaCreditoUso::class)->where('tipo', 'uso');
     }
 }

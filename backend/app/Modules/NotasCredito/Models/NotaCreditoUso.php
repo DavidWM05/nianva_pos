@@ -4,6 +4,7 @@ namespace App\Modules\NotasCredito\Models;
 
 use App\Modules\NotasCredito\Database\Factories\NotaCreditoUsoFactory;
 use App\Modules\Nucleo\Models\Concerns\BelongsToTenantViaRelacion;
+use App\Modules\Nucleo\Models\Concerns\EsLibroDeMovimientos;
 use App\Modules\Nucleo\Models\Concerns\SerializaDecimales;
 use App\Modules\Tpv\Models\Venta;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
@@ -17,10 +18,11 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property string $monto_usado
  * @property string $created_at
  */
-#[Fillable(['nota_credito_id', 'venta_id', 'monto_usado'])]
+#[Fillable(['nota_credito_id', 'tipo', 'venta_id', 'monto_usado', 'saldo_antes', 'saldo_despues', 'usuario_id'])]
 class NotaCreditoUso extends Model
 {
     use BelongsToTenantViaRelacion;
+    use EsLibroDeMovimientos;
 
     /** @use HasFactory<NotaCreditoUsoFactory> */
     use HasFactory;
@@ -35,6 +37,8 @@ class NotaCreditoUso extends Model
 
     protected $casts = [
         'monto_usado' => 'decimal:2',
+        'saldo_antes' => 'decimal:2',
+        'saldo_despues' => 'decimal:2',
     ];
 
     public static function tenantRelacion(): string

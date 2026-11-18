@@ -10,6 +10,9 @@ use App\Modules\CuentasCobrar\Exceptions\CuentaConAbonosException;
 use App\Modules\CuentasCobrar\Exceptions\CuentaYaPagadaException;
 use App\Modules\CuentasCobrar\Models\AbonoCuenta;
 use App\Modules\CuentasCobrar\Models\CuentaCobrar;
+use App\Modules\CuentasCobrar\Models\CuentaCobrarMovimiento;
+use App\Modules\Nucleo\Support\Dinero;
+use App\Modules\Nucleo\Support\Proyeccion;
 use App\Modules\Tpv\Exceptions\CajaSesionNoAbiertaException;
 use App\Modules\Tpv\Models\CajaSesion;
 use App\Modules\Tpv\Models\Venta;
@@ -30,7 +33,7 @@ class CuentasCobrarService
 
         $fechaVencimiento = now()->addDays($diasCredito)->toDateString();
 
-        return CuentaCobrar::create([
+        $cuenta = CuentaCobrar::create([
             'tenant_id' => $venta->tenant_id,
             'venta_id' => $venta->id,
             'cliente_id' => $venta->cliente_id,
@@ -39,6 +42,21 @@ class CuentasCobrarService
             'fecha_vencimiento' => $fechaVencimiento,
             'estado' => 'pendiente',
         ]);
+
+        // DAT-05: el primer renglón del libro de la cuenta es su monto.
+        $saldo = Dinero::desde((string) $cuenta->getAttribute('saldo_pendiente'))->aCadena();
+        CuentaCobrarMovimiento::query()->create([
+            'cuenta_cobrar_id' => $cuenta->id,
+            'tipo' => 'saldo_inicial',
+            'referencia_tabla' => 'ventas',
+            'referencia_id' => $venta->id,
+            'monto' => $saldo,
+            'saldo_antes' => '0.00',
+            'saldo_despues' => $saldo,
+            'usuario_id' => $venta->getAttribute('usuario_id'),
+        ]);
+
+        return $cuenta;
 
     }
 
@@ -85,11 +103,22 @@ class CuentasCobrarService
             'referencia' => $data['referencia'] ?? null,
         ]);
 
-        // Actualizar saldo pendiente
-        $nuevoSaldo = round((float) $cuenta->saldo_pendiente - $monto, 2);
-        $cuenta->update([
-            'saldo_pendiente' => $nuevoSaldo,
-            'estado' => $nuevoSaldo <= 0 ? 'pagada' : 'pendiente',
+        // Actualizar saldo pendiente: DAT-04, la proyección y su renglón en la misma transacción.
+        $antes = Dinero::desde((string) $cuenta->getAttribute('saldo_pendiente'))->aCadena();
+        $despues = Dinero::desde($antes)->restar(Dinero::desde(number_format($monto, 2, '.', '')))->aCadena();
+        Proyeccion::actualizar($cuenta, 'saldo_pendiente', $antes, [
+            'saldo_pendiente' => $despues,
+            'estado' => (float) $despues <= 0 ? 'pagada' : 'pendiente',
+        ]);
+        CuentaCobrarMovimiento::query()->create([
+            'cuenta_cobrar_id' => $cuenta->id,
+            'tipo' => 'abono',
+            'referencia_tabla' => 'abonos_cuenta',
+            'referencia_id' => $abono->id,
+            'monto' => Dinero::desde('0')->restar(Dinero::desde(number_format($monto, 2, '.', '')))->aCadena(),
+            'saldo_antes' => $antes,
+            'saldo_despues' => $despues,
+            'usuario_id' => $data['usuario_id'],
         ]);
 
         return $abono;

@@ -11,7 +11,7 @@ use App\Modules\Nucleo\Support\SucursalOperacion;
 
 /**
  * Solo lectura -- kardex se escribe unicamente desde
- * InventarioService::registrarMovimiento(). Sin paginacion (igual que
+ * InventarioService (movimientos y saldo inicial). Sin paginacion (igual que
  * VentaController::porCliente en Crm): es historial de contexto para la
  * vista de registro, no un reporte.
  */
@@ -22,7 +22,11 @@ class KardexController extends Controller
         $usuario = request()->user();
         $sucursalId = $usuario instanceof Usuario ? SucursalOperacion::paraFiltro($usuario, null) : null;
 
+        // DAT-05: el listado no muestra el saldo inicial en cero, que solo marca el arranque del
+        // libro; la base los guarda todos y conciliar:libros los exige. Un saldo inicial con
+        // cantidad (carga inicial) sí se lista. El filtro va solo aquí, no en el modelo.
         $consulta = Kardex::where('variante_id', $variante->id)
+            ->where(fn ($q) => $q->where('motivo', '!=', 'saldo_inicial')->orWhere('cantidad', '!=', 0))
             ->with(['sucursal:id,nombre', 'usuario:id,nombre,apellido']);
 
         if ($sucursalId !== null) {
@@ -44,7 +48,8 @@ class KardexController extends Controller
                 'motivo' => $movimiento->motivo,
                 'sucursal_nombre' => $movimiento->sucursal?->nombre,
                 'usuario_nombre' => $movimiento->usuario?->nombre,
-                'stock_resultante' => DecimalApi::cantidad($movimiento->stock_resultante),
+                'stock_antes' => DecimalApi::cantidad($movimiento->stock_antes),
+                'stock_despues' => DecimalApi::cantidad($movimiento->stock_despues),
                 'fecha' => $movimiento->fecha,
             ]);
 

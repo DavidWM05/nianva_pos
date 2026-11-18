@@ -90,6 +90,6 @@ export interface MovimientoKardex {
   motivo: 'venta' | 'compra' | 'devolucion' | 'merma' | 'ajuste' | 'apartado';
   sucursal_nombre: string | null;
   usuario_nombre: string | null;
-  stock_resultante: string;
+  stock_despues: string;
   fecha: string;
 }

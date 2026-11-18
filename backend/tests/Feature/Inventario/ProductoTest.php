@@ -262,8 +262,8 @@ class ProductoTest extends TestCase
         $respuesta->assertOk();
         $respuesta->assertJsonCount(2, 'data');
         $respuesta->assertJsonPath('data.0.tipo', 'salida');
-        $respuesta->assertJsonPath('data.0.stock_resultante', '7.000');
+        $respuesta->assertJsonPath('data.0.stock_despues', '7.000');
         $respuesta->assertJsonPath('data.1.tipo', 'entrada');
-        $respuesta->assertJsonPath('data.1.stock_resultante', '10.000');
+        $respuesta->assertJsonPath('data.1.stock_despues', '10.000');
     }
 }

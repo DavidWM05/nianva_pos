@@ -13,6 +13,8 @@ return new class extends Migration
             $table->foreignId('sucursal_id')->constrained('sucursales')->restrictOnDelete();
             $table->foreignId('usuario_id')->constrained('usuarios')->restrictOnDelete();
             $table->decimal('monto_apertura', 12, 2);
+            // DAT-04: proyección del libro de caja (caja_movimientos); nace igual a la apertura.
+            $table->decimal('saldo_teorico', 12, 2);
             $table->decimal('monto_cierre', 12, 2)->nullable();
             $table->decimal('total_ventas_sistema', 12, 2)->nullable();
             $table->decimal('diferencia', 12, 2)->nullable();

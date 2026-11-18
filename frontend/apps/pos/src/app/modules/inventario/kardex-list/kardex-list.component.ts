@@ -66,7 +66,7 @@ export class KardexListComponent {
     { tipo: 'fechaHora', campo: 'fecha', encabezado: 'Fecha' },
     {
       tipo: 'cantidad',
-      campo: 'stock_resultante',
+      campo: 'stock_despues',
       encabezado: 'Stock resultante',
     },
   ];

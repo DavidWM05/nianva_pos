@@ -37,7 +37,7 @@ final class RegistrarMovimiento
         // antes) asi que lockForUpdate ahora si bloquea sobre una fila
         // real y serializa cualquier otro movimiento concurrente sobre
         // la misma variante+sucursal hasta que esta transaccion termine.
-        $this->inventarioService->asegurarStock($dto->varianteId, $dto->sucursalId);
+        $this->inventarioService->asegurarStock($dto->varianteId, $dto->sucursalId, $dto->usuarioId);
 
         return InventarioStock::query()->withoutGlobalScope(TenantScopeViaRelacion::class)
             ->where('sucursal_id', $dto->sucursalId)

@@ -16,7 +16,7 @@ describe('KardexListComponent', () => {
       motivo: 'venta',
       sucursal_nombre: 'Centro',
       usuario_nombre: 'Ana',
-      stock_resultante: '7.000',
+      stock_despues: '7.000',
       fecha: '2026-07-20T10:00:00Z',
     },
     {
@@ -26,7 +26,7 @@ describe('KardexListComponent', () => {
       motivo: 'compra',
       sucursal_nombre: 'Centro',
       usuario_nombre: 'Ana',
-      stock_resultante: '10.000',
+      stock_despues: '10.000',
       fecha: '2026-07-19T10:00:00Z',
     },
   ];

@@ -24,7 +24,11 @@ class NotaCreditoUsoFactory extends Factory
                     ->firstOrFail()
                     ->getAttribute('tenant_id'),
             ])->id,
+            'tipo' => 'uso',
             'monto_usado' => 10,
+            'saldo_antes' => 100,
+            'saldo_despues' => 90,
+            'usuario_id' => null,
         ];
     }
 }

@@ -71,7 +71,7 @@ class VentaConcurrenteTest extends TestCase
             $this->assertSame(0, (int) $stock->fresh()->stock_actual);
             $this->assertSame(1, Venta::where('tenant_id', $tenant->id)->count());
             $this->assertSame(1, Kardex::where('variante_id', $variante->id)->count());
-            $this->assertSame(0, (int) Kardex::where('variante_id', $variante->id)->sole()->stock_resultante);
+            $this->assertSame(0, (int) Kardex::where('variante_id', $variante->id)->sole()->stock_despues);
         } finally {
             foreach ($hijos as $hijo) {
                 ProcesosConcurrentes::cerrar($hijo);

@@ -15,6 +15,8 @@ use Illuminate\Support\Facades\DB;
 
 class CajaService
 {
+    public function __construct(private readonly LibroCaja $libroCaja) {}
+
     public function abrirCajaConSucursal(Sucursal $sucursal, int $usuarioId, float $montoApertura): CajaSesion
     {
         $this->exigirTransaccion();
@@ -27,13 +29,18 @@ class CajaService
             throw new CajaYaAbiertaException($sucursal->id);
         }
 
-        return CajaSesion::query()->withoutGlobalScope(TenantScopeViaRelacion::class)->create([
+        $caja = CajaSesion::query()->withoutGlobalScope(TenantScopeViaRelacion::class)->create([
             'sucursal_id' => $sucursal->id,
             'usuario_id' => $usuarioId,
             'monto_apertura' => $montoApertura,
+            'saldo_teorico' => $montoApertura,
             'estado' => 'abierta',
             'fecha_apertura' => now(),
         ]);
+        // DAT-05: el primer renglón del libro de caja es la apertura.
+        $this->libroCaja->saldoInicial($caja, $usuarioId);
+
+        return $caja;
     }
 
     /**

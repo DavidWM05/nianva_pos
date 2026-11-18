@@ -52,6 +52,7 @@ class VentaService
     public function __construct(
         private readonly PricingService $pricingService,
         private readonly InventarioService $inventarioService,
+        private readonly LibroCaja $libroCaja,
     ) {}
 
     /**
@@ -148,6 +149,11 @@ class VentaService
                 'metodo_pago_id' => $pago['metodo_pago_id'],
                 'monto' => $pago['monto'],
             ]);
+            // DAT-04: el pago entra al libro de caja, igual que al total teórico del cierre
+            // (sin ventas sombra).
+            if (! $esVentaSombra) {
+                $this->libroCaja->registrar($cajaSesion, 'venta', Dinero::desde((string) $pago['monto'])->aCadena(), 'ventas', (int) $venta->id, (int) $datosVenta['usuario_id']);
+            }
         }
 
         return $venta->load('detalles', 'pagos');
@@ -179,6 +185,16 @@ class VentaService
                 referenciaTabla: 'ventas',
                 referenciaId: $venta->id,
             );
+        }
+
+        // DAT-04: la anulación revierte en el libro de caja cada pago de la venta, en la caja de la
+        // venta (el cierre excluye las anuladas). Si esa caja ya cerró, mueve su saldo teórico pero
+        // no el total que guardó el cierre (deuda en la fila DAT-04).
+        if (! (bool) $venta->getAttribute('es_venta_sombra')) {
+            $caja = CajaSesion::query()->withoutGlobalScopes()->whereKey($venta->getAttribute('caja_sesion_id'))->firstOrFail();
+            foreach (VentaPago::query()->where('venta_id', $venta->id)->get() as $pago) {
+                $this->libroCaja->registrar($caja, 'anulacion', Dinero::desde('0')->restar(Dinero::desde((string) $pago->getAttribute('monto')))->aCadena(), 'ventas', (int) $venta->id, (int) $usuario->id);
+            }
         }
 
         $venta->update([

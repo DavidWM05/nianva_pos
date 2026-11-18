@@ -46,6 +46,7 @@ Generado con `php artisan errores:catalogo` desde las excepciones de negocio y e
 | `gift_card_saldo_insuficiente` | 422 | `App\Modules\GiftCards\Exceptions\GiftCardSaldoInsuficienteException` | GiftCards | — |
 | `gift_card_sin_saldo` | 422 | `App\Modules\GiftCards\Exceptions\GiftCardSinSaldoException` | GiftCards | — |
 | `gift_card_ya_cancelada` | 422 | `App\Modules\GiftCards\Exceptions\GiftCardYaCanceladaException` | GiftCards | — |
+| `libro_inmutable` | 409 | `App\Modules\Nucleo\Exceptions\LibroInmutableException` | Nucleo | libro, operacion |
 | `lista_precio_no_disponible` | 422 | `App\Modules\Precios\Exceptions\ListaPrecioNoDisponibleException` | Precios | lista_precio_id |
 | `metodo_no_permitido` | 405 | `App\Modules\Nucleo\Support\MapaErroresHttp` | Nucleo | - |
 | `modulo_no_activo` | 403 | `App\Modules\Nucleo\Exceptions\ModuloNoActivoException` | Nucleo | — |
@@ -64,6 +65,7 @@ Generado con `php artisan errores:catalogo` desde las excepciones de negocio y e
 | `pedido_no_asignable` | 422 | `App\Modules\Delivery\Exceptions\PedidoNoAsignableException` | Delivery | — |
 | `plan_pago_ya_activo` | 422 | `App\Modules\VentasPlazos\Exceptions\PlanPagoYaActivoException` | VentasPlazos | venta_id, plan_pago_id |
 | `prestamo_ya_pagado` | 422 | `App\Modules\Prestamos\Exceptions\PrestamoPagadoException` | Prestamos | — |
+| `proyeccion_no_actualizada` | 409 | `App\Modules\Nucleo\Exceptions\ProyeccionNoActualizadaException` | Nucleo | proyeccion, id |
 | `puntos_insuficientes` | 422 | `App\Modules\CrmAvanzado\Exceptions\PuntosInsuficientesException` | CrmAvanzado | — |
 | `puntos_no_generados` | 422 | `App\Modules\CrmAvanzado\Exceptions\PuntosNoGeneradosException` | CrmAvanzado | — |
 | `servicio_no_disponible` | 503 | `App\Modules\Nucleo\Support\MapaErroresHttp` | Nucleo | - |

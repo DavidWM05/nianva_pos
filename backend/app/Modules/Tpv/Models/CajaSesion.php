@@ -18,7 +18,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * consultando sucursal.tenant_id (ver tenantRelacion()).
  */
 #[Fillable([
-    'sucursal_id', 'usuario_id', 'monto_apertura', 'monto_cierre',
+    'sucursal_id', 'usuario_id', 'monto_apertura', 'saldo_teorico', 'monto_cierre',
     'total_ventas_sistema', 'diferencia', 'fecha_apertura', 'fecha_cierre', 'estado',
 ])]
 class CajaSesion extends Model
@@ -37,12 +37,26 @@ class CajaSesion extends Model
     {
         return [
             'monto_apertura' => 'decimal:2',
+            'saldo_teorico' => 'decimal:2',
             'monto_cierre' => 'decimal:2',
             'total_ventas_sistema' => 'decimal:2',
             'diferencia' => 'decimal:2',
             'fecha_apertura' => 'datetime',
             'fecha_cierre' => 'datetime',
         ];
+    }
+
+    /**
+     * DAT-04: la proyección del libro de caja nace igual al monto de apertura (el saldo inicial),
+     * también en una caja creada sin CajaService, como en una preparación de pruebas.
+     */
+    protected static function booted(): void
+    {
+        static::creating(static function (self $caja): void {
+            if ($caja->getAttribute('saldo_teorico') === null) {
+                $caja->setAttribute('saldo_teorico', $caja->getAttribute('monto_apertura'));
+            }
+        });
     }
 
     public static function tenantRelacion(): string
@@ -63,5 +77,11 @@ class CajaSesion extends Model
     public function ventas(): HasMany
     {
         return $this->hasMany(Venta::class);
+    }
+
+    /** @return HasMany<CajaMovimiento, $this> */
+    public function movimientos(): HasMany
+    {
+        return $this->hasMany(CajaMovimiento::class);
     }
 }

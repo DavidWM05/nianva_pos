@@ -10,6 +10,8 @@ use App\Modules\NotasCredito\Exceptions\NotaCreditoSaldoInsuficienteException;
 use App\Modules\NotasCredito\Exceptions\NotaCreditoSinSaldoException;
 use App\Modules\NotasCredito\Models\NotaCredito;
 use App\Modules\NotasCredito\Models\NotaCreditoUso;
+use App\Modules\Nucleo\Support\Dinero;
+use App\Modules\Nucleo\Support\Proyeccion;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
 
@@ -19,7 +21,7 @@ class NotaCreditoService
     {
         $this->exigirTransaccion();
 
-        return NotaCredito::create([
+        $nota = NotaCredito::create([
             'tenant_id' => $devolucion->tenant_id,
             'cliente_id' => $devolucion->venta->cliente_id,
             'devolucion_id' => $devolucion->id,
@@ -27,6 +29,20 @@ class NotaCreditoService
             'saldo_disponible' => $devolucion->monto_devolucion,
             'estado' => 'activa',
         ]);
+
+        // DAT-05: el primer renglón del libro de la nota es su monto original.
+        $saldo = Dinero::desde((string) $nota->getAttribute('saldo_disponible'))->aCadena();
+        NotaCreditoUso::query()->create([
+            'nota_credito_id' => $nota->id,
+            'tipo' => 'saldo_inicial',
+            'venta_id' => null,
+            'monto_usado' => $saldo,
+            'saldo_antes' => '0.00',
+            'saldo_despues' => $saldo,
+            'usuario_id' => $devolucion->getAttribute('usuario_id'),
+        ]);
+
+        return $nota;
 
     }
 
@@ -48,17 +64,23 @@ class NotaCreditoService
             throw new NotaCreditoSaldoInsuficienteException($notaCreditoId);
         }
 
+        // DAT-04: el uso es un renglón del libro de la nota; la proyección se mueve en la misma
+        // transacción y solo si sigue valiendo lo que se leyó.
+        $antes = Dinero::desde((string) $notaCredito->getAttribute('saldo_disponible'))->aCadena();
+        $importe = Dinero::desde(number_format($monto, 2, '.', ''));
+        $despues = Dinero::desde($antes)->restar($importe)->aCadena();
+        Proyeccion::actualizar($notaCredito, 'saldo_disponible', $antes, [
+            'saldo_disponible' => $despues,
+            'estado' => (float) $despues <= 0 ? 'usada_total' : 'usada_parcial',
+        ]);
         NotaCreditoUso::create([
             'nota_credito_id' => $notaCredito->id,
+            'tipo' => 'uso',
             'venta_id' => $ventaId,
-            'monto_usado' => $monto,
-        ]);
-
-        $nuevoSaldo = round((float) $notaCredito->saldo_disponible - $monto, 2);
-
-        $notaCredito->update([
-            'saldo_disponible' => $nuevoSaldo,
-            'estado' => $nuevoSaldo <= 0 ? 'usada_total' : 'usada_parcial',
+            'monto_usado' => $importe->aCadena(),
+            'saldo_antes' => $antes,
+            'saldo_despues' => $despues,
+            'usuario_id' => null,
         ]);
 
     }

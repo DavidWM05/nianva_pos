@@ -51,7 +51,7 @@ class ActionsTpvInventarioTest extends TestCase
 
         $this->assertSame($nivel, DB::transactionLevel());
         $this->assertSame(13, $d['stock']->fresh()->stock_actual);
-        $this->assertSame(13, $kardex->stock_resultante);
+        $this->assertSame(13, $kardex->stock_despues);
         $this->assertSame('ajuste', $kardex->motivo);
     }
 
@@ -97,7 +97,7 @@ class ActionsTpvInventarioTest extends TestCase
         $d['stock']->delete();
         $kardex = app(RegistrarMovimiento::class)->ejecutar(new MovimientoInventarioDto($d['variante']->id, $d['sucursal']->id, 'entrada', 3, 'ajuste', $d['usuario']->id));
 
-        $this->assertSame(3, $kardex->stock_resultante);
+        $this->assertSame(3, $kardex->stock_despues);
         $this->assertDatabaseHas('inventario_stock', ['variante_id' => $d['variante']->id, 'sucursal_id' => $d['sucursal']->id, 'stock_actual' => 3]);
     }
 
