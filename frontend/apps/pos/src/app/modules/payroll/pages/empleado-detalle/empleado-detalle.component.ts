@@ -16,8 +16,7 @@ import {
   StatusBadgeComponent,
 } from '@nianva/ui-shared';
 
-import { EmpleadoService } from '../../empleado.service';
-import { Empleado } from '../../empleado.types';
+import { Empleado, EmpleadoService } from '@nianva/domain-payroll';
 
 /**
  * Vista de registro (RecordTabsComponent, obligatorio -- CLAUDE.md §4).

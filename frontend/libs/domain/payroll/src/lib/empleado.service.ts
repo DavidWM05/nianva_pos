@@ -1,10 +1,9 @@
 import { RespuestaDe, CuerpoDe } from '@nianva/api-contrato';
+import { ConsultaPagina, urlApi } from '@nianva/core-http';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
-import { DataTableLazyEvent } from '@nianva/ui-shared';
 import { Observable, map } from 'rxjs';
 
-import { urlApi } from '../../core/api-config';
 import { Empleado, EmpleadoCrearPayload } from './empleado.types';
 
 export interface EmpleadosPermisos {
@@ -22,7 +21,7 @@ export interface EmpleadosPagina {
 export class EmpleadoService {
   private readonly http = inject(HttpClient);
 
-  listar(evento: DataTableLazyEvent): Observable<EmpleadosPagina> {
+  listar(evento: ConsultaPagina): Observable<EmpleadosPagina> {
     const rows = evento.rows || 25;
     const page = Math.floor(evento.first / rows) + 1;
 
@@ -38,7 +37,7 @@ export class EmpleadoService {
       .get<RespuestaDe<'/empleados', 'get'>>(urlApi(`/empleados`), { params })
       .pipe(
         map((r) => ({
-          data: r.data as Empleado[],
+          data: r.data,
           total: r.meta.total,
           permisos: { ...r.meta.permisos, crear: r.meta.permisos['crear'] },
         })),
@@ -50,7 +49,7 @@ export class EmpleadoService {
       .get<RespuestaDe<'/empleados/{empleado}', 'get'>>(
         urlApi(`/empleados/${id}`),
       )
-      .pipe(map((r) => r.data as Empleado));
+      .pipe(map((r) => r.data));
   }
 
   crear(payload: EmpleadoCrearPayload): Observable<Empleado> {
@@ -59,6 +58,6 @@ export class EmpleadoService {
         urlApi(`/empleados`),
         payload satisfies CuerpoDe<'/empleados', 'post'>,
       )
-      .pipe(map((r) => r.data as Empleado));
+      .pipe(map((r) => r.data));
   }
 }

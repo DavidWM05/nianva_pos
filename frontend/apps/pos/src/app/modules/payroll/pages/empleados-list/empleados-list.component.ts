@@ -39,8 +39,7 @@ import {
 
 import { AuthStateService } from '../../../../auth/auth-state.service';
 import { BUSCADOR_USUARIO } from '../../../../core/buscadores-entidad.tokens';
-import { EmpleadoService, EmpleadosPermisos } from '../../empleado.service';
-import { Empleado, TipoSalario } from '../../empleado.types';
+import { Empleado, EmpleadoService, EmpleadosPermisos, TipoSalario } from '@nianva/domain-payroll';
 
 const PERMISOS_VACIOS: EmpleadosPermisos = { crear: false };
 

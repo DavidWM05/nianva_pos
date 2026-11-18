@@ -1,8 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { describe, expect, it } from 'vitest';
 
-import { SesionActualService } from './sesion-actual.service';
-import { Sesion } from './sesion.types';
+import { Sesion, SesionActualService } from '@nianva/domain-sesion';
 
 function sesion(parcial: Partial<Sesion> = {}): Sesion {
   return {

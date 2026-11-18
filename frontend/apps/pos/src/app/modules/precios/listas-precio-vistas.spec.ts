@@ -14,7 +14,7 @@ import {
   BUSCADOR_PRODUCTO,
   BUSCADOR_VARIANTE_DE_PRODUCTO,
 } from '../../core/buscadores-entidad.tokens';
-import { SesionActualService } from '../../auth/sesion-actual.service';
+import { SesionActualService } from '@nianva/domain-sesion';
 
 describe('Listas de precio: vistas', () => {
   it('el alta valida nombre obligatorio y largo máximo antes de enviar', async () => {

@@ -1,10 +1,9 @@
 import { RespuestaDe, CuerpoDe } from '@nianva/api-contrato';
+import { ConsultaPagina, urlApi } from '@nianva/core-http';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
-import { DataTableLazyEvent } from '@nianva/ui-shared';
 import { Observable, map } from 'rxjs';
 
-import { urlApi } from '../../core/api-config';
 import {
   Prestamo,
   PrestamoCrearPayload,
@@ -20,7 +19,7 @@ export interface PrestamosPagina {
 export class PrestamoService {
   private readonly http = inject(HttpClient);
 
-  listar(evento: DataTableLazyEvent): Observable<PrestamosPagina> {
+  listar(evento: ConsultaPagina): Observable<PrestamosPagina> {
     const rows = evento.rows || 25;
     const page = Math.floor(evento.first / rows) + 1;
 
@@ -34,7 +33,7 @@ export class PrestamoService {
 
     return this.http
       .get<RespuestaDe<'/prestamos', 'get'>>(urlApi(`/prestamos`), { params })
-      .pipe(map((r) => ({ data: r.data as Prestamo[], total: r.meta.total })));
+      .pipe(map((r) => ({ data: r.data, total: r.meta.total })));
   }
 
   obtener(id: number): Observable<Prestamo> {
@@ -42,7 +41,7 @@ export class PrestamoService {
       .get<RespuestaDe<'/prestamos/{prestamo}', 'get'>>(
         urlApi(`/prestamos/${id}`),
       )
-      .pipe(map((r) => r.data as Prestamo));
+      .pipe(map((r) => r.data));
   }
 
   crear(payload: PrestamoCrearPayload): Observable<Prestamo> {
@@ -51,7 +50,7 @@ export class PrestamoService {
         urlApi(`/prestamos`),
         payload satisfies CuerpoDe<'/prestamos', 'post'>,
       )
-      .pipe(map((r) => r.data as Prestamo));
+      .pipe(map((r) => r.data));
   }
 
   /**

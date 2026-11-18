@@ -19,8 +19,7 @@ if (typeof globalThis.ResizeObserver === 'undefined') {
 }
 /* eslint-enable @typescript-eslint/no-empty-function */
 
-import { EmpleadoService } from '../../empleado.service';
-import { Empleado } from '../../empleado.types';
+import { Empleado, EmpleadoService } from '@nianva/domain-payroll';
 import { EmpleadoDetalleComponent } from './empleado-detalle.component';
 
 describe('EmpleadoDetalleComponent', () => {

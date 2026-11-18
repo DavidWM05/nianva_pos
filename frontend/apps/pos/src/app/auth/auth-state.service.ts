@@ -2,8 +2,7 @@ import { Injectable, computed, inject, signal } from '@angular/core';
 import { catchError, firstValueFrom, of, tap } from 'rxjs';
 
 import { AuthService } from './auth.service';
-import { SesionActualService } from './sesion-actual.service';
-import { Usuario } from './usuario.types';
+import { SesionActualService, Usuario } from '@nianva/domain-sesion';
 
 /**
  * Fuente unica de verdad del estado de sesion en el frontend. authGuard,

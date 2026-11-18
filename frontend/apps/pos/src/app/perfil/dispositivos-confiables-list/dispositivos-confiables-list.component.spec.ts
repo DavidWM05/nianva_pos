@@ -2,7 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ConfirmDialogService } from '@nianva/ui-shared';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { DispositivoConfiable } from '../seguridad.types';
+import { DispositivoConfiable } from '@nianva/domain-perfil';
 import { DispositivosConfiablesListComponent } from './dispositivos-confiables-list.component';
 
 describe('DispositivosConfiablesListComponent', () => {

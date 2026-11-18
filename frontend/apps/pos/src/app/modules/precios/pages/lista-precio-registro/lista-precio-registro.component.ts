@@ -36,7 +36,7 @@ import {
 } from '@nianva/ui-shared';
 import { aCentavos } from '@nianva/ui-format';
 import { finalize } from 'rxjs';
-import { SesionActualService } from '../../../../auth/sesion-actual.service';
+import { SesionActualService } from '@nianva/domain-sesion';
 import {
   BUSCADOR_CLIENTE,
   BUSCADOR_PRODUCTO,

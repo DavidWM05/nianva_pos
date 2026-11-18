@@ -3000,7 +3000,8 @@ export interface components {
             };
             sucursal_id: number;
             salario_base: string;
-            tipo_salario: string;
+            /** @enum {string} */
+            tipo_salario: "fijo" | "por_hora";
             numero_seguridad_social: string | null;
             /** Format: date-time */
             fecha_ingreso: string | null;
@@ -4487,7 +4488,12 @@ export interface operations {
                             accion: "create" | "update" | "delete";
                             usuario_id: number | null;
                             usuario_nombre: string | null;
-                            cambios: unknown[] | null;
+                            cambios: {
+                                [key: string]: {
+                                    antes: unknown;
+                                    despues: unknown;
+                                };
+                            } | null;
                             /** Format: date-time */
                             fecha: string;
                         }[];

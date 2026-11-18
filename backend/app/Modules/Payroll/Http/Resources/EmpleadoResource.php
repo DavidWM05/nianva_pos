@@ -19,6 +19,7 @@ class EmpleadoResource extends JsonResource
             ]),
             'sucursal_id' => $this->sucursal_id,
             'salario_base' => DecimalApi::dinero($this->salario_base),
+            /** @var 'fijo'|'por_hora' */
             'tipo_salario' => $this->tipo_salario,
             'numero_seguridad_social' => $this->numero_seguridad_social,
             'fecha_ingreso' => $this->fecha_ingreso,

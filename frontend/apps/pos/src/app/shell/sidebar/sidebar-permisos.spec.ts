@@ -2,8 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { beforeEach, describe, expect, it } from 'vitest';
 
-import { SesionActualService } from '../../auth/sesion-actual.service';
-import { Sesion } from '../../auth/sesion.types';
+import { Sesion, SesionActualService } from '@nianva/domain-sesion';
 import { NUCLEO_NAV_GROUPS } from '../../modules/modules.config';
 import { SidebarComponent } from './sidebar.component';
 

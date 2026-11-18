@@ -94,6 +94,7 @@ class AuditoriaController extends Controller
                 'accion' => $entrada->accion,
                 'usuario_id' => $entrada->usuario_id,
                 'usuario_nombre' => $entrada->usuario?->nombre,
+                /** @var array<string, array{antes: mixed, despues: mixed}>|null */
                 'cambios' => $entrada->cambios,
                 'fecha' => $entrada->created_at,
             ]);

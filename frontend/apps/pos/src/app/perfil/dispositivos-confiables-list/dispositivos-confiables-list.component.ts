@@ -4,7 +4,7 @@ import { SkeletonComponent } from '@nianva/ui-feedback';
 import { FechaHoraPipe } from '@nianva/ui-format';
 import { ConfirmDialogService } from '@nianva/ui-shared';
 
-import { DispositivoConfiable } from '../seguridad.types';
+import { DispositivoConfiable } from '@nianva/domain-perfil';
 
 /**
  * Lista simple (no nucleo-data-table): son a lo sumo un puñado de

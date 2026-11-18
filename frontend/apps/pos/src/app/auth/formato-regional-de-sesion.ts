@@ -1,7 +1,7 @@
 import { Provider, inject } from '@angular/core';
 import { FORMATO_REGIONAL, FORMATO_REGIONAL_DEFAULTS, FormatoRegional } from '@nianva/ui-format';
 
-import { SesionActualService } from './sesion-actual.service';
+import { SesionActualService } from '@nianva/domain-sesion';
 
 /**
  * FORMATO_REGIONAL de la app: la moneda, la zona horaria y el locale salen de GET /sesion

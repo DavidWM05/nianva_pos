@@ -1,4 +1,4 @@
-import { SesionActualService } from '../../../../auth/sesion-actual.service';
+import { SesionActualService } from '@nianva/domain-sesion';
 import { SelectorListaPrecioComponent } from '../../selector-lista-precio/selector-lista-precio.component';
 import { HttpErrorResponse } from '@angular/common/http';
 import {

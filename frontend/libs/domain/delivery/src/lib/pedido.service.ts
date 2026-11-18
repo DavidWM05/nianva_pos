@@ -1,11 +1,9 @@
 import { RespuestaDe, CuerpoDe } from '@nianva/api-contrato';
+import { CODIGOS_EN_PANTALLA, ConsultaPagina, urlApi } from '@nianva/core-http';
 import { HttpClient, HttpContext, HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
-import { DataTableLazyEvent } from '@nianva/ui-shared';
 import { Observable, map } from 'rxjs';
 
-import { urlApi } from '../../core/api-config';
-import { CODIGOS_EN_PANTALLA } from '../../core/errores.interceptor';
 import { EstadoPedido, Pedido, PedidoCrearPayload } from './pedido.types';
 
 export interface PedidosPermisos {
@@ -28,7 +26,7 @@ export class PedidoService {
   );
 
   listar(
-    evento: DataTableLazyEvent,
+    evento: ConsultaPagina,
     filtros: {
       numeroPedido?: string;
       estado?: EstadoPedido | null;
@@ -63,7 +61,7 @@ export class PedidoService {
       .get<RespuestaDe<'/pedidos', 'get'>>(urlApi(`/pedidos`), { params })
       .pipe(
         map((r) => ({
-          data: r.data as Pedido[],
+          data: r.data,
           total: r.meta.total,
           permisos: { ...r.meta.permisos, crear: r.meta.permisos['crear'] },
         })),
@@ -73,7 +71,7 @@ export class PedidoService {
   obtener(id: number): Observable<Pedido> {
     return this.http
       .get<RespuestaDe<'/pedidos/{pedido}', 'get'>>(urlApi(`/pedidos/${id}`))
-      .pipe(map((r) => r.data as Pedido));
+      .pipe(map((r) => r.data));
   }
 
   crear(payload: PedidoCrearPayload): Observable<Pedido> {
@@ -83,7 +81,7 @@ export class PedidoService {
         payload satisfies CuerpoDe<'/pedidos', 'post'>,
         { context: this.sucursalEnPantalla },
       )
-      .pipe(map((r) => r.data as Pedido));
+      .pipe(map((r) => r.data));
   }
 
   cambiarEstado(id: number, estado: EstadoPedido): Observable<Pedido> {
@@ -92,7 +90,7 @@ export class PedidoService {
         urlApi(`/pedidos/${id}/estado`),
         { estado } satisfies CuerpoDe<'/pedidos/{id}/estado', 'patch'>,
       )
-      .pipe(map((r) => r.data as Pedido));
+      .pipe(map((r) => r.data));
   }
 
   asignarRepartidor(id: number, repartidorId: number): Observable<Pedido> {
@@ -104,6 +102,6 @@ export class PedidoService {
           'patch'
         >,
       )
-      .pipe(map((r) => r.data as Pedido));
+      .pipe(map((r) => r.data));
   }
 }

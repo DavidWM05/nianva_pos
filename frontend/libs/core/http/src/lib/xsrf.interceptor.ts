@@ -1,5 +1,5 @@
 import { HttpInterceptorFn, HttpRequest } from '@angular/common/http';
-import { esUrlBackend } from '../core/api-config';
+import { esUrlBackend } from './api-config';
 
 const COOKIE_XSRF = 'XSRF-TOKEN';
 const HEADER_XSRF = 'X-XSRF-TOKEN';

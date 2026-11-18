@@ -6,7 +6,7 @@ import { LineasProductoComponent } from './lineas-producto/lineas-producto.compo
 import { VentaComponent } from './pages/venta/venta.component';
 import { CajaService, CuponValidacionService, MetodoPagoService, VentaService } from '@nianva/domain-tpv';
 import { NotaCreditoService } from '@nianva/domain-notas-credito';
-import { SesionActualService } from '../../auth/sesion-actual.service';
+import { SesionActualService } from '@nianva/domain-sesion';
 import {
   BUSCADOR_CLIENTE,
   BUSCADOR_PRODUCTO,

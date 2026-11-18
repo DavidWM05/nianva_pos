@@ -29,8 +29,7 @@ import {
   LineasCotizacionCambio,
   LineasCotizacionComponent,
 } from '../../../cotizaciones/lineas-cotizacion/lineas-cotizacion.component';
-import { PedidoService } from '../../pedido.service';
-import { PedidoItemPayload } from '../../pedido.types';
+import { PedidoItemPayload, PedidoService } from '@nianva/domain-delivery';
 
 function esNumero(valor: unknown): valor is number {
   return typeof valor === 'number';

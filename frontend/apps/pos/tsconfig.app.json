@@ -8,6 +8,9 @@
   "exclude": ["src/**/*.spec.ts", "src/**/*.test.ts"],
   "references": [
     {
+      "path": "../../libs/domain/perfil"
+    },
+    {
       "path": "../../libs/domain/unidades-medida"
     },
     {
@@ -18,6 +21,9 @@
     },
     {
       "path": "../../libs/ui/report"
+    },
+    {
+      "path": "../../libs/domain/prestamos"
     },
     {
       "path": "../../libs/domain/nucleo"
@@ -50,9 +56,6 @@
       "path": "../../libs/domain/configuracion"
     },
     {
-      "path": "../../libs/domain/auditoria"
-    },
-    {
       "path": "../../libs/ui/actions"
     },
     {
@@ -71,10 +74,19 @@
       "path": "../../libs/domain/administracion"
     },
     {
+      "path": "../../libs/api-contrato"
+    },
+    {
+      "path": "../../libs/domain/payroll"
+    },
+    {
+      "path": "../../libs/domain/delivery"
+    },
+    {
       "path": "../../libs/domain/cotizaciones"
     },
     {
-      "path": "../../libs/core/http"
+      "path": "../../libs/domain/auditoria"
     },
     {
       "path": "../../libs/ui/forms"
@@ -86,7 +98,10 @@
       "path": "../../libs/ui/format"
     },
     {
-      "path": "../../libs/api-contrato"
+      "path": "../../libs/domain/sesion"
+    },
+    {
+      "path": "../../libs/core/http"
     },
     {
       "path": "../../libs/ui-shared"

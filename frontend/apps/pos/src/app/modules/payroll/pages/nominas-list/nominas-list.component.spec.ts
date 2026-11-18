@@ -8,9 +8,8 @@ import { of, throwError } from 'rxjs';
 import { describe, expect, it, vi } from 'vitest';
 
 import { AuthStateService } from '../../../../auth/auth-state.service';
-import { Usuario } from '../../../../auth/usuario.types';
-import { NominaService, NominasPagina } from '../../nomina.service';
-import { Nomina } from '../../nomina.types';
+import { Usuario } from '@nianva/domain-sesion';
+import { Nomina, NominaService, NominasPagina } from '@nianva/domain-payroll';
 import { NominasListComponent } from './nominas-list.component';
 
 describe('NominasListComponent', () => {

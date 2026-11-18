@@ -2,7 +2,7 @@ import { Injectable, effect, inject, untracked } from '@angular/core';
 
 import { AuthService } from './auth.service';
 import { AuthStateService } from './auth-state.service';
-import { SesionActualService } from './sesion-actual.service';
+import { SesionActualService } from '@nianva/domain-sesion';
 
 /**
  * Carga GET /sesion (API-09) cuando hay usuario pero aun no hay sesion: justo despues del

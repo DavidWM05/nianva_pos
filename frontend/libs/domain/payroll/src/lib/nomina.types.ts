@@ -8,7 +8,7 @@ export interface NominaDetalleEmpleado {
 
 export interface NominaDetalle {
   id: number;
-  empleado: NominaDetalleEmpleado | null;
+  empleado?: NominaDetalleEmpleado | null;
   dias_trabajados: number;
   percepciones: string;
   deducciones: string;
