@@ -16,7 +16,7 @@ class ValidarCuponRequest extends SolicitudNegocio
     {
         return [
             'codigo' => ['required', 'string'],
-            'total' => ['required', 'numeric', 'min:0'],
+            'total' => ['required', 'numeric', 'decimal:0,2', 'min:0'],
         ];
     }
 

@@ -1,3 +1,4 @@
+import { limitesDe } from '@nianva/api-contrato';
 import { SesionActualService } from '@nianva/domain-sesion';
 import { SelectorListaPrecioComponent } from '../../selector-lista-precio/selector-lista-precio.component';
 import { HttpErrorResponse } from '@angular/common/http';
@@ -89,6 +90,9 @@ export class VentaComponent implements OnInit {
   private lineasProductoRef!: LineasProductoComponent;
   @ViewChild(LineasPagoComponent) private lineasPagoRef!: LineasPagoComponent;
 
+  /** Limites del contrato (UI-11b). El codigo de cupon mide lo que acepta el catalogo de cupones. */
+  protected readonly limitesVenta = limitesDe('/ventas', 'post');
+  protected readonly limitesCupon = limitesDe('/cupones', 'post');
   protected readonly cargandoCaja = signal(true);
   protected readonly cajaAbierta = signal<CajaSesion | null>(null);
 

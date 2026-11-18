@@ -1,3 +1,4 @@
+import { limitesDe } from '@nianva/api-contrato';
 import { compararDinero, DineroPipe, FechaHoraPipe } from '@nianva/ui-format';
 import { HttpErrorResponse } from '@angular/common/http';
 import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
@@ -52,6 +53,10 @@ export class CajaComponent implements OnInit {
   private readonly gastoService = inject(GastoService);
   private readonly toast = inject(ToastService);
 
+  /** Limites del contrato (UI-11b): apertura, cierre y gasto. */
+  protected readonly limitesApertura = limitesDe('/caja/abrir', 'post');
+  protected readonly limitesCierre = limitesDe('/caja/{cajaSesion}/cerrar', 'patch');
+  protected readonly limitesGasto = limitesDe('/gastos', 'post');
   protected readonly cargando = signal(true);
   protected readonly estado = signal<CajaActual | null>(null);
 

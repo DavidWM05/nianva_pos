@@ -14,7 +14,7 @@ class CrearGastoRequest extends SolicitudNegocio
     {
         return [
             'descripcion' => ['required', 'string', 'max:255'],
-            'monto' => ['required', 'numeric', 'min:0.01'],
+            'monto' => ['required', 'numeric', 'decimal:0,2', 'min:0.01'],
         ];
     }
 

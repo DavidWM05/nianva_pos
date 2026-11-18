@@ -15,7 +15,7 @@ class EmitirGiftCardRequest extends SolicitudNegocio
     {
         return [
             'cliente_id' => ['nullable', 'integer', ReglasTenant::existe('clientes', $this->tenantId())],
-            'monto' => ['required', 'numeric', 'min:0.01'],
+            'monto' => ['required', 'numeric', 'decimal:0,2', 'min:0.01'],
             'fecha_expiracion' => ['nullable', 'date', 'after:today'],
         ];
     }

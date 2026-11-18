@@ -13,7 +13,7 @@ class CerrarCajaRequest extends SolicitudNegocio
     public function rules(): array
     {
         return [
-            'monto_fisico' => ['required', 'numeric', 'min:0'],
+            'monto_fisico' => ['required', 'numeric', 'decimal:0,2', 'min:0'],
         ];
     }
 

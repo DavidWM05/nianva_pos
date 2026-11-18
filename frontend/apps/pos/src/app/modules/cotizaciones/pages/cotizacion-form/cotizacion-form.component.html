@@ -23,7 +23,7 @@
 
     <ui-section titulo="Resumen">
       <p>Subtotal: {{ subtotal() | dinero }}</p>
-      <ui-campo #campo1 etiqueta="Descuento global"><ui-input-dinero [min]="0" [ngModel]="descuentoGlobal()" (ngModelChange)="descuentoGlobal.set($event)" /></ui-campo>
+      <ui-campo #campo1 etiqueta="Descuento global"><ui-input-dinero [min]="limites.descuento.minimum" [ngModel]="descuentoGlobal()" (ngModelChange)="descuentoGlobal.set($event)" /></ui-campo>
       <p>Total: {{ total() | dinero }}</p>
     </ui-section>
 
@@ -32,8 +32,8 @@
         <input
           type="number"
           [id]="campo2.controlId()"
-          min="1"
-          max="365"
+          [min]="limites.validez_dias.minimum"
+          [max]="limites.validez_dias.maximum"
           [ngModel]="validezDias()"
           (ngModelChange)="validezDias.set($event)"
         />
@@ -42,7 +42,7 @@
         <input
           type="text"
           [id]="campo3.controlId()"
-          maxlength="10"
+          [maxlength]="limites.uso_cfdi.maxLength"
           [ngModel]="usoCfdi()"
           (ngModelChange)="usoCfdi.set($event)"
         />
@@ -51,6 +51,7 @@
         <textarea
           [id]="campo4.controlId()"
           rows="3"
+          [maxlength]="limites.observaciones.maxLength"
           [ngModel]="observaciones()"
           (ngModelChange)="observaciones.set($event)"
         ></textarea>

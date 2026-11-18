@@ -8,6 +8,6 @@
   /></ui-campo>
   <ui-campo etiqueta="Precio de compra (unitario)" [requerido]="true"
     ><ui-input-dinero
-      [min]="0"
+      [min]="linea.precio_compra.minimum"
       [formControl]="numericos.controls.precio_compra" /></ui-campo
 ></nucleo-dynamic-form>

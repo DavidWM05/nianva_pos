@@ -51,7 +51,7 @@ function decimalesDe(propiedad) {
   return patron ? Number(patron[1]) : undefined;
 }
 
-function limiteDe(propiedad, requerido) {
+function limiteDe(spec, propiedad, requerido) {
   const limite = { requerido };
   for (const clave of ['maxLength', 'minimum', 'maximum']) {
     if (typeof propiedad[clave] === 'number') {
@@ -62,14 +62,28 @@ function limiteDe(propiedad, requerido) {
   if (decimales !== undefined) {
     limite.decimales = decimales;
   }
+  const elemento = resolver(spec, propiedad.items);
+  if (elemento?.properties) {
+    limite.elemento = limitesDeCampos(spec, elemento);
+  }
 
   return limite;
 }
 
+function limitesDeCampos(spec, esquema) {
+  const requeridos = new Set(esquema.required ?? []);
+  const campos = {};
+  for (const [campo, propiedad] of Object.entries(esquema.properties)) {
+    campos[campo] = limiteDe(spec, resolver(spec, propiedad), requeridos.has(campo));
+  }
+
+  return campos;
+}
+
 /**
  * Limites por ruta, metodo y campo del cuerpo JSON de la peticion: `maxLength`, `minimum`,
- * `maximum`, decimales y requerido. Solo los campos de primer nivel: los de las lineas
- * (`items.*`) no se pintan con un solo input.
+ * `maximum`, decimales y requerido. Un arreglo de objetos (las lineas, `items.*`, o los pagos)
+ * lleva en `elemento` los limites de cada campo de una linea.
  */
 export function limitesDelContrato(spec) {
   const limites = {};
@@ -79,13 +93,8 @@ export function limitesDelContrato(spec) {
       if (!esquema?.properties) {
         continue;
       }
-      const requeridos = new Set(esquema.required ?? []);
-      const campos = {};
-      for (const [campo, propiedad] of Object.entries(esquema.properties)) {
-        campos[campo] = limiteDe(resolver(spec, propiedad), requeridos.has(campo));
-      }
       limites[ruta] ??= {};
-      limites[ruta][metodo] = campos;
+      limites[ruta][metodo] = limitesDeCampos(spec, esquema);
     }
   }
 

@@ -11731,7 +11731,8 @@
                 "properties": {
                     "monto_apertura": {
                         "type": "number",
-                        "minimum": 0
+                        "minimum": 0,
+                        "multipleOf": 0.01
                     }
                 },
                 "required": [
@@ -11860,7 +11861,8 @@
                             "number",
                             "null"
                         ],
-                        "minimum": 0
+                        "minimum": 0,
+                        "multipleOf": 0.01
                     },
                     "uso_cfdi": {
                         "type": [
@@ -11895,14 +11897,16 @@
                                         "number",
                                         "null"
                                     ],
-                                    "minimum": 0
+                                    "minimum": 0,
+                                    "multipleOf": 0.01
                                 },
                                 "descuento": {
                                     "type": [
                                         "number",
                                         "null"
                                     ],
-                                    "minimum": 0
+                                    "minimum": 0,
+                                    "multipleOf": 0.01
                                 }
                             },
                             "required": [
@@ -12221,7 +12225,8 @@
                 "properties": {
                     "monto": {
                         "type": "number",
-                        "minimum": 0.01
+                        "minimum": 0.01,
+                        "multipleOf": 0.01
                     },
                     "metodo_pago_id": {
                         "type": "integer"
@@ -12520,7 +12525,8 @@
                 "properties": {
                     "monto_fisico": {
                         "type": "number",
-                        "minimum": 0
+                        "minimum": 0,
+                        "multipleOf": 0.01
                     }
                 },
                 "required": [
@@ -13141,7 +13147,8 @@
                             "number",
                             "null"
                         ],
-                        "minimum": 0
+                        "minimum": 0,
+                        "multipleOf": 0.01
                     },
                     "uso_cfdi": {
                         "type": [
@@ -13176,14 +13183,16 @@
                                         "number",
                                         "null"
                                     ],
-                                    "minimum": 0
+                                    "minimum": 0,
+                                    "multipleOf": 0.01
                                 },
                                 "descuento": {
                                     "type": [
                                         "number",
                                         "null"
                                     ],
-                                    "minimum": 0
+                                    "minimum": 0,
+                                    "multipleOf": 0.01
                                 }
                             },
                             "required": [
@@ -13280,7 +13289,8 @@
                                 },
                                 "monto": {
                                     "type": "number",
-                                    "minimum": 0.01
+                                    "minimum": 0.01,
+                                    "multipleOf": 0.01
                                 }
                             }
                         }
@@ -13368,7 +13378,8 @@
                     },
                     "monto": {
                         "type": "number",
-                        "minimum": 0.01
+                        "minimum": 0.01,
+                        "multipleOf": 0.01
                     }
                 },
                 "required": [
@@ -13838,7 +13849,8 @@
                                 },
                                 "monto": {
                                     "type": "number",
-                                    "minimum": 0.01
+                                    "minimum": 0.01,
+                                    "multipleOf": 0.01
                                 }
                             },
                             "required": [
@@ -13859,7 +13871,8 @@
                             "number",
                             "null"
                         ],
-                        "minimum": 0
+                        "minimum": 0,
+                        "multipleOf": 0.01
                     },
                     "gift_card_codigo": {
                         "type": [
@@ -14559,7 +14572,8 @@
                     },
                     "monto": {
                         "type": "number",
-                        "minimum": 0.01
+                        "minimum": 0.01,
+                        "multipleOf": 0.01
                     },
                     "fecha_expiracion": {
                         "type": [
@@ -15208,14 +15222,16 @@
                             "number",
                             "null"
                         ],
-                        "minimum": 0
+                        "minimum": 0,
+                        "multipleOf": 0.01
                     },
                     "precio_venta": {
                         "type": [
                             "number",
                             "null"
                         ],
-                        "minimum": 0
+                        "minimum": 0,
+                        "multipleOf": 0.01
                     },
                     "tasa_iva": {
                         "type": [
@@ -15356,7 +15372,8 @@
                             "number",
                             "null"
                         ],
-                        "minimum": 0
+                        "minimum": 0,
+                        "multipleOf": 0.01
                     },
                     "aplica_a": {
                         "type": "string",
@@ -16107,7 +16124,8 @@
                             "number",
                             "null"
                         ],
-                        "minimum": 0.01
+                        "minimum": 0.01,
+                        "multipleOf": 0.01
                     }
                 },
                 "required": [
@@ -17033,7 +17051,8 @@
                 "properties": {
                     "monto": {
                         "type": "number",
-                        "minimum": 0.01
+                        "minimum": 0.01,
+                        "multipleOf": 0.01
                     }
                 },
                 "required": [
@@ -17120,7 +17139,8 @@
                 "properties": {
                     "monto": {
                         "type": "number",
-                        "minimum": 0.01
+                        "minimum": 0.01,
+                        "multipleOf": 0.01
                     },
                     "pagos": {
                         "type": "array",
@@ -17132,7 +17152,8 @@
                                 },
                                 "monto": {
                                     "type": "number",
-                                    "minimum": 0.01
+                                    "minimum": 0.01,
+                                    "multipleOf": 0.01
                                 }
                             },
                             "required": [
@@ -17184,7 +17205,8 @@
                                 },
                                 "precio_compra": {
                                     "type": "number",
-                                    "minimum": 0
+                                    "minimum": 0,
+                                    "multipleOf": 0.01
                                 }
                             },
                             "required": [
@@ -17233,7 +17255,8 @@
                 "properties": {
                     "monto": {
                         "type": "number",
-                        "minimum": 0.01
+                        "minimum": 0.01,
+                        "multipleOf": 0.01
                     },
                     "metodo_pago_id": {
                         "type": "integer"
@@ -17820,7 +17843,8 @@
                     },
                     "total": {
                         "type": "number",
-                        "minimum": 0
+                        "minimum": 0,
+                        "multipleOf": 0.01
                     }
                 },
                 "required": [

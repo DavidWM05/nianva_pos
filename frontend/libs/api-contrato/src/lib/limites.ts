@@ -10,7 +10,18 @@ export const LIMITES = {
         "requerido": true
       },
       "items": {
-        "requerido": true
+        "requerido": true,
+        "elemento": {
+          "variante_id": {
+            "requerido": true
+          },
+          "cantidad": {
+            "requerido": true,
+            "minimum": 0.001,
+            "maximum": 99999999999.999,
+            "decimales": 3
+          }
+        }
       },
       "fecha_vencimiento": {
         "requerido": false
@@ -24,10 +35,21 @@ export const LIMITES = {
     "post": {
       "monto": {
         "requerido": true,
-        "minimum": 0.01
+        "minimum": 0.01,
+        "decimales": 2
       },
       "pagos": {
-        "requerido": true
+        "requerido": true,
+        "elemento": {
+          "metodo_pago_id": {
+            "requerido": true
+          },
+          "monto": {
+            "requerido": true,
+            "minimum": 0.01,
+            "decimales": 2
+          }
+        }
       },
       "notas": {
         "requerido": false
@@ -98,7 +120,8 @@ export const LIMITES = {
     "post": {
       "monto_apertura": {
         "requerido": true,
-        "minimum": 0
+        "minimum": 0,
+        "decimales": 2
       }
     }
   },
@@ -106,7 +129,8 @@ export const LIMITES = {
     "patch": {
       "monto_fisico": {
         "requerido": true,
-        "minimum": 0
+        "minimum": 0,
+        "decimales": 2
       }
     }
   },
@@ -188,7 +212,23 @@ export const LIMITES = {
         "maxLength": 60
       },
       "items": {
-        "requerido": true
+        "requerido": true,
+        "elemento": {
+          "variante_id": {
+            "requerido": true
+          },
+          "cantidad": {
+            "requerido": true,
+            "minimum": 0.001,
+            "maximum": 99999999999.999,
+            "decimales": 3
+          },
+          "precio_compra": {
+            "requerido": true,
+            "minimum": 0,
+            "decimales": 2
+          }
+        }
       }
     }
   },
@@ -272,7 +312,8 @@ export const LIMITES = {
       },
       "descuento": {
         "requerido": false,
-        "minimum": 0
+        "minimum": 0,
+        "decimales": 2
       },
       "uso_cfdi": {
         "requerido": false,
@@ -283,7 +324,28 @@ export const LIMITES = {
         "maxLength": 1000
       },
       "items": {
-        "requerido": true
+        "requerido": true,
+        "elemento": {
+          "variante_id": {
+            "requerido": true
+          },
+          "cantidad": {
+            "requerido": true,
+            "minimum": 0.001,
+            "maximum": 99999999999.999,
+            "decimales": 3
+          },
+          "precio_unitario": {
+            "requerido": false,
+            "minimum": 0,
+            "decimales": 2
+          },
+          "descuento": {
+            "requerido": false,
+            "minimum": 0,
+            "decimales": 2
+          }
+        }
       }
     }
   },
@@ -302,7 +364,8 @@ export const LIMITES = {
       },
       "descuento": {
         "requerido": false,
-        "minimum": 0
+        "minimum": 0,
+        "decimales": 2
       },
       "uso_cfdi": {
         "requerido": false,
@@ -313,7 +376,28 @@ export const LIMITES = {
         "maxLength": 1000
       },
       "items": {
-        "requerido": true
+        "requerido": true,
+        "elemento": {
+          "variante_id": {
+            "requerido": true
+          },
+          "cantidad": {
+            "requerido": true,
+            "minimum": 0.001,
+            "maximum": 99999999999.999,
+            "decimales": 3
+          },
+          "precio_unitario": {
+            "requerido": false,
+            "minimum": 0,
+            "decimales": 2
+          },
+          "descuento": {
+            "requerido": false,
+            "minimum": 0,
+            "decimales": 2
+          }
+        }
       }
     }
   },
@@ -370,7 +454,8 @@ export const LIMITES = {
     "post": {
       "monto": {
         "requerido": true,
-        "minimum": 0.01
+        "minimum": 0.01,
+        "decimales": 2
       },
       "metodo_pago_id": {
         "requerido": true
@@ -385,7 +470,8 @@ export const LIMITES = {
     "post": {
       "monto": {
         "requerido": true,
-        "minimum": 0.01
+        "minimum": 0.01,
+        "decimales": 2
       },
       "metodo_pago_id": {
         "requerido": true
@@ -483,7 +569,8 @@ export const LIMITES = {
       },
       "total": {
         "requerido": true,
-        "minimum": 0
+        "minimum": 0,
+        "decimales": 2
       }
     }
   },
@@ -518,13 +605,51 @@ export const LIMITES = {
         "requerido": true
       },
       "items_devueltos": {
-        "requerido": true
+        "requerido": true,
+        "elemento": {
+          "venta_detalle_id": {
+            "requerido": false
+          },
+          "variante_id": {
+            "requerido": true
+          },
+          "cantidad": {
+            "requerido": true,
+            "minimum": 0.001,
+            "maximum": 99999999999.999,
+            "decimales": 3
+          },
+          "va_a_merma": {
+            "requerido": false
+          }
+        }
       },
       "items_nuevos": {
-        "requerido": false
+        "requerido": false,
+        "elemento": {
+          "variante_id": {
+            "requerido": false
+          },
+          "cantidad": {
+            "requerido": false,
+            "minimum": 0.001,
+            "maximum": 99999999999.999,
+            "decimales": 3
+          }
+        }
       },
       "pagos": {
-        "requerido": false
+        "requerido": false,
+        "elemento": {
+          "metodo_pago_id": {
+            "requerido": false
+          },
+          "monto": {
+            "requerido": false,
+            "minimum": 0.01,
+            "decimales": 2
+          }
+        }
       },
       "motivo": {
         "requerido": false,
@@ -543,7 +668,8 @@ export const LIMITES = {
       },
       "monto": {
         "requerido": true,
-        "minimum": 0.01
+        "minimum": 0.01,
+        "decimales": 2
       }
     }
   },
@@ -554,7 +680,8 @@ export const LIMITES = {
       },
       "monto": {
         "requerido": true,
-        "minimum": 0.01
+        "minimum": 0.01,
+        "decimales": 2
       },
       "fecha_expiracion": {
         "requerido": false
@@ -565,7 +692,8 @@ export const LIMITES = {
     "post": {
       "monto": {
         "requerido": true,
-        "minimum": 0.01
+        "minimum": 0.01,
+        "decimales": 2
       }
     }
   },
@@ -737,7 +865,22 @@ export const LIMITES = {
         "maxLength": 1000
       },
       "items": {
-        "requerido": false
+        "requerido": false,
+        "elemento": {
+          "variante_id": {
+            "requerido": false
+          },
+          "cantidad": {
+            "requerido": false,
+            "minimum": 0.001,
+            "maximum": 99999999999.999,
+            "decimales": 3
+          },
+          "precio_unitario": {
+            "requerido": false,
+            "minimum": 0
+          }
+        }
       }
     }
   },
@@ -789,7 +932,8 @@ export const LIMITES = {
       },
       "monto": {
         "requerido": false,
-        "minimum": 0.01
+        "minimum": 0.01,
+        "decimales": 2
       }
     }
   },
@@ -953,7 +1097,21 @@ export const LIMITES = {
         "requerido": false
       },
       "ingredientes": {
-        "requerido": true
+        "requerido": true,
+        "elemento": {
+          "insumo_id": {
+            "requerido": true
+          },
+          "cantidad": {
+            "requerido": true,
+            "minimum": 0.001,
+            "maximum": 99999999999.999,
+            "decimales": 3
+          },
+          "unidad_medida_id": {
+            "requerido": true
+          }
+        }
       }
     }
   },
@@ -1033,11 +1191,13 @@ export const LIMITES = {
       },
       "precio_compra": {
         "requerido": false,
-        "minimum": 0
+        "minimum": 0,
+        "decimales": 2
       },
       "precio_venta": {
         "requerido": false,
-        "minimum": 0
+        "minimum": 0,
+        "decimales": 2
       },
       "tasa_iva": {
         "requerido": false,
@@ -1075,11 +1235,13 @@ export const LIMITES = {
       },
       "precio_compra": {
         "requerido": false,
-        "minimum": 0
+        "minimum": 0,
+        "decimales": 2
       },
       "precio_venta": {
         "requerido": false,
-        "minimum": 0
+        "minimum": 0,
+        "decimales": 2
       },
       "tasa_iva": {
         "requerido": false,
@@ -1211,7 +1373,8 @@ export const LIMITES = {
       },
       "precio_bundle": {
         "requerido": false,
-        "minimum": 0
+        "minimum": 0,
+        "decimales": 2
       },
       "aplica_a": {
         "requerido": true
@@ -1275,7 +1438,8 @@ export const LIMITES = {
       },
       "precio_bundle": {
         "requerido": false,
-        "minimum": 0
+        "minimum": 0,
+        "decimales": 2
       },
       "aplica_a": {
         "requerido": true
@@ -1437,17 +1601,42 @@ export const LIMITES = {
         "requerido": true
       },
       "items": {
-        "requerido": true
+        "requerido": true,
+        "elemento": {
+          "presentacion_id": {
+            "requerido": false
+          },
+          "variante_id": {
+            "requerido": true
+          },
+          "cantidad": {
+            "requerido": true,
+            "minimum": 0.001,
+            "maximum": 99999999999.999,
+            "decimales": 3
+          }
+        }
       },
       "pagos": {
-        "requerido": true
+        "requerido": true,
+        "elemento": {
+          "metodo_pago_id": {
+            "requerido": true
+          },
+          "monto": {
+            "requerido": true,
+            "minimum": 0.01,
+            "decimales": 2
+          }
+        }
       },
       "cupon_codigo": {
         "requerido": false
       },
       "descuento_manual": {
         "requerido": false,
-        "minimum": 0
+        "minimum": 0,
+        "decimales": 2
       },
       "gift_card_codigo": {
         "requerido": false,
@@ -1467,7 +1656,21 @@ export const LIMITES = {
         "requerido": false
       },
       "items": {
-        "requerido": true
+        "requerido": true,
+        "elemento": {
+          "presentacion_id": {
+            "requerido": false
+          },
+          "variante_id": {
+            "requerido": true
+          },
+          "cantidad": {
+            "requerido": true,
+            "minimum": 0.001,
+            "maximum": 99999999999.999,
+            "decimales": 3
+          }
+        }
       }
     }
   },

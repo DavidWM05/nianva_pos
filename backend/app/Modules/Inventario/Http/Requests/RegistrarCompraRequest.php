@@ -25,7 +25,7 @@ class RegistrarCompraRequest extends SolicitudNegocio
             'items' => ['required', 'array', 'min:1'],
             'items.*.variante_id' => ['required', 'integer', ReglasVariante::delTenant($tenantId)],
             'items.*.cantidad' => ['required', ...ReglasCantidad::paraVariante($tenantId)],
-            'items.*.precio_compra' => ['required', 'numeric', 'min:0'],
+            'items.*.precio_compra' => ['required', 'numeric', 'decimal:0,2', 'min:0'],
         ];
     }
 

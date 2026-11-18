@@ -14,7 +14,7 @@ class RegistrarAbonoRequest extends SolicitudNegocio
     public function rules(): array
     {
         return [
-            'monto' => ['required', 'numeric', 'min:0.01'],
+            'monto' => ['required', 'numeric', 'decimal:0,2', 'min:0.01'],
             'metodo_pago_id' => ['required', 'integer', ReglasTenant::existeGlobalODelTenant('metodos_pago', $this->tenantId())],
             'referencia' => ['nullable', 'string', 'max:100'],
         ];

@@ -8,7 +8,12 @@ import {
   SimpleChanges,
 } from '@angular/core';
 import { DynamicFormComponent, DynamicFormField } from '@nianva/ui-shared';
+import { limitesDe } from '@nianva/api-contrato';
 import type { ListaPrecio } from '@nianva/domain-precios';
+
+/** Limites del contrato de POST /precios/listas (UI-11b). */
+const LIMITES = limitesDe('/precios/listas', 'post');
+
 @Component({
   selector: 'nucleo-lista-precio-form',
   standalone: true,
@@ -30,8 +35,7 @@ export class ListaPrecioFormComponent implements OnChanges {
         name: 'nombre',
         label: 'Nombre',
         type: 'text',
-        required: true,
-        maxLength: 120,
+        limite: LIMITES.nombre,
         defaultValue: this.valorInicial?.nombre ?? '',
       },
     ];
