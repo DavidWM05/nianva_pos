@@ -27,8 +27,7 @@ import {
 import { DataTableLazyEvent } from '@nianva/ui-shared';
 import { Subject, debounceTime } from 'rxjs';
 
-import { ReglaPrecioService } from '../../regla-precio.service';
-import { ReglaPrecio, ReglasPrecioPermisos } from '../../regla-precio.types';
+import { ReglaPrecio, ReglaPrecioService, ReglasPrecioPermisos } from '@nianva/domain-precios';
 
 interface Fila extends ReglaPrecio {
   tipoTexto: string;

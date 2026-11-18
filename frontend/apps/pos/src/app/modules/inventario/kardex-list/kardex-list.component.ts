@@ -14,7 +14,7 @@ import {
 } from '@nianva/ui-data';
 import { PageComponent } from '@nianva/ui-layout';
 
-import { MovimientoKardex } from '../producto.types';
+import { MovimientoKardex } from '@nianva/domain-inventario';
 
 /**
  * Historial de movimientos de una variante -- solo lectura (kardex nunca

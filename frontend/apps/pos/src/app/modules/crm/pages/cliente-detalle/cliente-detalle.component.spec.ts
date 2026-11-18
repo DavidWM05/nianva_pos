@@ -21,10 +21,7 @@ if (typeof globalThis.ResizeObserver === 'undefined') {
 }
 /* eslint-enable @typescript-eslint/no-empty-function */
 
-import { ClienteService } from '../../cliente.service';
-import { Cliente } from '../../cliente.types';
-import { CrmAvanzadoService } from '../../crm-avanzado.service';
-import { CrmInteraccion, LoyaltyResumen } from '../../crm-avanzado.types';
+import { Cliente, ClienteService, CrmAvanzadoService, CrmInteraccion, LoyaltyResumen } from '@nianva/domain-crm';
 import { ClienteDetalleComponent } from './cliente-detalle.component';
 
 describe('ClienteDetalleComponent', () => {

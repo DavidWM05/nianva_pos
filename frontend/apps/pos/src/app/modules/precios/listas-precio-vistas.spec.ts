@@ -8,7 +8,7 @@ import { proveedoresDePantalla } from '../../testing/proveedores-pantalla';
 import { ListaPrecioFormComponent } from './lista-precio-form/lista-precio-form.component';
 import { ListaPrecioRegistroComponent } from './pages/lista-precio-registro/lista-precio-registro.component';
 import { ListasPrecioListadoComponent } from './pages/listas-precio-listado/listas-precio-listado.component';
-import { ListaPrecioListadoService } from './lista-precio-listado.service';
+import { ListaPrecioListadoService } from '@nianva/domain-precios';
 import {
   BUSCADOR_CLIENTE,
   BUSCADOR_PRODUCTO,

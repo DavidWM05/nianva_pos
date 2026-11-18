@@ -18,8 +18,7 @@ if (typeof globalThis.ResizeObserver === 'undefined') {
 }
 /* eslint-enable @typescript-eslint/no-empty-function */
 
-import { CuponService } from '../../cupon.service';
-import { Cupon } from '../../cupon.types';
+import { Cupon, CuponService } from '@nianva/domain-precios';
 import { CuponDetalleComponent } from './cupon-detalle.component';
 
 describe('CuponDetalleComponent', () => {

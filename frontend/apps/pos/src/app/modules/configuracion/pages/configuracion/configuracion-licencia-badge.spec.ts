@@ -4,8 +4,7 @@ import { of } from 'rxjs';
 import { describe, expect, it, vi } from 'vitest';
 
 import { proveedoresDePantalla } from '../../../../testing/proveedores-pantalla';
-import { ConfiguracionService } from '../../configuracion.service';
-import { LicenciaLocal } from '../../configuracion.types';
+import { ConfiguracionService, LicenciaLocal } from '@nianva/domain-configuracion';
 import { ConfiguracionComponent } from './configuracion.component';
 
 // UI-06: el estado de la licencia se pinta con ui-badge y REGISTRO_ESTADOS (entidad "licencia").

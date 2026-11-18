@@ -7,8 +7,8 @@ import { of } from 'rxjs';
 import { describe, expect, it, vi } from 'vitest';
 
 import { BUSCADOR_CLIENTE, BUSCADOR_PRODUCTO, BUSCADOR_VARIANTE_DE_PRODUCTO } from '../../../../core/buscadores-entidad.tokens';
-import { VentaService } from '../../../tpv/venta.service';
-import { ApartadoService } from '../../apartado.service';
+import { VentaService } from '@nianva/domain-tpv';
+import { ApartadoService } from '@nianva/domain-apartados';
 import { ApartadoFormComponent } from './apartado-form.component';
 
 describe('ApartadoFormComponent', () => {

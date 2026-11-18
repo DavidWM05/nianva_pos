@@ -6,8 +6,7 @@ import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@a
 import { Router } from '@angular/router';
 import { DataTableLazyEvent } from '@nianva/ui-shared';
 
-import { DevolucionService } from '../../devolucion.service';
-import { Devolucion, DevolucionesPermisos } from '../../devolucion.types';
+import { Devolucion, DevolucionesPermisos, DevolucionService } from '@nianva/domain-devoluciones';
 
 type FilaListado = Devolucion & { ventaTexto: string; tipoTexto: string; diferenciaTexto: string };
 

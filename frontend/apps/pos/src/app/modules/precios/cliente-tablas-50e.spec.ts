@@ -6,8 +6,7 @@ import { of } from 'rxjs';
 import { expect, it, vi } from 'vitest';
 
 import { proveedoresDePantalla } from '../../testing/proveedores-pantalla';
-import { ClienteService } from '../crm/cliente.service';
-import { CrmAvanzadoService } from '../crm/crm-avanzado.service';
+import { ClienteService, CrmAvanzadoService } from '@nianva/domain-crm';
 import { ClienteDetalleComponent } from '../crm/pages/cliente-detalle/cliente-detalle.component';
 
 vi.stubGlobal(

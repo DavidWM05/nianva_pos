@@ -23,7 +23,7 @@ import {
 import { limitesDe } from '@nianva/api-contrato';
 import { DynamicFormComponent, DynamicFormField } from '@nianva/ui-shared';
 
-import { ProveedorSimple } from '../producto.types';
+import { ProveedorSimple } from '@nianva/domain-inventario';
 
 /** Límites del cuerpo de la petición, leídos del contrato (UI-11b). */
 const LIMITES = limitesDe('/compras', 'post');

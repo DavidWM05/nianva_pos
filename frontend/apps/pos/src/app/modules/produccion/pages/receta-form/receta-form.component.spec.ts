@@ -7,8 +7,7 @@ import { of } from 'rxjs';
 import { describe, expect, it, vi } from 'vitest';
 
 import { BUSCADOR_INSUMO, BUSCADOR_PRODUCTO, BUSCADOR_UNIDAD_MEDIDA, BUSCADOR_VARIANTE_DE_PRODUCTO } from '../../../../core/buscadores-entidad.tokens';
-import { RecetaService } from '../../receta.service';
-import { Receta } from '../../receta.types';
+import { Receta, RecetaService } from '@nianva/domain-produccion';
 import { RecetaFormComponent } from './receta-form.component';
 
 describe('RecetaFormComponent', () => {

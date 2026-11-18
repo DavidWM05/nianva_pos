@@ -25,7 +25,7 @@ import {
 import { AlertComponent } from '@nianva/ui-feedback';
 import { SectionComponent } from '@nianva/ui-layout';
 
-import { ProductoVariante, StockPorSucursal } from '../producto.types';
+import { ProductoVariante, StockPorSucursal } from '@nianva/domain-inventario';
 
 /**
  * Primera relacion anidada de verdad del shell: cada variante tiene su

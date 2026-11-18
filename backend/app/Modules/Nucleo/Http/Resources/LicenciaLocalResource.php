@@ -27,6 +27,7 @@ class LicenciaLocalResource extends JsonResource
         return [
             /** @var 'activa'|'vencida'|'revocada'|'prueba' */
             'estado' => $this->estado,
+            /** @var 'saas'|'pago_unico'|'anual'|'demo' */
             'tipo' => $this->tipo,
             'fecha_expiracion' => $this->fecha_expiracion,
             'ultima_validacion' => $this->ultima_validacion,

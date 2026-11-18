@@ -4,10 +4,8 @@ import { of } from 'rxjs';
 import { describe, expect, it, vi } from 'vitest';
 import { proveedoresDePantalla } from '../../testing/proveedores-pantalla';
 import { DevolucionFormComponent } from './pages/devolucion-form/devolucion-form.component';
-import { DevolucionService } from './devolucion.service';
-import type { DevolucionFormPayload } from './devolucion.types';
-import { VentaService } from '../tpv/venta.service';
-import { MetodoPagoService } from '../tpv/metodo-pago.service';
+import { type DevolucionFormPayload, DevolucionService } from '@nianva/domain-devoluciones';
+import { MetodoPagoService, VentaService } from '@nianva/domain-tpv';
 import { BUSCADOR_PRODUCTO, BUSCADOR_VARIANTE_DE_PRODUCTO } from '../../core/buscadores-entidad.tokens';
 describe('Devolución de presentaciones',()=>{it('envía la línea original y muestra el stock en unidades base',async()=>{
  const venta={id:1,es_venta_sombra:false,detalles:[{id:10,variante_id:5,cantidad:'1.000',precio_unitario:'100.00',variante:null},{id:11,variante_id:5,cantidad:'2.000',precio_unitario:'50.00',presentacion_id:9,presentacion_nombre:'Caja',factor:'6.000',variante:null}]};

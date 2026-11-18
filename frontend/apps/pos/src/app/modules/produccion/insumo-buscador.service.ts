@@ -2,8 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { BuscadorEntidad } from '@nianva/ui-shared';
 import { Observable, map } from 'rxjs';
 
-import { InsumoService } from './insumo.service';
-import { Insumo } from './insumo.types';
+import { Insumo, InsumoService } from '@nianva/domain-produccion';
 
 /**
  * Adapta InsumoService (paginado, con `evento`/filtros propios de

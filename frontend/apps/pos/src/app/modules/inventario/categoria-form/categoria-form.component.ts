@@ -11,8 +11,7 @@ import {
 import { limitesDe } from '@nianva/api-contrato';
 import { DynamicFormComponent, DynamicFormField } from '@nianva/ui-shared';
 
-import { CategoriaFormPayload } from '../categoria.service';
-import { Categoria } from '../categoria.types';
+import { Categoria, CategoriaFormPayload } from '@nianva/domain-inventario';
 
 /** Límites del cuerpo de la petición, leídos del contrato (UI-11b). */
 const LIMITES = limitesDe('/categorias', 'post');

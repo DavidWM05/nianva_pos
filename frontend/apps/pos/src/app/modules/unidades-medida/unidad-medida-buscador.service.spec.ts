@@ -2,8 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { of } from 'rxjs';
 import { describe, expect, it, vi } from 'vitest';
 
-import { UnidadMedida } from './unidad-medida.types';
-import { UnidadMedidaService } from './unidad-medida.service';
+import { UnidadMedida, UnidadMedidaService } from '@nianva/domain-unidades-medida';
 import { UnidadMedidaBuscadorService } from './unidad-medida-buscador.service';
 
 describe('UnidadMedidaBuscadorService', () => {

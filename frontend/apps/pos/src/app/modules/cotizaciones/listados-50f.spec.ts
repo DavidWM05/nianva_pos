@@ -4,11 +4,11 @@ import { of } from 'rxjs';
 import { describe, expect, it, vi } from 'vitest';
 import { proveedoresDePantalla } from '../../testing/proveedores-pantalla';
 import { CotizacionesListComponent } from './pages/cotizaciones-list/cotizaciones-list.component';
-import { CotizacionService } from './cotizacion.service';
+import { CotizacionService } from '@nianva/domain-cotizaciones';
 import { ApartadosListComponent } from '../apartados/pages/apartados-list/apartados-list.component';
-import { ApartadoService } from '../apartados/apartado.service';
+import { ApartadoService } from '@nianva/domain-apartados';
 import { DevolucionesListComponent } from '../devoluciones/pages/devoluciones-list/devoluciones-list.component';
-import { DevolucionService } from '../devoluciones/devolucion.service';
+import { DevolucionService } from '@nianva/domain-devoluciones';
 vi.stubGlobal('ResizeObserver', class { observe = vi.fn(); unobserve = vi.fn(); disconnect = vi.fn(); });
 const casos = [
   { nombre: 'cotizaciones', componente: CotizacionesListComponent, servicio: CotizacionService, fila: { id: 1, numero_cotizacion: 'COT-1', total: '10.00', estado: 'pendiente' } },

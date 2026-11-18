@@ -2560,7 +2560,8 @@ export interface components {
             mostrar_telefono: boolean;
             mostrar_correo: boolean;
             backup_auto: boolean;
-            backup_frecuencia: string;
+            /** @enum {string} */
+            backup_frecuencia: "diario" | "semanal" | "mensual";
             /** Format: date-time */
             backup_ultimo: string | null;
             codigo_barras_automatico: boolean;
@@ -2841,7 +2842,8 @@ export interface components {
                 nombre: string;
             };
             asunto: string;
-            segmento: string | null;
+            /** @enum {string|null} */
+            segmento: "todos" | "nuevo" | "frecuente" | "vip" | "inactivo" | null;
             destinatarios: number;
             /** Format: date-time */
             enviado_en: string | null;
@@ -2856,7 +2858,8 @@ export interface components {
                 id: number;
                 nombre: string;
             };
-            tipo: string;
+            /** @enum {string} */
+            tipo: "llamada" | "email" | "whatsapp" | "nota" | "visita";
             observacion: string;
             /** Format: date-time */
             fecha: string;
@@ -2903,7 +2906,8 @@ export interface components {
             id: number;
             codigo: string;
             nombre: string;
-            tipo: string;
+            /** @enum {string} */
+            tipo: "porcentaje" | "monto_fijo";
             porcentaje: string | null;
             monto: string | null;
             uso_maximo: number | null;
@@ -2936,7 +2940,8 @@ export interface components {
             id: number;
             /** Format: date-time */
             fecha: string;
-            tipo: string;
+            /** @enum {string} */
+            tipo: "devolucion" | "cambio";
             venta?: {
                 id: number;
                 cliente_nombre: string;
@@ -2946,11 +2951,13 @@ export interface components {
             monto_cambio: string;
             diferencia: string;
             motivo: string | null;
-            tipo_reembolso: string;
+            /** @enum {string} */
+            tipo_reembolso: "efectivo" | "nota_credito";
             nota_credito_id: number | null;
             items?: {
                 id: number;
-                tipo: string;
+                /** @enum {string} */
+                tipo: "devuelto" | "nuevo";
                 variante_id: number;
                 variante: {
                     id: number;
@@ -3217,7 +3224,8 @@ export interface components {
         LicenciaLocalResource: {
             /** @enum {string} */
             estado: "activa" | "vencida" | "revocada" | "prueba";
-            tipo: string;
+            /** @enum {string} */
+            tipo: "saas" | "pago_unico" | "anual" | "demo";
             /** Format: date-time */
             fecha_expiracion: string | null;
             /** Format: date-time */
@@ -3266,15 +3274,6 @@ export interface components {
             expira_en: string | null;
             /** Format: date-time */
             created_at: string;
-        };
-        /** MetodoPago */
-        MetodoPago: {
-            id: number;
-            tenant_id: number | null;
-            nombre: string;
-            tipo: string;
-            incluir_en_financiero: boolean;
-            activo: boolean;
         };
         /** MetodoPagoResource */
         MetodoPagoResource: {
@@ -3670,13 +3669,15 @@ export interface components {
             nombre: string;
             prioridad: number;
             combinable: boolean;
-            tipo: string;
+            /** @enum {string} */
+            tipo: "porcentaje" | "monto_fijo" | "nxm" | "bundle";
             porcentaje: string | null;
             monto: string | null;
             cantidad_compra: string | null;
             cantidad_paga: string | null;
             precio_bundle: string | null;
-            aplica_a: string;
+            /** @enum {string} */
+            aplica_a: "todo" | "categoria" | "producto" | "variante";
             /**
              * @description El nombre de la entidad especifica, no solo el nivel -- ver
              *     el requisito de la columna "a que aplica" en la lista.
@@ -3755,7 +3756,8 @@ export interface components {
             id: number;
             nombre: string;
             abreviatura: string;
-            tipo: string;
+            /** @enum {string} */
+            tipo: "entero" | "fraccionario";
             activo: boolean;
             /** Format: date-time */
             created_at: string;
@@ -3800,34 +3802,6 @@ export interface components {
         ValidarCuponRequest: {
             codigo: string;
             total: number;
-        };
-        /** Venta */
-        Venta: {
-            id: number;
-            lista_precio_id: number | null;
-            tenant_id: number;
-            sucursal_id: number;
-            caja_sesion_id: number;
-            usuario_id: number;
-            cliente_id: number;
-            cupon_id: number | null;
-            /** Format: date-time */
-            fecha: string;
-            total: string;
-            descuento_cupon: string;
-            descuento_manual: string;
-            abono_previo: string;
-            es_venta_sombra: boolean;
-            estado: string;
-            motivo_anulacion: string | null;
-            /** Format: date-time */
-            fecha_anulacion: string | null;
-            usuario_anulacion_id: number | null;
-            serie_cfdi: string | null;
-            folio_cfdi: number | null;
-            forma_pago_sat: string | null;
-            metodo_pago_sat: string | null;
-            uso_cfdi: string | null;
         };
         /** VentaLineaResource */
         VentaLineaResource: {
@@ -4015,7 +3989,6 @@ export type ListaPrecioClienteResource = components['schemas']['ListaPrecioClien
 export type ListaPrecioItemResource = components['schemas']['ListaPrecioItemResource'];
 export type ListaPrecioResource = components['schemas']['ListaPrecioResource'];
 export type LoyaltyTransaccion = components['schemas']['LoyaltyTransaccion'];
-export type MetodoPago = components['schemas']['MetodoPago'];
 export type MetodoPagoResource = components['schemas']['MetodoPagoResource'];
 export type NominaDetalleResource = components['schemas']['NominaDetalleResource'];
 export type NominaResource = components['schemas']['NominaResource'];
@@ -4051,7 +4024,6 @@ export type UnidadMedidaResource = components['schemas']['UnidadMedidaResource']
 export type UsuarioAdminResource = components['schemas']['UsuarioAdminResource'];
 export type UsuarioResource = components['schemas']['UsuarioResource'];
 export type ValidarCuponRequest = components['schemas']['ValidarCuponRequest'];
-export type Venta = components['schemas']['Venta'];
 export type VentaLineaResource = components['schemas']['VentaLineaResource'];
 export type VentaResource = components['schemas']['VentaResource'];
 export type ResponseAuthenticationException = components['responses']['AuthenticationException'];
@@ -5430,7 +5402,18 @@ export interface operations {
                             };
                             puntos_loyalty: number;
                             puntos_acumulados: number;
-                            historial: components["schemas"]["LoyaltyTransaccion"][];
+                            historial: {
+                                id: number;
+                                tenant_id: number;
+                                cliente_id: number;
+                                /** @enum {string} */
+                                tipo: "ganados" | "canjeados" | "vencidos" | "ajuste";
+                                puntos: number;
+                                referencia_tabla: string | null;
+                                referencia_id: number | null;
+                                expira_en: string | null;
+                                created_at: string;
+                            }[];
                         };
                     };
                 };
@@ -5463,7 +5446,18 @@ export interface operations {
                     "application/json": {
                         /** @constant */
                         message: "Puntos ajustados correctamente.";
-                        data: components["schemas"]["LoyaltyTransaccion"];
+                        data: {
+                            id: number;
+                            tenant_id: number;
+                            cliente_id: number;
+                            /** @enum {string} */
+                            tipo: "ganados" | "canjeados" | "vencidos" | "ajuste";
+                            puntos: number;
+                            referencia_tabla: string | null;
+                            referencia_id: number | null;
+                            expira_en: string | null;
+                            created_at: string;
+                        };
                     };
                 };
             };
@@ -5517,23 +5511,28 @@ export interface operations {
                     "application/json": {
                         data: {
                             clientes_por_segmento: {
-                                /** @constant */
-                                nuevo: 0;
-                                /** @constant */
-                                frecuente: 0;
-                                /** @constant */
-                                vip: 0;
-                                /** @constant */
-                                inactivo: 0;
+                                nuevo: number;
+                                frecuente: number;
+                                vip: number;
+                                inactivo: number;
                             };
-                            interacciones_por_tipo: unknown[];
+                            interacciones_por_tipo: {
+                                [key: string]: number;
+                            };
                             loyalty: {
                                 puntos_ganados_total: number;
                                 puntos_canjeados_total: number;
                                 puntos_vencidos_total: number;
                                 saldo_actual_total: number;
                             };
-                            campanas_recientes: components["schemas"]["CrmCampana"][];
+                            campanas_recientes: {
+                                id: number;
+                                asunto: string;
+                                /** @enum {string|null} */
+                                segmento: "todos" | "nuevo" | "frecuente" | "vip" | "inactivo" | null;
+                                destinatarios: number;
+                                enviado_en: string;
+                            }[];
                         };
                     };
                 };
@@ -6036,7 +6035,8 @@ export interface operations {
                                 id: string;
                                 codigo: string;
                                 nombre: string;
-                                tipo: string;
+                                /** @enum {string} */
+                                tipo: "porcentaje" | "monto_fijo";
                                 porcentaje: string | null;
                                 monto: string | null;
                             };
@@ -6612,9 +6612,11 @@ export interface operations {
                     "application/json": {
                         data: {
                             id: number;
-                            tipo: string;
+                            /** @enum {string} */
+                            tipo: "entrada" | "salida";
                             cantidad: string;
-                            motivo: string;
+                            /** @enum {string} */
+                            motivo: "saldo_inicial" | "venta" | "compra" | "devolucion" | "merma" | "ajuste" | "apartado";
                             sucursal_nombre: string;
                             usuario_nombre: string | null;
                             stock_antes: string;
@@ -7015,7 +7017,12 @@ export interface operations {
                             };
                         };
                     } | {
-                        data: components["schemas"]["MetodoPago"][];
+                        data: {
+                            id: number;
+                            nombre: string;
+                            /** @enum {string} */
+                            tipo: "efectivo" | "tarjeta" | "transferencia" | "digital" | "otro";
+                        }[];
                     };
                 };
             };
@@ -9482,7 +9489,14 @@ export interface operations {
                 };
                 content: {
                     "application/json": {
-                        data: components["schemas"]["Venta"][];
+                        data: {
+                            id: number;
+                            fecha: string;
+                            total: string;
+                            /** @enum {string} */
+                            estado: "completada" | "anulada";
+                            es_venta_sombra: boolean;
+                        }[];
                     };
                 };
             };

@@ -5,12 +5,11 @@ import { of } from 'rxjs';
 import { describe, expect, it, vi } from 'vitest';
 
 import { proveedoresDePantalla } from '../../testing/proveedores-pantalla';
-import { ClienteService } from '../crm/cliente.service';
+import { ClienteService } from '@nianva/domain-crm';
 import { ClientesListComponent } from '../crm/pages/clientes-list/clientes-list.component';
-import { CuponService } from './cupon.service';
+import { CuponService, ReglaPrecioService } from '@nianva/domain-precios';
 import { CuponesListComponent } from './pages/cupones-list/cupones-list.component';
 import { ReglasPrecioListComponent } from './pages/reglas-precio-list/reglas-precio-list.component';
-import { ReglaPrecioService } from './regla-precio.service';
 
 const casos = [
   {

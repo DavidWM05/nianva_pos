@@ -9,10 +9,7 @@ import { DatosComponent, FormActionsComponent } from '@nianva/ui-layout';
 import { ModalComponent } from '@nianva/ui-overlays';
 import { ToastService, esErrorNegocio, mensajeError } from '@nianva/ui-shared';
 
-import { CajaService } from '../../caja.service';
-import { CajaActual, CajaDesglose, CajaSesion } from '../../caja.types';
-import { Gasto } from '../../gasto.types';
-import { GastoService } from '../../gasto.service';
+import { CajaActual, CajaDesglose, CajaService, CajaSesion, Gasto, GastoService } from '@nianva/domain-tpv';
 
 /**
  * Pantalla de caja: abrir/ver estado/cerrar la sesion de la sucursal del

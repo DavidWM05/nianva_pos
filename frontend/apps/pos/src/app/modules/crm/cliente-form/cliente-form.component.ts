@@ -11,8 +11,7 @@ import { Validators } from '@angular/forms';
 import { limitesDe } from '@nianva/api-contrato';
 import { DynamicFormComponent, DynamicFormField } from '@nianva/ui-shared';
 
-import { ClienteFormPayload } from '../cliente.service';
-import { Cliente } from '../cliente.types';
+import { Cliente, ClienteFormPayload } from '@nianva/domain-crm';
 
 /** Límites del cuerpo de la petición, leídos del contrato (UI-11b). */
 const LIMITES = limitesDe('/clientes', 'post');

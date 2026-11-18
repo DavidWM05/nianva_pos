@@ -2,8 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { of } from 'rxjs';
 import { describe, expect, it, vi } from 'vitest';
 
-import { InsumoService, InsumosPagina } from './insumo.service';
-import { Insumo } from './insumo.types';
+import { Insumo, InsumoService, InsumosPagina } from '@nianva/domain-produccion';
 import { InsumoBuscadorService } from './insumo-buscador.service';
 
 describe('InsumoBuscadorService', () => {

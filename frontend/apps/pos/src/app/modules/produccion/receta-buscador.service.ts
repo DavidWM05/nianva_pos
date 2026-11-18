@@ -2,8 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { BuscadorEntidad } from '@nianva/ui-shared';
 import { Observable, map } from 'rxjs';
 
-import { RecetaService } from './receta.service';
-import { Receta } from './receta.types';
+import { Receta, RecetaService } from '@nianva/domain-produccion';
 
 /**
  * Adapta RecetaService (paginado, sin busqueda por texto -- ver

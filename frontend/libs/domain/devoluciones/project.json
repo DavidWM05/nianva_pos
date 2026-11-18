@@ -1,0 +1,19 @@
+{
+  "name": "domain-devoluciones",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/domain/devoluciones/src",
+  "projectType": "library",
+  "tags": ["type:domain", "scope:devoluciones"],
+  "targets": {
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    },
+    "test": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": ["tsc -p libs/domain/devoluciones/tsconfig.json --noEmit"],
+        "cwd": "{workspaceRoot}"
+      }
+    }
+  }
+}

@@ -7,14 +7,8 @@ import { FechaHoraPipe, FechaPipe } from '@nianva/ui-format';
 
 import { ConfiguracionFormComponent } from '../../configuracion-form/configuracion-form.component';
 import { ConfiguracionSeguridadFormComponent } from '../../configuracion-seguridad-form/configuracion-seguridad-form.component';
-import { ConfiguracionService } from '../../configuracion.service';
+import { ConfiguracionSeguridad, ConfiguracionService, ConfiguracionTenant, ConfiguracionTenantFormPayload, LicenciaLocal } from '@nianva/domain-configuracion';
 import { PerfilGiroComponent } from '../../perfil-giro/perfil-giro.component';
-import {
-  ConfiguracionSeguridad,
-  ConfiguracionTenant,
-  ConfiguracionTenantFormPayload,
-  LicenciaLocal,
-} from '../../configuracion.types';
 
 /**
  * "Empresa" (moneda/ticket/logo/backup + dias de dispositivo confiable) y

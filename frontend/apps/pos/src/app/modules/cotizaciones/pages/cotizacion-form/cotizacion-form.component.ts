@@ -10,8 +10,7 @@ import { EntidadSelectorComponent, MENSAJE_SUCURSAL_REQUERIDA, ToastService, esE
 import { AuthStateService } from '../../../../auth/auth-state.service';
 import { BUSCADOR_CLIENTE } from '../../../../core/buscadores-entidad.tokens';
 import { LineasCotizacionCambio, LineasCotizacionComponent } from '../../lineas-cotizacion/lineas-cotizacion.component';
-import { Cotizacion, CotizacionFormPayload, CotizacionItemPayload } from '../../cotizacion.types';
-import { CotizacionService } from '../../cotizacion.service';
+import { Cotizacion, CotizacionFormPayload, CotizacionItemPayload, CotizacionService } from '@nianva/domain-cotizaciones';
 
 
 function esNumero(valor: unknown): valor is number {

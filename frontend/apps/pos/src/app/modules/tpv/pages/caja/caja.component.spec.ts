@@ -6,10 +6,7 @@ import { ToastService } from '@nianva/ui-shared';
 import { of, throwError } from 'rxjs';
 import { describe, expect, it, vi } from 'vitest';
 
-import { CajaService } from '../../caja.service';
-import { CajaActual, CajaSesion } from '../../caja.types';
-import { Gasto } from '../../gasto.types';
-import { GastoService } from '../../gasto.service';
+import { CajaActual, CajaService, CajaSesion, Gasto, GastoService } from '@nianva/domain-tpv';
 import { CajaComponent } from './caja.component';
 
 describe('CajaComponent', () => {

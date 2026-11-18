@@ -7,7 +7,7 @@ import { ConfirmDialogService, ToastService } from '@nianva/ui-feedback';
 import { aCentavos, cantidadANumero } from '@nianva/ui-format';
 import { leerErrorNegocio, mensajeError } from '@nianva/ui-shared';
 import { finalize } from 'rxjs';
-import { PresentacionService, Presentacion } from '../presentacion.service';
+import { PresentacionService, Presentacion } from '@nianva/domain-inventario';
 @Component({selector:'nucleo-presentaciones',standalone:true,changeDetection:ChangeDetectionStrategy.OnPush,imports:[TablaComponent,ReactiveFormsModule,CampoComponent,InputCantidadComponent,InputDineroComponent,BtnEnviarComponent,FormActionsComponent,PageComponent],templateUrl:'./presentaciones.component.html'})
 export class PresentacionesComponent implements OnChanges {
  @Input({required:true}) varianteId!:number;

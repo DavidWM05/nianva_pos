@@ -17,8 +17,7 @@ if (typeof globalThis.ResizeObserver === 'undefined') {
 }
 /* eslint-enable @typescript-eslint/no-empty-function */
 
-import { ConfiguracionService } from '../../configuracion.service';
-import { ConfiguracionSeguridad, ConfiguracionTenant, LicenciaLocal } from '../../configuracion.types';
+import { ConfiguracionSeguridad, ConfiguracionService, ConfiguracionTenant, LicenciaLocal } from '@nianva/domain-configuracion';
 import { ConfiguracionComponent } from './configuracion.component';
 
 describe('ConfiguracionComponent', () => {

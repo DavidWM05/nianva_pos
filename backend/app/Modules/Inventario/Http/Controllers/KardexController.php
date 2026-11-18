@@ -43,8 +43,10 @@ class KardexController extends Controller
             ->get()
             ->map(fn (Kardex $movimiento) => [
                 'id' => $movimiento->id,
+                /** @var 'entrada'|'salida' */
                 'tipo' => $movimiento->tipo,
                 'cantidad' => DecimalApi::cantidad($movimiento->cantidad),
+                /** @var 'saldo_inicial'|'venta'|'compra'|'devolucion'|'merma'|'ajuste'|'apartado' */
                 'motivo' => $movimiento->motivo,
                 'sucursal_nombre' => $movimiento->sucursal?->nombre,
                 'usuario_nombre' => $movimiento->usuario?->nombre,

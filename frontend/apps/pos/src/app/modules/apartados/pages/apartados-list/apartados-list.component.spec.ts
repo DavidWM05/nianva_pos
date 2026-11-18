@@ -5,8 +5,7 @@ import { provideRouter } from '@angular/router';
 import { of } from 'rxjs';
 import { describe, expect, it, vi } from 'vitest';
 
-import { ApartadoService } from '../../apartado.service';
-import { Apartado, ApartadosListaPermisos, ApartadosPagina } from '../../apartado.types';
+import { Apartado, ApartadoService, ApartadosListaPermisos, ApartadosPagina } from '@nianva/domain-apartados';
 import { ApartadosListComponent } from './apartados-list.component';
 
 describe('ApartadosListComponent', () => {

@@ -9,8 +9,7 @@ import { Router } from '@angular/router';
 import { DataTableLazyEvent } from '@nianva/ui-shared';
 import { Subject, debounceTime } from 'rxjs';
 
-import { CotizacionesPermisos, CotizacionService } from '../../cotizacion.service';
-import { Cotizacion, EstadoCotizacion } from '../../cotizacion.types';
+import { Cotizacion, CotizacionesPermisos, CotizacionService, EstadoCotizacion } from '@nianva/domain-cotizaciones';
 
 type FilaListado = Cotizacion & { clienteTexto: string };
 

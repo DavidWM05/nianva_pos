@@ -20,9 +20,8 @@ if (typeof globalThis.ResizeObserver === 'undefined') {
 }
 /* eslint-enable @typescript-eslint/no-empty-function */
 
-import { MetodoPagoService } from '../../../tpv/metodo-pago.service';
-import { CotizacionService } from '../../cotizacion.service';
-import { Cotizacion } from '../../cotizacion.types';
+import { MetodoPagoService } from '@nianva/domain-tpv';
+import { Cotizacion, CotizacionService } from '@nianva/domain-cotizaciones';
 import { CotizacionDetalleComponent } from './cotizacion-detalle.component';
 
 describe('CotizacionDetalleComponent', () => {

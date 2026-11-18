@@ -1,0 +1,19 @@
+{
+  "name": "domain-apartados",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/domain/apartados/src",
+  "projectType": "library",
+  "tags": ["type:domain", "scope:apartados"],
+  "targets": {
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    },
+    "test": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": ["tsc -p libs/domain/apartados/tsconfig.json --noEmit"],
+        "cwd": "{workspaceRoot}"
+      }
+    }
+  }
+}

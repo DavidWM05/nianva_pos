@@ -14,10 +14,8 @@ import { ToastService, erroresValidacion } from '@nianva/ui-shared';
 import { LineasPagoCambio, LineasPagoComponent } from '../../../tpv/lineas-pago/lineas-pago.component';
 import { LineasProductoCambio, LineasProductoComponent } from '../../../tpv/lineas-producto/lineas-producto.component';
 import { ErrorNegocioTpv } from '../../../tpv/tpv-error.types';
-import { Venta, VentaItemPayload, VentaPagoPayload } from '../../../tpv/venta.types';
-import { VentaService } from '../../../tpv/venta.service';
-import { DevolucionService } from '../../devolucion.service';
-import { DevolucionFormPayload, TipoDevolucion, TipoReembolso } from '../../devolucion.types';
+import { Venta, VentaItemPayload, VentaPagoPayload, VentaService } from '@nianva/domain-tpv';
+import { DevolucionFormPayload, DevolucionService, TipoDevolucion, TipoReembolso } from '@nianva/domain-devoluciones';
 
 
 interface LineaDevuelta {

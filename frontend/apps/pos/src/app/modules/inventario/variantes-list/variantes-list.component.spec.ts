@@ -4,7 +4,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ConfirmDialogService } from '@nianva/ui-shared';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { ProductoVariante } from '../producto.types';
+import { ProductoVariante } from '@nianva/domain-inventario';
 import { VariantesListComponent } from './variantes-list.component';
 
 describe('VariantesListComponent', () => {

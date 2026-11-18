@@ -11,8 +11,7 @@ import { ModalComponent } from '@nianva/ui-overlays';
 import { DataTableLazyEvent, ToastService, esErrorNegocio, mensajeError } from '@nianva/ui-shared';
 import { Subject, debounceTime } from 'rxjs';
 
-import { Venta, VentasPermisos } from '../../venta.types';
-import { VentaService } from '../../venta.service';
+import { Venta, VentaService, VentasPermisos } from '@nianva/domain-tpv';
 
 const PERMISOS_VACIOS: VentasPermisos = { anular: false };
 

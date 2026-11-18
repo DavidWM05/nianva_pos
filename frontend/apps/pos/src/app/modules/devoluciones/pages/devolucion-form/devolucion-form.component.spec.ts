@@ -7,10 +7,8 @@ import { of } from 'rxjs';
 import { describe, expect, it, vi } from 'vitest';
 
 import { BUSCADOR_PRODUCTO, BUSCADOR_VARIANTE_DE_PRODUCTO } from '../../../../core/buscadores-entidad.tokens';
-import { MetodoPagoService } from '../../../tpv/metodo-pago.service';
-import { Venta } from '../../../tpv/venta.types';
-import { VentaService } from '../../../tpv/venta.service';
-import { DevolucionService } from '../../devolucion.service';
+import { MetodoPagoService, Venta, VentaService } from '@nianva/domain-tpv';
+import { DevolucionService } from '@nianva/domain-devoluciones';
 import { DevolucionFormComponent } from './devolucion-form.component';
 
 describe('DevolucionFormComponent', () => {

@@ -8,7 +8,7 @@ import {
   SimpleChanges,
 } from '@angular/core';
 import { DynamicFormComponent, DynamicFormField } from '@nianva/ui-shared';
-import type { ListaPrecio } from '../lista-precio.types';
+import type { ListaPrecio } from '@nianva/domain-precios';
 @Component({
   selector: 'nucleo-lista-precio-form',
   standalone: true,

@@ -3,7 +3,7 @@ import { provideAnimationsAsync } from '@angular/platform-browser/animations/asy
 import { of } from 'rxjs';
 import { describe, expect, it, vi } from 'vitest';
 
-import { MetodoPagoService } from '../metodo-pago.service';
+import { MetodoPagoService } from '@nianva/domain-tpv';
 import { LineasPagoCambio, LineasPagoComponent } from './lineas-pago.component';
 
 describe('LineasPagoComponent', () => {

@@ -16,7 +16,7 @@ import {
   Validators,
 } from '@angular/forms';
 import { limitesDe } from '@nianva/api-contrato';
-import type { Atributo } from '@nianva/domain-inventario';
+import { type Atributo, ProductoVariante, VarianteFormPayload } from '@nianva/domain-inventario';
 import {
   CampoComponent,
   InputDineroComponent,
@@ -27,8 +27,6 @@ import {
 import { aCentavos } from '@nianva/ui-format';
 import { DynamicFormComponent, DynamicFormField } from '@nianva/ui-shared';
 
-import { VarianteFormPayload } from '../producto.service';
-import { ProductoVariante } from '../producto.types';
 
 /** Límites del cuerpo de la petición, leídos del contrato (UI-11b). */
 const LIMITES = limitesDe('/productos/{producto}/variantes', 'post');

@@ -4,7 +4,7 @@ import { REGISTRO_NAVEGACION } from '@nianva/ui-layout';
 import { Subject, of } from 'rxjs';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { ListaPrecioListadoService } from '../../lista-precio-listado.service';
+import { ListaPrecioListadoService } from '@nianva/domain-precios';
 import { ListasPrecioListadoComponent } from './listas-precio-listado.component';
 
 const respuesta = {

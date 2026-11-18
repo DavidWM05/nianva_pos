@@ -10,8 +10,8 @@ import { MatProgressSpinner } from '@angular/material/progress-spinner';
 import { EntidadBuscable, EntidadSelectorComponent } from '@nianva/ui-shared';
 
 import { BUSCADOR_PRODUCTO, BUSCADOR_VARIANTE_DE_PRODUCTO } from '../../../core/buscadores-entidad.tokens';
-import { CotizacionDetalle, CotizacionItemPayload } from '../cotizacion.types';
-import { VentaService } from '../../tpv/venta.service';
+import { CotizacionDetalle, CotizacionItemPayload } from '@nianva/domain-cotizaciones';
+import { VentaService } from '@nianva/domain-tpv';
 
 interface LineaCotizacion {
   variante_id: number;

@@ -6,8 +6,7 @@ import { NgTemplateOutlet } from '@angular/common';
 import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { AuditLogViewerComponent, RecordTabConfig, RecordTabsComponent } from '@nianva/ui-shared';
-import { DevolucionService } from '../../devolucion.service';
-import { Devolucion } from '../../devolucion.types';
+import { Devolucion, DevolucionService } from '@nianva/domain-devoluciones';
 
 
 /**

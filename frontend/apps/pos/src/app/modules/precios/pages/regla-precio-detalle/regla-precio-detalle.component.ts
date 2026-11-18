@@ -21,11 +21,7 @@ import {
 } from '@nianva/ui-shared';
 
 import { ReglaPrecioFormComponent } from '../../regla-precio-form/regla-precio-form.component';
-import {
-  ReglaPrecioFormPayload,
-  ReglaPrecioService,
-} from '../../regla-precio.service';
-import { ReglaPrecio } from '../../regla-precio.types';
+import { ReglaPrecio, ReglaPrecioFormPayload, ReglaPrecioService } from '@nianva/domain-precios';
 
 /**
  * Vista de registro de Regla de precio -- General (formulario, `readonly`

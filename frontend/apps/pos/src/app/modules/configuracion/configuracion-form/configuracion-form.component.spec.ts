@@ -4,7 +4,7 @@ import { provideAnimationsAsync } from '@angular/platform-browser/animations/asy
 import { DynamicFormComponent } from '@nianva/ui-shared';
 import { beforeEach, describe, expect, it } from 'vitest';
 
-import { ConfiguracionTenant } from '../configuracion.types';
+import { ConfiguracionTenant } from '@nianva/domain-configuracion';
 import { ConfiguracionFormComponent } from './configuracion-form.component';
 
 describe('ConfiguracionFormComponent', () => {

@@ -7,8 +7,7 @@ import { DineroPipe, FechaHoraPipe } from '@nianva/ui-format';
 import { DatosComponent, PageHeaderComponent } from '@nianva/ui-layout';
 import { AuditLogViewerComponent, RecordTabConfig, RecordTabsComponent } from '@nianva/ui-shared';
 
-import { VentaService } from '../../venta.service';
-import { Venta, VentaDetalle } from '../../venta.types';
+import { Venta, VentaDetalle, VentaService } from '@nianva/domain-tpv';
 
 /**
  * Vista de registro de Venta -- General (resumen + cliente + pago, ver el

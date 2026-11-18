@@ -7,8 +7,7 @@ import { of } from 'rxjs';
 import { describe, expect, it, vi } from 'vitest';
 
 import { BUSCADOR_PRODUCTO, BUSCADOR_VARIANTE_DE_PRODUCTO } from '../../../../core/buscadores-entidad.tokens';
-import { TransformacionService } from '../../transformacion.service';
-import { TransformacionProducto } from '../../transformacion.types';
+import { TransformacionProducto, TransformacionService } from '@nianva/domain-produccion';
 import { TransformacionFormComponent } from './transformacion-form.component';
 
 describe('TransformacionFormComponent', () => {

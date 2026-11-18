@@ -5,7 +5,7 @@ import { expect, it, vi, afterEach } from 'vitest';
 import { ToastService } from '@nianva/ui-shared';
 import { proveedoresDePantalla } from '../../../../testing/proveedores-pantalla';
 import { BUSCADOR_UNIDAD_MEDIDA } from '../../../../core/buscadores-entidad.tokens';
-import { InsumoService } from '../../insumo.service';
+import { InsumoService } from '@nianva/domain-produccion';
 import { InsumoFormComponent } from './insumo-form.component';
 
 afterEach(() => TestBed.resetTestingModule());

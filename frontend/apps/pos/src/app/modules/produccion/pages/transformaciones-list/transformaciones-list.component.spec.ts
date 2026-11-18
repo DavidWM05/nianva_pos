@@ -5,8 +5,7 @@ import { proveedoresDePantalla } from '../../../../testing/proveedores-pantalla'
 import { of } from 'rxjs';
 import { describe, expect, it, vi } from 'vitest';
 
-import { TransformacionService, TransformacionesPagina } from '../../transformacion.service';
-import { TransformacionProducto } from '../../transformacion.types';
+import { TransformacionesPagina, TransformacionProducto, TransformacionService } from '@nianva/domain-produccion';
 import { TransformacionesListComponent } from './transformaciones-list.component';
 
 describe('TransformacionesListComponent', () => {

@@ -2,8 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { BuscadorEntidad, EntidadBuscable } from '@nianva/ui-shared';
 import { Observable, map } from 'rxjs';
 
-import { VentaService } from '../tpv/venta.service';
-import { Venta } from '../tpv/venta.types';
+import { Venta, VentaService } from '@nianva/domain-tpv';
 
 /**
  * Venta no tiene `nombre` -- arma la etiqueta "Venta #id - cliente - $total"

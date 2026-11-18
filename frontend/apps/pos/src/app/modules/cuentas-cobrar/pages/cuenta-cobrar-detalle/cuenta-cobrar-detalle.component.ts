@@ -41,8 +41,7 @@ import {
   mensajeError,
 } from '@nianva/ui-shared';
 
-import { MetodoPago } from '../../../tpv/metodo-pago.types';
-import { MetodoPagoService } from '../../../tpv/metodo-pago.service';
+import { MetodoPago, MetodoPagoService } from '@nianva/domain-tpv';
 import { CuentaCobrar, CuentaCobrarService } from '@nianva/domain-cuentas-cobrar';
 
 /**

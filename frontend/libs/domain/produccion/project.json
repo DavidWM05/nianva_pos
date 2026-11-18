@@ -1,0 +1,19 @@
+{
+  "name": "domain-produccion",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/domain/produccion/src",
+  "projectType": "library",
+  "tags": ["type:domain", "scope:produccion"],
+  "targets": {
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    },
+    "test": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": ["tsc -p libs/domain/produccion/tsconfig.json --noEmit"],
+        "cwd": "{workspaceRoot}"
+      }
+    }
+  }
+}

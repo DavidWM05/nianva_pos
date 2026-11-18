@@ -12,7 +12,7 @@ import { PageComponent, PageHeaderComponent } from '@nianva/ui-layout';
 import { MatButton } from '@angular/material/button';
 
 import { ClienteFormComponent } from '../../cliente-form/cliente-form.component';
-import { ClienteFormPayload, ClienteService } from '../../cliente.service';
+import { ClienteFormPayload, ClienteService } from '@nianva/domain-crm';
 
 /**
  * Vista dedicada, no modal (ver el reporte del punto 1): cliente es una

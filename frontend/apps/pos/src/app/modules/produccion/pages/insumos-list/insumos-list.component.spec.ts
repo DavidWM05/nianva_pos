@@ -8,8 +8,7 @@ import { of } from 'rxjs';
 import { describe, expect, it, vi } from 'vitest';
 
 import { BUSCADOR_UNIDAD_MEDIDA } from '../../../../core/buscadores-entidad.tokens';
-import { InsumoService, InsumosPagina } from '../../insumo.service';
-import { Insumo } from '../../insumo.types';
+import { Insumo, InsumoService, InsumosPagina } from '@nianva/domain-produccion';
 import { InsumosListComponent } from './insumos-list.component';
 
 describe('InsumosListComponent', () => {

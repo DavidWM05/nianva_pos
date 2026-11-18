@@ -18,8 +18,7 @@ if (typeof globalThis.ResizeObserver === 'undefined') {
 }
 /* eslint-enable @typescript-eslint/no-empty-function */
 
-import { DepartamentoService } from '../../departamento.service';
-import { Departamento } from '../../departamento.types';
+import { Departamento, DepartamentoService } from '@nianva/domain-inventario';
 import { DepartamentoDetalleComponent } from './departamento-detalle.component';
 
 describe('DepartamentoDetalleComponent', () => {

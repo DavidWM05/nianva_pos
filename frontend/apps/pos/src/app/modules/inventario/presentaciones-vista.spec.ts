@@ -3,7 +3,7 @@ import { of } from 'rxjs';
 import { describe, expect, it, vi } from 'vitest';
 import { proveedoresDePantalla } from '../../testing/proveedores-pantalla';
 import { PresentacionesComponent } from './presentaciones/presentaciones.component';
-import { PresentacionService } from './presentacion.service';
+import { PresentacionService } from '@nianva/domain-inventario';
 describe('Presentaciones de variante', () => {
   async function preparar(soloLectura = false) {
     const crear = vi.fn(() => of({ id:1 }));

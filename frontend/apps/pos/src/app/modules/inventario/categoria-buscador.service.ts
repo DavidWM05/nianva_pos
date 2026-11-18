@@ -2,7 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { BuscadorEntidad, EntidadBuscable } from '@nianva/ui-shared';
 import { Observable, map } from 'rxjs';
 
-import { ProductoService } from './producto.service';
+import { ProductoService } from '@nianva/domain-inventario';
 
 /**
  * Categoria no tiene un endpoint de "obtener una sola" -- la lista

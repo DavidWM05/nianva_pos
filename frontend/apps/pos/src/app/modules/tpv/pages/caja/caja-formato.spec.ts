@@ -5,10 +5,7 @@ import { ToastService } from '@nianva/ui-shared';
 import { of } from 'rxjs';
 import { describe, expect, it, vi } from 'vitest';
 
-import { CajaService } from '../../caja.service';
-import { CajaActual, CajaSesion } from '../../caja.types';
-import { Gasto } from '../../gasto.types';
-import { GastoService } from '../../gasto.service';
+import { CajaActual, CajaService, CajaSesion, Gasto, GastoService } from '@nianva/domain-tpv';
 import { CajaComponent } from './caja.component';
 
 // UI-05: todos los montos de la caja con el pipe dinero (formato regional es-MX del spec).

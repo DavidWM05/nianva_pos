@@ -3,8 +3,7 @@ import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@ang
 import { SkeletonComponent } from '@nianva/ui-feedback';
 import { CantidadPipe, FechaHoraPipe } from '@nianva/ui-format';
 
-import { CrmAvanzadoService } from '../../../crm/crm-avanzado.service';
-import { ReporteCrm } from '../../../crm/crm-avanzado.types';
+import { CrmAvanzadoService, ReporteCrm } from '@nianva/domain-crm';
 
 const ETIQUETAS_TIPO_INTERACCION: Record<string, string> = {
   llamada: 'Llamada',

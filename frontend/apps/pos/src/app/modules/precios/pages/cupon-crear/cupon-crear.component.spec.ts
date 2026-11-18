@@ -6,7 +6,7 @@ import { ToastService } from '@nianva/ui-shared';
 import { of, throwError } from 'rxjs';
 import { describe, expect, it, vi } from 'vitest';
 
-import { CuponService } from '../../cupon.service';
+import { CuponService } from '@nianva/domain-precios';
 import { CuponCrearComponent } from './cupon-crear.component';
 
 describe('CuponCrearComponent', () => {

@@ -5,8 +5,7 @@ import { proveedoresDePantalla } from '../../../../testing/proveedores-pantalla'
 import { of } from 'rxjs';
 import { describe, expect, it, vi } from 'vitest';
 
-import { RecetaService, RecetasPagina } from '../../receta.service';
-import { Receta } from '../../receta.types';
+import { Receta, RecetaService, RecetasPagina } from '@nianva/domain-produccion';
 import { RecetasListComponent } from './recetas-list.component';
 
 describe('RecetasListComponent', () => {

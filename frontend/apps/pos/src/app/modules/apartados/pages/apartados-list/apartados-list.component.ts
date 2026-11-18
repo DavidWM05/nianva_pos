@@ -9,8 +9,7 @@ import { Router } from '@angular/router';
 import { DataTableLazyEvent } from '@nianva/ui-shared';
 import { Subject, debounceTime } from 'rxjs';
 
-import { ApartadoService } from '../../apartado.service';
-import { Apartado, ApartadosListaPermisos } from '../../apartado.types';
+import { Apartado, ApartadoService, ApartadosListaPermisos } from '@nianva/domain-apartados';
 
 type FilaListado = Apartado & { clienteTexto: string; avanceTexto: string; avancePorcentaje: number; vencimientoTexto: string };
 

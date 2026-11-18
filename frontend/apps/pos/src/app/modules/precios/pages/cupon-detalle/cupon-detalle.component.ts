@@ -21,8 +21,7 @@ import {
 } from '@nianva/ui-shared';
 
 import { CuponFormComponent } from '../../cupon-form/cupon-form.component';
-import { CuponFormPayload, CuponService } from '../../cupon.service';
-import { Cupon } from '../../cupon.types';
+import { Cupon, CuponFormPayload, CuponService } from '@nianva/domain-precios';
 
 /**
  * Vista de registro de Cupon -- General (formulario, `readonly` sin

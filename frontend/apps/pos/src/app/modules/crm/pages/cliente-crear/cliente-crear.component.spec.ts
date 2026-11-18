@@ -6,7 +6,7 @@ import { ToastService } from '@nianva/ui-shared';
 import { of, throwError } from 'rxjs';
 import { describe, expect, it, vi } from 'vitest';
 
-import { ClienteService } from '../../cliente.service';
+import { ClienteService } from '@nianva/domain-crm';
 import { ClienteCrearComponent } from './cliente-crear.component';
 
 describe('ClienteCrearComponent', () => {

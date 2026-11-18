@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { BuscadorEntidad, EntidadBuscable } from '@nianva/ui-shared';
 import { map, Observable } from 'rxjs';
-import { ListaPrecioListadoService } from './lista-precio-listado.service';
+import { ListaPrecioListadoService } from '@nianva/domain-precios';
 @Injectable({ providedIn: 'root' })
 export class ListaPrecioBuscadorService extends BuscadorEntidad<EntidadBuscable> {
   private readonly listas = inject(ListaPrecioListadoService);

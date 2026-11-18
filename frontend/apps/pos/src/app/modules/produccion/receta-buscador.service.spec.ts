@@ -2,8 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { of } from 'rxjs';
 import { describe, expect, it, vi } from 'vitest';
 
-import { RecetaService, RecetasPagina } from './receta.service';
-import { Receta } from './receta.types';
+import { Receta, RecetaService, RecetasPagina } from '@nianva/domain-produccion';
 import { RecetaBuscadorService } from './receta-buscador.service';
 
 describe('RecetaBuscadorService', () => {

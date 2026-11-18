@@ -12,9 +12,8 @@ import {
 import { of, Subject, throwError } from 'rxjs';
 import { describe, expect, it, vi } from 'vitest';
 import { proveedoresDePantalla } from '../../testing/proveedores-pantalla';
-import { ConfiguracionService } from '../configuracion/configuracion.service';
-import { ProductoService } from './producto.service';
-import { CompraService } from './compra.service';
+import { ConfiguracionService } from '@nianva/domain-configuracion';
+import { CompraService, ProductoService } from '@nianva/domain-inventario';
 import { ProductoFormComponent } from './producto-form/producto-form.component';
 import { VarianteFormComponent } from './variante-form/variante-form.component';
 import { CompraFormComponent } from './compra-form/compra-form.component';

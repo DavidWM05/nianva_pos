@@ -2,8 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { of } from 'rxjs';
 import { describe, expect, it, vi } from 'vitest';
 
-import { CrmAvanzadoService } from '../../../crm/crm-avanzado.service';
-import { ReporteCrm } from '../../../crm/crm-avanzado.types';
+import { CrmAvanzadoService, ReporteCrm } from '@nianva/domain-crm';
 import { ReporteCrmComponent } from './reporte-crm.component';
 
 // UI-05: puntos con el pipe cantidad y la fecha de envio con fechaHora (es-MX, America/Mexico_City).

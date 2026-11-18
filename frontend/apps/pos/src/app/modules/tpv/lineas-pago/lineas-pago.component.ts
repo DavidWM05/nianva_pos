@@ -4,9 +4,7 @@ import { MatButton, MatIconButton } from '@angular/material/button';
 import { CampoComponent, SelectFiltroComponent, SelectFiltroOpcion } from '@nianva/ui-forms';
 import { aCentavos, sumarDinero, DineroPipe } from '@nianva/ui-format';
 
-import { MetodoPago } from '../metodo-pago.types';
-import { MetodoPagoService } from '../metodo-pago.service';
-import { VentaPagoPayload } from '../venta.types';
+import { MetodoPago, MetodoPagoService, VentaPagoPayload } from '@nianva/domain-tpv';
 
 interface LineaPagoForm {
   metodo_pago_id: number | null;

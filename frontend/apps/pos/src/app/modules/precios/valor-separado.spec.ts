@@ -10,8 +10,7 @@ import { describe, expect, it, vi } from 'vitest';
 import { BUSCADOR_CATEGORIA, BUSCADOR_PRODUCTO, BUSCADOR_VARIANTE_DE_PRODUCTO } from '../../core/buscadores-entidad.tokens';
 import { proveedoresDePantalla } from '../../testing/proveedores-pantalla';
 import { CuponFormComponent } from './cupon-form/cupon-form.component';
-import { CuponFormPayload } from './cupon.service';
-import { ReglaPrecioFormPayload } from './regla-precio.service';
+import { CuponFormPayload, ReglaPrecioFormPayload } from '@nianva/domain-precios';
 import { ReglaPrecioFormComponent } from './regla-precio-form/regla-precio-form.component';
 
 // DAT-02b: reglas y cupones mandan `porcentaje` o `monto` segun el tipo. El formulario muestra

@@ -4,8 +4,7 @@ import { TestBed } from '@angular/core/testing';
 import { Observable } from 'rxjs';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
-import { CotizacionService } from '../modules/cotizaciones/cotizacion.service';
-import { CotizacionCrearPayload } from '../modules/cotizaciones/cotizacion.types';
+import { CotizacionCrearPayload, CotizacionService } from '@nianva/domain-cotizaciones';
 import { PedidoService } from '../modules/delivery/pedido.service';
 import { PedidoCrearPayload } from '../modules/delivery/pedido.types';
 import { NominaService } from '../modules/payroll/nomina.service';

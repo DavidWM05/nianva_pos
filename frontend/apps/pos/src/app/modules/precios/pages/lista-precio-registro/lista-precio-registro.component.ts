@@ -42,13 +42,8 @@ import {
   BUSCADOR_PRODUCTO,
   BUSCADOR_VARIANTE_DE_PRODUCTO,
 } from '../../../../core/buscadores-entidad.tokens';
-import { ListaPrecioListadoService } from '../../lista-precio-listado.service';
+import { type ListaPrecioCliente, type ListaPrecioItem, ListaPrecioListadoService, type ListaPrecioRegistro } from '@nianva/domain-precios';
 import { ListaPrecioFormComponent } from '../../lista-precio-form/lista-precio-form.component';
-import type {
-  ListaPrecioRegistro,
-  ListaPrecioItem,
-  ListaPrecioCliente,
-} from '../../lista-precio.types';
 @Component({
   selector: 'nucleo-lista-precio-registro',
   standalone: true,

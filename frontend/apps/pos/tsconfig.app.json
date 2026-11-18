@@ -8,6 +8,15 @@
   "exclude": ["src/**/*.spec.ts", "src/**/*.test.ts"],
   "references": [
     {
+      "path": "../../libs/domain/unidades-medida"
+    },
+    {
+      "path": "../../libs/domain/produccion"
+    },
+    {
+      "path": "../../libs/domain/precios"
+    },
+    {
       "path": "../../libs/ui/report"
     },
     {
@@ -32,6 +41,12 @@
       "path": "../../libs/domain/cuentas-cobrar"
     },
     {
+      "path": "../../libs/domain/crm"
+    },
+    {
+      "path": "../../libs/domain/devoluciones"
+    },
+    {
       "path": "../../libs/domain/configuracion"
     },
     {
@@ -44,10 +59,19 @@
       "path": "../../libs/ui/overlays"
     },
     {
+      "path": "../../libs/domain/apartados"
+    },
+    {
+      "path": "../../libs/domain/tpv"
+    },
+    {
       "path": "../../libs/ui/data"
     },
     {
       "path": "../../libs/domain/administracion"
+    },
+    {
+      "path": "../../libs/domain/cotizaciones"
     },
     {
       "path": "../../libs/core/http"

@@ -4,10 +4,8 @@ import { of } from 'rxjs';
 import { describe, expect, it, vi } from 'vitest';
 import { proveedoresDePantalla } from '../../testing/proveedores-pantalla';
 import { DevolucionFormComponent } from './pages/devolucion-form/devolucion-form.component';
-import { DevolucionService } from './devolucion.service';
-import type { DevolucionFormPayload } from './devolucion.types';
-import { VentaService } from '../tpv/venta.service';
-import { MetodoPagoService } from '../tpv/metodo-pago.service';
+import { type DevolucionFormPayload, DevolucionService } from '@nianva/domain-devoluciones';
+import { MetodoPagoService, VentaService } from '@nianva/domain-tpv';
 import { BUSCADOR_PRODUCTO, BUSCADOR_VARIANTE_DE_PRODUCTO } from '../../core/buscadores-entidad.tokens';
 describe('Reembolso de presentación fraccionaria',()=>{it('estima el subtotal guardado y no multiplica el precio mostrado redondeado',async()=>{
  const venta={id:1,es_venta_sombra:false,detalles:[{id:11,variante_id:5,cantidad:'3.000',precio_unitario:'0.51',subtotal:'1.52',presentacion_id:9,presentacion_nombre:'Media unidad',factor:'0.500',variante:null}]};

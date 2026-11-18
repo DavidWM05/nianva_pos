@@ -1,2 +1,10 @@
 export * from './lib/atributo.service';
 export type * from './lib/atributo.types';
+export * from './lib/categoria.service';
+export type * from './lib/categoria.types';
+export * from './lib/compra.service';
+export * from './lib/departamento.service';
+export type * from './lib/departamento.types';
+export * from './lib/presentacion.service';
+export * from './lib/producto.service';
+export type * from './lib/producto.types';

@@ -125,6 +125,7 @@ class CuponController extends Controller
                     'id' => $cupon->id,
                     'codigo' => $cupon->codigo,
                     'nombre' => $cupon->nombre,
+                    /** @var 'porcentaje'|'monto_fijo' */
                     'tipo' => $cupon->tipo,
                     'porcentaje' => $cupon->getAttribute('porcentaje') === null ? null : DecimalApi::tasa((string) $cupon->getAttribute('porcentaje')),
                     'monto' => $cupon->getAttribute('monto') === null ? null : DecimalApi::dinero((string) $cupon->getAttribute('monto')),

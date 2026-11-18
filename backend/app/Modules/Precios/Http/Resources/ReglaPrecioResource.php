@@ -22,12 +22,14 @@ class ReglaPrecioResource extends JsonResource
             'nombre' => $this->nombre,
             'prioridad' => $this->prioridad,
             'combinable' => $this->combinable,
+            /** @var 'porcentaje'|'monto_fijo'|'nxm'|'bundle' */
             'tipo' => $this->tipo,
             'porcentaje' => $this->resource->getAttribute('porcentaje') === null ? null : DecimalApi::tasa((string) $this->resource->getAttribute('porcentaje')),
             'monto' => $this->resource->getAttribute('monto') === null ? null : DecimalApi::dinero((string) $this->resource->getAttribute('monto')),
             'cantidad_compra' => $this->cantidad_compra === null ? null : DecimalApi::cantidad($this->cantidad_compra),
             'cantidad_paga' => $this->cantidad_paga === null ? null : DecimalApi::cantidad($this->cantidad_paga),
             'precio_bundle' => $this->precio_bundle === null ? null : DecimalApi::dinero($this->precio_bundle),
+            /** @var 'todo'|'categoria'|'producto'|'variante' */
             'aplica_a' => $this->aplica_a,
             // El nombre de la entidad especifica, no solo el nivel -- ver
             // el requisito de la columna "a que aplica" en la lista.

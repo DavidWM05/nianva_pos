@@ -28,8 +28,7 @@ import {
   ToastService,
 } from '@nianva/ui-shared';
 import { Subject, debounceTime } from 'rxjs';
-import { DepartamentoService } from '../../departamento.service';
-import { Departamento, DepartamentosPermisos } from '../../departamento.types';
+import { Departamento, DepartamentoService, DepartamentosPermisos } from '@nianva/domain-inventario';
 
 const PERMISOS_VACIOS: DepartamentosPermisos = {
   crear: false,

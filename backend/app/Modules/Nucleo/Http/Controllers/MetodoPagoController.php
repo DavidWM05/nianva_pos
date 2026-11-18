@@ -30,7 +30,12 @@ class MetodoPagoController extends Controller
     {
         if ($request->boolean('solo_activos')) {
             return response()->json([
-                'data' => MetodoPago::where('activo', true)->orderBy('nombre')->get(['id', 'nombre', 'tipo']),
+                'data' => MetodoPago::where('activo', true)->orderBy('nombre')->get(['id', 'nombre', 'tipo'])->map(fn (MetodoPago $metodo) => [
+                    'id' => (int) $metodo->getKey(),
+                    'nombre' => (string) $metodo->getAttribute('nombre'),
+                    /** @var 'efectivo'|'tarjeta'|'transferencia'|'digital'|'otro' */
+                    'tipo' => $metodo->getAttribute('tipo'),
+                ]),
             ]);
         }
 

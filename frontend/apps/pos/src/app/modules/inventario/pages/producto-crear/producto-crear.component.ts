@@ -12,7 +12,7 @@ import { Router, RouterLink } from '@angular/router';
 import { ToastService } from '@nianva/ui-shared';
 
 import { ProductoFormComponent } from '../../producto-form/producto-form.component';
-import { ProductoFormPayload, ProductoService } from '../../producto.service';
+import { ProductoFormPayload, ProductoService } from '@nianva/domain-inventario';
 
 /**
  * Vista dedicada, no modal (ver el reporte del punto 1): producto es una

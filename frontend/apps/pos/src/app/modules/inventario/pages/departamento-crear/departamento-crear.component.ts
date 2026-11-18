@@ -15,7 +15,7 @@ import { DepartamentoFormComponent } from '../../departamento-form/departamento-
 import {
   DepartamentoFormPayload,
   DepartamentoService,
-} from '../../departamento.service';
+} from '@nianva/domain-inventario';
 
 /**
  * Vista dedicada, no modal (ver el reporte del punto 1 de Fase B):

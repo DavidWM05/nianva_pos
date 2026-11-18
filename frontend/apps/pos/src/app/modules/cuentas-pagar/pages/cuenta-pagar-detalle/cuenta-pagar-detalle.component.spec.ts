@@ -20,7 +20,7 @@ if (typeof globalThis.ResizeObserver === 'undefined') {
 }
 /* eslint-enable @typescript-eslint/no-empty-function */
 
-import { MetodoPagoService } from '../../../tpv/metodo-pago.service';
+import { MetodoPagoService } from '@nianva/domain-tpv';
 import { CuentaPagar, CuentaPagarService } from '@nianva/domain-cuentas-pagar';
 import { CuentaPagarDetalleComponent } from './cuenta-pagar-detalle.component';
 

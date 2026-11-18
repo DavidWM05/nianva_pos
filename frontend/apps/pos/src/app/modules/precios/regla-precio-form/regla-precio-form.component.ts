@@ -23,8 +23,7 @@ import {
   BUSCADOR_PRODUCTO,
   BUSCADOR_VARIANTE_DE_PRODUCTO,
 } from '../../../core/buscadores-entidad.tokens';
-import { ReglaPrecioFormPayload } from '../regla-precio.service';
-import { AplicaA, ReglaPrecio, TipoReglaPrecio } from '../regla-precio.types';
+import { AplicaA, ReglaPrecio, ReglaPrecioFormPayload, TipoReglaPrecio } from '@nianva/domain-precios';
 import { numeroONulo } from '../numero-o-nulo';
 
 /** Límites del cuerpo de la petición, leídos del contrato (UI-11b). */

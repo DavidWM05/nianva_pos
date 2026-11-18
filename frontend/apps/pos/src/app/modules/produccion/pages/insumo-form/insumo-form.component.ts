@@ -14,7 +14,7 @@ import { EntidadSelectorComponent, ToastService } from '@nianva/ui-shared';
 import { CampoComponent, BtnEnviarComponent } from '@nianva/ui-forms';
 import { PageHeaderComponent, PageComponent } from '@nianva/ui-layout';
 import { BUSCADOR_UNIDAD_MEDIDA } from '../../../../core/buscadores-entidad.tokens';
-import { InsumoService } from '../../insumo.service';
+import { InsumoService } from '@nianva/domain-produccion';
 
 @Component({
   selector: 'nucleo-insumo-form',
