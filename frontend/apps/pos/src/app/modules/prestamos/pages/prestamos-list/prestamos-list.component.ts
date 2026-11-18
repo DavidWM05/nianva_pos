@@ -20,8 +20,7 @@ import {
 import { Router } from '@angular/router';
 import { DataTableLazyEvent } from '@nianva/ui-shared';
 
-import { PrestamoService } from '../../prestamo.service';
-import { Prestamo } from '../../prestamo.types';
+import { Prestamo, PrestamoService } from '@nianva/domain-prestamos';
 
 @Component({
   selector: 'nucleo-prestamos-list',

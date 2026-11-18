@@ -3,7 +3,7 @@ import { of } from 'rxjs';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { configurarBaseApi, urlApi } from '../core/api-config';
-import { xsrfInterceptor } from './xsrf.interceptor';
+import { xsrfInterceptor } from '@nianva/core-http';
 
 describe('xsrfInterceptor', () => {
   beforeEach(() => {

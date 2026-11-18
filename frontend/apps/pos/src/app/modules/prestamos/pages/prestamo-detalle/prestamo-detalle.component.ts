@@ -28,8 +28,7 @@ import {
   ToastService,
 } from '@nianva/ui-shared';
 
-import { PrestamoService } from '../../prestamo.service';
-import { Prestamo } from '../../prestamo.types';
+import { Prestamo, PrestamoService } from '@nianva/domain-prestamos';
 
 /**
  * Vista de registro (RecordTabsComponent, obligatorio -- CLAUDE.md §4).

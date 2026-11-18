@@ -6,9 +6,8 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { configurarBaseApi, urlApi, urlSesion } from '../core/api-config';
 import { authInterceptor } from './auth.interceptor';
 import { credentialsInterceptor } from './credentials.interceptor';
-import { csrfRetryInterceptor } from './csrf-retry.interceptor';
+import { csrfRetryInterceptor, xsrfInterceptor } from '@nianva/core-http';
 import { SesionEntrePestanasService } from './sesion-entre-pestanas.service';
-import { xsrfInterceptor } from './xsrf.interceptor';
 
 describe('csrfRetryInterceptor', () => {
   let http: HttpClient;

@@ -31,8 +31,7 @@ import {
   BUSCADOR_CLIENTE,
   BUSCADOR_USUARIO,
 } from '../../../../core/buscadores-entidad.tokens';
-import { PedidoService, PedidosPermisos } from '../../pedido.service';
-import { EstadoPedido, Pedido } from '../../pedido.types';
+import { EstadoPedido, Pedido, PedidoService, PedidosPermisos } from '@nianva/domain-delivery';
 
 const PERMISOS_VACIOS: PedidosPermisos = { crear: false };
 

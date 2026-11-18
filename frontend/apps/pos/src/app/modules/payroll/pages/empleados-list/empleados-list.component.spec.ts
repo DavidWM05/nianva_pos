@@ -7,10 +7,9 @@ import { of } from 'rxjs';
 import { describe, expect, it, vi } from 'vitest';
 
 import { AuthStateService } from '../../../../auth/auth-state.service';
-import { Usuario } from '../../../../auth/usuario.types';
+import { Usuario } from '@nianva/domain-sesion';
 import { BUSCADOR_USUARIO } from '../../../../core/buscadores-entidad.tokens';
-import { EmpleadoService, EmpleadosPagina } from '../../empleado.service';
-import { Empleado } from '../../empleado.types';
+import { Empleado, EmpleadoService, EmpleadosPagina } from '@nianva/domain-payroll';
 import { EmpleadosListComponent } from './empleados-list.component';
 
 describe('EmpleadosListComponent', () => {

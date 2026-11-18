@@ -5,8 +5,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { AuthService } from './auth.service';
 import { AuthStateService } from './auth-state.service';
 import { CargaSesionService } from './carga-sesion.service';
-import { SesionActualService } from './sesion-actual.service';
-import { Sesion } from './sesion.types';
+import { Sesion, SesionActualService } from '@nianva/domain-sesion';
 
 const sesion: Sesion = {
   usuario: { id: 7, nombre: 'Ana', apellido: null, correo: 'ana@x.test', tenant_id: 1, sucursal_id: 2, es_superadmin: false, roles: ['vendedor'], requiere_dos_factor: false, dos_factor_confirmado: false },

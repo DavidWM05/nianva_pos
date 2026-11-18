@@ -20,8 +20,7 @@ if (typeof globalThis.ResizeObserver === 'undefined') {
 }
 /* eslint-enable @typescript-eslint/no-empty-function */
 
-import { PrestamoService } from '../../prestamo.service';
-import { Prestamo } from '../../prestamo.types';
+import { Prestamo, PrestamoService } from '@nianva/domain-prestamos';
 import { PrestamoDetalleComponent } from './prestamo-detalle.component';
 
 describe('PrestamoDetalleComponent', () => {

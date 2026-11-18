@@ -8,7 +8,7 @@ export interface EmpleadoUsuarioResumen {
 export interface Empleado {
   id: number;
   usuario_id: number;
-  usuario: EmpleadoUsuarioResumen | null;
+  usuario?: EmpleadoUsuarioResumen | null;
   sucursal_id: number;
   salario_base: string;
   tipo_salario: TipoSalario;

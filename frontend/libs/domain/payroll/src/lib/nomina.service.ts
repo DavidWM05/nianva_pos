@@ -1,11 +1,9 @@
 import { RespuestaDe, CuerpoDe } from '@nianva/api-contrato';
+import { CODIGOS_EN_PANTALLA, ConsultaPagina, urlApi } from '@nianva/core-http';
 import { HttpClient, HttpContext, HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
-import { DataTableLazyEvent } from '@nianva/ui-shared';
 import { Observable, map } from 'rxjs';
 
-import { urlApi } from '../../core/api-config';
-import { CODIGOS_EN_PANTALLA } from '../../core/errores.interceptor';
 import { GenerarNominaPayload, Nomina } from './nomina.types';
 
 export interface NominasPermisos {
@@ -27,7 +25,7 @@ export class NominaService {
     ['sucursal_requerida'],
   );
 
-  listar(evento: DataTableLazyEvent): Observable<NominasPagina> {
+  listar(evento: ConsultaPagina): Observable<NominasPagina> {
     const rows = evento.rows || 25;
     const page = Math.floor(evento.first / rows) + 1;
 
@@ -43,7 +41,7 @@ export class NominaService {
       .get<RespuestaDe<'/nominas', 'get'>>(urlApi(`/nominas`), { params })
       .pipe(
         map((r) => ({
-          data: r.data as Nomina[],
+          data: r.data,
           total: r.meta.total,
           permisos: { ...r.meta.permisos, crear: r.meta.permisos['crear'] },
         })),
@@ -53,7 +51,7 @@ export class NominaService {
   obtener(id: number): Observable<Nomina> {
     return this.http
       .get<RespuestaDe<'/nominas/{nomina}', 'get'>>(urlApi(`/nominas/${id}`))
-      .pipe(map((r) => r.data as Nomina));
+      .pipe(map((r) => r.data));
   }
 
   generar(payload: GenerarNominaPayload): Observable<Nomina> {
@@ -63,7 +61,7 @@ export class NominaService {
         payload satisfies CuerpoDe<'/nominas/generar', 'post'>,
         { context: this.sucursalEnPantalla },
       )
-      .pipe(map((r) => r.data as Nomina));
+      .pipe(map((r) => r.data));
   }
 
   pagar(id: number): Observable<Nomina> {
@@ -72,6 +70,6 @@ export class NominaService {
         urlApi(`/nominas/${id}/pagar`),
         {},
       )
-      .pipe(map((r) => r.data as Nomina));
+      .pipe(map((r) => r.data));
   }
 }

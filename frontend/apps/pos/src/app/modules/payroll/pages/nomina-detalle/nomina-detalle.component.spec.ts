@@ -20,8 +20,7 @@ if (typeof globalThis.ResizeObserver === 'undefined') {
 }
 /* eslint-enable @typescript-eslint/no-empty-function */
 
-import { NominaService } from '../../nomina.service';
-import { Nomina } from '../../nomina.types';
+import { Nomina, NominaService } from '@nianva/domain-payroll';
 import { NominaDetalleComponent } from './nomina-detalle.component';
 
 describe('NominaDetalleComponent', () => {

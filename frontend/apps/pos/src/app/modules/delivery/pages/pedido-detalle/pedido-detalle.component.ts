@@ -23,8 +23,7 @@ import {
 } from '@nianva/ui-shared';
 
 import { BUSCADOR_USUARIO } from '../../../../core/buscadores-entidad.tokens';
-import { PedidoService } from '../../pedido.service';
-import { EstadoPedido, Pedido, TRANSICIONES_PEDIDO } from '../../pedido.types';
+import { EstadoPedido, Pedido, PedidoService, TRANSICIONES_PEDIDO } from '@nianva/domain-delivery';
 
 const ETIQUETAS_ESTADO: Record<EstadoPedido, string> = {
   pendiente: 'Pendiente',

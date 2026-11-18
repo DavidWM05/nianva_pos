@@ -10,10 +10,9 @@ import { BUSCADOR_USUARIO } from '../../core/buscadores-entidad.tokens';
 import { proveedoresDePantalla } from '../../testing/proveedores-pantalla';
 import { EmpleadosListComponent } from './pages/empleados-list/empleados-list.component';
 import { NominasListComponent } from './pages/nominas-list/nominas-list.component';
-import { EmpleadoService } from './empleado.service';
-import { NominaService } from './nomina.service';
+import { EmpleadoService, NominaService } from '@nianva/domain-payroll';
 import { PrestamoFormComponent } from '../prestamos/pages/prestamo-form/prestamo-form.component';
-import { PrestamoService } from '../prestamos/prestamo.service';
+import { PrestamoService } from '@nianva/domain-prestamos';
 
 interface CasoFecha {
   pantalla: Type<object>;

@@ -2,7 +2,7 @@ import { HttpClient, HttpContext, HttpContextToken, HttpErrorResponse, HttpInter
 import { inject } from '@angular/core';
 import { catchError, switchMap, throwError } from 'rxjs';
 
-import { esUrlBackend, urlSesion } from '../core/api-config';
+import { esUrlBackend, urlSesion } from './api-config';
 import { conTokenXsrf } from './xsrf.interceptor';
 
 const METODOS_MUTANTES = new Set(['POST', 'PUT', 'PATCH', 'DELETE']);

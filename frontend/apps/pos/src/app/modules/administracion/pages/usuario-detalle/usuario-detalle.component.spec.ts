@@ -20,7 +20,7 @@ if (typeof globalThis.ResizeObserver === 'undefined') {
 /* eslint-enable @typescript-eslint/no-empty-function */
 
 import { AuthStateService } from '../../../../auth/auth-state.service';
-import { Usuario } from '../../../../auth/usuario.types';
+import { Usuario } from '@nianva/domain-sesion';
 import { RolService, SucursalService, UsuarioAdmin, UsuarioAdminService } from '@nianva/domain-administracion';
 import { UsuarioDetalleComponent } from './usuario-detalle.component';
 

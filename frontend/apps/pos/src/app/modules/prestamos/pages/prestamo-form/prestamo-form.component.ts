@@ -18,7 +18,7 @@ import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { ToastService } from '@nianva/ui-shared';
 
-import { PrestamoService } from '../../prestamo.service';
+import { PrestamoService } from '@nianva/domain-prestamos';
 
 /**
  * Solo "crear" -- PrestamoController no tiene update() ni show(), asi que

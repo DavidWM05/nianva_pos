@@ -3,7 +3,7 @@ import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { MatIconButton } from '@angular/material/button';
 import { PantallaService } from '@nianva/ui-layout';
 
-import { SesionActualService } from '../../auth/sesion-actual.service';
+import { SesionActualService } from '@nianva/domain-sesion';
 import { NUCLEO_ITEM_INICIO, NUCLEO_NAV_GROUPS } from '../../modules/modules.config';
 
 /**

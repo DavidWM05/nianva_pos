@@ -5,8 +5,8 @@ import { of, throwError } from 'rxjs';
 import { describe, expect, it, vi } from 'vitest';
 
 import { AuthStateService } from '../../../auth/auth-state.service';
-import { Usuario } from '../../../auth/usuario.types';
-import { SeguridadService } from '../../seguridad.service';
+import { Usuario } from '@nianva/domain-sesion';
+import { SeguridadService } from '@nianva/domain-perfil';
 import { PreferenciasComponent } from './preferencias.component';
 import { proveedoresDePantalla } from '../../../testing/proveedores-pantalla';
 

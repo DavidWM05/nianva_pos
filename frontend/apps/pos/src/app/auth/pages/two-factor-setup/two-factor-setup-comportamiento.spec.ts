@@ -6,7 +6,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { AuthService } from '../../auth.service';
 import { AuthStateService } from '../../auth-state.service';
-import { TwoFactorConfirmResponse, TwoFactorSetupResponse } from '../../usuario.types';
+import { TwoFactorConfirmResponse, TwoFactorSetupResponse } from '@nianva/domain-sesion';
 import { GENERAR_QR, TwoFactorSetupComponent } from './two-factor-setup.component';
 
 // 50j (PRO-01, paso 1): el comportamiento de la configuracion de 2FA sin mirar el DOM de la

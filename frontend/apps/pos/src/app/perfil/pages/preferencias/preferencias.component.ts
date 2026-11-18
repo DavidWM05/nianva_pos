@@ -8,8 +8,7 @@ import { AuthStateService } from '../../../auth/auth-state.service';
 import { TwoFactorCodeInputComponent } from '../../../auth/two-factor-code-input/two-factor-code-input.component';
 import { CambiarPasswordFormComponent, CambiarPasswordFormValue } from '../../cambiar-password-form/cambiar-password-form.component';
 import { DispositivosConfiablesListComponent } from '../../dispositivos-confiables-list/dispositivos-confiables-list.component';
-import { SeguridadService } from '../../seguridad.service';
-import { DispositivoConfiable } from '../../seguridad.types';
+import { DispositivoConfiable, SeguridadService } from '@nianva/domain-perfil';
 
 /**
  * Preferencias personales -- antes "Seguridad" (ver el reporte de

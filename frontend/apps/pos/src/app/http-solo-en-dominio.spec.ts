@@ -10,23 +10,11 @@ import { describe, expect, it } from 'vitest';
 const RAIZ = join(process.cwd(), 'apps', 'pos', 'src', 'app');
 
 /**
- * Solo baja. Los módulos que cambia el tren de Codex o que están congelados pasan a domain/* en
- * ARQ-12c, después de integrar los dos trenes; el shell (sesión, interceptor de CSRF, auditoría
- * por registro y perfil) también queda para entonces.
+ * Solo baja. Vacía desde ARQ-12c: los módulos de negocio, el shell (sesión, interceptor de CSRF,
+ * auditoría por registro y perfil) y los congelados (delivery, payroll y préstamos) ya no usan
+ * HttpClient en la app.
  */
-const PENDIENTES = [
-  // Shell de la app.
-  'auth/auth.service.ts',
-  'auth/csrf-retry.interceptor.ts',
-  'auth/sesion-actual.service.ts',
-  'core/auditoria.service.ts',
-  'perfil/seguridad.service.ts',
-  // Congelados (ARQ-10): delivery, payroll y préstamos.
-  'modules/delivery/pedido.service.ts',
-  'modules/payroll/empleado.service.ts',
-  'modules/payroll/nomina.service.ts',
-  'modules/prestamos/prestamo.service.ts',
-];
+const PENDIENTES: string[] = [];
 
 function archivosTs(): string[] {
   return readdirSync(RAIZ, { recursive: true, encoding: 'utf8' })

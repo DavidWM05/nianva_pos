@@ -30,8 +30,8 @@ export interface PedidoItem {
 export interface Pedido {
   id: number;
   numero_pedido: string;
-  cliente: PedidoClienteResumen | null;
-  repartidor: PedidoRepartidorResumen | null;
+  cliente?: PedidoClienteResumen | null;
+  repartidor?: PedidoRepartidorResumen | null;
   direccion_entrega: string | null;
   costo_delivery: string;
   estado: EstadoPedido;

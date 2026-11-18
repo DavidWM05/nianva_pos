@@ -3,8 +3,7 @@ import { FORMATO_REGIONAL, FORMATO_REGIONAL_DEFAULTS } from '@nianva/ui-format';
 import { beforeEach, describe, expect, it } from 'vitest';
 
 import { provideFormatoRegionalDeSesion } from './formato-regional-de-sesion';
-import { SesionActualService } from './sesion-actual.service';
-import { Sesion } from './sesion.types';
+import { Sesion, SesionActualService } from '@nianva/domain-sesion';
 
 const sesion: Sesion = {
   usuario: { id: 1, nombre: 'Ana', apellido: null, correo: 'ana@x.test', tenant_id: 1, sucursal_id: 1, es_superadmin: false, roles: [], requiere_dos_factor: false, dos_factor_confirmado: false },

@@ -21,8 +21,7 @@ if (typeof globalThis.ResizeObserver === 'undefined') {
 /* eslint-enable @typescript-eslint/no-empty-function */
 
 import { BUSCADOR_USUARIO } from '../../../../core/buscadores-entidad.tokens';
-import { PedidoService } from '../../pedido.service';
-import { Pedido } from '../../pedido.types';
+import { Pedido, PedidoService } from '@nianva/domain-delivery';
 import { PedidoDetalleComponent } from './pedido-detalle.component';
 
 describe('PedidoDetalleComponent', () => {

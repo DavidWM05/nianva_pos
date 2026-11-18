@@ -9,7 +9,7 @@ import { DynamicFormComponent } from '@nianva/ui-shared';
 import { firstValueFrom, Observable, of, throwError } from 'rxjs';
 import { describe, expect, it, vi } from 'vitest';
 
-import { SesionActualService } from '../../auth/sesion-actual.service';
+import { SesionActualService } from '@nianva/domain-sesion';
 import { proveedoresDePantalla } from '../../testing/proveedores-pantalla';
 import { atributosDeVarianteResolver } from './atributos-de-variante.resolver';
 import { AtributoRegistroComponent } from './pages/atributo-registro/atributo-registro.component';

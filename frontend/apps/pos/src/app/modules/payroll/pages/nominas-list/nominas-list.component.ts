@@ -33,8 +33,7 @@ import {
 } from '@nianva/ui-shared';
 
 import { AuthStateService } from '../../../../auth/auth-state.service';
-import { NominaService, NominasPermisos } from '../../nomina.service';
-import { Nomina } from '../../nomina.types';
+import { Nomina, NominaService, NominasPermisos } from '@nianva/domain-payroll';
 
 const PERMISOS_VACIOS: NominasPermisos = { crear: false };
 

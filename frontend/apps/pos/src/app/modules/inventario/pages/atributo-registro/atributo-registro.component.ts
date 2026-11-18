@@ -34,7 +34,7 @@ import {
 import { MatButton } from '@angular/material/button';
 import { Observable, finalize } from 'rxjs';
 
-import { SesionActualService } from '../../../../auth/sesion-actual.service';
+import { SesionActualService } from '@nianva/domain-sesion';
 import { AtributoFormComponent } from '../../atributo-form/atributo-form.component';
 
 /** Límites del cuerpo de un valor, leídos del contrato (UI-11b). */

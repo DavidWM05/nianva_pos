@@ -3,8 +3,7 @@ import { Injectable, inject } from '@angular/core';
 import type { CuerpoDe, RespuestaDe } from '@nianva/api-contrato';
 import { Observable, map } from 'rxjs';
 
-import { urlApi } from '../core/api-config';
-import { ERROR_EN_PANTALLA } from '../core/errores.interceptor';
+import { ERROR_EN_PANTALLA, urlApi } from '@nianva/core-http';
 import { CambiarPasswordPayload, DispositivoConfiable } from './seguridad.types';
 
 /**

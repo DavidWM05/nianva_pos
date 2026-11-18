@@ -6,8 +6,7 @@ import { of } from 'rxjs';
 import { describe, expect, it, vi } from 'vitest';
 
 import { BUSCADOR_CLIENTE, BUSCADOR_USUARIO } from '../../../../core/buscadores-entidad.tokens';
-import { PedidoService, PedidosPagina } from '../../pedido.service';
-import { Pedido } from '../../pedido.types';
+import { Pedido, PedidoService, PedidosPagina } from '@nianva/domain-delivery';
 import { PedidosListComponent } from './pedidos-list.component';
 
 describe('PedidosListComponent', () => {

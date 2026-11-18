@@ -20,8 +20,7 @@ import {
   ToastService,
 } from '@nianva/ui-shared';
 
-import { NominaService } from '../../nomina.service';
-import { Nomina } from '../../nomina.types';
+import { Nomina, NominaService } from '@nianva/domain-payroll';
 
 /**
  * Vista de registro (RecordTabsComponent, obligatorio -- CLAUDE.md §4).

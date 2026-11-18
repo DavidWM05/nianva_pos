@@ -5,7 +5,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { AuthService } from '../../auth.service';
 import { AuthStateService } from '../../auth-state.service';
-import { TwoFactorConfirmResponse, TwoFactorSetupResponse } from '../../usuario.types';
+import { TwoFactorConfirmResponse, TwoFactorSetupResponse } from '@nianva/domain-sesion';
 import { GENERAR_QR, TwoFactorSetupComponent } from './two-factor-setup.component';
 
 describe('TwoFactorSetupComponent', () => {

@@ -6,8 +6,7 @@ import { proveedoresDePantalla } from '../../../../testing/proveedores-pantalla'
 import { of } from 'rxjs';
 import { describe, expect, it, vi } from 'vitest';
 
-import { PrestamoService } from '../../prestamo.service';
-import { Prestamo } from '../../prestamo.types';
+import { Prestamo, PrestamoService } from '@nianva/domain-prestamos';
 import { PrestamoFormComponent } from './prestamo-form.component';
 
 describe('PrestamoFormComponent', () => {
