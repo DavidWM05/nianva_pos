@@ -3,6 +3,7 @@
 namespace App\Modules\Nucleo\Providers;
 
 use App\Modules\Nucleo\Console\Commands\ActivarLicenciaCommand;
+use App\Modules\Nucleo\Console\Commands\ConciliarLibrosCommand;
 use App\Modules\Nucleo\Console\Commands\ConciliarTextoCommand;
 use App\Modules\Nucleo\Console\Commands\ErroresCatalogoCommand;
 use App\Modules\Nucleo\Console\Commands\EsquemaSnapshotCommand;
@@ -58,6 +59,7 @@ class NucleoServiceProvider extends ServiceProvider
                 ResetearDosFactorCommand::class,
                 EsquemaSnapshotCommand::class,
                 ConciliarTextoCommand::class,
+                ConciliarLibrosCommand::class,
                 StrictTypesPendientesCommand::class,
             ]);
         }

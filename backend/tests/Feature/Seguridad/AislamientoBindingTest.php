@@ -184,7 +184,8 @@ class AislamientoBindingTest extends TestCase
             'tipo' => 'entrada',
             'cantidad' => 1,
             'motivo' => 'ajuste',
-            'stock_resultante' => 1,
+            'stock_antes' => 0,
+            'stock_despues' => 1,
             'usuario_id' => $this->usuario->id,
         ]);
         $kardex = $this->actingAs($this->usuario)

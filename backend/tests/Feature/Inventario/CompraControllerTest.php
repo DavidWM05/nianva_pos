@@ -85,7 +85,7 @@ class CompraControllerTest extends TestCase
             'tipo' => 'entrada',
             'cantidad' => 20,
             'motivo' => 'compra',
-            'stock_resultante' => 20,
+            'stock_despues' => 20,
         ]);
         $this->assertDatabaseHas('compras', [
             'proveedor_id' => $proveedor->id,
@@ -107,7 +107,7 @@ class CompraControllerTest extends TestCase
             'variante_id' => $variante->id,
             'stock_actual' => 25,
         ]);
-        $this->assertDatabaseCount('kardex', 2);
+        $this->assertDatabaseCount('kardex', 3);
     }
 
     public function test_registrar_compra_exige_permiso_compras_crear(): void
@@ -183,6 +183,6 @@ class CompraControllerTest extends TestCase
             ->assertJsonCount(1, 'data')
             ->assertJsonPath('data.0.tipo', 'entrada')
             ->assertJsonPath('data.0.motivo', 'compra')
-            ->assertJsonPath('data.0.stock_resultante', '30.000');
+            ->assertJsonPath('data.0.stock_despues', '30.000');
     }
 }

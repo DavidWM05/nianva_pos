@@ -4,12 +4,15 @@ declare(strict_types=1);
 
 namespace App\Modules\VentasPlazos\Services;
 
+use App\Modules\Nucleo\Support\Dinero;
+use App\Modules\Nucleo\Support\Proyeccion;
 use App\Modules\Tpv\Models\Venta;
 use App\Modules\VentasPlazos\Exceptions\CuotaYaPagadaException;
 use App\Modules\VentasPlazos\Exceptions\PagoCuotaInsuficienteException;
 use App\Modules\VentasPlazos\Exceptions\PlanPagoYaActivoException;
 use App\Modules\VentasPlazos\Models\PlanPagoCliente;
 use App\Modules\VentasPlazos\Models\PlanPagoClienteCuota;
+use App\Modules\VentasPlazos\Models\PlanPagoMovimiento;
 use Illuminate\Support\Facades\DB;
 use InvalidArgumentException;
 
@@ -61,6 +64,7 @@ class VentasPlazosService
             'venta_id' => $venta->id,
             'concepto' => "Venta #{$venta->id} - Pago a plazos",
             'monto_total' => $montoTotal,
+            'saldo_pendiente' => round($montoPorCuota * $numeroCuotas, 2),
             'interes_total' => $interesTotal,
             'tasa_interes' => $tasaInteres,
             'numero_cuotas' => $numeroCuotas,
@@ -86,6 +90,19 @@ class VentasPlazosService
                 'estado' => 'pendiente',
             ]);
         }
+
+        // DAT-05: el primer renglón del libro del plan es lo que el cliente debe en cuotas.
+        $saldo = Dinero::desde((string) $plan->getAttribute('saldo_pendiente'))->aCadena();
+        PlanPagoMovimiento::query()->create([
+            'plan_pago_cliente_id' => $plan->id,
+            'tipo' => 'saldo_inicial',
+            'referencia_tabla' => 'ventas',
+            'referencia_id' => $venta->id,
+            'monto' => $saldo,
+            'saldo_antes' => '0.00',
+            'saldo_despues' => $saldo,
+            'usuario_id' => $venta->getAttribute('usuario_id'),
+        ]);
 
         return $plan->load('cuotas');
 
@@ -114,6 +131,23 @@ class VentasPlazosService
             'estado' => 'pagada',
             'fecha_pago' => now(),
             'fecha_pago_real' => now(),
+        ]);
+
+        // DAT-04: la cuota pagada baja el saldo del plan en su libro, en la misma transacción.
+        $plan = PlanPagoCliente::query()->withoutGlobalScopes()->whereKey($planId)->firstOrFail();
+        $antes = Dinero::desde((string) $plan->getAttribute('saldo_pendiente'))->aCadena();
+        $importe = Dinero::desde((string) $cuota->getAttribute('monto'));
+        $despues = Dinero::desde($antes)->restar($importe)->aCadena();
+        Proyeccion::actualizar($plan, 'saldo_pendiente', $antes, ['saldo_pendiente' => $despues]);
+        PlanPagoMovimiento::query()->create([
+            'plan_pago_cliente_id' => $planId,
+            'tipo' => 'pago_cuota',
+            'referencia_tabla' => 'planes_pago_cliente_cuotas',
+            'referencia_id' => $cuotaId,
+            'monto' => Dinero::desde('0')->restar($importe)->aCadena(),
+            'saldo_antes' => $antes,
+            'saldo_despues' => $despues,
+            'usuario_id' => null,
         ]);
 
         return $cuota->refresh();

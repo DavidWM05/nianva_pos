@@ -28,7 +28,8 @@ class KardexFactory extends Factory
             'motivo' => 'compra',
             'referencia_tabla' => null,
             'referencia_id' => null,
-            'stock_resultante' => fake()->numberBetween(0, 100),
+            'stock_antes' => 0,
+            'stock_despues' => fn (array $a) => $a['tipo'] === 'salida' ? 0 : $a['cantidad'],
             'usuario_id' => fn (array $a) => Usuario::factory()->create([
                 'tenant_id' => Sucursal::query()->withoutGlobalScopes()->whereKey($a['sucursal_id'])->firstOrFail()->getAttribute('tenant_id'),
                 'sucursal_id' => $a['sucursal_id'],

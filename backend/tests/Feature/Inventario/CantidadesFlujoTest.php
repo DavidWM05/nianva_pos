@@ -46,7 +46,7 @@ class CantidadesFlujoTest extends TestCase
         $this->assertSame(49.5, InventarioStock::where('variante_id', $this->variante->id)->value('stock_actual'));
         $movimiento = Kardex::where('variante_id', $this->variante->id)->latest('id')->firstOrFail();
         $this->assertSame(0.5, $movimiento->cantidad);
-        $this->assertSame(49.5, $movimiento->stock_resultante);
+        $this->assertSame(49.5, $movimiento->stock_despues);
     }
 
     public function test_comprar_medio_incrementa_la_fraccion(): void
@@ -92,7 +92,7 @@ class CantidadesFlujoTest extends TestCase
     {
         $movimiento = app(RegistrarMovimiento::class)->ejecutar(new MovimientoInventarioDto($this->variante->id, $this->sucursal->id, 'salida', 0.001, 'ajuste', $this->usuario->id));
         $this->assertSame(0.001, $movimiento->cantidad);
-        $this->assertSame(49.999, $movimiento->stock_resultante);
+        $this->assertSame(49.999, $movimiento->stock_despues);
     }
 
     public function test_porcentaje_se_aplica_sobre_la_base_fraccionaria_antes_de_redondear(): void

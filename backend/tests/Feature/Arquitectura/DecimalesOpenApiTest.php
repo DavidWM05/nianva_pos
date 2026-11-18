@@ -70,7 +70,7 @@ class DecimalesOpenApiTest extends TestCase
         'paths//inicio/resumen/get/responses/200/content/application/json/schema/properties/data/properties/apartados_por_vencer/items/properties/total',
         'paths//inicio/resumen/get/responses/200/content/application/json/schema/properties/data/properties/apartados_por_vencer/items/properties/total_abonado',
         'paths//producto-variantes/{variante}/kardex/get/responses/200/content/application/json/schema/properties/data/items/properties/cantidad',
-        'paths//producto-variantes/{variante}/kardex/get/responses/200/content/application/json/schema/properties/data/items/properties/stock_resultante',
+        'paths//producto-variantes/{variante}/kardex/get/responses/200/content/application/json/schema/properties/data/items/properties/stock_despues',
         'paths//ventas/cotizar/post/responses/200/content/application/json/schema/properties/data/properties/subtotal',
         'components/schemas/CotizacionVentaLineaResource/properties/cantidad',
         'components/schemas/CotizacionVentaLineaResource/properties/precio_unitario',

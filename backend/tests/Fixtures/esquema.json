@@ -1146,6 +1146,120 @@
         ],
         "llaves_foraneas": []
     },
+    "caja_movimientos": {
+        "columnas": [
+            {
+                "nombre": "caja_sesion_id",
+                "tipo": "integer",
+                "nullable": false,
+                "default": null
+            },
+            {
+                "nombre": "fecha",
+                "tipo": "datetime",
+                "nullable": false,
+                "default": "CURRENT_TIMESTAMP"
+            },
+            {
+                "nombre": "id",
+                "tipo": "integer",
+                "nullable": false,
+                "default": null
+            },
+            {
+                "nombre": "monto",
+                "tipo": "numeric",
+                "nullable": false,
+                "default": null
+            },
+            {
+                "nombre": "referencia_id",
+                "tipo": "integer",
+                "nullable": true,
+                "default": null
+            },
+            {
+                "nombre": "referencia_tabla",
+                "tipo": "varchar",
+                "nullable": true,
+                "default": null
+            },
+            {
+                "nombre": "saldo_antes",
+                "tipo": "numeric",
+                "nullable": false,
+                "default": null
+            },
+            {
+                "nombre": "saldo_despues",
+                "tipo": "numeric",
+                "nullable": false,
+                "default": null
+            },
+            {
+                "nombre": "tipo",
+                "tipo": "varchar",
+                "nullable": false,
+                "default": null
+            },
+            {
+                "nombre": "usuario_id",
+                "tipo": "integer",
+                "nullable": false,
+                "default": null
+            }
+        ],
+        "indices": [
+            {
+                "nombre": "caja_movimientos_caja_sesion_id_index",
+                "columnas": [
+                    "caja_sesion_id"
+                ],
+                "unico": false
+            },
+            {
+                "nombre": "caja_movimientos_referencia_tabla_referencia_id_index",
+                "columnas": [
+                    "referencia_tabla",
+                    "referencia_id"
+                ],
+                "unico": false
+            },
+            {
+                "nombre": "primary",
+                "columnas": [
+                    "id"
+                ],
+                "unico": true
+            }
+        ],
+        "llaves_foraneas": [
+            {
+                "nombre": null,
+                "columnas": [
+                    "caja_sesion_id"
+                ],
+                "tabla_foranea": "caja_sesiones",
+                "columnas_foraneas": [
+                    "id"
+                ],
+                "on_update": "no action",
+                "on_delete": "restrict"
+            },
+            {
+                "nombre": null,
+                "columnas": [
+                    "usuario_id"
+                ],
+                "tabla_foranea": "usuarios",
+                "columnas_foraneas": [
+                    "id"
+                ],
+                "on_update": "no action",
+                "on_delete": "restrict"
+            }
+        ]
+    },
     "caja_sesiones": {
         "columnas": [
             {
@@ -1188,6 +1302,12 @@
                 "nombre": "monto_cierre",
                 "tipo": "numeric",
                 "nullable": true,
+                "default": null
+            },
+            {
+                "nombre": "saldo_teorico",
+                "tipo": "numeric",
+                "nullable": false,
                 "default": null
             },
             {
@@ -2569,6 +2689,112 @@
                     "tenant_id"
                 ],
                 "tabla_foranea": "tenants",
+                "columnas_foraneas": [
+                    "id"
+                ],
+                "on_update": "no action",
+                "on_delete": "cascade"
+            },
+            {
+                "nombre": null,
+                "columnas": [
+                    "usuario_id"
+                ],
+                "tabla_foranea": "usuarios",
+                "columnas_foraneas": [
+                    "id"
+                ],
+                "on_update": "no action",
+                "on_delete": "restrict"
+            }
+        ]
+    },
+    "cuenta_cobrar_movimientos": {
+        "columnas": [
+            {
+                "nombre": "cuenta_cobrar_id",
+                "tipo": "integer",
+                "nullable": false,
+                "default": null
+            },
+            {
+                "nombre": "fecha",
+                "tipo": "datetime",
+                "nullable": false,
+                "default": "CURRENT_TIMESTAMP"
+            },
+            {
+                "nombre": "id",
+                "tipo": "integer",
+                "nullable": false,
+                "default": null
+            },
+            {
+                "nombre": "monto",
+                "tipo": "numeric",
+                "nullable": false,
+                "default": null
+            },
+            {
+                "nombre": "referencia_id",
+                "tipo": "integer",
+                "nullable": true,
+                "default": null
+            },
+            {
+                "nombre": "referencia_tabla",
+                "tipo": "varchar",
+                "nullable": true,
+                "default": null
+            },
+            {
+                "nombre": "saldo_antes",
+                "tipo": "numeric",
+                "nullable": false,
+                "default": null
+            },
+            {
+                "nombre": "saldo_despues",
+                "tipo": "numeric",
+                "nullable": false,
+                "default": null
+            },
+            {
+                "nombre": "tipo",
+                "tipo": "varchar",
+                "nullable": false,
+                "default": null
+            },
+            {
+                "nombre": "usuario_id",
+                "tipo": "integer",
+                "nullable": true,
+                "default": null
+            }
+        ],
+        "indices": [
+            {
+                "nombre": "cuenta_cobrar_movimientos_cuenta_cobrar_id_index",
+                "columnas": [
+                    "cuenta_cobrar_id"
+                ],
+                "unico": false
+            },
+            {
+                "nombre": "primary",
+                "columnas": [
+                    "id"
+                ],
+                "unico": true
+            }
+        ],
+        "llaves_foraneas": [
+            {
+                "nombre": null,
+                "columnas": [
+                    "cuenta_cobrar_id"
+                ],
+                "tabla_foranea": "cuentas_cobrar",
                 "columnas_foraneas": [
                     "id"
                 ],
@@ -4602,7 +4828,13 @@
                 "default": null
             },
             {
-                "nombre": "stock_resultante",
+                "nombre": "stock_antes",
+                "tipo": "numeric",
+                "nullable": false,
+                "default": null
+            },
+            {
+                "nombre": "stock_despues",
                 "tipo": "numeric",
                 "nullable": false,
                 "default": null
@@ -4622,7 +4854,7 @@
             {
                 "nombre": "usuario_id",
                 "tipo": "integer",
-                "nullable": false,
+                "nullable": true,
                 "default": null
             },
             {
@@ -5669,9 +5901,33 @@
                 "default": null
             },
             {
+                "nombre": "saldo_antes",
+                "tipo": "numeric",
+                "nullable": false,
+                "default": null
+            },
+            {
+                "nombre": "saldo_despues",
+                "tipo": "numeric",
+                "nullable": false,
+                "default": null
+            },
+            {
+                "nombre": "tipo",
+                "tipo": "varchar",
+                "nullable": false,
+                "default": null
+            },
+            {
+                "nombre": "usuario_id",
+                "tipo": "integer",
+                "nullable": true,
+                "default": null
+            },
+            {
                 "nombre": "venta_id",
                 "tipo": "integer",
-                "nullable": false,
+                "nullable": true,
                 "default": null
             }
         ],
@@ -5710,6 +5966,18 @@
                 ],
                 "on_update": "no action",
                 "on_delete": "cascade"
+            },
+            {
+                "nombre": null,
+                "columnas": [
+                    "usuario_id"
+                ],
+                "tabla_foranea": "usuarios",
+                "columnas_foraneas": [
+                    "id"
+                ],
+                "on_update": "no action",
+                "on_delete": "restrict"
             },
             {
                 "nombre": null,
@@ -6525,6 +6793,112 @@
         ],
         "llaves_foraneas": []
     },
+    "plan_pago_movimientos": {
+        "columnas": [
+            {
+                "nombre": "fecha",
+                "tipo": "datetime",
+                "nullable": false,
+                "default": "CURRENT_TIMESTAMP"
+            },
+            {
+                "nombre": "id",
+                "tipo": "integer",
+                "nullable": false,
+                "default": null
+            },
+            {
+                "nombre": "monto",
+                "tipo": "numeric",
+                "nullable": false,
+                "default": null
+            },
+            {
+                "nombre": "plan_pago_cliente_id",
+                "tipo": "integer",
+                "nullable": false,
+                "default": null
+            },
+            {
+                "nombre": "referencia_id",
+                "tipo": "integer",
+                "nullable": true,
+                "default": null
+            },
+            {
+                "nombre": "referencia_tabla",
+                "tipo": "varchar",
+                "nullable": true,
+                "default": null
+            },
+            {
+                "nombre": "saldo_antes",
+                "tipo": "numeric",
+                "nullable": false,
+                "default": null
+            },
+            {
+                "nombre": "saldo_despues",
+                "tipo": "numeric",
+                "nullable": false,
+                "default": null
+            },
+            {
+                "nombre": "tipo",
+                "tipo": "varchar",
+                "nullable": false,
+                "default": null
+            },
+            {
+                "nombre": "usuario_id",
+                "tipo": "integer",
+                "nullable": true,
+                "default": null
+            }
+        ],
+        "indices": [
+            {
+                "nombre": "plan_pago_movimientos_plan_pago_cliente_id_index",
+                "columnas": [
+                    "plan_pago_cliente_id"
+                ],
+                "unico": false
+            },
+            {
+                "nombre": "primary",
+                "columnas": [
+                    "id"
+                ],
+                "unico": true
+            }
+        ],
+        "llaves_foraneas": [
+            {
+                "nombre": null,
+                "columnas": [
+                    "plan_pago_cliente_id"
+                ],
+                "tabla_foranea": "planes_pago_cliente",
+                "columnas_foraneas": [
+                    "id"
+                ],
+                "on_update": "no action",
+                "on_delete": "cascade"
+            },
+            {
+                "nombre": null,
+                "columnas": [
+                    "usuario_id"
+                ],
+                "tabla_foranea": "usuarios",
+                "columnas_foraneas": [
+                    "id"
+                ],
+                "on_update": "no action",
+                "on_delete": "restrict"
+            }
+        ]
+    },
     "planes_pago_cliente": {
         "columnas": [
             {
@@ -6580,6 +6954,12 @@
                 "tipo": "varchar",
                 "nullable": false,
                 "default": "'mensual'"
+            },
+            {
+                "nombre": "saldo_pendiente",
+                "tipo": "numeric",
+                "nullable": false,
+                "default": null
             },
             {
                 "nombre": "tasa_interes",

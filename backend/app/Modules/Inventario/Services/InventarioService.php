@@ -15,6 +15,7 @@ use App\Modules\Inventario\Models\ProductoVariante;
 use App\Modules\Inventario\Support\ImpuestoDeProducto;
 use App\Modules\Inventario\Support\UnidadDeVariante;
 use App\Modules\Nucleo\Exceptions\FotoIncompletaException;
+use App\Modules\Nucleo\Exceptions\ProyeccionNoActualizadaException;
 use App\Modules\Nucleo\Models\Sucursal;
 use App\Modules\Nucleo\Scopes\TenantScopeViaRelacion;
 use App\Modules\Nucleo\Support\Cantidad;
@@ -73,7 +74,7 @@ class InventarioService
                 $actualizacion['ultimo_costo'] = $costo->aCadena();
             }
         }
-        $stock->update($actualizacion);
+        $this->actualizarProyeccion($stock, $stockActual, $actualizacion);
 
         return Kardex::query()->withoutGlobalScope(TenantScopeViaRelacion::class)->create([
             'variante_id' => $varianteId,
@@ -83,9 +84,34 @@ class InventarioService
             'motivo' => $motivo,
             'referencia_tabla' => $referenciaTabla,
             'referencia_id' => $referenciaId,
-            'stock_resultante' => $stockResultante,
+            'stock_antes' => $stockActual,
+            'stock_despues' => $stockResultante,
             'usuario_id' => $usuarioId,
         ]);
+    }
+
+    /**
+     * DAT-05: el primer movimiento de una variante en una sucursal. La fila de stock acaba de
+     * nacer en cero (asegurarStock con escribirSaldoInicial=false); el saldo inicial la deja en
+     * la cantidad dada y, si trae costo, ese costo es el promedio.
+     */
+    public function registrarSaldoInicial(InventarioStock $stock, int|float $cantidad, string|int|float|null $costoUnitario, ?int $usuarioId): Kardex
+    {
+        $this->exigirTransaccion();
+        if ($cantidad < 0 || Cantidad::numero($cantidad) != $cantidad) {
+            throw new InvalidArgumentException('El saldo inicial no puede ser negativo y admite como máximo tres decimales.');
+        }
+
+        $stockActual = Cantidad::numero($stock->getAttribute('stock_actual'));
+        if ($cantidad > 0) {
+            $actualizacion = ['stock_actual' => Cantidad::sumar($stockActual, $cantidad)];
+            if ($costoUnitario !== null) {
+                $actualizacion['costo_promedio'] = Dinero::desde((string) $costoUnitario)->aCadena();
+            }
+            $this->actualizarProyeccion($stock, $stockActual, $actualizacion);
+        }
+
+        return $this->escribirSaldoInicial((int) $stock->getAttribute('variante_id'), (int) $stock->getAttribute('sucursal_id'), $stockActual, Cantidad::sumar($stockActual, $cantidad), $usuarioId);
     }
 
     /**
@@ -161,30 +187,81 @@ class InventarioService
         return $compra->load('detalles');
     }
 
-    /** Preparación compartida; el llamador bloquea la fila antes de leer su saldo. */
-    public function asegurarStock(int $varianteId, int $sucursalId): void
+    /**
+     * Preparación compartida; el llamador bloquea la fila antes de leer su saldo. Devuelve si la
+     * fila nació aquí. DAT-05: al nacer, su primer movimiento es saldo_inicial en cero, en la misma
+     * transacción, salvo que el llamador escriba el suyo con cantidad (registrarSaldoInicial).
+     */
+    public function asegurarStock(int $varianteId, int $sucursalId, ?int $usuarioId = null, bool $escribirSaldoInicial = true): bool
     {
         $this->exigirTransaccion();
         $this->verificarMismoTenant($varianteId, $sucursalId);
-        // Upsert atomico (INSERT ... ON DUPLICATE KEY UPDATE): garantiza
-        // que la fila exista sin la carrera de un SELECT-then-INSERT. Si
-        // ya existe, el UPDATE del duplicado solo toca updated_at -- nunca
-        // pisa stock_actual/stock_minimo de una fila existente. Si dos
-        // movimientos concurrentes llegan aqui para la misma variante+
-        // sucursal sin fila previa, MySQL serializa el segundo INSERT
-        // detras del primero (misma unique key) en vez de que ambos
-        // intenten insertar y uno truene por duplicado.
-        InventarioStock::sinTenant()->upsert(
-            [[
-                'sucursal_id' => $sucursalId,
-                'variante_id' => $varianteId,
-                'stock_actual' => 0,
-                'stock_minimo' => 0,
-                'updated_at' => now(),
-            ]],
-            ['sucursal_id', 'variante_id'],
-            ['updated_at'],
-        );
+        $fila = [
+            'sucursal_id' => $sucursalId,
+            'variante_id' => $varianteId,
+            'stock_actual' => 0,
+            'stock_minimo' => 0,
+            'updated_at' => now(),
+        ];
+
+        if (DB::connection()->getDriverName() === 'mysql') {
+            // Upsert atomico (INSERT ... ON DUPLICATE KEY UPDATE): garantiza que la fila exista sin
+            // la carrera de un SELECT-then-INSERT y nunca pisa stock_actual/stock_minimo de una
+            // fila existente (el duplicado solo toca updated_at). Toma un lock exclusivo exista o
+            // no la fila, asi que el SELECT FOR UPDATE posterior del llamador no tiene que
+            // escalarlo. No se usa INSERT IGNORE: sobre una fila existente toma un lock
+            // compartido, y dos movimientos que luego piden FOR UPDATE se interbloquean (1213).
+            // MySQL reporta 1 fila al insertar y 0 o 2 al actualizar el duplicado (sin
+            // CLIENT_FOUND_ROWS), asi que solo el movimiento que la inserto la cuenta como nueva y
+            // el saldo inicial se escribe una sola vez.
+            $creada = InventarioStock::sinTenant()->upsert([$fila], ['sucursal_id', 'variante_id'], ['updated_at']) === 1;
+        } else {
+            // SQLite (tests): no hay locks de fila ni concurrencia real, y su upsert cuenta 1 fila
+            // tambien al actualizar; INSERT OR IGNORE distingue la fila nueva.
+            $creada = InventarioStock::sinTenant()->insertOrIgnore([$fila]) === 1;
+        }
+
+        if ($creada && $escribirSaldoInicial) {
+            $this->escribirSaldoInicial($varianteId, $sucursalId, 0, 0, $usuarioId);
+        }
+
+        return $creada;
+    }
+
+    /**
+     * DAT-04: la proyección (inventario_stock) se actualiza en la misma transacción que el renglón
+     * y solo si su saldo sigue siendo el que se leyó. Cero filas afectadas = la operación falla.
+     *
+     * @param  array<string, mixed>  $actualizacion
+     */
+    private function actualizarProyeccion(InventarioStock $stock, int|float $saldoLeido, array $actualizacion): void
+    {
+        $filas = InventarioStock::query()->withoutGlobalScopes()
+            ->whereKey($stock->getKey())
+            ->where('stock_actual', Cantidad::cadena($saldoLeido))
+            ->update([...$actualizacion, 'updated_at' => now()]);
+
+        if ($filas !== 1) {
+            throw new ProyeccionNoActualizadaException('inventario_stock', (int) $stock->getKey());
+        }
+
+        $stock->forceFill($actualizacion)->syncOriginal();
+    }
+
+    private function escribirSaldoInicial(int $varianteId, int $sucursalId, int|float $saldoAntes, int|float $saldoDespues, ?int $usuarioId): Kardex
+    {
+        return Kardex::query()->withoutGlobalScope(TenantScopeViaRelacion::class)->create([
+            'variante_id' => $varianteId,
+            'sucursal_id' => $sucursalId,
+            'tipo' => 'entrada',
+            'cantidad' => Cantidad::restar($saldoDespues, $saldoAntes),
+            'motivo' => 'saldo_inicial',
+            'referencia_tabla' => null,
+            'referencia_id' => null,
+            'stock_antes' => $saldoAntes,
+            'stock_despues' => $saldoDespues,
+            'usuario_id' => $usuarioId,
+        ]);
     }
 
     private function exigirTransaccion(): void

@@ -5294,9 +5294,16 @@
                                                         "type": "string"
                                                     },
                                                     "usuario_nombre": {
-                                                        "type": "string"
+                                                        "type": [
+                                                            "string",
+                                                            "null"
+                                                        ]
                                                     },
-                                                    "stock_resultante": {
+                                                    "stock_antes": {
+                                                        "type": "string",
+                                                        "pattern": "^-?[0-9]+\\.[0-9]{3}$"
+                                                    },
+                                                    "stock_despues": {
                                                         "type": "string",
                                                         "pattern": "^-?[0-9]+\\.[0-9]{3}$"
                                                     },
@@ -5312,7 +5319,8 @@
                                                     "motivo",
                                                     "sucursal_nombre",
                                                     "usuario_nombre",
-                                                    "stock_resultante",
+                                                    "stock_antes",
+                                                    "stock_despues",
                                                     "fecha"
                                                 ]
                                             }

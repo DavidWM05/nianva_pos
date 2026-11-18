@@ -1581,7 +1581,7 @@ parameters:
 		-
 			message: '#^Access to an undefined property App\\Modules\\CuentasCobrar\\Models\\CuentaCobrar\:\:\$saldo_pendiente\.$#'
 			identifier: property.notFound
-			count: 3
+			count: 2
 			path: app/Modules/CuentasCobrar/Services/CuentasCobrarService.php
 
 		-
@@ -2803,12 +2803,6 @@ parameters:
 			path: app/Modules/Inventario/Http/Controllers/KardexController.php
 
 		-
-			message: '#^Access to an undefined property App\\Modules\\Inventario\\Models\\Kardex\:\:\$stock_resultante\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Modules/Inventario/Http/Controllers/KardexController.php
-
-		-
 			message: '#^Access to an undefined property App\\Modules\\Inventario\\Models\\Kardex\:\:\$tipo\.$#'
 			identifier: property.notFound
 			count: 1
@@ -3441,7 +3435,7 @@ parameters:
 		-
 			message: '#^Access to an undefined property App\\Modules\\NotasCredito\\Models\\NotaCredito\:\:\$saldo_disponible\.$#'
 			identifier: property.notFound
-			count: 4
+			count: 3
 			path: app/Modules/NotasCredito/Services/NotaCreditoService.php
 
 		-

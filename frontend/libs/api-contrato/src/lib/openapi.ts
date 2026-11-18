@@ -6616,8 +6616,9 @@ export interface operations {
                             cantidad: string;
                             motivo: string;
                             sucursal_nombre: string;
-                            usuario_nombre: string;
-                            stock_resultante: string;
+                            usuario_nombre: string | null;
+                            stock_antes: string;
+                            stock_despues: string;
                             /** Format: date-time */
                             fecha: string;
                         }[];
