@@ -28,8 +28,7 @@ import {
   ToastService,
 } from '@nianva/ui-shared';
 import { Subject, debounceTime } from 'rxjs';
-import { ProductoService } from '../../producto.service';
-import { Producto, ProductosPermisos } from '../../producto.types';
+import { Producto, ProductoService, ProductosPermisos } from '@nianva/domain-inventario';
 
 interface FilaProducto extends Producto {
   categoriaTexto: string;

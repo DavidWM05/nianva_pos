@@ -28,8 +28,7 @@ import { PageComponent } from '@nianva/ui-layout';
 import { forkJoin } from 'rxjs';
 import { DynamicFormComponent, DynamicFormField } from '@nianva/ui-shared';
 
-import { ProductoFormPayload, ProductoService } from '../producto.service';
-import { CatalogoSimple, Producto } from '../producto.types';
+import { CatalogoSimple, Producto, ProductoFormPayload, ProductoService } from '@nianva/domain-inventario';
 
 /** Límites del cuerpo de la petición, leídos del contrato (UI-11b). */
 const LIMITES = limitesDe('/productos', 'post');

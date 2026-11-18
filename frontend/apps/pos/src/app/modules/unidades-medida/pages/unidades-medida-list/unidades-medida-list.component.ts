@@ -13,8 +13,7 @@ import { ColumnaListado, TablaComponent } from '@nianva/ui-data';
 import { ConfirmDialogService, mensajeError } from '@nianva/ui-shared';
 import { ModalComponent } from '@nianva/ui-overlays';
 
-import { UnidadMedidaFormPayload, UnidadMedidaService } from '../../unidad-medida.service';
-import { TipoUnidadMedida, UnidadMedida } from '../../unidad-medida.types';
+import { TipoUnidadMedida, UnidadMedida, UnidadMedidaFormPayload, UnidadMedidaService } from '@nianva/domain-unidades-medida';
 
 const TIPOS: { label: string; value: TipoUnidadMedida }[] = [
   { label: 'Entero (sin decimales)', value: 'entero' },

@@ -1,0 +1,19 @@
+{
+  "name": "domain-unidades-medida",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/domain/unidades-medida/src",
+  "projectType": "library",
+  "tags": ["type:domain", "scope:unidades-medida"],
+  "targets": {
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    },
+    "test": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": ["tsc -p libs/domain/unidades-medida/tsconfig.json --noEmit"],
+        "cwd": "{workspaceRoot}"
+      }
+    }
+  }
+}

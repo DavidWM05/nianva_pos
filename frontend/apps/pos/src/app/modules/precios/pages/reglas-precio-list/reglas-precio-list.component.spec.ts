@@ -11,8 +11,7 @@ import {
   BUSCADOR_PRODUCTO,
   BUSCADOR_VARIANTE_DE_PRODUCTO,
 } from '../../../../core/buscadores-entidad.tokens';
-import { ReglaPrecioService } from '../../regla-precio.service';
-import { ReglaPrecio, ReglasPrecioPagina } from '../../regla-precio.types';
+import { ReglaPrecio, ReglaPrecioService, ReglasPrecioPagina } from '@nianva/domain-precios';
 import { ReglasPrecioListComponent } from './reglas-precio-list.component';
 
 describe('ReglasPrecioListComponent', () => {

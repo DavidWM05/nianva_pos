@@ -9,7 +9,7 @@ import {
 import { of, throwError } from 'rxjs';
 import { describe, expect, it, vi } from 'vitest';
 import { proveedoresDePantalla } from '../../testing/proveedores-pantalla';
-import { MetodoPagoService } from '../tpv/metodo-pago.service';
+import { MetodoPagoService } from '@nianva/domain-tpv';
 import { CuentaCobrarDetalleComponent } from '../cuentas-cobrar/pages/cuenta-cobrar-detalle/cuenta-cobrar-detalle.component';
 import { CuentaCobrarService } from '@nianva/domain-cuentas-cobrar';
 import { CuentaPagarDetalleComponent } from '../cuentas-pagar/pages/cuenta-pagar-detalle/cuenta-pagar-detalle.component';

@@ -2,8 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { BuscadorEntidad } from '@nianva/ui-shared';
 import { Observable, map } from 'rxjs';
 
-import { UnidadMedidaService } from './unidad-medida.service';
-import { UnidadMedida } from './unidad-medida.types';
+import { UnidadMedida, UnidadMedidaService } from '@nianva/domain-unidades-medida';
 
 /**
  * Adapta UnidadMedidaService (sin paginar, sin busqueda por texto en el

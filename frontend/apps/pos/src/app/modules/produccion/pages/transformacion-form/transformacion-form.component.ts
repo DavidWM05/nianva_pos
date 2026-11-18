@@ -21,7 +21,7 @@ import {
   BUSCADOR_PRODUCTO,
   BUSCADOR_VARIANTE_DE_PRODUCTO,
 } from '../../../../core/buscadores-entidad.tokens';
-import { TransformacionService } from '../../transformacion.service';
+import { TransformacionService } from '@nianva/domain-produccion';
 
 /**
  * Solo alta -- TransformacionResource no tiene show() propio, asi que tras

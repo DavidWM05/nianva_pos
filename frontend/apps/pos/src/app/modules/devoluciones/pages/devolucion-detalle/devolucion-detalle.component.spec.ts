@@ -19,8 +19,7 @@ if (typeof globalThis.ResizeObserver === 'undefined') {
 }
 /* eslint-enable @typescript-eslint/no-empty-function */
 
-import { DevolucionService } from '../../devolucion.service';
-import { Devolucion } from '../../devolucion.types';
+import { Devolucion, DevolucionService } from '@nianva/domain-devoluciones';
 import { DevolucionDetalleComponent } from './devolucion-detalle.component';
 
 describe('DevolucionDetalleComponent', () => {

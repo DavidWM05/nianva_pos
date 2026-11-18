@@ -6,8 +6,7 @@ import { ConfirmDialogService, ToastService } from '@nianva/ui-shared';
 import { of } from 'rxjs';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
-import { ClienteService } from '../../cliente.service';
-import { Cliente, ClientesPagina } from '../../cliente.types';
+import { Cliente, ClienteService, ClientesPagina } from '@nianva/domain-crm';
 import { ClientesListComponent } from './clientes-list.component';
 
 describe('ClientesListComponent', () => {

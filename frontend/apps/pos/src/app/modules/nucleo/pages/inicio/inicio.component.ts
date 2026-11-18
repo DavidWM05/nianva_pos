@@ -5,8 +5,7 @@ import { KpiComponent, SkeletonComponent } from '@nianva/ui-feedback';
 import { DineroPipe, FechaPipe } from '@nianva/ui-format';
 import { PageHeaderComponent, SectionComponent } from '@nianva/ui-layout';
 
-import { CajaActual } from '../../../tpv/caja.types';
-import { CajaService } from '../../../tpv/caja.service';
+import { CajaActual, CajaService } from '@nianva/domain-tpv';
 import { ApartadoPorVencer, InicioResumen, InicioService } from '@nianva/domain-nucleo';
 
 /**

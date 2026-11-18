@@ -3,7 +3,7 @@ import { Injectable, inject } from '@angular/core';
 import { BuscadorDeHijos, EntidadBuscable } from '@nianva/ui-shared';
 import { Observable, map } from 'rxjs';
 
-import { ProductoService } from './producto.service';
+import { ProductoService } from '@nianva/domain-inventario';
 
 /**
  * "Hijos" de un producto = sus variantes. La etiqueta es el `nombre` armado

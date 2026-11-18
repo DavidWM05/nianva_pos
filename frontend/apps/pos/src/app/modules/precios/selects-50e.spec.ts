@@ -12,9 +12,7 @@ import {
   BUSCADOR_VARIANTE_DE_PRODUCTO,
 } from '../../core/buscadores-entidad.tokens';
 import { proveedoresDePantalla } from '../../testing/proveedores-pantalla';
-import { ClienteService } from '../crm/cliente.service';
-import { CrmAvanzadoService } from '../crm/crm-avanzado.service';
-import { CampanaService } from '../crm/campana.service';
+import { CampanaService, ClienteService, CrmAvanzadoService } from '@nianva/domain-crm';
 import { CampanaFormComponent } from '../crm/pages/campana-form/campana-form.component';
 import { ClienteDetalleComponent } from '../crm/pages/cliente-detalle/cliente-detalle.component';
 import { ReglaPrecioFormComponent } from './regla-precio-form/regla-precio-form.component';

@@ -18,11 +18,7 @@ import {
 } from '@nianva/ui-shared';
 
 import { DepartamentoFormComponent } from '../../departamento-form/departamento-form.component';
-import {
-  DepartamentoFormPayload,
-  DepartamentoService,
-} from '../../departamento.service';
-import { Departamento } from '../../departamento.types';
+import { Departamento, DepartamentoFormPayload, DepartamentoService } from '@nianva/domain-inventario';
 
 /**
  * Vista de registro de Departamento -- General (formulario, `readonly`

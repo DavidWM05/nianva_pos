@@ -15,7 +15,7 @@ import { CategoriaFormComponent } from '../../categoria-form/categoria-form.comp
 import {
   CategoriaFormPayload,
   CategoriaService,
-} from '../../categoria.service';
+} from '@nianva/domain-inventario';
 
 /**
  * Vista dedicada, no modal (ver el reporte del punto 1 de Fase B):

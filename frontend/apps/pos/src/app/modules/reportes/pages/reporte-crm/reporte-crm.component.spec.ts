@@ -2,8 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { of } from 'rxjs';
 import { describe, expect, it, vi } from 'vitest';
 
-import { CrmAvanzadoService } from '../../../crm/crm-avanzado.service';
-import { ReporteCrm } from '../../../crm/crm-avanzado.types';
+import { CrmAvanzadoService, ReporteCrm } from '@nianva/domain-crm';
 import { ReporteCrmComponent } from './reporte-crm.component';
 
 describe('ReporteCrmComponent', () => {

@@ -15,6 +15,7 @@ class CrmInteraccionResource extends JsonResource
             'id' => $this->id,
             'cliente_id' => $this->cliente_id,
             'usuario' => $this->whenLoaded('usuario', fn () => ['id' => $this->usuario->id, 'nombre' => $this->usuario->nombre]),
+            /** @var 'llamada'|'email'|'whatsapp'|'nota'|'visita' */
             'tipo' => $this->tipo,
             'observacion' => $this->observacion,
             'fecha' => $this->fecha,

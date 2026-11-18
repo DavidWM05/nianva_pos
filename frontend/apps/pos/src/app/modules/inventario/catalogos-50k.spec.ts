@@ -12,8 +12,7 @@ import {
 import { of, Subject, throwError } from 'rxjs';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { proveedoresDePantalla } from '../../testing/proveedores-pantalla';
-import { CategoriaService } from './categoria.service';
-import { DepartamentoService } from './departamento.service';
+import { CategoriaService, DepartamentoService } from '@nianva/domain-inventario';
 import { CategoriasListComponent } from './pages/categorias-list/categorias-list.component';
 import { DepartamentosListComponent } from './pages/departamentos-list/departamentos-list.component';
 import { CategoriaCrearComponent } from './pages/categoria-crear/categoria-crear.component';

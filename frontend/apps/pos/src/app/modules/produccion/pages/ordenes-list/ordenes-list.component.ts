@@ -33,8 +33,7 @@ import {
   mensajeError,
 } from '@nianva/ui-shared';
 
-import { OrdenProduccionService, OrdenesPermisos } from '../../orden.service';
-import { OrdenProduccion } from '../../orden.types';
+import { OrdenesPermisos, OrdenProduccion, OrdenProduccionService } from '@nianva/domain-produccion';
 
 const PERMISOS_VACIOS: OrdenesPermisos = { crear: false };
 

@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnChanges, Out
 import { Validators } from '@angular/forms';
 import { DynamicFormComponent, DynamicFormField } from '@nianva/ui-shared';
 
-import { ConfiguracionSeguridad } from '../configuracion.types';
+import { ConfiguracionSeguridad } from '@nianva/domain-configuracion';
 
 const DIAS_MIN = 1;
 const DIAS_MAX = 90;

@@ -18,11 +18,7 @@ import {
 
 import { DataTableLazyEvent } from '@nianva/ui-shared';
 
-import {
-  TransformacionService,
-  TransformacionesPermisos,
-} from '../../transformacion.service';
-import { TransformacionProducto } from '../../transformacion.types';
+import { TransformacionesPermisos, TransformacionProducto, TransformacionService } from '@nianva/domain-produccion';
 
 const PERMISOS_VACIOS: TransformacionesPermisos = { crear: false };
 

@@ -13,8 +13,7 @@ import { FormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { AuditLogViewerComponent, RecordTabConfig, RecordTabsComponent, ToastService, mensajeError } from '@nianva/ui-shared';
 import { LineasPagoCambio, LineasPagoComponent } from '../../../tpv/lineas-pago/lineas-pago.component';
-import { ApartadoService } from '../../apartado.service';
-import { AbonoPagoPayload, Apartado, ApartadoDetallePermisos, ResultadoCancelacion } from '../../apartado.types';
+import { AbonoPagoPayload, Apartado, ApartadoDetallePermisos, ApartadoService, ResultadoCancelacion } from '@nianva/domain-apartados';
 
 
 const PERMISOS_VACIOS: ApartadoDetallePermisos = { abonar: false, cancelar: false };

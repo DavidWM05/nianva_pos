@@ -23,8 +23,7 @@ import { PageComponent, PageHeaderComponent } from '@nianva/ui-layout';
 import { ConfirmDialogService } from '@nianva/ui-feedback';
 import { CampoComponent } from '@nianva/ui-forms';
 
-import { ListaPrecioListadoService } from '../../lista-precio-listado.service';
-import { ListaPrecio } from '../../lista-precio.types';
+import { ListaPrecio, ListaPrecioListadoService } from '@nianva/domain-precios';
 
 /**
  * Listado de listas-precio (UI-09), creado con el generador ui-listado. El detalle se abre

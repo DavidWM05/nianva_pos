@@ -4,7 +4,7 @@ import { provideAnimationsAsync } from '@angular/platform-browser/animations/asy
 import { DynamicFormComponent } from '@nianva/ui-shared';
 import { describe, expect, it } from 'vitest';
 
-import { ConfiguracionSeguridad } from '../configuracion.types';
+import { ConfiguracionSeguridad } from '@nianva/domain-configuracion';
 import { ConfiguracionSeguridadFormComponent } from './configuracion-seguridad-form.component';
 
 // minutos_inactividad es obligatorio en el contrato (5-480): el formulario

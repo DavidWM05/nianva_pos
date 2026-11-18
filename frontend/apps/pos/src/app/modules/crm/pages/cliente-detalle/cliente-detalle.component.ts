@@ -43,15 +43,7 @@ import {
 } from '@nianva/ui-shared';
 
 import { ClienteFormComponent } from '../../cliente-form/cliente-form.component';
-import { ClienteFormPayload, ClienteService } from '../../cliente.service';
-import { Cliente, VentaResumen } from '../../cliente.types';
-import { CrmAvanzadoService } from '../../crm-avanzado.service';
-import {
-  CrmInteraccion,
-  LoyaltyResumen,
-  LoyaltyTransaccion,
-  TipoInteraccion,
-} from '../../crm-avanzado.types';
+import { Cliente, ClienteFormPayload, ClienteService, CrmAvanzadoService, CrmInteraccion, LoyaltyResumen, LoyaltyTransaccion, TipoInteraccion, VentaResumen } from '@nianva/domain-crm';
 
 const ICONO_POR_TIPO: Record<TipoInteraccion, string> = {
   llamada: '📞',

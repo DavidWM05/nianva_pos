@@ -27,6 +27,7 @@ class ConfiguracionTenantResource extends JsonResource
             'mostrar_telefono' => $this->mostrar_telefono,
             'mostrar_correo' => $this->mostrar_correo,
             'backup_auto' => $this->backup_auto,
+            /** @var 'diario'|'semanal'|'mensual' */
             'backup_frecuencia' => $this->backup_frecuencia,
             'backup_ultimo' => $this->backup_ultimo,
             'codigo_barras_automatico' => $this->codigo_barras_automatico,

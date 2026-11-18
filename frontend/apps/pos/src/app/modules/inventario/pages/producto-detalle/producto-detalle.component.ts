@@ -31,26 +31,10 @@ import {
   CompraFormComponent,
   CompraFormValue,
 } from '../../compra-form/compra-form.component';
-import {
-  CompraFormPayload,
-  CompraService,
-  ProveedorFormPayload,
-} from '../../compra.service';
-import type { Atributo } from '@nianva/domain-inventario';
-import { ConfiguracionService } from '../../../configuracion/configuracion.service';
+import { type Atributo, CompraFormPayload, CompraService, MovimientoKardex, Producto, ProductoFormPayload, ProductoService, ProductoVariante, ProveedorFormPayload, ProveedorSimple, VarianteFormPayload } from '@nianva/domain-inventario';
+import { ConfiguracionService } from '@nianva/domain-configuracion';
 import { KardexListComponent } from '../../kardex-list/kardex-list.component';
 import { ProductoFormComponent } from '../../producto-form/producto-form.component';
-import {
-  ProductoFormPayload,
-  ProductoService,
-  VarianteFormPayload,
-} from '../../producto.service';
-import {
-  MovimientoKardex,
-  Producto,
-  ProductoVariante,
-  ProveedorSimple,
-} from '../../producto.types';
 import { ProveedorFormComponent } from '../../proveedor-form/proveedor-form.component';
 import { VarianteFormComponent } from '../../variante-form/variante-form.component';
 import { VariantesListComponent } from '../../variantes-list/variantes-list.component';

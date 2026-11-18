@@ -6,8 +6,7 @@ import { proveedoresDePantalla } from '../../../../testing/proveedores-pantalla'
 import { of, throwError } from 'rxjs';
 import { describe, expect, it, vi } from 'vitest';
 
-import { UnidadMedidaService } from '../../unidad-medida.service';
-import { UnidadMedida } from '../../unidad-medida.types';
+import { UnidadMedida, UnidadMedidaService } from '@nianva/domain-unidades-medida';
 import { UnidadesMedidaListComponent } from './unidades-medida-list.component';
 
 describe('UnidadesMedidaListComponent', () => {

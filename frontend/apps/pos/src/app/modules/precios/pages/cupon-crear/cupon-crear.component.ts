@@ -12,7 +12,7 @@ import { PageComponent, PageHeaderComponent } from '@nianva/ui-layout';
 import { MatButton } from '@angular/material/button';
 
 import { CuponFormComponent } from '../../cupon-form/cupon-form.component';
-import { CuponFormPayload, CuponService } from '../../cupon.service';
+import { CuponFormPayload, CuponService } from '@nianva/domain-precios';
 
 /**
  * Vista dedicada, no modal (ver el reporte del punto 1): cupon es una

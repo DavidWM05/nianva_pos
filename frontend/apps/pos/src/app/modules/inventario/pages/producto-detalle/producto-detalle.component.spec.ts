@@ -6,10 +6,8 @@ import { AuditLogSource, DynamicFormComponent, ToastService } from '@nianva/ui-s
 import { of, throwError } from 'rxjs';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { CompraService } from '../../compra.service';
-import { ConfiguracionService } from '../../../configuracion/configuracion.service';
-import { ProductoService } from '../../producto.service';
-import { Producto } from '../../producto.types';
+import { CompraService, Producto, ProductoService } from '@nianva/domain-inventario';
+import { ConfiguracionService } from '@nianva/domain-configuracion';
 import { ProductoDetalleComponent } from './producto-detalle.component';
 
 // jsdom no implementa ResizeObserver -- lo usa PrimeNG's TabList detras de

@@ -10,8 +10,7 @@ import {
 } from '../../core/buscadores-entidad.tokens';
 import { InsumosListComponent } from './pages/insumos-list/insumos-list.component';
 import { OrdenesListComponent } from './pages/ordenes-list/ordenes-list.component';
-import { InsumoService } from './insumo.service';
-import { OrdenProduccionService } from './orden.service';
+import { InsumoService, OrdenProduccionService } from '@nianva/domain-produccion';
 
 afterEach(() => TestBed.resetTestingModule());
 for (const [nombre, componente, servicio] of [

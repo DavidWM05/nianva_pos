@@ -18,6 +18,7 @@ class CuponResource extends JsonResource
             'id' => $this->id,
             'codigo' => $this->codigo,
             'nombre' => $this->nombre,
+            /** @var 'porcentaje'|'monto_fijo' */
             'tipo' => $this->tipo,
             'porcentaje' => $this->resource->getAttribute('porcentaje') === null ? null : DecimalApi::tasa((string) $this->resource->getAttribute('porcentaje')),
             'monto' => $this->resource->getAttribute('monto') === null ? null : DecimalApi::dinero((string) $this->resource->getAttribute('monto')),

@@ -20,8 +20,7 @@ import {
 } from '@nianva/ui-layout';
 import { CantidadPipe } from '@nianva/ui-format';
 
-import { CampanaService } from '../../campana.service';
-import { Campana, SegmentoCampana } from '../../campana.types';
+import { Campana, CampanaService, SegmentoCampana } from '@nianva/domain-crm';
 
 const SEGMENTOS: { label: string; value: SegmentoCampana }[] = [
   { label: 'Todos los clientes', value: 'todos' },

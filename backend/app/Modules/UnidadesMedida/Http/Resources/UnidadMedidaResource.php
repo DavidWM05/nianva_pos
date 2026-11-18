@@ -17,6 +17,7 @@ class UnidadMedidaResource extends JsonResource
             'id' => $this->id,
             'nombre' => $this->nombre,
             'abreviatura' => $this->abreviatura,
+            /** @var 'entero'|'fraccionario' */
             'tipo' => $this->tipo,
             'activo' => $this->activo,
             'created_at' => $this->created_at,

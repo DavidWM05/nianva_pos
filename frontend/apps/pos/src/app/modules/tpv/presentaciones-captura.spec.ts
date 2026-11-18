@@ -5,7 +5,7 @@ import { of } from 'rxjs';
 import { describe, expect, it, vi } from 'vitest';
 import { proveedoresDePantalla } from '../../testing/proveedores-pantalla';
 import { LineasProductoComponent } from './lineas-producto/lineas-producto.component';
-import { VentaService } from './venta.service';
+import { VentaService } from '@nianva/domain-tpv';
 import { BUSCADOR_PRODUCTO, BUSCADOR_VARIANTE_DE_PRODUCTO } from '../../core/buscadores-entidad.tokens';
 describe('Captura de presentaciones',()=>{
   async function preparar(stock='20.000') {const cotizar=vi.fn(()=>of({items:[{variante_id:5,regla_precio_id:null,cantidad:'1.000',precio_unitario:'50.00',descuento_aplicado:'0.00',subtotal:'50.00'}],subtotal:'50.00'}));const resolverCodigo=vi.fn(()=>of({variante_id:5,producto_nombre:'Martillo',presentacion_id:9,presentacion_nombre:'Caja',factor:'6.000',stock_actual:stock}));const buscador={buscar:()=>of([]),obtener:()=>of({id:1,nombre:'Martillo'}),hijosDe:()=>of([])};

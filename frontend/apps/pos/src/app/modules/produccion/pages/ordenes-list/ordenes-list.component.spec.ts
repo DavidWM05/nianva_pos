@@ -8,8 +8,7 @@ import { of } from 'rxjs';
 import { describe, expect, it, vi } from 'vitest';
 
 import { BUSCADOR_RECETA } from '../../../../core/buscadores-entidad.tokens';
-import { OrdenProduccionService, OrdenesPagina } from '../../orden.service';
-import { OrdenProduccion } from '../../orden.types';
+import { OrdenesPagina, OrdenProduccion, OrdenProduccionService } from '@nianva/domain-produccion';
 import { OrdenesListComponent } from './ordenes-list.component';
 
 describe('OrdenesListComponent', () => {

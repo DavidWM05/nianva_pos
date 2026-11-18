@@ -5,8 +5,7 @@ import { Router, provideRouter } from '@angular/router';
 import { of } from 'rxjs';
 import { describe, expect, it, vi } from 'vitest';
 
-import { CotizacionesPagina, CotizacionService } from '../../cotizacion.service';
-import { Cotizacion } from '../../cotizacion.types';
+import { Cotizacion, CotizacionesPagina, CotizacionService } from '@nianva/domain-cotizaciones';
 import { CotizacionesListComponent } from './cotizaciones-list.component';
 
 describe('CotizacionesListComponent', () => {

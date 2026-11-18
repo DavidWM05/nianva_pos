@@ -5,7 +5,7 @@ import { expect, it, vi, afterEach } from 'vitest';
 import { ToastService } from '@nianva/ui-shared';
 import { proveedoresDePantalla } from '../../../../testing/proveedores-pantalla';
 import { BUSCADOR_RECETA } from '../../../../core/buscadores-entidad.tokens';
-import { OrdenProduccionService } from '../../orden.service';
+import { OrdenProduccionService } from '@nianva/domain-produccion';
 import { OrdenFormComponent } from './orden-form.component';
 
 afterEach(() => TestBed.resetTestingModule());

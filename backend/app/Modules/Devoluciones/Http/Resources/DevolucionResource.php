@@ -24,6 +24,7 @@ class DevolucionResource extends JsonResource
         return [
             'id' => $this->id,
             'fecha' => $this->fecha,
+            /** @var 'devolucion'|'cambio' */
             'tipo' => $this->tipo,
             'venta' => $this->whenLoaded(
                 'venta',
@@ -37,10 +38,12 @@ class DevolucionResource extends JsonResource
             'monto_cambio' => DecimalApi::dinero($this->monto_cambio),
             'diferencia' => DecimalApi::dinero($this->diferencia),
             'motivo' => $this->motivo,
+            /** @var 'efectivo'|'nota_credito' */
             'tipo_reembolso' => $this->tipo_reembolso,
             'nota_credito_id' => $this->nota_credito_id,
             'items' => $this->whenLoaded('items', fn () => $this->items->map(fn ($item) => [
                 'id' => $item->id,
+                /** @var 'devuelto'|'nuevo' */
                 'tipo' => $item->tipo,
                 'variante_id' => $item->variante_id,
                 'variante' => $item->variante ? [

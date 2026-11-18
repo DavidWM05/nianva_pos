@@ -6,8 +6,7 @@ import { CampoComponent, SelectFiltroComponent, SelectFiltroOpcion } from '@nian
 import { CantidadPipe, DineroPipe } from '@nianva/ui-format';
 
 import { SucursalService, SucursalSimple } from '@nianva/domain-administracion';
-import { VentaService } from '../../../tpv/venta.service';
-import { ReporteVentas } from '../../../tpv/venta.types';
+import { ReporteVentas, VentaService } from '@nianva/domain-tpv';
 
 /** Reporte de solo lectura, con filtros de fecha/sucursal (ver VentaService.reporte()). */
 @Component({

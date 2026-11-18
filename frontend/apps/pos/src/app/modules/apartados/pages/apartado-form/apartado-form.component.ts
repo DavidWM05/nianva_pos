@@ -12,8 +12,7 @@ import { EntidadSelectorComponent, ToastService } from '@nianva/ui-shared';
 import { BUSCADOR_CLIENTE } from '../../../../core/buscadores-entidad.tokens';
 import { ErrorNegocioTpv } from '../../../tpv/tpv-error.types';
 import { LineasProductoCambio, LineasProductoComponent } from '../../../tpv/lineas-producto/lineas-producto.component';
-import { ApartadoService } from '../../apartado.service';
-import { ApartadoItemPayload } from '../../apartado.types';
+import { ApartadoItemPayload, ApartadoService } from '@nianva/domain-apartados';
 
 
 /**

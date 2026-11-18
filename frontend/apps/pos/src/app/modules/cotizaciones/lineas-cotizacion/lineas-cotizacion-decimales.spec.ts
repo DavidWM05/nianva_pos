@@ -3,7 +3,7 @@ import { of } from 'rxjs';
 import { describe, expect, it, vi } from 'vitest';
 import { proveedoresDePantalla } from '../../../testing/proveedores-pantalla';
 import { BUSCADOR_PRODUCTO, BUSCADOR_VARIANTE_DE_PRODUCTO } from '../../../core/buscadores-entidad.tokens';
-import { VentaService } from '../../tpv/venta.service';
+import { VentaService } from '@nianva/domain-tpv';
 import { LineasCotizacionComponent } from './lineas-cotizacion.component';
 
 describe('Decimales de cotización', () => {

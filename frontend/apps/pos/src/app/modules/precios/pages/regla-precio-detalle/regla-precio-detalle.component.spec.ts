@@ -19,8 +19,7 @@ if (typeof globalThis.ResizeObserver === 'undefined') {
 /* eslint-enable @typescript-eslint/no-empty-function */
 
 import { BUSCADOR_CATEGORIA, BUSCADOR_PRODUCTO, BUSCADOR_VARIANTE_DE_PRODUCTO } from '../../../../core/buscadores-entidad.tokens';
-import { ReglaPrecioService } from '../../regla-precio.service';
-import { ReglaPrecio } from '../../regla-precio.types';
+import { ReglaPrecio, ReglaPrecioService } from '@nianva/domain-precios';
 import { ReglaPrecioDetalleComponent } from './regla-precio-detalle.component';
 
 describe('ReglaPrecioDetalleComponent', () => {

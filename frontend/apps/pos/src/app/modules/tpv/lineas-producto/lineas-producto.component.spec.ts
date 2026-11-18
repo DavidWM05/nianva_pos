@@ -5,7 +5,7 @@ import { of } from 'rxjs';
 import { describe, expect, it, vi } from 'vitest';
 
 import { BUSCADOR_PRODUCTO, BUSCADOR_VARIANTE_DE_PRODUCTO } from '../../../core/buscadores-entidad.tokens';
-import { VentaService } from '../venta.service';
+import { VentaService } from '@nianva/domain-tpv';
 import { LineasProductoCambio, LineasProductoComponent } from './lineas-producto.component';
 
 describe('LineasProductoComponent', () => {

@@ -15,6 +15,7 @@ class CrmCampanaResource extends JsonResource
             'id' => $this->id,
             'usuario' => $this->whenLoaded('usuario', fn () => ['id' => $this->usuario->id, 'nombre' => $this->usuario->nombre]),
             'asunto' => $this->asunto,
+            /** @var 'todos'|'nuevo'|'frecuente'|'vip'|'inactivo'|null */
             'segmento' => $this->segmento,
             'destinatarios' => $this->destinatarios,
             'enviado_en' => $this->enviado_en,

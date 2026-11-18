@@ -2,8 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { BuscadorEntidad } from '@nianva/ui-shared';
 import { Observable, map } from 'rxjs';
 
-import { ProductoService } from './producto.service';
-import { Producto } from './producto.types';
+import { Producto, ProductoService } from '@nianva/domain-inventario';
 
 /**
  * Adapta ProductoService (paginado, con `evento`/`busqueda` propios de

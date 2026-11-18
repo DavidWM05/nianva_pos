@@ -27,8 +27,7 @@ import {
 import { DataTableLazyEvent } from '@nianva/ui-shared';
 import { Subject, debounceTime } from 'rxjs';
 
-import { CuponService } from '../../cupon.service';
-import { Cupon, CuponesPermisos } from '../../cupon.types';
+import { Cupon, CuponesPermisos, CuponService } from '@nianva/domain-precios';
 
 interface Fila extends Cupon {
   tipoTexto: string;

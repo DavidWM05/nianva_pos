@@ -10,7 +10,7 @@ import { describe, expect, it, vi } from 'vitest';
 import { AuthStateService } from '../../../../auth/auth-state.service';
 import { Usuario } from '../../../../auth/usuario.types';
 import { BUSCADOR_CLIENTE, BUSCADOR_PRODUCTO, BUSCADOR_VARIANTE_DE_PRODUCTO } from '../../../../core/buscadores-entidad.tokens';
-import { VentaService } from '../../../tpv/venta.service';
+import { VentaService } from '@nianva/domain-tpv';
 import { PedidoService } from '../../pedido.service';
 import { Pedido } from '../../pedido.types';
 import { PedidoFormComponent } from './pedido-form.component';

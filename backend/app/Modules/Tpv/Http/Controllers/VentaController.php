@@ -50,11 +50,21 @@ class VentaController extends Controller
             ->limit(50)
             ->get(['id', 'fecha', 'total', 'estado', 'es_venta_sombra']);
 
+        // Las mismas columnas del get(), mapeadas una por una: así el contrato publica esas cinco
+        // y no la venta completa.
+        $filas = [];
         foreach ($ventas as $venta) {
-            $venta->setAttribute('total', DecimalApi::dinero($venta->getAttribute('total')));
+            $filas[] = [
+                'id' => (int) $venta->getKey(),
+                'fecha' => $venta->getAttribute('fecha'),
+                'total' => DecimalApi::dinero($venta->getAttribute('total')),
+                /** @var 'completada'|'anulada' */
+                'estado' => $venta->getAttribute('estado'),
+                'es_venta_sombra' => (bool) $venta->getAttribute('es_venta_sombra'),
+            ];
         }
 
-        return response()->json(['data' => $ventas]);
+        return response()->json(['data' => $filas]);
     }
 
     public function index(Request $request)

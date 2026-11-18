@@ -2,8 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { BuscadorEntidad } from '@nianva/ui-shared';
 import { Observable, map } from 'rxjs';
 
-import { ClienteService } from './cliente.service';
-import { Cliente } from './cliente.types';
+import { Cliente, ClienteService } from '@nianva/domain-crm';
 
 /**
  * Adapta ClienteService (paginado, con `evento`/`busqueda` propios de

@@ -5,8 +5,7 @@ import { provideRouter } from '@angular/router';
 import { of } from 'rxjs';
 import { describe, expect, it, vi } from 'vitest';
 
-import { Devolucion, DevolucionesPagina, DevolucionesPermisos } from '../../devolucion.types';
-import { DevolucionService } from '../../devolucion.service';
+import { Devolucion, DevolucionesPagina, DevolucionesPermisos, DevolucionService } from '@nianva/domain-devoluciones';
 import { DevolucionesListComponent } from './devoluciones-list.component';
 
 describe('DevolucionesListComponent', () => {

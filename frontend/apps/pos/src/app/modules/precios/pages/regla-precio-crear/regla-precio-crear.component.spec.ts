@@ -7,7 +7,7 @@ import { of, throwError } from 'rxjs';
 import { describe, expect, it, vi } from 'vitest';
 
 import { BUSCADOR_CATEGORIA, BUSCADOR_PRODUCTO, BUSCADOR_VARIANTE_DE_PRODUCTO } from '../../../../core/buscadores-entidad.tokens';
-import { ReglaPrecioService } from '../../regla-precio.service';
+import { ReglaPrecioService } from '@nianva/domain-precios';
 import { ReglaPrecioCrearComponent } from './regla-precio-crear.component';
 
 describe('ReglaPrecioCrearComponent', () => {

@@ -4,8 +4,7 @@ import { of } from 'rxjs';
 import { describe, expect, it, vi } from 'vitest';
 
 import { SucursalService } from '@nianva/domain-administracion';
-import { VentaService } from '../../../tpv/venta.service';
-import { ReporteVentas } from '../../../tpv/venta.types';
+import { ReporteVentas, VentaService } from '@nianva/domain-tpv';
 import { ReporteVentasComponent } from './reporte-ventas.component';
 
 describe('ReporteVentasComponent', () => {

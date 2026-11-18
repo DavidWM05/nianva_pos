@@ -24,8 +24,7 @@ import { FormsModule } from '@angular/forms';
 import { DataTableLazyEvent } from '@nianva/ui-shared';
 
 import { BUSCADOR_UNIDAD_MEDIDA } from '../../../../core/buscadores-entidad.tokens';
-import { InsumoService, InsumosPermisos } from '../../insumo.service';
-import { Insumo } from '../../insumo.types';
+import { Insumo, InsumoService, InsumosPermisos } from '@nianva/domain-produccion';
 
 const PERMISOS_VACIOS: InsumosPermisos = { crear: false };
 

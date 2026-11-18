@@ -7,13 +7,9 @@ import { describe, expect, it, vi } from 'vitest';
 
 import { BUSCADOR_CLIENTE, BUSCADOR_PRODUCTO, BUSCADOR_VARIANTE_DE_PRODUCTO } from '../../../../core/buscadores-entidad.tokens';
 import { NotaCredito, NotaCreditoService } from '@nianva/domain-notas-credito';
-import { CajaService } from '../../caja.service';
-import { CajaActual } from '../../caja.types';
-import { CuponValidacionService } from '../../cupon-validacion.service';
+import { CajaActual, CajaService, CuponValidacionService, MetodoPagoService, VentaService } from '@nianva/domain-tpv';
 import { LineasPagoComponent } from '../../lineas-pago/lineas-pago.component';
 import { LineasProductoComponent } from '../../lineas-producto/lineas-producto.component';
-import { MetodoPagoService } from '../../metodo-pago.service';
-import { VentaService } from '../../venta.service';
 import { VentaComponent } from './venta.component';
 
 describe('VentaComponent', () => {

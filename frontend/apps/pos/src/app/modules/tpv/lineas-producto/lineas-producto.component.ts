@@ -24,8 +24,7 @@ import {
   BUSCADOR_PRODUCTO,
   BUSCADOR_VARIANTE_DE_PRODUCTO,
 } from '../../../core/buscadores-entidad.tokens';
-import { VentaItemPayload } from '../venta.types';
-import { VentaService } from '../venta.service';
+import { VentaItemPayload, VentaService } from '@nianva/domain-tpv';
 
 interface LineaCarrito {
   presentacion_id?: number;

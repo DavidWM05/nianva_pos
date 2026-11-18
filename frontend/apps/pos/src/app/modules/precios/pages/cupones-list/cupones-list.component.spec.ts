@@ -6,8 +6,7 @@ import { AuditLogSource, ConfirmDialogService, ToastService } from '@nianva/ui-s
 import { of } from 'rxjs';
 import { describe, expect, it, vi } from 'vitest';
 
-import { CuponService } from '../../cupon.service';
-import { Cupon, CuponesPagina } from '../../cupon.types';
+import { Cupon, CuponesPagina, CuponService } from '@nianva/domain-precios';
 import { CuponesListComponent } from './cupones-list.component';
 
 describe('CuponesListComponent', () => {

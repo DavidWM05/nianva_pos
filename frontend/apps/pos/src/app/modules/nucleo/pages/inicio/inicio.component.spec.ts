@@ -3,8 +3,7 @@ import { provideRouter } from '@angular/router';
 import { of } from 'rxjs';
 import { describe, expect, it, vi } from 'vitest';
 
-import { CajaActual } from '../../../tpv/caja.types';
-import { CajaService } from '../../../tpv/caja.service';
+import { CajaActual, CajaService } from '@nianva/domain-tpv';
 import { InicioResumen, InicioService } from '@nianva/domain-nucleo';
 import { proveedoresDePantalla } from '../../../../testing/proveedores-pantalla';
 import { InicioComponent } from './inicio.component';

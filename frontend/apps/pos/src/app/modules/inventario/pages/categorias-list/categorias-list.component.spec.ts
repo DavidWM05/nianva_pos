@@ -6,8 +6,7 @@ import { ConfirmDialogService, ToastService } from '@nianva/ui-shared';
 import { of } from 'rxjs';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
-import { CategoriaService } from '../../categoria.service';
-import { Categoria, CategoriasPagina } from '../../categoria.types';
+import { Categoria, CategoriaService, CategoriasPagina } from '@nianva/domain-inventario';
 import { CategoriasListComponent } from './categorias-list.component';
 
 describe('CategoriasListComponent', () => {

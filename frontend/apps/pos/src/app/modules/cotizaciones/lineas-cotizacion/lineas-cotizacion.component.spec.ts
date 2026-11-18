@@ -5,8 +5,8 @@ import { of, throwError } from 'rxjs';
 import { describe, expect, it, vi } from 'vitest';
 
 import { BUSCADOR_PRODUCTO, BUSCADOR_VARIANTE_DE_PRODUCTO } from '../../../core/buscadores-entidad.tokens';
-import { VentaService } from '../../tpv/venta.service';
-import { CotizacionDetalle } from '../cotizacion.types';
+import { VentaService } from '@nianva/domain-tpv';
+import { CotizacionDetalle } from '@nianva/domain-cotizaciones';
 import { LineasCotizacionCambio, LineasCotizacionComponent } from './lineas-cotizacion.component';
 
 describe('LineasCotizacionComponent', () => {

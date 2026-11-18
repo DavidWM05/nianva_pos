@@ -16,7 +16,7 @@ import {
   ConfiguracionTenant,
   ConfiguracionTenantFormPayload,
   FrecuenciaBackup,
-} from '../configuracion.types';
+} from '@nianva/domain-configuracion';
 
 /** Límites del cuerpo de la petición, leídos del contrato (UI-11b). */
 const LIMITES = limitesDe('/configuracion', 'put');

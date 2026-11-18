@@ -10,8 +10,7 @@ import {
 import { limitesDe } from '@nianva/api-contrato';
 import { DynamicFormComponent, DynamicFormField } from '@nianva/ui-shared';
 
-import { CuponFormPayload } from '../cupon.service';
-import { Cupon } from '../cupon.types';
+import { Cupon, CuponFormPayload } from '@nianva/domain-precios';
 import { numeroONulo } from '../numero-o-nulo';
 
 /** Límites del cuerpo de la petición, leídos del contrato (UI-11b). */

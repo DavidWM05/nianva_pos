@@ -6,8 +6,7 @@ import { ToastService } from '@nianva/ui-shared';
 import { of, throwError } from 'rxjs';
 import { describe, expect, it, vi } from 'vitest';
 
-import { Venta, VentasPagina, VentasPermisos } from '../../venta.types';
-import { VentaService } from '../../venta.service';
+import { Venta, VentaService, VentasPagina, VentasPermisos } from '@nianva/domain-tpv';
 import { VentasListComponent } from './ventas-list.component';
 
 describe('VentasListComponent', () => {

@@ -2,7 +2,7 @@ import { proveedoresDePantalla } from '../../../testing/proveedores-pantalla';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { beforeEach, describe, expect, it } from 'vitest';
 
-import { MovimientoKardex } from '../producto.types';
+import { MovimientoKardex } from '@nianva/domain-inventario';
 import { KardexListComponent } from './kardex-list.component';
 
 describe('KardexListComponent', () => {

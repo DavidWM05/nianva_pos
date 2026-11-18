@@ -2831,7 +2831,62 @@
                                                 "historial": {
                                                     "type": "array",
                                                     "items": {
-                                                        "$ref": "#/components/schemas/LoyaltyTransaccion"
+                                                        "type": "object",
+                                                        "properties": {
+                                                            "id": {
+                                                                "type": "integer"
+                                                            },
+                                                            "tenant_id": {
+                                                                "type": "integer"
+                                                            },
+                                                            "cliente_id": {
+                                                                "type": "integer"
+                                                            },
+                                                            "tipo": {
+                                                                "type": "string",
+                                                                "enum": [
+                                                                    "ganados",
+                                                                    "canjeados",
+                                                                    "vencidos",
+                                                                    "ajuste"
+                                                                ]
+                                                            },
+                                                            "puntos": {
+                                                                "type": "integer"
+                                                            },
+                                                            "referencia_tabla": {
+                                                                "type": [
+                                                                    "string",
+                                                                    "null"
+                                                                ]
+                                                            },
+                                                            "referencia_id": {
+                                                                "type": [
+                                                                    "integer",
+                                                                    "null"
+                                                                ]
+                                                            },
+                                                            "expira_en": {
+                                                                "type": [
+                                                                    "string",
+                                                                    "null"
+                                                                ]
+                                                            },
+                                                            "created_at": {
+                                                                "type": "string"
+                                                            }
+                                                        },
+                                                        "required": [
+                                                            "id",
+                                                            "tenant_id",
+                                                            "cliente_id",
+                                                            "tipo",
+                                                            "puntos",
+                                                            "referencia_tabla",
+                                                            "referencia_id",
+                                                            "expira_en",
+                                                            "created_at"
+                                                        ]
                                                     }
                                                 }
                                             },
@@ -2899,7 +2954,62 @@
                                             "const": "Puntos ajustados correctamente."
                                         },
                                         "data": {
-                                            "$ref": "#/components/schemas/LoyaltyTransaccion"
+                                            "type": "object",
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer"
+                                                },
+                                                "tenant_id": {
+                                                    "type": "integer"
+                                                },
+                                                "cliente_id": {
+                                                    "type": "integer"
+                                                },
+                                                "tipo": {
+                                                    "type": "string",
+                                                    "enum": [
+                                                        "ganados",
+                                                        "canjeados",
+                                                        "vencidos",
+                                                        "ajuste"
+                                                    ]
+                                                },
+                                                "puntos": {
+                                                    "type": "integer"
+                                                },
+                                                "referencia_tabla": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "referencia_id": {
+                                                    "type": [
+                                                        "integer",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "expira_en": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "created_at": {
+                                                    "type": "string"
+                                                }
+                                            },
+                                            "required": [
+                                                "id",
+                                                "tenant_id",
+                                                "cliente_id",
+                                                "tipo",
+                                                "puntos",
+                                                "referencia_tabla",
+                                                "referencia_id",
+                                                "expira_en",
+                                                "created_at"
+                                            ]
                                         }
                                     },
                                     "required": [
@@ -2987,20 +3097,16 @@
                                                     "type": "object",
                                                     "properties": {
                                                         "nuevo": {
-                                                            "type": "integer",
-                                                            "const": 0
+                                                            "type": "integer"
                                                         },
                                                         "frecuente": {
-                                                            "type": "integer",
-                                                            "const": 0
+                                                            "type": "integer"
                                                         },
                                                         "vip": {
-                                                            "type": "integer",
-                                                            "const": 0
+                                                            "type": "integer"
                                                         },
                                                         "inactivo": {
-                                                            "type": "integer",
-                                                            "const": 0
+                                                            "type": "integer"
                                                         }
                                                     },
                                                     "required": [
@@ -3011,8 +3117,10 @@
                                                     ]
                                                 },
                                                 "interacciones_por_tipo": {
-                                                    "type": "array",
-                                                    "items": {}
+                                                    "type": "object",
+                                                    "additionalProperties": {
+                                                        "type": "integer"
+                                                    }
                                                 },
                                                 "loyalty": {
                                                     "type": "object",
@@ -3040,7 +3148,42 @@
                                                 "campanas_recientes": {
                                                     "type": "array",
                                                     "items": {
-                                                        "$ref": "#/components/schemas/CrmCampana"
+                                                        "type": "object",
+                                                        "properties": {
+                                                            "id": {
+                                                                "type": "integer"
+                                                            },
+                                                            "asunto": {
+                                                                "type": "string"
+                                                            },
+                                                            "segmento": {
+                                                                "type": [
+                                                                    "string",
+                                                                    "null"
+                                                                ],
+                                                                "enum": [
+                                                                    "todos",
+                                                                    "nuevo",
+                                                                    "frecuente",
+                                                                    "vip",
+                                                                    "inactivo",
+                                                                    null
+                                                                ]
+                                                            },
+                                                            "destinatarios": {
+                                                                "type": "integer"
+                                                            },
+                                                            "enviado_en": {
+                                                                "type": "string"
+                                                            }
+                                                        },
+                                                        "required": [
+                                                            "id",
+                                                            "asunto",
+                                                            "segmento",
+                                                            "destinatarios",
+                                                            "enviado_en"
+                                                        ]
                                                     }
                                                 }
                                             },
@@ -4123,7 +4266,11 @@
                                                             "type": "string"
                                                         },
                                                         "tipo": {
-                                                            "type": "string"
+                                                            "type": "string",
+                                                            "enum": [
+                                                                "porcentaje",
+                                                                "monto_fijo"
+                                                            ]
                                                         },
                                                         "porcentaje": {
                                                             "type": [
@@ -5281,14 +5428,27 @@
                                                         "type": "integer"
                                                     },
                                                     "tipo": {
-                                                        "type": "string"
+                                                        "type": "string",
+                                                        "enum": [
+                                                            "entrada",
+                                                            "salida"
+                                                        ]
                                                     },
                                                     "cantidad": {
                                                         "type": "string",
                                                         "pattern": "^-?[0-9]+\\.[0-9]{3}$"
                                                     },
                                                     "motivo": {
-                                                        "type": "string"
+                                                        "type": "string",
+                                                        "enum": [
+                                                            "saldo_inicial",
+                                                            "venta",
+                                                            "compra",
+                                                            "devolucion",
+                                                            "merma",
+                                                            "ajuste",
+                                                            "apartado"
+                                                        ]
                                                     },
                                                     "sucursal_nombre": {
                                                         "type": "string"
@@ -6112,7 +6272,30 @@
                                                 "data": {
                                                     "type": "array",
                                                     "items": {
-                                                        "$ref": "#/components/schemas/MetodoPago"
+                                                        "type": "object",
+                                                        "properties": {
+                                                            "id": {
+                                                                "type": "integer"
+                                                            },
+                                                            "nombre": {
+                                                                "type": "string"
+                                                            },
+                                                            "tipo": {
+                                                                "type": "string",
+                                                                "enum": [
+                                                                    "efectivo",
+                                                                    "tarjeta",
+                                                                    "transferencia",
+                                                                    "digital",
+                                                                    "otro"
+                                                                ]
+                                                            }
+                                                        },
+                                                        "required": [
+                                                            "id",
+                                                            "nombre",
+                                                            "tipo"
+                                                        ]
                                                     }
                                                 }
                                             },
@@ -10816,7 +10999,36 @@
                                         "data": {
                                             "type": "array",
                                             "items": {
-                                                "$ref": "#/components/schemas/Venta"
+                                                "type": "object",
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer"
+                                                    },
+                                                    "fecha": {
+                                                        "type": "string"
+                                                    },
+                                                    "total": {
+                                                        "type": "string",
+                                                        "pattern": "^-?[0-9]+\\.[0-9]{2}$"
+                                                    },
+                                                    "estado": {
+                                                        "type": "string",
+                                                        "enum": [
+                                                            "completada",
+                                                            "anulada"
+                                                        ]
+                                                    },
+                                                    "es_venta_sombra": {
+                                                        "type": "boolean"
+                                                    }
+                                                },
+                                                "required": [
+                                                    "id",
+                                                    "fecha",
+                                                    "total",
+                                                    "estado",
+                                                    "es_venta_sombra"
+                                                ]
                                             }
                                         }
                                     },
@@ -12464,7 +12676,12 @@
                         "type": "boolean"
                     },
                     "backup_frecuencia": {
-                        "type": "string"
+                        "type": "string",
+                        "enum": [
+                            "diario",
+                            "semanal",
+                            "mensual"
+                        ]
                     },
                     "backup_ultimo": {
                         "type": [
@@ -13743,6 +13960,14 @@
                         "type": [
                             "string",
                             "null"
+                        ],
+                        "enum": [
+                            "todos",
+                            "nuevo",
+                            "frecuente",
+                            "vip",
+                            "inactivo",
+                            null
                         ]
                     },
                     "destinatarios": {
@@ -13795,7 +14020,14 @@
                         ]
                     },
                     "tipo": {
-                        "type": "string"
+                        "type": "string",
+                        "enum": [
+                            "llamada",
+                            "email",
+                            "whatsapp",
+                            "nota",
+                            "visita"
+                        ]
                     },
                     "observacion": {
                         "type": "string"
@@ -13969,7 +14201,11 @@
                         "type": "string"
                     },
                     "tipo": {
-                        "type": "string"
+                        "type": "string",
+                        "enum": [
+                            "porcentaje",
+                            "monto_fijo"
+                        ]
                     },
                     "porcentaje": {
                         "type": [
@@ -14104,7 +14340,11 @@
                         "format": "date-time"
                     },
                     "tipo": {
-                        "type": "string"
+                        "type": "string",
+                        "enum": [
+                            "devolucion",
+                            "cambio"
+                        ]
                     },
                     "venta": {
                         "type": [
@@ -14149,7 +14389,11 @@
                         ]
                     },
                     "tipo_reembolso": {
-                        "type": "string"
+                        "type": "string",
+                        "enum": [
+                            "efectivo",
+                            "nota_credito"
+                        ]
                     },
                     "nota_credito_id": {
                         "type": [
@@ -14166,7 +14410,11 @@
                                     "type": "integer"
                                 },
                                 "tipo": {
-                                    "type": "string"
+                                    "type": "string",
+                                    "enum": [
+                                        "devuelto",
+                                        "nuevo"
+                                    ]
                                 },
                                 "variante_id": {
                                     "type": "integer"
@@ -15301,7 +15549,13 @@
                         ]
                     },
                     "tipo": {
-                        "type": "string"
+                        "type": "string",
+                        "enum": [
+                            "saas",
+                            "pago_unico",
+                            "anual",
+                            "demo"
+                        ]
                     },
                     "fecha_expiracion": {
                         "type": [
@@ -15471,41 +15725,6 @@
                     "created_at"
                 ],
                 "title": "LoyaltyTransaccion"
-            },
-            "MetodoPago": {
-                "type": "object",
-                "properties": {
-                    "id": {
-                        "type": "integer"
-                    },
-                    "tenant_id": {
-                        "type": [
-                            "integer",
-                            "null"
-                        ]
-                    },
-                    "nombre": {
-                        "type": "string"
-                    },
-                    "tipo": {
-                        "type": "string"
-                    },
-                    "incluir_en_financiero": {
-                        "type": "boolean"
-                    },
-                    "activo": {
-                        "type": "boolean"
-                    }
-                },
-                "required": [
-                    "id",
-                    "tenant_id",
-                    "nombre",
-                    "tipo",
-                    "incluir_en_financiero",
-                    "activo"
-                ],
-                "title": "MetodoPago"
             },
             "MetodoPagoResource": {
                 "type": "object",
@@ -17035,7 +17254,13 @@
                         "type": "boolean"
                     },
                     "tipo": {
-                        "type": "string"
+                        "type": "string",
+                        "enum": [
+                            "porcentaje",
+                            "monto_fijo",
+                            "nxm",
+                            "bundle"
+                        ]
                     },
                     "porcentaje": {
                         "type": [
@@ -17073,7 +17298,13 @@
                         "pattern": "^-?[0-9]+\\.[0-9]{2}$"
                     },
                     "aplica_a": {
-                        "type": "string"
+                        "type": "string",
+                        "enum": [
+                            "todo",
+                            "categoria",
+                            "producto",
+                            "variante"
+                        ]
                     },
                     "categoria": {
                         "type": [
@@ -17385,7 +17616,11 @@
                         "type": "string"
                     },
                     "tipo": {
-                        "type": "string"
+                        "type": "string",
+                        "enum": [
+                            "entero",
+                            "fraccionario"
+                        ]
                     },
                     "activo": {
                         "type": "boolean"
@@ -17579,142 +17814,6 @@
                     "total"
                 ],
                 "title": "ValidarCuponRequest"
-            },
-            "Venta": {
-                "type": "object",
-                "properties": {
-                    "id": {
-                        "type": "integer"
-                    },
-                    "lista_precio_id": {
-                        "type": [
-                            "integer",
-                            "null"
-                        ]
-                    },
-                    "tenant_id": {
-                        "type": "integer"
-                    },
-                    "sucursal_id": {
-                        "type": "integer"
-                    },
-                    "caja_sesion_id": {
-                        "type": "integer"
-                    },
-                    "usuario_id": {
-                        "type": "integer"
-                    },
-                    "cliente_id": {
-                        "type": "integer"
-                    },
-                    "cupon_id": {
-                        "type": [
-                            "integer",
-                            "null"
-                        ]
-                    },
-                    "fecha": {
-                        "type": "string",
-                        "format": "date-time"
-                    },
-                    "total": {
-                        "type": "string",
-                        "pattern": "^-?[0-9]+\\.[0-9]{2}$"
-                    },
-                    "descuento_cupon": {
-                        "type": "string",
-                        "pattern": "^-?[0-9]+\\.[0-9]{2}$"
-                    },
-                    "descuento_manual": {
-                        "type": "string",
-                        "pattern": "^-?[0-9]+\\.[0-9]{2}$"
-                    },
-                    "abono_previo": {
-                        "type": "string",
-                        "pattern": "^-?[0-9]+\\.[0-9]{2}$"
-                    },
-                    "es_venta_sombra": {
-                        "type": "boolean"
-                    },
-                    "estado": {
-                        "type": "string"
-                    },
-                    "motivo_anulacion": {
-                        "type": [
-                            "string",
-                            "null"
-                        ]
-                    },
-                    "fecha_anulacion": {
-                        "type": [
-                            "string",
-                            "null"
-                        ],
-                        "format": "date-time"
-                    },
-                    "usuario_anulacion_id": {
-                        "type": [
-                            "integer",
-                            "null"
-                        ]
-                    },
-                    "serie_cfdi": {
-                        "type": [
-                            "string",
-                            "null"
-                        ]
-                    },
-                    "folio_cfdi": {
-                        "type": [
-                            "integer",
-                            "null"
-                        ]
-                    },
-                    "forma_pago_sat": {
-                        "type": [
-                            "string",
-                            "null"
-                        ]
-                    },
-                    "metodo_pago_sat": {
-                        "type": [
-                            "string",
-                            "null"
-                        ]
-                    },
-                    "uso_cfdi": {
-                        "type": [
-                            "string",
-                            "null"
-                        ]
-                    }
-                },
-                "required": [
-                    "id",
-                    "lista_precio_id",
-                    "tenant_id",
-                    "sucursal_id",
-                    "caja_sesion_id",
-                    "usuario_id",
-                    "cliente_id",
-                    "cupon_id",
-                    "fecha",
-                    "total",
-                    "descuento_cupon",
-                    "descuento_manual",
-                    "abono_previo",
-                    "es_venta_sombra",
-                    "estado",
-                    "motivo_anulacion",
-                    "fecha_anulacion",
-                    "usuario_anulacion_id",
-                    "serie_cfdi",
-                    "folio_cfdi",
-                    "forma_pago_sat",
-                    "metodo_pago_sat",
-                    "uso_cfdi"
-                ],
-                "title": "Venta"
             },
             "VentaLineaResource": {
                 "type": "object",

@@ -1,21 +1,16 @@
-import { HttpContextToken, HttpErrorResponse, HttpInterceptorFn } from '@angular/common/http';
+import { HttpErrorResponse, HttpInterceptorFn } from '@angular/common/http';
 import { inject } from '@angular/core';
-import { ERROR_EN_PANTALLA } from '@nianva/core-http';
+import { CODIGOS_EN_PANTALLA, ERROR_EN_PANTALLA } from '@nianva/core-http';
 import { ToastService } from '@nianva/ui-feedback';
-import { CodigoError, leerErrorNegocio, mensajeError } from '@nianva/ui-shared';
+import { leerErrorNegocio, mensajeError } from '@nianva/ui-shared';
 import { catchError, throwError } from 'rxjs';
 
 import { esUrlBackend } from './api-config';
 
 // ERROR_EN_PANTALLA (marca una peticion cuyos errores maneja la pantalla, tambien los de
 // negocio) vive en @nianva/core-http para que la usen los servicios de libs/domain/* (ARQ-12b).
-export { ERROR_EN_PANTALLA };
-
-/**
- * Codigos de negocio que la pantalla maneja con su propio mensaje: el interceptor no muestra
- * esos, y si los demas y los tecnicos. Mas estrecho que ERROR_EN_PANTALLA, que lo calla todo.
- */
-export const CODIGOS_EN_PANTALLA = new HttpContextToken<readonly CodigoError[]>(() => []);
+// CODIGOS_EN_PANTALLA (solo los codigos que la pantalla maneja) tambien, desde ARQ-12c.
+export { CODIGOS_EN_PANTALLA, ERROR_EN_PANTALLA };
 
 /** Las peticiones cuyo error de negocio es el resultado de una accion (UI-13). */
 const METODOS_QUE_MODIFICAN = new Set(['POST', 'PUT', 'PATCH', 'DELETE']);
@@ -65,7 +60,7 @@ export const erroresInterceptor: HttpInterceptorFn = (req, next) => {
 function esRechazoDeNegocio(
   metodo: string,
   error: HttpErrorResponse,
-  codigosEnPantalla: readonly CodigoError[],
+  codigosEnPantalla: readonly string[],
 ): boolean {
   if (! METODOS_QUE_MODIFICAN.has(metodo.toUpperCase())) {
     return false;

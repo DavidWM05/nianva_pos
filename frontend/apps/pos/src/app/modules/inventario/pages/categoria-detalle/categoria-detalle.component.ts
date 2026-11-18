@@ -18,11 +18,7 @@ import {
 } from '@nianva/ui-shared';
 
 import { CategoriaFormComponent } from '../../categoria-form/categoria-form.component';
-import {
-  CategoriaFormPayload,
-  CategoriaService,
-} from '../../categoria.service';
-import { Categoria } from '../../categoria.types';
+import { Categoria, CategoriaFormPayload, CategoriaService } from '@nianva/domain-inventario';
 
 /**
  * Vista de registro de Categoria -- General (formulario, `readonly` sin

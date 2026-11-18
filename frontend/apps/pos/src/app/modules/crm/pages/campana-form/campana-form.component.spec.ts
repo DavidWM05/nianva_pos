@@ -5,8 +5,7 @@ import { ToastService } from '@nianva/ui-shared';
 import { of } from 'rxjs';
 import { describe, expect, it, vi } from 'vitest';
 
-import { CampanaService } from '../../campana.service';
-import { Campana } from '../../campana.types';
+import { Campana, CampanaService } from '@nianva/domain-crm';
 import { CampanaFormComponent } from './campana-form.component';
 
 describe('CampanaFormComponent', () => {

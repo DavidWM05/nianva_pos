@@ -21,9 +21,8 @@ if (typeof globalThis.ResizeObserver === 'undefined') {
 /* eslint-enable @typescript-eslint/no-empty-function */
 
 import { LineasPagoComponent } from '../../../tpv/lineas-pago/lineas-pago.component';
-import { MetodoPagoService } from '../../../tpv/metodo-pago.service';
-import { ApartadoService } from '../../apartado.service';
-import { Apartado, ApartadoDetallePermisos } from '../../apartado.types';
+import { MetodoPagoService } from '@nianva/domain-tpv';
+import { Apartado, ApartadoDetallePermisos, ApartadoService } from '@nianva/domain-apartados';
 import { ApartadoDetalleComponent } from './apartado-detalle.component';
 
 describe('ApartadoDetalleComponent', () => {

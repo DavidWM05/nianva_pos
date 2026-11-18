@@ -27,8 +27,7 @@ import {
   BUSCADOR_UNIDAD_MEDIDA,
   BUSCADOR_VARIANTE_DE_PRODUCTO,
 } from '../../../../core/buscadores-entidad.tokens';
-import { RecetaService } from '../../receta.service';
-import { RecetaIngredientePayload } from '../../receta.types';
+import { RecetaIngredientePayload, RecetaService } from '@nianva/domain-produccion';
 
 interface IngredienteEnLista extends RecetaIngredientePayload {
   etiquetaInsumo: string;

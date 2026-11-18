@@ -1,7 +1,7 @@
 import { By } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 import { CotizacionFormComponent } from './pages/cotizacion-form/cotizacion-form.component';
-import { CotizacionService } from './cotizacion.service';
+import { CotizacionService } from '@nianva/domain-cotizaciones';
 import { AuthStateService } from '../../auth/auth-state.service';
 import { BUSCADOR_CLIENTE } from '../../core/buscadores-entidad.tokens';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
@@ -13,9 +13,8 @@ import { describe, expect, it, vi } from 'vitest';
 import { proveedoresDePantalla } from '../../testing/proveedores-pantalla';
 import { LineasCotizacionComponent } from './lineas-cotizacion/lineas-cotizacion.component';
 import { DevolucionFormComponent } from '../devoluciones/pages/devolucion-form/devolucion-form.component';
-import { VentaService } from '../tpv/venta.service';
-import { DevolucionService } from '../devoluciones/devolucion.service';
-import { MetodoPagoService } from '../tpv/metodo-pago.service';
+import { MetodoPagoService, VentaService } from '@nianva/domain-tpv';
+import { DevolucionService } from '@nianva/domain-devoluciones';
 import { BUSCADOR_PRODUCTO, BUSCADOR_VARIANTE_DE_PRODUCTO } from '../../core/buscadores-entidad.tokens';
 
 vi.stubGlobal('ResizeObserver', class { observe = vi.fn(); unobserve = vi.fn(); disconnect = vi.fn(); });

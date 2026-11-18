@@ -30,12 +30,7 @@ import {
 
 import { BUSCADOR_CLIENTE } from '../../../../core/buscadores-entidad.tokens';
 import { NotaCredito, NotaCreditoService } from '@nianva/domain-notas-credito';
-import { CajaService } from '../../caja.service';
-import { CajaSesion } from '../../caja.types';
-import {
-  CuponValidacion,
-  CuponValidacionService,
-} from '../../cupon-validacion.service';
+import { CajaService, CajaSesion, CuponValidacion, CuponValidacionService, Venta, VentaFormPayload, VentaItemPayload, VentaPagoPayload, VentaService } from '@nianva/domain-tpv';
 import {
   LineasPagoCambio,
   LineasPagoComponent,
@@ -44,13 +39,6 @@ import {
   LineasProductoCambio,
   LineasProductoComponent,
 } from '../../lineas-producto/lineas-producto.component';
-import {
-  Venta,
-  VentaFormPayload,
-  VentaItemPayload,
-  VentaPagoPayload,
-} from '../../venta.types';
-import { VentaService } from '../../venta.service';
 
 /**
  * Vista de venta: flujo de captura de punto de venta, no una lista+registro

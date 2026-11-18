@@ -6,8 +6,7 @@ import { ConfirmDialogService, ToastService } from '@nianva/ui-shared';
 import { of } from 'rxjs';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
-import { DepartamentoService } from '../../departamento.service';
-import { Departamento, DepartamentosPagina } from '../../departamento.types';
+import { Departamento, DepartamentoService, DepartamentosPagina } from '@nianva/domain-inventario';
 import { DepartamentosListComponent } from './departamentos-list.component';
 
 describe('DepartamentosListComponent', () => {

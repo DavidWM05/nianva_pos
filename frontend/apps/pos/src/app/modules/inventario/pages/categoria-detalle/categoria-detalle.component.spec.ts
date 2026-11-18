@@ -18,8 +18,7 @@ if (typeof globalThis.ResizeObserver === 'undefined') {
 }
 /* eslint-enable @typescript-eslint/no-empty-function */
 
-import { CategoriaService } from '../../categoria.service';
-import { Categoria } from '../../categoria.types';
+import { Categoria, CategoriaService } from '@nianva/domain-inventario';
 import { CategoriaDetalleComponent } from './categoria-detalle.component';
 
 describe('CategoriaDetalleComponent', () => {

@@ -11,10 +11,8 @@ import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal } 
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { AuditLogViewerComponent, ConfirmDialogService, RecordTabConfig, RecordTabsComponent, ToastService, mensajeError } from '@nianva/ui-shared';
-import { MetodoPago } from '../../../tpv/metodo-pago.types';
-import { MetodoPagoService } from '../../../tpv/metodo-pago.service';
-import { CotizacionService } from '../../cotizacion.service';
-import { Cotizacion } from '../../cotizacion.types';
+import { MetodoPago, MetodoPagoService } from '@nianva/domain-tpv';
+import { Cotizacion, CotizacionService } from '@nianva/domain-cotizaciones';
 
 
 /**

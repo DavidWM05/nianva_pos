@@ -2,8 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { of } from 'rxjs';
 import { describe, expect, it, vi } from 'vitest';
 
-import { VentaService } from '../tpv/venta.service';
-import { Venta, VentasPagina } from '../tpv/venta.types';
+import { Venta, VentaService, VentasPagina } from '@nianva/domain-tpv';
 import { VentaBuscadorService } from './venta-buscador.service';
 
 describe('VentaBuscadorService', () => {

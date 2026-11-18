@@ -18,8 +18,7 @@ import {
 
 import { DataTableLazyEvent } from '@nianva/ui-shared';
 
-import { RecetaService, RecetasPermisos } from '../../receta.service';
-import { Receta } from '../../receta.types';
+import { Receta, RecetaService, RecetasPermisos } from '@nianva/domain-produccion';
 
 const PERMISOS_VACIOS: RecetasPermisos = { crear: false };
 

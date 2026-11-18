@@ -15,7 +15,7 @@ import { ReglaPrecioFormComponent } from '../../regla-precio-form/regla-precio-f
 import {
   ReglaPrecioFormPayload,
   ReglaPrecioService,
-} from '../../regla-precio.service';
+} from '@nianva/domain-precios';
 
 /**
  * Vista dedicada, no modal (ver el reporte del punto 1): regla de precio

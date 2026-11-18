@@ -26,8 +26,7 @@ import {
 import { DataTableLazyEvent } from '@nianva/ui-shared';
 import { Subject, debounceTime } from 'rxjs';
 
-import { ClienteService } from '../../cliente.service';
-import { Cliente, ClientesPermisos } from '../../cliente.types';
+import { Cliente, ClienteService, ClientesPermisos } from '@nianva/domain-crm';
 
 type Fila = Cliente;
 

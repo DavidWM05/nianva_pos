@@ -17,7 +17,7 @@ import {
 import { CampoComponent, BtnEnviarComponent } from '@nianva/ui-forms';
 import { PageHeaderComponent, PageComponent } from '@nianva/ui-layout';
 import { BUSCADOR_RECETA } from '../../../../core/buscadores-entidad.tokens';
-import { OrdenProduccionService } from '../../orden.service';
+import { OrdenProduccionService } from '@nianva/domain-produccion';
 
 @Component({
   selector: 'nucleo-orden-form',

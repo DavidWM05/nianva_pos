@@ -5,8 +5,7 @@ import { of } from 'rxjs';
 import { describe, expect, it, vi } from 'vitest';
 
 import { proveedoresDePantalla } from '../../../../testing/proveedores-pantalla';
-import { VentaService } from '../../venta.service';
-import { Venta } from '../../venta.types';
+import { Venta, VentaService } from '@nianva/domain-tpv';
 import { VentaDetalleComponent } from './venta-detalle.component';
 
 // Cierre de la Fase 2: el detalle de venta usa ui-page-header (nombre por clave), ui-badge

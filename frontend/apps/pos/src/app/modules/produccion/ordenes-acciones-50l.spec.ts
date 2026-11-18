@@ -4,7 +4,7 @@ import { expect, it, vi } from 'vitest';
 import { ToastService } from '@nianva/ui-shared';
 import { proveedoresDePantalla } from '../../testing/proveedores-pantalla';
 import { OrdenesListComponent } from './pages/ordenes-list/ordenes-list.component';
-import { OrdenProduccionService } from './orden.service';
+import { OrdenProduccionService } from '@nianva/domain-produccion';
 
 it('50l órdenes: las acciones de estado exigen produccion.completar', async () => {
   const orden = {

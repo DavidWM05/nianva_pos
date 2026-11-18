@@ -28,8 +28,7 @@ import {
   ToastService,
 } from '@nianva/ui-shared';
 import { Subject, debounceTime } from 'rxjs';
-import { CategoriaService } from '../../categoria.service';
-import { Categoria, CategoriasPermisos } from '../../categoria.types';
+import { Categoria, CategoriaService, CategoriasPermisos } from '@nianva/domain-inventario';
 
 const PERMISOS_VACIOS: CategoriasPermisos = {
   crear: false,

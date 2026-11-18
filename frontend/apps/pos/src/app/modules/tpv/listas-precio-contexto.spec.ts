@@ -4,10 +4,7 @@ import { describe, expect, it, vi } from 'vitest';
 import { proveedoresDePantalla } from '../../testing/proveedores-pantalla';
 import { LineasProductoComponent } from './lineas-producto/lineas-producto.component';
 import { VentaComponent } from './pages/venta/venta.component';
-import { VentaService } from './venta.service';
-import { CajaService } from './caja.service';
-import { MetodoPagoService } from './metodo-pago.service';
-import { CuponValidacionService } from './cupon-validacion.service';
+import { CajaService, CuponValidacionService, MetodoPagoService, VentaService } from '@nianva/domain-tpv';
 import { NotaCreditoService } from '@nianva/domain-notas-credito';
 import { SesionActualService } from '../../auth/sesion-actual.service';
 import {

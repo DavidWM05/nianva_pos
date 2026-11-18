@@ -17,8 +17,7 @@ if (typeof globalThis.ResizeObserver === 'undefined') {
 /* eslint-enable @typescript-eslint/no-empty-function */
 
 import { proveedoresDePantalla } from '../../../../testing/proveedores-pantalla';
-import { VentaService } from '../../venta.service';
-import { Venta } from '../../venta.types';
+import { Venta, VentaService } from '@nianva/domain-tpv';
 import { VentaDetalleComponent } from './venta-detalle.component';
 
 describe('VentaDetalleComponent', () => {

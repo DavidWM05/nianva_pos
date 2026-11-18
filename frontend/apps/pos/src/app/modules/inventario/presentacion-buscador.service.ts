@@ -2,7 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { BuscadorDeHijos } from '@nianva/ui-shared';
 import { map } from 'rxjs';
 import type { PresentacionBuscable } from '../../core/buscadores-entidad.tokens';
-import { PresentacionService } from './presentacion.service';
+import { PresentacionService } from '@nianva/domain-inventario';
 @Injectable({providedIn:'root'})
 export class PresentacionBuscadorService extends BuscadorDeHijos<PresentacionBuscable> {
  private readonly servicio=inject(PresentacionService);

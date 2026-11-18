@@ -8,7 +8,7 @@ import { DynamicFormComponent } from '@nianva/ui-shared';
 import { InputDineroComponent } from '@nianva/ui-forms';
 import { VarianteFormComponent } from './variante-form/variante-form.component';
 import { ProductoFormComponent } from './producto-form/producto-form.component';
-import { ProductoService } from './producto.service';
+import { ProductoService } from '@nianva/domain-inventario';
 import { ConfiguracionFormComponent } from '../configuracion/configuracion-form/configuracion-form.component';
 
 describe('Catálogo: precio por variante e IVA incluido', () => {

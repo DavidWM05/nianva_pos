@@ -7,15 +7,14 @@ import { describe, expect, it, vi } from 'vitest';
 
 import { BUSCADOR_CATEGORIA, BUSCADOR_PRODUCTO, BUSCADOR_VARIANTE_DE_PRODUCTO } from '../../core/buscadores-entidad.tokens';
 import { proveedoresDePantalla } from '../../testing/proveedores-pantalla';
-import { ClienteService } from '../crm/cliente.service';
+import { ClienteService } from '@nianva/domain-crm';
 import { ClienteCrearComponent } from '../crm/pages/cliente-crear/cliente-crear.component';
-import { CuponService } from './cupon.service';
+import { CuponService, ReglaPrecioService } from '@nianva/domain-precios';
 import { CuponCrearComponent } from './pages/cupon-crear/cupon-crear.component';
 import { CuponDetalleComponent } from './pages/cupon-detalle/cupon-detalle.component';
 import { PreciosComponent } from './pages/precios/precios.component';
 import { ReglaPrecioCrearComponent } from './pages/regla-precio-crear/regla-precio-crear.component';
 import { ReglaPrecioDetalleComponent } from './pages/regla-precio-detalle/regla-precio-detalle.component';
-import { ReglaPrecioService } from './regla-precio.service';
 
 vi.stubGlobal('ResizeObserver', class { observe = vi.fn(); unobserve = vi.fn(); disconnect = vi.fn(); });
 

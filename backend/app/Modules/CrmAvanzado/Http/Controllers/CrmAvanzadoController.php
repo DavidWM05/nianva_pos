@@ -71,6 +71,7 @@ class CrmAvanzadoController extends Controller
                 'cliente' => ['id' => (int) $cliente->id, 'nombre' => $cliente->nombre],
                 'puntos_loyalty' => (int) $cliente->puntos_loyalty,
                 'puntos_acumulados' => (int) $cliente->puntos_acumulados,
+                /** @var list<array{id: int, tenant_id: int, cliente_id: int, tipo: 'ganados'|'canjeados'|'vencidos'|'ajuste', puntos: int, referencia_tabla: string|null, referencia_id: int|null, expira_en: string|null, created_at: string}> */
                 'historial' => $historial,
             ],
         ]);
@@ -88,6 +89,7 @@ class CrmAvanzadoController extends Controller
 
         return response()->json([
             'message' => 'Puntos ajustados correctamente.',
+            /** @var array{id: int, tenant_id: int, cliente_id: int, tipo: 'ganados'|'canjeados'|'vencidos'|'ajuste', puntos: int, referencia_tabla: string|null, referencia_id: int|null, expira_en: string|null, created_at: string} */
             'data' => $transaccion,
         ]);
     }
@@ -140,7 +142,10 @@ class CrmAvanzadoController extends Controller
             ->get(['id', 'asunto', 'segmento', 'destinatarios', 'enviado_en']);
 
         return response()->json(['data' => [
+            /** @var array{nuevo: int, frecuente: int, vip: int, inactivo: int} */
             'clientes_por_segmento' => $segmentos,
+            // Solo los tipos con al menos una interaccion (pluck('total', 'tipo')).
+            /** @var array<'llamada'|'email'|'whatsapp'|'nota'|'visita', int> */
             'interacciones_por_tipo' => $interacciones,
             'loyalty' => [
                 'puntos_ganados_total' => $puntosGanados,
@@ -148,6 +153,7 @@ class CrmAvanzadoController extends Controller
                 'puntos_vencidos_total' => $puntosVencidos,
                 'saldo_actual_total' => $saldoActual,
             ],
+            /** @var list<array{id: int, asunto: string, segmento: 'todos'|'nuevo'|'frecuente'|'vip'|'inactivo'|null, destinatarios: int, enviado_en: string}> */
             'campanas_recientes' => $campanas,
         ]]);
     }
