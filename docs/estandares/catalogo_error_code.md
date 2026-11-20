@@ -16,6 +16,7 @@ Generado con `php artisan errores:catalogo` desde las excepciones de negocio y e
 | `cliente_sistema` | 403 | `App\Modules\Crm\Exceptions\ClienteSistemaException` | Crm | cliente_id |
 | `conflicto` | 409 | `App\Modules\Nucleo\Support\MapaErroresHttp` | Nucleo | - |
 | `contenido_demasiado_grande` | 413 | `App\Modules\Nucleo\Support\MapaErroresHttp` | Nucleo | - |
+| `conteo_metodo_faltante` | 422 | `App\Modules\Tpv\Exceptions\ConteoMetodoFaltanteException` | Tpv | caja_sesion_id, metodo_pago_id |
 | `costo_no_disponible` | 422 | `App\Modules\Inventario\Exceptions\CostoNoDisponibleException` | Inventario | variante_id, sucursal_id |
 | `cotizacion_no_editable` | 422 | `App\Modules\Cotizaciones\Exceptions\CotizacionNoEditableException` | Cotizaciones | — |
 | `cotizacion_total_negativo` | 422 | `App\Modules\Cotizaciones\Exceptions\CotizacionTotalNegativoException` | Cotizaciones | subtotal, descuento |
@@ -48,6 +49,7 @@ Generado con `php artisan errores:catalogo` desde las excepciones de negocio y e
 | `gift_card_ya_cancelada` | 422 | `App\Modules\GiftCards\Exceptions\GiftCardYaCanceladaException` | GiftCards | — |
 | `libro_inmutable` | 409 | `App\Modules\Nucleo\Exceptions\LibroInmutableException` | Nucleo | libro, operacion |
 | `lista_precio_no_disponible` | 422 | `App\Modules\Precios\Exceptions\ListaPrecioNoDisponibleException` | Precios | lista_precio_id |
+| `metodo_efectivo_no_existe` | 422 | `App\Modules\Nucleo\Exceptions\MetodoEfectivoNoExisteException` | Nucleo | — |
 | `metodo_no_permitido` | 405 | `App\Modules\Nucleo\Support\MapaErroresHttp` | Nucleo | - |
 | `modulo_no_activo` | 403 | `App\Modules\Nucleo\Exceptions\ModuloNoActivoException` | Nucleo | — |
 | `monto_invalido` | 422 | `App\Modules\GiftCards\Exceptions\MontoInvalidoException` | GiftCards | — |
@@ -68,6 +70,7 @@ Generado con `php artisan errores:catalogo` desde las excepciones de negocio y e
 | `proyeccion_no_actualizada` | 409 | `App\Modules\Nucleo\Exceptions\ProyeccionNoActualizadaException` | Nucleo | proyeccion, id |
 | `puntos_insuficientes` | 422 | `App\Modules\CrmAvanzado\Exceptions\PuntosInsuficientesException` | CrmAvanzado | — |
 | `puntos_no_generados` | 422 | `App\Modules\CrmAvanzado\Exceptions\PuntosNoGeneradosException` | CrmAvanzado | — |
+| `recarga_pago_no_cuadra` | 422 | `App\Modules\GiftCards\Exceptions\RecargaPagoNoCuadraException` | GiftCards | monto, suma_pagos |
 | `servicio_no_disponible` | 503 | `App\Modules\Nucleo\Support\MapaErroresHttp` | Nucleo | - |
 | `sesion_expirada` | 419 | `App\Modules\Nucleo\Support\MapaErroresHttp` | Nucleo | - |
 | `sesion_inactiva` | 401 | `App\Modules\Nucleo\Exceptions\SesionInactivaException` | Nucleo | — |

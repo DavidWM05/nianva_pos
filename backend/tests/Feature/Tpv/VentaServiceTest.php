@@ -17,6 +17,7 @@ use App\Modules\Nucleo\Models\Sucursal;
 use App\Modules\Nucleo\Models\Tenant;
 use App\Modules\Nucleo\Models\Usuario;
 use App\Modules\Nucleo\Services\TenantContext;
+use App\Modules\Nucleo\Support\MetodoEfectivo;
 use App\Modules\Precios\Models\ReglaPrecio;
 use App\Modules\Precios\Services\PrecioService;
 use App\Modules\Tpv\Exceptions\PagoNoCuadraException;
@@ -250,7 +251,7 @@ class VentaServiceTest extends TestCase
         $this->ventaService->anularVentaConStocks(Bloqueos04c::venta($ventaA), 'Cliente se arrepintio', $ctx['usuario'], Bloqueos04c::stocks($ctx['sucursal']->id));
 
         // total_teorico = apertura(500) + ventas(50, solo B) - gastos(0) = 550.
-        $cajaCerrada = $this->cajaService->cerrarCajaConSesion(Bloqueos04c::sesion($caja), 545);
+        $cajaCerrada = $this->cajaService->cerrarCajaConSesion(Bloqueos04c::sesion($caja), [['metodo_pago_id' => MetodoEfectivo::id(), 'monto' => 545]]);
 
         $this->assertSame(50.0, (float) $cajaCerrada->total_ventas_sistema);
         $this->assertSame(-5.0, (float) $cajaCerrada->diferencia);

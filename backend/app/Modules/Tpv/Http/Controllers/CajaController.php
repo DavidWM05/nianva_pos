@@ -12,6 +12,7 @@ use App\Modules\Nucleo\Models\Usuario;
 use App\Modules\Nucleo\Support\DecimalApi;
 use App\Modules\Tpv\Http\Requests\AbrirCajaRequest;
 use App\Modules\Tpv\Http\Requests\CerrarCajaRequest;
+use App\Modules\Tpv\Http\Resources\CajaSaldoResource;
 use App\Modules\Tpv\Http\Resources\CajaSesionResource;
 use App\Modules\Tpv\Models\CajaSesion;
 use Illuminate\Http\Request;
@@ -42,11 +43,12 @@ class CajaController extends Controller
         return response()->json([
             'data' => $resultado['sesion'] ? new CajaSesionResource($resultado['sesion']) : null,
             'meta' => [
-                'resumen' => $resultado['resumen'] === null ? null : [
+                'resumen' => $resultado['sesion'] === null || $resultado['resumen'] === null ? null : [
                     /** @var non-negative-int */
                     'ventas_count' => (int) $resultado['resumen']['ventas_count'],
                     'total_ventas' => DecimalApi::dinero($resultado['resumen']['total_ventas']),
                     'total_gastos' => DecimalApi::dinero($resultado['resumen']['total_gastos']),
+                    'metodos' => CajaSaldoResource::collection($resultado['sesion']->saldos),
                 ],
                 'permisos' => $resultado['permisos'],
             ],
@@ -73,7 +75,7 @@ class CajaController extends Controller
     {
         $dto = $request->toDto();
 
-        $resultado = $cerrarCaja->ejecutar($cajaSesion, $dto->montoFisico);
+        $resultado = $cerrarCaja->ejecutar($cajaSesion, $dto->conteos);
 
         return response()->json([
             'data' => new CajaSesionResource($resultado['sesion']),

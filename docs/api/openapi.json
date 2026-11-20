@@ -1266,12 +1266,19 @@
                                                         "total_gastos": {
                                                             "type": "string",
                                                             "pattern": "^-?[0-9]+\\.[0-9]{2}$"
+                                                        },
+                                                        "metodos": {
+                                                            "type": "array",
+                                                            "items": {
+                                                                "$ref": "#/components/schemas/CajaSaldoResource"
+                                                            }
                                                         }
                                                     },
                                                     "required": [
                                                         "ventas_count",
                                                         "total_ventas",
-                                                        "total_gastos"
+                                                        "total_gastos",
+                                                        "metodos"
                                                     ]
                                                 },
                                                 "permisos": {
@@ -1399,7 +1406,17 @@
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/components/schemas/CajaSesionResource"
+                                            "allOf": [
+                                                {
+                                                    "$ref": "#/components/schemas/CajaSesionResource"
+                                                },
+                                                {
+                                                    "type": "object",
+                                                    "required": [
+                                                        "metodos"
+                                                    ]
+                                                }
+                                            ]
                                         },
                                         "desglose": {
                                             "type": "object",
@@ -12311,6 +12328,58 @@
                 ],
                 "title": "AtributoResource"
             },
+            "CajaCierreMetodoResource": {
+                "type": "object",
+                "properties": {
+                    "metodo_pago_id": {
+                        "type": "integer"
+                    },
+                    "nombre": {
+                        "type": "string"
+                    },
+                    "total_teorico": {
+                        "type": "string",
+                        "pattern": "^-?[0-9]+\\.[0-9]{2}$"
+                    },
+                    "monto_contado": {
+                        "type": "string",
+                        "pattern": "^-?[0-9]+\\.[0-9]{2}$"
+                    },
+                    "diferencia": {
+                        "type": "string",
+                        "pattern": "^-?[0-9]+\\.[0-9]{2}$"
+                    }
+                },
+                "required": [
+                    "metodo_pago_id",
+                    "nombre",
+                    "total_teorico",
+                    "monto_contado",
+                    "diferencia"
+                ],
+                "title": "CajaCierreMetodoResource"
+            },
+            "CajaSaldoResource": {
+                "type": "object",
+                "properties": {
+                    "metodo_pago_id": {
+                        "type": "integer"
+                    },
+                    "nombre": {
+                        "type": "string"
+                    },
+                    "total_teorico": {
+                        "type": "string",
+                        "pattern": "^-?[0-9]+\\.[0-9]{2}$"
+                    }
+                },
+                "required": [
+                    "metodo_pago_id",
+                    "nombre",
+                    "total_teorico"
+                ],
+                "title": "CajaSaldoResource"
+            },
             "CajaSesionResource": {
                 "type": "object",
                 "properties": {
@@ -12326,6 +12395,19 @@
                     "monto_apertura": {
                         "type": "string",
                         "pattern": "^-?[0-9]+\\.[0-9]{2}$"
+                    },
+                    "total_teorico": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "pattern": "^-?[0-9]+\\.[0-9]{2}$"
+                    },
+                    "metodos": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/CajaCierreMetodoResource"
+                        }
                     },
                     "monto_cierre": {
                         "type": [
@@ -12372,6 +12454,7 @@
                     "sucursal_id",
                     "usuario_id",
                     "monto_apertura",
+                    "total_teorico",
                     "monto_cierre",
                     "total_ventas_sistema",
                     "diferencia",
@@ -12523,14 +12606,32 @@
             "CerrarCajaRequest": {
                 "type": "object",
                 "properties": {
-                    "monto_fisico": {
-                        "type": "number",
-                        "minimum": 0,
-                        "multipleOf": 0.01
+                    "conteos": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "metodo_pago_id": {
+                                    "type": "integer"
+                                },
+                                "monto": {
+                                    "type": "number",
+                                    "minimum": 0,
+                                    "maximum": 9999999999.99,
+                                    "multipleOf": 0.01
+                                }
+                            },
+                            "required": [
+                                "metodo_pago_id",
+                                "monto"
+                            ]
+                        },
+                        "minItems": 1,
+                        "uniqueItems": true
                     }
                 },
                 "required": [
-                    "monto_fisico"
+                    "conteos"
                 ],
                 "title": "CerrarCajaRequest"
             },
@@ -17052,11 +17153,35 @@
                     "monto": {
                         "type": "number",
                         "minimum": 0.01,
+                        "maximum": 9999999999.99,
                         "multipleOf": 0.01
+                    },
+                    "pagos": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "metodo_pago_id": {
+                                    "type": "integer"
+                                },
+                                "monto": {
+                                    "type": "number",
+                                    "minimum": 0.01,
+                                    "maximum": 9999999999.99,
+                                    "multipleOf": 0.01
+                                }
+                            },
+                            "required": [
+                                "metodo_pago_id",
+                                "monto"
+                            ]
+                        },
+                        "minItems": 1
                     }
                 },
                 "required": [
-                    "monto"
+                    "monto",
+                    "pagos"
                 ],
                 "title": "RecargarGiftCardRequest"
             },

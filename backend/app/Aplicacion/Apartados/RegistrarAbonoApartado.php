@@ -10,20 +10,38 @@ use App\Modules\Apartados\Models\Apartado;
 use App\Modules\Apartados\Models\ApartadoAbono;
 use App\Modules\Apartados\Services\ApartadoService;
 use App\Modules\Nucleo\Models\Usuario;
+use App\Modules\Nucleo\Scopes\TenantScopeViaRelacion;
+use App\Modules\Nucleo\Support\Dinero;
+use App\Modules\Tpv\Exceptions\CajaSesionNoAbiertaException;
+use App\Modules\Tpv\Models\CajaSesion;
+use App\Modules\Tpv\Services\LibroCaja;
 use Illuminate\Support\Facades\DB;
 
 final class RegistrarAbonoApartado
 {
-    public function __construct(private readonly ApartadoService $service) {}
+    public function __construct(private readonly ApartadoService $service, private readonly LibroCaja $libro) {}
 
     /** Reutiliza una transacción exterior si existe. */
     public function ejecutar(RegistrarAbonoApartadoDto $dto, Apartado $apartado, Usuario $usuario): ApartadoAbono
     {
         $operacion = function () use ($dto, $apartado, $usuario): ApartadoAbono {
+            $caja = CajaSesion::query()->withoutGlobalScope(TenantScopeViaRelacion::class)->where('sucursal_id', (int) $usuario->getAttribute('sucursal_id'))->where('estado', 'abierta')->latest('id')->lockForUpdate()->first();
+            $monetarios = array_values(array_filter($dto->pagos, fn (PagoApartadoDto $pago): bool => $pago->monto > 0 && $this->libro->esMonetario($pago->metodoPagoId)));
+            if ($monetarios !== [] && $caja === null) {
+                throw new CajaSesionNoAbiertaException((int) $usuario->getAttribute('sucursal_id'));
+            }
             $bloqueado = Apartado::query()->whereKey($apartado->id)->lockForUpdate()->firstOrFail();
             $pagos = array_map(static fn (PagoApartadoDto $pago): array => ['metodo_pago_id' => $pago->metodoPagoId, 'monto' => $pago->monto], $dto->pagos);
 
-            return $this->service->registrarAbonoConApartado($bloqueado, $dto->monto, $usuario->id, $pagos, $dto->notas);
+            $abono = $this->service->registrarAbonoConApartado($bloqueado, $dto->monto, $usuario->id, $pagos, $dto->notas);
+            $abono->update(['caja_sesion_id' => $caja?->id]);
+            if ($caja !== null) {
+                foreach ($monetarios as $pago) {
+                    $this->libro->registrar($caja, 'abono_apartado', Dinero::desde((string) $pago->monto)->aCadena(), 'apartado_abonos', (int) $abono->id, (int) $usuario->id, $pago->metodoPagoId);
+                }
+            }
+
+            return $abono;
         };
 
         return DB::transactionLevel() > 0 ? $operacion() : DB::transaction($operacion);

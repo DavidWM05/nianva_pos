@@ -27,6 +27,7 @@ use App\Modules\GiftCards\Dtos\CargarGiftCardDto;
 use App\Modules\GiftCards\Dtos\EmitirGiftCardDto;
 use App\Modules\GiftCards\Dtos\RecargarGiftCardDto;
 use App\Modules\NotasCredito\Dtos\AplicarNotaCreditoDto;
+use App\Modules\Tpv\Dtos\PagoDto;
 use App\Modules\VentasPlazos\Dtos\CrearPlanPagoDto;
 use App\Modules\VentasPlazos\Dtos\PagarCuotaDto;
 use App\Modules\VentasPlazos\Models\PlanPagoCliente;
@@ -84,7 +85,7 @@ class ActionsSaldosTest extends TestCase
         $d = $this->negocio04d();
         $gift = app(EmitirGiftCard::class)->ejecutar(new EmitirGiftCardDto($d['cliente']->id, 100, null), $d['tenant']->id);
         $this->assertSame(100.0, (float) $gift->saldo_actual);
-        $recargada = app(RecargarGiftCard::class)->ejecutar(new RecargarGiftCardDto(20), $gift->id, $d['usuario']);
+        $recargada = app(RecargarGiftCard::class)->ejecutar(new RecargarGiftCardDto(20, [new PagoDto($d['metodo']->id, 20)]), $gift->id, $d['usuario']);
         $this->assertSame(120.0, (float) $recargada->saldo_actual);
         $this->assertDatabaseHas('gift_card_recargas', ['gift_card_id' => $gift->id, 'caja_sesion_id' => $d['caja']->id, 'monto' => 20]);
         app(CargarGiftCard::class)->ejecutar(new CargarGiftCardDto($gift->id, 120));
@@ -145,7 +146,7 @@ class ActionsSaldosTest extends TestCase
         try {
             app(RegistrarAbono::class)->ejecutar(new RegistrarAbonoDto(30, $d['metodo']->id, null), $d['cxc']->id, $d['usuario']);
             app(RegistrarPago::class)->ejecutar(new RegistrarPagoDto(30, $d['metodo']->id, null), $d['cxp']->id, $d['usuario']);
-            app(RecargarGiftCard::class)->ejecutar(new RecargarGiftCardDto(20), $d['gift']->id, $d['usuario']);
+            app(RecargarGiftCard::class)->ejecutar(new RecargarGiftCardDto(20, [new PagoDto($d['metodo']->id, 20)]), $d['gift']->id, $d['usuario']);
             app(CargarGiftCard::class)->ejecutar(new CargarGiftCardDto($d['gift']->id, 30));
             app(AplicarNotaCredito::class)->ejecutar(new AplicarNotaCreditoDto($d['nota']->id, $d['venta']->id, 30));
             app(PagarCuota::class)->ejecutar(new PagarCuotaDto($d['cuota']->id, 100, ['monto']), $d['plan']->id);

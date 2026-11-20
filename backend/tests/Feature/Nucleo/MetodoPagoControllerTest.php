@@ -49,7 +49,7 @@ class MetodoPagoControllerTest extends TestCase
     {
         ['tenant' => $tenant, 'usuario' => $usuario] = $this->crearUsuarioConPermisos(['metodos_pago.ver']);
         MetodoPago::create(['tenant_id' => null, 'nombre' => 'Transferencia', 'tipo' => 'transferencia']);
-        MetodoPago::create(['tenant_id' => null, 'nombre' => 'Efectivo', 'tipo' => 'efectivo']);
+        MetodoPago::firstOrCreate(['tenant_id' => null, 'nombre' => 'Efectivo'], ['tipo' => 'efectivo']);
         MetodoPago::create(['tenant_id' => $tenant->id, 'nombre' => 'Inactivo', 'tipo' => 'otro', 'activo' => false]);
 
         $this->actingAs($usuario);
@@ -91,7 +91,7 @@ class MetodoPagoControllerTest extends TestCase
     public function test_index_incluye_las_filas_globales_ademas_de_las_del_tenant(): void
     {
         ['tenant' => $tenant, 'usuario' => $usuario] = $this->crearUsuarioConPermisos(['metodos_pago.ver']);
-        MetodoPago::create(['tenant_id' => null, 'nombre' => 'Efectivo', 'tipo' => 'efectivo']);
+        MetodoPago::firstOrCreate(['tenant_id' => null, 'nombre' => 'Efectivo'], ['tipo' => 'efectivo']);
         MetodoPago::create(['tenant_id' => $tenant->id, 'nombre' => 'Vales de despensa', 'tipo' => 'otro']);
 
         $this->actingAs($usuario);

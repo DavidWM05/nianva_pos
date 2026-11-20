@@ -127,10 +127,19 @@ export const LIMITES = {
   },
   "/caja/{cajaSesion}/cerrar": {
     "patch": {
-      "monto_fisico": {
+      "conteos": {
         "requerido": true,
-        "minimum": 0,
-        "decimales": 2
+        "elemento": {
+          "metodo_pago_id": {
+            "requerido": true
+          },
+          "monto": {
+            "requerido": true,
+            "minimum": 0,
+            "maximum": 9999999999.99,
+            "decimales": 2
+          }
+        }
       }
     }
   },
@@ -693,7 +702,22 @@ export const LIMITES = {
       "monto": {
         "requerido": true,
         "minimum": 0.01,
+        "maximum": 9999999999.99,
         "decimales": 2
+      },
+      "pagos": {
+        "requerido": true,
+        "elemento": {
+          "metodo_pago_id": {
+            "requerido": true
+          },
+          "monto": {
+            "requerido": true,
+            "minimum": 0.01,
+            "maximum": 9999999999.99,
+            "decimales": 2
+          }
+        }
       }
     }
   },

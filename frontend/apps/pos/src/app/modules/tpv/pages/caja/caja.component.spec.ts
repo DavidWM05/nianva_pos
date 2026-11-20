@@ -3,6 +3,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { provideRouter } from '@angular/router';
 import { ToastService } from '@nianva/ui-shared';
+import { sumarDinero, restarDinero } from '@nianva/ui-format';
 import { of, throwError } from 'rxjs';
 import { describe, expect, it, vi } from 'vitest';
 
@@ -29,6 +30,9 @@ describe('CajaComponent', () => {
   };
 
   async function crearComponente(estado: CajaActual): Promise<void> {
+    if (estado.resumen && estado.sesion) {
+      estado.resumen.metodos = [{ metodo_pago_id: 1, nombre: 'Efectivo', total_teorico: restarDinero(sumarDinero(estado.sesion.monto_apertura, estado.resumen.total_ventas), estado.resumen.total_gastos) }];
+    }
     cajaService = {
       actual: vi.fn().mockReturnValue(of(estado)),
       abrir: vi.fn(),
@@ -101,7 +105,7 @@ describe('CajaComponent', () => {
     expect(texto).toContain('Caja abierta');
     expect(texto).toContain('3');
     expect(texto).toContain('80');
-    expect(fixture.nativeElement.querySelector('#caja-monto-fisico')).not.toBeNull();
+    expect(fixture.nativeElement.querySelector('#caja-conteo-1')).not.toBeNull();
   });
 
   it('con caja abierta y permiso, muestra la lista de gastos de la sesion', async () => {
@@ -168,7 +172,7 @@ describe('CajaComponent', () => {
       of({ sesion: null, resumen: null, permisos: { abrir: true, cerrar: true, gastos_ver: true, gastos_crear: true } }),
     );
 
-    fixture.componentInstance['montoFisico'].set(580);
+    fixture.componentInstance['conteos'].set({ 1: 580 });
     fixture.componentInstance.cerrarCaja();
     fixture.detectChanges();
 
@@ -192,7 +196,7 @@ describe('CajaComponent', () => {
       of({ sesion: null, resumen: null, permisos: { abrir: true, cerrar: true, gastos_ver: true, gastos_crear: true } }),
     );
 
-    fixture.componentInstance['montoFisico'].set(580);
+    fixture.componentInstance['conteos'].set({ 1: 580 });
     fixture.componentInstance.cerrarCaja();
     fixture.detectChanges();
 
@@ -217,7 +221,7 @@ describe('CajaComponent', () => {
     cajaService.actual.mockReturnValue(
       of({ sesion: null, resumen: null, permisos: { abrir: true, cerrar: true, gastos_ver: true, gastos_crear: true } }),
     );
-    fixture.componentInstance['montoFisico'].set(580);
+    fixture.componentInstance['conteos'].set({ 1: 580 });
     fixture.componentInstance.cerrarCaja();
 
     fixture.componentInstance.cerrarResumenDeCierre();
@@ -271,7 +275,7 @@ describe('CajaComponent', () => {
       ),
     );
 
-    fixture.componentInstance['montoFisico'].set(580);
+    fixture.componentInstance['conteos'].set({ 1: 580 });
     fixture.componentInstance.cerrarCaja();
 
     expect(toastService.error).toHaveBeenCalledWith('La caja ya esta cerrada.');

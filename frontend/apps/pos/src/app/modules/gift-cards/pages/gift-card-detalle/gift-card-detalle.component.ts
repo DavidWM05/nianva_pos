@@ -1,3 +1,6 @@
+import { limitesDe } from '@nianva/api-contrato';
+import { compararDinero, sumarDinero } from '@nianva/ui-format';
+import { LineasPagoComponent, LineasPagoCambio } from '../../../tpv/lineas-pago/lineas-pago.component';
 import {
   BtnEnviarComponent,
   CampoComponent,
@@ -11,7 +14,7 @@ import {
   MetaListado,
   TablaComponent,
 } from '@nianva/ui-data';
-import { BadgeComponent, SkeletonComponent } from '@nianva/ui-feedback';
+import { AlertComponent, BadgeComponent, SkeletonComponent } from '@nianva/ui-feedback';
 import { DineroPipe, FechaPipe, FechaHoraPipe } from '@nianva/ui-format';
 import {
   DatosComponent,
@@ -38,9 +41,10 @@ import {
   RecordTabsComponent,
   ToastService,
   mensajeError,
+  esErrorNegocio,
 } from '@nianva/ui-shared';
 
-import { GiftCard, GiftCardService } from '@nianva/domain-gift-cards';
+import { GiftCard, GiftCardService, PagoRecarga } from '@nianva/domain-gift-cards';
 
 /**
  * Vista de registro (RecordTabsComponent, obligatorio -- CLAUDE.md §4).
@@ -49,6 +53,8 @@ import { GiftCard, GiftCardService } from '@nianva/domain-gift-cards';
   selector: 'nucleo-gift-card-detalle',
   standalone: true,
   imports: [
+    LineasPagoComponent,
+    AlertComponent,
     BtnEnviarComponent,
     CampoComponent,
     InputDineroComponent,
@@ -102,6 +108,20 @@ export class GiftCardDetalleComponent implements OnInit {
   protected readonly mostrarRecargar = signal(false);
   protected readonly montoRecarga = signal<number | null>(null);
   protected readonly recargando = signal(false);
+  protected readonly limitesRecarga = limitesDe('/gift-cards/{id}/recargar', 'post');
+  protected readonly pagosRecarga = signal<PagoRecarga[]>([]);
+  protected readonly cajaRequerida = signal(false);
+  protected readonly recargaValida = computed(() => {
+    const monto = this.montoRecarga();
+    const limites = this.limitesRecarga.monto;
+    return monto !== null && Number.isFinite(monto) && monto >= limites.minimum && monto <= limites.maximum
+      && this.pagosRecarga().length > 0 && this.pagosRecarga().every(pago => pago.monto > 0)
+      && compararDinero(sumarDinero(...this.pagosRecarga().map(pago => pago.monto)), monto) === 0;
+  });
+
+  onPagosRecarga(evento: LineasPagoCambio): void {
+    this.pagosRecarga.set(evento.pagos);
+  }
 
   ngOnInit(): void {
     const id = Number(this.route.snapshot.paramMap.get('id'));
@@ -110,6 +130,8 @@ export class GiftCardDetalleComponent implements OnInit {
 
   abrirRecargar(): void {
     this.montoRecarga.set(null);
+    this.pagosRecarga.set([]);
+    this.cajaRequerida.set(false);
     this.mostrarRecargar.set(true);
   }
 
@@ -120,7 +142,7 @@ export class GiftCardDetalleComponent implements OnInit {
   confirmarRecargar(): void {
     const giftCard = this.giftCard();
     const monto = this.montoRecarga();
-    if (!giftCard || !monto || monto <= 0) return;
+    if (!giftCard || monto === null || !this.recargaValida()) return;
 
     this.recargando.set(true);
 
@@ -128,7 +150,7 @@ export class GiftCardDetalleComponent implements OnInit {
     // eager-load de `recargas` -- usar esa respuesta directamente borraria
     // el historial ya cargado. Se recarga con obtener() (mismo patron que
     // anular() y CuentaCobrarDetalleComponent) para traer `recargas` completo.
-    this.giftCardService.recargar(giftCard.id, monto).subscribe({
+    this.giftCardService.recargar(giftCard.id, monto, this.pagosRecarga()).subscribe({
       next: () => {
         this.recargando.set(false);
         this.mostrarRecargar.set(false);
@@ -137,6 +159,10 @@ export class GiftCardDetalleComponent implements OnInit {
       },
       error: (error: HttpErrorResponse) => {
         this.recargando.set(false);
+        if (esErrorNegocio(error, 'caja_no_abierta')) {
+          this.cajaRequerida.set(true);
+          return;
+        }
         this.toast.error(
           mensajeError(error, 'No se pudo recargar la gift card.'),
         );

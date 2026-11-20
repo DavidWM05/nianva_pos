@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Aplicacion\Caja;
 
 use App\Modules\Gastos\Services\GastoService;
@@ -31,6 +33,7 @@ class ObtenerCajaActual
             ->where('estado', 'abierta')
             ->latest('id')
             ->first();
+        $sesion?->load('saldos.metodoPago');
 
         return [
             'sesion' => $sesion,

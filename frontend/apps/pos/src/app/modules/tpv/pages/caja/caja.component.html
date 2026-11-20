@@ -12,7 +12,7 @@
           <dd>{{ cerrada.monto_apertura | dinero }}</dd>
           <dt>Ventas del sistema</dt>
           <dd>{{ cerrada.total_ventas_sistema | dinero }}</dd>
-          <dt>Monto físico contado</dt>
+          <dt>Total contado</dt>
           <dd>{{ cerrada.monto_cierre | dinero }}</dd>
           <dt>Diferencia</dt>
           <dd
@@ -23,6 +23,14 @@
           </dd>
         </dl>
 
+        @for (metodo of cerrada.metodos ?? []; track metodo.metodo_pago_id) {
+          <h4>{{ metodo.nombre }}</h4>
+          <dl uiDatos>
+            <dt>Teórico</dt><dd>{{ metodo.total_teorico | dinero }}</dd>
+            <dt>Contado</dt><dd>{{ metodo.monto_contado | dinero }}</dd>
+            <dt>Diferencia</dt><dd>{{ metodo.diferencia | dinero }}</dd>
+          </dl>
+        }
         @if (desgloseCierre(); as desglose) {
           <h4>Desglose del total teórico</h4>
           <dl uiDatos>
@@ -59,17 +67,19 @@
 
         @if (estadoActual.permisos.cerrar) {
           <div class="caja__form">
-            <label for="caja-monto-fisico">Monto físico contado</label>
-            <input
-              type="number"
-              id="caja-monto-fisico"
-              [min]="limitesCierre.monto_fisico.minimum"
-              step="0.01"
-              [ngModel]="montoFisico()"
-              (ngModelChange)="montoFisico.set($event)"
-            />
+            @for (metodo of metodos(); track metodo.metodo_pago_id) {
+              <h4>{{ metodo.nombre }}</h4>
+              <p>Teórico: {{ metodo.total_teorico | dinero }}</p>
+              <label [for]="'caja-conteo-' + metodo.metodo_pago_id">Contado · {{ metodo.nombre }}</label>
+              <input type="number" [id]="'caja-conteo-' + metodo.metodo_pago_id"
+                [min]="limitesCierre.conteos.elemento.monto.minimum"
+                [max]="limitesCierre.conteos.elemento.monto.maximum" step="0.01"
+                [ngModel]="conteos()[metodo.metodo_pago_id]"
+                (ngModelChange)="actualizarConteo(metodo.metodo_pago_id, $event)" />
+              <p>Diferencia: {{ diferenciaMetodo(metodo.total_teorico, conteos()[metodo.metodo_pago_id]) | dinero }}</p>
+            }
             <div>
-              <ui-btn-enviar etiqueta="Cerrar caja" [enviando]="cerrando()" [deshabilitado]="montoFisico() === null" (click)="cerrarCaja()" />
+              <ui-btn-enviar etiqueta="Cerrar caja" [enviando]="cerrando()" [deshabilitado]="!conteosValidos()" (click)="cerrarCaja()" />
             </div>
           </div>
         }

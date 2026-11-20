@@ -12,6 +12,7 @@ use App\Modules\Delivery\Models\Pedido;
 use App\Modules\Devoluciones\Models\Devolucion;
 use App\Modules\Gastos\Models\Gasto;
 use App\Modules\GiftCards\Models\GiftCard;
+use App\Modules\GiftCards\Models\GiftCardRecargaPago;
 use App\Modules\Inventario\Models\Atributo;
 use App\Modules\Inventario\Models\AtributoValor;
 use App\Modules\Inventario\Models\Compra;
@@ -37,7 +38,9 @@ use App\Modules\Produccion\Models\Insumo;
 use App\Modules\Produccion\Models\OrdenProduccion;
 use App\Modules\Produccion\Models\Receta;
 use App\Modules\Produccion\Models\TransformacionProducto;
+use App\Modules\Tpv\Models\CajaCierreMetodo;
 use App\Modules\Tpv\Models\CajaSesion;
+use App\Modules\Tpv\Models\CajaSesionSaldo;
 use App\Modules\Tpv\Models\Venta;
 use App\Modules\UnidadesMedida\Models\UnidadMedida;
 use App\Modules\VentasPlazos\Models\PlanPagoCliente;
@@ -160,12 +163,15 @@ return [
         PlanPagoCliente::class,
         Venta::class,
         CajaSesion::class,
+        CajaSesionSaldo::class,
+        CajaCierreMetodo::class,
         Cotizacion::class,
         CrmInteraccion::class,
         CuentaCobrar::class,
         CuentaPagar::class,
         Pedido::class,
         GiftCard::class,
+        GiftCardRecargaPago::class,
         NotaCredito::class,
         Empleado::class,
         Nomina::class,

@@ -2462,12 +2462,28 @@ export interface components {
                 orden: number;
             }[];
         };
+        /** CajaCierreMetodoResource */
+        CajaCierreMetodoResource: {
+            metodo_pago_id: number;
+            nombre: string;
+            total_teorico: string;
+            monto_contado: string;
+            diferencia: string;
+        };
+        /** CajaSaldoResource */
+        CajaSaldoResource: {
+            metodo_pago_id: number;
+            nombre: string;
+            total_teorico: string;
+        };
         /** CajaSesionResource */
         CajaSesionResource: {
             id: number;
             sucursal_id: number;
             usuario_id: number;
             monto_apertura: string;
+            total_teorico: string | null;
+            metodos?: components["schemas"]["CajaCierreMetodoResource"][];
             monto_cierre: string | null;
             total_ventas_sistema: string | null;
             diferencia: string | null;
@@ -2518,7 +2534,10 @@ export interface components {
         };
         /** CerrarCajaRequest */
         CerrarCajaRequest: {
-            monto_fisico: number;
+            conteos: {
+                metodo_pago_id: number;
+                monto: number;
+            }[];
         };
         /** ClienteResource */
         ClienteResource: {
@@ -3614,6 +3633,10 @@ export interface components {
         /** RecargarGiftCardRequest */
         RecargarGiftCardRequest: {
             monto: number;
+            pagos: {
+                metodo_pago_id: number;
+                monto: number;
+            }[];
         };
         /** RecetaIngrediente */
         RecetaIngrediente: {
@@ -3919,6 +3942,8 @@ export type AppModulesCuentasCobrarHttpRequestsRegistrarAbonoRequest = component
 export type AsignarListaPrecioClienteRequest = components['schemas']['AsignarListaPrecioClienteRequest'];
 export type AsignarRepartidorRequest = components['schemas']['AsignarRepartidorRequest'];
 export type AtributoResource = components['schemas']['AtributoResource'];
+export type CajaCierreMetodoResource = components['schemas']['CajaCierreMetodoResource'];
+export type CajaSaldoResource = components['schemas']['CajaSaldoResource'];
 export type CajaSesionResource = components['schemas']['CajaSesionResource'];
 export type CambiarEstadoOrdenRequest = components['schemas']['CambiarEstadoOrdenRequest'];
 export type CambiarEstadoPedidoRequest = components['schemas']['CambiarEstadoPedidoRequest'];
@@ -4574,6 +4599,7 @@ export interface operations {
                                 ventas_count: number;
                                 total_ventas: string;
                                 total_gastos: string;
+                                metodos: components["schemas"]["CajaSaldoResource"][];
                             } | null;
                             permisos: {
                                 abrir: boolean;
@@ -4638,7 +4664,7 @@ export interface operations {
                 };
                 content: {
                     "application/json": {
-                        data: components["schemas"]["CajaSesionResource"];
+                        data: components["schemas"]["CajaSesionResource"] & Record<string, never>;
                         desglose: {
                             total_gastos: string;
                             total_abonos_cxc: string;

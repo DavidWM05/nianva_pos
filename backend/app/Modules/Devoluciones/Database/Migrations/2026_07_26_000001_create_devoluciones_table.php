@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -12,6 +14,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('tenant_id')->constrained('tenants')->cascadeOnDelete();
             $table->foreignId('sucursal_id')->constrained('sucursales')->restrictOnDelete();
+            $table->foreignId('caja_sesion_id')->nullable()->constrained('caja_sesiones')->restrictOnDelete();
             $table->foreignId('venta_id')->constrained('ventas')->restrictOnDelete()->comment('ticket origen');
             $table->foreignId('venta_sombra_id')->nullable()->constrained('ventas')->nullOnDelete()->comment('venta generada si tipo=cambio; permite devolucion recursiva');
             $table->foreignId('usuario_id')->constrained('usuarios')->restrictOnDelete();

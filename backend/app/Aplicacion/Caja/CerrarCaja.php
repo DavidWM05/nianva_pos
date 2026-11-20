@@ -27,11 +27,12 @@ class CerrarCaja
     /**
      * Si la llama otra Action, su savepoint participa de la transacción exterior.
      *
+     * @param  list<array{metodo_pago_id:int,monto:int|float|string}>  $conteos
      * @return array{sesion: CajaSesion, desglose: array<string, float>}
      */
-    public function ejecutar(CajaSesion $cajaSesion, float $montoFisico): array
+    public function ejecutar(CajaSesion $cajaSesion, array $conteos): array
     {
-        return DB::transaction(function () use ($cajaSesion, $montoFisico) {
+        return DB::transaction(function () use ($cajaSesion, $conteos) {
             $cajaSesion = CajaSesion::query()->whereKey($cajaSesion->id)->lockForUpdate()->firstOrFail();
             $cajaSesionId = $cajaSesion->id;
 
@@ -42,9 +43,7 @@ class CerrarCaja
                 ->sum('monto'), 2);
             $totalPagosCxp = round((float) AbonoPagar::where('caja_sesion_id', $cajaSesionId)->sum('monto'), 2);
 
-            $totalGastosAjustado = $totalGastos + $totalPagosCxp - $totalAbonosCxc - $totalRecargasGc;
-
-            $sesion = $this->cajaService->cerrarCajaConSesion($cajaSesion, $montoFisico, $totalGastosAjustado);
+            $sesion = $this->cajaService->cerrarCajaConSesion($cajaSesion, $conteos);
 
             return [
                 'sesion' => $sesion,

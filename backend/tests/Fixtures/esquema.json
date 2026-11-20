@@ -335,6 +335,12 @@
                 "default": null
             },
             {
+                "nombre": "caja_sesion_id",
+                "tipo": "integer",
+                "nullable": true,
+                "default": null
+            },
+            {
                 "nombre": "fecha",
                 "tipo": "datetime",
                 "nullable": false,
@@ -386,6 +392,18 @@
                 ],
                 "on_update": "no action",
                 "on_delete": "cascade"
+            },
+            {
+                "nombre": null,
+                "columnas": [
+                    "caja_sesion_id"
+                ],
+                "tabla_foranea": "caja_sesiones",
+                "columnas_foraneas": [
+                    "id"
+                ],
+                "on_update": "no action",
+                "on_delete": "restrict"
             },
             {
                 "nombre": null,
@@ -1146,6 +1164,89 @@
         ],
         "llaves_foraneas": []
     },
+    "caja_cierre_metodos": {
+        "columnas": [
+            {
+                "nombre": "caja_sesion_id",
+                "tipo": "integer",
+                "nullable": false,
+                "default": null
+            },
+            {
+                "nombre": "diferencia",
+                "tipo": "numeric",
+                "nullable": false,
+                "default": null
+            },
+            {
+                "nombre": "id",
+                "tipo": "integer",
+                "nullable": false,
+                "default": null
+            },
+            {
+                "nombre": "metodo_pago_id",
+                "tipo": "integer",
+                "nullable": false,
+                "default": null
+            },
+            {
+                "nombre": "monto_contado",
+                "tipo": "numeric",
+                "nullable": false,
+                "default": null
+            },
+            {
+                "nombre": "total_teorico",
+                "tipo": "numeric",
+                "nullable": false,
+                "default": null
+            }
+        ],
+        "indices": [
+            {
+                "nombre": "caja_cierre_metodos_caja_sesion_id_metodo_pago_id_unique",
+                "columnas": [
+                    "caja_sesion_id",
+                    "metodo_pago_id"
+                ],
+                "unico": true
+            },
+            {
+                "nombre": "primary",
+                "columnas": [
+                    "id"
+                ],
+                "unico": true
+            }
+        ],
+        "llaves_foraneas": [
+            {
+                "nombre": null,
+                "columnas": [
+                    "caja_sesion_id"
+                ],
+                "tabla_foranea": "caja_sesiones",
+                "columnas_foraneas": [
+                    "id"
+                ],
+                "on_update": "no action",
+                "on_delete": "restrict"
+            },
+            {
+                "nombre": null,
+                "columnas": [
+                    "metodo_pago_id"
+                ],
+                "tabla_foranea": "metodos_pago",
+                "columnas_foraneas": [
+                    "id"
+                ],
+                "on_update": "no action",
+                "on_delete": "restrict"
+            }
+        ]
+    },
     "caja_movimientos": {
         "columnas": [
             {
@@ -1162,6 +1263,12 @@
             },
             {
                 "nombre": "id",
+                "tipo": "integer",
+                "nullable": false,
+                "default": null
+            },
+            {
+                "nombre": "metodo_pago_id",
                 "tipo": "integer",
                 "nullable": false,
                 "default": null
@@ -1249,9 +1356,92 @@
             {
                 "nombre": null,
                 "columnas": [
+                    "metodo_pago_id"
+                ],
+                "tabla_foranea": "metodos_pago",
+                "columnas_foraneas": [
+                    "id"
+                ],
+                "on_update": "no action",
+                "on_delete": "restrict"
+            },
+            {
+                "nombre": null,
+                "columnas": [
                     "usuario_id"
                 ],
                 "tabla_foranea": "usuarios",
+                "columnas_foraneas": [
+                    "id"
+                ],
+                "on_update": "no action",
+                "on_delete": "restrict"
+            }
+        ]
+    },
+    "caja_sesion_saldos": {
+        "columnas": [
+            {
+                "nombre": "caja_sesion_id",
+                "tipo": "integer",
+                "nullable": false,
+                "default": null
+            },
+            {
+                "nombre": "id",
+                "tipo": "integer",
+                "nullable": false,
+                "default": null
+            },
+            {
+                "nombre": "metodo_pago_id",
+                "tipo": "integer",
+                "nullable": false,
+                "default": null
+            },
+            {
+                "nombre": "saldo_teorico",
+                "tipo": "numeric",
+                "nullable": false,
+                "default": null
+            }
+        ],
+        "indices": [
+            {
+                "nombre": "caja_sesion_saldos_caja_sesion_id_metodo_pago_id_unique",
+                "columnas": [
+                    "caja_sesion_id",
+                    "metodo_pago_id"
+                ],
+                "unico": true
+            },
+            {
+                "nombre": "primary",
+                "columnas": [
+                    "id"
+                ],
+                "unico": true
+            }
+        ],
+        "llaves_foraneas": [
+            {
+                "nombre": null,
+                "columnas": [
+                    "caja_sesion_id"
+                ],
+                "tabla_foranea": "caja_sesiones",
+                "columnas_foraneas": [
+                    "id"
+                ],
+                "on_update": "no action",
+                "on_delete": "restrict"
+            },
+            {
+                "nombre": null,
+                "columnas": [
+                    "metodo_pago_id"
+                ],
+                "tabla_foranea": "metodos_pago",
                 "columnas_foraneas": [
                     "id"
                 ],
@@ -1314,6 +1504,12 @@
                 "nombre": "sucursal_id",
                 "tipo": "integer",
                 "nullable": false,
+                "default": null
+            },
+            {
+                "nombre": "total_teorico",
+                "tipo": "numeric",
+                "nullable": true,
                 "default": null
             },
             {
@@ -3550,6 +3746,12 @@
     "devoluciones": {
         "columnas": [
             {
+                "nombre": "caja_sesion_id",
+                "tipo": "integer",
+                "nullable": true,
+                "default": null
+            },
+            {
                 "nombre": "diferencia",
                 "tipo": "numeric",
                 "nullable": false,
@@ -3644,6 +3846,18 @@
             }
         ],
         "llaves_foraneas": [
+            {
+                "nombre": null,
+                "columnas": [
+                    "caja_sesion_id"
+                ],
+                "tabla_foranea": "caja_sesiones",
+                "columnas_foraneas": [
+                    "id"
+                ],
+                "on_update": "no action",
+                "on_delete": "restrict"
+            },
             {
                 "nombre": null,
                 "columnas": [
@@ -4070,6 +4284,69 @@
                     "usuario_id"
                 ],
                 "tabla_foranea": "usuarios",
+                "columnas_foraneas": [
+                    "id"
+                ],
+                "on_update": "no action",
+                "on_delete": "restrict"
+            }
+        ]
+    },
+    "gift_card_recarga_pagos": {
+        "columnas": [
+            {
+                "nombre": "id",
+                "tipo": "integer",
+                "nullable": false,
+                "default": null
+            },
+            {
+                "nombre": "metodo_pago_id",
+                "tipo": "integer",
+                "nullable": false,
+                "default": null
+            },
+            {
+                "nombre": "monto",
+                "tipo": "numeric",
+                "nullable": false,
+                "default": null
+            },
+            {
+                "nombre": "recarga_id",
+                "tipo": "integer",
+                "nullable": false,
+                "default": null
+            }
+        ],
+        "indices": [
+            {
+                "nombre": "primary",
+                "columnas": [
+                    "id"
+                ],
+                "unico": true
+            }
+        ],
+        "llaves_foraneas": [
+            {
+                "nombre": null,
+                "columnas": [
+                    "metodo_pago_id"
+                ],
+                "tabla_foranea": "metodos_pago",
+                "columnas_foraneas": [
+                    "id"
+                ],
+                "on_update": "no action",
+                "on_delete": "restrict"
+            },
+            {
+                "nombre": null,
+                "columnas": [
+                    "recarga_id"
+                ],
+                "tabla_foranea": "gift_card_recargas",
                 "columnas_foraneas": [
                     "id"
                 ],
@@ -9480,7 +9757,7 @@
             {
                 "nombre": "caja_sesion_id",
                 "tipo": "integer",
-                "nullable": false,
+                "nullable": true,
                 "default": null
             },
             {
@@ -9509,7 +9786,7 @@
             },
             {
                 "nombre": "es_venta_sombra",
-                "tipo": "tinyint",
+                "tipo": "boolean",
                 "nullable": false,
                 "default": "'0'"
             },

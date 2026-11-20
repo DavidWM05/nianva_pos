@@ -2,6 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { provideRouter } from '@angular/router';
 import { ToastService } from '@nianva/ui-shared';
+import { sumarDinero, restarDinero } from '@nianva/ui-format';
 import { of } from 'rxjs';
 import { describe, expect, it, vi } from 'vitest';
 
@@ -25,6 +26,9 @@ describe('CajaComponent formato por pipe', () => {
   };
 
   async function crear(estado: CajaActual, gastos: Gasto[] = []) {
+    if (estado.resumen && estado.sesion) {
+      estado.resumen.metodos = [{ metodo_pago_id: 1, nombre: 'Efectivo', total_teorico: restarDinero(sumarDinero(estado.sesion.monto_apertura, estado.resumen.total_ventas), estado.resumen.total_gastos) }];
+    }
     const cajaService = { actual: vi.fn().mockReturnValue(of(estado)), abrir: vi.fn(), cerrar: vi.fn() };
 
     await TestBed.configureTestingModule({
@@ -70,7 +74,7 @@ describe('CajaComponent formato por pipe', () => {
     );
     cajaService.actual.mockReturnValue(of({ sesion: null, resumen: null, permisos }));
 
-    fixture.componentInstance['montoFisico'].set(2580);
+    fixture.componentInstance['conteos'].set({ 1: 2580 });
     fixture.componentInstance.cerrarCaja();
     fixture.detectChanges();
     const texto = (fixture.nativeElement as HTMLElement).textContent ?? '';

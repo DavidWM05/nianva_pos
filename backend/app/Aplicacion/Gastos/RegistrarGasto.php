@@ -10,6 +10,7 @@ use App\Modules\Gastos\Services\GastoService;
 use App\Modules\Nucleo\Models\Usuario;
 use App\Modules\Nucleo\Scopes\TenantScopeViaRelacion;
 use App\Modules\Nucleo\Support\Dinero;
+use App\Modules\Nucleo\Support\MetodoEfectivo;
 use App\Modules\Tpv\Models\CajaSesion;
 use App\Modules\Tpv\Services\LibroCaja;
 use Illuminate\Support\Facades\DB;
@@ -29,7 +30,7 @@ final class RegistrarGasto
             // DAT-04: el gasto sale de la caja en su libro. La orquestación vive aquí porque Gastos
             // solo puede usar modelos y excepciones de Tpv, nunca sus servicios.
             if ($caja !== null) {
-                $this->libroCaja->registrar($caja, 'gasto', Dinero::desde('0')->restar(Dinero::desde((string) $gasto->getAttribute('monto')))->aCadena(), 'gastos', (int) $gasto->getKey(), (int) $usuario->id);
+                $this->libroCaja->registrar($caja, 'gasto', Dinero::desde('0')->restar(Dinero::desde((string) $gasto->getAttribute('monto')))->aCadena(), 'gastos', (int) $gasto->getKey(), (int) $usuario->id, MetodoEfectivo::id());
             }
 
             return $gasto;

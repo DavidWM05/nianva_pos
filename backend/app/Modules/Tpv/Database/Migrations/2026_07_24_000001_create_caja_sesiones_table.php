@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -16,6 +18,7 @@ return new class extends Migration
             // DAT-04: proyección del libro de caja (caja_movimientos); nace igual a la apertura.
             $table->decimal('saldo_teorico', 12, 2);
             $table->decimal('monto_cierre', 12, 2)->nullable();
+            $table->decimal('total_teorico', 12, 2)->nullable();
             $table->decimal('total_ventas_sistema', 12, 2)->nullable();
             $table->decimal('diferencia', 12, 2)->nullable();
             $table->dateTime('fecha_apertura')->useCurrent();

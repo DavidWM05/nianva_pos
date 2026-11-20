@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\Tpv\Database\Factories;
 
+use App\Modules\Nucleo\Support\MetodoEfectivo;
 use App\Modules\Tpv\Models\CajaMovimiento;
 use App\Modules\Tpv\Models\CajaSesion;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -17,6 +18,7 @@ class CajaMovimientoFactory extends Factory
     {
         return [
             'caja_sesion_id' => fn () => CajaSesion::factory()->create()->id,
+            'metodo_pago_id' => fn () => MetodoEfectivo::id(),
             'tipo' => 'venta',
             'referencia_tabla' => null,
             'referencia_id' => null,

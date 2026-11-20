@@ -9,6 +9,7 @@ use App\Modules\Inventario\Models\ProductoVariante;
 use App\Modules\Nucleo\Models\Permiso;
 use App\Modules\Nucleo\Models\Rol;
 use App\Modules\Nucleo\Models\Usuario;
+use App\Modules\Nucleo\Support\MetodoEfectivo;
 use App\Modules\Tpv\Models\Venta;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\Support\PreparaNegocio;
@@ -76,7 +77,7 @@ class OperacionesSensiblesTest extends TestCase
         $this->assertGreaterThan(0, $this->auditoria('productos', $producto->id));
 
         $this->actingAs($this->usuario)
-            ->patchJson("/api/v1/caja/{$this->caja->id}/cerrar", ['monto_fisico' => 0])
+            ->patchJson("/api/v1/caja/{$this->caja->id}/cerrar", ['conteos' => [['metodo_pago_id' => MetodoEfectivo::id(), 'monto' => 0]]])
             ->assertOk();
         $this->assertGreaterThan(0, $this->auditoria('caja_sesiones', $this->caja->id));
 

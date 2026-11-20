@@ -25,6 +25,7 @@ use App\Modules\Devoluciones\Dtos\ItemDevueltoDto;
 use App\Modules\Devoluciones\Dtos\PagoDevolucionDto;
 use App\Modules\Gastos\Dtos\CrearGastoDto;
 use App\Modules\Inventario\Models\Kardex;
+use App\Modules\Nucleo\Support\MetodoEfectivo;
 use App\Modules\Tpv\Dtos\CrearVentaDto;
 use App\Modules\Tpv\Dtos\LineaVentaDto;
 use App\Modules\Tpv\Dtos\PagoDto;
@@ -91,7 +92,7 @@ class ActionsApartadosGastosTest extends TestCase
     {
         $d = $this->negocio04b();
         $gasto = app(RegistrarGasto::class)->ejecutar(new CrearGastoDto('Luz', 30), $d['usuario']);
-        $cierre = app(CerrarCaja::class)->ejecutar($d['caja'], 20);
+        $cierre = app(CerrarCaja::class)->ejecutar($d['caja'], [['metodo_pago_id' => MetodoEfectivo::id(), 'monto' => 20]]);
 
         $this->assertSame($d['caja']->id, $gasto->caja_sesion_id);
         $this->assertSame('30.00', $gasto->monto);

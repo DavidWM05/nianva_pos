@@ -14,6 +14,7 @@ use App\Modules\Inventario\Dtos\CompraDto;
 use App\Modules\Inventario\Dtos\LineaCompraDto;
 use App\Modules\Inventario\Dtos\MovimientoInventarioDto;
 use App\Modules\Inventario\Models\Kardex;
+use App\Modules\Nucleo\Support\MetodoEfectivo;
 use App\Modules\Tpv\Dtos\AbrirCajaDto;
 use App\Modules\Tpv\Dtos\AnularVentaDto;
 use App\Modules\Tpv\Dtos\CrearVentaDto;
@@ -85,10 +86,10 @@ class ActionsTpvInventarioTest extends TestCase
     public function test_cerrar_caja_relee_el_estado_en_lugar_de_confiar_en_un_modelo_viejo(): void
     {
         $d = $this->negocio04b();
-        app(CerrarCaja::class)->ejecutar($d['caja'], 50);
+        app(CerrarCaja::class)->ejecutar($d['caja'], [['metodo_pago_id' => MetodoEfectivo::id(), 'monto' => 50]]);
 
         $this->expectException(CajaYaCerradaException::class);
-        app(CerrarCaja::class)->ejecutar($d['caja'], 999);
+        app(CerrarCaja::class)->ejecutar($d['caja'], [['metodo_pago_id' => MetodoEfectivo::id(), 'monto' => 999]]);
     }
 
     public function test_movimiento_crea_y_bloquea_el_stock_si_la_fila_no_existia(): void

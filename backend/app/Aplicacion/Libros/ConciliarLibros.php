@@ -14,6 +14,7 @@ use App\Modules\Nucleo\Support\Cantidad;
 use App\Modules\Nucleo\Support\Dinero;
 use App\Modules\Tpv\Models\CajaMovimiento;
 use App\Modules\Tpv\Models\CajaSesion;
+use App\Modules\Tpv\Models\CajaSesionSaldo;
 use App\Modules\VentasPlazos\Models\PlanPagoCliente;
 use App\Modules\VentasPlazos\Models\PlanPagoMovimiento;
 use Illuminate\Database\Eloquent\Collection;
@@ -74,10 +75,34 @@ final class ConciliarLibros
     /** @return list<string> */
     private function caja(): array
     {
-        return $this->dinero(
-            'caja_sesiones', CajaSesion::query()->withoutGlobalScopes()->get(), 'saldo_teorico',
-            fn (Model $caja) => CajaMovimiento::sinTenant()->where('caja_sesion_id', $caja->getKey())->orderBy('id')->get(),
-        );
+        $hallazgos = [];
+        foreach (CajaSesion::query()->withoutGlobalScopes()->orderBy('id')->get() as $caja) {
+            $saldos = CajaSesionSaldo::query()->withoutGlobalScopes()->where('caja_sesion_id', $caja->getKey())->orderBy('metodo_pago_id')->get();
+            if ($saldos->isEmpty()) {
+                $hallazgos[] = "caja_sesiones {$caja->getKey()}: el primer movimiento no es saldo_inicial.";
+
+                continue;
+            }
+            $suma = Dinero::desde('0');
+            foreach ($saldos as $saldo) {
+                $metodoId = (int) $saldo->getAttribute('metodo_pago_id');
+                $renglones = CajaMovimiento::sinTenant()->where('caja_sesion_id', $caja->getKey())->where('metodo_pago_id', $metodoId)->orderBy('id')->get();
+                $hallazgo = $this->cuadra($renglones, (string) $saldo->getAttribute('saldo_teorico'), static fn (Model $r): string => (string) $r->getAttribute('monto'));
+                if ($hallazgo !== null) {
+                    $hallazgos[] = "caja_sesiones {$caja->getKey()}, método {$metodoId}: {$hallazgo}";
+                }
+                $suma = $suma->sumar(Dinero::desde((string) $saldo->getAttribute('saldo_teorico')));
+            }
+            if ($suma->aCadena() !== Dinero::desde((string) $caja->getAttribute('saldo_teorico'))->aCadena()) {
+                $hallazgos[] = "caja_sesiones {$caja->getKey()}: la suma de los métodos no coincide con la proyección del encabezado.";
+            }
+            $sinSaldo = CajaMovimiento::sinTenant()->where('caja_sesion_id', $caja->getKey())->whereNotIn('metodo_pago_id', $saldos->pluck('metodo_pago_id'))->exists();
+            if ($sinSaldo) {
+                $hallazgos[] = "caja_sesiones {$caja->getKey()}: hay movimientos sin proyección de su método.";
+            }
+        }
+
+        return $hallazgos;
     }
 
     /**

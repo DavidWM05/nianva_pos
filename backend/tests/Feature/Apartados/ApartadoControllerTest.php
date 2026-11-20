@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Apartados;
 
+use App\Aplicacion\Caja\AbrirCaja;
 use App\Modules\Apartados\Models\Apartado;
 use App\Modules\Crm\Models\Cliente;
 use App\Modules\Inventario\Database\Factories\ProductoVarianteFactory;
@@ -17,6 +18,7 @@ use App\Modules\Nucleo\Models\Sucursal;
 use App\Modules\Nucleo\Models\Tenant;
 use App\Modules\Nucleo\Models\Usuario;
 use App\Modules\Nucleo\Services\TenantContext;
+use App\Modules\Tpv\Dtos\AbrirCajaDto;
 use App\Modules\Tpv\Services\CajaService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\Support\Bloqueos04e;
@@ -124,6 +126,7 @@ class ApartadoControllerTest extends TestCase
     public function test_registrar_abono_con_pago_mixto_actualiza_total_abonado(): void
     {
         $ctx = $this->prepararTenantConCatalogo();
+        app(AbrirCaja::class)->ejecutar(new AbrirCajaDto(0), $ctx['usuario']);
         $this->actingAs($ctx['usuario']);
 
         $apartado = $this->postJson('/api/v1/apartados', [
@@ -145,6 +148,7 @@ class ApartadoControllerTest extends TestCase
     public function test_registrar_abono_que_no_cuadra_devuelve_422_con_error_code(): void
     {
         $ctx = $this->prepararTenantConCatalogo();
+        app(AbrirCaja::class)->ejecutar(new AbrirCajaDto(0), $ctx['usuario']);
         $this->actingAs($ctx['usuario']);
 
         $apartado = $this->postJson('/api/v1/apartados', [
@@ -198,6 +202,7 @@ class ApartadoControllerTest extends TestCase
     public function test_cancelar_devuelve_abonos_pendientes_en_la_respuesta(): void
     {
         $ctx = $this->prepararTenantConCatalogo();
+        app(AbrirCaja::class)->ejecutar(new AbrirCajaDto(0), $ctx['usuario']);
         $this->actingAs($ctx['usuario']);
 
         $apartado = $this->postJson('/api/v1/apartados', [
@@ -234,6 +239,7 @@ class ApartadoControllerTest extends TestCase
     public function test_show_incluye_detalles_y_abonos(): void
     {
         $ctx = $this->prepararTenantConCatalogo();
+        app(AbrirCaja::class)->ejecutar(new AbrirCajaDto(0), $ctx['usuario']);
         $this->actingAs($ctx['usuario']);
 
         $apartado = $this->postJson('/api/v1/apartados', [
