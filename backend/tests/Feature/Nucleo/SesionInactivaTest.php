@@ -131,6 +131,10 @@ class SesionInactivaTest extends TestCase
 
     public function test_un_login_nuevo_arranca_el_plazo_de_cero(): void
     {
+        // El login guarda la hora de su petición; congelar el reloj evita que el test falle
+        // cuando la petición cruza un cambio de segundo (el hash de la contraseña tarda).
+        $this->freezeTime();
+
         $usuario = $this->crearUsuarioConTenant(30);
         $this->withSession([
             self::CLAVE_ULTIMA_ACTIVIDAD => now()->subMinutes(100)->timestamp,
