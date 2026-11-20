@@ -49,7 +49,7 @@ class DevolucionService
      *
      * @throws DevolucionSobreVentaSombraException si $ventaOrigen->es_venta_sombra y $tipo === 'devolucion'.
      * @throws DevolucionPagoNoCuadraException si la suma de pagos no coincide con abs(diferencia).
-     * @throws CajaSesionNoAbiertaException si $tipo === 'cambio' y la sucursal no tiene caja abierta (la venta sombra la exige, como cualquier venta).
+     * @throws CajaSesionNoAbiertaException si el cambio tiene diferencia a cobrar o reembolsar y la sucursal no tiene caja abierta.
      */
     public function registrarDevolucionConBloqueos(
         Venta $ventaOrigen,
@@ -128,8 +128,13 @@ class DevolucionService
         }
 
         $diferencia = round($montoCambio - $montoDevolucion, 2);
+        if ($tipo === 'cambio' && $caja === null && Dinero::desde((string) $diferencia)->comparar(Dinero::desde('0')) !== 0) {
+            throw new CajaSesionNoAbiertaException($sucursalId);
+        }
 
-        $this->verificarPagosDiferencia($pagos, $diferencia);
+        if ($tipoReembolso !== 'nota_credito' || $diferencia >= 0) {
+            $this->verificarPagosDiferencia($pagos, $diferencia);
+        }
 
         $devolucion = Devolucion::query()->create([
             'tenant_id' => $tenantId,

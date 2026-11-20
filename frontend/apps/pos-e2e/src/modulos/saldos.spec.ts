@@ -94,6 +94,9 @@ test('saldos: emitir, buscar y recargar una gift card', async ({ page }) => {
     .getByRole('dialog')
     .getByRole('textbox', { name: 'Monto a recargar', exact: true })
     .fill('25');
+  await page.getByRole('dialog').getByRole('combobox').click();
+  await page.getByRole('option', { name: /Efectivo$/ }).click();
+  await page.getByRole('dialog').locator('nucleo-lineas-pago input[type="number"]').fill('25');
   await capturarPantalla50h(page, 'gift-cards-modal-recarga-listo');
   await page.getByRole('button', { name: /Confirmar recarga$/ }).click();
   await expect(page.locator('dd').filter({ hasText: '$125.00' })).toBeVisible();

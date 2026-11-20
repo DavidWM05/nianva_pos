@@ -25,7 +25,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property string $saldo_antes
  * @property string $saldo_despues
  */
-#[Fillable(['caja_sesion_id', 'tipo', 'referencia_tabla', 'referencia_id', 'monto', 'saldo_antes', 'saldo_despues', 'usuario_id'])]
+#[Fillable(['caja_sesion_id', 'metodo_pago_id', 'tipo', 'referencia_tabla', 'referencia_id', 'monto', 'saldo_antes', 'saldo_despues', 'usuario_id'])]
 class CajaMovimiento extends Model
 {
     use BelongsToTenantViaRelacion;

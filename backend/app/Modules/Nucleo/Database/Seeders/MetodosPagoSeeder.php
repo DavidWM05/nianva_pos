@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Modules\Nucleo\Database\Seeders;
 
 use App\Modules\Nucleo\Models\MetodoPago;
@@ -7,15 +9,15 @@ use Illuminate\Database\Seeder;
 
 /**
  * Catalogo global de metodos de pago (tenant_id NULL -- ver la migracion
- * create_metodos_pago_table). Sin este seeder, un tenant nuevo no tiene
- * ningun metodo de pago para elegir en la pantalla de venta: no se siembra
+ * create_metodos_pago_table). El Efectivo global ya nace en esa migración;
+ * este seeder completa los demás métodos para elegir en la venta. No se siembra
  * desde un TenantObserver (como "Publico General" en Crm) porque esto es
  * un catalogo *compartido*, no algo propio de cada tenant.
  */
 class MetodosPagoSeeder extends Seeder
 {
     /**
-     * @var list<array{nombre: string, tipo: string}>
+     * @var list<array{nombre: string, tipo: string, incluir_en_financiero: bool}>
      */
     private const METODOS = [
         ['nombre' => 'Efectivo', 'tipo' => 'efectivo', 'incluir_en_financiero' => true],
@@ -30,7 +32,8 @@ class MetodosPagoSeeder extends Seeder
     public function run(): void
     {
         foreach (self::METODOS as $metodo) {
-            MetodoPago::firstOrCreate(
+            // NULL en un índice UNIQUE no evita duplicados: buscar el global antes de crear.
+            MetodoPago::sinTenant()->whereNull('tenant_id')->firstOrCreate(
                 ['tenant_id' => null, 'nombre' => $metodo['nombre']],
                 ['tipo' => $metodo['tipo'], 'incluir_en_financiero' => $metodo['incluir_en_financiero'], 'activo' => true],
             );

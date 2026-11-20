@@ -22,6 +22,7 @@ use App\Modules\Nucleo\Models\Sucursal;
 use App\Modules\Nucleo\Models\Tenant;
 use App\Modules\Nucleo\Models\Usuario;
 use App\Modules\Nucleo\Services\TenantContext;
+use App\Modules\Nucleo\Support\MetodoEfectivo;
 use App\Modules\Tpv\Models\CajaMovimiento;
 use App\Modules\Tpv\Models\CajaSesion;
 use App\Modules\Tpv\Services\LibroCaja;
@@ -110,10 +111,23 @@ class LibrosTest extends TestCase
     {
         ['sucursal' => $sucursal, 'usuario' => $usuario] = $this->negocio();
         $caja = CajaSesion::factory()->create(['sucursal_id' => $sucursal->id, 'usuario_id' => $usuario->id, 'monto_apertura' => 50]);
-        CajaSesion::query()->withoutGlobalScopes()->whereKey($caja->id)->update(['saldo_teorico' => 80]);
+        app(LibroCaja::class)->saldoInicial($caja, $usuario->id);
+        $metodoId = MetodoEfectivo::id();
+        $alterada = false;
+        $activo = true;
+        DB::connection()->beforeExecuting(static function (string $consulta) use ($caja, $metodoId, &$alterada, &$activo): void {
+            if ($activo && ! $alterada && str_starts_with(strtolower($consulta), 'update') && str_contains($consulta, 'caja_sesion_saldos')) {
+                $alterada = true;
+                DB::table('caja_sesion_saldos')->where('caja_sesion_id', $caja->id)->where('metodo_pago_id', $metodoId)->update(['saldo_teorico' => 80]);
+            }
+        });
 
         $this->expectException(ProyeccionNoActualizadaException::class);
-        DB::transaction(fn () => app(LibroCaja::class)->registrar($caja, 'venta', '20.00', 'ventas', 1, $usuario->id));
+        try {
+            DB::transaction(fn () => app(LibroCaja::class)->registrar($caja, 'venta', '20.00', 'ventas', 1, $usuario->id, $metodoId));
+        } finally {
+            $activo = false;
+        }
     }
 
     /** @return iterable<string, array{0: class-string<Model>, 1: string}> */

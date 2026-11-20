@@ -1,7 +1,7 @@
 import { limitesDe } from '@nianva/api-contrato';
-import { compararDinero, DineroPipe, FechaHoraPipe } from '@nianva/ui-format';
+import { compararDinero, restarDinero, DineroPipe, FechaHoraPipe } from '@nianva/ui-format';
 import { HttpErrorResponse } from '@angular/common/http';
-import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatButton } from '@angular/material/button';
 import { SkeletonComponent } from '@nianva/ui-feedback';
@@ -10,7 +10,7 @@ import { DatosComponent, FormActionsComponent } from '@nianva/ui-layout';
 import { ModalComponent } from '@nianva/ui-overlays';
 import { ToastService, esErrorNegocio, mensajeError } from '@nianva/ui-shared';
 
-import { CajaActual, CajaDesglose, CajaService, CajaSesion, Gasto, GastoService } from '@nianva/domain-tpv';
+import { CajaActual, CajaConteo, CajaDesglose, CajaService, CajaSesion, Gasto, GastoService } from '@nianva/domain-tpv';
 
 /**
  * Pantalla de caja: abrir/ver estado/cerrar la sesion de la sucursal del
@@ -63,7 +63,22 @@ export class CajaComponent implements OnInit {
   protected readonly montoApertura = signal<number | null>(null);
   protected readonly abriendo = signal(false);
 
-  protected readonly montoFisico = signal<number | null>(null);
+  protected readonly conteos = signal<Record<number, number | null>>({});
+  protected readonly metodos = computed(() => this.estado()?.resumen?.metodos ?? []);
+  protected readonly conteosValidos = computed(() => this.metodos().length > 0 && this.metodos().every(metodo => {
+    const monto = this.conteos()[metodo.metodo_pago_id];
+    const limites = this.limitesCierre.conteos.elemento.monto;
+    return monto !== undefined && monto !== null && Number.isFinite(monto)
+      && monto >= limites.minimum && monto <= limites.maximum && /^\d+(\.\d{1,2})?$/.test(String(monto));
+  }));
+
+  actualizarConteo(id: number, monto: number | null): void {
+    this.conteos.update(actuales => ({ ...actuales, [id]: monto }));
+  }
+
+  diferenciaMetodo(teorico: string, monto: number | null | undefined): string | null {
+    return monto === null || monto === undefined ? null : restarDinero(monto, teorico);
+  }
   protected readonly cerrando = signal(false);
 
   protected readonly cajaRecienCerrada = signal<CajaSesion | null>(null);
@@ -131,15 +146,20 @@ export class CajaComponent implements OnInit {
 
   cerrarCaja(): void {
     const sesion = this.estado()?.sesion;
-    const monto = this.montoFisico();
-    if (!sesion || monto === null || monto < 0) return;
+    if (!sesion || !this.conteosValidos()) return;
+    const conteos: CajaConteo[] = [];
+    for (const metodo of this.metodos()) {
+      const monto = this.conteos()[metodo.metodo_pago_id];
+      if (monto === null || monto === undefined) return;
+      conteos.push({ metodo_pago_id: metodo.metodo_pago_id, monto });
+    }
 
     this.cerrando.set(true);
 
-    this.cajaService.cerrar(sesion.id, monto).subscribe({
+    this.cajaService.cerrar(sesion.id, conteos).subscribe({
       next: ({ sesion: cerrada, desglose }) => {
         this.cerrando.set(false);
-        this.montoFisico.set(null);
+        this.conteos.set({});
         this.cajaRecienCerrada.set(cerrada);
         this.desgloseCierre.set(desglose);
         this.cargarEstado();

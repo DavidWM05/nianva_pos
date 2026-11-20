@@ -2,17 +2,23 @@
 
 namespace Tests\Feature\Aplicacion;
 
-use App\Modules\CuentasCobrar\Models\AbonoCuenta;
+use App\Aplicacion\CuentasCobrar\RegistrarAbono;
+use App\Aplicacion\CuentasPagar\RegistrarPago;
+use App\Aplicacion\Gastos\RegistrarGasto;
+use App\Aplicacion\GiftCards\RecargarGiftCard;
+use App\Modules\CuentasCobrar\Dtos\RegistrarAbonoDto;
 use App\Modules\CuentasCobrar\Models\CuentaCobrar;
-use App\Modules\CuentasPagar\Models\AbonoPagar;
+use App\Modules\CuentasPagar\Dtos\RegistrarPagoDto;
 use App\Modules\CuentasPagar\Models\CuentaPagar;
+use App\Modules\Gastos\Dtos\CrearGastoDto;
 use App\Modules\Gastos\Services\GastoService;
+use App\Modules\GiftCards\Dtos\RecargarGiftCardDto;
 use App\Modules\GiftCards\Models\GiftCard;
-use App\Modules\GiftCards\Models\GiftCardRecarga;
+use App\Modules\Nucleo\Support\MetodoEfectivo;
+use App\Modules\Tpv\Dtos\PagoDto;
 use App\Modules\Tpv\Models\CajaSesion;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Mockery\MockInterface;
-use Tests\Support\Bloqueos04c;
 use Tests\Support\PreparaNegocio;
 use Tests\TestCase;
 
@@ -31,7 +37,7 @@ class CerrarCajaTest extends TestCase
     {
         $venta = $this->crearVenta();
 
-        app(GastoService::class)->registrarGastoConCaja(Bloqueos04c::caja($this->sucursal->id), $this->sucursal->id, $this->usuario->id, 'Luz', 80);
+        app(RegistrarGasto::class)->ejecutar(new CrearGastoDto('Luz', 80), $this->usuario);
 
         $cuentaCobrar = CuentaCobrar::create([
             'tenant_id' => $this->tenant->id,
@@ -42,13 +48,7 @@ class CerrarCajaTest extends TestCase
             'estado' => 'pendiente',
         ]);
 
-        AbonoCuenta::create([
-            'cuenta_cobrar_id' => $cuentaCobrar->id,
-            'caja_sesion_id' => $this->caja->id,
-            'usuario_id' => $this->usuario->id,
-            'monto' => 30,
-            'metodo_pago_id' => $this->metodoPago->id,
-        ]);
+        app(RegistrarAbono::class)->ejecutar(new RegistrarAbonoDto(30, $this->metodoPago->id, null), $cuentaCobrar->id, $this->usuario);
 
         $giftCard = GiftCard::create([
             'tenant_id' => $this->tenant->id,
@@ -58,12 +58,7 @@ class CerrarCajaTest extends TestCase
             'estado' => 'activa',
         ]);
 
-        GiftCardRecarga::create([
-            'gift_card_id' => $giftCard->id,
-            'caja_sesion_id' => $this->caja->id,
-            'usuario_id' => $this->usuario->id,
-            'monto' => 20,
-        ]);
+        app(RecargarGiftCard::class)->ejecutar(new RecargarGiftCardDto(20, [new PagoDto($this->metodoPago->id, 20)]), $giftCard->id, $this->usuario);
 
         $cuentaPagar = CuentaPagar::create([
             'tenant_id' => $this->tenant->id,
@@ -74,18 +69,12 @@ class CerrarCajaTest extends TestCase
             'estado' => 'pendiente',
         ]);
 
-        AbonoPagar::create([
-            'cuenta_pagar_id' => $cuentaPagar->id,
-            'caja_sesion_id' => $this->caja->id,
-            'usuario_id' => $this->usuario->id,
-            'monto' => 10,
-            'metodo_pago_id' => $this->metodoPago->id,
-        ]);
+        app(RegistrarPago::class)->ejecutar(new RegistrarPagoDto(10, $this->metodoPago->id, null), $cuentaPagar->id, $this->usuario);
 
         $this->actingAs($this->usuario);
 
         // 500 apertura + 100 ventas + 30 CxC + 20 GC - 10 CxP - 80 gastos = 560.
-        $this->patchJson("/api/v1/caja/{$this->caja->id}/cerrar", ['monto_fisico' => 560])
+        $this->patchJson("/api/v1/caja/{$this->caja->id}/cerrar", ['conteos' => [['metodo_pago_id' => MetodoEfectivo::id(), 'monto' => 560]]])
             ->assertOk()
             ->assertJsonPath('data.estado', 'cerrada')
             ->assertJsonPath('data.total_ventas_sistema', '100.00')
@@ -107,7 +96,7 @@ class CerrarCajaTest extends TestCase
 
         $this->actingAs($this->usuario);
 
-        $this->patchJson("/api/v1/caja/{$this->caja->id}/cerrar", ['monto_fisico' => 500])
+        $this->patchJson("/api/v1/caja/{$this->caja->id}/cerrar", ['conteos' => [['metodo_pago_id' => MetodoEfectivo::id(), 'monto' => 500]]])
             ->assertStatus(500);
 
         $sesion = CajaSesion::findOrFail($this->caja->id);

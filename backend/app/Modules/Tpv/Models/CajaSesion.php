@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Modules\Tpv\Models;
 
 use App\Modules\Nucleo\Models\Concerns\BelongsToSucursal;
@@ -19,7 +21,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  */
 #[Fillable([
     'sucursal_id', 'usuario_id', 'monto_apertura', 'saldo_teorico', 'monto_cierre',
-    'total_ventas_sistema', 'diferencia', 'fecha_apertura', 'fecha_cierre', 'estado',
+    'total_ventas_sistema', 'total_teorico', 'diferencia', 'fecha_apertura', 'fecha_cierre', 'estado',
 ])]
 class CajaSesion extends Model
 {
@@ -41,6 +43,7 @@ class CajaSesion extends Model
             'monto_cierre' => 'decimal:2',
             'total_ventas_sistema' => 'decimal:2',
             'diferencia' => 'decimal:2',
+            'total_teorico' => 'decimal:2',
             'fecha_apertura' => 'datetime',
             'fecha_cierre' => 'datetime',
         ];
@@ -77,6 +80,18 @@ class CajaSesion extends Model
     public function ventas(): HasMany
     {
         return $this->hasMany(Venta::class);
+    }
+
+    /** @return HasMany<CajaSesionSaldo, $this> */
+    public function saldos(): HasMany
+    {
+        return $this->hasMany(CajaSesionSaldo::class);
+    }
+
+    /** @return HasMany<CajaCierreMetodo, $this> */
+    public function cierreMetodos(): HasMany
+    {
+        return $this->hasMany(CajaCierreMetodo::class);
     }
 
     /** @return HasMany<CajaMovimiento, $this> */

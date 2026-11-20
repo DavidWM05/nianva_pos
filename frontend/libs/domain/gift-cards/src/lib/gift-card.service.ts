@@ -10,6 +10,8 @@ import {
   GiftCardEmitirPayload,
 } from './gift-card.types';
 
+export type PagoRecarga = CuerpoDe<'/gift-cards/{id}/recargar', 'post'>['pagos'][number];
+
 export interface GiftCardsPagina {
   data: GiftCard[];
   total: number;
@@ -78,8 +80,8 @@ export class GiftCardService {
       .pipe(map((r) => r.data));
   }
 
-  recargar(id: number, monto: number): Observable<GiftCard> {
-    const cuerpo: CuerpoDe<'/gift-cards/{id}/recargar', 'post'> = { monto };
+  recargar(id: number, monto: number, pagos: PagoRecarga[]): Observable<GiftCard> {
+    const cuerpo: CuerpoDe<'/gift-cards/{id}/recargar', 'post'> = { monto, pagos };
 
     return this.http
       .post<RespuestaDe<'/gift-cards/{id}/recargar', 'post'>>(

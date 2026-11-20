@@ -6,9 +6,13 @@ namespace App\Modules\Tpv\Services;
 
 use App\Modules\Nucleo\Models\Sucursal;
 use App\Modules\Nucleo\Scopes\TenantScopeViaRelacion;
+use App\Modules\Nucleo\Support\Dinero;
 use App\Modules\Tpv\Exceptions\CajaYaAbiertaException;
 use App\Modules\Tpv\Exceptions\CajaYaCerradaException;
+use App\Modules\Tpv\Exceptions\ConteoMetodoFaltanteException;
+use App\Modules\Tpv\Models\CajaCierreMetodo;
 use App\Modules\Tpv\Models\CajaSesion;
+use App\Modules\Tpv\Models\CajaSesionSaldo;
 use App\Modules\Tpv\Models\Venta;
 use App\Modules\Tpv\Models\VentaPago;
 use Illuminate\Support\Facades\DB;
@@ -53,41 +57,57 @@ class CajaService
      * es una venta real del dia y contarla inflaria el sistema contra el
      * corte fisico de caja.
      *
-     * $totalGastos: Tpv no importa el modulo Gastos (se construyo antes y
+     * El desglose de gastos lo obtiene la Action: Tpv no importa el modulo Gastos (se construyo antes y
      * la direccion de dependencia del proyecto va siempre de lo nuevo hacia
      * lo viejo, nunca al reves) -- es el LLAMADOR (GastoService::totalGastos())
-     * quien calcula el numero y lo entrega ya resuelto aqui, mismo patron
-     * que abono_previo en VentaService::registrarVentaConBloqueos(). Default 0.0:
-     * cualquier instalacion sin el modulo Gastos sigue funcionando igual.
+     * quien calcula el desglose; el saldo por método sale del libro, mismo patron
+     * de separar la orquestación entre módulos de la escritura de dominio.
      *
      * CORRECCION DE FORMULA (cambia el resultado de llamadas previas): antes
      * diferencia = montoFisico - totalVentasSistema, que ignoraba por
      * completo monto_apertura -- un error real (si abres con $500 de fondo
      * y vendes $50, el cajon deberia tener ~$550, no $50). Se corrige al
      * total_teorico del documento original de POS Ropa: apertura + ventas -
-     * gastos. Ya no es solo "agregar gastos", es la formula completa.
+     * gastos. DAT-04b aplica esa suma por método con los demás movimientos monetarios;
+     * el encabezado suma los conteos y teóricos, nunca compara solo efectivo con tarjetas.
      */
-    public function cerrarCajaConSesion(CajaSesion $cajaSesion, float $montoFisico, float $totalGastos = 0.0): CajaSesion
+    /** @param list<array{metodo_pago_id:int,monto:int|float|string}> $conteos */
+    public function cerrarCajaConSesion(CajaSesion $cajaSesion, array $conteos): CajaSesion
     {
         $this->exigirTransaccion();
-        if ($cajaSesion->estado === 'cerrada') {
-            throw new CajaYaCerradaException($cajaSesion->id);
+        if ($cajaSesion->getAttribute('estado') === 'cerrada') {
+            throw new CajaYaCerradaException((int) $cajaSesion->id);
         }
+        $this->libroCaja->saldoInicial($cajaSesion, (int) $cajaSesion->getAttribute('usuario_id'));
+        $saldos = CajaSesionSaldo::query()->where('caja_sesion_id', $cajaSesion->id)->get()->keyBy('metodo_pago_id');
+        $contados = [];
+        foreach ($conteos as $conteo) {
+            $id = $conteo['metodo_pago_id'];
+            if (isset($contados[$id])) {
+                throw new \InvalidArgumentException('No se puede repetir un método de pago en el cierre.');
+            }
+            $monto = Dinero::desde((string) $conteo['monto']);
+            if ($monto->comparar(Dinero::desde('0')) < 0) {
+                throw new \InvalidArgumentException('El monto contado no puede ser negativo.');
+            }
+            $contados[$id] = $monto;
+        }
+        foreach ($saldos as $id => $saldo) {
+            if (! isset($contados[$id])) {
+                throw new ConteoMetodoFaltanteException((int) $cajaSesion->id, (int) $id);
+            }
+        }
+        $teoricoTotal = Dinero::desde('0');
+        $contadoTotal = Dinero::desde('0');
+        foreach ($contados as $id => $contado) {
+            $teorico = Dinero::desde(isset($saldos[$id]) ? (string) $saldos[$id]->getAttribute('saldo_teorico') : '0.00');
+            CajaCierreMetodo::query()->create(['caja_sesion_id' => $cajaSesion->id, 'metodo_pago_id' => $id, 'total_teorico' => $teorico->aCadena(), 'monto_contado' => $contado->aCadena(), 'diferencia' => $contado->restar($teorico)->aCadena()]);
+            $teoricoTotal = $teoricoTotal->sumar($teorico);
+            $contadoTotal = $contadoTotal->sumar($contado);
+        }
+        $cajaSesion->update(['monto_cierre' => $contadoTotal->aCadena(), 'total_teorico' => $teoricoTotal->aCadena(), 'total_ventas_sistema' => $this->totalVentasSistema($cajaSesion), 'diferencia' => $contadoTotal->restar($teoricoTotal)->aCadena(), 'fecha_cierre' => now(), 'estado' => 'cerrada']);
 
-        $totalVentasSistema = $this->totalVentasSistema($cajaSesion);
-
-        $totalTeorico = round((float) $cajaSesion->monto_apertura + $totalVentasSistema - $totalGastos, 2);
-        $diferencia = round($montoFisico - $totalTeorico, 2);
-
-        $cajaSesion->update([
-            'monto_cierre' => $montoFisico,
-            'total_ventas_sistema' => $totalVentasSistema,
-            'diferencia' => $diferencia,
-            'fecha_cierre' => now(),
-            'estado' => 'cerrada',
-        ]);
-
-        return $cajaSesion->refresh();
+        return $cajaSesion->refresh()->load('cierreMetodos.metodoPago');
     }
 
     private function exigirTransaccion(): void

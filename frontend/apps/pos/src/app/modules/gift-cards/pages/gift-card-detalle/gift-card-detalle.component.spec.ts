@@ -102,9 +102,10 @@ describe('GiftCardDetalleComponent', () => {
 
     fixture.componentInstance.abrirRecargar();
     fixture.componentInstance['montoRecarga'].set(200);
+    fixture.componentInstance.onPagosRecarga({ pagos: [{ metodo_pago_id: 1, monto: 200 }], cuadra: true, suma: 200 });
     fixture.componentInstance.confirmarRecargar();
 
-    expect(giftCardService.recargar).toHaveBeenCalledWith(5, 200);
+    expect(giftCardService.recargar).toHaveBeenCalledWith(5, 200, [{ metodo_pago_id: 1, monto: 200 }]);
     expect(giftCardService.obtener).toHaveBeenCalledTimes(2); // 1 al iniciar + 1 al recargar
     expect(toast.success).toHaveBeenCalledWith('Gift card recargada.');
   });
@@ -117,6 +118,7 @@ describe('GiftCardDetalleComponent', () => {
 
     fixture.componentInstance.abrirRecargar();
     fixture.componentInstance['montoRecarga'].set(200);
+    fixture.componentInstance.onPagosRecarga({ pagos: [{ metodo_pago_id: 1, monto: 200 }], cuadra: true, suma: 200 });
     fixture.componentInstance.confirmarRecargar();
 
     expect(toast.error).toHaveBeenCalledWith('La gift card está expirada.');

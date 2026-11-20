@@ -2,7 +2,9 @@
 
 namespace Tests\Feature\Tpv;
 
+use App\Aplicacion\Gastos\RegistrarGasto;
 use App\Modules\Crm\Models\Cliente;
+use App\Modules\Gastos\Dtos\CrearGastoDto;
 use App\Modules\Gastos\Services\GastoService;
 use App\Modules\Inventario\Database\Factories\ProductoVarianteFactory;
 use App\Modules\Inventario\Models\Categoria;
@@ -17,6 +19,7 @@ use App\Modules\Nucleo\Models\Sucursal;
 use App\Modules\Nucleo\Models\Tenant;
 use App\Modules\Nucleo\Models\Usuario;
 use App\Modules\Nucleo\Services\TenantContext;
+use App\Modules\Nucleo\Support\MetodoEfectivo;
 use App\Modules\Tpv\Services\CajaService;
 use App\Modules\Tpv\Services\VentaService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -131,7 +134,7 @@ class CajaControllerTest extends TestCase
         $sesion = app(CajaService::class)->abrirCajaConSucursal(Bloqueos04e::sucursal($sucursal->id), $usuario->id, 500);
         $this->actingAs($usuario);
 
-        $respuesta = $this->patchJson("/api/v1/caja/{$sesion->id}/cerrar", ['monto_fisico' => 480]);
+        $respuesta = $this->patchJson("/api/v1/caja/{$sesion->id}/cerrar", ['conteos' => [['metodo_pago_id' => MetodoEfectivo::id(), 'monto' => 480]]]);
 
         $respuesta->assertOk()
             ->assertJsonPath('data.estado', 'cerrada')
@@ -158,11 +161,11 @@ class CajaControllerTest extends TestCase
     {
         ['sucursal' => $sucursal, 'usuario' => $usuario] = $this->crearUsuarioConPermisos(['caja.abrir', 'caja.cerrar']);
         $sesion = app(CajaService::class)->abrirCajaConSucursal(Bloqueos04e::sucursal($sucursal->id), $usuario->id, 500);
-        app(GastoService::class)->registrarGastoConCaja(Bloqueos04c::caja($sucursal->id), $sucursal->id, $usuario->id, 'Luz', 80);
+        app(RegistrarGasto::class)->ejecutar(new CrearGastoDto('Luz', 80), $usuario);
         $this->actingAs($usuario);
 
         // total_teorico = apertura(500) + ventas(0) - gastos(80) = 420.
-        $respuesta = $this->patchJson("/api/v1/caja/{$sesion->id}/cerrar", ['monto_fisico' => 420]);
+        $respuesta = $this->patchJson("/api/v1/caja/{$sesion->id}/cerrar", ['conteos' => [['metodo_pago_id' => MetodoEfectivo::id(), 'monto' => 420]]]);
 
         $respuesta->assertOk()->assertJsonPath('data.diferencia', '0.00');
     }

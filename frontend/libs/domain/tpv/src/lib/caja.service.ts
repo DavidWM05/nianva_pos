@@ -4,7 +4,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable, map } from 'rxjs';
 
-import { CajaActual, CajaDesglose, CajaSesion } from './caja.types';
+import { CajaActual, CajaConteo, CajaDesglose, CajaSesion } from './caja.types';
 
 @Injectable({ providedIn: 'root' })
 export class CajaService {
@@ -31,8 +31,8 @@ export class CajaService {
    * pagos CxP) para que nadie pueda cerrar la caja con una diferencia
    * manipulada -- ver el docblock del Controller.
    */
-  cerrar(id: number, montoFisico: number): Observable<{ sesion: CajaSesion; desglose: CajaDesglose }> {
-    const cuerpo: CuerpoDe<'/caja/{cajaSesion}/cerrar', 'patch'> = { monto_fisico: montoFisico };
+  cerrar(id: number, conteos: CajaConteo[]): Observable<{ sesion: CajaSesion; desglose: CajaDesglose }> {
+    const cuerpo: CuerpoDe<'/caja/{cajaSesion}/cerrar', 'patch'> = { conteos };
 
     return this.http
       .patch<RespuestaDe<'/caja/{cajaSesion}/cerrar', 'patch'>>(urlApi(`/caja/${id}/cerrar`), cuerpo)

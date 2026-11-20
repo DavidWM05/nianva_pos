@@ -51,6 +51,6 @@ class NucleosRequierenTransaccionTest extends TestCase
     public function test_cierre_rechaza_escribir_sin_transaccion(): void
     {
         $this->expectException(LogicException::class);
-        app(CajaService::class)->cerrarCajaConSesion(new CajaSesion, 50);
+        app(CajaService::class)->cerrarCajaConSesion(new CajaSesion, [['metodo_pago_id' => 1, 'monto' => 50]]);
     }
 }

@@ -6001,18 +6001,6 @@ parameters:
 			path: app/Modules/Tpv/Models/VentaPago.php
 
 		-
-			message: '#^Access to an undefined property App\\Modules\\Tpv\\Models\\CajaSesion\:\:\$estado\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Modules/Tpv/Services/CajaService.php
-
-		-
-			message: '#^Access to an undefined property App\\Modules\\Tpv\\Models\\CajaSesion\:\:\$monto_apertura\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Modules/Tpv/Services/CajaService.php
-
-		-
 			message: '#^Access to an undefined property App\\Modules\\Precios\\Models\\Cupon\:\:\$tenant_id\.$#'
 			identifier: property.notFound
 			count: 1

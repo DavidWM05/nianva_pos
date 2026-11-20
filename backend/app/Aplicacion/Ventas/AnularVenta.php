@@ -9,6 +9,7 @@ use App\Modules\Inventario\Dtos\MovimientoInventarioDto;
 use App\Modules\Nucleo\Models\Usuario;
 use App\Modules\Nucleo\Scopes\TenantScopeViaRelacion;
 use App\Modules\Tpv\Dtos\AnularVentaDto;
+use App\Modules\Tpv\Exceptions\CajaSesionNoAbiertaException;
 use App\Modules\Tpv\Models\CajaSesion;
 use App\Modules\Tpv\Models\Venta;
 use App\Modules\Tpv\Services\VentaService;
@@ -22,7 +23,13 @@ final class AnularVenta
     public function ejecutar(AnularVentaDto $dto, Venta $venta, Usuario $usuario): Venta
     {
         $operacion = function () use ($dto, $venta, $usuario): Venta {
-            CajaSesion::query()->withoutGlobalScope(TenantScopeViaRelacion::class)->whereKey($venta->getAttribute('caja_sesion_id'))->lockForUpdate()->firstOrFail();
+            $caja = CajaSesion::query()->withoutGlobalScope(TenantScopeViaRelacion::class)->whereKey($venta->getAttribute('caja_sesion_id'))->lockForUpdate()->firstOrFail();
+            if ($caja->getAttribute('estado') !== 'abierta') {
+                $caja = CajaSesion::query()->withoutGlobalScope(TenantScopeViaRelacion::class)->where('sucursal_id', (int) $usuario->getAttribute('sucursal_id'))->where('estado', 'abierta')->latest('id')->lockForUpdate()->first();
+                if ($caja === null) {
+                    throw new CajaSesionNoAbiertaException((int) $usuario->getAttribute('sucursal_id'));
+                }
+            }
             $venta = Venta::query()->whereKey($venta->id)->lockForUpdate()->firstOrFail();
             $variantes = $venta->detalles->pluck('variante_id')->unique()->sort()->values()->all();
             $stocks = [];
@@ -30,7 +37,7 @@ final class AnularVenta
                 $stocks[$varianteId] = $this->movimiento->bloquearStock(new MovimientoInventarioDto($varianteId, (int) $venta->getAttribute('sucursal_id'), 'entrada', 1, 'ajuste', $usuario->id));
             }
 
-            return $this->ventaService->anularVentaConStocks($venta, $dto->motivo, $usuario, $stocks);
+            return $this->ventaService->anularVentaConStocks($venta, $dto->motivo, $usuario, $stocks, $caja);
         };
 
         return DB::transactionLevel() > 0 ? $operacion() : DB::transaction($operacion);

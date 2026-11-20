@@ -86,7 +86,7 @@ class VentaService
         $abonoPrevio = round((float) ($datosVenta['abono_previo'] ?? 0), 2);
         $esVentaSombra = (bool) ($datosVenta['es_venta_sombra'] ?? false);
 
-        if (! $cajaSesion || $cajaSesion->getAttribute('estado') !== 'abierta') {
+        if ((! $esVentaSombra && $cajaSesion === null) || ($cajaSesion !== null && $cajaSesion->getAttribute('estado') !== 'abierta')) {
             throw new CajaSesionNoAbiertaException($sucursalId);
         }
 
@@ -115,7 +115,7 @@ class VentaService
             'lista_precio_id' => $datosVenta['lista_precio_id'] ?? null,
             'tenant_id' => $tenantId,
             'sucursal_id' => $sucursalId,
-            'caja_sesion_id' => $cajaSesion->id,
+            'caja_sesion_id' => $cajaSesion?->id,
             'usuario_id' => $datosVenta['usuario_id'],
             'cliente_id' => $datosVenta['cliente_id'],
             'cupon_id' => $cuponId,
@@ -151,8 +151,8 @@ class VentaService
             ]);
             // DAT-04: el pago entra al libro de caja, igual que al total teórico del cierre
             // (sin ventas sombra).
-            if (! $esVentaSombra) {
-                $this->libroCaja->registrar($cajaSesion, 'venta', Dinero::desde((string) $pago['monto'])->aCadena(), 'ventas', (int) $venta->id, (int) $datosVenta['usuario_id']);
+            if (! $esVentaSombra && $this->libroCaja->esMonetario((int) $pago['metodo_pago_id']) && Dinero::desde((string) $pago['monto'])->aCadena() !== '0.00') {
+                $this->libroCaja->registrar($cajaSesion, 'venta', Dinero::desde((string) $pago['monto'])->aCadena(), 'ventas', (int) $venta->id, (int) $datosVenta['usuario_id'], (int) $pago['metodo_pago_id']);
             }
         }
 
@@ -168,11 +168,16 @@ class VentaService
      *
      * @param  array<int, InventarioStock>  $stocks
      */
-    public function anularVentaConStocks(Venta $venta, string $motivo, Usuario $usuario, array $stocks): Venta
+    public function anularVentaConStocks(Venta $venta, string $motivo, Usuario $usuario, array $stocks, ?CajaSesion $cajaDestino = null): Venta
     {
         $this->exigirTransaccion();
         if ($venta->estado === 'anulada') {
             throw new VentaYaAnuladaException($venta->id);
+        }
+
+        $caja = $cajaDestino ?? CajaSesion::query()->withoutGlobalScopes()->whereKey($venta->getAttribute('caja_sesion_id'))->firstOrFail();
+        if ($caja->getAttribute('estado') !== 'abierta') {
+            throw new CajaSesionNoAbiertaException((int) $caja->getAttribute('sucursal_id'));
         }
 
         foreach ($venta->detalles as $detalle) {
@@ -188,12 +193,14 @@ class VentaService
         }
 
         // DAT-04: la anulación revierte en el libro de caja cada pago de la venta, en la caja de la
-        // venta (el cierre excluye las anuladas). Si esa caja ya cerró, mueve su saldo teórico pero
-        // no el total que guardó el cierre (deuda en la fila DAT-04).
+        // venta si sigue abierta. Si ya cerró, la Action entrega la caja abierta del usuario;
+        // el corte y el saldo de la caja cerrada permanecen intactos.
         if (! (bool) $venta->getAttribute('es_venta_sombra')) {
-            $caja = CajaSesion::query()->withoutGlobalScopes()->whereKey($venta->getAttribute('caja_sesion_id'))->firstOrFail();
             foreach (VentaPago::query()->where('venta_id', $venta->id)->get() as $pago) {
-                $this->libroCaja->registrar($caja, 'anulacion', Dinero::desde('0')->restar(Dinero::desde((string) $pago->getAttribute('monto')))->aCadena(), 'ventas', (int) $venta->id, (int) $usuario->id);
+                if (! $this->libroCaja->esMonetario((int) $pago->getAttribute('metodo_pago_id')) || Dinero::desde((string) $pago->getAttribute('monto'))->aCadena() === '0.00') {
+                    continue;
+                }
+                $this->libroCaja->registrar($caja, 'anulacion', Dinero::desde('0')->restar(Dinero::desde((string) $pago->getAttribute('monto')))->aCadena(), 'ventas', (int) $venta->id, (int) $usuario->id, (int) $pago->getAttribute('metodo_pago_id'));
             }
         }
 

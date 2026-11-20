@@ -16,8 +16,11 @@ use App\Modules\NotasCredito\Models\NotaCredito;
 use App\Modules\NotasCredito\Services\NotaCreditoService;
 use App\Modules\Nucleo\Models\Usuario;
 use App\Modules\Nucleo\Scopes\TenantScopeViaRelacion;
+use App\Modules\Nucleo\Support\Dinero;
+use App\Modules\Tpv\Exceptions\CajaSesionNoAbiertaException;
 use App\Modules\Tpv\Models\CajaSesion;
 use App\Modules\Tpv\Models\Venta;
+use App\Modules\Tpv\Services\LibroCaja;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -30,6 +33,7 @@ class RegistrarDevolucion
         private readonly DevolucionService $devolucionService,
         private readonly RegistrarMovimiento $movimiento,
         private readonly NotaCreditoService $notaCreditoService,
+        private readonly LibroCaja $libro,
     ) {}
 
     /**
@@ -76,6 +80,7 @@ class RegistrarDevolucion
             $motivo,
             $tipoReembolso,
             $usuario,
+            $dto,
         ) {
             $sucursalId = (int) $usuario->getAttribute('sucursal_id');
             $caja = CajaSesion::query()->withoutGlobalScope(TenantScopeViaRelacion::class)->where('sucursal_id', $sucursalId)->where('estado', 'abierta')->latest('id')->lockForUpdate()->first();
@@ -104,6 +109,26 @@ class RegistrarDevolucion
                 stocks: $stocks,
             );
 
+            $diferencia = Dinero::desde((string) $devolucion->getAttribute('diferencia'));
+            $esReembolso = $diferencia->comparar(Dinero::desde('0')) < 0;
+            $monetarios = [];
+            if ($diferencia->aCadena() !== '0.00' && ! ($esReembolso && $tipoReembolso === 'nota_credito')) {
+                foreach ($dto->pagos as $pago) {
+                    if ($pago->monto > 0 && $this->libro->esMonetario($pago->metodoPagoId)) {
+                        $monetarios[] = $pago;
+                    }
+                }
+            }
+            if ($monetarios !== [] && $caja === null) {
+                throw new CajaSesionNoAbiertaException($sucursalId);
+            }
+            if ($caja !== null && $monetarios !== []) {
+                $devolucion->update(['caja_sesion_id' => $caja->id]);
+                foreach ($monetarios as $pago) {
+                    $monto = Dinero::desde((string) $pago->monto);
+                    $this->libro->registrar($caja, 'devolucion', ($esReembolso ? Dinero::desde('0')->restar($monto) : $monto)->aCadena(), 'devoluciones', (int) $devolucion->id, (int) $usuario->id, $pago->metodoPagoId);
+                }
+            }
             $nota = null;
 
             if ($tipoReembolso === 'nota_credito' && $devolucion->monto_devolucion > 0) {

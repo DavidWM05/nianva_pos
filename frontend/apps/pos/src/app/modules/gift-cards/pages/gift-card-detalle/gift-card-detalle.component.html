@@ -74,19 +74,26 @@
   titulo="Recargar saldo"
   [visible]="mostrarRecargar()"
   (visibleChange)="cerrarRecargar()"
-  tamano="sm"
+  tamano="md"
 >
   <ui-campo etiqueta="Monto a recargar" [requerido]="true"
     ><ui-input-dinero
-      [min]="0.01"
+      [min]="limitesRecarga.monto.minimum"
+      [max]="limitesRecarga.monto.maximum"
       [ngModel]="montoRecarga()"
       (ngModelChange)="montoRecarga.set($event)"
   /></ui-campo>
+  @if (mostrarRecargar()) {
+    <nucleo-lineas-pago [montoObjetivo]="montoRecarga() ?? 0" (cambio)="onPagosRecarga($event)" />
+  }
+  @if (cajaRequerida()) {
+    <ui-alert tono="advertencia">Abre una caja para registrar la recarga.</ui-alert>
+  }
   <ui-form-actions acciones
     ><ui-btn-enviar
       etiqueta="Confirmar recarga"
       [enviando]="recargando()"
-      [deshabilitado]="!montoRecarga() || montoRecarga()! <= 0"
+      [deshabilitado]="!recargaValida()"
       (click)="confirmarRecargar()"
   /></ui-form-actions>
 </ui-modal>

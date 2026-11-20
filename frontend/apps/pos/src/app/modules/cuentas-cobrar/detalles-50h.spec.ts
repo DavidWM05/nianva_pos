@@ -137,8 +137,12 @@ for (const pantalla of pantallas) {
         expect(boton).not.toBeNull();
         expect(boton?.disabled).toBe(true);
         Reflect.get(componente, monto).set(10);
+
         if (pantalla.nombre.startsWith('cuentas-'))
           Reflect.get(componente, 'metodoPagoElegido').set(1);
+        fixture.detectChanges();
+        if (pantalla.nombre === 'gift-cards')
+          Reflect.get(componente, 'onPagosRecarga').call(componente, { pagos: [{ metodo_pago_id: 1, monto: 10 }], cuadra: true, suma: 10 });
         fixture.detectChanges();
         expect(boton?.disabled).toBe(false);
         Reflect.get(componente, enviando).set(true);

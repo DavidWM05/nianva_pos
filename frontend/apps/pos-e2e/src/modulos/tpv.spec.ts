@@ -13,7 +13,12 @@ import { iniciarSesion } from '../soporte/sesion';
 const USUARIO = 'tpv-e2e@abarrotes.test';
 
 async function cerrarCaja(page: Page, montoFisico: string): Promise<void> {
-  await page.getByLabel('Monto físico contado').fill(montoFisico);
+  const controles = page.locator('input[id^="caja-conteo-"]');
+  for (const control of await controles.all()) await control.fill('0');
+  if (montoFisico !== '0') {
+    await page.getByLabel('Contado · Efectivo', { exact: true }).fill('520');
+    await page.getByLabel('Contado · Tarjeta', { exact: true }).fill('20');
+  }
   await page.getByRole('button', { name: 'Cerrar caja' }).click();
   await expect(page.getByRole('heading', { name: 'Caja cerrada', exact: true })).toBeVisible({ timeout: 20000 });
 }

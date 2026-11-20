@@ -9,7 +9,8 @@ use Illuminate\Support\Facades\Schema;
 /**
  * DAT-04: libro de caja de solo inserción. Registra exactamente lo que entra al total teórico del
  * cierre: la apertura (saldo_inicial), cada pago de venta, la anulación como renglón inverso y cada
- * gasto. caja_sesiones.saldo_teorico es su proyección. Montos con signo: lo que sale es negativo.
+ * gasto, además de abonos, recargas, pagos CxP y reembolsos monetarios. La proyección por método
+ * está en caja_sesion_saldos y su suma en caja_sesiones.saldo_teorico. Montos con signo: lo que sale es negativo.
  */
 return new class extends Migration
 {
@@ -18,7 +19,8 @@ return new class extends Migration
         Schema::create('caja_movimientos', function (Blueprint $table) {
             $table->id();
             $table->foreignId('caja_sesion_id')->constrained('caja_sesiones')->restrictOnDelete();
-            $table->enum('tipo', ['saldo_inicial', 'venta', 'anulacion', 'gasto']);
+            $table->foreignId('metodo_pago_id')->constrained('metodos_pago')->restrictOnDelete();
+            $table->enum('tipo', ['saldo_inicial', 'venta', 'anulacion', 'gasto', 'abono_cxc', 'pago_cxp', 'abono_apartado', 'recarga_gc', 'devolucion']);
             $table->string('referencia_tabla', 60)->nullable();
             $table->unsignedBigInteger('referencia_id')->nullable();
             $table->decimal('monto', 12, 2);

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Modules\Apartados\Models;
 
 use App\Modules\Apartados\Database\Factories\ApartadoAbonoFactory;
@@ -15,7 +17,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * Sin tenant_id propio: el aislamiento se resuelve via BelongsToTenantViaRelacion
  * consultando apartado.tenant_id (ver tenantRelacion()).
  */
-#[Fillable(['apartado_id', 'monto', 'usuario_id', 'notas'])]
+#[Fillable(['apartado_id', 'caja_sesion_id', 'monto', 'usuario_id', 'notas'])]
 class ApartadoAbono extends Model
 {
     use BelongsToTenantViaRelacion;

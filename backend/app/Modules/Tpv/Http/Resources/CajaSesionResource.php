@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Modules\Tpv\Http\Resources;
 
 use App\Modules\Nucleo\Support\DecimalApi;
@@ -19,6 +21,8 @@ class CajaSesionResource extends JsonResource
             'sucursal_id' => $this->sucursal_id,
             'usuario_id' => $this->usuario_id,
             'monto_apertura' => DecimalApi::dinero($this->monto_apertura),
+            'total_teorico' => $this->getAttribute('total_teorico') === null ? null : DecimalApi::dinero($this->getAttribute('total_teorico')),
+            'metodos' => $this->whenLoaded('cierreMetodos', fn () => CajaCierreMetodoResource::collection($this->cierreMetodos)),
             'monto_cierre' => $this->monto_cierre === null ? null : DecimalApi::dinero($this->monto_cierre),
             'total_ventas_sistema' => $this->total_ventas_sistema === null ? null : DecimalApi::dinero($this->total_ventas_sistema),
             'diferencia' => $this->diferencia === null ? null : DecimalApi::dinero($this->diferencia),

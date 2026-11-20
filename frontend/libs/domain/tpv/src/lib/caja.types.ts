@@ -1,3 +1,9 @@
+import { components, CuerpoDe } from '@nianva/api-contrato';
+
+export type CajaConteo = CuerpoDe<'/caja/{cajaSesion}/cerrar', 'patch'>['conteos'][number];
+export type CajaMetodoSaldo = components['schemas']['CajaSaldoResource'];
+export type CajaMetodoCierre = components['schemas']['CajaCierreMetodoResource'];
+
 /** Espejo de CajaSesionResource del backend (backend/app/Modules/Tpv). */
 export type EstadoCaja = 'abierta' | 'cerrada';
 
@@ -7,6 +13,8 @@ export interface CajaSesion {
   usuario_id: number;
   monto_apertura: string;
   monto_cierre: string | null;
+  total_teorico?: string | null;
+  metodos?: CajaMetodoCierre[];
   total_ventas_sistema: string | null;
   diferencia: string | null;
   fecha_apertura: string;
@@ -21,6 +29,7 @@ export interface CajaSesion {
  */
 export interface CajaResumen {
   ventas_count: number;
+  metodos?: CajaMetodoSaldo[];
   total_ventas: string;
   total_gastos: string;
 }
