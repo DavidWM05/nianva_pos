@@ -929,6 +929,23 @@ export const LIMITES = {
       }
     }
   },
+  "/sesion/pin": {
+    "put": {
+      "pin": {
+        "requerido": true
+      },
+      "password_actual": {
+        "requerido": true
+      }
+    }
+  },
+  "/sesion/desbloquear": {
+    "post": {
+      "pin": {
+        "requerido": true
+      }
+    }
+  },
   "/ventas/{venta}/plan-pago": {
     "post": {
       "numero_cuotas": {
@@ -1510,6 +1527,36 @@ export const LIMITES = {
       },
       "permisos": {
         "requerido": false
+      }
+    }
+  },
+  "/sesion/terminal": {
+    "put": {
+      "terminal_id": {
+        "requerido": true,
+        "minimum": 1
+      }
+    }
+  },
+  "/terminales": {
+    "post": {
+      "nombre": {
+        "requerido": true,
+        "maxLength": 100
+      },
+      "sucursal_id": {
+        "requerido": true
+      }
+    }
+  },
+  "/terminales/{terminal}": {
+    "put": {
+      "nombre": {
+        "requerido": true,
+        "maxLength": 100
+      },
+      "sucursal_id": {
+        "requerido": true
       }
     }
   },

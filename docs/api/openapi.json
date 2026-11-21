@@ -7796,6 +7796,80 @@
                 }
             }
         },
+        "/sesion/pin": {
+            "put": {
+                "operationId": "pinSesion.guardar",
+                "tags": [
+                    "PinSesion"
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/GuardarPinSesionRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "204": {
+                        "description": "No content"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    }
+                }
+            }
+        },
+        "/sesion/bloquear": {
+            "post": {
+                "operationId": "pinSesion.bloquear",
+                "tags": [
+                    "PinSesion"
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No content"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
+        "/sesion/desbloquear": {
+            "post": {
+                "operationId": "sesion.desbloquear",
+                "tags": [
+                    "PinSesion"
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/DesbloquearSesionRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "204": {
+                        "description": "No content"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    }
+                }
+            }
+        },
         "/planes-pago-cliente": {
             "get": {
                 "operationId": "planPago.index",
@@ -10572,6 +10646,57 @@
                 }
             }
         },
+        "/sesion/terminal": {
+            "put": {
+                "operationId": "sesion.elegirTerminal",
+                "tags": [
+                    "Sesion"
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ElegirTerminalRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "204": {
+                        "description": "No content"
+                    },
+                    "403": {
+                        "description": "An error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "description": "Error overview.",
+                                            "examples": [
+                                                ""
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "message"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    }
+                }
+            }
+        },
         "/sucursales": {
             "get": {
                 "operationId": "sucursal.index",
@@ -10599,6 +10724,275 @@
                                 }
                             }
                         }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
+        "/terminales": {
+            "get": {
+                "operationId": "terminal.index",
+                "tags": [
+                    "Terminal"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Array of `TerminalResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/TerminalResource"
+                                            }
+                                        },
+                                        "meta": {
+                                            "type": "object",
+                                            "properties": {
+                                                "total": {
+                                                    "type": "integer"
+                                                },
+                                                "page": {
+                                                    "type": "integer"
+                                                },
+                                                "rows": {},
+                                                "filtros_aplicados": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "q": {
+                                                            "type": "string"
+                                                        }
+                                                    },
+                                                    "required": [
+                                                        "q"
+                                                    ]
+                                                },
+                                                "permisos": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "administrar": {
+                                                            "type": "boolean"
+                                                        }
+                                                    },
+                                                    "required": [
+                                                        "administrar"
+                                                    ]
+                                                }
+                                            },
+                                            "required": [
+                                                "total",
+                                                "page",
+                                                "rows",
+                                                "filtros_aplicados",
+                                                "permisos"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data",
+                                        "meta"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            },
+            "post": {
+                "operationId": "terminal.store",
+                "tags": [
+                    "Terminal"
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/GuardarTerminalRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "`TerminalResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/TerminalResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "An error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "description": "Error overview.",
+                                            "examples": [
+                                                ""
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "message"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    }
+                }
+            }
+        },
+        "/terminales/{terminal}": {
+            "get": {
+                "operationId": "terminal.show",
+                "tags": [
+                    "Terminal"
+                ],
+                "parameters": [
+                    {
+                        "name": "terminal",
+                        "in": "path",
+                        "required": true,
+                        "description": "The terminal ID",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "`TerminalResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/TerminalResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            },
+            "put": {
+                "operationId": "terminal.update",
+                "tags": [
+                    "Terminal"
+                ],
+                "parameters": [
+                    {
+                        "name": "terminal",
+                        "in": "path",
+                        "required": true,
+                        "description": "The terminal ID",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/GuardarTerminalRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "`TerminalResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/TerminalResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    }
+                }
+            },
+            "delete": {
+                "operationId": "terminal.destroy",
+                "tags": [
+                    "Terminal"
+                ],
+                "parameters": [
+                    {
+                        "name": "terminal",
+                        "in": "path",
+                        "required": true,
+                        "description": "The terminal ID",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No content"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
                     },
                     "401": {
                         "$ref": "#/components/responses/AuthenticationException"
@@ -14899,6 +15293,19 @@
                 ],
                 "title": "DepartamentoResource"
             },
+            "DesbloquearSesionRequest": {
+                "type": "object",
+                "properties": {
+                    "pin": {
+                        "type": "string",
+                        "pattern": "^[0-9]{4,6}$"
+                    }
+                },
+                "required": [
+                    "pin"
+                ],
+                "title": "DesbloquearSesionRequest"
+            },
             "DevolucionResource": {
                 "type": "object",
                 "properties": {
@@ -15148,6 +15555,19 @@
                     "nota_credito_id"
                 ],
                 "title": "DevolucionResource"
+            },
+            "ElegirTerminalRequest": {
+                "type": "object",
+                "properties": {
+                    "terminal_id": {
+                        "type": "integer",
+                        "minimum": 1
+                    }
+                },
+                "required": [
+                    "terminal_id"
+                ],
+                "title": "ElegirTerminalRequest"
             },
             "EmitirGiftCardRequest": {
                 "type": "object",
@@ -15746,6 +16166,23 @@
                 ],
                 "title": "GuardarMetodoPagoRequest"
             },
+            "GuardarPinSesionRequest": {
+                "type": "object",
+                "properties": {
+                    "pin": {
+                        "type": "string",
+                        "pattern": "^[0-9]{4,6}$"
+                    },
+                    "password_actual": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "pin",
+                    "password_actual"
+                ],
+                "title": "GuardarPinSesionRequest"
+            },
             "GuardarPresentacionRequest": {
                 "type": "object",
                 "properties": {
@@ -15964,6 +16401,23 @@
                     "nombre"
                 ],
                 "title": "GuardarRolRequest"
+            },
+            "GuardarTerminalRequest": {
+                "type": "object",
+                "properties": {
+                    "nombre": {
+                        "type": "string",
+                        "maxLength": 100
+                    },
+                    "sucursal_id": {
+                        "type": "integer"
+                    }
+                },
+                "required": [
+                    "nombre",
+                    "sucursal_id"
+                ],
+                "title": "GuardarTerminalRequest"
             },
             "GuardarUnidadMedidaRequest": {
                 "type": "object",
@@ -18027,7 +18481,26 @@
                         ]
                     },
                     "terminal": {
-                        "type": "null"
+                        "type": [
+                            "object",
+                            "null"
+                        ],
+                        "properties": {
+                            "id": {
+                                "type": "integer"
+                            },
+                            "nombre": {
+                                "type": "string"
+                            },
+                            "sucursal_id": {
+                                "type": "integer"
+                            }
+                        },
+                        "required": [
+                            "id",
+                            "nombre",
+                            "sucursal_id"
+                        ]
                     },
                     "permisos": {
                         "type": "array",
@@ -18122,6 +18595,26 @@
                     "updated_at"
                 ],
                 "title": "Sucursal"
+            },
+            "TerminalResource": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer"
+                    },
+                    "sucursal_id": {
+                        "type": "integer"
+                    },
+                    "nombre": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "id",
+                    "sucursal_id",
+                    "nombre"
+                ],
+                "title": "TerminalResource"
             },
             "TransformacionResource": {
                 "type": "object",

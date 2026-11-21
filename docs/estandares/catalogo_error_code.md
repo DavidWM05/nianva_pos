@@ -67,6 +67,9 @@ Generado con `php artisan errores:catalogo` desde las excepciones de negocio y e
 | `pago_excede_saldo_prestamo` | 422 | `App\Modules\Prestamos\Exceptions\PagoExcedeSaldoPrestamoException` | Prestamos | saldo_pendiente, monto_pago |
 | `pago_no_cuadra` | 422 | `App\Modules\Tpv\Exceptions\PagoNoCuadraException` | Tpv | total, suma_pagos |
 | `pedido_no_asignable` | 422 | `App\Modules\Delivery\Exceptions\PedidoNoAsignableException` | Delivery | — |
+| `pin_caja_incorrecto` | 422 | `App\Modules\Nucleo\Exceptions\PinCajaIncorrectoException` | Nucleo | — |
+| `pin_caja_intentos_agotados` | 429 | `App\Modules\Nucleo\Exceptions\PinCajaIntentosAgotadosException` | Nucleo | — |
+| `pin_caja_no_configurado` | 409 | `App\Modules\Nucleo\Exceptions\PinCajaNoConfiguradoException` | Nucleo | — |
 | `plan_pago_ya_activo` | 422 | `App\Modules\VentasPlazos\Exceptions\PlanPagoYaActivoException` | VentasPlazos | venta_id, plan_pago_id |
 | `prestamo_ya_pagado` | 422 | `App\Modules\Prestamos\Exceptions\PrestamoPagadoException` | Prestamos | — |
 | `proyeccion_no_actualizada` | 409 | `App\Modules\Nucleo\Exceptions\ProyeccionNoActualizadaException` | Nucleo | proyeccion, id |
@@ -74,6 +77,7 @@ Generado con `php artisan errores:catalogo` desde las excepciones de negocio y e
 | `puntos_no_generados` | 422 | `App\Modules\CrmAvanzado\Exceptions\PuntosNoGeneradosException` | CrmAvanzado | — |
 | `recarga_pago_no_cuadra` | 422 | `App\Modules\GiftCards\Exceptions\RecargaPagoNoCuadraException` | GiftCards | monto, suma_pagos |
 | `servicio_no_disponible` | 503 | `App\Modules\Nucleo\Support\MapaErroresHttp` | Nucleo | - |
+| `sesion_bloqueada` | 423 | `App\Modules\Nucleo\Exceptions\SesionBloqueadaException` | Nucleo | — |
 | `sesion_expirada` | 419 | `App\Modules\Nucleo\Support\MapaErroresHttp` | Nucleo | - |
 | `sesion_inactiva` | 401 | `App\Modules\Nucleo\Exceptions\SesionInactivaException` | Nucleo | — |
 | `sin_cliente` | 422 | `App\Modules\Cotizaciones\Exceptions\SinClienteException` | Cotizaciones | — |

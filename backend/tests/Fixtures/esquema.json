@@ -9549,6 +9549,81 @@
         ],
         "llaves_foraneas": []
     },
+    "terminales": {
+        "columnas": [
+            {
+                "nombre": "created_at",
+                "tipo": "datetime",
+                "nullable": true,
+                "default": null
+            },
+            {
+                "nombre": "id",
+                "tipo": "integer",
+                "nullable": false,
+                "default": null
+            },
+            {
+                "nombre": "nombre",
+                "tipo": "varchar",
+                "nullable": false,
+                "default": null
+            },
+            {
+                "nombre": "sucursal_id",
+                "tipo": "integer",
+                "nullable": false,
+                "default": null
+            },
+            {
+                "nombre": "tenant_id",
+                "tipo": "integer",
+                "nullable": false,
+                "default": null
+            },
+            {
+                "nombre": "updated_at",
+                "tipo": "datetime",
+                "nullable": true,
+                "default": null
+            }
+        ],
+        "indices": [
+            {
+                "nombre": "primary",
+                "columnas": [
+                    "id"
+                ],
+                "unico": true
+            }
+        ],
+        "llaves_foraneas": [
+            {
+                "nombre": null,
+                "columnas": [
+                    "sucursal_id"
+                ],
+                "tabla_foranea": "sucursales",
+                "columnas_foraneas": [
+                    "id"
+                ],
+                "on_update": "no action",
+                "on_delete": "cascade"
+            },
+            {
+                "nombre": null,
+                "columnas": [
+                    "tenant_id"
+                ],
+                "tabla_foranea": "tenants",
+                "columnas_foraneas": [
+                    "id"
+                ],
+                "on_update": "no action",
+                "on_delete": "cascade"
+            }
+        ]
+    },
     "transformaciones_producto": {
         "columnas": [
             {
@@ -9945,6 +10020,12 @@
                 "nombre": "password",
                 "tipo": "varchar",
                 "nullable": false,
+                "default": null
+            },
+            {
+                "nombre": "pin_caja_hash",
+                "tipo": "varchar",
+                "nullable": true,
                 "default": null
             },
             {

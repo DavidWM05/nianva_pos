@@ -15,6 +15,10 @@ class RutasConPermisoTest extends TestCase
     private const EXENTAS = [
         'GET /api/v1/user' => 'El usuario autenticado consulta sus propios datos.',
         'GET /api/v1/sesion' => 'El usuario autenticado consulta su propia sesion: permisos, modulos y formato (API-09).',
+        'PUT /api/v1/sesion/pin' => 'Autoservicio: cambia el PIN propio con la contrasena vigente.',
+        'POST /api/v1/sesion/bloquear' => 'Autoservicio: bloquea su propia sesion autenticada.',
+        'POST /api/v1/sesion/desbloquear' => 'Autoservicio: desbloquea su propia sesion con el PIN de caja.',
+        'PUT /api/v1/sesion/terminal' => 'Autoservicio: selecciona una terminal de su sucursal para su propia sesion.',
         'GET /api/v1/two-factor/qr-code' => 'Autoservicio de configuracion de 2FA del propio usuario.',
         'POST /api/v1/two-factor/confirm' => 'Autoservicio de confirmacion de 2FA del propio usuario.',
         'POST /api/v1/password/change' => 'Autoservicio de cambio de contrasena del propio usuario.',

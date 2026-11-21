@@ -35,6 +35,7 @@ class NucleoRolesPermisosSeeder extends Seeder
         'roles' => ['ver', 'crear', 'editar', 'eliminar'],
         'permisos' => ['ver', 'crear', 'editar', 'eliminar'],
         'usuarios' => ['ver', 'crear', 'editar', 'eliminar'],
+        'terminales' => ['administrar'],
         'metodos_pago' => ['ver', 'crear', 'editar', 'eliminar'],
         'inventario' => ['ver', 'crear', 'editar', 'eliminar'],
         'compras' => ['ver', 'crear'],

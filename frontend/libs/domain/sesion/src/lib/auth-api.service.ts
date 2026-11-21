@@ -1,6 +1,6 @@
 import { HttpClient, HttpContext } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
-import type { RespuestaDe } from '@nianva/api-contrato';
+import type { CuerpoDe, RespuestaDe } from '@nianva/api-contrato';
 import { ERROR_EN_PANTALLA, urlApi, urlSesion } from '@nianva/core-http';
 import { Observable, map, switchMap } from 'rxjs';
 
@@ -52,6 +52,25 @@ export class AuthApiService {
     return this.http
       .get<RespuestaDe<'/sesion', 'get'>>(urlApi('/sesion'))
       .pipe(map((respuesta) => respuesta.data));
+  }
+
+  guardarPinCaja(passwordActual: string, pin: string): Observable<void> {
+    const cuerpo: CuerpoDe<'/sesion/pin', 'put'> = { password_actual: passwordActual, pin };
+    return this.http.put<void>(urlApi('/sesion/pin'), cuerpo, { context: this.contextoErrorEnPantalla });
+  }
+
+  bloquearSesion(): Observable<void> {
+    return this.http.post<void>(urlApi('/sesion/bloquear'), {}, { context: this.contextoErrorEnPantalla });
+  }
+
+  desbloquearSesion(pin: string): Observable<void> {
+    const cuerpo: CuerpoDe<'/sesion/desbloquear', 'post'> = { pin };
+    return this.http.post<void>(urlApi('/sesion/desbloquear'), cuerpo, { context: this.contextoErrorEnPantalla });
+  }
+
+  elegirTerminal(terminalId: number): Observable<void> {
+    const cuerpo: CuerpoDe<'/sesion/terminal', 'put'> = { terminal_id: terminalId };
+    return this.http.put<void>(urlApi('/sesion/terminal'), cuerpo, { context: this.contextoErrorEnPantalla });
   }
 
   me(): Observable<Usuario> {

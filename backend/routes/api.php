@@ -34,9 +34,11 @@ use App\Modules\Nucleo\Http\Controllers\LicenciaLocalController;
 use App\Modules\Nucleo\Http\Controllers\MetodoPagoController;
 use App\Modules\Nucleo\Http\Controllers\PasswordResetController;
 use App\Modules\Nucleo\Http\Controllers\PermisoController;
+use App\Modules\Nucleo\Http\Controllers\PinSesionController;
 use App\Modules\Nucleo\Http\Controllers\RolController;
 use App\Modules\Nucleo\Http\Controllers\SesionController;
 use App\Modules\Nucleo\Http\Controllers\SucursalController;
+use App\Modules\Nucleo\Http\Controllers\TerminalController;
 use App\Modules\Nucleo\Http\Controllers\TwoFactorController;
 use App\Modules\Nucleo\Http\Controllers\UsuarioController;
 use App\Modules\Nucleo\Http\Resources\UsuarioResource;
@@ -79,6 +81,19 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Rutas de modulos reales (Inventario, TPV, etc.) van aqui cuando existan.
     Route::middleware('two-factor.confirmed')->group(function () {
+        Route::put('/sesion/pin', [PinSesionController::class, 'guardar']);
+        Route::post('/sesion/bloquear', [PinSesionController::class, 'bloquear']);
+        Route::post('/sesion/desbloquear', [PinSesionController::class, 'desbloquear'])->name('sesion.desbloquear');
+        Route::put('/sesion/terminal', [SesionController::class, 'elegirTerminal']);
+
+        Route::middleware('permiso:terminales.administrar')->group(function () {
+            Route::get('/terminales', [TerminalController::class, 'index']);
+            Route::post('/terminales', [TerminalController::class, 'store']);
+            Route::get('/terminales/{terminal}', [TerminalController::class, 'show'])->whereNumber('terminal');
+            Route::put('/terminales/{terminal}', [TerminalController::class, 'update'])->whereNumber('terminal');
+            Route::delete('/terminales/{terminal}', [TerminalController::class, 'destroy'])->whereNumber('terminal');
+        });
+
         Route::get('/configuracion-seguridad', [ConfiguracionSeguridadController::class, 'show'])
             ->middleware('permiso:configuracion.ver');
         Route::put('/configuracion-seguridad', [ConfiguracionSeguridadController::class, 'update'])

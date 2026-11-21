@@ -19,7 +19,7 @@ use Illuminate\Notifications\Notification;
     'tenant_id', 'sucursal_id', 'nombre', 'apellido', 'alias', 'correo',
     'password', 'telefono', 'avatar_url', 'activo',
 ])]
-#[Hidden(['password', 'remember_token', 'two_factor_secret', 'two_factor_recovery_codes'])]
+#[Hidden(['password', 'pin_caja_hash', 'remember_token', 'two_factor_secret', 'two_factor_recovery_codes'])]
 class Usuario extends Authenticatable
 {
     use BelongsToTenant, Notifiable, SoftDeletes;

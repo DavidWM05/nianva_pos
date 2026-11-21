@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace App\Modules\Nucleo\Http\Middleware;
 
+use App\Modules\Nucleo\Exceptions\SesionBloqueadaException;
 use App\Modules\Nucleo\Exceptions\SesionInactivaException;
 use App\Modules\Nucleo\Models\ConfiguracionSeguridad;
 use App\Modules\Nucleo\Models\Usuario;
+use App\Modules\Nucleo\Support\BloqueoSesion;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -57,6 +59,14 @@ class ExpirarSesionInactiva
             $sesion->migrate(true);
 
             throw new SesionInactivaException;
+        }
+
+        if ($request->is('api/*') && BloqueoSesion::activa($sesion)) {
+            if (! $request->isMethod('POST') || ! $request->routeIs('sesion.desbloquear')) {
+                throw new SesionBloqueadaException;
+            }
+
+            return $next($request);
         }
 
         $sesion->put(self::CLAVE_ULTIMA_ACTIVIDAD, $ahora);
