@@ -1214,7 +1214,7 @@ export const LIMITES = {
         "requerido": false
       },
       "precio_compra": {
-        "requerido": false,
+        "requerido": true,
         "minimum": 0,
         "decimales": 2
       },

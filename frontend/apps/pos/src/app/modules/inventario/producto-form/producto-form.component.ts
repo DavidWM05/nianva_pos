@@ -32,6 +32,7 @@ import { CatalogoSimple, Producto, ProductoFormPayload, ProductoService } from '
 
 /** Límites del cuerpo de la petición, leídos del contrato (UI-11b). */
 const LIMITES = limitesDe('/productos', 'post');
+const LIMITES_EDICION = limitesDe('/productos/{producto}', 'put');
 
 /**
  * Reutilizado por la vista de creacion (sin valorInicial, ver
@@ -71,7 +72,7 @@ export class ProductoFormComponent implements OnInit, OnChanges {
   @ViewChild(DynamicFormComponent) private formComponent!: DynamicFormComponent;
 
   protected readonly numericos = new FormGroup({
-    precio_compra: new FormControl<number | null>(null, [Validators.min(LIMITES.precio_compra.minimum)]),
+    precio_compra: new FormControl<number | null>(null, [Validators.min(LIMITES.precio_compra.minimum), ...(LIMITES.precio_compra.requerido ? [Validators.required] : [])]),
     precio_venta: new FormControl<number | null>(null, [Validators.min(LIMITES.precio_venta.minimum)]),
   });
 
@@ -104,7 +105,16 @@ export class ProductoFormComponent implements OnInit, OnChanges {
     });
   }
 
+  costoRequerido(): boolean {
+    return (this.valorInicial ? LIMITES_EDICION : LIMITES).precio_compra.requerido;
+  }
+
   ngOnChanges(cambios?: SimpleChanges): void {
+    this.numericos.controls.precio_compra.setValidators([
+      Validators.min(LIMITES.precio_compra.minimum),
+      ...(this.costoRequerido() ? [Validators.required] : []),
+    ]);
+    this.numericos.controls.precio_compra.updateValueAndValidity({ emitEvent: false });
     if (!cambios || cambios['readonly']) {
       if (this.readonly) this.numericos.disable({ emitEvent: false });
       else this.numericos.enable({ emitEvent: false });
@@ -187,6 +197,11 @@ export class ProductoFormComponent implements OnInit, OnChanges {
   }
 
   onSubmit(value: Record<string, unknown>): void {
+    if (this.numericos.invalid) {
+      this.numericos.markAllAsTouched();
+      return;
+    }
+    const { precio_compra, ...precios } = this.numericos.getRawValue();
     this.guardar.emit({
       ...value,
       ...(value['tasa_iva'] === undefined
@@ -198,7 +213,8 @@ export class ProductoFormComponent implements OnInit, OnChanges {
                 : tasaANumero(String(value['tasa_iva'])),
           }),
       nombre: value['nombre'] as string,
-      ...this.numericos.getRawValue(),
+      ...precios,
+      ...(precio_compra === null ? {} : { precio_compra }),
     });
   }
 

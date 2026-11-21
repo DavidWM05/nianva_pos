@@ -8942,7 +8942,78 @@
                     "content": {
                         "application/json": {
                             "schema": {
-                                "$ref": "#/components/schemas/GuardarProductoRequest"
+                                "type": "object",
+                                "properties": {
+                                    "nombre": {
+                                        "type": "string",
+                                        "maxLength": 200
+                                    },
+                                    "descripcion": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "categoria_id": {
+                                        "type": [
+                                            "integer",
+                                            "null"
+                                        ]
+                                    },
+                                    "departamento_id": {
+                                        "type": [
+                                            "integer",
+                                            "null"
+                                        ]
+                                    },
+                                    "precio_compra": {
+                                        "type": "number",
+                                        "minimum": 0,
+                                        "multipleOf": 0.01
+                                    },
+                                    "precio_venta": {
+                                        "type": [
+                                            "number",
+                                            "null"
+                                        ],
+                                        "minimum": 0,
+                                        "multipleOf": 0.01
+                                    },
+                                    "tasa_iva": {
+                                        "type": [
+                                            "number",
+                                            "null"
+                                        ],
+                                        "pattern": "^(?:0|8|16)(?:\\.0{1,4})?$",
+                                        "multipleOf": 0.0001
+                                    },
+                                    "exento_iva": {
+                                        "type": "boolean"
+                                    },
+                                    "imagen_url": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ],
+                                        "maxLength": 500
+                                    },
+                                    "no_resurtible": {
+                                        "type": [
+                                            "boolean",
+                                            "null"
+                                        ]
+                                    },
+                                    "sin_descuento": {
+                                        "type": [
+                                            "boolean",
+                                            "null"
+                                        ]
+                                    }
+                                },
+                                "required": [
+                                    "nombre",
+                                    "precio_compra"
+                                ]
                             }
                         }
                     }
@@ -9083,7 +9154,77 @@
                     "content": {
                         "application/json": {
                             "schema": {
-                                "$ref": "#/components/schemas/GuardarProductoRequest"
+                                "type": "object",
+                                "properties": {
+                                    "nombre": {
+                                        "type": "string",
+                                        "maxLength": 200
+                                    },
+                                    "descripcion": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "categoria_id": {
+                                        "type": [
+                                            "integer",
+                                            "null"
+                                        ]
+                                    },
+                                    "departamento_id": {
+                                        "type": [
+                                            "integer",
+                                            "null"
+                                        ]
+                                    },
+                                    "precio_compra": {
+                                        "type": "number",
+                                        "minimum": 0,
+                                        "multipleOf": 0.01
+                                    },
+                                    "precio_venta": {
+                                        "type": [
+                                            "number",
+                                            "null"
+                                        ],
+                                        "minimum": 0,
+                                        "multipleOf": 0.01
+                                    },
+                                    "tasa_iva": {
+                                        "type": [
+                                            "number",
+                                            "null"
+                                        ],
+                                        "pattern": "^(?:0|8|16)(?:\\.0{1,4})?$",
+                                        "multipleOf": 0.0001
+                                    },
+                                    "exento_iva": {
+                                        "type": "boolean"
+                                    },
+                                    "imagen_url": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ],
+                                        "maxLength": 500
+                                    },
+                                    "no_resurtible": {
+                                        "type": [
+                                            "boolean",
+                                            "null"
+                                        ]
+                                    },
+                                    "sin_descuento": {
+                                        "type": [
+                                            "boolean",
+                                            "null"
+                                        ]
+                                    }
+                                },
+                                "required": [
+                                    "nombre"
+                                ]
                             }
                         }
                     }
@@ -15292,83 +15433,6 @@
                     "factor"
                 ],
                 "title": "GuardarPresentacionRequest"
-            },
-            "GuardarProductoRequest": {
-                "type": "object",
-                "properties": {
-                    "nombre": {
-                        "type": "string",
-                        "maxLength": 200
-                    },
-                    "descripcion": {
-                        "type": [
-                            "string",
-                            "null"
-                        ]
-                    },
-                    "categoria_id": {
-                        "type": [
-                            "integer",
-                            "null"
-                        ]
-                    },
-                    "departamento_id": {
-                        "type": [
-                            "integer",
-                            "null"
-                        ]
-                    },
-                    "precio_compra": {
-                        "type": [
-                            "number",
-                            "null"
-                        ],
-                        "minimum": 0,
-                        "multipleOf": 0.01
-                    },
-                    "precio_venta": {
-                        "type": [
-                            "number",
-                            "null"
-                        ],
-                        "minimum": 0,
-                        "multipleOf": 0.01
-                    },
-                    "tasa_iva": {
-                        "type": [
-                            "number",
-                            "null"
-                        ],
-                        "pattern": "^(?:0|8|16)(?:\\.0{1,4})?$",
-                        "multipleOf": 0.0001
-                    },
-                    "exento_iva": {
-                        "type": "boolean"
-                    },
-                    "imagen_url": {
-                        "type": [
-                            "string",
-                            "null"
-                        ],
-                        "maxLength": 500
-                    },
-                    "no_resurtible": {
-                        "type": [
-                            "boolean",
-                            "null"
-                        ]
-                    },
-                    "sin_descuento": {
-                        "type": [
-                            "boolean",
-                            "null"
-                        ]
-                    }
-                },
-                "required": [
-                    "nombre"
-                ],
-                "title": "GuardarProductoRequest"
             },
             "GuardarProductoVarianteRequest": {
                 "type": "object",

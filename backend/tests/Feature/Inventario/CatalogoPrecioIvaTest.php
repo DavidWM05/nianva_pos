@@ -38,7 +38,7 @@ class CatalogoPrecioIvaTest extends TestCase
     public function test_producto_conserva_tasa_exencion_y_herencia_en_altas_y_ediciones(): void
     {
         $this->autenticar();
-        $respuesta = $this->postJson('/api/v1/productos', ['nombre' => 'Producto IVA', 'tasa_iva' => '8.0000', 'exento_iva' => true]);
+        $respuesta = $this->postJson('/api/v1/productos', ['precio_compra' => '0.00', 'nombre' => 'Producto IVA', 'tasa_iva' => '8.0000', 'exento_iva' => true]);
         $respuesta->assertCreated()->assertJsonPath('data.tasa_iva', '8.0000')->assertJsonPath('data.exento_iva', true);
         $id = $respuesta->json('data.id');
         $this->putJson('/api/v1/productos/'.$id, ['nombre' => 'Producto IVA', 'tasa_iva' => null, 'exento_iva' => false])
@@ -61,7 +61,7 @@ class CatalogoPrecioIvaTest extends TestCase
     public function test_el_catalogo_rechaza_tasas_fuera_del_dominio(string $tasa): void
     {
         $this->autenticar();
-        $this->postJson('/api/v1/productos', ['nombre' => 'IVA inválido', 'tasa_iva' => $tasa])->assertUnprocessable()->assertJsonValidationErrors('tasa_iva');
+        $this->postJson('/api/v1/productos', ['precio_compra' => '0.00', 'nombre' => 'IVA inválido', 'tasa_iva' => $tasa])->assertUnprocessable()->assertJsonValidationErrors('tasa_iva');
     }
 
     public static function tasasInvalidas(): array

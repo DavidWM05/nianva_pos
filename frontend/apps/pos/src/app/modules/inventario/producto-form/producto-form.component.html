@@ -9,7 +9,7 @@
     [readonly]="readonly"
     [enviando]="enviando"
     (formSubmit)="onSubmit($event)"
-    ><ui-campo etiqueta="Precio de compra"
+    ><ui-campo etiqueta="Precio de compra" [requerido]="costoRequerido()"
       ><ui-input-dinero
         [min]="0"
         [formControl]="numericos.controls.precio_compra"

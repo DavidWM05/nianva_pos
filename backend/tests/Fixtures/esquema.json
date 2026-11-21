@@ -7997,7 +7997,7 @@
                 "nombre": "precio_compra",
                 "tipo": "numeric",
                 "nullable": false,
-                "default": "'0'"
+                "default": null
             },
             {
                 "nombre": "precio_venta",

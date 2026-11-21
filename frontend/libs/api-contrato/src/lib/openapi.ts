@@ -3158,20 +3158,6 @@ export interface components {
             codigo_barras?: string | null;
             precio_venta?: number | null;
         };
-        /** GuardarProductoRequest */
-        GuardarProductoRequest: {
-            nombre: string;
-            descripcion?: string | null;
-            categoria_id?: number | null;
-            departamento_id?: number | null;
-            precio_compra?: number | null;
-            precio_venta?: number | null;
-            tasa_iva?: number | null;
-            exento_iva?: boolean;
-            imagen_url?: string | null;
-            no_resurtible?: boolean | null;
-            sin_descuento?: boolean | null;
-        };
         /** GuardarProductoVarianteRequest */
         GuardarProductoVarianteRequest: {
             precio_venta?: number | null;
@@ -4003,7 +3989,6 @@ export type GuardarListaPrecioItemRequest = components['schemas']['GuardarListaP
 export type GuardarListaPrecioRequest = components['schemas']['GuardarListaPrecioRequest'];
 export type GuardarMetodoPagoRequest = components['schemas']['GuardarMetodoPagoRequest'];
 export type GuardarPresentacionRequest = components['schemas']['GuardarPresentacionRequest'];
-export type GuardarProductoRequest = components['schemas']['GuardarProductoRequest'];
 export type GuardarProductoVarianteRequest = components['schemas']['GuardarProductoVarianteRequest'];
 export type GuardarReglaPrecioRequest = components['schemas']['GuardarReglaPrecioRequest'];
 export type GuardarRolRequest = components['schemas']['GuardarRolRequest'];
@@ -8432,7 +8417,19 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["GuardarProductoRequest"];
+                "application/json": {
+                    nombre: string;
+                    descripcion?: string | null;
+                    categoria_id?: number | null;
+                    departamento_id?: number | null;
+                    precio_compra: number;
+                    precio_venta?: number | null;
+                    tasa_iva?: number | null;
+                    exento_iva?: boolean;
+                    imagen_url?: string | null;
+                    no_resurtible?: boolean | null;
+                    sin_descuento?: boolean | null;
+                };
             };
         };
         responses: {
@@ -8502,7 +8499,19 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["GuardarProductoRequest"];
+                "application/json": {
+                    nombre: string;
+                    descripcion?: string | null;
+                    categoria_id?: number | null;
+                    departamento_id?: number | null;
+                    precio_compra?: number;
+                    precio_venta?: number | null;
+                    tasa_iva?: number | null;
+                    exento_iva?: boolean;
+                    imagen_url?: string | null;
+                    no_resurtible?: boolean | null;
+                    sin_descuento?: boolean | null;
+                };
             };
         };
         responses: {

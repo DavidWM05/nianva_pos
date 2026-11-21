@@ -28,12 +28,12 @@ class ModelosEstrictosTest extends TestCase
         $tenant = Tenant::create(['nombre' => 'Test estricto', 'pais' => 'MX', 'activo' => true]);
         $categoria = Categoria::create(['tenant_id' => $tenant->id, 'nombre' => 'Ropa']);
 
-        Producto::create([
+        Producto::create(['precio_compra' => '0.00',
             'tenant_id' => $tenant->id,
             'categoria_id' => $categoria->id,
             'nombre' => 'Producto 1',
         ]);
-        Producto::create([
+        Producto::create(['precio_compra' => '0.00',
             'tenant_id' => $tenant->id,
             'categoria_id' => $categoria->id,
             'nombre' => 'Producto 2',

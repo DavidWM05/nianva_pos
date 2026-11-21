@@ -196,7 +196,7 @@ class ReglaPrecioTest extends TestCase
     public function test_variante_de_aplica_a_incluye_el_nombre_del_producto_padre(): void
     {
         ['tenant' => $tenant, 'usuario' => $usuario] = $this->crearUsuarioConPermisos(['reglas_precio.ver']);
-        $producto = Producto::create(['tenant_id' => $tenant->id, 'nombre' => 'Gorra']);
+        $producto = Producto::create(['precio_compra' => '0.00', 'tenant_id' => $tenant->id, 'nombre' => 'Gorra']);
         $variante = ProductoVarianteFactory::asignarAtributos(ProductoVariante::create(['producto_id' => $producto->id]), ['Talla' => 'Unica']);
         ReglaPrecio::create([
             'tenant_id' => $tenant->id, 'nombre' => 'Descuento gorra', 'tipo' => 'monto_fijo',

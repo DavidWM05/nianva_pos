@@ -59,7 +59,7 @@ class CompraControllerTest extends TestCase
     {
         ['tenant' => $tenant, 'sucursal' => $sucursal, 'usuario' => $usuario] = $this->crearUsuarioConPermisos(['compras.crear']);
         $proveedor = Proveedor::create(['tenant_id' => $tenant->id, 'razon_social' => 'Textiles del Norte']);
-        $producto = Producto::create(['tenant_id' => $tenant->id, 'nombre' => 'Playera Básica']);
+        $producto = Producto::create(['precio_compra' => '0.00', 'tenant_id' => $tenant->id, 'nombre' => 'Playera Básica']);
         $variante = ProductoVarianteFactory::asignarAtributos(ProductoVariante::create(['producto_id' => $producto->id]), ['Talla' => 'M']);
 
         $this->actingAs($usuario);
@@ -114,7 +114,7 @@ class CompraControllerTest extends TestCase
     {
         ['tenant' => $tenant, 'usuario' => $usuario] = $this->crearUsuarioConPermisos(['inventario.ver']);
         $proveedor = Proveedor::create(['tenant_id' => $tenant->id, 'razon_social' => 'Textiles del Norte']);
-        $producto = Producto::create(['tenant_id' => $tenant->id, 'nombre' => 'Gorra']);
+        $producto = Producto::create(['precio_compra' => '0.00', 'tenant_id' => $tenant->id, 'nombre' => 'Gorra']);
         $variante = ProductoVarianteFactory::asignarAtributos(ProductoVariante::create(['producto_id' => $producto->id]), ['Talla' => 'Unica']);
 
         $this->actingAs($usuario);
@@ -149,7 +149,7 @@ class CompraControllerTest extends TestCase
         ]);
         $this->actingAs($usuario);
 
-        $producto = $this->postJson('/api/v1/productos', ['nombre' => 'Playera Básica', 'precio_venta' => 199])
+        $producto = $this->postJson('/api/v1/productos', ['precio_compra' => '0.00', 'nombre' => 'Playera Básica', 'precio_venta' => 199])
             ->assertCreated()
             ->json('data');
 
