@@ -7,6 +7,7 @@ use App\Modules\Nucleo\Models\Permiso;
 use App\Modules\Nucleo\Models\Rol;
 use App\Modules\Nucleo\Models\Sucursal;
 use App\Modules\Nucleo\Models\Tenant;
+use App\Modules\Nucleo\Models\Terminal;
 use App\Modules\Nucleo\Models\Usuario;
 use App\Modules\Nucleo\Services\TenantContext;
 use App\Modules\Precios\Models\ListaPrecio;
@@ -142,7 +143,7 @@ class ListadosUniformesTest extends TestCase
         ]);
         $ids = [];
 
-        foreach (['roles.ver', 'usuarios.ver', 'listas_precio.ver', 'inventario.ver'] as $nombre) {
+        foreach (['roles.ver', 'usuarios.ver', 'listas_precio.ver', 'inventario.ver', 'terminales.administrar'] as $nombre) {
             [$modulo, $accion] = explode('.', $nombre);
             $ids[] = Permiso::firstOrCreate(
                 ['nombre' => $nombre],
@@ -166,6 +167,7 @@ class ListadosUniformesTest extends TestCase
             'es_sistema' => false,
         ]);
         Atributo::factory()->create(['tenant_id' => $tenant->id, 'nombre' => 'Atributo '.$token]);
+        Terminal::factory()->create(['tenant_id' => $tenant->id, 'sucursal_id' => $sucursal->id, 'nombre' => 'Terminal '.$token]);
         Usuario::factory()->create([
             'tenant_id' => $tenant->id,
             'sucursal_id' => $sucursal->id,

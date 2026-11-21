@@ -10,7 +10,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
 
 /**
  * GET /sesion (API-09). El usuario se serializa con UsuarioResource, la misma forma que
- * /user y el login. `terminal` y `perfil_giro` van en null hasta que existan (ver
+ * /user y el login. La terminal es null hasta que se selecciona una para la sesión (ver
  * ObtenerSesion).
  *
  * @property SesionDto $resource
@@ -21,7 +21,7 @@ class SesionResource extends JsonResource
      * @return array{
      *     usuario: UsuarioResource,
      *     sucursal: array{id: int, nombre: string}|null,
-     *     terminal: null,
+     *     terminal: array{id: int, nombre: string, sucursal_id: int}|null,
      *     permisos: list<string>,
      *     modulos_activos: list<string>,
      *     regional: array{locale: string, moneda: string, zona_horaria: string},
@@ -35,7 +35,7 @@ class SesionResource extends JsonResource
         return [
             'usuario' => new UsuarioResource($sesion->usuario),
             'sucursal' => $sesion->sucursal,
-            'terminal' => null,
+            'terminal' => $sesion->terminal,
             'permisos' => $sesion->permisos,
             'modulos_activos' => $sesion->modulosActivos,
             'regional' => $sesion->regional,

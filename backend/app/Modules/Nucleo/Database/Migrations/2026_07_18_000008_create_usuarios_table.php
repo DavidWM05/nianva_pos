@@ -20,6 +20,7 @@ return new class extends Migration
             $table->string('alias', 50)->nullable();
             $table->string('correo', 150)->unique();
             $table->string('password', 255);
+            $table->string('pin_caja_hash')->nullable();
             $table->string('telefono', 20)->nullable();
             $table->string('avatar_url', 500)->nullable();
             $table->boolean('activo')->default(true);

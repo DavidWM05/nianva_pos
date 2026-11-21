@@ -5,10 +5,13 @@ declare(strict_types=1);
 namespace App\Modules\Nucleo\Http\Controllers;
 
 use App\Aplicacion\Sesion\ObtenerSesion;
+use App\Aplicacion\Sesion\TerminalDeSesion;
 use App\Http\Controllers\Controller;
+use App\Modules\Nucleo\Http\Requests\ElegirTerminalRequest;
 use App\Modules\Nucleo\Http\Resources\SesionResource;
 use App\Modules\Nucleo\Models\Usuario;
 use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * GET /sesion (API-09): el usuario autenticado consulta su propia sesion. Sin permiso
@@ -22,6 +25,15 @@ class SesionController extends Controller
         /** @var Usuario $usuario */
         $usuario = $request->user();
 
-        return new SesionResource($obtenerSesion->ejecutar($usuario));
+        return new SesionResource($obtenerSesion->ejecutar($usuario, $request->hasSession() ? $request->session() : null));
+    }
+
+    public function elegirTerminal(ElegirTerminalRequest $request, TerminalDeSesion $terminal): Response
+    {
+        $usuario = $request->user();
+        abort_unless($usuario instanceof Usuario && $request->hasSession(), 403);
+        $terminal->elegir($request->session(), $request->toDto()->terminalId);
+
+        return response()->noContent();
     }
 }

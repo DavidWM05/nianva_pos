@@ -1543,6 +1543,54 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/sesion/pin": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put: operations["pinSesion.guardar"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/sesion/bloquear": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["pinSesion.bloquear"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/sesion/desbloquear": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["sesion.desbloquear"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/planes-pago-cliente": {
         parameters: {
             query?: never;
@@ -2013,6 +2061,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/sesion/terminal": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put: operations["sesion.elegirTerminal"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/sucursales": {
         parameters: {
             query?: never;
@@ -2024,6 +2088,38 @@ export interface paths {
         put?: never;
         post?: never;
         delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/terminales": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["terminal.index"];
+        put?: never;
+        post: operations["terminal.store"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/terminales/{terminal}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["terminal.show"];
+        put: operations["terminal.update"];
+        post?: never;
+        delete: operations["terminal.destroy"];
         options?: never;
         head?: never;
         patch?: never;
@@ -2969,6 +3065,10 @@ export interface components {
             descripcion: string | null;
             activo: boolean;
         };
+        /** DesbloquearSesionRequest */
+        DesbloquearSesionRequest: {
+            pin: string;
+        };
         /** DevolucionResource */
         DevolucionResource: {
             /** @description DAT-08: el identificador público es el ulid; el id interno no sale de la API. */
@@ -3033,6 +3133,10 @@ export interface components {
                 nombre: string;
                 monto: string;
             }[];
+        };
+        /** ElegirTerminalRequest */
+        ElegirTerminalRequest: {
+            terminal_id: number;
         };
         /** EmitirGiftCardRequest */
         EmitirGiftCardRequest: {
@@ -3185,6 +3289,11 @@ export interface components {
             tipo: "efectivo" | "tarjeta" | "transferencia" | "digital" | "otro";
             incluir_en_financiero: boolean;
         };
+        /** GuardarPinSesionRequest */
+        GuardarPinSesionRequest: {
+            pin: string;
+            password_actual: string;
+        };
         /** GuardarPresentacionRequest */
         GuardarPresentacionRequest: {
             nombre: string;
@@ -3230,6 +3339,11 @@ export interface components {
             nombre: string;
             descripcion?: string | null;
             permisos?: number[] | null;
+        };
+        /** GuardarTerminalRequest */
+        GuardarTerminalRequest: {
+            nombre: string;
+            sucursal_id: number;
         };
         /** GuardarUnidadMedidaRequest */
         GuardarUnidadMedidaRequest: {
@@ -3769,7 +3883,11 @@ export interface components {
                 id: number;
                 nombre: string;
             } | null;
-            terminal: null;
+            terminal: {
+                id: number;
+                nombre: string;
+                sucursal_id: number;
+            } | null;
             permisos: string[];
             modulos_activos: string[];
             regional: {
@@ -3791,6 +3909,12 @@ export interface components {
             created_at: string;
             /** Format: date-time */
             updated_at: string;
+        };
+        /** TerminalResource */
+        TerminalResource: {
+            id: number;
+            sucursal_id: number;
+            nombre: string;
         };
         /** TransformacionResource */
         TransformacionResource: {
@@ -4019,7 +4143,9 @@ export type CuentaPagarResource = components['schemas']['CuentaPagarResource'];
 export type CuponResource = components['schemas']['CuponResource'];
 export type Departamento = components['schemas']['Departamento'];
 export type DepartamentoResource = components['schemas']['DepartamentoResource'];
+export type DesbloquearSesionRequest = components['schemas']['DesbloquearSesionRequest'];
 export type DevolucionResource = components['schemas']['DevolucionResource'];
+export type ElegirTerminalRequest = components['schemas']['ElegirTerminalRequest'];
 export type EmitirGiftCardRequest = components['schemas']['EmitirGiftCardRequest'];
 export type EmpleadoResource = components['schemas']['EmpleadoResource'];
 export type EnviarCampanaRequest = components['schemas']['EnviarCampanaRequest'];
@@ -4036,10 +4162,12 @@ export type GuardarInsumoStockRequest = components['schemas']['GuardarInsumoStoc
 export type GuardarListaPrecioItemRequest = components['schemas']['GuardarListaPrecioItemRequest'];
 export type GuardarListaPrecioRequest = components['schemas']['GuardarListaPrecioRequest'];
 export type GuardarMetodoPagoRequest = components['schemas']['GuardarMetodoPagoRequest'];
+export type GuardarPinSesionRequest = components['schemas']['GuardarPinSesionRequest'];
 export type GuardarPresentacionRequest = components['schemas']['GuardarPresentacionRequest'];
 export type GuardarProductoVarianteRequest = components['schemas']['GuardarProductoVarianteRequest'];
 export type GuardarReglaPrecioRequest = components['schemas']['GuardarReglaPrecioRequest'];
 export type GuardarRolRequest = components['schemas']['GuardarRolRequest'];
+export type GuardarTerminalRequest = components['schemas']['GuardarTerminalRequest'];
 export type GuardarUnidadMedidaRequest = components['schemas']['GuardarUnidadMedidaRequest'];
 export type InsumoResource = components['schemas']['InsumoResource'];
 export type InsumoStock = components['schemas']['InsumoStock'];
@@ -4077,6 +4205,7 @@ export type ReglaPrecioResource = components['schemas']['ReglaPrecioResource'];
 export type RolResource = components['schemas']['RolResource'];
 export type SesionResource = components['schemas']['SesionResource'];
 export type Sucursal = components['schemas']['Sucursal'];
+export type TerminalResource = components['schemas']['TerminalResource'];
 export type TransformacionResource = components['schemas']['TransformacionResource'];
 export type UnidadMedidaResource = components['schemas']['UnidadMedidaResource'];
 export type UsuarioAdminResource = components['schemas']['UsuarioAdminResource'];
@@ -7832,6 +7961,73 @@ export interface operations {
             401: components["responses"]["AuthenticationException"];
         };
     };
+    "pinSesion.guardar": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["GuardarPinSesionRequest"];
+            };
+        };
+        responses: {
+            /** @description No content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            401: components["responses"]["AuthenticationException"];
+            422: components["responses"]["ValidationException"];
+        };
+    };
+    "pinSesion.bloquear": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            401: components["responses"]["AuthenticationException"];
+        };
+    };
+    "sesion.desbloquear": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DesbloquearSesionRequest"];
+            };
+        };
+        responses: {
+            /** @description No content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            401: components["responses"]["AuthenticationException"];
+            422: components["responses"]["ValidationException"];
+        };
+    };
     "planPago.index": {
         parameters: {
             query?: {
@@ -9211,6 +9407,45 @@ export interface operations {
             401: components["responses"]["AuthenticationException"];
         };
     };
+    "sesion.elegirTerminal": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ElegirTerminalRequest"];
+            };
+        };
+        responses: {
+            /** @description No content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            401: components["responses"]["AuthenticationException"];
+            /** @description An error */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /**
+                         * @description Error overview.
+                         * @example
+                         */
+                        message: string;
+                    };
+                };
+            };
+            422: components["responses"]["ValidationException"];
+        };
+    };
     "sucursal.index": {
         parameters: {
             query?: never;
@@ -9231,6 +9466,165 @@ export interface operations {
                 };
             };
             401: components["responses"]["AuthenticationException"];
+        };
+    };
+    "terminal.index": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Array of `TerminalResource` */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["TerminalResource"][];
+                        meta: {
+                            total: number;
+                            page: number;
+                            rows: unknown;
+                            filtros_aplicados: {
+                                q: string;
+                            };
+                            permisos: {
+                                administrar: boolean;
+                            };
+                        };
+                    };
+                };
+            };
+            401: components["responses"]["AuthenticationException"];
+        };
+    };
+    "terminal.store": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["GuardarTerminalRequest"];
+            };
+        };
+        responses: {
+            /** @description `TerminalResource` */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["TerminalResource"];
+                    };
+                };
+            };
+            401: components["responses"]["AuthenticationException"];
+            /** @description An error */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /**
+                         * @description Error overview.
+                         * @example
+                         */
+                        message: string;
+                    };
+                };
+            };
+            422: components["responses"]["ValidationException"];
+        };
+    };
+    "terminal.show": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The terminal ID */
+                terminal: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description `TerminalResource` */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["TerminalResource"];
+                    };
+                };
+            };
+            401: components["responses"]["AuthenticationException"];
+            404: components["responses"]["ModelNotFoundException"];
+        };
+    };
+    "terminal.update": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The terminal ID */
+                terminal: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["GuardarTerminalRequest"];
+            };
+        };
+        responses: {
+            /** @description `TerminalResource` */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["TerminalResource"];
+                    };
+                };
+            };
+            401: components["responses"]["AuthenticationException"];
+            404: components["responses"]["ModelNotFoundException"];
+            422: components["responses"]["ValidationException"];
+        };
+    };
+    "terminal.destroy": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The terminal ID */
+                terminal: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            401: components["responses"]["AuthenticationException"];
+            404: components["responses"]["ModelNotFoundException"];
         };
     };
     "twoFactor.setup": {

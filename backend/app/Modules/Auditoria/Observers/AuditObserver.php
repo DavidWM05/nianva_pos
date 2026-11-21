@@ -23,7 +23,7 @@ class AuditObserver
      * el log de auditoria).
      */
     private const CAMPOS_EXCLUIDOS = [
-        'password', 'remember_token', 'created_at', 'updated_at', 'deleted_at',
+        'password', 'pin_caja_hash', 'remember_token', 'created_at', 'updated_at', 'deleted_at',
         'two_factor_secret', 'two_factor_recovery_codes',
     ];
 

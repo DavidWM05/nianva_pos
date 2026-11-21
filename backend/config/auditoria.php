@@ -24,6 +24,7 @@ use App\Modules\NotasCredito\Models\NotaCredito;
 use App\Modules\Nucleo\Models\MetodoPago;
 use App\Modules\Nucleo\Models\Rol;
 use App\Modules\Nucleo\Models\RolPermiso;
+use App\Modules\Nucleo\Models\Terminal;
 use App\Modules\Nucleo\Models\Usuario;
 use App\Modules\Nucleo\Models\UsuarioRol;
 use App\Modules\Payroll\Models\Empleado;
@@ -148,6 +149,7 @@ return [
     'auditables' => [
         Presentacion::class,
         Usuario::class,
+        Terminal::class,
         Rol::class,
         Producto::class,
         ProductoVariante::class,

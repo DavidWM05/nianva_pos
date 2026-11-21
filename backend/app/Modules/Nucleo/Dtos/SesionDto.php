@@ -14,6 +14,7 @@ final readonly class SesionDto
 {
     /**
      * @param  array{id: int, nombre: string}|null  $sucursal
+     * @param  array{id: int, nombre: string, sucursal_id: int}|null  $terminal
      * @param  list<string>  $permisos
      * @param  list<string>  $modulosActivos
      * @param  array{locale: string, moneda: string, zona_horaria: string}  $regional
@@ -24,5 +25,6 @@ final readonly class SesionDto
         public array $permisos,
         public array $modulosActivos,
         public array $regional,
+        public ?array $terminal = null,
     ) {}
 }
