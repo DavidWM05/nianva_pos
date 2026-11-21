@@ -58,7 +58,7 @@ class EdicionesParcialesTest extends TestCase
 
     public function test_actualizar_producto_solo_con_nombre_conserva_los_demas_campos(): void
     {
-        $producto = Producto::create([
+        $producto = Producto::create(['precio_compra' => '0.00',
             'tenant_id' => $this->tenant->id,
             'nombre' => 'Original',
             'descripcion' => 'Descripcion original',

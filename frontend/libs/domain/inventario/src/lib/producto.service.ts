@@ -2,7 +2,7 @@ import { RespuestaDe, CuerpoDe } from '@nianva/api-contrato';
 import { ConsultaPagina, urlApi } from '@nianva/core-http';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
-import { Observable, map } from 'rxjs';
+import { Observable, map, throwError } from 'rxjs';
 
 import {
   CatalogoSimple,
@@ -90,14 +90,22 @@ export class ProductoService {
   }
 
   crear(payload: ProductoFormPayload): Observable<Producto> {
-    const cuerpo: CuerpoDe<'/productos', 'post'> = payload;
+    const costo = payload.precio_compra;
+    if (costo === null || costo === undefined) {
+      return throwError(() => new Error('El costo del producto es obligatorio en el alta.'));
+    }
+    const cuerpo: CuerpoDe<'/productos', 'post'> = { ...payload, precio_compra: costo };
     return this.http
       .post<RespuestaDe<'/productos', 'post'>>(urlApi(`/productos`), cuerpo)
       .pipe(map((r) => r.data));
   }
 
   actualizar(id: number, payload: ProductoFormPayload): Observable<Producto> {
-    const cuerpo: CuerpoDe<'/productos/{producto}', 'put'> = payload;
+    const { precio_compra, ...resto } = payload;
+    const cuerpo: CuerpoDe<'/productos/{producto}', 'put'> = {
+      ...resto,
+      ...(precio_compra === null || precio_compra === undefined ? {} : { precio_compra }),
+    };
     return this.http
       .put<RespuestaDe<'/productos/{producto}', 'put'>>(
         urlApi(`/productos/${id}`),

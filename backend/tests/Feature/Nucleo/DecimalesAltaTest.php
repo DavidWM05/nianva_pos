@@ -46,7 +46,7 @@ class DecimalesAltaTest extends TestCase
 
     public function test_el_alta_de_producto_sin_precios_responde_los_defaults_de_bd(): void
     {
-        $this->postJson('/api/v1/productos', ['nombre' => 'Producto sin precios'])
+        $this->postJson('/api/v1/productos', ['precio_compra' => '0.00', 'nombre' => 'Producto sin precios'])
             ->assertCreated()
             ->assertJsonPath('data.precio_compra', '0.00')
             ->assertJsonPath('data.precio_venta', '0.00');

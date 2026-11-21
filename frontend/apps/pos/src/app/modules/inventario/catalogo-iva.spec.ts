@@ -86,6 +86,7 @@ describe('Catálogo: precio por variante e IVA incluido', () => {
       exento_iva: true,
     });
     const guardar = vi.spyOn(fixture.componentInstance.guardar, 'emit');
+    fixture.componentInstance['numericos'].controls.precio_compra.setValue(0);
     form.onSubmit();
     expect(guardar).toHaveBeenCalledWith(
       expect.objectContaining({ tasa_iva: 0, exento_iva: true }),

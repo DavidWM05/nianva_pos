@@ -8,6 +8,13 @@ use App\Modules\Inventario\Dtos\ProductoDto;
 use App\Modules\Nucleo\Http\Requests\SolicitudNegocio;
 use App\Modules\Nucleo\Support\ReglasTenant;
 
+/**
+ * Alta con costo obligatorio y edición parcial con costo opcional.
+ *
+ * @ignoreSchema evita compartir el cuerpo entre POST y PUT: cada operación
+ * documenta sus reglas reales, como GuardarUsuarioRequest.
+ * @ignoreSchema
+ */
 class GuardarProductoRequest extends SolicitudNegocio
 {
     /**
@@ -22,7 +29,7 @@ class GuardarProductoRequest extends SolicitudNegocio
             'descripcion' => ['nullable', 'string'],
             'categoria_id' => ['nullable', 'integer', ReglasTenant::existe('categorias', $tenantId)],
             'departamento_id' => ['nullable', 'integer', ReglasTenant::existe('departamentos', $tenantId)],
-            'precio_compra' => ['nullable', 'numeric', 'decimal:0,2', 'min:0'],
+            'precio_compra' => [$this->isMethod('post') ? 'required' : 'sometimes', 'numeric', 'decimal:0,2', 'min:0'],
             'precio_venta' => ['nullable', 'numeric', 'decimal:0,2', 'min:0'],
             'tasa_iva' => ['nullable', 'numeric', 'decimal:0,4', 'regex:/\A(?:0|8|16)(?:\.0{1,4})?\z/'],
             'exento_iva' => ['sometimes', 'boolean'],

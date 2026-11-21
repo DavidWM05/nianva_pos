@@ -48,11 +48,11 @@ class EntradasTipadasCatalogosDtoTest extends TestCase
 
     public function test_guardar_producto_en_edicion_distingue_ausente_de_null(): void
     {
-        $sinDescripcion = $this->validar(GuardarProductoRequest::class, ['nombre' => 'Solo nombre'])->toDto();
+        $sinDescripcion = $this->validar(GuardarProductoRequest::class, ['nombre' => 'Solo nombre'], 'PUT')->toDto();
         $conDescripcionNula = $this->validar(GuardarProductoRequest::class, [
             'nombre' => 'Con descripcion nula',
             'descripcion' => null,
-        ])->toDto();
+        ], 'PUT')->toDto();
 
         $this->assertSame(['nombre'], $sinDescripcion->camposPresentes());
         $this->assertSame(['nombre' => 'Solo nombre'], $sinDescripcion->datosPresentes());
@@ -68,9 +68,9 @@ class EntradasTipadasCatalogosDtoTest extends TestCase
      * @param  class-string<SolicitudNegocio>  $clase
      * @param  array<string, mixed>  $payload
      */
-    private function validar(string $clase, array $payload): SolicitudNegocio
+    private function validar(string $clase, array $payload, string $metodo = 'POST'): SolicitudNegocio
     {
-        $request = $clase::create('/api/v1/test', 'POST', $payload);
+        $request = $clase::create('/api/v1/test', $metodo, $payload);
         $request->setContainer(app());
         $request->setRedirector(app('redirect'));
         $request->setUserResolver(fn () => $this->usuario);

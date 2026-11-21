@@ -39,7 +39,7 @@ async function crear<T>(page: Page, ruta: string, payload: Record<string, unknow
 }
 
 export function crearProducto(page: Page, nombre: string): Promise<{ id: number }> {
-  return crear(page, '/productos', { nombre, precio_venta: 10 });
+  return crear(page, '/productos', { nombre, precio_venta: 10, precio_compra: '0.00' });
 }
 
 export function crearCliente(page: Page, nombre: string): Promise<{ id: number }> {

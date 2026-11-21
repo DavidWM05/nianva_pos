@@ -21,7 +21,7 @@ class ProductoExistsTenantTest extends TestCase
     {
         $this->actingAs($this->usuario);
 
-        $this->postJson('/api/v1/productos', [
+        $this->postJson('/api/v1/productos', ['precio_compra' => '0.00',
             'nombre' => 'Producto',
             'categoria_id' => $this->categoriaB->id,
         ])->assertStatus(422)->assertJsonValidationErrors(['categoria_id']);
@@ -31,7 +31,7 @@ class ProductoExistsTenantTest extends TestCase
     {
         $this->actingAs($this->usuario);
 
-        $this->postJson('/api/v1/productos', [
+        $this->postJson('/api/v1/productos', ['precio_compra' => '0.00',
             'nombre' => 'Producto',
             'departamento_id' => $this->departamentoB->id,
         ])->assertStatus(422)->assertJsonValidationErrors(['departamento_id']);

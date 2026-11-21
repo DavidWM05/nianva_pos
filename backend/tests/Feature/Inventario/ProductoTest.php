@@ -58,13 +58,13 @@ class ProductoTest extends TestCase
         ['tenant' => $tenant, 'sucursal' => $sucursal, 'usuario' => $usuario] = $this->crearUsuarioConPermisos(['inventario.ver', 'inventario.crear']);
         $categoria = Categoria::create(['tenant_id' => $tenant->id, 'nombre' => 'Playeras']);
 
-        $productoA = Producto::create(['tenant_id' => $tenant->id, 'categoria_id' => $categoria->id, 'nombre' => 'Playera Basica']);
+        $productoA = Producto::create(['precio_compra' => '0.00', 'tenant_id' => $tenant->id, 'categoria_id' => $categoria->id, 'nombre' => 'Playera Basica']);
         $varianteA1 = ProductoVarianteFactory::asignarAtributos(ProductoVariante::create(['producto_id' => $productoA->id]), ['Talla' => 'M']);
         $varianteA2 = ProductoVarianteFactory::asignarAtributos(ProductoVariante::create(['producto_id' => $productoA->id]), ['Talla' => 'L']);
         InventarioStock::create(['sucursal_id' => $sucursal->id, 'variante_id' => $varianteA1->id, 'stock_actual' => 5]);
         InventarioStock::create(['sucursal_id' => $sucursal->id, 'variante_id' => $varianteA2->id, 'stock_actual' => 3]);
 
-        $productoB = Producto::create(['tenant_id' => $tenant->id, 'nombre' => 'Pantalon Cargo']);
+        $productoB = Producto::create(['precio_compra' => '0.00', 'tenant_id' => $tenant->id, 'nombre' => 'Pantalon Cargo']);
         ProductoVarianteFactory::asignarAtributos(ProductoVariante::create(['producto_id' => $productoB->id]), ['Talla' => 'Unica']);
         // Sin fila de inventario_stock -- stock_total debe ser 0, no null.
 
@@ -98,14 +98,14 @@ class ProductoTest extends TestCase
     {
         ['usuario' => $sinPermiso] = $this->crearUsuarioConPermisos(['inventario.ver']);
         $this->actingAs($sinPermiso);
-        $this->postJson('/api/v1/productos', ['nombre' => 'Nuevo'])->assertForbidden();
+        $this->postJson('/api/v1/productos', ['precio_compra' => '0.00', 'nombre' => 'Nuevo'])->assertForbidden();
 
         ['usuario' => $conPermiso] = $this->crearUsuarioConPermisos(['inventario.ver', 'inventario.crear']);
         $this->actingAs($conPermiso);
 
-        $this->postJson('/api/v1/productos', [])->assertUnprocessable()->assertJsonValidationErrors('nombre');
+        $this->postJson('/api/v1/productos', ['precio_compra' => '0.00'])->assertUnprocessable()->assertJsonValidationErrors('nombre');
 
-        $this->postJson('/api/v1/productos', ['nombre' => 'Sudadera Gris', 'precio_venta' => 450])
+        $this->postJson('/api/v1/productos', ['precio_compra' => '0.00', 'nombre' => 'Sudadera Gris', 'precio_venta' => 450])
             ->assertCreated()
             ->assertJsonPath('data.nombre', 'Sudadera Gris')
             ->assertJsonPath('data.activo', true);
@@ -114,7 +114,7 @@ class ProductoTest extends TestCase
     public function test_actualizar_y_desactivar_producto_nunca_borra_fisicamente(): void
     {
         ['tenant' => $tenant, 'usuario' => $usuario] = $this->crearUsuarioConPermisos(['inventario.editar', 'inventario.eliminar']);
-        $producto = Producto::create(['tenant_id' => $tenant->id, 'nombre' => 'Chamarra']);
+        $producto = Producto::create(['precio_compra' => '0.00', 'tenant_id' => $tenant->id, 'nombre' => 'Chamarra']);
 
         $this->actingAs($usuario);
 
@@ -132,7 +132,7 @@ class ProductoTest extends TestCase
     public function test_show_incluye_las_variantes_con_su_stock_por_sucursal(): void
     {
         ['tenant' => $tenant, 'sucursal' => $sucursal, 'usuario' => $usuario] = $this->crearUsuarioConPermisos(['inventario.ver']);
-        $producto = Producto::create(['tenant_id' => $tenant->id, 'nombre' => 'Gorra']);
+        $producto = Producto::create(['precio_compra' => '0.00', 'tenant_id' => $tenant->id, 'nombre' => 'Gorra']);
         $variante = ProductoVarianteFactory::asignarAtributos(ProductoVariante::create(['producto_id' => $producto->id]), ['Talla' => 'Unica', 'Color' => 'Negro']);
         InventarioStock::create(['sucursal_id' => $sucursal->id, 'variante_id' => $variante->id, 'stock_actual' => 12, 'stock_minimo' => 2]);
 
@@ -158,7 +158,7 @@ class ProductoTest extends TestCase
         ['tenant' => $tenant, 'sucursal' => $sucursal, 'usuario' => $usuario] = $this->crearUsuarioConPermisos(['inventario.ver']);
         $otraSucursal = Sucursal::create(['tenant_id' => $tenant->id, 'nombre' => 'Norte']);
 
-        $producto = Producto::create(['tenant_id' => $tenant->id, 'nombre' => 'Bufanda']);
+        $producto = Producto::create(['precio_compra' => '0.00', 'tenant_id' => $tenant->id, 'nombre' => 'Bufanda']);
         $conStock = ProductoVarianteFactory::asignarAtributos(ProductoVariante::create(['producto_id' => $producto->id]), ['Talla' => 'Unica']);
         InventarioStock::create(['sucursal_id' => $sucursal->id, 'variante_id' => $conStock->id, 'stock_actual' => 7]);
         InventarioStock::create(['sucursal_id' => $otraSucursal->id, 'variante_id' => $conStock->id, 'stock_actual' => 99]);
@@ -178,7 +178,7 @@ class ProductoTest extends TestCase
     public function test_variantes_se_crean_editan_y_desactivan_anidadas_bajo_el_producto(): void
     {
         ['tenant' => $tenant, 'usuario' => $usuario] = $this->crearUsuarioConPermisos(['inventario.crear', 'inventario.editar', 'inventario.eliminar']);
-        $producto = Producto::create(['tenant_id' => $tenant->id, 'nombre' => 'Tenis']);
+        $producto = Producto::create(['precio_compra' => '0.00', 'tenant_id' => $tenant->id, 'nombre' => 'Tenis']);
 
         $this->actingAs($usuario);
 
@@ -206,7 +206,7 @@ class ProductoTest extends TestCase
     {
         ['tenant' => $tenant, 'usuario' => $usuario] = $this->crearUsuarioConPermisos(['inventario.crear']);
         ConfiguracionTenant::where('tenant_id', $tenant->id)->update(['codigo_barras_automatico' => true]);
-        $producto = Producto::create(['tenant_id' => $tenant->id, 'nombre' => 'Gorra']);
+        $producto = Producto::create(['precio_compra' => '0.00', 'tenant_id' => $tenant->id, 'nombre' => 'Gorra']);
 
         $this->actingAs($usuario);
 
@@ -222,7 +222,7 @@ class ProductoTest extends TestCase
     {
         ['tenant' => $tenant, 'usuario' => $usuario] = $this->crearUsuarioConPermisos(['inventario.crear']);
         ConfiguracionTenant::where('tenant_id', $tenant->id)->update(['codigo_barras_automatico' => true]);
-        $producto = Producto::create(['tenant_id' => $tenant->id, 'nombre' => 'Gorra']);
+        $producto = Producto::create(['precio_compra' => '0.00', 'tenant_id' => $tenant->id, 'nombre' => 'Gorra']);
 
         $this->actingAs($usuario);
 
@@ -236,7 +236,7 @@ class ProductoTest extends TestCase
     public function test_store_variante_no_genera_codigo_si_la_configuracion_esta_apagada(): void
     {
         ['tenant' => $tenant, 'usuario' => $usuario] = $this->crearUsuarioConPermisos(['inventario.crear']);
-        $producto = Producto::create(['tenant_id' => $tenant->id, 'nombre' => 'Gorra']);
+        $producto = Producto::create(['precio_compra' => '0.00', 'tenant_id' => $tenant->id, 'nombre' => 'Gorra']);
 
         $this->actingAs($usuario);
 
@@ -248,7 +248,7 @@ class ProductoTest extends TestCase
     public function test_kardex_devuelve_los_movimientos_de_la_variante_mas_recientes_primero(): void
     {
         ['tenant' => $tenant, 'sucursal' => $sucursal, 'usuario' => $usuario] = $this->crearUsuarioConPermisos(['inventario.ver']);
-        $producto = Producto::create(['tenant_id' => $tenant->id, 'nombre' => 'Bufanda']);
+        $producto = Producto::create(['precio_compra' => '0.00', 'tenant_id' => $tenant->id, 'nombre' => 'Bufanda']);
         $variante = ProductoVarianteFactory::asignarAtributos(ProductoVariante::create(['producto_id' => $producto->id]), ['Talla' => 'Unica']);
 
         $servicio = app(InventarioService::class);
