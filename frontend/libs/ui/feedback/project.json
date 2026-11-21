@@ -23,6 +23,7 @@
     },
     "test": {
       "executor": "@nx/angular:unit-test",
+      "inputs": ["default", "^production", "contrato"],
       "options": {
         "watch": false
       }

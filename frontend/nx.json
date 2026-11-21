@@ -7,7 +7,12 @@
       "!{projectRoot}/.eslintrc.json",
       "!{projectRoot}/eslint.config.mjs"
     ],
-    "sharedGlobals": []
+    "sharedGlobals": [],
+    "contrato": [
+      {
+        "runtime": "node -e \"const fs = require('node:fs'); const crypto = require('node:crypto'); console.log(crypto.createHash('sha256').update(fs.readFileSync('../docs/api/openapi.json')).digest('hex'))\""
+      }
+    ]
   },
   "plugins": [
     {
