@@ -6,6 +6,7 @@ use App\Modules\NotasCredito\Database\Factories\NotaCreditoUsoFactory;
 use App\Modules\Nucleo\Models\Concerns\BelongsToTenantViaRelacion;
 use App\Modules\Nucleo\Models\Concerns\EsLibroDeMovimientos;
 use App\Modules\Nucleo\Models\Concerns\SerializaDecimales;
+use App\Modules\Nucleo\Models\Concerns\TieneUlid;
 use App\Modules\Tpv\Models\Venta;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -28,6 +29,7 @@ class NotaCreditoUso extends Model
     use HasFactory;
 
     use SerializaDecimales;
+    use TieneUlid;
 
     const UPDATED_AT = null;
 

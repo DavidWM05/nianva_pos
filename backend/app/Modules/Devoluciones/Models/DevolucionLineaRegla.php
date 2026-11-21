@@ -6,6 +6,7 @@ namespace App\Modules\Devoluciones\Models;
 
 use App\Modules\Devoluciones\Database\Factories\DevolucionLineaReglaFactory;
 use App\Modules\Nucleo\Models\Concerns\BelongsToTenantViaRelacion;
+use App\Modules\Nucleo\Models\Concerns\TieneUlid;
 use App\Modules\Nucleo\Scopes\TenantScopeViaRelacion;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Builder;
@@ -30,6 +31,8 @@ class DevolucionLineaRegla extends Model
 
     /** @use HasFactory<DevolucionLineaReglaFactory> */
     use HasFactory;
+
+    use TieneUlid;
 
     public $timestamps = false;
 

@@ -10,6 +10,7 @@ return new class extends Migration
     {
         Schema::create('gift_card_recargas', function (Blueprint $table) {
             $table->id();
+            $table->char('ulid', 26)->unique();
             $table->foreignId('gift_card_id')->constrained('gift_cards')->cascadeOnDelete();
             $table->decimal('monto', 12, 2);
             $table->foreignId('usuario_id')->constrained('usuarios')->restrictOnDelete();

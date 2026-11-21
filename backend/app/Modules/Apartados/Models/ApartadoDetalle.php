@@ -6,6 +6,7 @@ use App\Modules\Apartados\Database\Factories\ApartadoDetalleFactory;
 use App\Modules\Inventario\Models\ProductoVariante;
 use App\Modules\Nucleo\Casts\CantidadDecimal;
 use App\Modules\Nucleo\Models\Concerns\BelongsToTenantViaRelacion;
+use App\Modules\Nucleo\Models\Concerns\TieneUlid;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -38,6 +39,8 @@ class ApartadoDetalle extends Model
 
     /** @use HasFactory<ApartadoDetalleFactory> */
     use HasFactory;
+
+    use TieneUlid;
 
     public $timestamps = false;
 

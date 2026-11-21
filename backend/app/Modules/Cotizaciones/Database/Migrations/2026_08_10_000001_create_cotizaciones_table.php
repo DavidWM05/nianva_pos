@@ -12,6 +12,8 @@ return new class extends Migration
     {
         Schema::create('cotizaciones', function (Blueprint $table) {
             $table->id();
+            $table->char('ulid', 26);
+            $table->unique(['tenant_id', 'ulid']);
             $table->foreignId('lista_precio_id')->nullable()->constrained('listas_precio')->nullOnDelete();
             $table->foreignId('tenant_id')->constrained('tenants')->cascadeOnDelete();
             $table->foreignId('sucursal_id')->constrained('sucursales')->restrictOnDelete();

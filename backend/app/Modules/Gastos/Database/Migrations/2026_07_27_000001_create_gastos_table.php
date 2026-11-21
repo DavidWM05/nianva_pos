@@ -10,6 +10,7 @@ return new class extends Migration
     {
         Schema::create('gastos', function (Blueprint $table) {
             $table->id();
+            $table->char('ulid', 26)->unique();
             $table->foreignId('caja_sesion_id')->constrained('caja_sesiones')->cascadeOnDelete();
             $table->foreignId('sucursal_id')->constrained('sucursales')->restrictOnDelete();
             $table->foreignId('usuario_id')->constrained('usuarios')->restrictOnDelete();

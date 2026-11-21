@@ -17,6 +17,7 @@ return new class extends Migration
     {
         Schema::create('cuenta_cobrar_movimientos', function (Blueprint $table) {
             $table->id();
+            $table->char('ulid', 26)->unique();
             $table->foreignId('cuenta_cobrar_id')->constrained('cuentas_cobrar')->cascadeOnDelete();
             $table->enum('tipo', ['saldo_inicial', 'abono']);
             $table->string('referencia_tabla', 60)->nullable();

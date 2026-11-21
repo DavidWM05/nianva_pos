@@ -11730,6 +11730,9 @@
                     "id": {
                         "type": "integer"
                     },
+                    "ulid": {
+                        "type": "string"
+                    },
                     "cuenta_cobrar_id": {
                         "type": "integer"
                     },
@@ -11762,6 +11765,7 @@
                 },
                 "required": [
                     "id",
+                    "ulid",
                     "cuenta_cobrar_id",
                     "caja_sesion_id",
                     "usuario_id",
@@ -11810,6 +11814,9 @@
                     "id": {
                         "type": "integer"
                     },
+                    "ulid": {
+                        "type": "string"
+                    },
                     "cuenta_pagar_id": {
                         "type": "integer"
                     },
@@ -11842,6 +11849,7 @@
                 },
                 "required": [
                     "id",
+                    "ulid",
                     "cuenta_pagar_id",
                     "caja_sesion_id",
                     "usuario_id",
@@ -16539,6 +16547,9 @@
                     "id": {
                         "type": "integer"
                     },
+                    "ulid": {
+                        "type": "string"
+                    },
                     "plan_pago_cliente_id": {
                         "type": "integer"
                     },
@@ -16586,6 +16597,7 @@
                 },
                 "required": [
                     "id",
+                    "ulid",
                     "plan_pago_cliente_id",
                     "numero_cuota",
                     "monto",

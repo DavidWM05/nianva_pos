@@ -10,6 +10,8 @@ return new class extends Migration
     {
         Schema::create('cuentas_cobrar', function (Blueprint $table) {
             $table->id();
+            $table->char('ulid', 26);
+            $table->unique(['tenant_id', 'ulid']);
             $table->foreignId('tenant_id')->constrained('tenants')->cascadeOnDelete();
             $table->foreignId('venta_id')->constrained('ventas')->restrictOnDelete()
                 ->comment('Venta que origina la deuda');

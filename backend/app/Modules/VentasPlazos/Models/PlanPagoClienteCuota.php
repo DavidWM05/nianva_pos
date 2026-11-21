@@ -4,6 +4,7 @@ namespace App\Modules\VentasPlazos\Models;
 
 use App\Modules\Nucleo\Models\Concerns\BelongsToTenantViaRelacion;
 use App\Modules\Nucleo\Models\Concerns\SerializaDecimales;
+use App\Modules\Nucleo\Models\Concerns\TieneUlid;
 use App\Modules\VentasPlazos\Database\Factories\PlanPagoClienteCuotaFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -36,6 +37,7 @@ class PlanPagoClienteCuota extends Model
     use HasFactory;
 
     use SerializaDecimales;
+    use TieneUlid;
 
     public $timestamps = false;
 

@@ -2286,6 +2286,7 @@ export interface components {
         /** AbonoCuenta */
         AbonoCuenta: {
             id: number;
+            ulid: string;
             cuenta_cobrar_id: number;
             caja_sesion_id: number | null;
             usuario_id: number;
@@ -2307,6 +2308,7 @@ export interface components {
         /** AbonoPagar */
         AbonoPagar: {
             id: number;
+            ulid: string;
             cuenta_pagar_id: number;
             caja_sesion_id: number | null;
             usuario_id: number;
@@ -3438,6 +3440,7 @@ export interface components {
         /** PlanPagoClienteCuota */
         PlanPagoClienteCuota: {
             id: number;
+            ulid: string;
             plan_pago_cliente_id: number;
             numero_cuota: number;
             monto: string;

@@ -18,6 +18,7 @@ return new class extends Migration
     {
         Schema::create('caja_movimientos', function (Blueprint $table) {
             $table->id();
+            $table->char('ulid', 26)->unique();
             $table->foreignId('caja_sesion_id')->constrained('caja_sesiones')->restrictOnDelete();
             $table->foreignId('metodo_pago_id')->constrained('metodos_pago')->restrictOnDelete();
             $table->enum('tipo', ['saldo_inicial', 'venta', 'anulacion', 'gasto', 'abono_cxc', 'pago_cxp', 'abono_apartado', 'recarga_gc', 'devolucion']);

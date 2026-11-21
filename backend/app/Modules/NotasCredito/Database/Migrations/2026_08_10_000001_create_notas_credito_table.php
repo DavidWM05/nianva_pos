@@ -10,6 +10,8 @@ return new class extends Migration
     {
         Schema::create('notas_credito', function (Blueprint $table) {
             $table->id();
+            $table->char('ulid', 26);
+            $table->unique(['tenant_id', 'ulid']);
             $table->foreignId('tenant_id')->constrained('tenants')->cascadeOnDelete();
             $table->foreignId('cliente_id')->constrained('clientes')->restrictOnDelete();
             $table->foreignId('devolucion_id')->constrained('devoluciones')->restrictOnDelete()

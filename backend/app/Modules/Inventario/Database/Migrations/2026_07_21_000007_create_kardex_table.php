@@ -10,6 +10,7 @@ return new class extends Migration
     {
         Schema::create('kardex', function (Blueprint $table) {
             $table->id();
+            $table->char('ulid', 26)->unique();
             $table->foreignId('variante_id')->constrained('producto_variantes')->restrictOnDelete();
             $table->foreignId('sucursal_id')->constrained('sucursales')->restrictOnDelete();
             $table->enum('tipo', ['entrada', 'salida']);

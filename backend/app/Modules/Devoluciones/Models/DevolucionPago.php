@@ -4,6 +4,7 @@ namespace App\Modules\Devoluciones\Models;
 
 use App\Modules\Devoluciones\Database\Factories\DevolucionPagoFactory;
 use App\Modules\Nucleo\Models\Concerns\BelongsToTenantViaRelacion;
+use App\Modules\Nucleo\Models\Concerns\TieneUlid;
 use App\Modules\Nucleo\Models\MetodoPago;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -21,6 +22,8 @@ class DevolucionPago extends Model
 
     /** @use HasFactory<DevolucionPagoFactory> */
     use HasFactory;
+
+    use TieneUlid;
 
     public $timestamps = false;
 

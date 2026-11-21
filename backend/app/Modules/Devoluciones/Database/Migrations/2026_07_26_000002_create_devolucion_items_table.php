@@ -10,6 +10,7 @@ return new class extends Migration
     {
         Schema::create('devolucion_items', function (Blueprint $table) {
             $table->id();
+            $table->char('ulid', 26)->unique();
             $table->foreignId('devolucion_id')->constrained('devoluciones')->cascadeOnDelete();
             $table->foreignId('variante_id')->constrained('producto_variantes')->restrictOnDelete();
             $table->enum('tipo', ['devuelto', 'nuevo']);

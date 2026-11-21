@@ -6,6 +6,7 @@ use App\Modules\Cotizaciones\Database\Factories\CotizacionDetalleFactory;
 use App\Modules\Inventario\Models\ProductoVariante;
 use App\Modules\Nucleo\Casts\CantidadDecimal;
 use App\Modules\Nucleo\Models\Concerns\BelongsToTenantViaRelacion;
+use App\Modules\Nucleo\Models\Concerns\TieneUlid;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -35,6 +36,8 @@ class CotizacionDetalle extends Model
 
     /** @use HasFactory<CotizacionDetalleFactory> */
     use HasFactory;
+
+    use TieneUlid;
 
     public $timestamps = false;
 

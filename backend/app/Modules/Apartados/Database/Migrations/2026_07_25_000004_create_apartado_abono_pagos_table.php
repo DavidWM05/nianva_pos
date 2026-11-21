@@ -10,6 +10,7 @@ return new class extends Migration
     {
         Schema::create('apartado_abono_pagos', function (Blueprint $table) {
             $table->id();
+            $table->char('ulid', 26)->unique();
             $table->foreignId('abono_id')->constrained('apartado_abonos')->cascadeOnDelete();
             $table->foreignId('metodo_pago_id')->constrained('metodos_pago')->restrictOnDelete();
             $table->decimal('monto', 12, 2);

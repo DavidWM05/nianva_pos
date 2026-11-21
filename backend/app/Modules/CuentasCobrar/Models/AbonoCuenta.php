@@ -5,6 +5,7 @@ namespace App\Modules\CuentasCobrar\Models;
 use App\Modules\CuentasCobrar\Database\Factories\AbonoCuentaFactory;
 use App\Modules\Nucleo\Models\Concerns\BelongsToTenantViaRelacion;
 use App\Modules\Nucleo\Models\Concerns\SerializaDecimales;
+use App\Modules\Nucleo\Models\Concerns\TieneUlid;
 use App\Modules\Nucleo\Models\MetodoPago;
 use App\Modules\Nucleo\Models\Usuario;
 use App\Modules\Tpv\Models\CajaSesion;
@@ -25,6 +26,7 @@ class AbonoCuenta extends Model
     use HasFactory;
 
     use SerializaDecimales;
+    use TieneUlid;
 
     public $timestamps = false;
 

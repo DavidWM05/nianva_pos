@@ -7,6 +7,7 @@ namespace App\Modules\CuentasCobrar\Models;
 use App\Modules\CuentasCobrar\Database\Factories\CuentaCobrarMovimientoFactory;
 use App\Modules\Nucleo\Models\Concerns\BelongsToTenantViaRelacion;
 use App\Modules\Nucleo\Models\Concerns\EsLibroDeMovimientos;
+use App\Modules\Nucleo\Models\Concerns\TieneUlid;
 use App\Modules\Nucleo\Scopes\TenantScopeViaRelacion;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Builder;
@@ -33,6 +34,8 @@ class CuentaCobrarMovimiento extends Model
 
     /** @use HasFactory<CuentaCobrarMovimientoFactory> */
     use HasFactory;
+
+    use TieneUlid;
 
     const CREATED_AT = 'fecha';
 

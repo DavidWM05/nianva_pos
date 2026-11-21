@@ -6,6 +6,7 @@ namespace App\Modules\GiftCards\Models;
 
 use App\Modules\GiftCards\Database\Factories\GiftCardRecargaPagoFactory;
 use App\Modules\Nucleo\Models\Concerns\BelongsToTenantViaRelacion;
+use App\Modules\Nucleo\Models\Concerns\TieneUlid;
 use App\Modules\Nucleo\Scopes\TenantScopeViaRelacion;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Builder;
@@ -20,6 +21,8 @@ class GiftCardRecargaPago extends Model
 
     /** @use HasFactory<GiftCardRecargaPagoFactory> */
     use HasFactory;
+
+    use TieneUlid;
 
     public $timestamps = false;
 

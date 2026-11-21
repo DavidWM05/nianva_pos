@@ -8,6 +8,7 @@ use App\Modules\Inventario\Database\Factories\KardexFactory;
 use App\Modules\Nucleo\Casts\CantidadDecimal;
 use App\Modules\Nucleo\Models\Concerns\BelongsToTenantViaRelacion;
 use App\Modules\Nucleo\Models\Concerns\EsLibroDeMovimientos;
+use App\Modules\Nucleo\Models\Concerns\TieneUlid;
 use App\Modules\Nucleo\Models\Sucursal;
 use App\Modules\Nucleo\Models\Usuario;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
@@ -38,6 +39,8 @@ class Kardex extends Model
 
     /** @use HasFactory<KardexFactory> */
     use HasFactory;
+
+    use TieneUlid;
 
     const CREATED_AT = 'fecha';
 

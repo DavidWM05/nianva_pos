@@ -5,6 +5,7 @@ namespace App\Modules\Inventario\Models;
 use App\Modules\Inventario\Database\Factories\CompraDetalleFactory;
 use App\Modules\Nucleo\Casts\CantidadDecimal;
 use App\Modules\Nucleo\Models\Concerns\BelongsToTenantViaRelacion;
+use App\Modules\Nucleo\Models\Concerns\TieneUlid;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -36,6 +37,8 @@ class CompraDetalle extends Model
 
     /** @use HasFactory<CompraDetalleFactory> */
     use HasFactory;
+
+    use TieneUlid;
 
     public $timestamps = false;
 

@@ -17,6 +17,7 @@ return new class extends Migration
     {
         Schema::create('cotizacion_linea_reglas', function (Blueprint $table) {
             $table->id();
+            $table->char('ulid', 26)->unique();
             $table->foreignId('cotizacion_detalle_id')->constrained('cotizacion_detalles')->cascadeOnDelete();
             $table->unsignedBigInteger('regla_precio_id');
             $table->string('regla_nombre', 120);

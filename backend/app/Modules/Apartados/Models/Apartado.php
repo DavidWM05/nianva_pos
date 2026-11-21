@@ -8,6 +8,7 @@ use App\Modules\Apartados\Database\Factories\ApartadoFactory;
 use App\Modules\Crm\Models\Cliente;
 use App\Modules\Nucleo\Models\Concerns\BelongsToSucursal;
 use App\Modules\Nucleo\Models\Concerns\BelongsToTenant;
+use App\Modules\Nucleo\Models\Concerns\TieneUlid;
 use App\Modules\Nucleo\Models\Sucursal;
 use App\Modules\Nucleo\Models\Tenant;
 use App\Modules\Nucleo\Models\Usuario;
@@ -31,6 +32,8 @@ class Apartado extends Model
 
     /** @use HasFactory<ApartadoFactory> */
     use HasFactory;
+
+    use TieneUlid;
 
     const CREATED_AT = 'fecha_creacion';
 

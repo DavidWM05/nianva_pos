@@ -44,6 +44,12 @@
                 "default": null
             },
             {
+                "nombre": "ulid",
+                "tipo": "varchar",
+                "nullable": false,
+                "default": null
+            },
+            {
                 "nombre": "usuario_id",
                 "tipo": "integer",
                 "nullable": false,
@@ -64,6 +70,13 @@
                     "cuenta_cobrar_id"
                 ],
                 "unico": false
+            },
+            {
+                "nombre": "abonos_cuenta_ulid_unique",
+                "columnas": [
+                    "ulid"
+                ],
+                "unico": true
             },
             {
                 "nombre": "abonos_cuenta_usuario_id_index",
@@ -176,6 +189,12 @@
                 "default": null
             },
             {
+                "nombre": "ulid",
+                "tipo": "varchar",
+                "nullable": false,
+                "default": null
+            },
+            {
                 "nombre": "usuario_id",
                 "tipo": "integer",
                 "nullable": false,
@@ -196,6 +215,13 @@
                     "cuenta_pagar_id"
                 ],
                 "unico": false
+            },
+            {
+                "nombre": "abonos_pagar_ulid_unique",
+                "columnas": [
+                    "ulid"
+                ],
+                "unico": true
             },
             {
                 "nombre": "abonos_pagar_usuario_id_index",
@@ -288,9 +314,22 @@
                 "tipo": "numeric",
                 "nullable": false,
                 "default": null
+            },
+            {
+                "nombre": "ulid",
+                "tipo": "varchar",
+                "nullable": false,
+                "default": null
             }
         ],
         "indices": [
+            {
+                "nombre": "apartado_abono_pagos_ulid_unique",
+                "columnas": [
+                    "ulid"
+                ],
+                "unico": true
+            },
             {
                 "nombre": "primary",
                 "columnas": [
@@ -365,6 +404,12 @@
                 "default": null
             },
             {
+                "nombre": "ulid",
+                "tipo": "varchar",
+                "nullable": false,
+                "default": null
+            },
+            {
                 "nombre": "usuario_id",
                 "tipo": "integer",
                 "nullable": false,
@@ -372,6 +417,13 @@
             }
         ],
         "indices": [
+            {
+                "nombre": "apartado_abonos_ulid_unique",
+                "columnas": [
+                    "ulid"
+                ],
+                "unico": true
+            },
             {
                 "nombre": "primary",
                 "columnas": [
@@ -512,6 +564,12 @@
                 "default": null
             },
             {
+                "nombre": "ulid",
+                "tipo": "varchar",
+                "nullable": false,
+                "default": null
+            },
+            {
                 "nombre": "unidad_medida_id",
                 "tipo": "integer",
                 "nullable": false,
@@ -525,6 +583,13 @@
             }
         ],
         "indices": [
+            {
+                "nombre": "apartado_detalles_ulid_unique",
+                "columnas": [
+                    "ulid"
+                ],
+                "unico": true
+            },
             {
                 "nombre": "primary",
                 "columnas": [
@@ -603,9 +668,22 @@
                 "tipo": "integer",
                 "nullable": false,
                 "default": null
+            },
+            {
+                "nombre": "ulid",
+                "tipo": "varchar",
+                "nullable": false,
+                "default": null
             }
         ],
         "indices": [
+            {
+                "nombre": "apartado_linea_reglas_ulid_unique",
+                "columnas": [
+                    "ulid"
+                ],
+                "unico": true
+            },
             {
                 "nombre": "primary",
                 "columnas": [
@@ -716,6 +794,12 @@
                 "default": "'0'"
             },
             {
+                "nombre": "ulid",
+                "tipo": "varchar",
+                "nullable": false,
+                "default": null
+            },
+            {
                 "nombre": "usuario_cancelacion_id",
                 "tipo": "integer",
                 "nullable": true,
@@ -735,6 +819,14 @@
             }
         ],
         "indices": [
+            {
+                "nombre": "apartados_tenant_id_ulid_unique",
+                "columnas": [
+                    "tenant_id",
+                    "ulid"
+                ],
+                "unico": true
+            },
             {
                 "nombre": "primary",
                 "columnas": [
@@ -1201,6 +1293,12 @@
                 "tipo": "numeric",
                 "nullable": false,
                 "default": null
+            },
+            {
+                "nombre": "ulid",
+                "tipo": "varchar",
+                "nullable": false,
+                "default": null
             }
         ],
         "indices": [
@@ -1209,6 +1307,13 @@
                 "columnas": [
                     "caja_sesion_id",
                     "metodo_pago_id"
+                ],
+                "unico": true
+            },
+            {
+                "nombre": "caja_cierre_metodos_ulid_unique",
+                "columnas": [
+                    "ulid"
                 ],
                 "unico": true
             },
@@ -1310,6 +1415,12 @@
                 "default": null
             },
             {
+                "nombre": "ulid",
+                "tipo": "varchar",
+                "nullable": false,
+                "default": null
+            },
+            {
                 "nombre": "usuario_id",
                 "tipo": "integer",
                 "nullable": false,
@@ -1331,6 +1442,13 @@
                     "referencia_id"
                 ],
                 "unico": false
+            },
+            {
+                "nombre": "caja_movimientos_ulid_unique",
+                "columnas": [
+                    "ulid"
+                ],
+                "unico": true
             },
             {
                 "nombre": "primary",
@@ -1519,6 +1637,12 @@
                 "default": null
             },
             {
+                "nombre": "ulid",
+                "tipo": "varchar",
+                "nullable": false,
+                "default": null
+            },
+            {
                 "nombre": "usuario_id",
                 "tipo": "integer",
                 "nullable": false,
@@ -1526,6 +1650,13 @@
             }
         ],
         "indices": [
+            {
+                "nombre": "caja_sesiones_ulid_unique",
+                "columnas": [
+                    "ulid"
+                ],
+                "unico": true
+            },
             {
                 "nombre": "primary",
                 "columnas": [
@@ -1737,6 +1868,12 @@
                 "default": null
             },
             {
+                "nombre": "ulid",
+                "tipo": "varchar",
+                "nullable": false,
+                "default": null
+            },
+            {
                 "nombre": "uso_cfdi",
                 "tipo": "varchar",
                 "nullable": true,
@@ -1744,6 +1881,14 @@
             }
         ],
         "indices": [
+            {
+                "nombre": "clientes_tenant_id_ulid_unique",
+                "columnas": [
+                    "tenant_id",
+                    "ulid"
+                ],
+                "unico": true
+            },
             {
                 "nombre": "primary",
                 "columnas": [
@@ -1860,6 +2005,12 @@
                 "default": null
             },
             {
+                "nombre": "ulid",
+                "tipo": "varchar",
+                "nullable": false,
+                "default": null
+            },
+            {
                 "nombre": "unidad_medida_id",
                 "tipo": "integer",
                 "nullable": false,
@@ -1873,6 +2024,13 @@
             }
         ],
         "indices": [
+            {
+                "nombre": "compra_detalles_ulid_unique",
+                "columnas": [
+                    "ulid"
+                ],
+                "unico": true
+            },
             {
                 "nombre": "primary",
                 "columnas": [
@@ -1971,6 +2129,12 @@
                 "default": null
             },
             {
+                "nombre": "ulid",
+                "tipo": "varchar",
+                "nullable": false,
+                "default": null
+            },
+            {
                 "nombre": "usuario_id",
                 "tipo": "integer",
                 "nullable": false,
@@ -1978,6 +2142,14 @@
             }
         ],
         "indices": [
+            {
+                "nombre": "compras_tenant_id_ulid_unique",
+                "columnas": [
+                    "tenant_id",
+                    "ulid"
+                ],
+                "unico": true
+            },
             {
                 "nombre": "primary",
                 "columnas": [
@@ -2330,6 +2502,12 @@
                 "default": null
             },
             {
+                "nombre": "ulid",
+                "tipo": "varchar",
+                "nullable": false,
+                "default": null
+            },
+            {
                 "nombre": "unidad_medida_id",
                 "tipo": "integer",
                 "nullable": false,
@@ -2349,6 +2527,13 @@
                     "cotizacion_id"
                 ],
                 "unico": false
+            },
+            {
+                "nombre": "cotizacion_detalles_ulid_unique",
+                "columnas": [
+                    "ulid"
+                ],
+                "unico": true
             },
             {
                 "nombre": "cotizacion_detalles_variante_id_index",
@@ -2435,9 +2620,22 @@
                 "tipo": "integer",
                 "nullable": false,
                 "default": null
+            },
+            {
+                "nombre": "ulid",
+                "tipo": "varchar",
+                "nullable": false,
+                "default": null
             }
         ],
         "indices": [
+            {
+                "nombre": "cotizacion_linea_reglas_ulid_unique",
+                "columnas": [
+                    "ulid"
+                ],
+                "unico": true
+            },
             {
                 "nombre": "primary",
                 "columnas": [
@@ -2536,6 +2734,12 @@
                 "default": null
             },
             {
+                "nombre": "ulid",
+                "tipo": "varchar",
+                "nullable": false,
+                "default": null
+            },
+            {
                 "nombre": "updated_at",
                 "tipo": "datetime",
                 "nullable": false,
@@ -2586,6 +2790,14 @@
                 "columnas": [
                     "tenant_id",
                     "numero_cotizacion"
+                ],
+                "unico": true
+            },
+            {
+                "nombre": "cotizaciones_tenant_id_ulid_unique",
+                "columnas": [
+                    "tenant_id",
+                    "ulid"
                 ],
                 "unico": true
             },
@@ -2962,6 +3174,12 @@
                 "default": null
             },
             {
+                "nombre": "ulid",
+                "tipo": "varchar",
+                "nullable": false,
+                "default": null
+            },
+            {
                 "nombre": "usuario_id",
                 "tipo": "integer",
                 "nullable": true,
@@ -2975,6 +3193,13 @@
                     "cuenta_cobrar_id"
                 ],
                 "unico": false
+            },
+            {
+                "nombre": "cuenta_cobrar_movimientos_ulid_unique",
+                "columnas": [
+                    "ulid"
+                ],
+                "unico": true
             },
             {
                 "nombre": "primary",
@@ -3062,6 +3287,12 @@
                 "default": null
             },
             {
+                "nombre": "ulid",
+                "tipo": "varchar",
+                "nullable": false,
+                "default": null
+            },
+            {
                 "nombre": "updated_at",
                 "tipo": "datetime",
                 "nullable": false,
@@ -3095,6 +3326,14 @@
                     "tenant_id"
                 ],
                 "unico": false
+            },
+            {
+                "nombre": "cuentas_cobrar_tenant_id_ulid_unique",
+                "columnas": [
+                    "tenant_id",
+                    "ulid"
+                ],
+                "unico": true
             },
             {
                 "nombre": "cuentas_cobrar_venta_id_index",
@@ -3207,6 +3446,12 @@
                 "default": null
             },
             {
+                "nombre": "ulid",
+                "tipo": "varchar",
+                "nullable": false,
+                "default": null
+            },
+            {
                 "nombre": "updated_at",
                 "tipo": "datetime",
                 "nullable": false,
@@ -3234,6 +3479,14 @@
                     "tenant_id"
                 ],
                 "unico": false
+            },
+            {
+                "nombre": "cuentas_pagar_tenant_id_ulid_unique",
+                "columnas": [
+                    "tenant_id",
+                    "ulid"
+                ],
+                "unico": true
             },
             {
                 "nombre": "primary",
@@ -3557,6 +3810,12 @@
                 "default": null
             },
             {
+                "nombre": "ulid",
+                "tipo": "varchar",
+                "nullable": false,
+                "default": null
+            },
+            {
                 "nombre": "unidad_medida_id",
                 "tipo": "integer",
                 "nullable": false,
@@ -3576,6 +3835,13 @@
             }
         ],
         "indices": [
+            {
+                "nombre": "devolucion_items_ulid_unique",
+                "columnas": [
+                    "ulid"
+                ],
+                "unico": true
+            },
             {
                 "nombre": "primary",
                 "columnas": [
@@ -3654,9 +3920,22 @@
                 "tipo": "integer",
                 "nullable": false,
                 "default": null
+            },
+            {
+                "nombre": "ulid",
+                "tipo": "varchar",
+                "nullable": false,
+                "default": null
             }
         ],
         "indices": [
+            {
+                "nombre": "devolucion_linea_reglas_ulid_unique",
+                "columnas": [
+                    "ulid"
+                ],
+                "unico": true
+            },
             {
                 "nombre": "primary",
                 "columnas": [
@@ -3705,9 +3984,22 @@
                 "tipo": "numeric",
                 "nullable": false,
                 "default": null
+            },
+            {
+                "nombre": "ulid",
+                "tipo": "varchar",
+                "nullable": false,
+                "default": null
             }
         ],
         "indices": [
+            {
+                "nombre": "devolucion_pagos_ulid_unique",
+                "columnas": [
+                    "ulid"
+                ],
+                "unico": true
+            },
             {
                 "nombre": "primary",
                 "columnas": [
@@ -3818,6 +4110,12 @@
                 "default": "'efectivo'"
             },
             {
+                "nombre": "ulid",
+                "tipo": "varchar",
+                "nullable": false,
+                "default": null
+            },
+            {
                 "nombre": "usuario_id",
                 "tipo": "integer",
                 "nullable": false,
@@ -3837,6 +4135,14 @@
             }
         ],
         "indices": [
+            {
+                "nombre": "devoluciones_tenant_id_ulid_unique",
+                "columnas": [
+                    "tenant_id",
+                    "ulid"
+                ],
+                "unico": true
+            },
             {
                 "nombre": "primary",
                 "columnas": [
@@ -4238,6 +4544,12 @@
                 "default": null
             },
             {
+                "nombre": "ulid",
+                "tipo": "varchar",
+                "nullable": false,
+                "default": null
+            },
+            {
                 "nombre": "usuario_id",
                 "tipo": "integer",
                 "nullable": false,
@@ -4245,6 +4557,13 @@
             }
         ],
         "indices": [
+            {
+                "nombre": "gastos_ulid_unique",
+                "columnas": [
+                    "ulid"
+                ],
+                "unico": true
+            },
             {
                 "nombre": "primary",
                 "columnas": [
@@ -4317,9 +4636,22 @@
                 "tipo": "integer",
                 "nullable": false,
                 "default": null
+            },
+            {
+                "nombre": "ulid",
+                "tipo": "varchar",
+                "nullable": false,
+                "default": null
             }
         ],
         "indices": [
+            {
+                "nombre": "gift_card_recarga_pagos_ulid_unique",
+                "columnas": [
+                    "ulid"
+                ],
+                "unico": true
+            },
             {
                 "nombre": "primary",
                 "columnas": [
@@ -4388,6 +4720,12 @@
                 "default": null
             },
             {
+                "nombre": "ulid",
+                "tipo": "varchar",
+                "nullable": false,
+                "default": null
+            },
+            {
                 "nombre": "usuario_id",
                 "tipo": "integer",
                 "nullable": false,
@@ -4401,6 +4739,13 @@
                     "gift_card_id"
                 ],
                 "unico": false
+            },
+            {
+                "nombre": "gift_card_recargas_ulid_unique",
+                "columnas": [
+                    "ulid"
+                ],
+                "unico": true
             },
             {
                 "nombre": "primary",
@@ -4506,6 +4851,12 @@
                 "default": null
             },
             {
+                "nombre": "ulid",
+                "tipo": "varchar",
+                "nullable": false,
+                "default": null
+            },
+            {
                 "nombre": "updated_at",
                 "tipo": "datetime",
                 "nullable": false,
@@ -4534,6 +4885,14 @@
                     "tenant_id"
                 ],
                 "unico": false
+            },
+            {
+                "nombre": "gift_cards_tenant_id_ulid_unique",
+                "columnas": [
+                    "tenant_id",
+                    "ulid"
+                ],
+                "unico": true
             },
             {
                 "nombre": "primary",
@@ -5129,6 +5488,12 @@
                 "default": null
             },
             {
+                "nombre": "ulid",
+                "tipo": "varchar",
+                "nullable": false,
+                "default": null
+            },
+            {
                 "nombre": "usuario_id",
                 "tipo": "integer",
                 "nullable": true,
@@ -5157,6 +5522,13 @@
                     "sucursal_id"
                 ],
                 "unico": false
+            },
+            {
+                "nombre": "kardex_ulid_unique",
+                "columnas": [
+                    "ulid"
+                ],
+                "unico": true
             },
             {
                 "nombre": "primary",
@@ -6196,6 +6568,12 @@
                 "default": null
             },
             {
+                "nombre": "ulid",
+                "tipo": "varchar",
+                "nullable": false,
+                "default": null
+            },
+            {
                 "nombre": "usuario_id",
                 "tipo": "integer",
                 "nullable": true,
@@ -6215,6 +6593,13 @@
                     "nota_credito_id"
                 ],
                 "unico": false
+            },
+            {
+                "nombre": "nota_credito_usos_ulid_unique",
+                "columnas": [
+                    "ulid"
+                ],
+                "unico": true
             },
             {
                 "nombre": "nota_credito_usos_venta_id_index",
@@ -6327,6 +6712,12 @@
                 "default": null
             },
             {
+                "nombre": "ulid",
+                "tipo": "varchar",
+                "nullable": false,
+                "default": null
+            },
+            {
                 "nombre": "updated_at",
                 "tipo": "datetime",
                 "nullable": false,
@@ -6354,6 +6745,14 @@
                     "tenant_id"
                 ],
                 "unico": false
+            },
+            {
+                "nombre": "notas_credito_tenant_id_ulid_unique",
+                "columnas": [
+                    "tenant_id",
+                    "ulid"
+                ],
+                "unico": true
             },
             {
                 "nombre": "primary",
@@ -6471,6 +6870,12 @@
                 "default": null
             },
             {
+                "nombre": "ulid",
+                "tipo": "varchar",
+                "nullable": false,
+                "default": null
+            },
+            {
                 "nombre": "updated_at",
                 "tipo": "datetime",
                 "nullable": false,
@@ -6504,6 +6909,14 @@
                     "tenant_id"
                 ],
                 "unico": false
+            },
+            {
+                "nombre": "ordenes_produccion_tenant_id_ulid_unique",
+                "columnas": [
+                    "tenant_id",
+                    "ulid"
+                ],
+                "unico": true
             },
             {
                 "nombre": "ordenes_produccion_usuario_id_index",
@@ -7127,6 +7540,12 @@
                 "default": null
             },
             {
+                "nombre": "ulid",
+                "tipo": "varchar",
+                "nullable": false,
+                "default": null
+            },
+            {
                 "nombre": "usuario_id",
                 "tipo": "integer",
                 "nullable": true,
@@ -7140,6 +7559,13 @@
                     "plan_pago_cliente_id"
                 ],
                 "unico": false
+            },
+            {
+                "nombre": "plan_pago_movimientos_ulid_unique",
+                "columnas": [
+                    "ulid"
+                ],
+                "unico": true
             },
             {
                 "nombre": "primary",
@@ -7251,6 +7677,12 @@
                 "default": null
             },
             {
+                "nombre": "ulid",
+                "tipo": "varchar",
+                "nullable": false,
+                "default": null
+            },
+            {
                 "nombre": "venta_id",
                 "tipo": "integer",
                 "nullable": true,
@@ -7258,6 +7690,14 @@
             }
         ],
         "indices": [
+            {
+                "nombre": "planes_pago_cliente_tenant_id_ulid_unique",
+                "columnas": [
+                    "tenant_id",
+                    "ulid"
+                ],
+                "unico": true
+            },
             {
                 "nombre": "primary",
                 "columnas": [
@@ -7366,9 +7806,22 @@
                 "tipo": "integer",
                 "nullable": false,
                 "default": null
+            },
+            {
+                "nombre": "ulid",
+                "tipo": "varchar",
+                "nullable": false,
+                "default": null
             }
         ],
         "indices": [
+            {
+                "nombre": "planes_pago_cliente_cuotas_ulid_unique",
+                "columnas": [
+                    "ulid"
+                ],
+                "unico": true
+            },
             {
                 "nombre": "primary",
                 "columnas": [
@@ -8929,6 +9382,12 @@
                 "default": null
             },
             {
+                "nombre": "ulid",
+                "tipo": "varchar",
+                "nullable": false,
+                "default": null
+            },
+            {
                 "nombre": "usuario_id",
                 "tipo": "integer",
                 "nullable": false,
@@ -8961,6 +9420,14 @@
                     "tenant_id"
                 ],
                 "unico": false
+            },
+            {
+                "nombre": "transformaciones_producto_tenant_id_ulid_unique",
+                "columnas": [
+                    "tenant_id",
+                    "ulid"
+                ],
+                "unico": true
             },
             {
                 "nombre": "transformaciones_producto_variante_destino_id_index",
@@ -9548,6 +10015,12 @@
                 "default": null
             },
             {
+                "nombre": "ulid",
+                "tipo": "varchar",
+                "nullable": false,
+                "default": null
+            },
+            {
                 "nombre": "unidad_medida_id",
                 "tipo": "integer",
                 "nullable": false,
@@ -9571,6 +10044,13 @@
                 "nombre": "primary",
                 "columnas": [
                     "id"
+                ],
+                "unico": true
+            },
+            {
+                "nombre": "venta_detalles_ulid_unique",
+                "columnas": [
+                    "ulid"
                 ],
                 "unico": true
             }
@@ -9653,6 +10133,12 @@
                 "default": null
             },
             {
+                "nombre": "ulid",
+                "tipo": "varchar",
+                "nullable": false,
+                "default": null
+            },
+            {
                 "nombre": "venta_detalle_id",
                 "tipo": "integer",
                 "nullable": false,
@@ -9664,6 +10150,13 @@
                 "nombre": "primary",
                 "columnas": [
                     "id"
+                ],
+                "unico": true
+            },
+            {
+                "nombre": "venta_linea_reglas_ulid_unique",
+                "columnas": [
+                    "ulid"
                 ],
                 "unico": true
             }
@@ -9704,6 +10197,12 @@
                 "default": null
             },
             {
+                "nombre": "ulid",
+                "tipo": "varchar",
+                "nullable": false,
+                "default": null
+            },
+            {
                 "nombre": "venta_id",
                 "tipo": "integer",
                 "nullable": false,
@@ -9715,6 +10214,13 @@
                 "nombre": "primary",
                 "columnas": [
                     "id"
+                ],
+                "unico": true
+            },
+            {
+                "nombre": "venta_pagos_ulid_unique",
+                "columnas": [
+                    "ulid"
                 ],
                 "unico": true
             }
@@ -9869,6 +10375,12 @@
                 "default": null
             },
             {
+                "nombre": "ulid",
+                "tipo": "varchar",
+                "nullable": false,
+                "default": null
+            },
+            {
                 "nombre": "uso_cfdi",
                 "tipo": "varchar",
                 "nullable": true,
@@ -9892,6 +10404,14 @@
                 "nombre": "primary",
                 "columnas": [
                     "id"
+                ],
+                "unico": true
+            },
+            {
+                "nombre": "ventas_tenant_id_ulid_unique",
+                "columnas": [
+                    "tenant_id",
+                    "ulid"
                 ],
                 "unico": true
             }

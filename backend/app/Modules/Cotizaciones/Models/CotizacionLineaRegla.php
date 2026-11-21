@@ -6,6 +6,7 @@ namespace App\Modules\Cotizaciones\Models;
 
 use App\Modules\Cotizaciones\Database\Factories\CotizacionLineaReglaFactory;
 use App\Modules\Nucleo\Models\Concerns\BelongsToTenantViaRelacion;
+use App\Modules\Nucleo\Models\Concerns\TieneUlid;
 use App\Modules\Nucleo\Scopes\TenantScopeViaRelacion;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Builder;
@@ -30,6 +31,8 @@ class CotizacionLineaRegla extends Model
 
     /** @use HasFactory<CotizacionLineaReglaFactory> */
     use HasFactory;
+
+    use TieneUlid;
 
     public $timestamps = false;
 

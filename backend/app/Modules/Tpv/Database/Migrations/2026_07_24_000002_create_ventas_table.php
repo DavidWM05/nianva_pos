@@ -14,6 +14,8 @@ return new class extends Migration
         $condicionCaja = 'es_venta_sombra = 1 OR caja_sesion_id IS NOT NULL';
         Schema::create('ventas', function (Blueprint $table) use ($sqlite, $condicionCaja) {
             $table->id();
+            $table->char('ulid', 26);
+            $table->unique(['tenant_id', 'ulid']);
             $table->foreignId('lista_precio_id')->nullable()->constrained('listas_precio')->nullOnDelete();
             $table->foreignId('tenant_id')->constrained('tenants')->cascadeOnDelete();
             $table->foreignId('sucursal_id')->constrained('sucursales')->restrictOnDelete();

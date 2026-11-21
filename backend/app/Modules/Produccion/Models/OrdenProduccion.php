@@ -6,6 +6,7 @@ use App\Modules\Nucleo\Casts\CantidadDecimal;
 use App\Modules\Nucleo\Casts\CantidadNullable;
 use App\Modules\Nucleo\Models\Concerns\BelongsToSucursal;
 use App\Modules\Nucleo\Models\Concerns\BelongsToTenant;
+use App\Modules\Nucleo\Models\Concerns\TieneUlid;
 use App\Modules\Nucleo\Models\Sucursal;
 use App\Modules\Nucleo\Models\Tenant;
 use App\Modules\Nucleo\Models\Usuario;
@@ -23,6 +24,8 @@ class OrdenProduccion extends Model
 
     /** @use HasFactory<OrdenProduccionFactory> */
     use HasFactory;
+
+    use TieneUlid;
 
     protected $table = 'ordenes_produccion';
 

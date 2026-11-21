@@ -3,6 +3,7 @@
 namespace App\Modules\Tpv\Models;
 
 use App\Modules\Nucleo\Models\Concerns\BelongsToTenantViaRelacion;
+use App\Modules\Nucleo\Models\Concerns\TieneUlid;
 use App\Modules\Nucleo\Models\MetodoPago;
 use App\Modules\Tpv\Database\Factories\VentaPagoFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
@@ -21,6 +22,8 @@ class VentaPago extends Model
 
     /** @use HasFactory<VentaPagoFactory> */
     use HasFactory;
+
+    use TieneUlid;
 
     public $timestamps = false;
 

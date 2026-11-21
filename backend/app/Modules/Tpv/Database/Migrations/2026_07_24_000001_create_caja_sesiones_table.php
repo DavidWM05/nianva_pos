@@ -12,6 +12,7 @@ return new class extends Migration
     {
         Schema::create('caja_sesiones', function (Blueprint $table) {
             $table->id();
+            $table->char('ulid', 26)->unique();
             $table->foreignId('sucursal_id')->constrained('sucursales')->restrictOnDelete();
             $table->foreignId('usuario_id')->constrained('usuarios')->restrictOnDelete();
             $table->decimal('monto_apertura', 12, 2);
