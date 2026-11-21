@@ -92,6 +92,26 @@ class UlidApiRestoTest extends TestCase
         $this->assertSame($cuenta->abonos()->firstOrFail()->ulid, $datos['abono']['id']);
     }
 
+    public function test_cuentas_y_planes_publican_el_folio_de_su_documento_de_origen(): void
+    {
+        $cuenta = $this->crearCuentaCobrar();
+        $venta = $cuenta->venta()->firstOrFail();
+        $folioVenta = "V-{$this->sucursal->id}-1";
+        $venta->update(['folio' => $folioVenta]);
+        $plan = $this->crearPlan($venta);
+
+        $folioCompra = "CO-{$this->sucursal->id}-1";
+        $this->compra->update(['folio' => $folioCompra]);
+        $pagar = CuentaPagar::factory()->create(['tenant_id' => $this->tenant->id, 'compra_id' => $this->compra->id]);
+
+        $this->getJson("/api/v1/cuentas-cobrar/{$cuenta->ulid}")
+            ->assertOk()->assertJsonPath('data.folio', $folioVenta);
+        $this->getJson("/api/v1/planes-pago-cliente/{$plan->ulid}")
+            ->assertOk()->assertJsonPath('data.folio', $folioVenta);
+        $this->getJson('/api/v1/cuentas-pagar')
+            ->assertOk()->assertJsonPath('data.0.id', $pagar->ulid)->assertJsonPath('data.0.folio', $folioCompra);
+    }
+
     public function test_los_resources_publican_numero_y_referencias_por_ulid(): void
     {
         $cuenta = $this->crearCuentaCobrar();

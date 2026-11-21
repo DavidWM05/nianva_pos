@@ -68,6 +68,9 @@ class UlidEnTransaccionalesTest extends TestCase
         'Bitácoras internas: auditoria.registro_id apunta al id' => [
             'auditoria', 'logs_sistema',
         ],
+        'Infraestructura interna de folios' => [
+            'folio_contadores',
+        ],
         'Catálogos del back office: llegan a la terminal ya hechos' => [
             'atributo_valores', 'atributos', 'categorias', 'configuracion_seguridad',
             'configuracion_tenant', 'crm_campanas', 'cupones', 'departamentos',

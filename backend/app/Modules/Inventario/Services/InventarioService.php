@@ -119,7 +119,7 @@ class InventarioService
      * @param  list<array{variante_id:int, cantidad:int|float, precio_compra:float|string}>  $items
      * @param  array<int, InventarioStock>  $stocks
      */
-    public function registrarCompraConStocks(array $datosCompra, array $items, array $stocks): Compra
+    public function registrarCompraConStocks(array $datosCompra, array $items, array $stocks, ?string $folio = null): Compra
     {
         $this->exigirTransaccion();
         if ($items === []) {
@@ -132,6 +132,7 @@ class InventarioService
         }
 
         $compra = Compra::query()->create([
+            'folio' => $folio,
             'tenant_id' => $datosCompra['tenant_id'],
             'proveedor_id' => $datosCompra['proveedor_id'],
             'sucursal_id' => $datosCompra['sucursal_id'],

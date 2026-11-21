@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Aplicacion\Ventas;
 
+use App\Aplicacion\Folios\Folios;
 use App\Aplicacion\Inventario\RegistrarMovimiento;
 use App\Modules\GiftCards\Models\GiftCard;
 use App\Modules\GiftCards\Services\GiftCardService;
@@ -153,6 +154,7 @@ class RegistrarVenta
                 array_merge($pagos, $pagosExtra),
                 $caja,
                 $stocks,
+                folio: Folios::asignar($tenantId, (int) $usuario->getAttribute('sucursal_id'), 'V'),
             );
 
             if (! empty($notaCreditoId)) {

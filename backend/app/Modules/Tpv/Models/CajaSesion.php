@@ -21,7 +21,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * Sin tenant_id propio: el aislamiento se resuelve via BelongsToTenantViaRelacion
  * consultando sucursal.tenant_id (ver tenantRelacion()).
  */
-#[Fillable([
+#[Fillable(['folio',
     'sucursal_id', 'usuario_id', 'monto_apertura', 'saldo_teorico', 'monto_cierre',
     'total_ventas_sistema', 'total_teorico', 'diferencia', 'fecha_apertura', 'fecha_cierre', 'estado',
 ])]

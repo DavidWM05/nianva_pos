@@ -12,6 +12,8 @@ return new class extends Migration
     {
         Schema::create('caja_sesiones', function (Blueprint $table) {
             $table->id();
+            $table->string('folio', 48)->nullable();
+            $table->unique(['sucursal_id', 'folio']);
             $table->char('ulid', 26)->unique();
             $table->foreignId('sucursal_id')->constrained('sucursales')->restrictOnDelete();
             $table->foreignId('usuario_id')->constrained('usuarios')->restrictOnDelete();

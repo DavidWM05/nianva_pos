@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Aplicacion\Caja;
 
+use App\Aplicacion\Folios\Folios;
 use App\Modules\CuentasCobrar\Models\AbonoCuenta;
 use App\Modules\CuentasPagar\Models\AbonoPagar;
 use App\Modules\Gastos\Services\GastoService;
@@ -43,7 +44,7 @@ class CerrarCaja
                 ->sum('monto'), 2);
             $totalPagosCxp = round((float) AbonoPagar::where('caja_sesion_id', $cajaSesionId)->sum('monto'), 2);
 
-            $sesion = $this->cajaService->cerrarCajaConSesion($cajaSesion, $conteos);
+            $sesion = $this->cajaService->cerrarCajaConSesion($cajaSesion, $conteos, Folios::asignar((int) $cajaSesion->sucursal()->firstOrFail()->getAttribute('tenant_id'), (int) $cajaSesion->getAttribute('sucursal_id'), 'C'));
 
             return [
                 'sesion' => $sesion,

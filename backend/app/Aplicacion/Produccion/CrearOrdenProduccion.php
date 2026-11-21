@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Aplicacion\Produccion;
 
+use App\Aplicacion\Folios\Folios;
 use App\Modules\Nucleo\Models\Usuario;
 use App\Modules\Produccion\Dtos\CrearOrdenProduccionDto;
 use App\Modules\Produccion\Models\OrdenProduccion;
@@ -24,7 +25,7 @@ final class CrearOrdenProduccion
             $datos['usuario_id'] = $usuario->id;
             $lotes = $this->bloqueos->lotes($receta, $datos['sucursal_id']);
 
-            return $this->service->crearOrdenConReceta($datos, $receta, $lotes);
+            return $this->service->crearOrdenConReceta($datos, $receta, $lotes, Folios::asignar($datos['tenant_id'], $datos['sucursal_id'], 'OP'));
         };
 
         return DB::transactionLevel() > 0 ? $operacion() : DB::transaction($operacion);

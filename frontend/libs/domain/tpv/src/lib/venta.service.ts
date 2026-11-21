@@ -2,7 +2,7 @@ import { CuerpoDe, RespuestaDe } from '@nianva/api-contrato';
 import { ConsultaPagina, urlApi } from '@nianva/core-http';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
-import { Observable, map } from 'rxjs';
+import { Observable, map, of } from 'rxjs';
 
 import { ReporteVentas, ReporteVentasFiltros, Venta, VentaCotizacion, VentaFormPayload, VentaItemPayload, VentasPagina } from './venta.types';
 
@@ -45,6 +45,18 @@ export class VentaService {
     return this.http
       .get<RespuestaDe<'/ventas', 'get'>>(urlApi(`/ventas`), { params })
       .pipe(map((r) => r.data[0]?.id ?? null));
+  }
+
+  buscarPorFolio(folio: string): Observable<string | null> {
+    folio = folio.trim();
+    if (!folio) {
+      return of(null);
+    }
+
+    const params = new HttpParams().set('filtro_folio', folio).set('rows', 1);
+    return this.http
+      .get<RespuestaDe<'/ventas', 'get'>>(urlApi('/ventas'), { params })
+      .pipe(map((respuesta) => respuesta.data[0]?.id ?? null));
   }
 
   obtener(id: string): Observable<Venta> {

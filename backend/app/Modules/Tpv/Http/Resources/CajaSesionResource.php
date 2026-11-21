@@ -22,6 +22,8 @@ class CajaSesionResource extends JsonResource
             // D-3, transitorio: número visible de la sesión (= id interno), solo para mostrarlo; lo
             // reemplaza el folio de DAT-07.
             'numero' => (int) $this->getKey(),
+            /** @var string|null */
+            'folio' => $this->resource->getAttribute('folio'),
             'sucursal_id' => $this->sucursal_id,
             'usuario_id' => $this->usuario_id,
             'monto_apertura' => DecimalApi::dinero($this->monto_apertura),

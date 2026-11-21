@@ -15,7 +15,7 @@ class NotaCreditoController extends Controller
 
     public function index(Request $request)
     {
-        $query = NotaCredito::query()->with(['cliente:id,ulid,nombre']);
+        $query = NotaCredito::query()->with(['cliente:id,ulid,nombre', 'devolucion:id,ulid,folio']);
 
         if ($clienteId = $request->query('filtro_cliente_id')) {
             // DAT-08: el filtro recibe el ulid publicado del cliente.
@@ -44,14 +44,14 @@ class NotaCreditoController extends Controller
 
     public function show(NotaCredito $notaCredito)
     {
-        $notaCredito->load(['cliente', 'usos.venta']);
+        $notaCredito->load(['cliente', 'devolucion', 'usos.venta']);
 
         return new NotaCreditoResource($notaCredito);
     }
 
     public function activasPorCliente(Cliente $cliente, NotaCreditoService $service)
     {
-        $notas = $service->obtenerActivasPorCliente($cliente->id);
+        $notas = $service->obtenerActivasPorCliente($cliente->id)->load('devolucion:id,ulid,folio');
 
         return response()->json(['data' => NotaCreditoResource::collection($notas)]);
     }

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Aplicacion\Apartados;
 
+use App\Aplicacion\Folios\Folios;
 use App\Aplicacion\Inventario\RegistrarMovimiento;
 use App\Modules\Apartados\Dtos\LiquidarApartadoDto;
 use App\Modules\Apartados\Models\Apartado;
@@ -36,7 +37,7 @@ final class LiquidarApartado
                 $stocks[$varianteId] = $this->movimiento->bloquearStock(new MovimientoInventarioDto($varianteId, $sucursalId, 'entrada', 1, 'ajuste', $usuario->id));
             }
 
-            return $this->service->liquidarConBloqueos($bloqueado, $usuario->id, $caja, $stocks);
+            return $this->service->liquidarConBloqueos($bloqueado, $usuario->id, $caja, $stocks, Folios::asignar((int) $bloqueado->getAttribute('tenant_id'), $sucursalId, 'V'));
         };
 
         return DB::transactionLevel() > 0 ? $operacion() : DB::transaction($operacion);

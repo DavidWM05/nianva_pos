@@ -128,6 +128,26 @@ class UlidApiVentasTest extends TestCase
             ->assertJsonPath('data.0.venta_sombra_numero', fn ($valor) => $valor === null || is_int($valor));
     }
 
+    public function test_la_nota_publica_el_folio_de_su_devolucion(): void
+    {
+        $venta = $this->crearVenta();
+        $folio = "D-{$this->sucursal->id}-1";
+        $devolucion = Devolucion::factory()->create([
+            'tenant_id' => $this->tenant->id,
+            'sucursal_id' => $this->sucursal->id,
+            'venta_id' => $venta->id,
+            'folio' => $folio,
+        ]);
+        $nota = NotaCredito::factory()->create([
+            'tenant_id' => $this->tenant->id,
+            'devolucion_id' => $devolucion->id,
+            'cliente_id' => $this->cliente->id,
+        ]);
+
+        $this->getJson("/api/v1/notas-credito/{$nota->ulid}")
+            ->assertOk()->assertJsonPath('data.folio', $folio);
+    }
+
     public function test_la_nota_publica_el_numero_transitorio_de_su_devolucion(): void
     {
         $devolucion = Devolucion::factory()->create(['tenant_id' => $this->tenant->id, 'sucursal_id' => $this->sucursal->id, 'venta_id' => $this->crearVenta()->id]);
@@ -183,6 +203,21 @@ class UlidApiVentasTest extends TestCase
         $this->getJson("/api/v1/gastos?caja_sesion_id={$this->caja->getKey()}")->assertStatus(422)->assertJsonValidationErrors(['caja_sesion_id']);
         $this->getJson("/api/v1/gastos?caja_sesion_id={$this->cajaB->ulid}")->assertStatus(422)->assertJsonValidationErrors(['caja_sesion_id']);
         $this->getJson("/api/v1/gastos?caja_sesion_id={$this->caja->ulid}")->assertOk();
+    }
+
+    public function test_la_venta_se_busca_por_folio_exacto_y_respeta_el_tenant(): void
+    {
+        $venta = $this->crearVenta();
+        $venta->forceFill(['folio' => "V-{$this->sucursal->id}-100"])->save();
+        $otroFolio = 'V-'.$this->ventaB->sucursal_id.'-100';
+        $this->ventaB->forceFill(['folio' => $otroFolio])->save();
+
+        $this->getJson('/api/v1/ventas?filtro_folio='.$venta->folio)->assertOk()
+            ->assertJsonCount(1, 'data')
+            ->assertJsonPath('data.0.id', $venta->ulid)
+            ->assertJsonPath('data.0.folio', $venta->folio);
+        $this->getJson('/api/v1/ventas?filtro_folio='.$otroFolio)->assertOk()->assertJsonCount(0, 'data');
+        $this->getJson("/api/v1/ventas?filtro_folio=V-{$this->sucursal->id}-10")->assertOk()->assertJsonCount(0, 'data');
     }
 
     public function test_d7_la_venta_se_busca_por_su_numero(): void

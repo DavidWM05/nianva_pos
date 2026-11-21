@@ -12,6 +12,8 @@ return new class extends Migration
     {
         Schema::create('apartados', function (Blueprint $table) {
             $table->id();
+            $table->string('folio', 48)->nullable();
+            $table->unique(['tenant_id', 'folio']);
             $table->char('ulid', 26);
             $table->unique(['tenant_id', 'ulid']);
             $table->foreignId('lista_precio_id')->nullable()->constrained('listas_precio')->nullOnDelete();

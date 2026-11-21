@@ -746,6 +746,12 @@
                 "default": null
             },
             {
+                "nombre": "folio",
+                "tipo": "varchar",
+                "nullable": true,
+                "default": null
+            },
+            {
                 "nombre": "id",
                 "tipo": "integer",
                 "nullable": false,
@@ -819,6 +825,14 @@
             }
         ],
         "indices": [
+            {
+                "nombre": "apartados_tenant_id_folio_unique",
+                "columnas": [
+                    "tenant_id",
+                    "folio"
+                ],
+                "unico": true
+            },
             {
                 "nombre": "apartados_tenant_id_ulid_unique",
                 "columnas": [
@@ -1595,6 +1609,12 @@
                 "default": null
             },
             {
+                "nombre": "folio",
+                "tipo": "varchar",
+                "nullable": true,
+                "default": null
+            },
+            {
                 "nombre": "id",
                 "tipo": "integer",
                 "nullable": false,
@@ -1650,6 +1670,14 @@
             }
         ],
         "indices": [
+            {
+                "nombre": "caja_sesiones_sucursal_id_folio_unique",
+                "columnas": [
+                    "sucursal_id",
+                    "folio"
+                ],
+                "unico": true
+            },
             {
                 "nombre": "caja_sesiones_ulid_unique",
                 "columnas": [
@@ -2093,6 +2121,12 @@
                 "default": "CURRENT_TIMESTAMP"
             },
             {
+                "nombre": "folio",
+                "tipo": "varchar",
+                "nullable": true,
+                "default": null
+            },
+            {
                 "nombre": "id",
                 "tipo": "integer",
                 "nullable": false,
@@ -2142,6 +2176,14 @@
             }
         ],
         "indices": [
+            {
+                "nombre": "compras_tenant_id_folio_unique",
+                "columnas": [
+                    "tenant_id",
+                    "folio"
+                ],
+                "unico": true
+            },
             {
                 "nombre": "compras_tenant_id_ulid_unique",
                 "columnas": [
@@ -4056,6 +4098,12 @@
                 "default": "CURRENT_TIMESTAMP"
             },
             {
+                "nombre": "folio",
+                "tipo": "varchar",
+                "nullable": true,
+                "default": null
+            },
+            {
                 "nombre": "id",
                 "tipo": "integer",
                 "nullable": false,
@@ -4135,6 +4183,14 @@
             }
         ],
         "indices": [
+            {
+                "nombre": "devoluciones_tenant_id_folio_unique",
+                "columnas": [
+                    "tenant_id",
+                    "folio"
+                ],
+                "unico": true
+            },
             {
                 "nombre": "devoluciones_tenant_id_ulid_unique",
                 "columnas": [
@@ -4504,6 +4560,71 @@
             }
         ],
         "llaves_foraneas": []
+    },
+    "folio_contadores": {
+        "columnas": [
+            {
+                "nombre": "sucursal_id",
+                "tipo": "integer",
+                "nullable": false,
+                "default": null
+            },
+            {
+                "nombre": "tenant_id",
+                "tipo": "integer",
+                "nullable": false,
+                "default": null
+            },
+            {
+                "nombre": "tipo",
+                "tipo": "varchar",
+                "nullable": false,
+                "default": null
+            },
+            {
+                "nombre": "ultimo",
+                "tipo": "integer",
+                "nullable": false,
+                "default": null
+            }
+        ],
+        "indices": [
+            {
+                "nombre": "sqlite_autoindex_folio_contadores_1",
+                "columnas": [
+                    "tenant_id",
+                    "sucursal_id",
+                    "tipo"
+                ],
+                "unico": true
+            }
+        ],
+        "llaves_foraneas": [
+            {
+                "nombre": null,
+                "columnas": [
+                    "sucursal_id"
+                ],
+                "tabla_foranea": "sucursales",
+                "columnas_foraneas": [
+                    "id"
+                ],
+                "on_update": "no action",
+                "on_delete": "cascade"
+            },
+            {
+                "nombre": null,
+                "columnas": [
+                    "tenant_id"
+                ],
+                "tabla_foranea": "tenants",
+                "columnas_foraneas": [
+                    "id"
+                ],
+                "on_update": "no action",
+                "on_delete": "cascade"
+            }
+        ]
     },
     "gastos": {
         "columnas": [
@@ -6840,6 +6961,12 @@
                 "default": null
             },
             {
+                "nombre": "folio",
+                "tipo": "varchar",
+                "nullable": true,
+                "default": null
+            },
+            {
                 "nombre": "id",
                 "tipo": "integer",
                 "nullable": false,
@@ -6902,6 +7029,14 @@
                     "sucursal_id"
                 ],
                 "unico": false
+            },
+            {
+                "nombre": "ordenes_produccion_tenant_id_folio_unique",
+                "columnas": [
+                    "tenant_id",
+                    "folio"
+                ],
+                "unico": true
             },
             {
                 "nombre": "ordenes_produccion_tenant_id_index",
@@ -10315,6 +10450,12 @@
                 "default": null
             },
             {
+                "nombre": "folio",
+                "tipo": "varchar",
+                "nullable": true,
+                "default": null
+            },
+            {
                 "nombre": "folio_cfdi",
                 "tipo": "integer",
                 "nullable": true,
@@ -10404,6 +10545,14 @@
                 "nombre": "primary",
                 "columnas": [
                     "id"
+                ],
+                "unico": true
+            },
+            {
+                "nombre": "ventas_tenant_id_folio_unique",
+                "columnas": [
+                    "tenant_id",
+                    "folio"
                 ],
                 "unico": true
             },

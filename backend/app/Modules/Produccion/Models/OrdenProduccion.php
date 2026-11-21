@@ -17,7 +17,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-#[Fillable(['tenant_id', 'sucursal_id', 'receta_id', 'usuario_id', 'cantidad_programada', 'cantidad_producida', 'estado', 'notas', 'fecha_programada', 'fecha_completada'])]
+#[Fillable(['folio', 'tenant_id', 'sucursal_id', 'receta_id', 'usuario_id', 'cantidad_programada', 'cantidad_producida', 'estado', 'notas', 'fecha_programada', 'fecha_completada'])]
 class OrdenProduccion extends Model
 {
     use BelongsToSucursal;

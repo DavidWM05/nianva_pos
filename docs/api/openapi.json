@@ -2145,6 +2145,9 @@
                                                 "numero": {
                                                     "type": "integer"
                                                 },
+                                                "folio": {
+                                                    "type": "string"
+                                                },
                                                 "total": {
                                                     "type": "string",
                                                     "pattern": "^-?[0-9]+\\.[0-9]{2}$"
@@ -2153,6 +2156,7 @@
                                             "required": [
                                                 "id",
                                                 "numero",
+                                                "folio",
                                                 "total"
                                             ]
                                         }
@@ -11293,6 +11297,9 @@
                                                     "numero": {
                                                         "type": "integer"
                                                     },
+                                                    "folio": {
+                                                        "type": "string"
+                                                    },
                                                     "fecha": {
                                                         "type": "string"
                                                     },
@@ -11314,6 +11321,7 @@
                                                 "required": [
                                                     "id",
                                                     "numero",
+                                                    "folio",
                                                     "fecha",
                                                     "total",
                                                     "estado",
@@ -11349,6 +11357,13 @@
                         "name": "filtro_numero",
                         "in": "query",
                         "description": "D-7, transitorio: la devoluci\u00f3n busca la venta por su `numero` (= id interno) hasta que\n exista el folio de DAT-07. Un valor no num\u00e9rico no encuentra nada.",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "filtro_folio",
+                        "in": "query",
                         "schema": {
                             "type": "string"
                         }
@@ -12163,6 +12178,12 @@
                         "type": "integer",
                         "description": "D-3, transitorio: n\u00famero visible del apartado (= id interno), solo para mostrarlo; lo\nreemplaza el folio de DAT-07."
                     },
+                    "folio": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
                     "fecha_creacion": {
                         "type": "string",
                         "format": "date-time"
@@ -12387,6 +12408,7 @@
                     "lista_precio_id",
                     "id",
                     "numero",
+                    "folio",
                     "fecha_creacion",
                     "total",
                     "total_abonado",
@@ -12572,6 +12594,12 @@
                         "type": "integer",
                         "description": "D-3, transitorio: n\u00famero visible de la sesi\u00f3n (= id interno), solo para mostrarlo; lo\nreemplaza el folio de DAT-07."
                     },
+                    "folio": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
                     "sucursal_id": {
                         "type": "integer"
                     },
@@ -12638,6 +12666,7 @@
                 "required": [
                     "id",
                     "numero",
+                    "folio",
                     "sucursal_id",
                     "usuario_id",
                     "monto_apertura",
@@ -14376,6 +14405,9 @@
                         "type": "integer",
                         "description": "D-3, transitorio: n\u00famero visible de la cuenta (= id interno), solo para mostrarlo; lo\nreemplaza el folio de DAT-07."
                     },
+                    "folio": {
+                        "type": "string"
+                    },
                     "venta_id": {
                         "type": [
                             "string",
@@ -14457,6 +14489,9 @@
                     "numero": {
                         "type": "integer",
                         "description": "D-3, transitorio: n\u00famero visible de la cuenta (= id interno), solo para mostrarlo; lo\nreemplaza el folio de DAT-07."
+                    },
+                    "folio": {
+                        "type": "string"
                     },
                     "compra_id": {
                         "type": [
@@ -14685,6 +14720,12 @@
                         "type": "integer",
                         "description": "D-3, transitorio: n\u00famero visible de la devoluci\u00f3n (= id interno), solo para mostrarlo;\nlo reemplaza el folio de DAT-07."
                     },
+                    "folio": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
                     "fecha": {
                         "type": "string",
                         "format": "date-time"
@@ -14709,6 +14750,12 @@
                                 "type": "integer",
                                 "description": "D-3, transitorio: el n\u00famero de la venta origen, para mostrarla."
                             },
+                            "folio": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ]
+                            },
                             "cliente_nombre": {
                                 "type": "string"
                             }
@@ -14716,10 +14763,17 @@
                         "required": [
                             "id",
                             "numero",
+                            "folio",
                             "cliente_nombre"
                         ]
                     },
                     "venta_sombra_id": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "venta_sombra_folio": {
                         "type": [
                             "string",
                             "null"
@@ -14890,9 +14944,11 @@
                 "required": [
                     "id",
                     "numero",
+                    "folio",
                     "fecha",
                     "tipo",
                     "venta_sombra_id",
+                    "venta_sombra_folio",
                     "venta_sombra_numero",
                     "monto_devolucion",
                     "monto_cambio",
@@ -16196,6 +16252,9 @@
                         "type": "integer",
                         "description": "D-3, transitorio: n\u00famero visible de la nota (= id interno), solo para mostrarlo; lo\nreemplaza el folio de DAT-07."
                     },
+                    "folio": {
+                        "type": "string"
+                    },
                     "cliente": {
                         "type": "object",
                         "properties": {
@@ -16338,6 +16397,12 @@
                         "type": "integer",
                         "description": "D-3, transitorio: n\u00famero visible de la orden (= id interno); lo reemplaza el folio de DAT-07."
                     },
+                    "folio": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
                     "receta": {
                         "type": "object",
                         "properties": {
@@ -16401,6 +16466,7 @@
                 "required": [
                     "id",
                     "numero",
+                    "folio",
                     "cantidad_programada",
                     "cantidad_producida",
                     "estado",
@@ -16677,6 +16743,9 @@
                     "numero": {
                         "type": "integer",
                         "description": "D-3, transitorio: n\u00famero visible del plan (= id interno); lo reemplaza el folio de DAT-07."
+                    },
+                    "folio": {
+                        "type": "string"
                     },
                     "cliente": {
                         "type": "object",
@@ -18245,6 +18314,12 @@
                         "type": "integer",
                         "description": "D-3, transitorio: n\u00famero visible del documento (= id interno), solo para mostrarlo y\npara buscar la venta en la devoluci\u00f3n; lo reemplaza el folio de DAT-07."
                     },
+                    "folio": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
                     "fecha": {
                         "type": "string",
                         "format": "date-time"
@@ -18340,6 +18415,7 @@
                     "lista_precio_id",
                     "id",
                     "numero",
+                    "folio",
                     "fecha",
                     "total",
                     "descuento_cupon",

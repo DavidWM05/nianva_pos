@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Aplicacion\Inventario;
 
+use App\Aplicacion\Folios\Folios;
 use App\Modules\Inventario\Dtos\CompraDto;
 use App\Modules\Inventario\Dtos\LineaCompraDto;
 use App\Modules\Inventario\Dtos\MovimientoInventarioDto;
@@ -36,7 +37,7 @@ final class RegistrarCompra
                 'usuario_id' => $usuario->id,
                 'proveedor_id' => $dto->proveedorId,
                 'numero_comprobante' => $dto->numeroComprobante,
-            ], $items, $stocks);
+            ], $items, $stocks, Folios::asignar((int) $usuario->getAttribute('tenant_id'), $sucursalId, 'CO'));
         };
 
         return DB::transactionLevel() > 0 ? $operacion() : DB::transaction($operacion);

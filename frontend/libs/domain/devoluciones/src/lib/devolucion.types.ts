@@ -11,6 +11,7 @@ export type TipoDevolucion = 'devolucion' | 'cambio';
 export type TipoItemDevolucion = 'devuelto' | 'nuevo';
 
 export interface DevolucionVentaResumen {
+  folio?: string | null;
   /** DAT-08: ulid de la venta origen. */
   id: string;
   /** D-3, transitorio: número visible de la venta; lo reemplaza el folio de DAT-07. */
@@ -46,6 +47,8 @@ export interface DevolucionPagoResumen {
 export type TipoReembolso = 'efectivo' | 'nota_credito';
 
 export interface Devolucion {
+  folio?: string | null;
+  venta_sombra_folio?: string | null;
   /** DAT-08: ulid; es el que va en la ruta /devoluciones/:id y en la API. */
   id: string;
   /** D-3, transitorio: número visible (= id interno); lo reemplaza el folio de DAT-07. */

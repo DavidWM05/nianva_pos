@@ -37,6 +37,7 @@ export interface VentaDetalle {
 }
 
 export interface Venta {
+  folio?: VentaResource['folio'];
   /** DAT-08: ulid; es el que va en la ruta /tpv/ventas/:id y en la API. */
   id: string;
   /** D-3, transitorio: número visible (= id interno); lo reemplaza el folio de DAT-07. */

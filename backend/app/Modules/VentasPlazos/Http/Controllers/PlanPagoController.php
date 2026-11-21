@@ -17,7 +17,7 @@ class PlanPagoController extends Controller
 {
     public function index(Request $request)
     {
-        $query = PlanPagoCliente::with('cliente:id,ulid,nombre');
+        $query = PlanPagoCliente::with(['cliente:id,ulid,nombre', 'venta:id,ulid,folio']);
 
         $sortField = $request->query('sort_field');
         if (is_string($sortField) && in_array($sortField, ['id', 'monto_total', 'fecha_inicio', 'created_at'], true)) {
@@ -45,7 +45,7 @@ class PlanPagoController extends Controller
 
     public function show(PlanPagoCliente $plan)
     {
-        $plan->load(['cliente', 'cuotas']);
+        $plan->load(['cliente', 'cuotas', 'venta']);
 
         return new PlanPagoResource($plan);
     }
@@ -54,7 +54,7 @@ class PlanPagoController extends Controller
     {
         $plan = $action->ejecutar($request->toDto(), $venta->id);
 
-        return (new PlanPagoResource($plan))->response()->setStatusCode(201);
+        return (new PlanPagoResource($plan->load('venta')))->response()->setStatusCode(201);
     }
 
     public function pagarCuota(PagarCuotaRequest $request, PlanPagoCliente $plan, PagarCuota $action)

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Aplicacion\Devoluciones;
 
+use App\Aplicacion\Folios\Folios;
 use App\Aplicacion\Inventario\RegistrarMovimiento;
 use App\Modules\Devoluciones\Dtos\CrearDevolucionDto;
 use App\Modules\Devoluciones\Dtos\ItemDevueltoDto;
@@ -107,6 +108,8 @@ class RegistrarDevolucion
                 tipoReembolso: $tipoReembolso,
                 caja: $caja,
                 stocks: $stocks,
+                folio: Folios::asignar((int) $ventaOrigen->getAttribute('tenant_id'), $sucursalId, 'D'),
+                folioVentaSombra: $tipo === 'cambio' ? Folios::asignar((int) $ventaOrigen->getAttribute('tenant_id'), $sucursalId, 'V') : null,
             );
 
             $diferencia = Dinero::desde((string) $devolucion->getAttribute('diferencia'));

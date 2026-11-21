@@ -10,6 +10,8 @@ return new class extends Migration
     {
         Schema::create('ordenes_produccion', function (Blueprint $table) {
             $table->id();
+            $table->string('folio', 48)->nullable();
+            $table->unique(['tenant_id', 'folio']);
             $table->char('ulid', 26);
             $table->unique(['tenant_id', 'ulid']);
             $table->foreignId('tenant_id')->constrained('tenants')->cascadeOnDelete();

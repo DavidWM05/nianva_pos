@@ -30,6 +30,8 @@ class VentaResource extends JsonResource
             // D-3, transitorio: número visible del documento (= id interno), solo para mostrarlo y
             // para buscar la venta en la devolución; lo reemplaza el folio de DAT-07.
             'numero' => (int) $this->getKey(),
+            /** @var string|null */
+            'folio' => $this->resource->getAttribute('folio'),
             'fecha' => $this->fecha,
             'cliente' => $this->whenLoaded(
                 'cliente',

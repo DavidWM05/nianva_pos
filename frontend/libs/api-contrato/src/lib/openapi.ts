@@ -2366,6 +2366,7 @@ export interface components {
              *     reemplaza el folio de DAT-07.
              */
             numero: number;
+            folio: string | null;
             /** Format: date-time */
             fecha_creacion: string;
             cliente?: {
@@ -2471,6 +2472,7 @@ export interface components {
              *     reemplaza el folio de DAT-07.
              */
             numero: number;
+            folio: string | null;
             sucursal_id: number;
             usuario_id: number;
             monto_apertura: string;
@@ -2889,6 +2891,7 @@ export interface components {
              *     reemplaza el folio de DAT-07.
              */
             numero: number;
+            folio?: string;
             venta_id: string | null;
             cliente?: {
                 id: string;
@@ -2914,6 +2917,7 @@ export interface components {
              *     reemplaza el folio de DAT-07.
              */
             numero: number;
+            folio?: string;
             compra_id: string | null;
             /** @description D-3, transitorio: número visible de la compra de origen. */
             compra_numero: number | null;
@@ -2974,6 +2978,7 @@ export interface components {
              *     lo reemplaza el folio de DAT-07.
              */
             numero: number;
+            folio: string | null;
             /** Format: date-time */
             fecha: string;
             /** @enum {string} */
@@ -2982,9 +2987,11 @@ export interface components {
                 id: string;
                 /** @description D-3, transitorio: el número de la venta origen, para mostrarla. */
                 numero: number;
+                folio: string | null;
                 cliente_nombre: string;
             } | null;
             venta_sombra_id: string | null;
+            venta_sombra_folio: string | null;
             /**
              * @description D-3, transitorio: número visible de la venta sombra (= id interno), solo para mostrarlo;
              *     lo reemplaza el folio de DAT-07.
@@ -3363,6 +3370,7 @@ export interface components {
              *     reemplaza el folio de DAT-07.
              */
             numero: number;
+            folio?: string;
             cliente?: {
                 id: string;
                 nombre: string;
@@ -3402,6 +3410,7 @@ export interface components {
             id: string;
             /** @description D-3, transitorio: número visible de la orden (= id interno); lo reemplaza el folio de DAT-07. */
             numero: number;
+            folio: string | null;
             receta?: {
                 id: number;
                 nombre: string;
@@ -3485,6 +3494,7 @@ export interface components {
             id: string;
             /** @description D-3, transitorio: número visible del plan (= id interno); lo reemplaza el folio de DAT-07. */
             numero: number;
+            folio?: string;
             cliente?: {
                 id: string;
                 nombre: string;
@@ -3880,6 +3890,7 @@ export interface components {
              *     para buscar la venta en la devolución; lo reemplaza el folio de DAT-07.
              */
             numero: number;
+            folio: string | null;
             /** Format: date-time */
             fecha: string;
             cliente?: {
@@ -5065,6 +5076,7 @@ export interface operations {
                         data: {
                             id: string;
                             numero: number;
+                            folio: string;
                             total: string;
                         };
                     };
@@ -9615,6 +9627,7 @@ export interface operations {
                             /** @description DAT-08: ulid como id público; `numero` es el transitorio de D-3 (DAT-07). */
                             id: string;
                             numero: number;
+                            folio: string;
                             fecha: string;
                             total: string;
                             /** @enum {string} */
@@ -9636,6 +9649,7 @@ export interface operations {
                  *      exista el folio de DAT-07. Un valor no numérico no encuentra nada.
                  */
                 filtro_numero?: string;
+                filtro_folio?: string;
                 sort_field?: string;
             };
             header?: never;
