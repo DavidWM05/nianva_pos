@@ -9,6 +9,7 @@ import { PedidoCrearPayload, PedidoService } from '@nianva/domain-delivery';
 import { NominaService } from '@nianva/domain-payroll';
 import { configurarBaseApi } from './api-config';
 import { CODIGOS_EN_PANTALLA } from './errores.interceptor';
+import { ulidDePrueba } from '../testing/ulid-de-prueba';
 
 // ARQ-12: estas pantallas cambian el message de `sucursal_requerida` por MENSAJE_SUCURSAL_REQUERIDA,
 // asi que su peticion lo marca y el interceptor no muestra el del backend. Solo ese codigo: los
@@ -39,13 +40,13 @@ describe('peticiones que manejan `sucursal_requerida` en pantalla', () => {
     const servicio = TestBed.inject(CotizacionService);
 
     expect(marcaDe(() => servicio.crear(cotizacion))).toEqual(['sucursal_requerida']);
-    expect(marcaDe(() => servicio.actualizar(7, cotizacion))).toEqual(['sucursal_requerida']);
+    expect(marcaDe(() => servicio.actualizar(ulidDePrueba(7), cotizacion))).toEqual(['sucursal_requerida']);
   });
 
   it('crear un pedido de delivery', () => {
     const servicio = TestBed.inject(PedidoService);
 
-    expect(marcaDe(() => servicio.crear({ cliente_id: 1, sucursal_id: 1 } as PedidoCrearPayload))).toEqual(['sucursal_requerida']);
+    expect(marcaDe(() => servicio.crear({ cliente_id: ulidDePrueba(1), sucursal_id: 1 } as PedidoCrearPayload))).toEqual(['sucursal_requerida']);
   });
 
   it('generar una nomina', () => {

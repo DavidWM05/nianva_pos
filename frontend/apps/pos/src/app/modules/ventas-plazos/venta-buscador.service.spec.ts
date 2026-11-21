@@ -11,7 +11,7 @@ describe('VentaBuscadorService', () => {
     id: ulidDePrueba(3),
     numero: 3,
     fecha: '2026-07-01',
-    cliente: { id: 9, nombre: 'Juan Pérez' },
+    cliente: { id: ulidDePrueba(9), nombre: 'Juan Pérez' },
     total: '500.00',
     descuento_cupon: '0.00',
     descuento_manual: '0.00',

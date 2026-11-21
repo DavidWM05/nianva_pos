@@ -150,7 +150,7 @@ class CuentasCobrarReporteTest extends TestCase
         $porCliente = $response->json('data.por_cliente');
 
         $this->assertCount(1, $porCliente);
-        $this->assertSame($this->cliente->id, $porCliente[0]['cliente_id']);
+        $this->assertSame($this->cliente->ulid, $porCliente[0]['cliente_id']);
         $this->assertSame('Juan Pérez', $porCliente[0]['cliente_nombre']);
         $this->assertEquals(2000.0, $porCliente[0]['saldo_pendiente']);
         $this->assertSame(1, $porCliente[0]['cuentas_pendientes']);

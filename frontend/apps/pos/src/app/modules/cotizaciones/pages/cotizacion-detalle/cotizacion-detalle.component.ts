@@ -71,7 +71,8 @@ export class CotizacionDetalleComponent implements OnInit {
   ngOnInit(): void {
     this.metodoPagoService.listar().subscribe((metodos) => this.metodosPago.set(metodos));
 
-    const id = Number(this.route.snapshot.paramMap.get('id'));
+    // DAT-08: el parámetro de la ruta es el ulid; nunca Number().
+    const id = this.route.snapshot.paramMap.get('id') ?? '';
     this.cargar(id);
   }
 
@@ -128,7 +129,7 @@ export class CotizacionDetalleComponent implements OnInit {
     });
   }
 
-  protected cargar(id: number): void {
+  protected cargar(id: string): void {
     this.cargando.set(true);
     this.error.set(false);
     this.cotizacionService.obtener(id).subscribe({

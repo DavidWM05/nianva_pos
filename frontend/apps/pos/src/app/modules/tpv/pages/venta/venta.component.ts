@@ -103,7 +103,7 @@ export class VentaComponent implements OnInit {
       false,
   );
   protected readonly listaPrecioId = signal<number | null>(null);
-  protected readonly clienteId = signal<number | null>(null);
+  protected readonly clienteId = signal<string | null>(null);
 
   // -- Carrito (delegado a LineasProductoComponent) --
   protected readonly itemsActuales = signal<VentaItemPayload[]>([]);
@@ -239,7 +239,7 @@ export class VentaComponent implements OnInit {
   }
 
   /** Cambiar de cliente invalida las notas de credito ya listadas -- pertenecen al cliente anterior. */
-  onClienteSeleccionado(clienteId: number | null): void {
+  onClienteSeleccionado(clienteId: string | null): void {
     this.clienteId.set(clienteId);
     this.notaCreditoSeleccionadaId.set(null);
     this.notasCreditoDisponibles.set([]);

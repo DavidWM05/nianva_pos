@@ -163,7 +163,7 @@ class AislamientoBindingTest extends TestCase
         }
 
         $ventasCliente = $this->actingAs($this->usuario)
-            ->getJson("/api/v1/clientes/{$this->cliente->id}/ventas")
+            ->getJson("/api/v1/clientes/{$this->cliente->ulid}/ventas")
             ->assertOk()
             ->json('data');
         if (in_array($venta->getKey(), array_column($ventasCliente, 'id'), true)) {
@@ -171,7 +171,7 @@ class AislamientoBindingTest extends TestCase
         }
 
         $notasCliente = $this->actingAs($this->usuario)
-            ->getJson("/api/v1/clientes/{$this->cliente->id}/notas-credito")
+            ->getJson("/api/v1/clientes/{$this->cliente->ulid}/notas-credito")
             ->assertOk()
             ->json('data');
         if (in_array($nota->getKey(), array_column($notasCliente, 'id'), true)) {
@@ -231,7 +231,7 @@ class AislamientoBindingTest extends TestCase
             'tenant_id' => $this->tenant->id,
             'sucursal_id' => $this->sucursalA2->id,
         ]);
-        $manuales[] = ['PATCH', "/api/v1/ordenes-produccion/{$orden->id}/estado", ['estado' => 'cancelada']];
+        $manuales[] = ['PATCH', "/api/v1/ordenes-produccion/{$orden->ulid}/estado", ['estado' => 'cancelada']];
         $manuales[] = ['PATCH', "/api/v1/nominas/{$nomina->id}/pagar", []];
 
         foreach ($manuales as [$metodo, $url, $payload]) {

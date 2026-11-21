@@ -18,7 +18,7 @@ export class CrmAvanzadoService {
   private readonly http = inject(HttpClient);
 
   /** Sin paginacion: CrmAvanzadoController::interacciones() devuelve la lista completa, no un paginador. */
-  interacciones(clienteId: number): Observable<CrmInteraccion[]> {
+  interacciones(clienteId: string): Observable<CrmInteraccion[]> {
     return this.http
       .get<RespuestaDe<'/clientes/{cliente}/interacciones', 'get'>>(
         urlApi(`/clientes/${clienteId}/interacciones`),
@@ -27,7 +27,7 @@ export class CrmAvanzadoService {
   }
 
   crearInteraccion(
-    clienteId: number,
+    clienteId: string,
     payload: InteraccionFormPayload,
   ): Observable<CrmInteraccion> {
     const cuerpo: CuerpoDe<'/clientes/{cliente}/interacciones', 'post'> =
@@ -41,14 +41,14 @@ export class CrmAvanzadoService {
       .pipe(map((r) => r.data));
   }
 
-  loyalty(clienteId: number): Observable<LoyaltyResumen> {
+  loyalty(clienteId: string): Observable<LoyaltyResumen> {
     return this.http
       .get<RespuestaDe<'/clientes/{cliente}/loyalty', 'get'>>(urlApi(`/clientes/${clienteId}/loyalty`))
       .pipe(map((r) => r.data));
   }
 
   ajustarPuntos(
-    clienteId: number,
+    clienteId: string,
     payload: AjustarPuntosPayload,
   ): Observable<LoyaltyTransaccion> {
     const cuerpo: CuerpoDe<'/clientes/{cliente}/loyalty/ajustar', 'post'> =

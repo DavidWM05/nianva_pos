@@ -53,7 +53,7 @@ describe('CajaComponent formato por pipe', () => {
   it('con caja abierta, apertura, totales y gastos salen con dinero', async () => {
     const { fixture } = await crear(
       { sesion: sesionAbierta, resumen: { ventas_count: 3, total_ventas: '12500.50', total_gastos: '1080.00' }, permisos },
-      [{ id: 1, descripcion: 'Luz', monto: '1080.00', fecha: '2026-07-22T10:00:00.000000Z' }],
+      [{ id: ulidDePrueba(1), descripcion: 'Luz', monto: '1080.00', fecha: '2026-07-22T10:00:00.000000Z' }],
     );
     const texto = (fixture.nativeElement as HTMLElement).textContent ?? '';
 

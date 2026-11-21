@@ -67,7 +67,7 @@ export class GiftCardsListComponent {
   protected readonly total = signal(0);
   protected readonly loading = signal(false);
   protected readonly estadoFiltro = signal<EstadoGiftCard | null>(null);
-  protected readonly clienteFiltroId = signal<number | null>(null);
+  protected readonly clienteFiltroId = signal<string | null>(null);
   protected readonly codigoFiltro = signal('');
 
   private readonly ultimoEvento = signal<DataTableLazyEvent>({
@@ -98,7 +98,7 @@ export class GiftCardsListComponent {
     this.cargar({ ...this.ultimoEvento(), first: 0 });
   }
 
-  onClienteSeleccionado(clienteId: number | null): void {
+  onClienteSeleccionado(clienteId: string | null): void {
     this.clienteFiltroId.set(clienteId);
     this.cargar({ ...this.ultimoEvento(), first: 0 });
   }

@@ -1,6 +1,6 @@
 <ui-page-header clave="cotizaciones" subtitulo="Detalle del registro" />
 <div>
-  <ui-page [estado]="cargando() ? 'cargando' : error() ? 'error' : 'listo'" forma="detalle" (reintentar)="cargar(cotizacion()?.id ?? 0)">
+  <ui-page [estado]="cargando() ? 'cargando' : error() ? 'error' : 'listo'" forma="detalle" (reintentar)="cargar(cotizacion()?.id ?? '')">
   @if (cotizacion(); as cotizacionActual) {
     <div>
       <h2>{{ cotizacionActual.numero_cotizacion }}</h2>

@@ -10,6 +10,7 @@ use App\Modules\Inventario\Support\ReglasVariante;
 use App\Modules\Nucleo\Http\Requests\SolicitudNegocio;
 use App\Modules\Nucleo\Support\Cantidad;
 use App\Modules\Nucleo\Support\ReglasTenant;
+use App\Modules\Nucleo\Support\UlidPublico;
 use App\Modules\Tpv\Dtos\CotizarVentaDto;
 use App\Modules\Tpv\Dtos\LineaVentaDto;
 
@@ -24,7 +25,7 @@ class CotizarVentaRequest extends SolicitudNegocio
 
         return [
             'lista_precio_id' => ['nullable', 'integer', ReglasTenant::existe('listas_precio', $tenantId)->where('activo', true)],
-            'cliente_id' => ['nullable', 'integer', ReglasTenant::existe('clientes', $tenantId)],
+            'cliente_id' => ['nullable', 'string', 'ulid', ReglasTenant::existeUlid('clientes', $tenantId)],
             'items' => ['required', 'array', 'min:1'],
             'items.*.presentacion_id' => ['nullable', 'integer', new PresentacionDeVariante($tenantId)],
             'items.*.variante_id' => ['required', 'integer', ReglasVariante::delTenant($tenantId)],
@@ -49,7 +50,7 @@ class CotizarVentaRequest extends SolicitudNegocio
             (array) ($v['items'] ?? []),
         ));
 
-        return new CotizarVentaDto(items: $items, clienteId: isset($v['cliente_id']) ? (int) $v['cliente_id'] : null, listaPrecioId: isset($v['lista_precio_id']) ? (int) $v['lista_precio_id'] : null);
+        return new CotizarVentaDto(items: $items, clienteId: isset($v['cliente_id']) ? UlidPublico::idInterno('clientes', (string) $v['cliente_id']) : null, listaPrecioId: isset($v['lista_precio_id']) ? (int) $v['lista_precio_id'] : null);
     }
 
     public function messages(): array

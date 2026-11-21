@@ -33,9 +33,10 @@ describe('CuentaCobrarDetalleComponent', () => {
 
   function cuentaCon(overrides: Partial<CuentaCobrar>): CuentaCobrar {
     return {
-      id: 5,
+      id: ulidDePrueba(5),
+      numero: 5,
       venta_id: ulidDePrueba(42),
-      cliente: { id: 9, nombre: 'Juan Pérez' },
+      cliente: { id: ulidDePrueba(9), nombre: 'Juan Pérez' },
       monto_total: '500.00',
       saldo_pendiente: '300.00',
       fecha_vencimiento: '2026-08-01',
@@ -68,7 +69,7 @@ describe('CuentaCobrarDetalleComponent', () => {
         { provide: AuditLogSource, useValue: { listar: vi.fn().mockReturnValue(of([])) } },
         { provide: ConfirmDialogService, useValue: confirmDialog },
         { provide: ToastService, useValue: toast },
-        { provide: ActivatedRoute, useValue: { snapshot: { paramMap: convertToParamMap({ id: '5' }) } } },
+        { provide: ActivatedRoute, useValue: { snapshot: { paramMap: convertToParamMap({ id: ulidDePrueba(5) }) } } },
       ],
     }).compileComponents();
 
@@ -85,7 +86,7 @@ describe('CuentaCobrarDetalleComponent', () => {
 
   it('pendiente con abonos: puedeAbonar() sigue verdadero pero puedeAnular() es falso (CuentasCobrarService::anular exige sin abonos)', async () => {
     await crearComponente(
-      cuentaCon({ estado: 'pendiente', abonos: [{ id: 1, monto: '100.00', metodo_pago: 'Efectivo', referencia: null, fecha: '2026-07-27T10:00:00Z' }] }),
+      cuentaCon({ estado: 'pendiente', abonos: [{ id: ulidDePrueba(1), monto: '100.00', metodo_pago: 'Efectivo', referencia: null, fecha: '2026-07-27T10:00:00Z' }] }),
     );
 
     expect(fixture.componentInstance['puedeAbonar']()).toBe(true);
@@ -108,7 +109,7 @@ describe('CuentaCobrarDetalleComponent', () => {
     fixture.componentInstance['metodoPagoElegido'].set(1);
     fixture.componentInstance.confirmarAbono();
 
-    expect(cuentaCobrarService.registrarAbono).toHaveBeenCalledWith(5, { monto: 200, metodo_pago_id: 1, referencia: null });
+    expect(cuentaCobrarService.registrarAbono).toHaveBeenCalledWith(ulidDePrueba(5), { monto: 200, metodo_pago_id: 1, referencia: null });
     expect(toast.success).toHaveBeenCalledWith('Abono registrado.');
     expect(cuentaCobrarService.obtener).toHaveBeenCalledTimes(2); // 1 al iniciar + 1 al recargar
   });
@@ -142,7 +143,7 @@ describe('CuentaCobrarDetalleComponent', () => {
 
     await fixture.componentInstance.anular();
 
-    expect(cuentaCobrarService.anular).toHaveBeenCalledWith(5);
+    expect(cuentaCobrarService.anular).toHaveBeenCalledWith(ulidDePrueba(5));
     expect(toast.success).toHaveBeenCalledWith('Cuenta por cobrar anulada.');
     expect(cuentaCobrarService.obtener).toHaveBeenCalledTimes(2);
   });

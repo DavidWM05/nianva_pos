@@ -31,7 +31,7 @@ class InteraccionGuardTest extends TestCase
 
         $this->actingAs($this->usuario);
 
-        $this->postJson("/test-clientes/{$this->clienteB->id}/interacciones", [
+        $this->postJson("/test-clientes/{$this->clienteB->ulid}/interacciones", [
             'tipo' => 'invalido',
         ])
             ->assertNotFound()

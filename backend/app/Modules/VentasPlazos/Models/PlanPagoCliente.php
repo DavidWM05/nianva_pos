@@ -4,6 +4,7 @@ namespace App\Modules\VentasPlazos\Models;
 
 use App\Modules\Crm\Models\Cliente;
 use App\Modules\Nucleo\Models\Concerns\BelongsToTenant;
+use App\Modules\Nucleo\Models\Concerns\RutaPorUlid;
 use App\Modules\Nucleo\Models\Concerns\SerializaDecimales;
 use App\Modules\Nucleo\Models\Concerns\TieneUlid;
 use App\Modules\Nucleo\Models\Tenant;
@@ -26,6 +27,7 @@ class PlanPagoCliente extends Model
     /** @use HasFactory<PlanPagoClienteFactory> */
     use HasFactory;
 
+    use RutaPorUlid;
     use SerializaDecimales;
     use TieneUlid;
 

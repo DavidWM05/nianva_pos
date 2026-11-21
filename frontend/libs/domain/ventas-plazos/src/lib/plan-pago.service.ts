@@ -52,7 +52,7 @@ export class PlanPagoService {
       );
   }
 
-  obtener(id: number): Observable<PlanPago> {
+  obtener(id: string): Observable<PlanPago> {
     return this.http
       .get<RespuestaDe<'/planes-pago-cliente/{plan}', 'get'>>(
         urlApi(`/planes-pago-cliente/${id}`),
@@ -76,7 +76,7 @@ export class PlanPagoService {
   }
 
   pagarCuota(
-    planId: number,
+    planId: string,
     payload: PagarCuotaPayload,
   ): Observable<PlanPagoCuota> {
     const cuerpo: CuerpoDe<'/planes-pago-cliente/{plan}/pagar-cuota', 'post'> =

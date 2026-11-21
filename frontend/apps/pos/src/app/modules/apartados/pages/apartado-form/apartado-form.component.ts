@@ -39,7 +39,7 @@ export class ApartadoFormComponent {
 
   protected readonly buscadorCliente = inject(BUSCADOR_CLIENTE);
 
-  protected readonly clienteId = signal<number | null>(null);
+  protected readonly clienteId = signal<string | null>(null);
   protected readonly itemsActuales = signal<ApartadoItemPayload[]>([]);
   protected readonly subtotal = signal(0);
   protected readonly fechaVencimiento = signal<Date | null>(null);

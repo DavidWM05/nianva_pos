@@ -30,7 +30,7 @@ export class PedidoService {
     filtros: {
       numeroPedido?: string;
       estado?: EstadoPedido | null;
-      clienteId?: number | null;
+      clienteId?: string | null;
       repartidorId?: number | null;
     } = {},
   ): Observable<PedidosPagina> {

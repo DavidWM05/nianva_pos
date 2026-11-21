@@ -4,6 +4,7 @@ namespace App\Modules\Inventario\Models;
 
 use App\Modules\Inventario\Database\Factories\CompraFactory;
 use App\Modules\Nucleo\Models\Concerns\BelongsToTenant;
+use App\Modules\Nucleo\Models\Concerns\RutaPorUlid;
 use App\Modules\Nucleo\Models\Concerns\TieneUlid;
 use App\Modules\Nucleo\Models\Sucursal;
 use App\Modules\Nucleo\Models\Tenant;
@@ -25,6 +26,7 @@ class Compra extends Model
     /** @use HasFactory<CompraFactory> */
     use HasFactory;
 
+    use RutaPorUlid;
     use TieneUlid;
 
     const CREATED_AT = 'fecha';

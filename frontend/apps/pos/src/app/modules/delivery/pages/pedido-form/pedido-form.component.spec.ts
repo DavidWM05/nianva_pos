@@ -13,6 +13,7 @@ import { BUSCADOR_CLIENTE, BUSCADOR_PRODUCTO, BUSCADOR_VARIANTE_DE_PRODUCTO } fr
 import { VentaService } from '@nianva/domain-tpv';
 import { Pedido, PedidoService } from '@nianva/domain-delivery';
 import { PedidoFormComponent } from './pedido-form.component';
+import { ulidDePrueba } from '../../../../testing/ulid-de-prueba';
 
 describe('PedidoFormComponent', () => {
   let fixture: ComponentFixture<PedidoFormComponent>;
@@ -35,7 +36,7 @@ describe('PedidoFormComponent', () => {
   const pedidoCreado: Pedido = {
     id: 10,
     numero_pedido: 'PED-000010',
-    cliente: { id: 9, nombre: 'Juan Pérez' },
+    cliente: { id: ulidDePrueba(9), nombre: 'Juan Pérez' },
     repartidor: null,
     direccion_entrega: null,
     costo_delivery: '0.00',
@@ -78,10 +79,10 @@ describe('PedidoFormComponent', () => {
     await crearComponente();
     pedidoService.crear.mockReturnValue(of(pedidoCreado));
 
-    fixture.componentInstance['clienteId'].set(9);
+    fixture.componentInstance['clienteId'].set(ulidDePrueba(9));
     fixture.componentInstance.crear();
 
-    expect(pedidoService.crear).toHaveBeenCalledWith(expect.objectContaining({ cliente_id: 9, sucursal_id: 7 }));
+    expect(pedidoService.crear).toHaveBeenCalledWith(expect.objectContaining({ cliente_id: ulidDePrueba(9), sucursal_id: 7 }));
     expect(router.navigate).toHaveBeenCalledWith(['/pedidos', 10]);
   });
 
@@ -97,7 +98,7 @@ describe('PedidoFormComponent', () => {
     await crearComponente();
     pedidoService.crear.mockReturnValue(of(pedidoCreado));
 
-    fixture.componentInstance['clienteId'].set(9);
+    fixture.componentInstance['clienteId'].set(ulidDePrueba(9));
     fixture.componentInstance.crear();
 
     expect(pedidoService.crear).toHaveBeenCalledWith(expect.objectContaining({ items: undefined }));
@@ -111,7 +112,7 @@ describe('PedidoFormComponent', () => {
       items: [{ variante_id: 5, cantidad: 2, precio_unitario: 100, descuento: 10 }],
       subtotal: 190,
     });
-    fixture.componentInstance['clienteId'].set(9);
+    fixture.componentInstance['clienteId'].set(ulidDePrueba(9));
     fixture.componentInstance.crear();
 
     expect(pedidoService.crear).toHaveBeenCalledWith(
@@ -132,7 +133,7 @@ describe('PedidoFormComponent', () => {
       ),
     );
 
-    fixture.componentInstance['clienteId'].set(9);
+    fixture.componentInstance['clienteId'].set(ulidDePrueba(9));
     fixture.componentInstance.crear();
 
     expect(errorSpy).toHaveBeenCalledWith('Tu usuario no tiene sucursal asignada; pide a un administrador que te asigne una.');

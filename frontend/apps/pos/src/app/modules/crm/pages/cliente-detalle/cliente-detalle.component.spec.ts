@@ -6,6 +6,7 @@ import { ActivatedRoute, convertToParamMap } from '@angular/router';
 import { AuditLogSource, DynamicFormComponent, ToastService } from '@nianva/ui-shared';
 import { of, throwError } from 'rxjs';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { ulidDePrueba } from '../../../../testing/ulid-de-prueba';
 
 // jsdom (el entorno de estos tests) no implementa ResizeObserver -- lo usa
 // PrimeNG's TabList (detras de RecordTabsComponent) en ngAfterViewInit.
@@ -34,7 +35,7 @@ describe('ClienteDetalleComponent', () => {
   };
 
   const cliente: Cliente = {
-    id: 7,
+    id: ulidDePrueba(7),
     nombre: 'Hugo Mendez',
     documento_fiscal: null,
     telefono: '555-0202',
@@ -79,7 +80,7 @@ describe('ClienteDetalleComponent', () => {
         { provide: ToastService, useValue: { success: vi.fn(), error: vi.fn() } },
         {
           provide: ActivatedRoute,
-          useValue: { snapshot: { paramMap: convertToParamMap({ id: '7' }) } },
+          useValue: { snapshot: { paramMap: convertToParamMap({ id: ulidDePrueba(7) }) } },
         },
       ],
     }).compileComponents();
@@ -100,14 +101,14 @@ describe('ClienteDetalleComponent', () => {
   });
 
   it('carga interacciones y loyalty al iniciar, para el cliente correcto', () => {
-    expect(crmAvanzadoService.interacciones).toHaveBeenCalledWith(7);
-    expect(crmAvanzadoService.loyalty).toHaveBeenCalledWith(7);
+    expect(crmAvanzadoService.interacciones).toHaveBeenCalledWith(ulidDePrueba(7));
+    expect(crmAvanzadoService.loyalty).toHaveBeenCalledWith(ulidDePrueba(7));
   });
 
   it('registrar una interacción la agrega al principio de la lista y cierra el modal', () => {
     const nueva: CrmInteraccion = {
       id: 99,
-      cliente_id: 7,
+      cliente_id: ulidDePrueba(7),
       tipo: 'llamada',
       observacion: 'Preguntó por su pedido',
       fecha: '2026-07-27T10:00:00Z',
@@ -118,7 +119,7 @@ describe('ClienteDetalleComponent', () => {
     fixture.componentInstance['observacionNuevaInteraccion'].set('Preguntó por su pedido');
     fixture.componentInstance.guardarInteraccion();
 
-    expect(crmAvanzadoService.crearInteraccion).toHaveBeenCalledWith(7, {
+    expect(crmAvanzadoService.crearInteraccion).toHaveBeenCalledWith(ulidDePrueba(7), {
       tipo: 'llamada',
       observacion: 'Preguntó por su pedido',
     });
@@ -144,7 +145,7 @@ describe('ClienteDetalleComponent', () => {
     fixture.componentInstance['motivoAjuste'].set('Ajuste por devolución');
     fixture.componentInstance.confirmarAjustePuntos();
 
-    expect(crmAvanzadoService.ajustarPuntos).toHaveBeenCalledWith(7, { puntos: -50, motivo: 'Ajuste por devolución' });
+    expect(crmAvanzadoService.ajustarPuntos).toHaveBeenCalledWith(ulidDePrueba(7), { puntos: -50, motivo: 'Ajuste por devolución' });
     expect(crmAvanzadoService.loyalty).toHaveBeenCalledTimes(2); // 1 en ngOnInit + 1 tras el ajuste
     expect(fixture.componentInstance['mostrarAjustePuntos']()).toBe(false);
   });
@@ -178,7 +179,7 @@ describe('ClienteDetalleComponent', () => {
         { provide: CrmAvanzadoService, useValue: crmMock },
         { provide: AuditLogSource, useValue: { listar: vi.fn().mockReturnValue(of([])) } },
         { provide: ToastService, useValue: toast },
-        { provide: ActivatedRoute, useValue: { snapshot: { paramMap: convertToParamMap({ id: '7' }) } } },
+        { provide: ActivatedRoute, useValue: { snapshot: { paramMap: convertToParamMap({ id: ulidDePrueba(7) }) } } },
       ],
     }).compileComponents();
 
@@ -227,7 +228,7 @@ describe('ClienteDetalleComponent', () => {
         { provide: CrmAvanzadoService, useValue: crearCrmAvanzadoServiceMock() },
         { provide: AuditLogSource, useValue: { listar: vi.fn().mockReturnValue(of([])) } },
         { provide: ToastService, useValue: { success: vi.fn(), error: vi.fn() } },
-        { provide: ActivatedRoute, useValue: { snapshot: { paramMap: convertToParamMap({ id: '7' }) } } },
+        { provide: ActivatedRoute, useValue: { snapshot: { paramMap: convertToParamMap({ id: ulidDePrueba(7) }) } } },
       ],
     }).compileComponents();
 
@@ -258,7 +259,7 @@ describe('ClienteDetalleComponent', () => {
         { provide: CrmAvanzadoService, useValue: crearCrmAvanzadoServiceMock() },
         { provide: AuditLogSource, useValue: { listar: vi.fn().mockReturnValue(of([])) } },
         { provide: ToastService, useValue: { success: vi.fn(), error: vi.fn() } },
-        { provide: ActivatedRoute, useValue: { snapshot: { paramMap: convertToParamMap({ id: '7' }) } } },
+        { provide: ActivatedRoute, useValue: { snapshot: { paramMap: convertToParamMap({ id: ulidDePrueba(7) }) } } },
       ],
     }).compileComponents();
 

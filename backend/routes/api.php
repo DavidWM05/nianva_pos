@@ -323,9 +323,9 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::get('/cotizaciones', [CotizacionController::class, 'index'])->middleware('permiso:cotizaciones.ver');
             Route::post('/cotizaciones', [CotizacionController::class, 'store'])->middleware(['permiso:cotizaciones.crear', SeleccionarListaPrecio::class]);
             Route::get('/cotizaciones/{cotizacion}', [CotizacionController::class, 'show'])->middleware('permiso:cotizaciones.ver');
-            Route::put('/cotizaciones/{id}', [CotizacionController::class, 'update'])->middleware(['permiso:cotizaciones.editar', SeleccionarListaPrecio::class]);
-            Route::delete('/cotizaciones/{id}', [CotizacionController::class, 'destroy'])->middleware('permiso:cotizaciones.eliminar');
-            Route::post('/cotizaciones/{id}/convertir', [CotizacionController::class, 'convertir'])->middleware('permiso:cotizaciones.convertir');
+            Route::put('/cotizaciones/{cotizacion}', [CotizacionController::class, 'update'])->middleware(['permiso:cotizaciones.editar', SeleccionarListaPrecio::class]);
+            Route::delete('/cotizaciones/{cotizacion}', [CotizacionController::class, 'destroy'])->middleware('permiso:cotizaciones.eliminar');
+            Route::post('/cotizaciones/{cotizacion}/convertir', [CotizacionController::class, 'convertir'])->middleware('permiso:cotizaciones.convertir');
         });
 
         // Cuentas por Cobrar (CxC)
@@ -333,8 +333,8 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::get('/cuentas-cobrar', [CuentaCobrarController::class, 'index'])->middleware('permiso:cuentas_cobrar.ver');
             Route::get('/cuentas-cobrar/reporte', [CuentaCobrarController::class, 'reporte'])->middleware('permiso:reportes_cuentas_cobrar.ver');
             Route::get('/cuentas-cobrar/{cuentaCobrar}', [CuentaCobrarController::class, 'show'])->middleware('permiso:cuentas_cobrar.ver');
-            Route::post('/cuentas-cobrar/{id}/abonos', [CuentaCobrarController::class, 'registrarAbono'])->middleware('permiso:cuentas_cobrar.registrar_abono');
-            Route::post('/cuentas-cobrar/{id}/anular', [CuentaCobrarController::class, 'anular'])->middleware('permiso:cuentas_cobrar.anular');
+            Route::post('/cuentas-cobrar/{cuentaCobrar}/abonos', [CuentaCobrarController::class, 'registrarAbono'])->middleware('permiso:cuentas_cobrar.registrar_abono');
+            Route::post('/cuentas-cobrar/{cuentaCobrar}/anular', [CuentaCobrarController::class, 'anular'])->middleware('permiso:cuentas_cobrar.anular');
         });
 
         // Cuentas por Pagar (CxP)
@@ -342,8 +342,8 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::get('/cuentas-pagar', [CuentaPagarController::class, 'index'])->middleware('permiso:cuentas_pagar.ver');
             Route::get('/cuentas-pagar/reporte', [CuentaPagarController::class, 'reporte'])->middleware('permiso:reportes_cuentas_pagar.ver');
             Route::get('/cuentas-pagar/{cuentaPagar}', [CuentaPagarController::class, 'show'])->middleware('permiso:cuentas_pagar.ver');
-            Route::post('/cuentas-pagar/{id}/pagos', [CuentaPagarController::class, 'registrarPago'])->middleware('permiso:cuentas_pagar.registrar_pago');
-            Route::post('/cuentas-pagar/{id}/anular', [CuentaPagarController::class, 'anular'])->middleware('permiso:cuentas_pagar.anular');
+            Route::post('/cuentas-pagar/{cuentaPagar}/pagos', [CuentaPagarController::class, 'registrarPago'])->middleware('permiso:cuentas_pagar.registrar_pago');
+            Route::post('/cuentas-pagar/{cuentaPagar}/anular', [CuentaPagarController::class, 'anular'])->middleware('permiso:cuentas_pagar.anular');
         });
 
         // CRM Avanzado (extension del modulo CRM existente)
@@ -391,7 +391,7 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::post('/recetas', [ProduccionController::class, 'recetasStore'])->middleware('permiso:produccion.crear');
             Route::get('/ordenes-produccion', [ProduccionController::class, 'ordenesIndex'])->middleware('permiso:produccion.ver');
             Route::post('/ordenes-produccion', [ProduccionController::class, 'ordenesStore'])->middleware('permiso:produccion.crear');
-            Route::patch('/ordenes-produccion/{id}/estado', [ProduccionController::class, 'ordenesCambiarEstado'])->middleware('permiso:produccion.completar');
+            Route::patch('/ordenes-produccion/{ordenProduccion}/estado', [ProduccionController::class, 'ordenesCambiarEstado'])->middleware('permiso:produccion.completar');
             Route::get('/transformaciones', [ProduccionController::class, 'transformacionesIndex'])->middleware('permiso:produccion.ver');
             Route::post('/transformaciones', [ProduccionController::class, 'transformacionStore'])->middleware('permiso:produccion.transformar');
         });

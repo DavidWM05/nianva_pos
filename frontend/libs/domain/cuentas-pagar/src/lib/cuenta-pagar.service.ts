@@ -63,7 +63,7 @@ export class CuentaPagarService {
       );
   }
 
-  obtener(id: number): Observable<CuentaPagar> {
+  obtener(id: string): Observable<CuentaPagar> {
     return this.http
       .get<RespuestaDe<'/cuentas-pagar/{cuentaPagar}', 'get'>>(
         urlApi(`/cuentas-pagar/${id}`),
@@ -72,13 +72,13 @@ export class CuentaPagarService {
   }
 
   registrarPago(
-    id: number,
+    id: string,
     payload: RegistrarPagoPayload,
   ): Observable<RegistrarPagoRespuesta> {
-    const cuerpo: CuerpoDe<'/cuentas-pagar/{id}/pagos', 'post'> = payload;
+    const cuerpo: CuerpoDe<'/cuentas-pagar/{cuentaPagar}/pagos', 'post'> = payload;
 
     return this.http
-      .post<RespuestaDe<'/cuentas-pagar/{id}/pagos', 'post'>>(
+      .post<RespuestaDe<'/cuentas-pagar/{cuentaPagar}/pagos', 'post'>>(
         urlApi(`/cuentas-pagar/${id}/pagos`),
         cuerpo,
       )
@@ -93,9 +93,9 @@ export class CuentaPagarService {
       );
   }
 
-  anular(id: number): Observable<void> {
+  anular(id: string): Observable<void> {
     return this.http
-      .post<RespuestaDe<'/cuentas-pagar/{id}/anular', 'post'>>(
+      .post<RespuestaDe<'/cuentas-pagar/{cuentaPagar}/anular', 'post'>>(
         urlApi(`/cuentas-pagar/${id}/anular`),
         {},
       )

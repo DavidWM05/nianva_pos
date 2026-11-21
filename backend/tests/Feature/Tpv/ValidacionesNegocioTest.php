@@ -80,7 +80,7 @@ class ValidacionesNegocioTest extends TestCase
     {
         $this->actingAs($this->usuario);
 
-        $this->postJson('/api/v1/ventas', $this->payloadVenta(['cliente_id' => $this->clienteB->id]))
+        $this->postJson('/api/v1/ventas', $this->payloadVenta(['cliente_id' => $this->clienteB->ulid]))
             ->assertStatus(422)
             ->assertJsonValidationErrors(['cliente_id']);
     }

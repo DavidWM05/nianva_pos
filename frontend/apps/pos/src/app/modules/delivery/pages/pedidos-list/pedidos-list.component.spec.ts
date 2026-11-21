@@ -8,6 +8,7 @@ import { describe, expect, it, vi } from 'vitest';
 import { BUSCADOR_CLIENTE, BUSCADOR_USUARIO } from '../../../../core/buscadores-entidad.tokens';
 import { Pedido, PedidoService, PedidosPagina } from '@nianva/domain-delivery';
 import { PedidosListComponent } from './pedidos-list.component';
+import { ulidDePrueba } from '../../../../testing/ulid-de-prueba';
 
 describe('PedidosListComponent', () => {
   let fixture: ComponentFixture<PedidosListComponent>;
@@ -17,7 +18,7 @@ describe('PedidosListComponent', () => {
     {
       id: 1,
       numero_pedido: 'PED-000001',
-      cliente: { id: 9, nombre: 'Juan Pérez' },
+      cliente: { id: ulidDePrueba(9), nombre: 'Juan Pérez' },
       repartidor: null,
       direccion_entrega: null,
       costo_delivery: '30.00',

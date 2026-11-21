@@ -205,12 +205,6 @@ parameters:
 			path: app/Modules/Apartados/Http/Resources/ApartadoResource.php
 
 		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Modules/Apartados/Http/Resources/ApartadoResource.php
-
-		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$monto\.$#'
 			identifier: property.notFound
 			count: 1
@@ -813,7 +807,7 @@ parameters:
 		-
 			message: '#^Cannot access property \$id on Illuminate\\Database\\Eloquent\\Model\|null\.$#'
 			identifier: property.nonObject
-			count: 2
+			count: 1
 			path: app/Modules/Cotizaciones/Http/Resources/CotizacionResource.php
 
 		-
@@ -1189,12 +1183,6 @@ parameters:
 			path: app/Modules/CrmAvanzado/Http/Resources/CrmCampanaResource.php
 
 		-
-			message: '#^Access to an undefined property App\\Modules\\CrmAvanzado\\Http\\Resources\\CrmInteraccionResource\:\:\$cliente_id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Modules/CrmAvanzado/Http/Resources/CrmInteraccionResource.php
-
-		-
 			message: '#^Access to an undefined property App\\Modules\\CrmAvanzado\\Http\\Resources\\CrmInteraccionResource\:\:\$fecha\.$#'
 			identifier: property.notFound
 			count: 1
@@ -1339,12 +1327,6 @@ parameters:
 			path: app/Modules/CuentasCobrar/Exceptions/AbonoExcedeSaldoException.php
 
 		-
-			message: '#^Access to an undefined property App\\Modules\\CuentasCobrar\\Models\\CuentaCobrar\:\:\$cliente_id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Modules/CuentasCobrar/Http/Controllers/CuentaCobrarController.php
-
-		-
 			message: '#^Access to an undefined property App\\Modules\\CuentasCobrar\\Models\\CuentaCobrar\:\:\$cuentas_pendientes\.$#'
 			identifier: property.notFound
 			count: 1
@@ -1479,12 +1461,6 @@ parameters:
 		-
 			message: '#^Access to an undefined property App\\Modules\\CuentasCobrar\\Http\\Resources\\CuentaCobrarResource\:\:\$saldo_pendiente\.$#'
 			identifier: property.notFound
-			count: 1
-			path: app/Modules/CuentasCobrar/Http/Resources/CuentaCobrarResource.php
-
-		-
-			message: '#^Cannot access property \$id on Illuminate\\Database\\Eloquent\\Model\|null\.$#'
-			identifier: property.nonObject
 			count: 1
 			path: app/Modules/CuentasCobrar/Http/Resources/CuentaCobrarResource.php
 
@@ -1727,12 +1703,6 @@ parameters:
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Modules/CuentasPagar/Http/Resources/AbonoPagarResource.php
-
-		-
-			message: '#^Access to an undefined property App\\Modules\\CuentasPagar\\Http\\Resources\\CuentaPagarResource\:\:\$compra_id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Modules/CuentasPagar/Http/Resources/CuentaPagarResource.php
 
 		-
 			message: '#^Access to an undefined property App\\Modules\\CuentasPagar\\Http\\Resources\\CuentaPagarResource\:\:\$created_at\.$#'
@@ -1983,7 +1953,7 @@ parameters:
 		-
 			message: '#^Cannot access property \$id on Illuminate\\Database\\Eloquent\\Model\|null\.$#'
 			identifier: property.nonObject
-			count: 2
+			count: 1
 			path: app/Modules/Delivery/Http/Resources/PedidoResource.php
 
 		-
@@ -2559,12 +2529,6 @@ parameters:
 		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$usuario\.$#'
 			identifier: property.notFound
-			count: 1
-			path: app/Modules/GiftCards/Http/Resources/GiftCardResource.php
-
-		-
-			message: '#^Cannot access property \$id on Illuminate\\Database\\Eloquent\\Model\|null\.$#'
-			identifier: property.nonObject
 			count: 1
 			path: app/Modules/GiftCards/Http/Resources/GiftCardResource.php
 
@@ -3321,12 +3285,6 @@ parameters:
 		-
 			message: '#^Access to an undefined property App\\Modules\\NotasCredito\\Http\\Resources\\NotaCreditoResource\:\:\$saldo_disponible\.$#'
 			identifier: property.notFound
-			count: 1
-			path: app/Modules/NotasCredito/Http/Resources/NotaCreditoResource.php
-
-		-
-			message: '#^Cannot access property \$id on Illuminate\\Database\\Eloquent\\Model\|null\.$#'
-			identifier: property.nonObject
 			count: 1
 			path: app/Modules/NotasCredito/Http/Resources/NotaCreditoResource.php
 
@@ -5791,12 +5749,6 @@ parameters:
 			path: app/Modules/Tpv/Http/Resources/VentaResource.php
 
 		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Modules/Tpv/Http/Resources/VentaResource.php
-
-		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$metodoPago\.$#'
 			identifier: property.notFound
 			count: 1
@@ -6207,12 +6159,6 @@ parameters:
 		-
 			message: '#^Access to an undefined property App\\Modules\\VentasPlazos\\Http\\Resources\\PlanPagoResource\:\:\$tasa_interes\.$#'
 			identifier: property.notFound
-			count: 1
-			path: app/Modules/VentasPlazos/Http/Resources/PlanPagoResource.php
-
-		-
-			message: '#^Cannot access property \$id on Illuminate\\Database\\Eloquent\\Model\|null\.$#'
-			identifier: property.nonObject
 			count: 1
 			path: app/Modules/VentasPlazos/Http/Resources/PlanPagoResource.php
 

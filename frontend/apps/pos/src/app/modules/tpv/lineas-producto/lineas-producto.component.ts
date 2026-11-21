@@ -87,7 +87,8 @@ export class LineasProductoComponent implements OnChanges {
   @Input() presentacionesHabilitadas = false;
   protected readonly presentacionSeleccionada = signal<PresentacionBuscable | null>(null);
   private readonly toast = inject(ToastService);
-  @Input() clienteId: number | null = null;
+  /** DAT-08: ulid del cliente. */
+  @Input() clienteId: string | null = null;
   @Input() listaPrecioId: number | null = null;
   private versionCotizacion = 0;
   ngOnChanges(): void {

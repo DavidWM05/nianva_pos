@@ -67,7 +67,7 @@ export class ListaPrecioListadoService {
       RespuestaDe<'/precios/listas/{lista}/items/{item}', 'delete'>
     >(urlApi('/precios/listas/' + id + '/items/' + item));
   }
-  asignarCliente(id: number, cliente: number) {
+  asignarCliente(id: number, cliente: string) {
     const cuerpo: CuerpoDe<'/precios/listas/{lista}/clientes', 'post'> = {
       cliente_id: cliente,
     };

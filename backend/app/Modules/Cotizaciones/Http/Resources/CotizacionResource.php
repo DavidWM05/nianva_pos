@@ -19,10 +19,11 @@ class CotizacionResource extends JsonResource
     {
         return [
             'lista_precio_id' => $this->resource->getAttribute('lista_precio_id') === null ? null : (int) $this->resource->getAttribute('lista_precio_id'),
-            'id' => $this->id,
+            // DAT-08: el identificador público es el ulid; el número visible es numero_cotizacion.
+            'id' => (string) $this->resource->getAttribute('ulid'),
             'numero_cotizacion' => $this->numero_cotizacion,
             'cliente' => $this->whenLoaded('cliente', fn () => [
-                'id' => $this->cliente->id,
+                'id' => (string) UlidPublico::de($this->resource, 'cliente'),
                 'nombre' => $this->cliente->nombre,
             ]),
             'usuario' => $this->whenLoaded('usuario', fn () => [

@@ -1,6 +1,7 @@
 /** TransformacionResource (ajuste 9) -- transformacionStore()/transformacionesIndex() ya envuelven en Resource. */
 export interface TransformacionProducto {
-  id: number;
+  /** DAT-08: ulid de la transformación. */
+  id: string;
   variante_origen_id: number;
   variante_destino_id: number;
   cantidad_origen: string;

@@ -16,10 +16,14 @@ class CuentaCobrarResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'id' => $this->id,
+            // DAT-08: el identificador público es el ulid; el id interno no sale de la API.
+            'id' => (string) $this->resource->getAttribute('ulid'),
+            // D-3, transitorio: número visible de la cuenta (= id interno), solo para mostrarlo; lo
+            // reemplaza el folio de DAT-07.
+            'numero' => (int) $this->getKey(),
             'venta_id' => UlidPublico::de($this->resource, 'venta'),
             'cliente' => $this->whenLoaded('cliente', fn () => [
-                'id' => $this->cliente->id,
+                'id' => (string) UlidPublico::de($this->resource, 'cliente'),
                 'nombre' => $this->cliente->nombre,
             ]),
             'monto_total' => DecimalApi::dinero($this->monto_total),

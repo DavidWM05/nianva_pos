@@ -15,7 +15,8 @@ class GastoResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'id' => $this->id,
+            // DAT-08: el identificador público es el ulid.
+            'id' => (string) $this->resource->getAttribute('ulid'),
             'descripcion' => $this->descripcion,
             'monto' => DecimalApi::dinero($this->monto),
             'fecha' => $this->fecha,

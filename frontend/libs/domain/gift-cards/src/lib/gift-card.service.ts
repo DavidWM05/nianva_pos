@@ -34,7 +34,7 @@ export class GiftCardService {
   listar(
     evento: ConsultaPagina,
     filtros: {
-      clienteId?: number | null;
+      clienteId?: string | null;
       estado?: EstadoGiftCard | null;
       codigo?: string;
     } = {},

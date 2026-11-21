@@ -7,13 +7,14 @@ import { describe, expect, it, vi } from 'vitest';
 
 import { TransformacionesPagina, TransformacionProducto, TransformacionService } from '@nianva/domain-produccion';
 import { TransformacionesListComponent } from './transformaciones-list.component';
+import { ulidDePrueba } from '../../../../testing/ulid-de-prueba';
 
 describe('TransformacionesListComponent', () => {
   let fixture: ComponentFixture<TransformacionesListComponent>;
   let transformacionService: { listar: ReturnType<typeof vi.fn> };
 
   const transformaciones: TransformacionProducto[] = [
-    { id: 1, variante_origen_id: 8, variante_destino_id: 9, cantidad_origen: '10.00', cantidad_destino: '8.00', notas: null },
+    { id: ulidDePrueba(1), variante_origen_id: 8, variante_destino_id: 9, cantidad_origen: '10.00', cantidad_destino: '8.00', notas: null },
   ];
 
   function paginaCon(permisos: TransformacionesPagina['permisos']): TransformacionesPagina {

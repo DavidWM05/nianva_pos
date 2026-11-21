@@ -4,6 +4,7 @@ namespace App\Modules\Delivery\Http\Resources;
 
 use App\Modules\Delivery\Models\Pedido;
 use App\Modules\Nucleo\Support\DecimalApi;
+use App\Modules\Nucleo\Support\UlidPublico;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -15,7 +16,7 @@ class PedidoResource extends JsonResource
         return [
             'id' => $this->id,
             'numero_pedido' => $this->numero_pedido,
-            'cliente' => $this->whenLoaded('cliente', fn () => ['id' => $this->cliente->id, 'nombre' => $this->cliente->nombre]),
+            'cliente' => $this->whenLoaded('cliente', fn () => ['id' => (string) UlidPublico::de($this->resource, 'cliente'), 'nombre' => $this->cliente->nombre]),
             'repartidor' => $this->whenLoaded('repartidor', fn () => ['id' => $this->repartidor->id, 'nombre' => $this->repartidor->nombre]),
             'referencia' => $this->referencia,
             'direccion_entrega' => $this->direccion_entrega,

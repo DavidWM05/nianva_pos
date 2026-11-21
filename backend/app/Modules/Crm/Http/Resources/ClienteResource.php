@@ -14,7 +14,8 @@ class ClienteResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'id' => $this->id,
+            // DAT-08 (D-2): el cliente nace en la terminal; su identificador público es el ulid.
+            'id' => (string) $this->resource->getAttribute('ulid'),
             'nombre' => $this->nombre,
             'documento_fiscal' => $this->documento_fiscal,
             'telefono' => $this->telefono,

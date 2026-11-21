@@ -15,8 +15,9 @@ describe('PlanesPagoListComponent', () => {
 
   const planes: PlanPago[] = [
     {
-      id: 1,
-      cliente: { id: 9, nombre: 'Juan Pérez' },
+      id: ulidDePrueba(1),
+      numero: 1,
+      cliente: { id: ulidDePrueba(9), nombre: 'Juan Pérez' },
       venta_id: ulidDePrueba(3),
       concepto: 'Venta #3 - Pago a plazos',
       monto_total: '550.00',

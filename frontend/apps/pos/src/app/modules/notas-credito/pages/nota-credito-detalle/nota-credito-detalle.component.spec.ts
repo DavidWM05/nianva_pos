@@ -31,7 +31,7 @@ describe('NotaCreditoDetalleComponent', () => {
     return {
       id: ulidDePrueba(5),
       numero: 5,
-      cliente: { id: 9, nombre: 'Juan Pérez' },
+      cliente: { id: ulidDePrueba(9), nombre: 'Juan Pérez' },
       devolucion_id: ulidDePrueba(3),
       devolucion_numero: 3,
       monto_original: '500.00',

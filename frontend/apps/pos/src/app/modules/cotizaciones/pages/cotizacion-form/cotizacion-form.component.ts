@@ -53,13 +53,14 @@ export class CotizacionFormComponent implements OnInit {
   /** Limites del contrato de POST /cotizaciones (UI-11b). */
   protected readonly limites = limitesDe('/cotizaciones', 'post');
 
-  protected readonly cotizacionId = signal<number | null>(null);
+  // DAT-08: ulid de la cotización en edición.
+  protected readonly cotizacionId = signal<string | null>(null);
   protected readonly editando = computed(() => this.cotizacionId() !== null);
   protected readonly cargando = signal(false);
   protected readonly errorCarga = signal(false);
   protected readonly cotizacionActual = signal<Cotizacion | null>(null);
 
-  protected readonly clienteId = signal<number | null>(null);
+  protected readonly clienteId = signal<string | null>(null);
   protected readonly validezDias = signal(15);
   protected readonly descuentoGlobal = signal(0);
   protected readonly usoCfdi = signal('');
@@ -80,7 +81,8 @@ export class CotizacionFormComponent implements OnInit {
     const idParam = this.route.snapshot.paramMap.get('id');
     if (!idParam) return;
 
-    const id = Number(idParam);
+    // DAT-08: el parámetro de la ruta es el ulid; nunca Number().
+    const id = idParam;
     this.cotizacionId.set(id);
     this.cargando.set(true);
 

@@ -31,7 +31,7 @@ class ApartadoController extends Controller
 
     public function index(Request $request)
     {
-        $query = Apartado::query()->with('cliente:id,nombre');
+        $query = Apartado::query()->with('cliente:id,ulid,nombre');
 
         if ($clienteNombre = $request->query('filtro_cliente')) {
             $query->whereHas('cliente', fn ($q) => $q->where('nombre', 'like', "%{$clienteNombre}%"));

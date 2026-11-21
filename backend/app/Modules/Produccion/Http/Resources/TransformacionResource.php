@@ -13,7 +13,8 @@ class TransformacionResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'id' => $this->id,
+            // DAT-08: el identificador público es el ulid.
+            'id' => (string) $this->resource->getAttribute('ulid'),
             'variante_origen_id' => $this->variante_origen_id,
             'variante_destino_id' => $this->variante_destino_id,
             'cantidad_origen' => DecimalApi::cantidad($this->cantidad_origen),

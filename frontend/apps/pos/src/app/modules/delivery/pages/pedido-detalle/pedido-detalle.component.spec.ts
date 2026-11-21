@@ -23,6 +23,7 @@ if (typeof globalThis.ResizeObserver === 'undefined') {
 import { BUSCADOR_USUARIO } from '../../../../core/buscadores-entidad.tokens';
 import { Pedido, PedidoService } from '@nianva/domain-delivery';
 import { PedidoDetalleComponent } from './pedido-detalle.component';
+import { ulidDePrueba } from '../../../../testing/ulid-de-prueba';
 
 describe('PedidoDetalleComponent', () => {
   let fixture: ComponentFixture<PedidoDetalleComponent>;
@@ -33,7 +34,7 @@ describe('PedidoDetalleComponent', () => {
     return {
       id: 5,
       numero_pedido: 'PED-000005',
-      cliente: { id: 9, nombre: 'Juan Pérez' },
+      cliente: { id: ulidDePrueba(9), nombre: 'Juan Pérez' },
       repartidor: null,
       direccion_entrega: 'Calle Falsa 123',
       costo_delivery: '30.00',

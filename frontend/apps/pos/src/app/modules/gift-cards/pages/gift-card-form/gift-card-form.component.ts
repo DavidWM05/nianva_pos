@@ -59,7 +59,7 @@ export class GiftCardFormComponent {
 
   protected readonly buscadorCliente = inject(BUSCADOR_CLIENTE);
 
-  protected readonly clienteId = signal<number | null>(null);
+  protected readonly clienteId = signal<string | null>(null);
   protected readonly monto = signal<number | null>(null);
   protected readonly fechaExpiracion = signal<Date | null>(null);
   protected readonly guardando = signal(false);

@@ -41,8 +41,8 @@ class PlanPagoValidacionesTest extends TestCase
         $cuota->update(['estado' => 'pagada']);
         $this->actingAs($this->usuario);
 
-        $this->postJson("/api/v1/planes-pago-cliente/{$plan->id}/pagar-cuota", [
-            'cuota_id' => $cuota->id,
+        $this->postJson("/api/v1/planes-pago-cliente/{$plan->ulid}/pagar-cuota", [
+            'cuota_id' => $cuota->ulid,
             'monto' => $cuota->monto,
         ])
             ->assertStatus(422)
@@ -58,8 +58,8 @@ class PlanPagoValidacionesTest extends TestCase
         $cuota = $plan->cuotas()->first();
         $this->actingAs($this->usuario);
 
-        $this->postJson("/api/v1/planes-pago-cliente/{$plan->id}/pagar-cuota", [
-            'cuota_id' => $cuota->id,
+        $this->postJson("/api/v1/planes-pago-cliente/{$plan->ulid}/pagar-cuota", [
+            'cuota_id' => $cuota->ulid,
             'monto' => 1,
         ])
             ->assertStatus(422)

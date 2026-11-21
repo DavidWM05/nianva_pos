@@ -2,7 +2,8 @@
 export type EstadoApartado = 'activo' | 'completado' | 'cancelado';
 
 export interface ApartadoClienteResumen {
-  id: number;
+  /** DAT-08: ulid del cliente. */
+  id: string;
   nombre: string;
 }
 
@@ -81,7 +82,8 @@ export interface ApartadoItemPayload {
 }
 
 export interface ApartadoFormPayload {
-  cliente_id: number;
+  /** DAT-08: ulid del cliente. */
+  cliente_id: string;
   items: ApartadoItemPayload[];
   fecha_vencimiento?: string | null;
   notas?: string | null;

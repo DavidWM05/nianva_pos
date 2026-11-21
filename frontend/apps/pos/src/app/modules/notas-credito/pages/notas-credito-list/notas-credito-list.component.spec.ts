@@ -18,7 +18,7 @@ describe('NotasCreditoListComponent', () => {
     {
       id: ulidDePrueba(1),
       numero: 1,
-      cliente: { id: 9, nombre: 'Juan Pérez' },
+      cliente: { id: ulidDePrueba(9), nombre: 'Juan Pérez' },
       devolucion_id: ulidDePrueba(3),
       devolucion_numero: 3,
       monto_original: '200.00',
@@ -62,10 +62,10 @@ describe('NotasCreditoListComponent', () => {
   it('seleccionar un cliente vuelve a pedir la lista con filtro_cliente_id', async () => {
     await crearComponente();
 
-    fixture.componentInstance.onClienteSeleccionado(9);
+    fixture.componentInstance.onClienteSeleccionado(ulidDePrueba(9));
 
     expect(notaCreditoService.listar).toHaveBeenCalledTimes(2);
-    expect(notaCreditoService.listar).toHaveBeenLastCalledWith(expect.objectContaining({ first: 0 }), { clienteId: 9 });
+    expect(notaCreditoService.listar).toHaveBeenLastCalledWith(expect.objectContaining({ first: 0 }), { clienteId: ulidDePrueba(9) });
   });
 
   it('"Ver" navega al detalle de la nota de crédito', async () => {

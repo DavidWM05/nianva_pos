@@ -7,6 +7,7 @@ import { describe, expect, it, vi } from 'vitest';
 
 import { CuentaPagar, CuentaPagarService, CuentasPagarPagina } from '@nianva/domain-cuentas-pagar';
 import { CuentasPagarListComponent } from './cuentas-pagar-list.component';
+import { ulidDePrueba } from '../../../../testing/ulid-de-prueba';
 
 describe('CuentasPagarListComponent', () => {
   let fixture: ComponentFixture<CuentasPagarListComponent>;
@@ -14,8 +15,10 @@ describe('CuentasPagarListComponent', () => {
 
   const cuentas: CuentaPagar[] = [
     {
-      id: 1,
-      compra_id: 42,
+      id: ulidDePrueba(1),
+      numero: 1,
+      compra_id: ulidDePrueba(42),
+      compra_numero: 42,
       proveedor: { id: 7, razon_social: 'Textiles del Norte' },
       monto_total: '1000.00',
       saldo_pendiente: '1000.00',
@@ -73,6 +76,6 @@ describe('CuentasPagarListComponent', () => {
 
     fixture.componentInstance.irADetalle(cuentas[0]);
 
-    expect(navigateSpy).toHaveBeenCalledWith(['/cuentas-pagar', 1]);
+    expect(navigateSpy).toHaveBeenCalledWith(['/cuentas-pagar', ulidDePrueba(1)]);
   });
 });

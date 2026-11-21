@@ -16,11 +16,12 @@ import { DevolucionFormComponent } from '../devoluciones/pages/devolucion-form/d
 import { MetodoPagoService, VentaService } from '@nianva/domain-tpv';
 import { DevolucionService } from '@nianva/domain-devoluciones';
 import { BUSCADOR_PRODUCTO, BUSCADOR_VARIANTE_DE_PRODUCTO } from '../../core/buscadores-entidad.tokens';
+import { ulidDePrueba } from '../../testing/ulid-de-prueba';
 
 vi.stubGlobal('ResizeObserver', class { observe = vi.fn(); unobserve = vi.fn(); disconnect = vi.fn(); });
 const detalles = [
-  { id: 1, variante_id: 5, variante: { id: 5, nombre: 'Martillo', producto_nombre: 'Martillo' }, cantidad: '2.000', precio_unitario: '20.00', descuento: '3.00', subtotal: '37.00' },
-  { id: 2, variante_id: 6, variante: { id: 6, nombre: 'Clavo', producto_nombre: 'Clavo' }, cantidad: '3.000', precio_unitario: '25.00', descuento: '2.00', subtotal: '73.00' },
+  { id: ulidDePrueba(1), variante_id: 5, variante: { id: 5, nombre: 'Martillo', producto_nombre: 'Martillo' }, cantidad: '2.000', precio_unitario: '20.00', descuento: '3.00', subtotal: '37.00' },
+  { id: ulidDePrueba(2), variante_id: 6, variante: { id: 6, nombre: 'Clavo', producto_nombre: 'Clavo' }, cantidad: '3.000', precio_unitario: '25.00', descuento: '2.00', subtotal: '73.00' },
 ];
 async function montarCotizacion(manual = true): Promise<ComponentFixture<LineasCotizacionComponent>> {
   await TestBed.configureTestingModule({ imports: [LineasCotizacionComponent], providers: [

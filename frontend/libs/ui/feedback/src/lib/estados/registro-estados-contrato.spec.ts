@@ -39,8 +39,8 @@ const FUENTES: Record<EntidadConEstado, () => Esquema | undefined> = {
   cotizacion: () => deEsquema('CotizacionResource'),
   cuentaCobrar: () => deEsquema('CuentaCobrarResource'),
   cuentaPagar: () => deEsquema('CuentaPagarResource'),
-  // La cuota no tiene Resource propio: PlanPagoResource expone el modelo tal cual.
-  cuota: () => deEsquema('PlanPagoClienteCuota'),
+  // La cuota no tiene Resource propio: PlanPagoResource publica cada cuota con campos explícitos.
+  cuota: () => contrato.components.schemas['PlanPagoResource']?.properties?.['cuotas']?.items?.properties?.['estado'],
   giftCard: () => deEsquema('GiftCardResource'),
   notaCredito: () => deEsquema('NotaCreditoResource'),
   nomina: () => deEsquema('NominaResource'),

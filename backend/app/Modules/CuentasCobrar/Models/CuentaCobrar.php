@@ -6,6 +6,7 @@ use App\Modules\Crm\Models\Cliente;
 use App\Modules\CuentasCobrar\Database\Factories\CuentaCobrarFactory;
 use App\Modules\Nucleo\Models\Concerns\BelongsToSucursal;
 use App\Modules\Nucleo\Models\Concerns\BelongsToTenant;
+use App\Modules\Nucleo\Models\Concerns\RutaPorUlid;
 use App\Modules\Nucleo\Models\Concerns\TieneUlid;
 use App\Modules\Nucleo\Models\Tenant;
 use App\Modules\Tpv\Models\Venta;
@@ -27,6 +28,7 @@ class CuentaCobrar extends Model
     /** @use HasFactory<CuentaCobrarFactory> */
     use HasFactory;
 
+    use RutaPorUlid;
     use TieneUlid;
 
     protected $table = 'cuentas_cobrar';

@@ -40,7 +40,7 @@ describe('ApartadoDetalleComponent', () => {
       id: ulidDePrueba(7),
       numero: 7,
       fecha_creacion: '2026-07-01T10:00:00.000000Z',
-      cliente: { id: 9, nombre: 'Maria Lopez' },
+      cliente: { id: ulidDePrueba(9), nombre: 'Maria Lopez' },
       total: '600.00',
       total_abonado: '480.00',
       estado: 'activo',

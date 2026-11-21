@@ -14,7 +14,8 @@ export interface CrmInteraccionUsuarioResumen {
 
 export interface CrmInteraccion {
   id: number;
-  cliente_id: number;
+  /** DAT-08 (D-10): ulid del cliente. */
+  cliente_id: string | null;
   /**
    * Casi siempre ausente: CrmAvanzadoService::obtenerInteracciones() nunca
    * hace ->with('usuario'), y CrmInteraccionResource solo expone este campo

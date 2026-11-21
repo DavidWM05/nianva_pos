@@ -9,7 +9,7 @@ export type CuentaCobrarClienteResumen = NonNullable<CuentaCobrarResource['clien
 
 export type AbonoCuenta = AbonoCuentaResource;
 
-export type RegistrarAbonoPayload = CuerpoDe<'/cuentas-cobrar/{id}/abonos', 'post'>;
+export type RegistrarAbonoPayload = CuerpoDe<'/cuentas-cobrar/{cuentaCobrar}/abonos', 'post'>;
 
 /** CuentaCobrarController::reporte() -- solo cuentas con estado='pendiente', siempre "hoy". */
 export type ReporteCuentasCobrar = RespuestaDe<'/cuentas-cobrar/reporte', 'get'>['data'];

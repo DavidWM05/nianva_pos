@@ -34,9 +34,9 @@ describe('CotizacionDetalleComponent', () => {
 
   function cotizacionCon(overrides: Partial<Cotizacion>): Cotizacion {
     return {
-      id: 5,
+      id: ulidDePrueba(5),
       numero_cotizacion: 'COT-000005',
-      cliente: { id: 9, nombre: 'Juan Pérez' },
+      cliente: { id: ulidDePrueba(9), nombre: 'Juan Pérez' },
       total: '500.00',
       descuento: '0.00',
       estado: 'pendiente',
@@ -73,7 +73,7 @@ describe('CotizacionDetalleComponent', () => {
         { provide: AuditLogSource, useValue: { listar: vi.fn().mockReturnValue(of([])) } },
         { provide: ConfirmDialogService, useValue: confirmDialog },
         { provide: ToastService, useValue: toast },
-        { provide: ActivatedRoute, useValue: { snapshot: { paramMap: convertToParamMap({ id: '5' }) } } },
+        { provide: ActivatedRoute, useValue: { snapshot: { paramMap: convertToParamMap({ id: ulidDePrueba(5) }) } } },
       ],
     }).compileComponents();
 
@@ -84,7 +84,7 @@ describe('CotizacionDetalleComponent', () => {
   }
 
   it('pendiente, no vencida, con cliente: puedeConvertir() es verdadero', async () => {
-    await crearComponente(cotizacionCon({ estado: 'pendiente', fecha_vencimiento: '2030-01-01', cliente: { id: 9, nombre: 'Juan' } }));
+    await crearComponente(cotizacionCon({ estado: 'pendiente', fecha_vencimiento: '2030-01-01', cliente: { id: ulidDePrueba(9), nombre: 'Juan' } }));
 
     expect(fixture.componentInstance['puedeConvertir']()).toBe(true);
   });
@@ -117,7 +117,7 @@ describe('CotizacionDetalleComponent', () => {
     fixture.componentInstance['metodoPagoElegido'].set(1);
     fixture.componentInstance.confirmarConvertir();
 
-    expect(cotizacionService.convertir).toHaveBeenCalledWith(5, 1);
+    expect(cotizacionService.convertir).toHaveBeenCalledWith(ulidDePrueba(5), 1);
     expect(router.navigate).toHaveBeenCalledWith(['/tpv/ventas', 42]);
   });
 
@@ -149,7 +149,7 @@ describe('CotizacionDetalleComponent', () => {
 
     await fixture.componentInstance.anular();
 
-    expect(cotizacionService.anular).toHaveBeenCalledWith(5);
+    expect(cotizacionService.anular).toHaveBeenCalledWith(ulidDePrueba(5));
     expect(toast.success).toHaveBeenCalledWith('Cotización anulada.');
     expect(cotizacionService.obtener).toHaveBeenCalledTimes(2); // 1 al iniciar + 1 al recargar
   });

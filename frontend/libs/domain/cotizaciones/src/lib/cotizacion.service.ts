@@ -36,7 +36,7 @@ export class CotizacionService {
   // La pantalla muestra su propio mensaje para `sucursal_requerida` (ARQ-12); el resto, el interceptor.
   private readonly sucursalEnPantalla = new HttpContext().set(CODIGOS_EN_PANTALLA, ['sucursal_requerida']);
 
-  listar(evento: ConsultaPagina, filtros: { numero?: string; estado?: string; clienteId?: number } = {}): Observable<CotizacionesPagina> {
+  listar(evento: ConsultaPagina, filtros: { numero?: string; estado?: string; clienteId?: string } = {}): Observable<CotizacionesPagina> {
     const rows = evento.rows || 25;
     const page = Math.floor(evento.first / rows) + 1;
 
@@ -69,7 +69,7 @@ export class CotizacionService {
       })
       .pipe(map((r) => permisosDesde(r.meta.permisos)));
   }
-  obtener(id: number): Observable<Cotizacion> {
+  obtener(id: string): Observable<Cotizacion> {
     return this.http.get<RespuestaDe<'/cotizaciones/{cotizacion}', 'get'>>(urlApi(`/cotizaciones/${id}`)).pipe(map((r) => r.data));
   }
 
@@ -80,15 +80,15 @@ export class CotizacionService {
       .pipe(map((r) => r.data));
   }
 
-  actualizar(id: number, payload: CotizacionFormPayload): Observable<Cotizacion> {
-    const cuerpo: CuerpoDe<'/cotizaciones/{id}', 'put'> = payload;
+  actualizar(id: string, payload: CotizacionFormPayload): Observable<Cotizacion> {
+    const cuerpo: CuerpoDe<'/cotizaciones/{cotizacion}', 'put'> = payload;
     return this.http
-      .put<RespuestaDe<'/cotizaciones/{id}', 'put'>>(urlApi(`/cotizaciones/${id}`), cuerpo, { context: this.sucursalEnPantalla })
+      .put<RespuestaDe<'/cotizaciones/{cotizacion}', 'put'>>(urlApi(`/cotizaciones/${id}`), cuerpo, { context: this.sucursalEnPantalla })
       .pipe(map((r) => r.data));
   }
 
-  anular(id: number): Observable<void> {
-    return this.http.delete<RespuestaDe<'/cotizaciones/{id}', 'delete'>>(urlApi(`/cotizaciones/${id}`)).pipe(map(() => undefined));
+  anular(id: string): Observable<void> {
+    return this.http.delete<RespuestaDe<'/cotizaciones/{cotizacion}', 'delete'>>(urlApi(`/cotizaciones/${id}`)).pipe(map(() => undefined));
   }
 
   /**
@@ -97,10 +97,10 @@ export class CotizacionService {
    * monto_recibido/cambio (el docblock del metodo los menciona pero el
    * codigo nunca los lee). No inventar ese campo aqui.
    */
-  convertir(id: number, metodoPagoId: number): Observable<{ ventaId: number }> {
-    const cuerpo: CuerpoDe<'/cotizaciones/{id}/convertir', 'post'> = { metodo_pago_id: metodoPagoId };
+  convertir(id: string, metodoPagoId: number): Observable<{ ventaId: string }> {
+    const cuerpo: CuerpoDe<'/cotizaciones/{cotizacion}/convertir', 'post'> = { metodo_pago_id: metodoPagoId };
     return this.http
-      .post<RespuestaDe<'/cotizaciones/{id}/convertir', 'post'>>(urlApi(`/cotizaciones/${id}/convertir`), cuerpo)
+      .post<RespuestaDe<'/cotizaciones/{cotizacion}/convertir', 'post'>>(urlApi(`/cotizaciones/${id}/convertir`), cuerpo)
       .pipe(map((r) => ({ ventaId: r.venta_id })));
   }
 }

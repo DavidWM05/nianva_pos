@@ -10,6 +10,7 @@ import { BUSCADOR_CLIENTE, BUSCADOR_PRODUCTO, BUSCADOR_VARIANTE_DE_PRODUCTO } fr
 import { VentaService } from '@nianva/domain-tpv';
 import { ApartadoService } from '@nianva/domain-apartados';
 import { ApartadoFormComponent } from './apartado-form.component';
+import { ulidDePrueba } from '../../../../testing/ulid-de-prueba';
 
 describe('ApartadoFormComponent', () => {
   let fixture: ComponentFixture<ApartadoFormComponent>;
@@ -50,13 +51,13 @@ describe('ApartadoFormComponent', () => {
     await crearComponente();
     const navigateSpy = vi.spyOn(router, 'navigate').mockResolvedValue(true);
 
-    fixture.componentInstance['clienteId'].set(9);
+    fixture.componentInstance['clienteId'].set(ulidDePrueba(9));
     fixture.componentInstance.onLineasCambio({ items: [{ variante_id: 5, cantidad: 2 }], subtotal: 200 });
 
     fixture.componentInstance.crearApartado();
 
     expect(apartadoService.crear).toHaveBeenCalledWith({
-      cliente_id: 9,
+      cliente_id: ulidDePrueba(9),
       items: [{ variante_id: 5, cantidad: 2 }],
       fecha_vencimiento: null,
       notas: null,

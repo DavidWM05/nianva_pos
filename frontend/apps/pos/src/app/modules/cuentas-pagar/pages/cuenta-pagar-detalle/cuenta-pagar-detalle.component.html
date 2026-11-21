@@ -1,7 +1,7 @@
 <ui-page-header clave="cuentas-pagar" />
 <ui-page [estado]="estado()" forma="detalle" (reintentar)="reintentar()">
   @if (cuenta(); as c) {
-    <h2>Cuenta por pagar #{{ c.id }}</h2>
+    <h2>Cuenta por pagar #{{ c.numero }}</h2>
     <ui-badge entidad="cuentaPagar" [estado]="c.estado" />
 
     <nucleo-record-tabs [tabs]="tabs">
@@ -11,7 +11,7 @@
             <dt>Proveedor</dt>
             <dd>{{ c.proveedor?.razon_social ?? 'Sin proveedor' }}</dd>
             <dt>Compra origen</dt>
-            <dd>Compra #{{ c.compra_id }}</dd>
+            <dd>Compra #{{ c.compra_numero }}</dd>
             <dt>Creada</dt>
             <dd>{{ c.created_at | fechaHora }}</dd>
             <dt>Vence</dt>

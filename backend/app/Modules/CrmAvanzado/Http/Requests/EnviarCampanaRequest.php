@@ -5,6 +5,7 @@ namespace App\Modules\CrmAvanzado\Http\Requests;
 use App\Modules\CrmAvanzado\Dtos\EnviarCampanaDto;
 use App\Modules\Nucleo\Http\Requests\SolicitudNegocio;
 use App\Modules\Nucleo\Support\ReglasTenant;
+use App\Modules\Nucleo\Support\UlidPublico;
 
 class EnviarCampanaRequest extends SolicitudNegocio
 {
@@ -16,7 +17,7 @@ class EnviarCampanaRequest extends SolicitudNegocio
         return [
             'segmento' => ['nullable', 'string', 'in:todos,nuevo,frecuente,vip,inactivo'],
             'cliente_ids' => ['nullable', 'array'],
-            'cliente_ids.*' => ['integer', ReglasTenant::existe('clientes', $this->tenantId())],
+            'cliente_ids.*' => ['string', 'ulid', ReglasTenant::existeUlid('clientes', $this->tenantId())],
             'asunto' => ['required', 'string', 'max:200'],
             'mensaje' => ['required', 'string', 'max:5000'],
         ];
@@ -29,7 +30,7 @@ class EnviarCampanaRequest extends SolicitudNegocio
         $clienteIds = null;
         if (isset($v['cliente_ids'])) {
             $clienteIds = array_values(array_map(
-                fn (mixed $clienteId): int => (int) $clienteId,
+                fn (mixed $clienteId): int => UlidPublico::idInterno('clientes', (string) $clienteId),
                 (array) $v['cliente_ids'],
             ));
         }

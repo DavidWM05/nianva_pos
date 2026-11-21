@@ -15,9 +15,10 @@ describe('CuentasCobrarListComponent', () => {
 
   const cuentas: CuentaCobrar[] = [
     {
-      id: 1,
+      id: ulidDePrueba(1),
+      numero: 1,
       venta_id: ulidDePrueba(42),
-      cliente: { id: 9, nombre: 'Juan Pérez' },
+      cliente: { id: ulidDePrueba(9), nombre: 'Juan Pérez' },
       monto_total: '500.00',
       saldo_pendiente: '500.00',
       fecha_vencimiento: '2026-08-01',
@@ -87,6 +88,6 @@ describe('CuentasCobrarListComponent', () => {
 
     fixture.componentInstance.irADetalle(cuentas[0]);
 
-    expect(navigateSpy).toHaveBeenCalledWith(['/cuentas-cobrar', 1]);
+    expect(navigateSpy).toHaveBeenCalledWith(['/cuentas-cobrar', ulidDePrueba(1)]);
   });
 });

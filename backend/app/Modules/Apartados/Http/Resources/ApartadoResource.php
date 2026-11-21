@@ -34,7 +34,7 @@ class ApartadoResource extends JsonResource
             'fecha_creacion' => $this->fecha_creacion,
             'cliente' => $this->whenLoaded(
                 'cliente',
-                fn () => $this->cliente ? ['id' => $this->cliente->id, 'nombre' => $this->cliente->nombre] : null,
+                fn () => $this->cliente ? ['id' => (string) $this->cliente->getAttribute('ulid'), 'nombre' => $this->cliente->nombre] : null,
             ),
             'total' => DecimalApi::dinero($this->total),
             'total_abonado' => DecimalApi::dinero($this->total_abonado),

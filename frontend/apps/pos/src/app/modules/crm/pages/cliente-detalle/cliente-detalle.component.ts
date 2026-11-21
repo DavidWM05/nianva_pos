@@ -224,7 +224,8 @@ export class ClienteDetalleComponent implements OnInit {
   protected cargar(): void {
     this.cargando.set(true);
     this.error.set(false);
-    const id = Number(this.route.snapshot.paramMap.get('id'));
+    // DAT-08: el parámetro de la ruta es el ulid; nunca Number().
+    const id = this.route.snapshot.paramMap.get('id') ?? '';
 
     this.clienteService.obtener(id).subscribe({
       next: ({ cliente, permisos }) => {
@@ -349,7 +350,7 @@ export class ClienteDetalleComponent implements OnInit {
       });
   }
 
-  protected cargarVentas(id: number): void {
+  protected cargarVentas(id: string): void {
     this.cargandoVentas.set(true);
     this.errorVentas.set(false);
     this.clienteService.ventas(id).subscribe({
@@ -364,7 +365,7 @@ export class ClienteDetalleComponent implements OnInit {
     });
   }
 
-  protected cargarInteracciones(clienteId: number): void {
+  protected cargarInteracciones(clienteId: string): void {
     this.errorInteracciones.set(false);
     this.cargandoInteracciones.set(true);
     this.crmAvanzadoService.interacciones(clienteId).subscribe({
@@ -379,7 +380,7 @@ export class ClienteDetalleComponent implements OnInit {
     });
   }
 
-  protected cargarLoyalty(clienteId: number): void {
+  protected cargarLoyalty(clienteId: string): void {
     this.errorLoyalty.set(false);
     this.cargandoLoyalty.set(true);
     this.crmAvanzadoService.loyalty(clienteId).subscribe({

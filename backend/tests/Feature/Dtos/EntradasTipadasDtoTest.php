@@ -31,7 +31,7 @@ class EntradasTipadasDtoTest extends TestCase
     public function test_crear_venta_dto_tipa_lineas_pagos_y_valores_por_defecto(): void
     {
         $request = $this->validar(CrearVentaRequest::class, [
-            'cliente_id' => $this->cliente->id,
+            'cliente_id' => $this->cliente->ulid,
             'items' => [['variante_id' => $this->variante->id, 'cantidad' => 2]],
             'pagos' => [['metodo_pago_id' => $this->metodoPago->id, 'monto' => 200]],
         ]);
@@ -83,7 +83,7 @@ class EntradasTipadasDtoTest extends TestCase
     public function test_crear_apartado_dto_tipa_lineas_y_valores_por_defecto(): void
     {
         $request = $this->validar(CrearApartadoRequest::class, [
-            'cliente_id' => $this->cliente->id,
+            'cliente_id' => $this->cliente->ulid,
             'items' => [['variante_id' => $this->variante->id, 'cantidad' => 3]],
         ]);
 

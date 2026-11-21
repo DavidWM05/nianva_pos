@@ -49,9 +49,9 @@ const pantallas = [
     servicio: PlanPagoService,
   },
 ];
-// DAT-08 etapa 2: gift cards y notas de crédito se resuelven por ulid; las demás pantallas, de la
-// etapa 3, conservan su id numérico.
-const CON_ULID = new Set(['gift-cards', 'notas-credito']);
+// DAT-08: gift cards y notas de crédito (etapa 2) y cuentas por cobrar y pagar y planes de pago
+// (etapa 3) se resuelven por ulid.
+const CON_ULID = new Set(['gift-cards', 'notas-credito', 'cuentas-cobrar', 'cuentas-pagar', 'ventas-plazos']);
 for (const pantalla of pantallas) {
   describe('50h detalle ' + pantalla.nombre, () => {
     async function crear(falla = false) {

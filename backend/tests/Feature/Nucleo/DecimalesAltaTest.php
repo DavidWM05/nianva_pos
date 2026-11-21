@@ -58,7 +58,7 @@ class DecimalesAltaTest extends TestCase
         $variante = ProductoVariante::factory()->create(['producto_id' => $producto->id]);
         InventarioStock::factory()->create(['variante_id' => $variante->id, 'sucursal_id' => $this->sucursal->id, 'stock_actual' => 2]);
         $cliente = Cliente::factory()->create(['tenant_id' => $this->tenant->id]);
-        $this->postJson('/api/v1/apartados', ['cliente_id' => $cliente->id, 'items' => [['variante_id' => $variante->id, 'cantidad' => 1]]])
+        $this->postJson('/api/v1/apartados', ['cliente_id' => $cliente->ulid, 'items' => [['variante_id' => $variante->id, 'cantidad' => 1]]])
             ->assertCreated()
             ->assertJsonPath('data.total_abonado', '0.00');
     }
@@ -73,7 +73,7 @@ class DecimalesAltaTest extends TestCase
         $metodo = MetodoPago::factory()->create(['tenant_id' => $this->tenant->id, 'nombre' => 'Efectivo API-02', 'tipo' => 'efectivo']);
         CajaSesion::factory()->create(['sucursal_id' => $this->sucursal->id, 'usuario_id' => auth()->id()]);
         $this->postJson('/api/v1/ventas', [
-            'cliente_id' => $cliente->id,
+            'cliente_id' => $cliente->ulid,
             'items' => [['variante_id' => $variante->id, 'cantidad' => '0.500']],
             'pagos' => [['metodo_pago_id' => $metodo->id, 'monto' => '5.00']],
         ])->assertCreated()->assertJsonPath('data.total', '5.00')->assertJsonPath('data.detalles.0.cantidad', '0.500');

@@ -19,10 +19,11 @@ class GiftCardController extends Controller
 
     public function index(Request $request)
     {
-        $query = GiftCard::query()->with(['cliente:id,nombre']);
+        $query = GiftCard::query()->with(['cliente:id,ulid,nombre']);
 
         if ($clienteId = $request->query('filtro_cliente_id')) {
-            $query->where('cliente_id', $clienteId);
+            // DAT-08: el filtro recibe el ulid publicado del cliente.
+            $query->whereHas('cliente', fn ($q) => $q->where('ulid', strtolower((string) $clienteId)));
         }
 
         if ($estado = $request->query('filtro_estado')) {

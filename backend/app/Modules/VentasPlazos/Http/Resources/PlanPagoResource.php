@@ -15,8 +15,11 @@ class PlanPagoResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'id' => $this->id,
-            'cliente' => $this->whenLoaded('cliente', fn () => ['id' => $this->cliente->id, 'nombre' => $this->cliente->nombre]),
+            // DAT-08: el identificador público es el ulid; el id interno no sale de la API.
+            'id' => (string) $this->resource->getAttribute('ulid'),
+            // D-3, transitorio: número visible del plan (= id interno); lo reemplaza el folio de DAT-07.
+            'numero' => (int) $this->getKey(),
+            'cliente' => $this->whenLoaded('cliente', fn () => ['id' => (string) UlidPublico::de($this->resource, 'cliente'), 'nombre' => $this->cliente->nombre]),
             'venta_id' => UlidPublico::de($this->resource, 'venta'),
             'concepto' => $this->concepto,
             'monto_total' => DecimalApi::dinero($this->monto_total),
@@ -28,7 +31,8 @@ class PlanPagoResource extends JsonResource
             'fecha_inicio' => $this->fecha_inicio,
             // Campos explicitos (ARQ-12b): el modelo crudo no documentaba el estado como enum.
             'cuotas' => $this->whenLoaded('cuotas', fn () => $this->cuotas->map(fn (PlanPagoClienteCuota $cuota) => [
-                'id' => $cuota->id,
+                // DAT-08: ulid de la cuota; pagar-cuota la recibe en cuota_id.
+                'id' => (string) $cuota->getAttribute('ulid'),
                 'numero_cuota' => $cuota->numero_cuota,
                 'monto' => DecimalApi::dinero($cuota->monto),
                 'monto_capital' => DecimalApi::dinero($cuota->monto_capital),

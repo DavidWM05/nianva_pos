@@ -1907,9 +1907,9 @@
                         "name": "cliente",
                         "in": "path",
                         "required": true,
-                        "description": "The cliente ID",
+                        "description": "The cliente ulid",
                         "schema": {
-                            "type": "integer"
+                            "type": "string"
                         }
                     }
                 ],
@@ -1974,9 +1974,9 @@
                         "name": "cliente",
                         "in": "path",
                         "required": true,
-                        "description": "The cliente ID",
+                        "description": "The cliente ulid",
                         "schema": {
-                            "type": "integer"
+                            "type": "string"
                         }
                     }
                 ],
@@ -2033,9 +2033,9 @@
                         "name": "cliente",
                         "in": "path",
                         "required": true,
-                        "description": "The cliente ID",
+                        "description": "The cliente ulid",
                         "schema": {
-                            "type": "integer"
+                            "type": "string"
                         }
                     }
                 ],
@@ -2140,6 +2140,9 @@
                                             "type": "object",
                                             "properties": {
                                                 "id": {
+                                                    "type": "string"
+                                                },
+                                                "numero": {
                                                     "type": "integer"
                                                 },
                                                 "total": {
@@ -2149,6 +2152,7 @@
                                             },
                                             "required": [
                                                 "id",
+                                                "numero",
                                                 "total"
                                             ]
                                         }
@@ -2465,9 +2469,9 @@
                         "name": "cotizacion",
                         "in": "path",
                         "required": true,
-                        "description": "The cotizacion ID",
+                        "description": "The cotizacion ulid",
                         "schema": {
-                            "type": "integer"
+                            "type": "string"
                         }
                     }
                 ],
@@ -2524,21 +2528,21 @@
                         "$ref": "#/components/responses/AuthenticationException"
                     }
                 }
-            }
-        },
-        "/cotizaciones/{id}": {
+            },
             "put": {
                 "operationId": "cotizacion.update",
+                "summary": "DAT-08: las rutas de la cotizaci\u00f3n la resuelven por ulid (binding); las Actions siguen\nrecibiendo el id interno y bloqueando por \u00e9l",
                 "tags": [
                     "Cotizacion"
                 ],
                 "parameters": [
                     {
-                        "name": "id",
+                        "name": "cotizacion",
                         "in": "path",
                         "required": true,
+                        "description": "The cotizacion ulid",
                         "schema": {
-                            "type": "integer"
+                            "type": "string"
                         }
                     }
                 ],
@@ -2581,6 +2585,9 @@
                             }
                         }
                     },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
                     "401": {
                         "$ref": "#/components/responses/AuthenticationException"
                     },
@@ -2596,11 +2603,12 @@
                 ],
                 "parameters": [
                     {
-                        "name": "id",
+                        "name": "cotizacion",
                         "in": "path",
                         "required": true,
+                        "description": "The cotizacion ulid",
                         "schema": {
-                            "type": "integer"
+                            "type": "string"
                         }
                     }
                 ],
@@ -2624,13 +2632,16 @@
                             }
                         }
                     },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
                     "401": {
                         "$ref": "#/components/responses/AuthenticationException"
                     }
                 }
             }
         },
-        "/cotizaciones/{id}/convertir": {
+        "/cotizaciones/{cotizacion}/convertir": {
             "post": {
                 "operationId": "cotizacion.convertir",
                 "tags": [
@@ -2638,11 +2649,12 @@
                 ],
                 "parameters": [
                     {
-                        "name": "id",
+                        "name": "cotizacion",
                         "in": "path",
                         "required": true,
+                        "description": "The cotizacion ulid",
                         "schema": {
-                            "type": "integer"
+                            "type": "string"
                         }
                     }
                 ],
@@ -2669,7 +2681,8 @@
                                             "const": "Cotizaci\u00f3n convertida a venta correctamente."
                                         },
                                         "venta_id": {
-                                            "type": "integer"
+                                            "type": "string",
+                                            "description": "DAT-08: la venta creada se publica por su ulid."
                                         }
                                     },
                                     "required": [
@@ -2682,6 +2695,9 @@
                     },
                     "401": {
                         "$ref": "#/components/responses/AuthenticationException"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
                     },
                     "422": {
                         "$ref": "#/components/responses/ValidationException"
@@ -2700,9 +2716,9 @@
                         "name": "cliente",
                         "in": "path",
                         "required": true,
-                        "description": "The cliente ID",
+                        "description": "The cliente ulid",
                         "schema": {
-                            "type": "integer"
+                            "type": "string"
                         }
                     }
                 ],
@@ -2761,9 +2777,9 @@
                         "name": "cliente",
                         "in": "path",
                         "required": true,
-                        "description": "The cliente ID",
+                        "description": "The cliente ulid",
                         "schema": {
-                            "type": "integer"
+                            "type": "string"
                         }
                     }
                 ],
@@ -2819,9 +2835,9 @@
                         "name": "cliente",
                         "in": "path",
                         "required": true,
-                        "description": "The cliente ID",
+                        "description": "The cliente ulid",
                         "schema": {
-                            "type": "integer"
+                            "type": "string"
                         }
                     }
                 ],
@@ -2954,9 +2970,9 @@
                         "name": "cliente",
                         "in": "path",
                         "required": true,
-                        "description": "The cliente ID",
+                        "description": "The cliente ulid",
                         "schema": {
-                            "type": "integer"
+                            "type": "string"
                         }
                     }
                 ],
@@ -3362,7 +3378,11 @@
                                                         "type": "object",
                                                         "properties": {
                                                             "cliente_id": {
-                                                                "type": "integer"
+                                                                "type": [
+                                                                    "string",
+                                                                    "null"
+                                                                ],
+                                                                "description": "DAT-08: el cliente se publica por su ulid."
                                                             },
                                                             "cliente_nombre": {
                                                                 "type": [
@@ -3419,9 +3439,9 @@
                         "name": "cuentaCobrar",
                         "in": "path",
                         "required": true,
-                        "description": "The cuenta cobrar ID",
+                        "description": "The cuenta cobrar ulid",
                         "schema": {
-                            "type": "integer"
+                            "type": "string"
                         }
                     }
                 ],
@@ -3464,19 +3484,21 @@
                 }
             }
         },
-        "/cuentas-cobrar/{id}/abonos": {
+        "/cuentas-cobrar/{cuentaCobrar}/abonos": {
             "post": {
                 "operationId": "cuentaCobrar.registrarAbono",
+                "summary": "DAT-08: la ruta resuelve la cuenta por ulid (binding); la Action sigue recibiendo el id\ninterno y bloqueando por \u00e9l",
                 "tags": [
                     "CuentaCobrar"
                 ],
                 "parameters": [
                     {
-                        "name": "id",
+                        "name": "cuentaCobrar",
                         "in": "path",
                         "required": true,
+                        "description": "The cuenta cobrar ulid",
                         "schema": {
-                            "type": "integer"
+                            "type": "string"
                         }
                     }
                 ],
@@ -3502,13 +3524,14 @@
                                             "type": "object",
                                             "properties": {
                                                 "abono": {
-                                                    "$ref": "#/components/schemas/AbonoCuenta"
+                                                    "description": "DAT-08: el abono sale por su Resource (ulid), no como modelo crudo con ids internos.",
+                                                    "$ref": "#/components/schemas/AbonoCuentaResource"
                                                 },
                                                 "cuenta": {
                                                     "type": "object",
                                                     "properties": {
                                                         "id": {
-                                                            "type": "integer"
+                                                            "type": "string"
                                                         },
                                                         "saldo_pendiente": {
                                                             "type": "string",
@@ -3560,7 +3583,7 @@
                 }
             }
         },
-        "/cuentas-cobrar/{id}/anular": {
+        "/cuentas-cobrar/{cuentaCobrar}/anular": {
             "post": {
                 "operationId": "cuentaCobrar.anular",
                 "tags": [
@@ -3568,11 +3591,12 @@
                 ],
                 "parameters": [
                     {
-                        "name": "id",
+                        "name": "cuentaCobrar",
                         "in": "path",
                         "required": true,
+                        "description": "The cuenta cobrar ulid",
                         "schema": {
-                            "type": "integer"
+                            "type": "string"
                         }
                     }
                 ],
@@ -3595,6 +3619,9 @@
                                 }
                             }
                         }
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
                     },
                     "401": {
                         "$ref": "#/components/responses/AuthenticationException"
@@ -3784,9 +3811,9 @@
                         "name": "cuentaPagar",
                         "in": "path",
                         "required": true,
-                        "description": "The cuenta pagar ID",
+                        "description": "The cuenta pagar ulid",
                         "schema": {
-                            "type": "integer"
+                            "type": "string"
                         }
                     }
                 ],
@@ -3829,19 +3856,21 @@
                 }
             }
         },
-        "/cuentas-pagar/{id}/pagos": {
+        "/cuentas-pagar/{cuentaPagar}/pagos": {
             "post": {
                 "operationId": "cuentaPagar.registrarPago",
+                "summary": "DAT-08: la ruta resuelve la cuenta por ulid (binding); la Action sigue recibiendo el id\ninterno y bloqueando por \u00e9l",
                 "tags": [
                     "CuentaPagar"
                 ],
                 "parameters": [
                     {
-                        "name": "id",
+                        "name": "cuentaPagar",
                         "in": "path",
                         "required": true,
+                        "description": "The cuenta pagar ulid",
                         "schema": {
-                            "type": "integer"
+                            "type": "string"
                         }
                     }
                 ],
@@ -3867,13 +3896,14 @@
                                             "type": "object",
                                             "properties": {
                                                 "abono": {
-                                                    "$ref": "#/components/schemas/AbonoPagar"
+                                                    "description": "DAT-08: el pago sale por su Resource (ulid), no como modelo crudo con ids internos.",
+                                                    "$ref": "#/components/schemas/AbonoPagarResource"
                                                 },
                                                 "cuenta": {
                                                     "type": "object",
                                                     "properties": {
                                                         "id": {
-                                                            "type": "integer"
+                                                            "type": "string"
                                                         },
                                                         "saldo_pendiente": {
                                                             "type": "string",
@@ -3925,7 +3955,7 @@
                 }
             }
         },
-        "/cuentas-pagar/{id}/anular": {
+        "/cuentas-pagar/{cuentaPagar}/anular": {
             "post": {
                 "operationId": "cuentaPagar.anular",
                 "tags": [
@@ -3933,11 +3963,12 @@
                 ],
                 "parameters": [
                     {
-                        "name": "id",
+                        "name": "cuentaPagar",
                         "in": "path",
                         "required": true,
+                        "description": "The cuenta pagar ulid",
                         "schema": {
-                            "type": "integer"
+                            "type": "string"
                         }
                     }
                 ],
@@ -3960,6 +3991,9 @@
                                 }
                             }
                         }
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
                     },
                     "401": {
                         "$ref": "#/components/responses/AuthenticationException"
@@ -6715,9 +6749,9 @@
                         "name": "cliente",
                         "in": "path",
                         "required": true,
-                        "description": "The cliente ID",
+                        "description": "The cliente ulid",
                         "schema": {
-                            "type": "integer"
+                            "type": "string"
                         }
                     }
                 ],
@@ -7688,9 +7722,9 @@
                         "name": "plan",
                         "in": "path",
                         "required": true,
-                        "description": "The plan ID",
+                        "description": "The plan ulid",
                         "schema": {
-                            "type": "integer"
+                            "type": "string"
                         }
                     }
                 ],
@@ -7812,9 +7846,9 @@
                         "name": "plan",
                         "in": "path",
                         "required": true,
-                        "description": "The plan ID",
+                        "description": "The plan ulid",
                         "schema": {
-                            "type": "integer"
+                            "type": "string"
                         }
                     }
                 ],
@@ -7837,7 +7871,56 @@
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/components/schemas/PlanPagoClienteCuota"
+                                            "type": "object",
+                                            "properties": {
+                                                "id": {
+                                                    "type": "string"
+                                                },
+                                                "numero_cuota": {
+                                                    "type": "integer"
+                                                },
+                                                "monto": {
+                                                    "type": "string",
+                                                    "pattern": "^-?[0-9]+\\.[0-9]{2}$"
+                                                },
+                                                "monto_capital": {
+                                                    "type": "string",
+                                                    "pattern": "^-?[0-9]+\\.[0-9]{2}$"
+                                                },
+                                                "monto_interes": {
+                                                    "type": "string",
+                                                    "pattern": "^-?[0-9]+\\.[0-9]{2}$"
+                                                },
+                                                "fecha_vencimiento": {
+                                                    "type": "string",
+                                                    "format": "date-time"
+                                                },
+                                                "fecha_pago": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ],
+                                                    "format": "date-time"
+                                                },
+                                                "estado": {
+                                                    "type": "string",
+                                                    "enum": [
+                                                        "pendiente",
+                                                        "pagada",
+                                                        "vencida"
+                                                    ]
+                                                }
+                                            },
+                                            "required": [
+                                                "id",
+                                                "numero_cuota",
+                                                "monto",
+                                                "monto_capital",
+                                                "monto_interes",
+                                                "fecha_vencimiento",
+                                                "fecha_pago",
+                                                "estado"
+                                            ]
                                         }
                                     },
                                     "required": [
@@ -8713,19 +8796,21 @@
                 }
             }
         },
-        "/ordenes-produccion/{id}/estado": {
+        "/ordenes-produccion/{ordenProduccion}/estado": {
             "patch": {
                 "operationId": "produccion.ordenesCambiarEstado",
+                "summary": "DAT-08: la ruta resuelve la orden por ulid (binding); la Action sigue recibiendo el id\ninterno y bloqueando por \u00e9l",
                 "tags": [
                     "Produccion"
                 ],
                 "parameters": [
                     {
-                        "name": "id",
+                        "name": "ordenProduccion",
                         "in": "path",
                         "required": true,
+                        "description": "The orden produccion ulid",
                         "schema": {
-                            "type": "integer"
+                            "type": "string"
                         }
                     }
                 ],
@@ -8773,6 +8858,9 @@
                                 }
                             }
                         }
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
                     },
                     "401": {
                         "$ref": "#/components/responses/AuthenticationException"
@@ -11179,9 +11267,9 @@
                         "name": "cliente",
                         "in": "path",
                         "required": true,
-                        "description": "The cliente ID",
+                        "description": "The cliente ulid",
                         "schema": {
-                            "type": "integer"
+                            "type": "string"
                         }
                     }
                 ],
@@ -11766,63 +11854,11 @@
     },
     "components": {
         "schemas": {
-            "AbonoCuenta": {
-                "type": "object",
-                "properties": {
-                    "id": {
-                        "type": "integer"
-                    },
-                    "ulid": {
-                        "type": "string"
-                    },
-                    "cuenta_cobrar_id": {
-                        "type": "integer"
-                    },
-                    "caja_sesion_id": {
-                        "type": [
-                            "integer",
-                            "null"
-                        ]
-                    },
-                    "usuario_id": {
-                        "type": "integer"
-                    },
-                    "monto": {
-                        "type": "string",
-                        "pattern": "^-?[0-9]+\\.[0-9]{2}$"
-                    },
-                    "metodo_pago_id": {
-                        "type": "integer"
-                    },
-                    "referencia": {
-                        "type": [
-                            "string",
-                            "null"
-                        ]
-                    },
-                    "fecha": {
-                        "type": "string",
-                        "format": "date-time"
-                    }
-                },
-                "required": [
-                    "id",
-                    "ulid",
-                    "cuenta_cobrar_id",
-                    "caja_sesion_id",
-                    "usuario_id",
-                    "monto",
-                    "metodo_pago_id",
-                    "referencia",
-                    "fecha"
-                ],
-                "title": "AbonoCuenta"
-            },
             "AbonoCuentaResource": {
                 "type": "object",
                 "properties": {
                     "id": {
-                        "type": "integer"
+                        "type": "string"
                     },
                     "monto": {
                         "type": "string",
@@ -11850,63 +11886,11 @@
                 ],
                 "title": "AbonoCuentaResource"
             },
-            "AbonoPagar": {
-                "type": "object",
-                "properties": {
-                    "id": {
-                        "type": "integer"
-                    },
-                    "ulid": {
-                        "type": "string"
-                    },
-                    "cuenta_pagar_id": {
-                        "type": "integer"
-                    },
-                    "caja_sesion_id": {
-                        "type": [
-                            "integer",
-                            "null"
-                        ]
-                    },
-                    "usuario_id": {
-                        "type": "integer"
-                    },
-                    "monto": {
-                        "type": "string",
-                        "pattern": "^-?[0-9]+\\.[0-9]{2}$"
-                    },
-                    "metodo_pago_id": {
-                        "type": "integer"
-                    },
-                    "referencia": {
-                        "type": [
-                            "string",
-                            "null"
-                        ]
-                    },
-                    "fecha": {
-                        "type": "string",
-                        "format": "date-time"
-                    }
-                },
-                "required": [
-                    "id",
-                    "ulid",
-                    "cuenta_pagar_id",
-                    "caja_sesion_id",
-                    "usuario_id",
-                    "monto",
-                    "metodo_pago_id",
-                    "referencia",
-                    "fecha"
-                ],
-                "title": "AbonoPagar"
-            },
             "AbonoPagarResource": {
                 "type": "object",
                 "properties": {
                     "id": {
-                        "type": "integer"
+                        "type": "string"
                     },
                     "monto": {
                         "type": "string",
@@ -12052,7 +12036,7 @@
                     },
                     "cliente_id": {
                         "type": [
-                            "integer",
+                            "string",
                             "null"
                         ]
                     },
@@ -12190,7 +12174,7 @@
                         ],
                         "properties": {
                             "id": {
-                                "type": "integer"
+                                "type": "string"
                             },
                             "nombre": {
                                 "type": "string"
@@ -12463,7 +12447,7 @@
                 "type": "object",
                 "properties": {
                     "cliente_id": {
-                        "type": "integer"
+                        "type": "string"
                     }
                 },
                 "required": [
@@ -12842,7 +12826,8 @@
                 "type": "object",
                 "properties": {
                     "id": {
-                        "type": "integer"
+                        "type": "string",
+                        "description": "DAT-08 (D-2): el cliente nace en la terminal; su identificador p\u00fablico es el ulid."
                     },
                     "nombre": {
                         "type": "string"
@@ -13063,7 +13048,7 @@
                 "type": "object",
                 "properties": {
                     "id": {
-                        "type": "integer"
+                        "type": "string"
                     },
                     "variante_id": {
                         "type": "integer"
@@ -13153,7 +13138,8 @@
                         ]
                     },
                     "id": {
-                        "type": "integer"
+                        "type": "string",
+                        "description": "DAT-08: el identificador p\u00fablico es el ulid; el n\u00famero visible es numero_cotizacion."
                     },
                     "numero_cotizacion": {
                         "type": "string"
@@ -13162,7 +13148,7 @@
                         "type": "object",
                         "properties": {
                             "id": {
-                                "type": "integer"
+                                "type": "string"
                             },
                             "nombre": {
                                 "type": "string"
@@ -13325,7 +13311,7 @@
                     },
                     "cliente_id": {
                         "type": [
-                            "integer",
+                            "string",
                             "null"
                         ]
                     },
@@ -13373,7 +13359,7 @@
                         ]
                     },
                     "cliente_id": {
-                        "type": "integer"
+                        "type": "string"
                     },
                     "items": {
                         "type": "array",
@@ -13428,7 +13414,7 @@
                     },
                     "cliente_id": {
                         "type": [
-                            "integer",
+                            "string",
                             "null"
                         ]
                     },
@@ -13794,7 +13780,7 @@
                 "type": "object",
                 "properties": {
                     "cliente_id": {
-                        "type": "integer"
+                        "type": "string"
                     },
                     "sucursal_id": {
                         "type": [
@@ -14114,7 +14100,7 @@
                         ]
                     },
                     "cliente_id": {
-                        "type": "integer"
+                        "type": "string"
                     },
                     "items": {
                         "type": "array",
@@ -14331,7 +14317,11 @@
                         "type": "integer"
                     },
                     "cliente_id": {
-                        "type": "integer"
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "description": "DAT-08 (D-10, cambio m\u00ednimo en m\u00f3dulo congelado): el cliente se publica por su ulid."
                     },
                     "usuario": {
                         "type": "object",
@@ -14379,7 +14369,12 @@
                 "type": "object",
                 "properties": {
                     "id": {
-                        "type": "integer"
+                        "type": "string",
+                        "description": "DAT-08: el identificador p\u00fablico es el ulid; el id interno no sale de la API."
+                    },
+                    "numero": {
+                        "type": "integer",
+                        "description": "D-3, transitorio: n\u00famero visible de la cuenta (= id interno), solo para mostrarlo; lo\nreemplaza el folio de DAT-07."
                     },
                     "venta_id": {
                         "type": [
@@ -14391,7 +14386,7 @@
                         "type": "object",
                         "properties": {
                             "id": {
-                                "type": "integer"
+                                "type": "string"
                             },
                             "nombre": {
                                 "type": "string"
@@ -14441,6 +14436,7 @@
                 },
                 "required": [
                     "id",
+                    "numero",
                     "venta_id",
                     "monto_total",
                     "saldo_pendiente",
@@ -14455,10 +14451,25 @@
                 "type": "object",
                 "properties": {
                     "id": {
-                        "type": "integer"
+                        "type": "string",
+                        "description": "DAT-08: el identificador p\u00fablico es el ulid; el id interno no sale de la API."
+                    },
+                    "numero": {
+                        "type": "integer",
+                        "description": "D-3, transitorio: n\u00famero visible de la cuenta (= id interno), solo para mostrarlo; lo\nreemplaza el folio de DAT-07."
                     },
                     "compra_id": {
-                        "type": "integer"
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "compra_numero": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ],
+                        "description": "D-3, transitorio: n\u00famero visible de la compra de origen."
                     },
                     "proveedor": {
                         "type": "object",
@@ -14511,7 +14522,9 @@
                 },
                 "required": [
                     "id",
+                    "numero",
                     "compra_id",
+                    "compra_numero",
                     "monto_total",
                     "saldo_pendiente",
                     "fecha_vencimiento",
@@ -14895,7 +14908,7 @@
                 "properties": {
                     "cliente_id": {
                         "type": [
-                            "integer",
+                            "string",
                             "null"
                         ]
                     },
@@ -15007,7 +15020,7 @@
                             "null"
                         ],
                         "items": {
-                            "type": "integer"
+                            "type": "string"
                         }
                     },
                     "asunto": {
@@ -15029,7 +15042,8 @@
                 "type": "object",
                 "properties": {
                     "id": {
-                        "type": "integer"
+                        "type": "string",
+                        "description": "DAT-08: el identificador p\u00fablico es el ulid."
                     },
                     "descripcion": {
                         "type": "string"
@@ -15883,7 +15897,7 @@
                         "type": "integer"
                     },
                     "cliente_id": {
-                        "type": "integer"
+                        "type": "string"
                     }
                 },
                 "required": [
@@ -16186,7 +16200,7 @@
                         "type": "object",
                         "properties": {
                             "id": {
-                                "type": "integer"
+                                "type": "string"
                             },
                             "nombre": {
                                 "type": "string"
@@ -16317,7 +16331,12 @@
                 "type": "object",
                 "properties": {
                     "id": {
-                        "type": "integer"
+                        "type": "string",
+                        "description": "DAT-08: el identificador p\u00fablico es el ulid; el id interno no sale de la API."
+                    },
+                    "numero": {
+                        "type": "integer",
+                        "description": "D-3, transitorio: n\u00famero visible de la orden (= id interno); lo reemplaza el folio de DAT-07."
                     },
                     "receta": {
                         "type": "object",
@@ -16381,6 +16400,7 @@
                 },
                 "required": [
                     "id",
+                    "numero",
                     "cantidad_programada",
                     "cantidad_producida",
                     "estado",
@@ -16395,7 +16415,8 @@
                 "type": "object",
                 "properties": {
                     "cuota_id": {
-                        "type": "integer"
+                        "type": "string",
+                        "description": "DAT-08: la cuota llega por su ulid publicado; toDto() la traduce al id."
                     },
                     "monto": {
                         "type": [
@@ -16455,7 +16476,7 @@
                         "type": "object",
                         "properties": {
                             "id": {
-                                "type": "integer"
+                                "type": "string"
                             },
                             "nombre": {
                                 "type": "string"
@@ -16646,86 +16667,22 @@
                 ],
                 "title": "Permiso"
             },
-            "PlanPagoClienteCuota": {
-                "type": "object",
-                "properties": {
-                    "id": {
-                        "type": "integer"
-                    },
-                    "ulid": {
-                        "type": "string"
-                    },
-                    "plan_pago_cliente_id": {
-                        "type": "integer"
-                    },
-                    "numero_cuota": {
-                        "type": "integer"
-                    },
-                    "monto": {
-                        "type": "string",
-                        "pattern": "^-?[0-9]+\\.[0-9]{2}$"
-                    },
-                    "fecha_vencimiento": {
-                        "type": "string",
-                        "format": "date-time"
-                    },
-                    "fecha_pago": {
-                        "type": [
-                            "string",
-                            "null"
-                        ],
-                        "format": "date-time"
-                    },
-                    "estado": {
-                        "type": "string",
-                        "enum": [
-                            "pendiente",
-                            "pagada",
-                            "vencida"
-                        ]
-                    },
-                    "monto_interes": {
-                        "type": "string",
-                        "pattern": "^-?[0-9]+\\.[0-9]{2}$"
-                    },
-                    "monto_capital": {
-                        "type": "string",
-                        "pattern": "^-?[0-9]+\\.[0-9]{2}$"
-                    },
-                    "fecha_pago_real": {
-                        "type": [
-                            "string",
-                            "null"
-                        ],
-                        "format": "date-time"
-                    }
-                },
-                "required": [
-                    "id",
-                    "ulid",
-                    "plan_pago_cliente_id",
-                    "numero_cuota",
-                    "monto",
-                    "fecha_vencimiento",
-                    "fecha_pago",
-                    "estado",
-                    "monto_interes",
-                    "monto_capital",
-                    "fecha_pago_real"
-                ],
-                "title": "PlanPagoClienteCuota"
-            },
             "PlanPagoResource": {
                 "type": "object",
                 "properties": {
                     "id": {
-                        "type": "integer"
+                        "type": "string",
+                        "description": "DAT-08: el identificador p\u00fablico es el ulid; el id interno no sale de la API."
+                    },
+                    "numero": {
+                        "type": "integer",
+                        "description": "D-3, transitorio: n\u00famero visible del plan (= id interno); lo reemplaza el folio de DAT-07."
                     },
                     "cliente": {
                         "type": "object",
                         "properties": {
                             "id": {
-                                "type": "integer"
+                                "type": "string"
                             },
                             "nombre": {
                                 "type": "string"
@@ -16781,7 +16738,8 @@
                             "type": "object",
                             "properties": {
                                 "id": {
-                                    "type": "integer"
+                                    "type": "string",
+                                    "description": "DAT-08: ulid de la cuota; pagar-cuota la recibe en cuota_id."
                                 },
                                 "numero_cuota": {
                                     "type": "integer"
@@ -16837,6 +16795,7 @@
                 },
                 "required": [
                     "id",
+                    "numero",
                     "venta_id",
                     "concepto",
                     "monto_total",
@@ -17909,7 +17868,8 @@
                 "type": "object",
                 "properties": {
                     "id": {
-                        "type": "integer"
+                        "type": "string",
+                        "description": "DAT-08: el identificador p\u00fablico es el ulid."
                     },
                     "variante_origen_id": {
                         "type": "integer"
@@ -18296,7 +18256,7 @@
                         ],
                         "properties": {
                             "id": {
-                                "type": "integer"
+                                "type": "string"
                             },
                             "nombre": {
                                 "type": "string"

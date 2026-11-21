@@ -10,7 +10,8 @@ export const TRANSICIONES_PEDIDO: Record<EstadoPedido, EstadoPedido[]> = {
 };
 
 export interface PedidoClienteResumen {
-  id: number;
+  /** DAT-08 (D-10): ulid del cliente. */
+  id: string;
   nombre: string;
 }
 
@@ -50,7 +51,8 @@ export interface PedidoItemPayload {
 }
 
 export interface PedidoCrearPayload {
-  cliente_id: number;
+  /** DAT-08 (D-10): ulid del cliente. */
+  cliente_id: string;
   sucursal_id: number;
   direccion_entrega?: string | null;
   /**

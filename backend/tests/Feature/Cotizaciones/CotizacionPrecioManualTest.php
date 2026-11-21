@@ -28,7 +28,7 @@ class CotizacionPrecioManualTest extends TestCase
     {
         return [
             'sucursal_id' => $this->sucursal->id,
-            'cliente_id' => $this->cliente->id,
+            'cliente_id' => $this->cliente->ulid,
             'items' => [array_merge([
                 'variante_id' => $this->variante->id,
                 'cantidad' => 1,

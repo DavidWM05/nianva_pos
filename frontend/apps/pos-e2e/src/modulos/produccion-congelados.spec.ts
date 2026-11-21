@@ -150,7 +150,7 @@ test('50l producción: crear insumo y receta, registrar orden y transformación'
       .locator('ui-confirm-dialog')
       .getByRole('button', { name: 'Aceptar', exact: true }),
     'PATCH',
-    /^\/api\/v1\/ordenes-produccion\/\d+\/estado$/,
+    /^\/api\/v1\/ordenes-produccion\/[0-9a-hjkmnp-tv-z]{26}\/estado$/,
   );
   await expect(filaOrden).toContainText('En proceso');
   await capturarPantalla50l(page, 'ordenes-en-proceso');
@@ -167,7 +167,7 @@ test('50l producción: crear insumo y receta, registrar orden y transformación'
       .getByRole('dialog', { name: 'Completar orden', exact: true })
       .getByRole('button', { name: 'Completar', exact: true }),
     'PATCH',
-    /^\/api\/v1\/ordenes-produccion\/\d+\/estado$/,
+    /^\/api\/v1\/ordenes-produccion\/[0-9a-hjkmnp-tv-z]{26}\/estado$/,
   );
   await expect(filaOrden).toContainText('Completada');
   await capturarPantalla50l(page, 'ordenes-completada');

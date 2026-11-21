@@ -8,6 +8,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { Cliente, ClienteService, ClientesPagina } from '@nianva/domain-crm';
 import { ClientesListComponent } from './clientes-list.component';
+import { ulidDePrueba } from '../../../../testing/ulid-de-prueba';
 
 describe('ClientesListComponent', () => {
   let fixture: ComponentFixture<ClientesListComponent>;
@@ -16,7 +17,7 @@ describe('ClientesListComponent', () => {
 
   const clientes: Cliente[] = [
     {
-      id: 1,
+      id: ulidDePrueba(1),
       nombre: 'Ana Pérez',
       documento_fiscal: 'XAXX010101000',
       telefono: '555-0101',
@@ -27,7 +28,7 @@ describe('ClientesListComponent', () => {
       fecha_registro: '2026-07-01T10:00:00Z',
     },
     {
-      id: 2,
+      id: ulidDePrueba(2),
       nombre: 'Publico General',
       documento_fiscal: null,
       telefono: null,
