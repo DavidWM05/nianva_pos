@@ -223,6 +223,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/autorizaciones": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["autorizacionSupervisor.store"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/caja/actual": {
         parameters: {
             query?: never;
@@ -2405,6 +2421,11 @@ export interface components {
         AbrirCajaRequest: {
             monto_apertura: number;
         };
+        /**
+         * AccionSupervisor
+         * @enum {string}
+         */
+        AccionSupervisor: "ventas.anular" | "ventas.descuento" | "apartados.cancelar" | "caja.cerrar" | "devoluciones.reembolsar";
         /** ActualizarConfiguracionRequest */
         ActualizarConfiguracionRequest: {
             cupon_combinable_con_promociones?: boolean;
@@ -2544,6 +2565,22 @@ export interface components {
                 nombre: string;
                 orden: number;
             }[];
+        };
+        /** AutorizacionSupervisorResource */
+        AutorizacionSupervisorResource: {
+            token: string;
+            vence_en: string;
+        };
+        /** AutorizarSupervisorRequest */
+        AutorizarSupervisorRequest: {
+            supervisor_id: number;
+            pin: string;
+            accion: components["schemas"]["AccionSupervisor"];
+            recurso?: string | null;
+            /** @description Cuerpo exacto de la operación a autorizar. */
+            datos: {
+                [key: string]: unknown;
+            };
         };
         /** CajaCierreMetodoResource */
         CajaCierreMetodoResource: {
@@ -4089,6 +4126,7 @@ export interface components {
 export type AbonoCuentaResource = components['schemas']['AbonoCuentaResource'];
 export type AbonoPagarResource = components['schemas']['AbonoPagarResource'];
 export type AbrirCajaRequest = components['schemas']['AbrirCajaRequest'];
+export type AccionSupervisor = components['schemas']['AccionSupervisor'];
 export type ActualizarConfiguracionRequest = components['schemas']['ActualizarConfiguracionRequest'];
 export type ActualizarConfiguracionSeguridadRequest = components['schemas']['ActualizarConfiguracionSeguridadRequest'];
 export type ActualizarCotizacionRequest = components['schemas']['ActualizarCotizacionRequest'];
@@ -4100,6 +4138,8 @@ export type AppModulesCuentasCobrarHttpRequestsRegistrarAbonoRequest = component
 export type AsignarListaPrecioClienteRequest = components['schemas']['AsignarListaPrecioClienteRequest'];
 export type AsignarRepartidorRequest = components['schemas']['AsignarRepartidorRequest'];
 export type AtributoResource = components['schemas']['AtributoResource'];
+export type AutorizacionSupervisorResource = components['schemas']['AutorizacionSupervisorResource'];
+export type AutorizarSupervisorRequest = components['schemas']['AutorizarSupervisorRequest'];
 export type CajaCierreMetodoResource = components['schemas']['CajaCierreMetodoResource'];
 export type CajaSaldoResource = components['schemas']['CajaSaldoResource'];
 export type CajaSesionResource = components['schemas']['CajaSesionResource'];
@@ -4380,6 +4420,8 @@ export interface operations {
         parameters: {
             query?: never;
             header?: {
+                /** @description Token opaco de supervisor para la operación autorizada. */
+                "X-Autorizacion-Supervisor"?: string;
                 /** @description ULID opcional. Repetir la misma operación conserva la respuesta durante 24 horas. Una carga diferente con la misma llave devuelve 409. */
                 "Idempotency-Key"?: string;
             };
@@ -4755,6 +4797,34 @@ export interface operations {
             422: components["responses"]["ValidationException"];
         };
     };
+    "autorizacionSupervisor.store": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AutorizarSupervisorRequest"];
+            };
+        };
+        responses: {
+            /** @description `AutorizacionSupervisorResource` */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["AutorizacionSupervisorResource"];
+                    };
+                };
+            };
+            401: components["responses"]["AuthenticationException"];
+            422: components["responses"]["ValidationException"];
+        };
+    };
     "caja.actual": {
         parameters: {
             query?: never;
@@ -4826,6 +4896,8 @@ export interface operations {
         parameters: {
             query?: never;
             header?: {
+                /** @description Token opaco de supervisor para la operación autorizada. */
+                "X-Autorizacion-Supervisor"?: string;
                 /** @description ULID opcional. Repetir la misma operación conserva la respuesta durante 24 horas. Una carga diferente con la misma llave devuelve 409. */
                 "Idempotency-Key"?: string;
             };
@@ -6491,6 +6563,8 @@ export interface operations {
         parameters: {
             query?: never;
             header?: {
+                /** @description Token opaco de supervisor para la operación autorizada. */
+                "X-Autorizacion-Supervisor"?: string;
                 /** @description ULID opcional. Repetir la misma operación conserva la respuesta durante 24 horas. Una carga diferente con la misma llave devuelve 409. */
                 "Idempotency-Key"?: string;
             };
@@ -10135,6 +10209,8 @@ export interface operations {
         parameters: {
             query?: never;
             header?: {
+                /** @description Token opaco de supervisor para la operación autorizada. */
+                "X-Autorizacion-Supervisor"?: string;
                 /** @description ULID opcional. Repetir la misma operación conserva la respuesta durante 24 horas. Una carga diferente con la misma llave devuelve 409. */
                 "Idempotency-Key"?: string;
             };
@@ -10286,6 +10362,8 @@ export interface operations {
         parameters: {
             query?: never;
             header?: {
+                /** @description Token opaco de supervisor para la operación autorizada. */
+                "X-Autorizacion-Supervisor"?: string;
                 /** @description ULID opcional. Repetir la misma operación conserva la respuesta durante 24 horas. Una carga diferente con la misma llave devuelve 409. */
                 "Idempotency-Key"?: string;
             };

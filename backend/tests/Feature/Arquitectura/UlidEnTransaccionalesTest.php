@@ -74,6 +74,9 @@ class UlidEnTransaccionalesTest extends TestCase
         'Infraestructura interna de idempotencia' => [
             'solicitudes_idempotentes',
         ],
+        'Infraestructura interna de autorizaciones de supervisor' => [
+            'autorizaciones_supervisor',
+        ],
         'Catalogo de configuracion (D-2): ID numerico como sucursales y usuarios' => [
             'terminales',
         ],

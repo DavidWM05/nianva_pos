@@ -88,6 +88,9 @@ Generado con `php artisan errores:catalogo` desde las excepciones de negocio y e
 | `stock_insumos_insuficiente` | 422 | `App\Modules\Produccion\Exceptions\StockInsumosInsuficienteException` | Produccion | — |
 | `sucursal_no_permitida` | 422 | `App\Modules\Nucleo\Exceptions\SucursalNoPermitidaException` | Nucleo | sucursal_id |
 | `sucursal_requerida` | 422 | `App\Modules\Nucleo\Exceptions\SucursalRequeridaException` | Nucleo | — |
+| `supervisor_intentos_agotados` | 429 | `App\Modules\Nucleo\Exceptions\SupervisorIntentosAgotadosException` | Nucleo | — |
+| `supervisor_invalido` | 403 | `App\Modules\Nucleo\Exceptions\SupervisorInvalidoException` | Nucleo | — |
+| `supervisor_requerido` | 403 | `App\Modules\Nucleo\Exceptions\SupervisorRequeridoException` | Nucleo | — |
 | `tiempo_agotado` | 504 | `App\Modules\Nucleo\Support\MapaErroresHttp` | Nucleo | - |
 | `tiene_movimientos` | 422 | `App\Modules\Nucleo\Exceptions\TieneMovimientosException` | Nucleo | entidad, id |
 | `tipo_contenido_no_soportado` | 415 | `App\Modules\Nucleo\Support\MapaErroresHttp` | Nucleo | - |

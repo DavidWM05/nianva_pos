@@ -6,14 +6,18 @@ namespace App\Aplicacion\Ventas;
 
 use App\Aplicacion\Folios\Folios;
 use App\Aplicacion\Inventario\RegistrarMovimiento;
+use App\Aplicacion\Supervisor\Supervisor;
 use App\Modules\GiftCards\Models\GiftCard;
 use App\Modules\GiftCards\Services\GiftCardService;
 use App\Modules\Inventario\Dtos\MovimientoInventarioDto;
 use App\Modules\NotasCredito\Models\NotaCredito;
 use App\Modules\NotasCredito\Services\NotaCreditoService;
+use App\Modules\Nucleo\Dtos\OperacionSupervisorDto;
 use App\Modules\Nucleo\Models\MetodoPago;
 use App\Modules\Nucleo\Models\Usuario;
 use App\Modules\Nucleo\Scopes\TenantScopeViaRelacion;
+use App\Modules\Nucleo\Support\AccionSupervisor;
+use App\Modules\Nucleo\Support\Dinero;
 use App\Modules\Precios\Exceptions\CuponInvalidoException;
 use App\Modules\Precios\Models\Cupon;
 use App\Modules\Precios\Services\PricingService;
@@ -44,7 +48,7 @@ class RegistrarVenta
     ) {}
 
     /** Cuando la llama otra Action, el savepoint participa de su transacción y de su rollback. */
-    public function ejecutar(CrearVentaDto $dto, Usuario $usuario): Venta
+    public function ejecutar(CrearVentaDto $dto, Usuario $usuario, ?OperacionSupervisorDto $autorizacion = null): Venta
     {
         $clienteId = $dto->clienteId;
         $items = array_map(
@@ -110,10 +114,14 @@ class RegistrarVenta
             $metodoPagoNotaCredito,
             $subtotal,
             $dto,
+            $autorizacion,
         ) {
             $caja = CajaSesion::query()->withoutGlobalScope(TenantScopeViaRelacion::class)->where('sucursal_id', (int) $usuario->getAttribute('sucursal_id'))->where('estado', 'abierta')->latest('id')->lockForUpdate()->first();
             $notaCredito = null;
             $totalEstimado = round($subtotal - $descuentoManual - $descuentoCupon, 2);
+            if (Dinero::desde(sprintf('%.2F', $descuentoManual))->comparar(Dinero::desde((string) config('supervisor.margen_descuento'))) > 0) {
+                Supervisor::consumir($autorizacion, AccionSupervisor::DescuentoVenta);
+            }
             $pagosExtra = [];
 
             if (! empty($giftCardCodigo) && $metodoPagoGiftCard) {

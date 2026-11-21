@@ -385,6 +385,14 @@
                         }
                     },
                     {
+                        "name": "X-Autorizacion-Supervisor",
+                        "in": "header",
+                        "description": "Token opaco de supervisor para la operaci\u00f3n autorizada.",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
                         "name": "Idempotency-Key",
                         "in": "header",
                         "description": "ULID opcional. Repetir la misma operaci\u00f3n conserva la respuesta durante 24 horas. Una carga diferente con la misma llave devuelve 409.",
@@ -1258,6 +1266,50 @@
                 }
             }
         },
+        "/autorizaciones": {
+            "post": {
+                "operationId": "autorizacionSupervisor.store",
+                "tags": [
+                    "AutorizacionSupervisor"
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/AutorizarSupervisorRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "`AutorizacionSupervisorResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/AutorizacionSupervisorResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    }
+                }
+            }
+        },
         "/caja/actual": {
             "get": {
                 "operationId": "caja.actual",
@@ -1428,6 +1480,14 @@
                         "in": "path",
                         "required": true,
                         "description": "The caja sesion ulid",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "X-Autorizacion-Supervisor",
+                        "in": "header",
+                        "description": "Token opaco de supervisor para la operaci\u00f3n autorizada.",
                         "schema": {
                             "type": "string"
                         }
@@ -4897,6 +4957,14 @@
                     "Devolucion"
                 ],
                 "parameters": [
+                    {
+                        "name": "X-Autorizacion-Supervisor",
+                        "in": "header",
+                        "description": "Token opaco de supervisor para la operaci\u00f3n autorizada.",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
                     {
                         "name": "Idempotency-Key",
                         "in": "header",
@@ -12011,6 +12079,14 @@
                 ],
                 "parameters": [
                     {
+                        "name": "X-Autorizacion-Supervisor",
+                        "in": "header",
+                        "description": "Token opaco de supervisor para la operaci\u00f3n autorizada.",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
                         "name": "Idempotency-Key",
                         "in": "header",
                         "description": "ULID opcional. Repetir la misma operaci\u00f3n conserva la respuesta durante 24 horas. Una carga diferente con la misma llave devuelve 409.",
@@ -12389,6 +12465,14 @@
                         }
                     },
                     {
+                        "name": "X-Autorizacion-Supervisor",
+                        "in": "header",
+                        "description": "Token opaco de supervisor para la operaci\u00f3n autorizada.",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
                         "name": "Idempotency-Key",
                         "in": "header",
                         "description": "ULID opcional. Repetir la misma operaci\u00f3n conserva la respuesta durante 24 horas. Una carga diferente con la misma llave devuelve 409.",
@@ -12530,6 +12614,17 @@
                     "monto_apertura"
                 ],
                 "title": "AbrirCajaRequest"
+            },
+            "AccionSupervisor": {
+                "type": "string",
+                "enum": [
+                    "ventas.anular",
+                    "ventas.descuento",
+                    "apartados.cancelar",
+                    "caja.cerrar",
+                    "devoluciones.reembolsar"
+                ],
+                "title": "AccionSupervisor"
             },
             "ActualizarConfiguracionRequest": {
                 "type": "object",
@@ -13114,6 +13209,56 @@
                     "orden"
                 ],
                 "title": "AtributoResource"
+            },
+            "AutorizacionSupervisorResource": {
+                "type": "object",
+                "properties": {
+                    "token": {
+                        "type": "string"
+                    },
+                    "vence_en": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "token",
+                    "vence_en"
+                ],
+                "title": "AutorizacionSupervisorResource"
+            },
+            "AutorizarSupervisorRequest": {
+                "type": "object",
+                "properties": {
+                    "supervisor_id": {
+                        "type": "integer",
+                        "minimum": 1
+                    },
+                    "pin": {
+                        "type": "string",
+                        "pattern": "^[0-9]{4,6}$"
+                    },
+                    "accion": {
+                        "$ref": "#/components/schemas/AccionSupervisor"
+                    },
+                    "recurso": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "datos": {
+                        "type": "object",
+                        "description": "Cuerpo exacto de la operaci\u00f3n a autorizar.",
+                        "additionalProperties": {}
+                    }
+                },
+                "required": [
+                    "supervisor_id",
+                    "pin",
+                    "accion",
+                    "datos"
+                ],
+                "title": "AutorizarSupervisorRequest"
             },
             "CajaCierreMetodoResource": {
                 "type": "object",

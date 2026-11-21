@@ -116,6 +116,26 @@ export const LIMITES = {
       }
     }
   },
+  "/autorizaciones": {
+    "post": {
+      "supervisor_id": {
+        "requerido": true,
+        "minimum": 1
+      },
+      "pin": {
+        "requerido": true
+      },
+      "accion": {
+        "requerido": true
+      },
+      "recurso": {
+        "requerido": false
+      },
+      "datos": {
+        "requerido": true
+      }
+    }
+  },
   "/caja/abrir": {
     "post": {
       "monto_apertura": {
