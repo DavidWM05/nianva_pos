@@ -1,7 +1,7 @@
 <ui-page-header clave="ventas-plazos" />
 <ui-page [estado]="estado()" forma="detalle" (reintentar)="reintentar()">
   @if (plan(); as p) {
-    <h2>Plan de pago #{{ p.id }}</h2>
+    <h2>Plan de pago #{{ p.numero }}</h2>
 
     <nucleo-record-tabs [tabs]="tabs">
       <ng-template>

@@ -111,7 +111,7 @@ describe('CajaComponent', () => {
   });
 
   it('con caja abierta y permiso, muestra la lista de gastos de la sesion', async () => {
-    const gastos: Gasto[] = [{ id: 1, descripcion: 'Luz', monto: '80.00', fecha: '2026-07-22T10:00:00.000000Z' }];
+    const gastos: Gasto[] = [{ id: ulidDePrueba(1), descripcion: 'Luz', monto: '80.00', fecha: '2026-07-22T10:00:00.000000Z' }];
     await crearComponente({
       sesion: sesionAbierta,
       resumen: { ventas_count: 0, total_ventas: '0.00', total_gastos: '80.00' },

@@ -94,7 +94,7 @@ class VentaControllerTest extends TestCase
         $this->actingAs($ctx['usuario']);
 
         $respuesta = $this->postJson('/api/v1/ventas', [
-            'cliente_id' => $ctx['cliente']->id,
+            'cliente_id' => $ctx['cliente']->ulid,
             'items' => [
                 ['variante_id' => $ctx['varianteA']->id, 'cantidad' => 2],
                 ['variante_id' => $ctx['varianteB']->id, 'cantidad' => 3],
@@ -118,7 +118,7 @@ class VentaControllerTest extends TestCase
         $this->actingAs($ctx['usuario']);
 
         $respuesta = $this->postJson('/api/v1/ventas', [
-            'cliente_id' => $ctx['cliente']->id,
+            'cliente_id' => $ctx['cliente']->ulid,
             'items' => [['variante_id' => $ctx['varianteA']->id, 'cantidad' => 1]],
             'pagos' => [['metodo_pago_id' => $ctx['efectivo']->id, 'monto' => 100]],
         ]);
@@ -134,7 +134,7 @@ class VentaControllerTest extends TestCase
         $this->actingAs($ctx['usuario']);
 
         $respuesta = $this->postJson('/api/v1/ventas', [
-            'cliente_id' => $ctx['cliente']->id,
+            'cliente_id' => $ctx['cliente']->ulid,
             'items' => [['variante_id' => $ctx['varianteA']->id, 'cantidad' => 1]],
             'pagos' => [['metodo_pago_id' => $ctx['efectivo']->id, 'monto' => 50]],
         ]);
@@ -150,7 +150,7 @@ class VentaControllerTest extends TestCase
         $this->actingAs($ctx['usuario']);
 
         $respuesta = $this->postJson('/api/v1/ventas', [
-            'cliente_id' => $ctx['cliente']->id,
+            'cliente_id' => $ctx['cliente']->ulid,
             'items' => [['variante_id' => $ctx['varianteA']->id, 'cantidad' => 999]],
             'pagos' => [['metodo_pago_id' => $ctx['efectivo']->id, 'monto' => 99900]],
         ]);
@@ -165,7 +165,7 @@ class VentaControllerTest extends TestCase
         $this->actingAs($ctx['usuario']);
 
         $respuesta = $this->postJson('/api/v1/ventas', [
-            'cliente_id' => $ctx['cliente']->id,
+            'cliente_id' => $ctx['cliente']->ulid,
             'items' => [['variante_id' => $ctx['varianteA']->id, 'cantidad' => 1]],
             'pagos' => [['metodo_pago_id' => $ctx['efectivo']->id, 'monto' => 100]],
             'cupon_codigo' => 'NOEXISTE',
@@ -182,7 +182,7 @@ class VentaControllerTest extends TestCase
         $this->actingAs($ctx['usuario']);
 
         $respuesta = $this->postJson('/api/v1/ventas', [
-            'cliente_id' => $ctx['cliente']->id,
+            'cliente_id' => $ctx['cliente']->ulid,
             'items' => [['variante_id' => $ctx['varianteA']->id, 'cantidad' => 1]],
             'pagos' => [['metodo_pago_id' => $ctx['efectivo']->id, 'monto' => 100]],
         ]);
@@ -197,7 +197,7 @@ class VentaControllerTest extends TestCase
         $this->actingAs($ctx['usuario']);
 
         $this->postJson('/api/v1/ventas', [
-            'cliente_id' => $ctx['cliente']->id,
+            'cliente_id' => $ctx['cliente']->ulid,
             'items' => [['variante_id' => $ctx['varianteA']->id, 'cantidad' => 1]],
             'pagos' => [
                 ['metodo_pago_id' => $ctx['efectivo']->id, 'monto' => 60],
@@ -221,7 +221,7 @@ class VentaControllerTest extends TestCase
         $this->actingAs($ctx['usuario']);
 
         $creada = $this->postJson('/api/v1/ventas', [
-            'cliente_id' => $ctx['cliente']->id,
+            'cliente_id' => $ctx['cliente']->ulid,
             'items' => [['variante_id' => $ctx['varianteA']->id, 'cantidad' => 1]],
             'pagos' => [['metodo_pago_id' => $ctx['efectivo']->id, 'monto' => 100]],
         ])->json('data');
@@ -240,7 +240,7 @@ class VentaControllerTest extends TestCase
         $this->actingAs($ctx['usuario']);
 
         $creada = $this->postJson('/api/v1/ventas', [
-            'cliente_id' => $ctx['cliente']->id,
+            'cliente_id' => $ctx['cliente']->ulid,
             'items' => [['variante_id' => $ctx['varianteA']->id, 'cantidad' => 1]],
             'pagos' => [['metodo_pago_id' => $ctx['efectivo']->id, 'monto' => 100]],
         ])->json('data');
@@ -262,7 +262,7 @@ class VentaControllerTest extends TestCase
         $this->actingAs($ctx['usuario']);
 
         $creada = $this->postJson('/api/v1/ventas', [
-            'cliente_id' => $ctx['cliente']->id,
+            'cliente_id' => $ctx['cliente']->ulid,
             'items' => [['variante_id' => $ctx['varianteA']->id, 'cantidad' => 1]],
             'pagos' => [['metodo_pago_id' => $ctx['efectivo']->id, 'monto' => 100]],
         ])->json('data');

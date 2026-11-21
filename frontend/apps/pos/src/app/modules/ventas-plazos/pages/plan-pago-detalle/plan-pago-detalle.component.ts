@@ -95,7 +95,8 @@ export class PlanPagoDetalleComponent implements OnInit {
   protected readonly pagando = signal(false);
 
   ngOnInit(): void {
-    const id = Number(this.route.snapshot.paramMap.get('id'));
+    // DAT-08: el parámetro de la ruta es el ulid; nunca Number().
+    const id = this.route.snapshot.paramMap.get('id') ?? '';
     this.cargar(id);
   }
 
@@ -138,7 +139,7 @@ export class PlanPagoDetalleComponent implements OnInit {
       });
   }
 
-  private cargar(id: number): void {
+  private cargar(id: string): void {
     this.cargando.set(true);
     this.error.set(false);
     this.planPagoService.obtener(id).subscribe({
@@ -199,7 +200,7 @@ export class PlanPagoDetalleComponent implements OnInit {
   ];
 
   reintentar(): void {
-    this.cargar(Number(this.route.snapshot.paramMap.get('id')));
+    this.cargar((this.route.snapshot.paramMap.get('id') ?? ''));
   }
 
   cambiarPaginaHistorial(evento: CambioListado): void {

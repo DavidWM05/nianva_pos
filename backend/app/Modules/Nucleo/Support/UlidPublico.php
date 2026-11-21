@@ -6,11 +6,13 @@ namespace App\Modules\Nucleo\Support;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 /**
  * DAT-08 (D-4): una referencia publicada (`venta_id`, `nota_credito_id`…) lleva el ulid del
- * registro relacionado, nunca su id interno. Las llaves foráneas siguen en bigint; esto solo
- * traduce al armar la respuesta.
+ * registro relacionado, nunca su id interno, y una entrada que recibe un documento trae ese ulid.
+ * Las llaves foráneas siguen en bigint; esto solo traduce en el borde: al armar la respuesta y en
+ * el toDto() (o un middleware) de la entrada.
  */
 final class UlidPublico
 {
@@ -41,6 +43,20 @@ final class UlidPublico
         }
 
         return (int) $id;
+    }
+
+    /**
+     * Id interno de un ulid que todavía no se validó (un middleware que corre antes del
+     * FormRequest). Null si el valor no es un ulid o no existe en el tenant dado.
+     */
+    public static function idDe(string $tabla, mixed $ulid, int $tenantId): ?int
+    {
+        if (! is_string($ulid) || ! Str::isUlid($ulid)) {
+            return null;
+        }
+        $id = DB::table($tabla)->where('tenant_id', $tenantId)->where('ulid', strtolower($ulid))->value('id');
+
+        return $id === null ? null : (int) $id;
     }
 
     /**

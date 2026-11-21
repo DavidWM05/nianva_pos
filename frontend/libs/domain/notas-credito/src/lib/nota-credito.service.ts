@@ -25,7 +25,7 @@ export class NotaCreditoService {
 
   listar(
     evento: ConsultaPagina,
-    filtros: { clienteId?: number | null } = {},
+    filtros: { clienteId?: string | null } = {},
   ): Observable<NotasCreditoPagina> {
     const rows = evento.rows || 25;
     const page = Math.floor(evento.first / rows) + 1;
@@ -58,7 +58,7 @@ export class NotaCreditoService {
       .pipe(map((r) => r.data));
   }
 
-  activasPorCliente(clienteId: number): Observable<NotaCredito[]> {
+  activasPorCliente(clienteId: string): Observable<NotaCredito[]> {
     return this.http
       .get<RespuestaDe<'/clientes/{cliente}/notas-credito', 'get'>>(
         urlApi(`/clientes/${clienteId}/notas-credito`),

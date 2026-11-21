@@ -8,6 +8,7 @@ import { BUSCADOR_PRODUCTO, BUSCADOR_VARIANTE_DE_PRODUCTO } from '../../../core/
 import { VentaService } from '@nianva/domain-tpv';
 import { CotizacionDetalle } from '@nianva/domain-cotizaciones';
 import { LineasCotizacionCambio, LineasCotizacionComponent } from './lineas-cotizacion.component';
+import { ulidDePrueba } from '../../../testing/ulid-de-prueba';
 
 describe('LineasCotizacionComponent', () => {
   let fixture: ComponentFixture<LineasCotizacionComponent>;
@@ -141,7 +142,7 @@ describe('LineasCotizacionComponent', () => {
     await crearComponente();
 
     const detalles: CotizacionDetalle[] = [
-      { id: 1, variante_id: 8, variante: { id: 8, nombre: 'Pantalón (32)' }, cantidad: '3.000', precio_unitario: '200.00', descuento: '0.00', subtotal: '600.00' },
+      { id: ulidDePrueba(1), variante_id: 8, variante: { id: 8, nombre: 'Pantalón (32)' }, cantidad: '3.000', precio_unitario: '200.00', descuento: '0.00', subtotal: '600.00' },
     ];
     fixture.componentInstance.valorInicial = detalles;
     fixture.componentInstance.ngOnChanges();

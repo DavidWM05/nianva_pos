@@ -77,7 +77,7 @@ class DosGirosVendenTest extends TestCase
         $cliente = Cliente::query()->where('nombre', 'Publico General')->firstOrFail();
 
         $this->postJson('/api/v1/ventas', [
-            'cliente_id' => $cliente->id,
+            'cliente_id' => $cliente->ulid,
             'items' => [['variante_id' => $varianteId, 'cantidad' => 2]],
             'pagos' => [['metodo_pago_id' => $efectivo->id, 'monto' => 200]],
         ])->assertCreated()->assertJsonPath('data.total', '200.00');

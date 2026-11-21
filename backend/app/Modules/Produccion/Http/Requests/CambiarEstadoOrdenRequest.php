@@ -15,7 +15,7 @@ class CambiarEstadoOrdenRequest extends SolicitudNegocio
      */
     public function rules(): array
     {
-        $orden = OrdenProduccion::query()->with('receta')->where('tenant_id', $this->tenantId())->whereKey($this->route('id'))->first();
+        $orden = OrdenProduccion::query()->with('receta')->where('tenant_id', $this->tenantId())->whereKey($this->ordenDeLaRuta())->first();
         $varianteId = $orden?->receta?->getAttribute('variante_id');
 
         return [
@@ -37,5 +37,13 @@ class CambiarEstadoOrdenRequest extends SolicitudNegocio
     public function messages(): array
     {
         return ReglasCantidad::mensajes(['cantidad_producida']);
+    }
+
+    /** DAT-08: la ruta resuelve la orden por ulid (binding); aquí solo se necesita su id interno. */
+    private function ordenDeLaRuta(): ?int
+    {
+        $orden = $this->route('ordenProduccion');
+
+        return $orden instanceof OrdenProduccion ? (int) $orden->getKey() : null;
     }
 }

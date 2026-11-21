@@ -4,6 +4,7 @@ import { describe, expect, it, vi } from 'vitest';
 
 import { CuentaCobrarService, ReporteCuentasCobrar } from '@nianva/domain-cuentas-cobrar';
 import { ReporteCuentasCobrarComponent } from './reporte-cuentas-cobrar.component';
+import { ulidDePrueba } from '../../../../testing/ulid-de-prueba';
 
 // UI-05: todos los saldos con el pipe dinero (formato regional es-MX del spec).
 describe('ReporteCuentasCobrarComponent formato por pipe', () => {
@@ -12,7 +13,7 @@ describe('ReporteCuentasCobrarComponent formato por pipe', () => {
       total_pendiente: '5000.00',
       total_vencido: '1000.50',
       por_antiguedad: { al_dia: '4000.00', vencido_1_30: '1100.00', vencido_31_60: '1200.00', vencido_61_90: '1300.00', vencido_90_mas: '1400.00' },
-      por_cliente: [{ cliente_id: 9, cliente_nombre: 'Juan', saldo_pendiente: '2500.00', cuentas_pendientes: 1 }],
+      por_cliente: [{ cliente_id: ulidDePrueba(9), cliente_nombre: 'Juan', saldo_pendiente: '2500.00', cuentas_pendientes: 1 }],
     };
 
     await TestBed.configureTestingModule({

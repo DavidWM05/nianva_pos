@@ -60,7 +60,7 @@ export class NotasCreditoListComponent {
   protected readonly notas = signal<NotaCredito[]>([]);
   protected readonly total = signal(0);
   protected readonly loading = signal(false);
-  protected readonly clienteFiltroId = signal<number | null>(null);
+  protected readonly clienteFiltroId = signal<string | null>(null);
 
   private readonly ultimoEvento = signal<DataTableLazyEvent>({
     first: 0,
@@ -74,7 +74,7 @@ export class NotasCreditoListComponent {
     this.cargar(this.ultimoEvento());
   }
 
-  onClienteSeleccionado(clienteId: number | null): void {
+  onClienteSeleccionado(clienteId: string | null): void {
     this.clienteFiltroId.set(clienteId);
     this.cargar({ ...this.ultimoEvento(), first: 0 });
   }

@@ -14,6 +14,7 @@ import { BUSCADOR_CLIENTE, BUSCADOR_PRODUCTO, BUSCADOR_VARIANTE_DE_PRODUCTO } fr
 import { VentaService } from '@nianva/domain-tpv';
 import { Cotizacion, CotizacionService } from '@nianva/domain-cotizaciones';
 import { CotizacionFormComponent } from './cotizacion-form.component';
+import { ulidDePrueba } from '../../../../testing/ulid-de-prueba';
 
 describe('CotizacionFormComponent', () => {
   let fixture: ComponentFixture<CotizacionFormComponent>;
@@ -34,9 +35,9 @@ describe('CotizacionFormComponent', () => {
   };
 
   const cotizacionExistente: Cotizacion = {
-    id: 5,
+    id: ulidDePrueba(5),
     numero_cotizacion: 'COT-000005',
-    cliente: { id: 9, nombre: 'Juan Pérez' },
+    cliente: { id: ulidDePrueba(9), nombre: 'Juan Pérez' },
     total: '500.00',
     descuento: '0.00',
     estado: 'pendiente',
@@ -94,11 +95,11 @@ describe('CotizacionFormComponent', () => {
   });
 
   it('con :id en la ruta, arranca en modo editar y precarga los datos de la cotización', async () => {
-    await crearComponente('5');
+    await crearComponente(ulidDePrueba(5));
 
     expect(fixture.componentInstance['editando']()).toBe(true);
-    expect(cotizacionService.obtener).toHaveBeenCalledWith(5);
-    expect(fixture.componentInstance['clienteId']()).toBe(9);
+    expect(cotizacionService.obtener).toHaveBeenCalledWith(ulidDePrueba(5));
+    expect(fixture.componentInstance['clienteId']()).toBe(ulidDePrueba(9));
     expect(fixture.componentInstance['validezDias']()).toBe(15);
   });
 
@@ -116,13 +117,13 @@ describe('CotizacionFormComponent', () => {
   });
 
   it('guardar() en modo editar llama a actualizar() con el id de la ruta, no a crear()', async () => {
-    await crearComponente('5');
+    await crearComponente(ulidDePrueba(5));
     cotizacionService.actualizar.mockReturnValue(of(cotizacionExistente));
 
     fixture.componentInstance.onLineasCambio({ items: [{ variante_id: 5, cantidad: 1, precio_unitario: 100, descuento: 0 }], subtotal: 100 });
     fixture.componentInstance.guardar();
 
-    expect(cotizacionService.actualizar).toHaveBeenCalledWith(5, expect.objectContaining({ cliente_id: 9 }));
+    expect(cotizacionService.actualizar).toHaveBeenCalledWith(ulidDePrueba(5), expect.objectContaining({ cliente_id: ulidDePrueba(9) }));
     expect(cotizacionService.crear).not.toHaveBeenCalled();
   });
 

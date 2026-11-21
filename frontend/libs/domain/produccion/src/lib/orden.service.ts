@@ -71,19 +71,19 @@ export class OrdenProduccionService {
    * vuelve a pedir la lista despues de esto.
    */
   cambiarEstado(
-    id: number,
+    id: string,
     estado: EstadoOrdenProduccion,
     cantidadProducida?: number,
   ): Observable<void> {
     return this.http
-      .patch<RespuestaDe<'/ordenes-produccion/{id}/estado', 'patch'>>(
+      .patch<RespuestaDe<'/ordenes-produccion/{ordenProduccion}/estado', 'patch'>>(
         urlApi(`/ordenes-produccion/${id}/estado`),
         {
           estado,
           ...(cantidadProducida !== undefined
             ? { cantidad_producida: cantidadProducida }
             : {}),
-        } satisfies CuerpoDe<'/ordenes-produccion/{id}/estado', 'patch'>,
+        } satisfies CuerpoDe<'/ordenes-produccion/{ordenProduccion}/estado', 'patch'>,
       )
       .pipe(map(() => undefined));
   }

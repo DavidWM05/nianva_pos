@@ -95,7 +95,7 @@ export class PedidosListComponent {
   protected readonly permisos = signal<PedidosPermisos>(PERMISOS_VACIOS);
   protected readonly numeroFiltro = signal('');
   protected readonly estadoFiltro = signal<EstadoPedido | null>(null);
-  protected readonly clienteFiltroId = signal<number | null>(null);
+  protected readonly clienteFiltroId = signal<string | null>(null);
   protected readonly repartidorFiltroId = signal<number | null>(null);
 
   private ultimoEvento: DataTableLazyEvent = {
@@ -124,7 +124,7 @@ export class PedidosListComponent {
     this.cargar({ ...this.ultimoEvento, first: 0 });
   }
 
-  onClienteSeleccionado(clienteId: number | null): void {
+  onClienteSeleccionado(clienteId: string | null): void {
     this.clienteFiltroId.set(clienteId);
     this.cargar({ ...this.ultimoEvento, first: 0 });
   }

@@ -81,7 +81,7 @@ class ApartadoControllerTest extends TestCase
         $this->actingAs($ctx['usuario']);
 
         $respuesta = $this->postJson('/api/v1/apartados', [
-            'cliente_id' => $ctx['cliente']->id,
+            'cliente_id' => $ctx['cliente']->ulid,
             'items' => [['variante_id' => $ctx['variante']->id, 'cantidad' => 2]],
             'fecha_vencimiento' => '2026-08-15',
         ]);
@@ -99,7 +99,7 @@ class ApartadoControllerTest extends TestCase
         $this->actingAs($ctx['usuario']);
 
         $this->postJson('/api/v1/apartados', [
-            'cliente_id' => $ctx['cliente']->id,
+            'cliente_id' => $ctx['cliente']->ulid,
             'items' => [['variante_id' => $ctx['variante']->id, 'cantidad' => 1]],
         ])->assertForbidden();
     }
@@ -130,7 +130,7 @@ class ApartadoControllerTest extends TestCase
         $this->actingAs($ctx['usuario']);
 
         $apartado = $this->postJson('/api/v1/apartados', [
-            'cliente_id' => $ctx['cliente']->id,
+            'cliente_id' => $ctx['cliente']->ulid,
             'items' => [['variante_id' => $ctx['variante']->id, 'cantidad' => 2]],
         ])->json('data');
 
@@ -152,7 +152,7 @@ class ApartadoControllerTest extends TestCase
         $this->actingAs($ctx['usuario']);
 
         $apartado = $this->postJson('/api/v1/apartados', [
-            'cliente_id' => $ctx['cliente']->id,
+            'cliente_id' => $ctx['cliente']->ulid,
             'items' => [['variante_id' => $ctx['variante']->id, 'cantidad' => 1]],
         ])->json('data');
 
@@ -169,7 +169,7 @@ class ApartadoControllerTest extends TestCase
         $this->actingAs($ctx['usuario']);
 
         $apartado = $this->postJson('/api/v1/apartados', [
-            'cliente_id' => $ctx['cliente']->id,
+            'cliente_id' => $ctx['cliente']->ulid,
             'items' => [['variante_id' => $ctx['variante']->id, 'cantidad' => 1]],
         ])->json('data');
 
@@ -190,7 +190,7 @@ class ApartadoControllerTest extends TestCase
         $this->actingAs($ctx['usuario']);
 
         $apartado = $this->postJson('/api/v1/apartados', [
-            'cliente_id' => $ctx['cliente']->id,
+            'cliente_id' => $ctx['cliente']->ulid,
             'items' => [['variante_id' => $ctx['variante']->id, 'cantidad' => 1]],
         ])->json('data');
 
@@ -206,7 +206,7 @@ class ApartadoControllerTest extends TestCase
         $this->actingAs($ctx['usuario']);
 
         $apartado = $this->postJson('/api/v1/apartados', [
-            'cliente_id' => $ctx['cliente']->id,
+            'cliente_id' => $ctx['cliente']->ulid,
             'items' => [['variante_id' => $ctx['variante']->id, 'cantidad' => 1]],
         ])->json('data');
 
@@ -229,7 +229,7 @@ class ApartadoControllerTest extends TestCase
         $this->actingAs($ctx['usuario']);
 
         $apartado = $this->postJson('/api/v1/apartados', [
-            'cliente_id' => $ctx['cliente']->id,
+            'cliente_id' => $ctx['cliente']->ulid,
             'items' => [['variante_id' => $ctx['variante']->id, 'cantidad' => 1]],
         ])->json('data');
 
@@ -243,7 +243,7 @@ class ApartadoControllerTest extends TestCase
         $this->actingAs($ctx['usuario']);
 
         $apartado = $this->postJson('/api/v1/apartados', [
-            'cliente_id' => $ctx['cliente']->id,
+            'cliente_id' => $ctx['cliente']->ulid,
             'items' => [['variante_id' => $ctx['variante']->id, 'cantidad' => 1]],
         ])->json('data');
 

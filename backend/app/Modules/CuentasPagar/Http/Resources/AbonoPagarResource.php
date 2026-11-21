@@ -15,7 +15,7 @@ class AbonoPagarResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'id' => $this->id,
+            'id' => (string) $this->resource->getAttribute('ulid'),
             'monto' => DecimalApi::dinero($this->monto),
             'metodo_pago' => $this->whenLoaded('metodoPago', fn () => $this->metodoPago->nombre),
             'referencia' => $this->referencia,

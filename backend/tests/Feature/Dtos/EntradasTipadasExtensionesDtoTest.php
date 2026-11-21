@@ -86,7 +86,7 @@ class EntradasTipadasExtensionesDtoTest extends TestCase
     private function payloadCotizacion(?int $sucursalId = null): array
     {
         $payload = [
-            'cliente_id' => $this->cliente->id,
+            'cliente_id' => $this->cliente->ulid,
             'items' => [[
                 'variante_id' => $this->variante->id,
                 'cantidad' => 1,

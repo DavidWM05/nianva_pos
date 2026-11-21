@@ -28,7 +28,7 @@ describe('VentaDetalleComponent', () => {
     id: ulidDePrueba(42),
     numero: 42,
     fecha: '2026-07-01T10:00:00Z',
-    cliente: { id: 1, nombre: 'Ana Pérez' },
+    cliente: { id: ulidDePrueba(1), nombre: 'Ana Pérez' },
     total: '150.00',
     descuento_cupon: '0.00',
     descuento_manual: '0.00',

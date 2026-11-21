@@ -71,7 +71,7 @@ class VentaController extends Controller
 
     public function index(Request $request)
     {
-        $query = Venta::query()->with(['cliente:id,nombre', 'pagos.metodoPago:id,nombre']);
+        $query = Venta::query()->with(['cliente:id,ulid,nombre', 'pagos.metodoPago:id,nombre']);
 
         if ($clienteNombre = $request->query('filtro_cliente')) {
             $query->whereHas('cliente', fn ($q) => $q->where('nombre', 'like', "%{$clienteNombre}%"));

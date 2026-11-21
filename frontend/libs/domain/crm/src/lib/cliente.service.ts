@@ -60,7 +60,7 @@ export class ClienteService {
   }
 
   obtener(
-    id: number,
+    id: string,
   ): Observable<{
     cliente: Cliente;
     permisos: Omit<ClientesPermisos, 'crear'>;
@@ -80,7 +80,7 @@ export class ClienteService {
       .pipe(map((r) => r.data));
   }
 
-  actualizar(id: number, payload: ClienteFormPayload): Observable<Cliente> {
+  actualizar(id: string, payload: ClienteFormPayload): Observable<Cliente> {
     const cuerpo: CuerpoDe<'/clientes/{cliente}', 'put'> = payload;
 
     return this.http
@@ -91,7 +91,7 @@ export class ClienteService {
       .pipe(map((r) => r.data));
   }
 
-  desactivar(id: number): Observable<Cliente> {
+  desactivar(id: string): Observable<Cliente> {
     return this.http
       .patch<RespuestaDe<'/clientes/{cliente}/desactivar', 'patch'>>(
         urlApi(`/clientes/${id}/desactivar`),
@@ -100,7 +100,7 @@ export class ClienteService {
       .pipe(map((r) => r.data));
   }
 
-  ventas(id: number): Observable<VentaResumen[]> {
+  ventas(id: string): Observable<VentaResumen[]> {
     return this.http
       .get<RespuestaDe<'/clientes/{cliente}/ventas', 'get'>>(
         urlApi(`/clientes/${id}/ventas`),

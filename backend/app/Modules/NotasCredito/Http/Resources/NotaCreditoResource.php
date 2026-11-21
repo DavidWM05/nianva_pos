@@ -20,7 +20,7 @@ class NotaCreditoResource extends JsonResource
             // D-3, transitorio: número visible de la nota (= id interno), solo para mostrarlo; lo
             // reemplaza el folio de DAT-07.
             'numero' => (int) $this->getKey(),
-            'cliente' => $this->whenLoaded('cliente', fn () => ['id' => $this->cliente->id, 'nombre' => $this->cliente->nombre]),
+            'cliente' => $this->whenLoaded('cliente', fn () => ['id' => (string) UlidPublico::de($this->resource, 'cliente'), 'nombre' => $this->cliente->nombre]),
             'devolucion_id' => UlidPublico::de($this->resource, 'devolucion'),
             // D-3, transitorio: número visible de la devolución de origen (= id interno), solo para
             // mostrarlo; lo reemplaza el folio de DAT-07.

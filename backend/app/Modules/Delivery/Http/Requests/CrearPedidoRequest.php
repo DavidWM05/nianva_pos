@@ -10,6 +10,7 @@ use App\Modules\Nucleo\Http\Requests\SolicitudNegocio;
 use App\Modules\Nucleo\Support\Cantidad;
 use App\Modules\Nucleo\Support\ReglasTenant;
 use App\Modules\Nucleo\Support\SucursalOperacion;
+use App\Modules\Nucleo\Support\UlidPublico;
 
 class CrearPedidoRequest extends SolicitudNegocio
 {
@@ -21,7 +22,7 @@ class CrearPedidoRequest extends SolicitudNegocio
         $tenantId = $this->tenantId();
 
         return [
-            'cliente_id' => ['required', 'integer', ReglasTenant::existe('clientes', $tenantId)],
+            'cliente_id' => ['required', 'string', 'ulid', ReglasTenant::existeUlid('clientes', $tenantId)],
             'sucursal_id' => ['nullable', 'integer', ReglasTenant::existe('sucursales', $tenantId)],
             'direccion_entrega' => ['nullable', 'string', 'max:500'],
             'referencia' => ['nullable', 'string', 'max:255'],
@@ -58,7 +59,7 @@ class CrearPedidoRequest extends SolicitudNegocio
         ));
 
         return new CrearPedidoDto(
-            clienteId: (int) $v['cliente_id'],
+            clienteId: UlidPublico::idInterno('clientes', (string) $v['cliente_id']),
             sucursalId: SucursalOperacion::paraEscritura(
                 $usuario,
                 isset($v['sucursal_id']) ? (int) $v['sucursal_id'] : null,

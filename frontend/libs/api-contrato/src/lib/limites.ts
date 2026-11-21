@@ -358,7 +358,7 @@ export const LIMITES = {
       }
     }
   },
-  "/cotizaciones/{id}": {
+  "/cotizaciones/{cotizacion}": {
     "put": {
       "lista_precio_id": {
         "requerido": false
@@ -410,7 +410,7 @@ export const LIMITES = {
       }
     }
   },
-  "/cotizaciones/{id}/convertir": {
+  "/cotizaciones/{cotizacion}/convertir": {
     "post": {
       "metodo_pago_id": {
         "requerido": true
@@ -459,7 +459,7 @@ export const LIMITES = {
       }
     }
   },
-  "/cuentas-cobrar/{id}/abonos": {
+  "/cuentas-cobrar/{cuentaCobrar}/abonos": {
     "post": {
       "monto": {
         "requerido": true,
@@ -475,7 +475,7 @@ export const LIMITES = {
       }
     }
   },
-  "/cuentas-pagar/{id}/pagos": {
+  "/cuentas-pagar/{cuentaPagar}/pagos": {
     "post": {
       "monto": {
         "requerido": true,
@@ -1159,7 +1159,7 @@ export const LIMITES = {
       }
     }
   },
-  "/ordenes-produccion/{id}/estado": {
+  "/ordenes-produccion/{ordenProduccion}/estado": {
     "patch": {
       "estado": {
         "requerido": true

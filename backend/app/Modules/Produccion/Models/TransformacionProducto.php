@@ -5,6 +5,7 @@ namespace App\Modules\Produccion\Models;
 use App\Modules\Inventario\Models\ProductoVariante;
 use App\Modules\Nucleo\Casts\CantidadFormateada;
 use App\Modules\Nucleo\Models\Concerns\BelongsToTenant;
+use App\Modules\Nucleo\Models\Concerns\RutaPorUlid;
 use App\Modules\Nucleo\Models\Concerns\TieneUlid;
 use App\Modules\Nucleo\Models\Sucursal;
 use App\Modules\Nucleo\Models\Tenant;
@@ -23,6 +24,7 @@ class TransformacionProducto extends Model
     /** @use HasFactory<TransformacionProductoFactory> */
     use HasFactory;
 
+    use RutaPorUlid;
     use TieneUlid;
 
     const UPDATED_AT = null;

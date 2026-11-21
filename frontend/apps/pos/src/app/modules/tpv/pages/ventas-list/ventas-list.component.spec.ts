@@ -20,7 +20,7 @@ describe('VentasListComponent', () => {
       id: ulidDePrueba(1),
       numero: 1,
       fecha: '2026-07-22T10:00:00.000000Z',
-      cliente: { id: 9, nombre: 'Publico General' },
+      cliente: { id: ulidDePrueba(9), nombre: 'Publico General' },
       total: '330.00',
       descuento_cupon: '0.00',
       descuento_manual: '0.00',

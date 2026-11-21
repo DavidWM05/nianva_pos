@@ -11,6 +11,7 @@ use App\Modules\Inventario\Support\ReglasVariante;
 use App\Modules\Nucleo\Http\Requests\SolicitudNegocio;
 use App\Modules\Nucleo\Support\Cantidad;
 use App\Modules\Nucleo\Support\ReglasTenant;
+use App\Modules\Nucleo\Support\UlidPublico;
 
 class CrearApartadoRequest extends SolicitudNegocio
 {
@@ -23,7 +24,7 @@ class CrearApartadoRequest extends SolicitudNegocio
 
         return [
             'lista_precio_id' => ['nullable', 'integer', ReglasTenant::existe('listas_precio', $tenantId)->where('activo', true)],
-            'cliente_id' => ['required', 'integer', ReglasTenant::existe('clientes', $tenantId)],
+            'cliente_id' => ['required', 'string', 'ulid', ReglasTenant::existeUlid('clientes', $tenantId)],
             'items' => ['required', 'array', 'min:1'],
             'items.*.variante_id' => ['required', 'integer', ReglasVariante::delTenant($tenantId)],
             'items.*.cantidad' => ['required', ...ReglasCantidad::paraVariante($tenantId)],
@@ -50,7 +51,7 @@ class CrearApartadoRequest extends SolicitudNegocio
 
         return new CrearApartadoDto(
             listaPrecioId: isset($v['lista_precio_id']) ? (int) $v['lista_precio_id'] : null,
-            clienteId: (int) $v['cliente_id'],
+            clienteId: UlidPublico::idInterno('clientes', (string) $v['cliente_id']),
             items: $items,
             fechaVencimiento: isset($v['fecha_vencimiento']) ? (string) $v['fecha_vencimiento'] : null,
             notas: isset($v['notas']) ? (string) $v['notas'] : null,

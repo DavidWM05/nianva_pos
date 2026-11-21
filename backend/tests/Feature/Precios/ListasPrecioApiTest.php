@@ -104,11 +104,11 @@ class ListasPrecioApiTest extends TestCase
         $cliente = Cliente::factory()->create(['tenant_id' => $usuario->tenant_id]);
         $a = ListaPrecio::factory()->create(['tenant_id' => $usuario->tenant_id]);
         $b = ListaPrecio::factory()->create(['tenant_id' => $usuario->tenant_id]);
-        $this->postJson('/api/v1/precios/listas/'.$a->id.'/clientes', ['cliente_id' => $cliente->id])->assertCreated();
-        $respuesta = $this->postJson('/api/v1/precios/listas/'.$b->id.'/clientes', ['cliente_id' => $cliente->id]);
+        $this->postJson('/api/v1/precios/listas/'.$a->id.'/clientes', ['cliente_id' => $cliente->ulid])->assertCreated();
+        $respuesta = $this->postJson('/api/v1/precios/listas/'.$b->id.'/clientes', ['cliente_id' => $cliente->ulid]);
         $respuesta->assertCreated();
         $this->assertDatabaseCount('lista_precio_clientes', 1);
-        $this->getJson('/api/v1/precios/listas/'.$b->id)->assertOk()->assertJsonPath('data.clientes.0.cliente_id', $cliente->id);
+        $this->getJson('/api/v1/precios/listas/'.$b->id)->assertOk()->assertJsonPath('data.clientes.0.cliente_id', $cliente->ulid);
         $this->deleteJson('/api/v1/precios/listas/'.$a->id.'/clientes/'.$respuesta->json('data.id'))->assertNotFound();
         $this->deleteJson('/api/v1/precios/listas/'.$b->id.'/clientes/'.$respuesta->json('data.id'))->assertNoContent();
     }
@@ -123,7 +123,7 @@ class ListasPrecioApiTest extends TestCase
         $cliente = Cliente::factory()->create(['tenant_id' => $otro->id]);
         $this->getJson('/api/v1/precios/listas/'.$ajena->id)->assertNotFound();
         $this->postJson('/api/v1/precios/listas/'.$lista->id.'/items', ['producto_id' => $producto->id, 'precio' => 10])->assertUnprocessable()->assertJsonValidationErrors('producto_id');
-        $this->postJson('/api/v1/precios/listas/'.$lista->id.'/clientes', ['cliente_id' => $cliente->id])->assertUnprocessable()->assertJsonValidationErrors('cliente_id');
+        $this->postJson('/api/v1/precios/listas/'.$lista->id.'/clientes', ['cliente_id' => $cliente->ulid])->assertUnprocessable()->assertJsonValidationErrors('cliente_id');
     }
 
     #[DataProvider('selecciones')]
@@ -138,7 +138,7 @@ class ListasPrecioApiTest extends TestCase
         if ($misma) {
             ListaPrecioCliente::factory()->create(['tenant_id' => $usuario->tenant_id, 'lista_precio_id' => $lista->id, 'cliente_id' => $cliente->id]);
         }
-        $r = $this->postJson('/api/v1/ventas/cotizar', ['cliente_id' => $cliente->id, 'lista_precio_id' => $lista->id, 'items' => [['variante_id' => $variante->id, 'cantidad' => 1]]]);
+        $r = $this->postJson('/api/v1/ventas/cotizar', ['cliente_id' => $cliente->ulid, 'lista_precio_id' => $lista->id, 'items' => [['variante_id' => $variante->id, 'cantidad' => 1]]]);
         $r->assertStatus($status);
         if ($status === 200) {
             $r->assertJsonPath('data.subtotal', '80.00');
@@ -170,7 +170,7 @@ class ListasPrecioApiTest extends TestCase
         $metodo = MetodoPago::factory()->create(['tenant_id' => $usuario->tenant_id]);
         $lista = ListaPrecio::factory()->create(['tenant_id' => $usuario->tenant_id]);
         ListaPrecioItem::factory()->create(['tenant_id' => $usuario->tenant_id, 'lista_precio_id' => $lista->id, 'producto_id' => $producto->id, 'precio' => 80]);
-        $datos = ['cliente_id' => $cliente->id, 'lista_precio_id' => $lista->id, 'items' => [['variante_id' => $variante->id, 'cantidad' => 1]]];
+        $datos = ['cliente_id' => $cliente->ulid, 'lista_precio_id' => $lista->id, 'items' => [['variante_id' => $variante->id, 'cantidad' => 1]]];
         $this->postJson('/api/v1/ventas', $datos + ['pagos' => [['metodo_pago_id' => $metodo->id, 'monto' => 80]]])->assertCreated()->assertJsonPath('data.total', '80.00');
         $this->postJson('/api/v1/apartados', $datos)->assertCreated()->assertJsonPath('data.total', '80.00');
         $this->postJson('/api/v1/cotizaciones', $datos)->assertCreated()->assertJsonPath('data.total', '80.00');
@@ -188,7 +188,7 @@ class ListasPrecioApiTest extends TestCase
         $metodo = MetodoPago::factory()->create(['tenant_id' => $usuario->tenant_id]);
         $lista = ListaPrecio::factory()->create(['tenant_id' => $usuario->tenant_id]);
         ListaPrecioItem::factory()->create(['tenant_id' => $usuario->tenant_id, 'lista_precio_id' => $lista->id, 'producto_id' => $producto->id, 'precio' => 80]);
-        $r = $this->postJson('/api/v1/'.$operacion, ['cliente_id' => $cliente->id, 'lista_precio_id' => $lista->id, 'items' => [['variante_id' => $variante->id, 'cantidad' => 1]]]);
+        $r = $this->postJson('/api/v1/'.$operacion, ['cliente_id' => $cliente->ulid, 'lista_precio_id' => $lista->id, 'items' => [['variante_id' => $variante->id, 'cantidad' => 1]]]);
         $r->assertCreated();
         $id = $r->json('data.id');
         $venta = $operacion === 'apartados'

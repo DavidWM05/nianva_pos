@@ -4,7 +4,8 @@ import type { RespuestaDe, VentaResource } from '@nianva/api-contrato';
 export type EstadoVenta = 'completada' | 'anulada';
 
 export interface VentaClienteResumen {
-  id: number;
+  /** DAT-08: ulid del cliente. */
+  id: string;
   nombre: string;
 }
 
@@ -121,7 +122,8 @@ export interface ReporteVentasFiltros {
 
 export interface VentaFormPayload {
   lista_precio_id?: number | null;
-  cliente_id: number;
+  /** DAT-08: ulid del cliente. */
+  cliente_id: string;
   items: VentaItemPayload[];
   pagos: VentaPagoPayload[];
   cupon_codigo?: string | null;

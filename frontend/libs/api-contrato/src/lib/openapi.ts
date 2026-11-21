@@ -493,22 +493,10 @@ export interface paths {
             cookie?: never;
         };
         get: operations["cotizacion.show"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/cotizaciones/{id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
+        /**
+         * DAT-08: las rutas de la cotización la resuelven por ulid (binding); las Actions siguen
+         *     recibiendo el id interno y bloqueando por él
+         */
         put: operations["cotizacion.update"];
         post?: never;
         delete: operations["cotizacion.destroy"];
@@ -517,7 +505,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/cotizaciones/{id}/convertir": {
+    "/cotizaciones/{cotizacion}/convertir": {
         parameters: {
             query?: never;
             header?: never;
@@ -661,7 +649,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/cuentas-cobrar/{id}/abonos": {
+    "/cuentas-cobrar/{cuentaCobrar}/abonos": {
         parameters: {
             query?: never;
             header?: never;
@@ -670,6 +658,10 @@ export interface paths {
         };
         get?: never;
         put?: never;
+        /**
+         * DAT-08: la ruta resuelve la cuenta por ulid (binding); la Action sigue recibiendo el id
+         *     interno y bloqueando por él
+         */
         post: operations["cuentaCobrar.registrarAbono"];
         delete?: never;
         options?: never;
@@ -677,7 +669,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/cuentas-cobrar/{id}/anular": {
+    "/cuentas-cobrar/{cuentaCobrar}/anular": {
         parameters: {
             query?: never;
             header?: never;
@@ -741,7 +733,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/cuentas-pagar/{id}/pagos": {
+    "/cuentas-pagar/{cuentaPagar}/pagos": {
         parameters: {
             query?: never;
             header?: never;
@@ -750,6 +742,10 @@ export interface paths {
         };
         get?: never;
         put?: never;
+        /**
+         * DAT-08: la ruta resuelve la cuenta por ulid (binding); la Action sigue recibiendo el id
+         *     interno y bloqueando por él
+         */
         post: operations["cuentaPagar.registrarPago"];
         delete?: never;
         options?: never;
@@ -757,7 +753,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/cuentas-pagar/{id}/anular": {
+    "/cuentas-pagar/{cuentaPagar}/anular": {
         parameters: {
             query?: never;
             header?: never;
@@ -1755,7 +1751,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/ordenes-produccion/{id}/estado": {
+    "/ordenes-produccion/{ordenProduccion}/estado": {
         parameters: {
             query?: never;
             header?: never;
@@ -1768,6 +1764,10 @@ export interface paths {
         delete?: never;
         options?: never;
         head?: never;
+        /**
+         * DAT-08: la ruta resuelve la orden por ulid (binding); la Action sigue recibiendo el id
+         *     interno y bloqueando por él
+         */
         patch: operations["produccion.ordenesCambiarEstado"];
         trace?: never;
     };
@@ -2287,44 +2287,18 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
-        /** AbonoCuenta */
-        AbonoCuenta: {
-            id: number;
-            ulid: string;
-            cuenta_cobrar_id: number;
-            caja_sesion_id: number | null;
-            usuario_id: number;
-            monto: string;
-            metodo_pago_id: number;
-            referencia: string | null;
-            /** Format: date-time */
-            fecha: string;
-        };
         /** AbonoCuentaResource */
         AbonoCuentaResource: {
-            id: number;
+            id: string;
             monto: string;
             metodo_pago?: string;
             referencia: string | null;
             /** Format: date-time */
             fecha: string;
         };
-        /** AbonoPagar */
-        AbonoPagar: {
-            id: number;
-            ulid: string;
-            cuenta_pagar_id: number;
-            caja_sesion_id: number | null;
-            usuario_id: number;
-            monto: string;
-            metodo_pago_id: number;
-            referencia: string | null;
-            /** Format: date-time */
-            fecha: string;
-        };
         /** AbonoPagarResource */
         AbonoPagarResource: {
-            id: number;
+            id: string;
             monto: string;
             metodo_pago?: string;
             referencia: string | null;
@@ -2361,7 +2335,7 @@ export interface components {
         /** ActualizarCotizacionRequest */
         ActualizarCotizacionRequest: {
             lista_precio_id?: number | null;
-            cliente_id?: number | null;
+            cliente_id?: string | null;
             validez_dias?: number | null;
             descuento?: number | null;
             uso_cfdi?: string | null;
@@ -2395,7 +2369,7 @@ export interface components {
             /** Format: date-time */
             fecha_creacion: string;
             cliente?: {
-                id: number;
+                id: string;
                 nombre: string;
             } | null;
             total: string;
@@ -2457,7 +2431,7 @@ export interface components {
         };
         /** AsignarListaPrecioClienteRequest */
         AsignarListaPrecioClienteRequest: {
-            cliente_id: number;
+            cliente_id: string;
         };
         /** AsignarRepartidorRequest */
         AsignarRepartidorRequest: {
@@ -2559,7 +2533,8 @@ export interface components {
         };
         /** ClienteResource */
         ClienteResource: {
-            id: number;
+            /** @description DAT-08 (D-2): el cliente nace en la terminal; su identificador público es el ulid. */
+            id: string;
             nombre: string;
             documento_fiscal: string | null;
             telefono: string | null;
@@ -2614,7 +2589,7 @@ export interface components {
         };
         /** CotizacionDetalleResource */
         CotizacionDetalleResource: {
-            id: number;
+            id: string;
             variante_id: number;
             variante?: {
                 id: number;
@@ -2635,10 +2610,11 @@ export interface components {
         /** CotizacionResource */
         CotizacionResource: {
             lista_precio_id: number | null;
-            id: number;
+            /** @description DAT-08: el identificador público es el ulid; el número visible es numero_cotizacion. */
+            id: string;
             numero_cotizacion: string;
             cliente?: {
-                id: number;
+                id: string;
                 nombre: string;
             };
             usuario?: {
@@ -2676,7 +2652,7 @@ export interface components {
         /** CotizarVentaRequest */
         CotizarVentaRequest: {
             lista_precio_id?: number | null;
-            cliente_id?: number | null;
+            cliente_id?: string | null;
             items: {
                 presentacion_id?: number | null;
                 variante_id: number;
@@ -2686,7 +2662,7 @@ export interface components {
         /** CrearApartadoRequest */
         CrearApartadoRequest: {
             lista_precio_id?: number | null;
-            cliente_id: number;
+            cliente_id: string;
             items: {
                 variante_id: number;
                 cantidad: number;
@@ -2698,7 +2674,7 @@ export interface components {
         /** CrearCotizacionRequest */
         CrearCotizacionRequest: {
             lista_precio_id?: number | null;
-            cliente_id?: number | null;
+            cliente_id?: string | null;
             sucursal_id?: number | null;
             validez_dias?: number | null;
             descuento?: number | null;
@@ -2775,7 +2751,7 @@ export interface components {
         };
         /** CrearPedidoRequest */
         CrearPedidoRequest: {
-            cliente_id: number;
+            cliente_id: string;
             sucursal_id?: number | null;
             direccion_entrega?: string | null;
             referencia?: string | null;
@@ -2842,7 +2818,7 @@ export interface components {
         /** CrearVentaRequest */
         CrearVentaRequest: {
             lista_precio_id?: number | null;
-            cliente_id: number;
+            cliente_id: string;
             items: {
                 presentacion_id?: number | null;
                 variante_id: number;
@@ -2892,7 +2868,8 @@ export interface components {
         /** CrmInteraccionResource */
         CrmInteraccionResource: {
             id: number;
-            cliente_id: number;
+            /** @description DAT-08 (D-10, cambio mínimo en módulo congelado): el cliente se publica por su ulid. */
+            cliente_id: string | null;
             usuario?: {
                 id: number;
                 nombre: string;
@@ -2905,10 +2882,16 @@ export interface components {
         };
         /** CuentaCobrarResource */
         CuentaCobrarResource: {
-            id: number;
+            /** @description DAT-08: el identificador público es el ulid; el id interno no sale de la API. */
+            id: string;
+            /**
+             * @description D-3, transitorio: número visible de la cuenta (= id interno), solo para mostrarlo; lo
+             *     reemplaza el folio de DAT-07.
+             */
+            numero: number;
             venta_id: string | null;
             cliente?: {
-                id: number;
+                id: string;
                 nombre: string;
             };
             monto_total: string;
@@ -2924,8 +2907,16 @@ export interface components {
         };
         /** CuentaPagarResource */
         CuentaPagarResource: {
-            id: number;
-            compra_id: number;
+            /** @description DAT-08: el identificador público es el ulid; el id interno no sale de la API. */
+            id: string;
+            /**
+             * @description D-3, transitorio: número visible de la cuenta (= id interno), solo para mostrarlo; lo
+             *     reemplaza el folio de DAT-07.
+             */
+            numero: number;
+            compra_id: string | null;
+            /** @description D-3, transitorio: número visible de la compra de origen. */
+            compra_numero: number | null;
             proveedor?: {
                 id: number;
                 razon_social: string;
@@ -3038,7 +3029,7 @@ export interface components {
         };
         /** EmitirGiftCardRequest */
         EmitirGiftCardRequest: {
-            cliente_id?: number | null;
+            cliente_id?: string | null;
             monto: number;
             /** Format: date-time */
             fecha_expiracion?: string | null;
@@ -3064,13 +3055,14 @@ export interface components {
         EnviarCampanaRequest: {
             /** @enum {string|null} */
             segmento?: "todos" | "nuevo" | "frecuente" | "vip" | "inactivo" | null;
-            cliente_ids?: number[] | null;
+            cliente_ids?: string[] | null;
             asunto: string;
             mensaje: string;
         };
         /** GastoResource */
         GastoResource: {
-            id: number;
+            /** @description DAT-08: el identificador público es el ulid. */
+            id: string;
             descripcion: string;
             monto: string;
             /** Format: date-time */
@@ -3285,7 +3277,7 @@ export interface components {
         /** ListaPrecioClienteResource */
         ListaPrecioClienteResource: {
             id: number;
-            cliente_id: number;
+            cliente_id: string;
         };
         /** ListaPrecioItemResource */
         ListaPrecioItemResource: {
@@ -3372,7 +3364,7 @@ export interface components {
              */
             numero: number;
             cliente?: {
-                id: number;
+                id: string;
                 nombre: string;
             };
             devolucion_id: string | null;
@@ -3406,7 +3398,10 @@ export interface components {
         };
         /** OrdenProduccionResource */
         OrdenProduccionResource: {
-            id: number;
+            /** @description DAT-08: el identificador público es el ulid; el id interno no sale de la API. */
+            id: string;
+            /** @description D-3, transitorio: número visible de la orden (= id interno); lo reemplaza el folio de DAT-07. */
+            numero: number;
             receta?: {
                 id: number;
                 nombre: string;
@@ -3425,7 +3420,8 @@ export interface components {
         };
         /** PagarCuotaRequest */
         PagarCuotaRequest: {
-            cuota_id: number;
+            /** @description DAT-08: la cuota llega por su ulid publicado; toDto() la traduce al id. */
+            cuota_id: string;
             monto?: number | null;
         };
         /** PedidoItemResource */
@@ -3441,7 +3437,7 @@ export interface components {
             id: number;
             numero_pedido: string;
             cliente?: {
-                id: number;
+                id: string;
                 nombre: string;
             };
             repartidor?: {
@@ -3483,29 +3479,14 @@ export interface components {
             /** Format: date-time */
             created_at: string;
         };
-        /** PlanPagoClienteCuota */
-        PlanPagoClienteCuota: {
-            id: number;
-            ulid: string;
-            plan_pago_cliente_id: number;
-            numero_cuota: number;
-            monto: string;
-            /** Format: date-time */
-            fecha_vencimiento: string;
-            /** Format: date-time */
-            fecha_pago: string | null;
-            /** @enum {string} */
-            estado: "pendiente" | "pagada" | "vencida";
-            monto_interes: string;
-            monto_capital: string;
-            /** Format: date-time */
-            fecha_pago_real: string | null;
-        };
         /** PlanPagoResource */
         PlanPagoResource: {
-            id: number;
+            /** @description DAT-08: el identificador público es el ulid; el id interno no sale de la API. */
+            id: string;
+            /** @description D-3, transitorio: número visible del plan (= id interno); lo reemplaza el folio de DAT-07. */
+            numero: number;
             cliente?: {
-                id: number;
+                id: string;
                 nombre: string;
             };
             venta_id: string | null;
@@ -3520,7 +3501,8 @@ export interface components {
             fecha_inicio: string;
             /** @description Campos explicitos (ARQ-12b): el modelo crudo no documentaba el estado como enum. */
             cuotas?: {
-                id: number;
+                /** @description DAT-08: ulid de la cuota; pagar-cuota la recibe en cuota_id. */
+                id: string;
                 numero_cuota: number;
                 monto: string;
                 monto_capital: string;
@@ -3802,7 +3784,8 @@ export interface components {
         };
         /** TransformacionResource */
         TransformacionResource: {
-            id: number;
+            /** @description DAT-08: el identificador público es el ulid. */
+            id: string;
             variante_origen_id: number;
             variante_destino_id: number;
             cantidad_origen: string;
@@ -3900,7 +3883,7 @@ export interface components {
             /** Format: date-time */
             fecha: string;
             cliente?: {
-                id: number;
+                id: string;
                 nombre: string;
             } | null;
             total: string;
@@ -3968,9 +3951,7 @@ export interface components {
     headers: never;
     pathItems: never;
 }
-export type AbonoCuenta = components['schemas']['AbonoCuenta'];
 export type AbonoCuentaResource = components['schemas']['AbonoCuentaResource'];
-export type AbonoPagar = components['schemas']['AbonoPagar'];
 export type AbonoPagarResource = components['schemas']['AbonoPagarResource'];
 export type AbrirCajaRequest = components['schemas']['AbrirCajaRequest'];
 export type ActualizarConfiguracionRequest = components['schemas']['ActualizarConfiguracionRequest'];
@@ -4066,7 +4047,6 @@ export type PedidoItemResource = components['schemas']['PedidoItemResource'];
 export type PedidoResource = components['schemas']['PedidoResource'];
 export type PerfilGiroResource = components['schemas']['PerfilGiroResource'];
 export type Permiso = components['schemas']['Permiso'];
-export type PlanPagoClienteCuota = components['schemas']['PlanPagoClienteCuota'];
 export type PlanPagoResource = components['schemas']['PlanPagoResource'];
 export type PresentacionResource = components['schemas']['PresentacionResource'];
 export type PrestamoPago = components['schemas']['PrestamoPago'];
@@ -4951,8 +4931,8 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description The cliente ID */
-                cliente: number;
+                /** @description The cliente ulid */
+                cliente: string;
             };
             cookie?: never;
         };
@@ -4983,8 +4963,8 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description The cliente ID */
-                cliente: number;
+                /** @description The cliente ulid */
+                cliente: string;
             };
             cookie?: never;
         };
@@ -5015,8 +4995,8 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description The cliente ID */
-                cliente: number;
+                /** @description The cliente ulid */
+                cliente: string;
             };
             cookie?: never;
         };
@@ -5083,7 +5063,8 @@ export interface operations {
                 content: {
                     "application/json": {
                         data: {
-                            id: number;
+                            id: string;
+                            numero: number;
                             total: string;
                         };
                     };
@@ -5279,8 +5260,8 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description The cotizacion ID */
-                cotizacion: number;
+                /** @description The cotizacion ulid */
+                cotizacion: string;
             };
             cookie?: never;
         };
@@ -5310,7 +5291,8 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                id: number;
+                /** @description The cotizacion ulid */
+                cotizacion: string;
             };
             cookie?: never;
         };
@@ -5332,6 +5314,7 @@ export interface operations {
                 };
             };
             401: components["responses"]["AuthenticationException"];
+            404: components["responses"]["ModelNotFoundException"];
             422: components["responses"]["ValidationException"];
         };
     };
@@ -5340,7 +5323,8 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                id: number;
+                /** @description The cotizacion ulid */
+                cotizacion: string;
             };
             cookie?: never;
         };
@@ -5358,6 +5342,7 @@ export interface operations {
                 };
             };
             401: components["responses"]["AuthenticationException"];
+            404: components["responses"]["ModelNotFoundException"];
         };
     };
     "cotizacion.convertir": {
@@ -5365,7 +5350,8 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                id: number;
+                /** @description The cotizacion ulid */
+                cotizacion: string;
             };
             cookie?: never;
         };
@@ -5383,11 +5369,13 @@ export interface operations {
                     "application/json": {
                         /** @constant */
                         message: "Cotización convertida a venta correctamente.";
-                        venta_id: number;
+                        /** @description DAT-08: la venta creada se publica por su ulid. */
+                        venta_id: string;
                     };
                 };
             };
             401: components["responses"]["AuthenticationException"];
+            404: components["responses"]["ModelNotFoundException"];
             422: components["responses"]["ValidationException"];
         };
     };
@@ -5396,8 +5384,8 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description The cliente ID */
-                cliente: number;
+                /** @description The cliente ulid */
+                cliente: string;
             };
             cookie?: never;
         };
@@ -5427,8 +5415,8 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description The cliente ID */
-                cliente: number;
+                /** @description The cliente ulid */
+                cliente: string;
             };
             cookie?: never;
         };
@@ -5459,8 +5447,8 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description The cliente ID */
-                cliente: number;
+                /** @description The cliente ulid */
+                cliente: string;
             };
             cookie?: never;
         };
@@ -5504,8 +5492,8 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description The cliente ID */
-                cliente: number;
+                /** @description The cliente ulid */
+                cliente: string;
             };
             cookie?: never;
         };
@@ -5673,7 +5661,8 @@ export interface operations {
                                 vencido_90_mas: string;
                             };
                             por_cliente: {
-                                cliente_id: number;
+                                /** @description DAT-08: el cliente se publica por su ulid. */
+                                cliente_id: string | null;
                                 cliente_nombre: string | null;
                                 saldo_pendiente: string;
                                 cuentas_pendientes: number;
@@ -5690,8 +5679,8 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description The cuenta cobrar ID */
-                cuentaCobrar: number;
+                /** @description The cuenta cobrar ulid */
+                cuentaCobrar: string;
             };
             cookie?: never;
         };
@@ -5717,7 +5706,8 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                id: number;
+                /** @description The cuenta cobrar ulid */
+                cuentaCobrar: string;
             };
             cookie?: never;
         };
@@ -5734,9 +5724,10 @@ export interface operations {
                 content: {
                     "application/json": {
                         data: {
-                            abono: components["schemas"]["AbonoCuenta"];
+                            /** @description DAT-08: el abono sale por su Resource (ulid), no como modelo crudo con ids internos. */
+                            abono: components["schemas"]["AbonoCuentaResource"];
                             cuenta: {
-                                id: number;
+                                id: string;
                                 saldo_pendiente: string;
                                 /** @enum {string} */
                                 estado: "pendiente" | "pagada" | "anulada";
@@ -5757,7 +5748,8 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                id: number;
+                /** @description The cuenta cobrar ulid */
+                cuentaCobrar: string;
             };
             cookie?: never;
         };
@@ -5775,6 +5767,7 @@ export interface operations {
                 };
             };
             401: components["responses"]["AuthenticationException"];
+            404: components["responses"]["ModelNotFoundException"];
         };
     };
     "cuentaPagar.index": {
@@ -5850,8 +5843,8 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description The cuenta pagar ID */
-                cuentaPagar: number;
+                /** @description The cuenta pagar ulid */
+                cuentaPagar: string;
             };
             cookie?: never;
         };
@@ -5877,7 +5870,8 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                id: number;
+                /** @description The cuenta pagar ulid */
+                cuentaPagar: string;
             };
             cookie?: never;
         };
@@ -5894,9 +5888,10 @@ export interface operations {
                 content: {
                     "application/json": {
                         data: {
-                            abono: components["schemas"]["AbonoPagar"];
+                            /** @description DAT-08: el pago sale por su Resource (ulid), no como modelo crudo con ids internos. */
+                            abono: components["schemas"]["AbonoPagarResource"];
                             cuenta: {
-                                id: number;
+                                id: string;
                                 saldo_pendiente: string;
                                 /** @enum {string} */
                                 estado: "pendiente" | "pagada" | "anulada";
@@ -5917,7 +5912,8 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                id: number;
+                /** @description The cuenta pagar ulid */
+                cuentaPagar: string;
             };
             cookie?: never;
         };
@@ -5935,6 +5931,7 @@ export interface operations {
                 };
             };
             401: components["responses"]["AuthenticationException"];
+            404: components["responses"]["ModelNotFoundException"];
         };
     };
     "cupon.index": {
@@ -7298,8 +7295,8 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description The cliente ID */
-                cliente: number;
+                /** @description The cliente ulid */
+                cliente: string;
             };
             cookie?: never;
         };
@@ -7807,8 +7804,8 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description The plan ID */
-                plan: number;
+                /** @description The plan ulid */
+                plan: string;
             };
             cookie?: never;
         };
@@ -7866,8 +7863,8 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description The plan ID */
-                plan: number;
+                /** @description The plan ulid */
+                plan: string;
             };
             cookie?: never;
         };
@@ -7883,7 +7880,19 @@ export interface operations {
                 };
                 content: {
                     "application/json": {
-                        data: components["schemas"]["PlanPagoClienteCuota"];
+                        data: {
+                            id: string;
+                            numero_cuota: number;
+                            monto: string;
+                            monto_capital: string;
+                            monto_interes: string;
+                            /** Format: date-time */
+                            fecha_vencimiento: string;
+                            /** Format: date-time */
+                            fecha_pago: string | null;
+                            /** @enum {string} */
+                            estado: "pendiente" | "pagada" | "vencida";
+                        };
                     };
                 };
             };
@@ -8360,7 +8369,8 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                id: number;
+                /** @description The orden produccion ulid */
+                ordenProduccion: string;
             };
             cookie?: never;
         };
@@ -8385,6 +8395,7 @@ export interface operations {
                 };
             };
             401: components["responses"]["AuthenticationException"];
+            404: components["responses"]["ModelNotFoundException"];
             422: components["responses"]["ValidationException"];
         };
     };
@@ -9587,8 +9598,8 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description The cliente ID */
-                cliente: number;
+                /** @description The cliente ulid */
+                cliente: string;
             };
             cookie?: never;
         };

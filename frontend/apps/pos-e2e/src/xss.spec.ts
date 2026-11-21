@@ -43,7 +43,7 @@ test('el nombre con HTML se muestra literal y no ejecuta XSS en las pantallas de
   await expect(filaCliente).toBeVisible();
   await comprobarTextoLiteral(page, filaCliente);
 
-  await expect(cliente.id).toBeGreaterThan(0);
+  await expect(cliente.id).toMatch(/^[0-9a-hjkmnp-tv-z]{26}$/);
 });
 
 // Serie 50d: la sugerencia del buscador se busca por su rol (option), no por las clases de la

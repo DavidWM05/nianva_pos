@@ -214,7 +214,7 @@ describe('VentaComponent', () => {
   it('seleccionar cliente pide sus notas de credito activas', async () => {
     await crearComponente();
 
-    fixture.componentInstance.onClienteSeleccionado(9);
+    fixture.componentInstance.onClienteSeleccionado(ulidDePrueba(9));
 
     expect(notaCreditoService.activasPorCliente).toHaveBeenCalledWith(9);
   });
@@ -224,7 +224,7 @@ describe('VentaComponent', () => {
       {
         id: ulidDePrueba(3),
         numero: 3,
-        cliente: { id: 9, nombre: 'Juan' },
+        cliente: { id: ulidDePrueba(9), nombre: 'Juan' },
         devolucion_id: ulidDePrueba(1),
         devolucion_numero: 1,
         monto_original: '500.00',
@@ -241,7 +241,7 @@ describe('VentaComponent', () => {
     notaCreditoService.activasPorCliente.mockReturnValue(of(notas));
 
     fixture.componentInstance.onLineasCambio({ items: [{ variante_id: 5, cantidad: 2 }], subtotal: 200 });
-    fixture.componentInstance.onClienteSeleccionado(9);
+    fixture.componentInstance.onClienteSeleccionado(ulidDePrueba(9));
     fixture.componentInstance['notaCreditoSeleccionadaId'].set(ulidDePrueba(3));
     fixture.detectChanges();
 
@@ -265,7 +265,7 @@ describe('VentaComponent', () => {
       {
         id: ulidDePrueba(3),
         numero: 3,
-        cliente: { id: 9, nombre: 'Juan' },
+        cliente: { id: ulidDePrueba(9), nombre: 'Juan' },
         devolucion_id: ulidDePrueba(1),
         devolucion_numero: 1,
         monto_original: '500.00',
@@ -287,7 +287,7 @@ describe('VentaComponent', () => {
     // la nota de credito) sin que Angular detecte una diferencia en medio.
     fixture.detectChanges();
 
-    fixture.componentInstance.onClienteSeleccionado(9);
+    fixture.componentInstance.onClienteSeleccionado(ulidDePrueba(9));
     fixture.componentInstance['notaCreditoSeleccionadaId'].set(ulidDePrueba(3));
     fixture.componentInstance['giftCardCodigo'].set('GC-1-ABCD1234');
     fixture.detectChanges();

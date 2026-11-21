@@ -15,9 +15,7 @@ class DecimalesExtensionesOpenApiTest extends TestCase
         $propiedades = [];
         $this->recolectar($api, '', $propiedades);
         $campos = [
-            'components/schemas/AbonoCuenta/properties/monto',
             'components/schemas/AbonoCuentaResource/properties/monto',
-            'components/schemas/AbonoPagar/properties/monto',
             'components/schemas/AbonoPagarResource/properties/monto',
             'components/schemas/CotizacionDetalleResource/properties/cantidad',
             'components/schemas/CotizacionDetalleResource/properties/precio_unitario',
@@ -50,9 +48,9 @@ class DecimalesExtensionesOpenApiTest extends TestCase
             'components/schemas/PedidoItemResource/properties/precio_unitario',
             'components/schemas/PedidoItemResource/properties/subtotal',
             'components/schemas/PedidoResource/properties/costo_delivery',
-            'components/schemas/PlanPagoClienteCuota/properties/monto',
-            'components/schemas/PlanPagoClienteCuota/properties/monto_interes',
-            'components/schemas/PlanPagoClienteCuota/properties/monto_capital',
+            'paths//planes-pago-cliente/{plan}/pagar-cuota/post/responses/200/content/application/json/schema/properties/data/properties/monto',
+            'paths//planes-pago-cliente/{plan}/pagar-cuota/post/responses/200/content/application/json/schema/properties/data/properties/monto_interes',
+            'paths//planes-pago-cliente/{plan}/pagar-cuota/post/responses/200/content/application/json/schema/properties/data/properties/monto_capital',
             'components/schemas/PlanPagoResource/properties/monto_total',
             'components/schemas/PlanPagoResource/properties/interes_total',
             'components/schemas/PrestamoPago/properties/monto',
@@ -71,7 +69,7 @@ class DecimalesExtensionesOpenApiTest extends TestCase
             'paths//cuentas-cobrar/reporte/get/responses/200/content/application/json/schema/properties/data/properties/por_antiguedad/properties/vencido_61_90',
             'paths//cuentas-cobrar/reporte/get/responses/200/content/application/json/schema/properties/data/properties/por_antiguedad/properties/vencido_90_mas',
             'paths//cuentas-cobrar/reporte/get/responses/200/content/application/json/schema/properties/data/properties/por_cliente/items/properties/saldo_pendiente',
-            'paths//cuentas-cobrar/{id}/abonos/post/responses/200/content/application/json/schema/properties/data/properties/cuenta/properties/saldo_pendiente',
+            'paths//cuentas-cobrar/{cuentaCobrar}/abonos/post/responses/200/content/application/json/schema/properties/data/properties/cuenta/properties/saldo_pendiente',
             'paths//cuentas-pagar/reporte/get/responses/200/content/application/json/schema/properties/data/properties/total_pendiente',
             'paths//cuentas-pagar/reporte/get/responses/200/content/application/json/schema/properties/data/properties/total_vencido',
             'paths//cuentas-pagar/reporte/get/responses/200/content/application/json/schema/properties/data/properties/por_antiguedad/properties/al_dia',
@@ -80,7 +78,7 @@ class DecimalesExtensionesOpenApiTest extends TestCase
             'paths//cuentas-pagar/reporte/get/responses/200/content/application/json/schema/properties/data/properties/por_antiguedad/properties/vencido_61_90',
             'paths//cuentas-pagar/reporte/get/responses/200/content/application/json/schema/properties/data/properties/por_antiguedad/properties/vencido_90_mas',
             'paths//cuentas-pagar/reporte/get/responses/200/content/application/json/schema/properties/data/properties/por_proveedor/items/properties/saldo_pendiente',
-            'paths//cuentas-pagar/{id}/pagos/post/responses/200/content/application/json/schema/properties/data/properties/cuenta/properties/saldo_pendiente',
+            'paths//cuentas-pagar/{cuentaPagar}/pagos/post/responses/200/content/application/json/schema/properties/data/properties/cuenta/properties/saldo_pendiente',
         ];
         $errores = [];
         foreach ($campos as $campo) {

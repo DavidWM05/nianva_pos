@@ -30,7 +30,7 @@ class ManipulacionDePreciosTest extends TestCase
         $this->actingAs($this->usuario);
 
         $respuesta = $this->postJson('/api/v1/ventas', [
-            'cliente_id' => $this->cliente->id,
+            'cliente_id' => $this->cliente->ulid,
             'items' => [[
                 'variante_id' => $this->variante->id,
                 'cantidad' => 1,
@@ -79,7 +79,7 @@ class ManipulacionDePreciosTest extends TestCase
         $this->actingAs($this->usuario);
 
         $respuesta = $this->postJson('/api/v1/apartados', [
-            'cliente_id' => $this->cliente->id,
+            'cliente_id' => $this->cliente->ulid,
             'items' => [[
                 'variante_id' => $this->variante->id,
                 'cantidad' => 1,

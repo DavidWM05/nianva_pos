@@ -5,6 +5,7 @@ namespace Tests\Feature\Produccion;
 use App\Modules\Nucleo\Models\Permiso;
 use App\Modules\Nucleo\Models\Rol;
 use App\Modules\Nucleo\Models\Usuario;
+use App\Modules\Produccion\Models\OrdenProduccion;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\Support\PreparaNegocio;
 use Tests\TestCase;
@@ -22,8 +23,9 @@ class CambiarEstadoOrdenPermisoTest extends TestCase
 
     public function test_cambiar_estado_exige_produccion_completar(): void
     {
+        $orden = OrdenProduccion::factory()->create(['tenant_id' => $this->tenant->id, 'sucursal_id' => $this->sucursal->id]);
         $this->actingAs($this->usuario)
-            ->patchJson('/api/v1/ordenes-produccion/999999/estado', [
+            ->patchJson("/api/v1/ordenes-produccion/{$orden->ulid}/estado", [
                 'estado' => 'completada',
                 'cantidad_producida' => 1,
             ])
@@ -53,7 +55,8 @@ class CambiarEstadoOrdenPermisoTest extends TestCase
         $rol->permisos()->attach($permiso->id);
         $usuario->roles()->attach($rol->id);
 
-        $respuesta = $this->actingAs($usuario)->patchJson('/api/v1/ordenes-produccion/999999/estado', [
+        $orden = OrdenProduccion::factory()->create(['tenant_id' => $this->tenant->id, 'sucursal_id' => $this->sucursal->id]);
+        $respuesta = $this->actingAs($usuario)->patchJson("/api/v1/ordenes-produccion/{$orden->ulid}/estado", [
             'estado' => 'completada',
             'cantidad_producida' => 1,
         ]);

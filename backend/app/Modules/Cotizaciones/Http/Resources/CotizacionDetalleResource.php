@@ -15,7 +15,7 @@ class CotizacionDetalleResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'id' => $this->id,
+            'id' => (string) $this->resource->getAttribute('ulid'),
             'variante_id' => $this->variante_id,
             'variante' => $this->whenLoaded('variante', fn () => [
                 'id' => $this->variante->id,

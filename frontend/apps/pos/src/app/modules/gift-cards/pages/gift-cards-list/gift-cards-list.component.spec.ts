@@ -72,12 +72,12 @@ describe('GiftCardsListComponent', () => {
   it('seleccionar un cliente vuelve a pedir la lista con filtro_cliente_id', async () => {
     await crearComponente();
 
-    fixture.componentInstance.onClienteSeleccionado(9);
+    fixture.componentInstance.onClienteSeleccionado(ulidDePrueba(9));
 
     expect(giftCardService.listar).toHaveBeenCalledTimes(2);
     expect(giftCardService.listar).toHaveBeenLastCalledWith(
       expect.objectContaining({ first: 0 }),
-      { clienteId: 9, estado: null, codigo: '' },
+      { clienteId: ulidDePrueba(9), estado: null, codigo: '' },
     );
   });
 

@@ -1,7 +1,7 @@
 <ui-page-header clave="cuentas-cobrar" />
 <ui-page [estado]="estado()" forma="detalle" (reintentar)="reintentar()">
   @if (cuenta(); as c) {
-    <h2>Cuenta por cobrar #{{ c.id }}</h2>
+    <h2>Cuenta por cobrar #{{ c.numero }}</h2>
     <ui-badge entidad="cuentaCobrar" [estado]="c.estado" />
 
     <nucleo-record-tabs [tabs]="tabs">

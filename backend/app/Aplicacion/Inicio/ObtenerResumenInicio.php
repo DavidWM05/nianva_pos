@@ -31,7 +31,7 @@ class ObtenerResumenInicio
             ->whereNotNull('fecha_vencimiento')
             ->where('fecha_vencimiento', '<=', today()->addDays(self::DIAS_ALERTA_VENCIMIENTO))
             ->when($sucursalId, fn ($query) => $query->where('sucursal_id', $sucursalId))
-            ->with('cliente:id,nombre')
+            ->with('cliente:id,ulid,nombre')
             ->orderBy('fecha_vencimiento')
             ->limit(10)
             ->get();

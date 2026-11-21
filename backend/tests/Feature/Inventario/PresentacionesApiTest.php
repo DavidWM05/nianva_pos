@@ -67,7 +67,7 @@ class PresentacionesApiTest extends TestCase
 
     private function venta(array $d, Presentacion $p): string
     {
-        return $this->postJson('/api/v1/ventas', ['cliente_id' => $d['cliente']->id, 'items' => [['variante_id' => $d['variante']->id, 'presentacion_id' => $p->id, 'cantidad' => 2]], 'pagos' => [['metodo_pago_id' => $d['metodo']->id, 'monto' => 100]]])->assertCreated()->assertJsonPath('data.total', '100.00')->json('data.id');
+        return $this->postJson('/api/v1/ventas', ['cliente_id' => $d['cliente']->ulid, 'items' => [['variante_id' => $d['variante']->id, 'presentacion_id' => $p->id, 'cantidad' => 2]], 'pagos' => [['metodo_pago_id' => $d['metodo']->id, 'monto' => 100]]])->assertCreated()->assertJsonPath('data.total', '100.00')->json('data.id');
     }
 
     public function test_vender_y_anular_usa_factor_original_aunque_editen_la_presentacion(): void
@@ -114,7 +114,7 @@ class PresentacionesApiTest extends TestCase
     {
         $d = $this->actor();
         $p = Presentacion::factory()->create(['tenant_id' => $d['tenant']->id, 'variante_id' => $d['variante']->id, 'factor' => '6.000', 'precio_venta' => '50.00']);
-        $venta = $this->postJson('/api/v1/ventas', ['cliente_id' => $d['cliente']->id, 'items' => [['variante_id' => $d['variante']->id, 'cantidad' => 1], ['variante_id' => $d['variante']->id, 'cantidad' => 1, 'presentacion_id' => $p->id]], 'pagos' => [['metodo_pago_id' => $d['metodo']->id, 'monto' => 150]]])->assertCreated();
+        $venta = $this->postJson('/api/v1/ventas', ['cliente_id' => $d['cliente']->ulid, 'items' => [['variante_id' => $d['variante']->id, 'cantidad' => 1], ['variante_id' => $d['variante']->id, 'cantidad' => 1, 'presentacion_id' => $p->id]], 'pagos' => [['metodo_pago_id' => $d['metodo']->id, 'monto' => 150]]])->assertCreated();
         $origen = collect($venta->json('data.detalles'))->firstWhere('precio_unitario', $importe === 100 ? '100.00' : '50.00');
         $this->assertNotNull($origen);
         $this->assertSame(13, $d['stock']->refresh()->stock_actual);
@@ -133,7 +133,7 @@ class PresentacionesApiTest extends TestCase
         $p = Presentacion::factory()->create(['tenant_id' => $d['tenant']->id, 'variante_id' => $d['variante']->id, 'factor' => '0.500', 'precio_venta' => '50.00']);
         $this->postJson('/api/v1/ventas/cotizar', ['items' => [['variante_id' => $d['variante']->id, 'presentacion_id' => $p->id, 'cantidad' => 1]]])->assertUnprocessable()->assertJsonValidationErrors('items.0.presentacion_id');
         $d['variante']->update(['es_granel' => true]);
-        $this->postJson('/api/v1/ventas', ['cliente_id' => $d['cliente']->id, 'items' => [['variante_id' => $d['variante']->id, 'presentacion_id' => $p->id, 'cantidad' => '0.500']], 'pagos' => [['metodo_pago_id' => $d['metodo']->id, 'monto' => 25]]])->assertCreated()->assertJsonPath('data.total', '25.00');
+        $this->postJson('/api/v1/ventas', ['cliente_id' => $d['cliente']->ulid, 'items' => [['variante_id' => $d['variante']->id, 'presentacion_id' => $p->id, 'cantidad' => '0.500']], 'pagos' => [['metodo_pago_id' => $d['metodo']->id, 'monto' => 25]]])->assertCreated()->assertJsonPath('data.total', '25.00');
         $this->assertSame(19.75, $d['stock']->refresh()->stock_actual);
     }
 
@@ -160,7 +160,7 @@ class PresentacionesApiTest extends TestCase
         $d['producto']->update(['precio_venta' => '1.01']);
         $d['variante']->update(['es_granel' => true]);
         $p = Presentacion::factory()->create(['tenant_id' => $d['tenant']->id, 'variante_id' => $d['variante']->id, 'factor' => '0.500', 'precio_venta' => null]);
-        $venta = $this->postJson('/api/v1/ventas', ['cliente_id' => $d['cliente']->id, 'items' => [['variante_id' => $d['variante']->id, 'presentacion_id' => $p->id, 'cantidad' => 3]], 'pagos' => [['metodo_pago_id' => $d['metodo']->id, 'monto' => 1.52]]])->assertCreated();
+        $venta = $this->postJson('/api/v1/ventas', ['cliente_id' => $d['cliente']->ulid, 'items' => [['variante_id' => $d['variante']->id, 'presentacion_id' => $p->id, 'cantidad' => 3]], 'pagos' => [['metodo_pago_id' => $d['metodo']->id, 'monto' => 1.52]]])->assertCreated();
         $this->postJson('/api/v1/devoluciones', ['venta_id' => $venta->json('data.id'), 'tipo' => 'devolucion', 'items_devueltos' => [['variante_id' => $d['variante']->id, 'cantidad' => 3]], 'pagos' => [['metodo_pago_id' => $d['metodo']->id, 'monto' => 1.52]]])->assertCreated()->assertJsonPath('data.monto_devolucion', '1.52');
         $this->assertSame(20, $d['stock']->refresh()->stock_actual);
     }

@@ -249,7 +249,7 @@ class SucursalEndpointsTest extends TestCase
     private function payloadCotizacion(?int $sucursalId = null): array
     {
         $payload = [
-            'cliente_id' => $this->cliente->id,
+            'cliente_id' => $this->cliente->ulid,
             'items' => [[
                 'variante_id' => $this->variante->id,
                 'cantidad' => 1,
@@ -270,7 +270,7 @@ class SucursalEndpointsTest extends TestCase
     private function payloadPedido(?int $sucursalId = null): array
     {
         $payload = [
-            'cliente_id' => $this->cliente->id,
+            'cliente_id' => $this->cliente->ulid,
             'direccion_entrega' => 'Av. Siempre Viva 123',
         ];
 

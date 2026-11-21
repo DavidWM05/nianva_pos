@@ -60,7 +60,7 @@ class CantidadesFlujoTest extends TestCase
 
     public function test_liquidar_apartado_transfiere_la_fraccion_a_la_venta(): void
     {
-        $id = $this->postJson('/api/v1/apartados', ['cliente_id' => $this->cliente->id,
+        $id = $this->postJson('/api/v1/apartados', ['cliente_id' => $this->cliente->ulid,
             'items' => [['variante_id' => $this->variante->id, 'cantidad' => 0.5]],
         ])->assertCreated()->json('data.id');
         $this->postJson('/api/v1/apartados/'.$id.'/abonos', ['monto' => 50, 'pagos' => [['metodo_pago_id' => $this->metodoPago->id, 'monto' => 50]]])->assertOk();
@@ -71,7 +71,7 @@ class CantidadesFlujoTest extends TestCase
 
     public function test_cancelar_apartado_restituye_la_fraccion(): void
     {
-        $id = $this->postJson('/api/v1/apartados', ['cliente_id' => $this->cliente->id,
+        $id = $this->postJson('/api/v1/apartados', ['cliente_id' => $this->cliente->ulid,
             'items' => [['variante_id' => $this->variante->id, 'cantidad' => 0.5]],
         ])->assertCreated()->json('data.id');
         $this->patchJson('/api/v1/apartados/'.$id.'/cancelar', ['motivo' => 'Prueba de fracción'])->assertOk();

@@ -18,7 +18,8 @@ describe('PlanPagoFormComponent', () => {
   let router: Router;
 
   const planCreado: PlanPago = {
-    id: 7,
+    id: ulidDePrueba(7),
+    numero: 7,
     venta_id: ulidDePrueba(3),
     concepto: 'Venta #3 - Pago a plazos',
     monto_total: '550.00',
@@ -72,7 +73,7 @@ describe('PlanPagoFormComponent', () => {
       ulidDePrueba(3),
       expect.objectContaining({ numero_cuotas: 6, tasa_interes: 10, periodicidad: 'mensual' }),
     );
-    expect(router.navigate).toHaveBeenCalledWith(['/ventas-plazos', 7]);
+    expect(router.navigate).toHaveBeenCalledWith(['/ventas-plazos', ulidDePrueba(7)]);
   });
 
   it('si la venta ya tiene plan activo, navega al plan existente', async () => {

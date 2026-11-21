@@ -206,7 +206,7 @@ class NoSeBorraLoQueTieneHistoriaTest extends TestCase
         $actor = $this->actorCon(['clientes.eliminar']);
         $publicoGeneral = Cliente::query()->where('tenant_id', $actor->tenant_id)->where('es_sistema', true)->firstOrFail();
 
-        $this->patchJson("/api/v1/clientes/{$publicoGeneral->id}/desactivar")
+        $this->patchJson("/api/v1/clientes/{$publicoGeneral->ulid}/desactivar")
             ->assertForbidden()
             ->assertJsonPath('error_code', 'cliente_sistema')
             ->assertJsonPath('message', 'Este es un cliente de sistema y no se puede modificar.');
@@ -219,10 +219,10 @@ class NoSeBorraLoQueTieneHistoriaTest extends TestCase
         $cliente = Cliente::factory()->create(['tenant_id' => $actor->tenant_id]);
         Venta::factory()->create(['tenant_id' => $actor->tenant_id, 'cliente_id' => $cliente->id]);
 
-        $this->patchJson("/api/v1/clientes/{$cliente->id}/desactivar")
+        $this->patchJson("/api/v1/clientes/{$cliente->ulid}/desactivar")
             ->assertOk()
             ->assertJsonPath('data.activo', false);
-        $this->deleteJson("/api/v1/clientes/{$cliente->id}")->assertStatus(405);
+        $this->deleteJson("/api/v1/clientes/{$cliente->ulid}")->assertStatus(405);
         $this->assertDatabaseHas('clientes', ['id' => $cliente->id, 'activo' => false]);
     }
 

@@ -2,7 +2,8 @@
 export type EstadoCotizacion = 'pendiente' | 'convertida' | 'vencida' | 'anulada';
 
 export interface CotizacionClienteResumen {
-  id: number;
+  /** DAT-08: ulid del cliente. */
+  id: string;
   nombre: string;
 }
 
@@ -18,7 +19,8 @@ export interface CotizacionDetalleVariante {
 }
 
 export interface CotizacionDetalle {
-  id: number;
+  /** DAT-08: ulid de la línea. */
+  id: string;
   variante_id: number;
   variante?: CotizacionDetalleVariante | null;
   cantidad: string;
@@ -28,7 +30,8 @@ export interface CotizacionDetalle {
 }
 
 export interface Cotizacion {
-  id: number;
+  /** DAT-08: ulid; es el que va en la ruta /cotizaciones/:id y en la API. */
+  id: string;
   numero_cotizacion: string;
   cliente?: CotizacionClienteResumen | null;
   /** Solo viaja en show() -- index() no hace ->with('usuario'). */
@@ -56,7 +59,8 @@ export interface CotizacionItemPayload {
 }
 
 export interface CotizacionFormPayload {
-  cliente_id: number | null;
+  /** DAT-08: ulid del cliente. */
+  cliente_id: string | null;
   validez_dias?: number;
   descuento?: number;
   uso_cfdi?: string | null;

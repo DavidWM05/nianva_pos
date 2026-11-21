@@ -3,6 +3,7 @@
 namespace App\Modules\VentasPlazos\Http\Requests;
 
 use App\Modules\Nucleo\Http\Requests\SolicitudNegocio;
+use App\Modules\Nucleo\Support\UlidPublico;
 use App\Modules\VentasPlazos\Dtos\PagarCuotaDto;
 use App\Modules\VentasPlazos\Support\ReglasCuota;
 
@@ -14,7 +15,8 @@ class PagarCuotaRequest extends SolicitudNegocio
     public function rules(): array
     {
         return [
-            'cuota_id' => ['required', 'integer', ReglasCuota::delTenant($this->tenantId())],
+            // DAT-08: la cuota llega por su ulid publicado; toDto() la traduce al id.
+            'cuota_id' => ['required', 'string', 'ulid', ReglasCuota::delTenantPorUlid($this->tenantId())],
             'monto' => 'nullable|numeric|decimal:0,2|min:0.01',
         ];
     }
@@ -24,7 +26,7 @@ class PagarCuotaRequest extends SolicitudNegocio
         $v = $this->validated();
 
         return new PagarCuotaDto(
-            cuotaId: (int) $v['cuota_id'],
+            cuotaId: UlidPublico::idInterno('planes_pago_cliente_cuotas', (string) $v['cuota_id']),
             monto: isset($v['monto']) ? (float) $v['monto'] : null,
             presentes: array_keys($v),
         );

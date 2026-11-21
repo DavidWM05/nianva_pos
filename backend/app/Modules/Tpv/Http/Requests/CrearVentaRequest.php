@@ -26,7 +26,7 @@ class CrearVentaRequest extends SolicitudNegocio
 
         return [
             'lista_precio_id' => ['nullable', 'integer', ReglasTenant::existe('listas_precio', $tenantId)->where('activo', true)],
-            'cliente_id' => ['required', 'integer', ReglasTenant::existe('clientes', $tenantId)],
+            'cliente_id' => ['required', 'string', 'ulid', ReglasTenant::existeUlid('clientes', $tenantId)],
             'items' => ['required', 'array', 'min:1'],
             'items.*.presentacion_id' => ['nullable', 'integer', new PresentacionDeVariante($tenantId)],
             'items.*.variante_id' => ['required', 'integer', ReglasVariante::delTenant($tenantId)],
@@ -73,7 +73,7 @@ class CrearVentaRequest extends SolicitudNegocio
 
         return new CrearVentaDto(
             listaPrecioId: isset($v['lista_precio_id']) ? (int) $v['lista_precio_id'] : null,
-            clienteId: (int) $v['cliente_id'],
+            clienteId: UlidPublico::idInterno('clientes', (string) $v['cliente_id']),
             items: $items,
             pagos: $pagos,
             cuponCodigo: isset($v['cupon_codigo']) ? (string) $v['cupon_codigo'] : null,

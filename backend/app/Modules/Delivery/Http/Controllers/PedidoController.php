@@ -17,7 +17,7 @@ class PedidoController extends Controller
 
     public function index(Request $request)
     {
-        $query = Pedido::query()->with(['cliente:id,nombre', 'repartidor:id,nombre']);
+        $query = Pedido::query()->with(['cliente:id,ulid,nombre', 'repartidor:id,nombre']);
 
         if ($estado = $request->query('filtro_estado')) {
             $query->where('estado', $estado);
@@ -28,7 +28,8 @@ class PedidoController extends Controller
         }
 
         if ($clienteId = $request->query('filtro_cliente_id')) {
-            $query->where('cliente_id', $clienteId);
+            // DAT-08: el filtro recibe el ulid publicado del cliente.
+            $query->whereHas('cliente', fn ($q) => $q->where('ulid', strtolower((string) $clienteId)));
         }
 
         if ($numero = $request->query('filtro_numero_pedido')) {

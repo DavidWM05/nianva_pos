@@ -3,7 +3,8 @@
  * (backend/app/Modules/Crm/Http/Resources/ClienteResource.php).
  */
 export interface Cliente {
-  id: number;
+  /** DAT-08 (D-2): ulid; es el que va en la ruta /clientes/:id y en la API. */
+  id: string;
   nombre: string;
   documento_fiscal: string | null;
   telefono: string | null;

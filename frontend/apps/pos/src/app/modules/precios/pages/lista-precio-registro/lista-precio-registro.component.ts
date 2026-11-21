@@ -111,7 +111,7 @@ export class ListaPrecioRegistroComponent implements OnInit {
   protected readonly tipo = signal<'producto' | 'variante'>('producto');
   protected readonly productoId = signal<number | null>(null);
   protected readonly varianteId = signal<number | null>(null);
-  protected readonly clienteId = signal<number | null>(null);
+  protected readonly clienteId = signal<string | null>(null);
   protected readonly editando = signal<ListaPrecioItem | null>(null);
   protected readonly precio = new FormControl<number | null>(null, [
     Validators.required,

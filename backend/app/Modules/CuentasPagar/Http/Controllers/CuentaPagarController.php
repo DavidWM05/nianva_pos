@@ -6,6 +6,7 @@ use App\Aplicacion\CuentasPagar\AnularCuenta;
 use App\Aplicacion\CuentasPagar\RegistrarPago;
 use App\Http\Controllers\Controller;
 use App\Modules\CuentasPagar\Http\Requests\RegistrarPagoRequest;
+use App\Modules\CuentasPagar\Http\Resources\AbonoPagarResource;
 use App\Modules\CuentasPagar\Http\Resources\CuentaPagarResource;
 use App\Modules\CuentasPagar\Models\CuentaPagar;
 use App\Modules\Nucleo\Support\DecimalApi;
@@ -58,8 +59,13 @@ class CuentaPagarController extends Controller
         return new CuentaPagarResource($cuentaPagar);
     }
 
-    public function registrarPago(RegistrarPagoRequest $request, int $id, RegistrarPago $action)
+    /**
+     * DAT-08: la ruta resuelve la cuenta por ulid (binding); la Action sigue recibiendo el id
+     * interno y bloqueando por él.
+     */
+    public function registrarPago(RegistrarPagoRequest $request, CuentaPagar $cuentaPagar, RegistrarPago $action)
     {
+        $id = (int) $cuentaPagar->getKey();
         $usuario = $request->user();
 
         if ($usuario === null) {
@@ -74,9 +80,10 @@ class CuentaPagarController extends Controller
 
         return response()->json([
             'data' => [
-                'abono' => $abono,
+                // DAT-08: el pago sale por su Resource (ulid), no como modelo crudo con ids internos.
+                'abono' => new AbonoPagarResource($abono),
                 'cuenta' => [
-                    'id' => $cuenta->id,
+                    'id' => (string) $cuenta->getAttribute('ulid'),
                     'saldo_pendiente' => DecimalApi::dinero($cuenta->saldo_pendiente),
                     /** @var 'pendiente'|'pagada'|'anulada' */
                     'estado' => $cuenta->estado,
@@ -86,9 +93,9 @@ class CuentaPagarController extends Controller
         ]);
     }
 
-    public function anular(int $id, AnularCuenta $action)
+    public function anular(CuentaPagar $cuentaPagar, AnularCuenta $action)
     {
-        $action->ejecutar($id);
+        $action->ejecutar((int) $cuentaPagar->getKey());
 
         return response()->json(['message' => 'Cuenta por pagar anulada correctamente.']);
     }

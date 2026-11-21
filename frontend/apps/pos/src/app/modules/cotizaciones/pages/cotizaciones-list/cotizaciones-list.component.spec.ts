@@ -7,6 +7,7 @@ import { describe, expect, it, vi } from 'vitest';
 
 import { Cotizacion, CotizacionesPagina, CotizacionService } from '@nianva/domain-cotizaciones';
 import { CotizacionesListComponent } from './cotizaciones-list.component';
+import { ulidDePrueba } from '../../../../testing/ulid-de-prueba';
 
 describe('CotizacionesListComponent', () => {
   let fixture: ComponentFixture<CotizacionesListComponent>;
@@ -14,9 +15,9 @@ describe('CotizacionesListComponent', () => {
 
   const cotizaciones: Cotizacion[] = [
     {
-      id: 1,
+      id: ulidDePrueba(1),
       numero_cotizacion: 'COT-000001',
-      cliente: { id: 9, nombre: 'Juan Pérez' },
+      cliente: { id: ulidDePrueba(9), nombre: 'Juan Pérez' },
       total: '500.00',
       descuento: '0.00',
       estado: 'pendiente',
@@ -82,6 +83,6 @@ describe('CotizacionesListComponent', () => {
 
     fixture.componentInstance.irADetalle(cotizaciones[0]);
 
-    expect(navigateSpy).toHaveBeenCalledWith(['/cotizaciones', 1]);
+    expect(navigateSpy).toHaveBeenCalledWith(['/cotizaciones', ulidDePrueba(1)]);
   });
 });

@@ -117,7 +117,7 @@ export class OrdenesListComponent {
 
   async iniciar(orden: OrdenProduccion): Promise<void> {
     const confirmado = await this.confirmDialog.confirm({
-      message: `¿Marcar la orden #${orden.id} como en proceso?`,
+      message: `¿Marcar la orden #${orden.numero} como en proceso?`,
       header: 'Iniciar orden',
       severity: 'info',
     });
@@ -128,7 +128,7 @@ export class OrdenesListComponent {
 
   async cancelar(orden: OrdenProduccion): Promise<void> {
     const confirmado = await this.confirmDialog.confirm({
-      message: `¿Cancelar la orden #${orden.id}? Esta acción no se puede deshacer.`,
+      message: `¿Cancelar la orden #${orden.numero}? Esta acción no se puede deshacer.`,
       header: 'Cancelar orden',
       severity: 'danger',
     });

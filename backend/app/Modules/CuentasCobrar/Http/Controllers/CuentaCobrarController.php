@@ -6,6 +6,7 @@ use App\Aplicacion\CuentasCobrar\AnularCuenta;
 use App\Aplicacion\CuentasCobrar\RegistrarAbono;
 use App\Http\Controllers\Controller;
 use App\Modules\CuentasCobrar\Http\Requests\RegistrarAbonoRequest;
+use App\Modules\CuentasCobrar\Http\Resources\AbonoCuentaResource;
 use App\Modules\CuentasCobrar\Http\Resources\CuentaCobrarResource;
 use App\Modules\CuentasCobrar\Models\CuentaCobrar;
 use App\Modules\Nucleo\Support\DecimalApi;
@@ -23,14 +24,15 @@ class CuentaCobrarController extends Controller
 
     public function index(Request $request)
     {
-        $query = CuentaCobrar::query()->with(['cliente:id,nombre']);
+        $query = CuentaCobrar::query()->with(['cliente:id,ulid,nombre']);
 
         if ($estado = $request->query('filtro_estado')) {
             $query->where('estado', $estado);
         }
 
         if ($clienteId = $request->query('filtro_cliente_id')) {
-            $query->where('cliente_id', $clienteId);
+            // DAT-08: el filtro recibe el ulid publicado del cliente.
+            $query->whereHas('cliente', fn ($q) => $q->where('ulid', strtolower((string) $clienteId)));
         }
 
         if ($request->boolean('vencidas')) {
@@ -69,8 +71,13 @@ class CuentaCobrarController extends Controller
         return new CuentaCobrarResource($cuentaCobrar);
     }
 
-    public function registrarAbono(RegistrarAbonoRequest $request, int $id, RegistrarAbono $action)
+    /**
+     * DAT-08: la ruta resuelve la cuenta por ulid (binding); la Action sigue recibiendo el id
+     * interno y bloqueando por él.
+     */
+    public function registrarAbono(RegistrarAbonoRequest $request, CuentaCobrar $cuentaCobrar, RegistrarAbono $action)
     {
+        $id = (int) $cuentaCobrar->getKey();
         $usuario = $request->user();
 
         if ($usuario === null) {
@@ -85,9 +92,10 @@ class CuentaCobrarController extends Controller
 
         return response()->json([
             'data' => [
-                'abono' => $abono,
+                // DAT-08: el abono sale por su Resource (ulid), no como modelo crudo con ids internos.
+                'abono' => new AbonoCuentaResource($abono),
                 'cuenta' => [
-                    'id' => $cuenta->id,
+                    'id' => (string) $cuenta->getAttribute('ulid'),
                     'saldo_pendiente' => DecimalApi::dinero($cuenta->saldo_pendiente),
                     /** @var 'pendiente'|'pagada'|'anulada' */
                     'estado' => $cuenta->estado,
@@ -97,9 +105,9 @@ class CuentaCobrarController extends Controller
         ]);
     }
 
-    public function anular(int $id, AnularCuenta $action)
+    public function anular(CuentaCobrar $cuentaCobrar, AnularCuenta $action)
     {
-        $action->ejecutar($id);
+        $action->ejecutar((int) $cuentaCobrar->getKey());
 
         return response()->json(['message' => 'Cuenta por cobrar anulada correctamente.']);
     }
@@ -142,13 +150,14 @@ class CuentaCobrarController extends Controller
         // cliente_nombre sin `?->`: con el operador nullsafe Scramble lo documentaba como string (ARQ-12b).
         $porCliente = (clone $base)
             ->selectRaw('cliente_id, sum(saldo_pendiente) as saldo_pendiente, count(*) as cuentas_pendientes')
-            ->with('cliente:id,nombre')
+            ->with('cliente:id,ulid,nombre')
             ->groupBy('cliente_id')
             ->orderByDesc('saldo_pendiente')
             ->limit($limite)
             ->get()
             ->map(fn ($r) => [
-                'cliente_id' => $r->cliente_id,
+                // DAT-08: el cliente se publica por su ulid.
+                'cliente_id' => $r->cliente === null ? null : (string) $r->cliente->getAttribute('ulid'),
                 'cliente_nombre' => $r->cliente === null ? null : $r->cliente->nombre,
                 'saldo_pendiente' => DecimalApi::dinero($r->saldo_pendiente),
                 'cuentas_pendientes' => (int) $r->cuentas_pendientes,

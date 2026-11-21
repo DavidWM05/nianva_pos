@@ -157,10 +157,14 @@ class ProduccionController extends Controller
         return (new OrdenProduccionResource($orden))->response()->setStatusCode(201);
     }
 
-    public function ordenesCambiarEstado(CambiarEstadoOrdenRequest $request, int $id, CambiarEstadoOrden $action)
+    /**
+     * DAT-08: la ruta resuelve la orden por ulid (binding); la Action sigue recibiendo el id
+     * interno y bloqueando por él.
+     */
+    public function ordenesCambiarEstado(CambiarEstadoOrdenRequest $request, OrdenProduccion $ordenProduccion, CambiarEstadoOrden $action)
     {
         $dto = $request->toDto();
-        $orden = $action->ejecutar($dto, $id);
+        $orden = $action->ejecutar($dto, (int) $ordenProduccion->getKey());
 
         if ($dto->estado === 'completada') {
             return new OrdenProduccionResource($orden);

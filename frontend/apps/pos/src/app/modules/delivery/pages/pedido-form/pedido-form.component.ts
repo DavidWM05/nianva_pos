@@ -73,7 +73,7 @@ export class PedidoFormComponent {
 
   protected readonly buscadorCliente = inject(BUSCADOR_CLIENTE);
 
-  protected readonly clienteId = signal<number | null>(null);
+  protected readonly clienteId = signal<string | null>(null);
   protected readonly direccionEntrega = signal('');
   protected readonly referencia = signal('');
   protected readonly costoDelivery = signal<number | null>(null);

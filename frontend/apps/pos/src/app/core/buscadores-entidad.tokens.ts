@@ -16,7 +16,8 @@ export const BUSCADOR_VARIANTE_DE_PRODUCTO = new InjectionToken<BuscadorDeHijos<
 );
 export const BUSCADOR_CATEGORIA = new InjectionToken<BuscadorEntidad>('BUSCADOR_CATEGORIA');
 /** Prerrequisito de TPV (buscador de cliente para la pantalla de venta). */
-export const BUSCADOR_CLIENTE = new InjectionToken<BuscadorEntidad>('BUSCADOR_CLIENTE');
+// DAT-08 (D-2): el cliente se identifica por su ulid.
+export const BUSCADOR_CLIENTE = new InjectionToken<BuscadorEntidad<EntidadBuscable<string>>>('BUSCADOR_CLIENTE');
 /**
  * No hay un rol "repartidor" formal sembrado (solo admin/vendedor) --
  * repartidor_id en Pedidos solo referencia cualquier fila de `usuarios`.

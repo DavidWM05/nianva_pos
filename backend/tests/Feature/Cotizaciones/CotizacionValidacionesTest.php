@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Cotizaciones;
 
+use App\Modules\Cotizaciones\Models\Cotizacion;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\Support\PreparaNegocio;
 use Tests\TestCase;
@@ -45,7 +46,7 @@ class CotizacionValidacionesTest extends TestCase
 
     public function test_actualizar_cotizacion_con_variante_de_otro_tenant_devuelve_422_de_validacion(): void
     {
-        $id = $this->crearCotizacion();
+        $id = Cotizacion::query()->findOrFail($this->crearCotizacion())->ulid;
         $this->actingAs($this->usuario);
 
         $this->putJson("/api/v1/cotizaciones/{$id}", [
@@ -57,7 +58,7 @@ class CotizacionValidacionesTest extends TestCase
 
     public function test_actualizar_cotizacion_con_total_negativo_devuelve_422_con_error_code(): void
     {
-        $id = $this->crearCotizacion();
+        $id = Cotizacion::query()->findOrFail($this->crearCotizacion())->ulid;
         $this->actingAs($this->usuario);
 
         $this->putJson("/api/v1/cotizaciones/{$id}", [

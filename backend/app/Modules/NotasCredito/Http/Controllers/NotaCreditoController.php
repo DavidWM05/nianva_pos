@@ -15,10 +15,11 @@ class NotaCreditoController extends Controller
 
     public function index(Request $request)
     {
-        $query = NotaCredito::query()->with(['cliente:id,nombre']);
+        $query = NotaCredito::query()->with(['cliente:id,ulid,nombre']);
 
         if ($clienteId = $request->query('filtro_cliente_id')) {
-            $query->where('cliente_id', $clienteId);
+            // DAT-08: el filtro recibe el ulid publicado del cliente.
+            $query->whereHas('cliente', fn ($q) => $q->where('ulid', strtolower((string) $clienteId)));
         }
 
         $sortField = $request->query('sort_field');

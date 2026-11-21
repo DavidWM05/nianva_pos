@@ -22,7 +22,7 @@ export class ClienteBuscadorService extends BuscadorEntidad<Cliente> {
       .pipe(map((respuesta) => respuesta.data));
   }
 
-  obtener(id: number): Observable<Cliente> {
+  obtener(id: string): Observable<Cliente> {
     return this.clienteService.obtener(id).pipe(map((respuesta) => respuesta.cliente));
   }
 }

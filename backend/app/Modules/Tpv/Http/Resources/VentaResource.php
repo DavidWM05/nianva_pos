@@ -33,7 +33,7 @@ class VentaResource extends JsonResource
             'fecha' => $this->fecha,
             'cliente' => $this->whenLoaded(
                 'cliente',
-                fn () => $this->cliente ? ['id' => $this->cliente->id, 'nombre' => $this->cliente->nombre] : null,
+                fn () => $this->cliente ? ['id' => (string) $this->cliente->getAttribute('ulid'), 'nombre' => $this->cliente->nombre] : null,
             ),
             'total' => DecimalApi::dinero($this->total),
             'descuento_cupon' => DecimalApi::dinero($this->descuento_cupon),

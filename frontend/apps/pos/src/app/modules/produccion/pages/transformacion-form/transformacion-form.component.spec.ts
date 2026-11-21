@@ -9,6 +9,7 @@ import { describe, expect, it, vi } from 'vitest';
 import { BUSCADOR_PRODUCTO, BUSCADOR_VARIANTE_DE_PRODUCTO } from '../../../../core/buscadores-entidad.tokens';
 import { TransformacionProducto, TransformacionService } from '@nianva/domain-produccion';
 import { TransformacionFormComponent } from './transformacion-form.component';
+import { ulidDePrueba } from '../../../../testing/ulid-de-prueba';
 
 describe('TransformacionFormComponent', () => {
   let fixture: ComponentFixture<TransformacionFormComponent>;
@@ -16,7 +17,7 @@ describe('TransformacionFormComponent', () => {
   let toast: { success: ReturnType<typeof vi.fn>; error: ReturnType<typeof vi.fn>; warn: ReturnType<typeof vi.fn> };
 
   const transformacionCreada: TransformacionProducto = {
-    id: 5,
+    id: ulidDePrueba(5),
     variante_origen_id: 8,
     variante_destino_id: 9,
     cantidad_origen: '10.00',

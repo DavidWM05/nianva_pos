@@ -32,7 +32,7 @@ class EntradasTipadasCongeladosDtoTest extends TestCase
     public function test_pedido_dto_sin_todas_usa_la_sucursal_del_usuario(): void
     {
         $request = $this->validar(CrearPedidoRequest::class, [
-            'cliente_id' => $this->cliente->id,
+            'cliente_id' => $this->cliente->ulid,
         ]);
 
         $dto = $request->toDto();
@@ -46,7 +46,7 @@ class EntradasTipadasCongeladosDtoTest extends TestCase
         $this->darPermisosA($this->usuario, ['sucursales.todas']);
 
         $request = $this->validar(CrearPedidoRequest::class, [
-            'cliente_id' => $this->cliente->id,
+            'cliente_id' => $this->cliente->ulid,
             'sucursal_id' => $this->sucursalExtra->id,
         ]);
 

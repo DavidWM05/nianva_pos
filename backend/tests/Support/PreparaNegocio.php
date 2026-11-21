@@ -362,7 +362,7 @@ trait PreparaNegocio
     private function payloadVenta(array $overrides = []): array
     {
         return array_merge([
-            'cliente_id' => $this->cliente->id,
+            'cliente_id' => $this->cliente->ulid,
             'items' => [['variante_id' => $this->variante->id, 'cantidad' => 1]],
             'pagos' => [['metodo_pago_id' => $this->metodoPago->id, 'monto' => 100]],
         ], $overrides);

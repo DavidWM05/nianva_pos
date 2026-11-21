@@ -30,8 +30,9 @@ describe('PlanPagoDetalleComponent', () => {
 
   function planCon(overrides: Partial<PlanPago>): PlanPago {
     return {
-      id: 7,
-      cliente: { id: 9, nombre: 'Juan Pérez' },
+      id: ulidDePrueba(7),
+      numero: 7,
+      cliente: { id: ulidDePrueba(9), nombre: 'Juan Pérez' },
       venta_id: ulidDePrueba(3),
       concepto: 'Venta #3 - Pago a plazos',
       monto_total: '550.00',
@@ -41,7 +42,7 @@ describe('PlanPagoDetalleComponent', () => {
       periodicidad: 'mensual',
       fecha_inicio: '2026-07-27',
       cuotas: [
-        { id: 1, numero_cuota: 1, monto: '275.00', monto_capital: '250.00', monto_interes: '25.00', fecha_vencimiento: '2026-07-27', fecha_pago: null, estado: 'pendiente' },
+        { id: ulidDePrueba(1), numero_cuota: 1, monto: '275.00', monto_capital: '250.00', monto_interes: '25.00', fecha_vencimiento: '2026-07-27', fecha_pago: null, estado: 'pendiente' },
       ],
       created_at: '2026-07-27T10:00:00Z',
       ...overrides,
@@ -61,7 +62,7 @@ describe('PlanPagoDetalleComponent', () => {
         { provide: PlanPagoService, useValue: planPagoService },
         { provide: AuditLogSource, useValue: { listar: vi.fn().mockReturnValue(of([])) } },
         { provide: ToastService, useValue: toast },
-        { provide: ActivatedRoute, useValue: { snapshot: { paramMap: convertToParamMap({ id: '7' }) } } },
+        { provide: ActivatedRoute, useValue: { snapshot: { paramMap: convertToParamMap({ id: ulidDePrueba(7) }) } } },
       ],
     }).compileComponents();
 
@@ -87,7 +88,7 @@ describe('PlanPagoDetalleComponent', () => {
     fixture.componentInstance.abrirPagarCuota(cuota);
     fixture.componentInstance.confirmarPagarCuota();
 
-    expect(planPagoService.pagarCuota).toHaveBeenCalledWith(7, { cuota_id: 1, monto: 275 });
+    expect(planPagoService.pagarCuota).toHaveBeenCalledWith(ulidDePrueba(7), { cuota_id: ulidDePrueba(1), monto: 275 });
     expect(toast.success).toHaveBeenCalled();
   });
 

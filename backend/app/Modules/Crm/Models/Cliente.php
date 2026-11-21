@@ -4,6 +4,7 @@ namespace App\Modules\Crm\Models;
 
 use App\Modules\Crm\Database\Factories\ClienteFactory;
 use App\Modules\Nucleo\Models\Concerns\BelongsToTenant;
+use App\Modules\Nucleo\Models\Concerns\RutaPorUlid;
 use App\Modules\Nucleo\Models\Concerns\TieneUlid;
 use App\Modules\Nucleo\Models\Tenant;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
@@ -22,6 +23,7 @@ class Cliente extends Model
     /** @use HasFactory<ClienteFactory> */
     use HasFactory;
 
+    use RutaPorUlid;
     use TieneUlid;
 
     const CREATED_AT = 'fecha_registro';

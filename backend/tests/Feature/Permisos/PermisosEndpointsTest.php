@@ -84,10 +84,10 @@ class PermisosEndpointsTest extends TestCase
     public function test_auditoria_index_exige_auditoria_ver(): void
     {
         $this->actingAs($this->usuario);
-        $this->getJson('/api/v1/auditoria?tabla=clientes&registro_id=1')->assertForbidden();
+        $this->getJson('/api/v1/auditoria?tabla=clientes&registro_id=01ARZ3NDEKTSV4RRFFQ69G5FAV')->assertForbidden();
 
         $this->conPermiso('auditoria.ver');
-        $this->getJson('/api/v1/auditoria?tabla=clientes&registro_id=1')->assertOk();
+        $this->getJson('/api/v1/auditoria?tabla=clientes&registro_id=01ARZ3NDEKTSV4RRFFQ69G5FAV')->assertOk();
     }
 
     public function test_cuentas_pagar_anular_exige_cuentas_pagar_anular(): void
@@ -103,9 +103,9 @@ class PermisosEndpointsTest extends TestCase
         ]);
 
         $this->actingAs($this->usuario);
-        $this->postJson("/api/v1/cuentas-pagar/{$cuenta->id}/anular")->assertForbidden();
+        $this->postJson("/api/v1/cuentas-pagar/{$cuenta->ulid}/anular")->assertForbidden();
 
         $this->conPermiso('cuentas_pagar.anular');
-        $this->postJson("/api/v1/cuentas-pagar/{$cuenta->id}/anular")->assertOk();
+        $this->postJson("/api/v1/cuentas-pagar/{$cuenta->ulid}/anular")->assertOk();
     }
 }

@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Cotizaciones;
 
+use App\Modules\Cotizaciones\Models\Cotizacion;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\Support\PreparaNegocio;
 use Tests\TestCase;
@@ -23,7 +24,7 @@ class CotizacionExistsTenantTest extends TestCase
 
         $this->postJson('/api/v1/cotizaciones', [
             'sucursal_id' => $this->sucursal->id,
-            'cliente_id' => $this->clienteB->id,
+            'cliente_id' => $this->clienteB->ulid,
             'items' => [['variante_id' => $this->variante->id, 'cantidad' => 1, 'precio_unitario' => 100]],
         ])->assertStatus(422)->assertJsonValidationErrors(['cliente_id']);
     }
@@ -34,25 +35,25 @@ class CotizacionExistsTenantTest extends TestCase
 
         $this->postJson('/api/v1/cotizaciones', [
             'sucursal_id' => $this->sucursalB->id,
-            'cliente_id' => $this->cliente->id,
+            'cliente_id' => $this->cliente->ulid,
             'items' => [['variante_id' => $this->variante->id, 'cantidad' => 1, 'precio_unitario' => 100]],
         ])->assertStatus(422)->assertJsonValidationErrors(['sucursal_id']);
     }
 
     public function test_update_rechaza_cliente_de_otro_tenant(): void
     {
-        $id = $this->crearCotizacion();
+        $id = Cotizacion::query()->findOrFail($this->crearCotizacion())->ulid;
         $this->actingAs($this->usuario);
 
         $this->putJson("/api/v1/cotizaciones/{$id}", [
-            'cliente_id' => $this->clienteB->id,
+            'cliente_id' => $this->clienteB->ulid,
             'items' => [['variante_id' => $this->variante->id, 'cantidad' => 1, 'precio_unitario' => 100]],
         ])->assertStatus(422)->assertJsonValidationErrors(['cliente_id']);
     }
 
     public function test_convertir_rechaza_metodo_pago_de_otro_tenant(): void
     {
-        $id = $this->crearCotizacion();
+        $id = Cotizacion::query()->findOrFail($this->crearCotizacion())->ulid;
         $this->actingAs($this->usuario);
 
         $this->postJson("/api/v1/cotizaciones/{$id}/convertir", [
@@ -62,7 +63,7 @@ class CotizacionExistsTenantTest extends TestCase
 
     public function test_convertir_acepta_metodo_pago_global(): void
     {
-        $id = $this->crearCotizacion();
+        $id = Cotizacion::query()->findOrFail($this->crearCotizacion())->ulid;
         $this->actingAs($this->usuario);
 
         $this->postJson("/api/v1/cotizaciones/{$id}/convertir", [

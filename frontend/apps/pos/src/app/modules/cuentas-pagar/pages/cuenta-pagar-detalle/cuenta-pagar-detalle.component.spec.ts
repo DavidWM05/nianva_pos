@@ -6,6 +6,7 @@ import { ActivatedRoute, convertToParamMap, provideRouter } from '@angular/route
 import { AuditLogSource, ConfirmDialogService, ToastService } from '@nianva/ui-shared';
 import { of, throwError } from 'rxjs';
 import { describe, expect, it, vi } from 'vitest';
+import { ulidDePrueba } from '../../../../testing/ulid-de-prueba';
 
 // jsdom no implementa ResizeObserver -- lo usa PrimeNG's TabList (detras de
 // RecordTabsComponent) en ngAfterViewInit. Mismo stub que
@@ -32,8 +33,10 @@ describe('CuentaPagarDetalleComponent', () => {
 
   function cuentaCon(overrides: Partial<CuentaPagar>): CuentaPagar {
     return {
-      id: 5,
-      compra_id: 42,
+      id: ulidDePrueba(5),
+      numero: 5,
+      compra_id: ulidDePrueba(42),
+      compra_numero: 42,
       proveedor: { id: 7, razon_social: 'Textiles del Norte' },
       monto_total: '1000.00',
       saldo_pendiente: '600.00',
@@ -66,7 +69,7 @@ describe('CuentaPagarDetalleComponent', () => {
         { provide: AuditLogSource, useValue: { listar: vi.fn().mockReturnValue(of([])) } },
         { provide: ConfirmDialogService, useValue: confirmDialog },
         { provide: ToastService, useValue: toast },
-        { provide: ActivatedRoute, useValue: { snapshot: { paramMap: convertToParamMap({ id: '5' }) } } },
+        { provide: ActivatedRoute, useValue: { snapshot: { paramMap: convertToParamMap({ id: ulidDePrueba(5) }) } } },
       ],
     }).compileComponents();
 
@@ -83,7 +86,7 @@ describe('CuentaPagarDetalleComponent', () => {
 
   it('pendiente con abonos: puedePagar() sigue verdadero pero puedeAnular() es falso (CuentasPagarService::anular exige sin abonos)', async () => {
     await crearComponente(
-      cuentaCon({ estado: 'pendiente', abonos: [{ id: 1, monto: '400.00', metodo_pago: 'Efectivo', referencia: null, fecha: '2026-07-27T10:00:00Z' }] }),
+      cuentaCon({ estado: 'pendiente', abonos: [{ id: ulidDePrueba(1), monto: '400.00', metodo_pago: 'Efectivo', referencia: null, fecha: '2026-07-27T10:00:00Z' }] }),
     );
 
     expect(fixture.componentInstance['puedePagar']()).toBe(true);
@@ -106,7 +109,7 @@ describe('CuentaPagarDetalleComponent', () => {
     fixture.componentInstance['metodoPagoElegido'].set(1);
     fixture.componentInstance.confirmarPago();
 
-    expect(cuentaPagarService.registrarPago).toHaveBeenCalledWith(5, { monto: 400, metodo_pago_id: 1, referencia: null });
+    expect(cuentaPagarService.registrarPago).toHaveBeenCalledWith(ulidDePrueba(5), { monto: 400, metodo_pago_id: 1, referencia: null });
     expect(toast.success).toHaveBeenCalledWith('Pago registrado.');
     expect(cuentaPagarService.obtener).toHaveBeenCalledTimes(2); // 1 al iniciar + 1 al recargar
   });
@@ -140,7 +143,7 @@ describe('CuentaPagarDetalleComponent', () => {
 
     await fixture.componentInstance.anular();
 
-    expect(cuentaPagarService.anular).toHaveBeenCalledWith(5);
+    expect(cuentaPagarService.anular).toHaveBeenCalledWith(ulidDePrueba(5));
     expect(toast.success).toHaveBeenCalledWith('Cuenta por pagar anulada.');
     expect(cuentaPagarService.obtener).toHaveBeenCalledTimes(2);
   });

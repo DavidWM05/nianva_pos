@@ -10,6 +10,7 @@ import { describe, expect, it, vi } from 'vitest';
 import { BUSCADOR_RECETA } from '../../../../core/buscadores-entidad.tokens';
 import { OrdenesPagina, OrdenProduccion, OrdenProduccionService } from '@nianva/domain-produccion';
 import { OrdenesListComponent } from './ordenes-list.component';
+import { ulidDePrueba } from '../../../../testing/ulid-de-prueba';
 
 describe('OrdenesListComponent', () => {
   let fixture: ComponentFixture<OrdenesListComponent>;
@@ -17,7 +18,8 @@ describe('OrdenesListComponent', () => {
   let confirmDialog: { confirm: ReturnType<typeof vi.fn> };
 
   const ordenPendiente: OrdenProduccion = {
-    id: 1,
+    id: ulidDePrueba(1),
+    numero: 1,
     cantidad_programada: '20.000',
     cantidad_producida: null,
     estado: 'pendiente',
@@ -106,7 +108,7 @@ describe('OrdenesListComponent', () => {
     await fixture.componentInstance.iniciar(ordenPendiente);
 
     expect(confirmDialog.confirm).toHaveBeenCalled();
-    expect(ordenService.cambiarEstado).toHaveBeenCalledWith(1, 'en_proceso');
+    expect(ordenService.cambiarEstado).toHaveBeenCalledWith(ulidDePrueba(1), 'en_proceso');
   });
 
   it('cancelar() sin confirmar no llama al backend', async () => {
@@ -125,6 +127,6 @@ describe('OrdenesListComponent', () => {
     fixture.componentInstance['cantidadProducida'].set(18);
     fixture.componentInstance.confirmarCompletar();
 
-    expect(ordenService.cambiarEstado).toHaveBeenCalledWith(1, 'completada', 18);
+    expect(ordenService.cambiarEstado).toHaveBeenCalledWith(ulidDePrueba(1), 'completada', 18);
   });
 });

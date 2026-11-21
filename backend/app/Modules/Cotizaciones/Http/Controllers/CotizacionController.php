@@ -27,14 +27,15 @@ class CotizacionController extends Controller
 
     public function index(Request $request)
     {
-        $query = Cotizacion::query()->with(['cliente:id,nombre']);
+        $query = Cotizacion::query()->with(['cliente:id,ulid,nombre']);
 
         if ($estado = $request->query('filtro_estado')) {
             $query->where('estado', $estado);
         }
 
         if ($clienteId = $request->query('filtro_cliente_id')) {
-            $query->where('cliente_id', $clienteId);
+            // DAT-08: el filtro recibe el ulid publicado del cliente.
+            $query->whereHas('cliente', fn ($q) => $q->where('ulid', strtolower((string) $clienteId)));
         }
 
         if ($desde = $request->query('desde')) {
@@ -104,23 +105,27 @@ class CotizacionController extends Controller
         ]);
     }
 
-    public function update(ActualizarCotizacionRequest $request, int $id, ActualizarCotizacion $action)
+    /**
+     * DAT-08: las rutas de la cotización la resuelven por ulid (binding); las Actions siguen
+     * recibiendo el id interno y bloqueando por él.
+     */
+    public function update(ActualizarCotizacionRequest $request, Cotizacion $cotizacion, ActualizarCotizacion $action)
     {
         $dto = $request->toDto();
 
-        $cotizacion = $action->ejecutar($dto, $id);
+        $cotizacion = $action->ejecutar($dto, (int) $cotizacion->getKey());
 
         return new CotizacionResource($cotizacion);
     }
 
-    public function destroy(int $id, AnularCotizacion $action)
+    public function destroy(Cotizacion $cotizacion, AnularCotizacion $action)
     {
-        $action->ejecutar($id);
+        $action->ejecutar((int) $cotizacion->getKey());
 
         return response()->json(['message' => 'Cotización anulada correctamente.']);
     }
 
-    public function convertir(ConvertirCotizacionRequest $request, int $id, ConvertirCotizacion $action)
+    public function convertir(ConvertirCotizacionRequest $request, Cotizacion $cotizacion, ConvertirCotizacion $action)
     {
         $usuario = $request->user();
 
@@ -128,11 +133,12 @@ class CotizacionController extends Controller
             abort(401);
         }
 
-        $venta = $action->ejecutar($request->toDto(), $id, $usuario);
+        $venta = $action->ejecutar($request->toDto(), (int) $cotizacion->getKey(), $usuario);
 
         return response()->json([
             'message' => 'Cotización convertida a venta correctamente.',
-            'venta_id' => $venta->id,
+            // DAT-08: la venta creada se publica por su ulid.
+            'venta_id' => (string) $venta->getAttribute('ulid'),
         ]);
     }
 
