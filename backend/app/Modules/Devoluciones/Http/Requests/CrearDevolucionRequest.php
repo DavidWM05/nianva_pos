@@ -12,6 +12,7 @@ use App\Modules\Inventario\Support\ReglasVariante;
 use App\Modules\Nucleo\Http\Requests\SolicitudNegocio;
 use App\Modules\Nucleo\Support\Cantidad;
 use App\Modules\Nucleo\Support\ReglasTenant;
+use App\Modules\Nucleo\Support\UlidPublico;
 use Illuminate\Validation\Rule;
 
 class CrearDevolucionRequest extends SolicitudNegocio
@@ -24,10 +25,11 @@ class CrearDevolucionRequest extends SolicitudNegocio
         $tenantId = $this->tenantId();
 
         return [
-            'venta_id' => ['required', 'integer', ReglasTenant::existe('ventas', $tenantId)],
+            // DAT-08: la venta y sus líneas llegan por el ulid publicado; toDto() las traduce al id.
+            'venta_id' => ['required', 'string', 'ulid', ReglasTenant::existeUlid('ventas', $tenantId)],
             'tipo' => ['required', Rule::in(['devolucion', 'cambio'])],
             'items_devueltos' => ['required', 'array', 'min:1'],
-            'items_devueltos.*.venta_detalle_id' => ['nullable', 'integer', new DetalleDevueltoDeVenta($tenantId)],
+            'items_devueltos.*.venta_detalle_id' => ['nullable', 'string', 'ulid', new DetalleDevueltoDeVenta($tenantId)],
             'items_devueltos.*.variante_id' => ['required', 'integer', ReglasVariante::delTenant($tenantId)],
             'items_devueltos.*.cantidad' => ['required', ...ReglasCantidad::paraVariante($tenantId)],
             'items_devueltos.*.va_a_merma' => ['nullable', 'boolean'],
@@ -54,7 +56,7 @@ class CrearDevolucionRequest extends SolicitudNegocio
                     varianteId: (int) $item['variante_id'],
                     cantidad: Cantidad::numero($item['cantidad']),
                     vaAMerma: (bool) ($item['va_a_merma'] ?? false),
-                    ventaDetalleId: isset($item['venta_detalle_id']) ? (int) $item['venta_detalle_id'] : null,
+                    ventaDetalleId: isset($item['venta_detalle_id']) ? UlidPublico::idInterno('venta_detalles', (string) $item['venta_detalle_id']) : null,
                 );
             },
             (array) ($v['items_devueltos'] ?? []),
@@ -85,7 +87,7 @@ class CrearDevolucionRequest extends SolicitudNegocio
         ));
 
         return new CrearDevolucionDto(
-            ventaId: (int) $v['venta_id'],
+            ventaId: UlidPublico::idInterno('ventas', (string) $v['venta_id']),
             tipo: (string) $v['tipo'],
             itemsDevueltos: $itemsDevueltos,
             itemsNuevos: $itemsNuevos,

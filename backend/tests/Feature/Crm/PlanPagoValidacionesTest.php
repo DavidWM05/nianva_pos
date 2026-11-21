@@ -23,7 +23,7 @@ class PlanPagoValidacionesTest extends TestCase
         $plan = $this->crearPlan($venta);
         $this->actingAs($this->usuario);
 
-        $this->postJson("/api/v1/ventas/{$venta->id}/plan-pago", [
+        $this->postJson("/api/v1/ventas/{$venta->ulid}/plan-pago", [
             'numero_cuotas' => 2,
             'periodicidad' => 'mensual',
         ])

@@ -11,6 +11,7 @@ import { CajaActual, CajaService, CuponValidacionService, MetodoPagoService, Ven
 import { LineasPagoComponent } from '../../lineas-pago/lineas-pago.component';
 import { LineasProductoComponent } from '../../lineas-producto/lineas-producto.component';
 import { VentaComponent } from './venta.component';
+import { ulidDePrueba } from '../../../../testing/ulid-de-prueba';
 
 describe('VentaComponent', () => {
   let fixture: ComponentFixture<VentaComponent>;
@@ -20,7 +21,8 @@ describe('VentaComponent', () => {
 
   const cajaAbierta: CajaActual = {
     sesion: {
-      id: 1,
+      id: ulidDePrueba(1),
+      numero: 1,
       sucursal_id: 1,
       usuario_id: 1,
       monto_apertura: '500.00',
@@ -220,9 +222,11 @@ describe('VentaComponent', () => {
   it('con nota de credito seleccionada, montoObjetivoPago se reduce por el saldo disponible de la nota (topado al total)', async () => {
     const notas: NotaCredito[] = [
       {
-        id: 3,
+        id: ulidDePrueba(3),
+        numero: 3,
         cliente: { id: 9, nombre: 'Juan' },
-        devolucion_id: 1,
+        devolucion_id: ulidDePrueba(1),
+        devolucion_numero: 1,
         monto_original: '500.00',
         saldo_disponible: '80.00',
         fecha_expiracion: null,
@@ -238,7 +242,7 @@ describe('VentaComponent', () => {
 
     fixture.componentInstance.onLineasCambio({ items: [{ variante_id: 5, cantidad: 2 }], subtotal: 200 });
     fixture.componentInstance.onClienteSeleccionado(9);
-    fixture.componentInstance['notaCreditoSeleccionadaId'].set(3);
+    fixture.componentInstance['notaCreditoSeleccionadaId'].set(ulidDePrueba(3));
     fixture.detectChanges();
 
     expect(fixture.componentInstance['montoNotaCredito']()).toBe(80);
@@ -259,9 +263,11 @@ describe('VentaComponent', () => {
   it('registrarVenta() manda gift_card_codigo y nota_credito_id en el payload', async () => {
     const notas: NotaCredito[] = [
       {
-        id: 3,
+        id: ulidDePrueba(3),
+        numero: 3,
         cliente: { id: 9, nombre: 'Juan' },
-        devolucion_id: 1,
+        devolucion_id: ulidDePrueba(1),
+        devolucion_numero: 1,
         monto_original: '500.00',
         saldo_disponible: '200.00',
         fecha_expiracion: null,
@@ -282,7 +288,7 @@ describe('VentaComponent', () => {
     fixture.detectChanges();
 
     fixture.componentInstance.onClienteSeleccionado(9);
-    fixture.componentInstance['notaCreditoSeleccionadaId'].set(3);
+    fixture.componentInstance['notaCreditoSeleccionadaId'].set(ulidDePrueba(3));
     fixture.componentInstance['giftCardCodigo'].set('GC-1-ABCD1234');
     fixture.detectChanges();
 
@@ -290,7 +296,7 @@ describe('VentaComponent', () => {
     fixture.componentInstance.registrarVenta();
 
     expect(ventaService.registrar).toHaveBeenCalledWith(
-      expect.objectContaining({ gift_card_codigo: 'GC-1-ABCD1234', nota_credito_id: 3 }),
+      expect.objectContaining({ gift_card_codigo: 'GC-1-ABCD1234', nota_credito_id: ulidDePrueba(3) }),
     );
   });
 

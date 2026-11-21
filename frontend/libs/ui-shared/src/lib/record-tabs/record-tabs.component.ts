@@ -18,7 +18,7 @@ export interface RecordTabConfig {
  *     <ng-template>...contenido general...</ng-template>
  *     <ng-template>
  *       @defer (on viewport) {
- *         <nucleo-audit-log-viewer [tabla]="'ventas'" [registroId]="1" />
+ *         <nucleo-audit-log-viewer [tabla]="'productos'" [registroId]="1" />
  *       } @placeholder { <p>Cargando auditoria...</p> }
  *     </ng-template>
  *   </nucleo-record-tabs>

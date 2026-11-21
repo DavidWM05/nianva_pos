@@ -19,6 +19,15 @@ final class ReglasTenant
         return Rule::exists($tabla, 'id')->where('tenant_id', $tenantId);
     }
 
+    /**
+     * DAT-08: la entrada trae el ulid publicado de un registro con tenant_id propio. El toDto()
+     * lo traduce al id interno con UlidPublico::idInterno().
+     */
+    public static function existeUlid(string $tabla, int $tenantId): Exists
+    {
+        return Rule::exists($tabla, 'ulid')->where('tenant_id', $tenantId);
+    }
+
     public static function existeGlobalODelTenant(string $tabla, int $tenantId): Exists
     {
         return Rule::exists($tabla, 'id')->where(

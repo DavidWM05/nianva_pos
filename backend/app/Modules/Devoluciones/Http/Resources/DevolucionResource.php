@@ -4,6 +4,7 @@ namespace App\Modules\Devoluciones\Http\Resources;
 
 use App\Modules\Devoluciones\Models\Devolucion;
 use App\Modules\Nucleo\Support\DecimalApi;
+use App\Modules\Nucleo\Support\UlidPublico;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -22,27 +23,37 @@ class DevolucionResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'id' => $this->id,
+            // DAT-08: el identificador público es el ulid; el id interno no sale de la API.
+            'id' => (string) $this->resource->getAttribute('ulid'),
+            // D-3, transitorio: número visible de la devolución (= id interno), solo para mostrarlo;
+            // lo reemplaza el folio de DAT-07.
+            'numero' => (int) $this->getKey(),
             'fecha' => $this->fecha,
             /** @var 'devolucion'|'cambio' */
             'tipo' => $this->tipo,
             'venta' => $this->whenLoaded(
                 'venta',
                 fn () => $this->venta ? [
-                    'id' => $this->venta->id,
+                    'id' => (string) $this->venta->getAttribute('ulid'),
+                    // D-3, transitorio: el número de la venta origen, para mostrarla.
+                    'numero' => (int) $this->venta->getKey(),
                     'cliente_nombre' => $this->venta->cliente?->nombre,
                 ] : null,
             ),
-            'venta_sombra_id' => $this->venta_sombra_id,
+            'venta_sombra_id' => UlidPublico::de($this->resource, 'ventaSombra'),
+            // D-3, transitorio: número visible de la venta sombra (= id interno), solo para mostrarlo;
+            // lo reemplaza el folio de DAT-07.
+            'venta_sombra_numero' => $this->resource->getAttribute('venta_sombra_id') === null ? null : (int) $this->resource->getAttribute('venta_sombra_id'),
             'monto_devolucion' => DecimalApi::dinero($this->monto_devolucion),
             'monto_cambio' => DecimalApi::dinero($this->monto_cambio),
             'diferencia' => DecimalApi::dinero($this->diferencia),
             'motivo' => $this->motivo,
             /** @var 'efectivo'|'nota_credito' */
             'tipo_reembolso' => $this->tipo_reembolso,
-            'nota_credito_id' => $this->nota_credito_id,
+            // Devoluciones es base y NotasCredito extensión (ARQ-03): sin relación, se lee el ulid por tabla.
+            'nota_credito_id' => UlidPublico::deTabla('notas_credito', $this->nota_credito_id),
             'items' => $this->whenLoaded('items', fn () => $this->items->map(fn ($item) => [
-                'id' => $item->id,
+                'id' => (string) $item->getAttribute('ulid'),
                 /** @var 'devuelto'|'nuevo' */
                 'tipo' => $item->tipo,
                 'variante_id' => $item->variante_id,

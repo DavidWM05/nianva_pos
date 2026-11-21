@@ -81,7 +81,7 @@ class CantidadesFlujoTest extends TestCase
     public function test_devolver_medio_restituye_el_stock_y_reembolsa_su_importe(): void
     {
         $venta = $this->crearVenta();
-        $this->postJson('/api/v1/devoluciones', ['venta_id' => $venta->id, 'tipo' => 'devolucion',
+        $this->postJson('/api/v1/devoluciones', ['venta_id' => $venta->ulid, 'tipo' => 'devolucion',
             'items_devueltos' => [['variante_id' => $this->variante->id, 'cantidad' => 0.5]],
             'pagos' => [['metodo_pago_id' => $this->metodoPago->id, 'monto' => 50]],
         ])->assertCreated()->assertJsonPath('data.items.0.cantidad', '0.500');

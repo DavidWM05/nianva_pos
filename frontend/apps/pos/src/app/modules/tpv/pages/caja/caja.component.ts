@@ -113,7 +113,7 @@ export class CajaComponent implements OnInit {
     });
   }
 
-  private cargarGastos(cajaSesionId: number): void {
+  private cargarGastos(cajaSesionId: string): void {
     this.cargandoGastos.set(true);
     this.gastoService.listar(cajaSesionId).subscribe({
       next: (gastos) => {

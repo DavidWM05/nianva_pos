@@ -6,6 +6,7 @@ import { ActivatedRoute, convertToParamMap, provideRouter } from '@angular/route
 import { AuditLogSource, ConfirmDialogService, ToastService } from '@nianva/ui-shared';
 import { of, throwError } from 'rxjs';
 import { describe, expect, it, vi } from 'vitest';
+import { ulidDePrueba } from '../../../../testing/ulid-de-prueba';
 
 // jsdom no implementa ResizeObserver -- lo usa PrimeNG's TabList (detras de
 // RecordTabsComponent) en ngAfterViewInit. Mismo stub que
@@ -31,7 +32,7 @@ describe('GiftCardDetalleComponent', () => {
 
   function giftCardCon(overrides: Partial<GiftCard>): GiftCard {
     return {
-      id: 5,
+      id: ulidDePrueba(5),
       cliente: { id: 9, nombre: 'Juan Pérez' },
       codigo: 'GC-1-AAAA1111',
       saldo_inicial: '500.00',
@@ -64,7 +65,7 @@ describe('GiftCardDetalleComponent', () => {
         { provide: AuditLogSource, useValue: { listar: vi.fn().mockReturnValue(of([])) } },
         { provide: ConfirmDialogService, useValue: confirmDialog },
         { provide: ToastService, useValue: toast },
-        { provide: ActivatedRoute, useValue: { snapshot: { paramMap: convertToParamMap({ id: '5' }) } } },
+        { provide: ActivatedRoute, useValue: { snapshot: { paramMap: convertToParamMap({ id: ulidDePrueba(5) }) } } },
       ],
     }).compileComponents();
 
@@ -105,7 +106,7 @@ describe('GiftCardDetalleComponent', () => {
     fixture.componentInstance.onPagosRecarga({ pagos: [{ metodo_pago_id: 1, monto: 200 }], cuadra: true, suma: 200 });
     fixture.componentInstance.confirmarRecargar();
 
-    expect(giftCardService.recargar).toHaveBeenCalledWith(5, 200, [{ metodo_pago_id: 1, monto: 200 }]);
+    expect(giftCardService.recargar).toHaveBeenCalledWith(ulidDePrueba(5), 200, [{ metodo_pago_id: 1, monto: 200 }]);
     expect(giftCardService.obtener).toHaveBeenCalledTimes(2); // 1 al iniciar + 1 al recargar
     expect(toast.success).toHaveBeenCalledWith('Gift card recargada.');
   });
@@ -139,7 +140,7 @@ describe('GiftCardDetalleComponent', () => {
 
     await fixture.componentInstance.cancelar();
 
-    expect(giftCardService.cancelar).toHaveBeenCalledWith(5);
+    expect(giftCardService.cancelar).toHaveBeenCalledWith(ulidDePrueba(5));
     expect(toast.success).toHaveBeenCalledWith('Gift card cancelada.');
     expect(giftCardService.obtener).toHaveBeenCalledTimes(2); // 1 al iniciar + 1 al recargar
   });
@@ -154,7 +155,7 @@ describe('GiftCardDetalleComponent', () => {
   it('con recargas, lista cada una con su monto y quién la registró', async () => {
     await crearComponente(
       giftCardCon({
-        recargas: [{ id: 1, monto: '200.00', usuario: { id: 3, nombre: 'Ana' }, fecha: '2026-07-20T10:00:00Z' }],
+        recargas: [{ id: ulidDePrueba(1), monto: '200.00', usuario: { id: 3, nombre: 'Ana' }, fecha: '2026-07-20T10:00:00Z' }],
       }),
     );
 

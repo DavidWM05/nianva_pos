@@ -79,11 +79,12 @@ export class ApartadoDetalleComponent implements OnInit {
   protected readonly resultadoCancelacion = signal<ResultadoCancelacion | null>(null);
 
   ngOnInit(): void {
-    const id = Number(this.route.snapshot.paramMap.get('id'));
+    // DAT-08: el parámetro de la ruta es el ulid; nunca Number().
+    const id = this.route.snapshot.paramMap.get('id') ?? '';
     this.cargar(id);
   }
 
-  protected cargar(id: number): void {
+  protected cargar(id: string): void {
     this.cargando.set(true);
     this.error.set(false);
     this.apartadoService.obtener(id).subscribe({

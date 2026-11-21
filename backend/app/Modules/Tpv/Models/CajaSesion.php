@@ -6,6 +6,7 @@ namespace App\Modules\Tpv\Models;
 
 use App\Modules\Nucleo\Models\Concerns\BelongsToSucursal;
 use App\Modules\Nucleo\Models\Concerns\BelongsToTenantViaRelacion;
+use App\Modules\Nucleo\Models\Concerns\RutaPorUlid;
 use App\Modules\Nucleo\Models\Concerns\TieneUlid;
 use App\Modules\Nucleo\Models\Sucursal;
 use App\Modules\Nucleo\Models\Usuario;
@@ -32,6 +33,7 @@ class CajaSesion extends Model
     /** @use HasFactory<CajaSesionFactory> */
     use HasFactory;
 
+    use RutaPorUlid;
     use TieneUlid;
 
     public $timestamps = false;

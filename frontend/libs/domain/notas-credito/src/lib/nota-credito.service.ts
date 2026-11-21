@@ -50,7 +50,7 @@ export class NotaCreditoService {
       );
   }
 
-  obtener(id: number): Observable<NotaCredito> {
+  obtener(id: string): Observable<NotaCredito> {
     return this.http
       .get<RespuestaDe<'/notas-credito/{notaCredito}', 'get'>>(
         urlApi(`/notas-credito/${id}`),

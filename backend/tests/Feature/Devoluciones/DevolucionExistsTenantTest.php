@@ -22,7 +22,7 @@ class DevolucionExistsTenantTest extends TestCase
         $this->actingAs($this->usuario);
 
         $this->postJson('/api/v1/devoluciones', [
-            'venta_id' => $this->ventaB->id,
+            'venta_id' => $this->ventaB->ulid,
             'tipo' => 'devolucion',
             'items_devueltos' => [['variante_id' => $this->variante->id, 'cantidad' => 1]],
         ])->assertStatus(422)->assertJsonValidationErrors(['venta_id']);
@@ -34,7 +34,7 @@ class DevolucionExistsTenantTest extends TestCase
         $this->actingAs($this->usuario);
 
         $this->postJson('/api/v1/devoluciones', [
-            'venta_id' => $venta->id,
+            'venta_id' => $venta->ulid,
             'tipo' => 'devolucion',
             'items_devueltos' => [['variante_id' => $this->varianteB->id, 'cantidad' => 1]],
         ])->assertStatus(422)->assertJsonValidationErrors(['items_devueltos.0.variante_id']);
@@ -46,7 +46,7 @@ class DevolucionExistsTenantTest extends TestCase
         $this->actingAs($this->usuario);
 
         $this->postJson('/api/v1/devoluciones', [
-            'venta_id' => $venta->id,
+            'venta_id' => $venta->ulid,
             'tipo' => 'cambio',
             'items_devueltos' => [['variante_id' => $this->variante->id, 'cantidad' => 1]],
             'items_nuevos' => [['variante_id' => $this->varianteB->id, 'cantidad' => 1]],
@@ -59,7 +59,7 @@ class DevolucionExistsTenantTest extends TestCase
         $this->actingAs($this->usuario);
 
         $this->postJson('/api/v1/devoluciones', [
-            'venta_id' => $venta->id,
+            'venta_id' => $venta->ulid,
             'tipo' => 'devolucion',
             'items_devueltos' => [['variante_id' => $this->variante->id, 'cantidad' => 1]],
             'pagos' => [['metodo_pago_id' => $this->metodoPagoB->id, 'monto' => 100]],
@@ -72,7 +72,7 @@ class DevolucionExistsTenantTest extends TestCase
         $this->actingAs($this->usuario);
 
         $this->postJson('/api/v1/devoluciones', [
-            'venta_id' => $venta->id,
+            'venta_id' => $venta->ulid,
             'tipo' => 'devolucion',
             'items_devueltos' => [['variante_id' => $this->variante->id, 'cantidad' => 1]],
             'pagos' => [['metodo_pago_id' => $this->metodoPagoGlobal->id, 'monto' => 100]],

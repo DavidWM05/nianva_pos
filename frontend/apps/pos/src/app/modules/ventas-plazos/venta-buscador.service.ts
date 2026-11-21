@@ -12,20 +12,21 @@ import { Venta, VentaService } from '@nianva/domain-tpv';
  * UI, el backend no lo valida.
  */
 @Injectable({ providedIn: 'root' })
-export class VentaBuscadorService extends BuscadorEntidad<EntidadBuscable> {
+export class VentaBuscadorService extends BuscadorEntidad<EntidadBuscable<string>> {
   private readonly ventaService = inject(VentaService);
 
-  buscar(texto: string): Observable<EntidadBuscable[]> {
+  buscar(texto: string): Observable<EntidadBuscable<string>[]> {
     return this.ventaService
       .listar({ first: 0, rows: 10, sortField: null, sortOrder: null, filters: {} }, texto)
       .pipe(map((respuesta) => respuesta.data.filter((v) => v.estado === 'completada').map((v) => this.aBuscable(v))));
   }
 
-  obtener(id: number): Observable<EntidadBuscable> {
+  obtener(id: string): Observable<EntidadBuscable<string>> {
     return this.ventaService.obtener(id).pipe(map((venta) => this.aBuscable(venta)));
   }
 
-  private aBuscable(venta: Venta): EntidadBuscable {
-    return { id: venta.id, nombre: `Venta #${venta.id} — ${venta.cliente?.nombre ?? 'Sin cliente'} — $${venta.total}` };
+  private aBuscable(venta: Venta): EntidadBuscable<string> {
+    // DAT-08: el id es el ulid; la etiqueta muestra el número transitorio (D-3).
+    return { id: venta.id, nombre: `Venta #${venta.numero} — ${venta.cliente?.nombre ?? 'Sin cliente'} — $${venta.total}` };
   }
 }

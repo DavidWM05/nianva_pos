@@ -38,7 +38,7 @@ export class ApartadoService {
       .pipe(map((r) => ({ data: r.data, total: r.meta.total, permisos: r.meta.permisos })));
   }
 
-  obtener(id: number): Observable<{ apartado: Apartado; permisos: ApartadoDetallePermisos }> {
+  obtener(id: string): Observable<{ apartado: Apartado; permisos: ApartadoDetallePermisos }> {
     return this.http
       .get<RespuestaDe<'/apartados/{apartado}', 'get'>>(urlApi(`/apartados/${id}`))
       .pipe(map((r) => ({ apartado: r.data, permisos: r.meta.permisos })));
@@ -49,18 +49,18 @@ export class ApartadoService {
     return this.http.post<RespuestaDe<'/apartados', 'post'>>(urlApi(`/apartados`), cuerpo).pipe(map((r) => r.data));
   }
 
-  registrarAbono(id: number, payload: AbonoFormPayload): Observable<Apartado> {
+  registrarAbono(id: string, payload: AbonoFormPayload): Observable<Apartado> {
     const cuerpo: CuerpoDe<'/apartados/{apartado}/abonos', 'post'> = payload;
     return this.http
       .post<RespuestaDe<'/apartados/{apartado}/abonos', 'post'>>(urlApi(`/apartados/${id}/abonos`), cuerpo)
       .pipe(map((r) => r.data));
   }
 
-  liquidar(id: number): Observable<Apartado> {
+  liquidar(id: string): Observable<Apartado> {
     return this.http.patch<RespuestaDe<'/apartados/{apartado}/liquidar', 'patch'>>(urlApi(`/apartados/${id}/liquidar`), {}).pipe(map((r) => r.data));
   }
 
-  cancelar(id: number, motivo: string): Observable<ResultadoCancelacion> {
+  cancelar(id: string, motivo: string): Observable<ResultadoCancelacion> {
     const cuerpo: CuerpoDe<'/apartados/{apartado}/cancelar', 'patch'> = { motivo };
     return this.http
       .patch<RespuestaDe<'/apartados/{apartado}/cancelar', 'patch'>>(

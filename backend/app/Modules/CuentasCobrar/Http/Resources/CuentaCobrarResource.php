@@ -4,6 +4,7 @@ namespace App\Modules\CuentasCobrar\Http\Resources;
 
 use App\Modules\CuentasCobrar\Models\CuentaCobrar;
 use App\Modules\Nucleo\Support\DecimalApi;
+use App\Modules\Nucleo\Support\UlidPublico;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -16,7 +17,7 @@ class CuentaCobrarResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'venta_id' => $this->venta_id,
+            'venta_id' => UlidPublico::de($this->resource, 'venta'),
             'cliente' => $this->whenLoaded('cliente', fn () => [
                 'id' => $this->cliente->id,
                 'nombre' => $this->cliente->nombre,

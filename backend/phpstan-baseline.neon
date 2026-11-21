@@ -193,12 +193,6 @@ parameters:
 			path: app/Modules/Apartados/Http/Resources/ApartadoResource.php
 
 		-
-			message: '#^Access to an undefined property App\\Modules\\Apartados\\Http\\Resources\\ApartadoResource\:\:\$venta_id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Modules/Apartados/Http/Resources/ApartadoResource.php
-
-		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$cantidad\.$#'
 			identifier: property.notFound
 			count: 1
@@ -213,7 +207,7 @@ parameters:
 		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
 			identifier: property.notFound
-			count: 3
+			count: 1
 			path: app/Modules/Apartados/Http/Resources/ApartadoResource.php
 
 		-
@@ -812,12 +806,6 @@ parameters:
 
 		-
 			message: '#^Access to an undefined property App\\Modules\\Cotizaciones\\Http\\Resources\\CotizacionResource\:\:\$validez_dias\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Modules/Cotizaciones/Http/Resources/CotizacionResource.php
-
-		-
-			message: '#^Access to an undefined property App\\Modules\\Cotizaciones\\Http\\Resources\\CotizacionResource\:\:\$venta_id\.$#'
 			identifier: property.notFound
 			count: 1
 			path: app/Modules/Cotizaciones/Http/Resources/CotizacionResource.php
@@ -1490,12 +1478,6 @@ parameters:
 
 		-
 			message: '#^Access to an undefined property App\\Modules\\CuentasCobrar\\Http\\Resources\\CuentaCobrarResource\:\:\$saldo_pendiente\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Modules/CuentasCobrar/Http/Resources/CuentaCobrarResource.php
-
-		-
-			message: '#^Access to an undefined property App\\Modules\\CuentasCobrar\\Http\\Resources\\CuentaCobrarResource\:\:\$venta_id\.$#'
 			identifier: property.notFound
 			count: 1
 			path: app/Modules/CuentasCobrar/Http/Resources/CuentaCobrarResource.php
@@ -2233,12 +2215,6 @@ parameters:
 			path: app/Modules/Devoluciones/Http/Resources/DevolucionResource.php
 
 		-
-			message: '#^Access to an undefined property App\\Modules\\Devoluciones\\Http\\Resources\\DevolucionResource\:\:\$venta_sombra_id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Modules/Devoluciones/Http/Resources/DevolucionResource.php
-
-		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$cantidad\.$#'
 			identifier: property.notFound
 			count: 1
@@ -2248,12 +2224,6 @@ parameters:
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$cliente\.$#'
 			identifier: property.notFound
 			count: 1
-			path: app/Modules/Devoluciones/Http/Resources/DevolucionResource.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 2
 			path: app/Modules/Devoluciones/Http/Resources/DevolucionResource.php
 
 		-
@@ -2576,12 +2546,6 @@ parameters:
 
 		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$fecha\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Modules/GiftCards/Http/Resources/GiftCardResource.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
 			identifier: property.notFound
 			count: 1
 			path: app/Modules/GiftCards/Http/Resources/GiftCardResource.php
@@ -3332,12 +3296,6 @@ parameters:
 
 		-
 			message: '#^Access to an undefined property App\\Modules\\NotasCredito\\Http\\Resources\\NotaCreditoResource\:\:\$created_at\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Modules/NotasCredito/Http/Resources/NotaCreditoResource.php
-
-		-
-			message: '#^Access to an undefined property App\\Modules\\NotasCredito\\Http\\Resources\\NotaCreditoResource\:\:\$devolucion_id\.$#'
 			identifier: property.notFound
 			count: 1
 			path: app/Modules/NotasCredito/Http/Resources/NotaCreditoResource.php
@@ -6248,12 +6206,6 @@ parameters:
 
 		-
 			message: '#^Access to an undefined property App\\Modules\\VentasPlazos\\Http\\Resources\\PlanPagoResource\:\:\$tasa_interes\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Modules/VentasPlazos/Http/Resources/PlanPagoResource.php
-
-		-
-			message: '#^Access to an undefined property App\\Modules\\VentasPlazos\\Http\\Resources\\PlanPagoResource\:\:\$venta_id\.$#'
 			identifier: property.notFound
 			count: 1
 			path: app/Modules/VentasPlazos/Http/Resources/PlanPagoResource.php

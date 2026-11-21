@@ -5,7 +5,7 @@
     <ui-skeleton forma="bloque" alto="16rem" etiqueta="Cargando venta" />
   } @else if (venta(); as ventaActual) {
     <div class="venta-detalle__encabezado">
-      <h2>Venta #{{ ventaActual.id }}</h2>
+      <h2>Venta #{{ ventaActual.numero }}</h2>
       <ui-badge entidad="venta" [estado]="ventaActual.estado" />
     </div>
 

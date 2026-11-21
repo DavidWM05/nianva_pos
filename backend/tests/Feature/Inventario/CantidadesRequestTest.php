@@ -55,7 +55,7 @@ class CantidadesRequestTest extends TestCase
         $metodo = MetodoPago::factory()->create(['tenant_id' => $tenant->id]);
         $venta = Venta::factory()->create(['tenant_id' => $tenant->id, 'sucursal_id' => $sucursal->id, 'usuario_id' => $usuario->id, 'cliente_id' => $cliente->id]);
         $linea = ['variante_id' => $variante->id, 'cantidad' => $cantidad, 'precio_compra' => 100, 'precio_unitario' => 100];
-        $payload = ['cliente_id' => $cliente->id, 'proveedor_id' => $proveedor->id, 'venta_id' => $venta->id,
+        $payload = ['cliente_id' => $cliente->id, 'proveedor_id' => $proveedor->id, 'venta_id' => $venta->ulid,
             'tipo' => 'devolucion', 'items' => [$linea], 'items_devueltos' => [$linea],
             'pagos' => [['metodo_pago_id' => $metodo->id, 'monto' => 50]], 'tipo_entrega' => 'domicilio', 'direccion_entrega' => 'Centro'];
         $idRuta = 0;

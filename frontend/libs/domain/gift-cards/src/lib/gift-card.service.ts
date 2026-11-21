@@ -10,7 +10,7 @@ import {
   GiftCardEmitirPayload,
 } from './gift-card.types';
 
-export type PagoRecarga = CuerpoDe<'/gift-cards/{id}/recargar', 'post'>['pagos'][number];
+export type PagoRecarga = CuerpoDe<'/gift-cards/{giftCard}/recargar', 'post'>['pagos'][number];
 
 export interface GiftCardsPagina {
   data: GiftCard[];
@@ -64,7 +64,7 @@ export class GiftCardService {
       .pipe(map((r) => ({ data: r.data, total: r.meta.total })));
   }
 
-  obtener(id: number): Observable<GiftCard> {
+  obtener(id: string): Observable<GiftCard> {
     return this.http
       .get<RespuestaDe<'/gift-cards/{giftCard}', 'get'>>(
         urlApi(`/gift-cards/${id}`),
@@ -80,20 +80,20 @@ export class GiftCardService {
       .pipe(map((r) => r.data));
   }
 
-  recargar(id: number, monto: number, pagos: PagoRecarga[]): Observable<GiftCard> {
-    const cuerpo: CuerpoDe<'/gift-cards/{id}/recargar', 'post'> = { monto, pagos };
+  recargar(id: string, monto: number, pagos: PagoRecarga[]): Observable<GiftCard> {
+    const cuerpo: CuerpoDe<'/gift-cards/{giftCard}/recargar', 'post'> = { monto, pagos };
 
     return this.http
-      .post<RespuestaDe<'/gift-cards/{id}/recargar', 'post'>>(
+      .post<RespuestaDe<'/gift-cards/{giftCard}/recargar', 'post'>>(
         urlApi(`/gift-cards/${id}/recargar`),
         cuerpo,
       )
       .pipe(map((r) => r.data));
   }
 
-  cancelar(id: number): Observable<void> {
+  cancelar(id: string): Observable<void> {
     return this.http
-      .post<RespuestaDe<'/gift-cards/{id}/cancelar', 'post'>>(
+      .post<RespuestaDe<'/gift-cards/{giftCard}/cancelar', 'post'>>(
         urlApi(`/gift-cards/${id}/cancelar`),
         {},
       )

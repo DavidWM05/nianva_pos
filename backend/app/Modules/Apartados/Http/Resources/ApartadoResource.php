@@ -6,6 +6,7 @@ namespace App\Modules\Apartados\Http\Resources;
 
 use App\Modules\Apartados\Models\Apartado;
 use App\Modules\Nucleo\Support\DecimalApi;
+use App\Modules\Nucleo\Support\UlidPublico;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -25,7 +26,11 @@ class ApartadoResource extends JsonResource
     {
         return [
             'lista_precio_id' => $this->resource->getAttribute('lista_precio_id') === null ? null : (int) $this->resource->getAttribute('lista_precio_id'),
-            'id' => $this->id,
+            // DAT-08: el identificador público es el ulid; el id interno no sale de la API.
+            'id' => (string) $this->resource->getAttribute('ulid'),
+            // D-3, transitorio: número visible del apartado (= id interno), solo para mostrarlo; lo
+            // reemplaza el folio de DAT-07.
+            'numero' => (int) $this->getKey(),
             'fecha_creacion' => $this->fecha_creacion,
             'cliente' => $this->whenLoaded(
                 'cliente',
@@ -39,10 +44,10 @@ class ApartadoResource extends JsonResource
             'fecha_completado' => $this->fecha_completado,
             'fecha_cancelado' => $this->fecha_cancelado,
             'motivo_cancelacion' => $this->motivo_cancelacion,
-            'venta_id' => $this->venta_id,
+            'venta_id' => UlidPublico::de($this->resource, 'venta'),
             'notas' => $this->notas,
             'detalles' => $this->whenLoaded('detalles', fn () => $this->detalles->map(fn ($detalle) => [
-                'id' => $detalle->id,
+                'id' => (string) $detalle->getAttribute('ulid'),
                 'variante_id' => $detalle->variante_id,
                 'variante' => $detalle->variante ? [
                     'id' => $detalle->variante->id,
@@ -62,7 +67,7 @@ class ApartadoResource extends JsonResource
                 'unidad_medida_id' => (int) $detalle->getAttribute('unidad_medida_id'),
             ])),
             'abonos' => $this->whenLoaded('abonos', fn () => $this->abonos->map(fn ($abono) => [
-                'id' => $abono->id,
+                'id' => (string) $abono->getAttribute('ulid'),
                 'monto' => DecimalApi::dinero($abono->monto),
                 'fecha' => $abono->fecha,
                 'notas' => $abono->notas,

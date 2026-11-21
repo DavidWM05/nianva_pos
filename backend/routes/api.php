@@ -370,8 +370,8 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::get('/gift-cards', [GiftCardController::class, 'index'])->middleware('permiso:gift_cards.ver');
             Route::post('/gift-cards', [GiftCardController::class, 'store'])->middleware('permiso:gift_cards.emitir');
             Route::get('/gift-cards/{giftCard}', [GiftCardController::class, 'show'])->middleware('permiso:gift_cards.ver');
-            Route::post('/gift-cards/{id}/recargar', [GiftCardController::class, 'recargar'])->middleware('permiso:gift_cards.recargar');
-            Route::post('/gift-cards/{id}/cancelar', [GiftCardController::class, 'cancelar'])->middleware('permiso:gift_cards.cancelar');
+            Route::post('/gift-cards/{giftCard}/recargar', [GiftCardController::class, 'recargar'])->middleware('permiso:gift_cards.recargar');
+            Route::post('/gift-cards/{giftCard}/cancelar', [GiftCardController::class, 'cancelar'])->middleware('permiso:gift_cards.cancelar');
         });
 
         // Notas de Credito

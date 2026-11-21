@@ -5,6 +5,7 @@ import { ActivatedRoute, convertToParamMap } from '@angular/router';
 import { AuditLogSource } from '@nianva/ui-shared';
 import { of } from 'rxjs';
 import { describe, expect, it, vi } from 'vitest';
+import { ulidDePrueba } from '../../../../testing/ulid-de-prueba';
 
 // jsdom (el entorno de estos tests) no implementa ResizeObserver -- lo usa
 // PrimeNG's TabList (detras de RecordTabsComponent) en ngAfterViewInit.
@@ -26,11 +27,13 @@ describe('DevolucionDetalleComponent', () => {
   let fixture: ComponentFixture<DevolucionDetalleComponent>;
 
   const devolucionCambio: Devolucion = {
-    id: 3,
+    id: ulidDePrueba(3),
+    numero: 3,
     fecha: '2026-07-22T10:00:00.000000Z',
     tipo: 'cambio',
-    venta: { id: 55, cliente_nombre: 'Publico General' },
-    venta_sombra_id: 99,
+    venta: { id: ulidDePrueba(55), numero: 55, cliente_nombre: 'Publico General' },
+    venta_sombra_id: ulidDePrueba(99),
+    venta_sombra_numero: 99,
     monto_devolucion: '120.00',
     monto_cambio: '400.00',
     diferencia: '280.00',
@@ -39,7 +42,7 @@ describe('DevolucionDetalleComponent', () => {
     nota_credito_id: null,
     items: [
       {
-        id: 1,
+        id: ulidDePrueba(1),
         tipo: 'devuelto',
         variante_id: 5,
         variante: { id: 5, nombre: 'M', producto_nombre: 'Camisa' },
@@ -49,7 +52,7 @@ describe('DevolucionDetalleComponent', () => {
         va_a_merma: false,
       },
       {
-        id: 2,
+        id: ulidDePrueba(2),
         tipo: 'nuevo',
         variante_id: 8,
         variante: { id: 8, nombre: 'L', producto_nombre: 'Saco' },
@@ -105,12 +108,12 @@ describe('DevolucionDetalleComponent', () => {
       monto_cambio: '0.00',
       diferencia: '-120.00',
       tipo_reembolso: 'nota_credito',
-      nota_credito_id: 7,
+      nota_credito_id: ulidDePrueba(7),
     });
 
     const texto = (fixture.nativeElement as HTMLElement).textContent ?? '';
     expect(texto).toContain('Nota de crédito');
-    const link = fixture.nativeElement.querySelector('a[href="/notas-credito/7"]');
+    const link = fixture.nativeElement.querySelector(`a[href="/notas-credito/${ulidDePrueba(7)}"]`);
     expect(link).not.toBeNull();
   });
 

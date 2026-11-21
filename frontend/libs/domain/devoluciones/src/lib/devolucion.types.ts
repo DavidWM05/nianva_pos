@@ -11,7 +11,10 @@ export type TipoDevolucion = 'devolucion' | 'cambio';
 export type TipoItemDevolucion = 'devuelto' | 'nuevo';
 
 export interface DevolucionVentaResumen {
-  id: number;
+  /** DAT-08: ulid de la venta origen. */
+  id: string;
+  /** D-3, transitorio: número visible de la venta; lo reemplaza el folio de DAT-07. */
+  numero: number;
   cliente_nombre: string | null;
 }
 
@@ -23,7 +26,8 @@ export interface DevolucionItemVariante {
 }
 
 export interface DevolucionItem {
-  id: number;
+  /** DAT-08: ulid de la línea. */
+  id: string;
   tipo: TipoItemDevolucion;
   variante_id: number;
   variante: DevolucionItemVariante | null;
@@ -42,11 +46,16 @@ export interface DevolucionPagoResumen {
 export type TipoReembolso = 'efectivo' | 'nota_credito';
 
 export interface Devolucion {
-  id: number;
+  /** DAT-08: ulid; es el que va en la ruta /devoluciones/:id y en la API. */
+  id: string;
+  /** D-3, transitorio: número visible (= id interno); lo reemplaza el folio de DAT-07. */
+  numero: number;
   fecha: string;
   tipo: TipoDevolucion;
   venta?: DevolucionVentaResumen | null;
-  venta_sombra_id: number | null;
+  venta_sombra_id: string | null;
+  /** D-3, transitorio: número visible de la venta sombra; lo reemplaza el folio de DAT-07. */
+  venta_sombra_numero: number | null;
   monto_devolucion: string;
   monto_cambio: string;
   /** Negativo = reembolso al cliente; positivo = cobro adicional. Ya viene calculado por el backend. */
@@ -54,7 +63,7 @@ export interface Devolucion {
   motivo: string | null;
   /** Solo tiene sentido si diferencia < 0 (reembolso al cliente). */
   tipo_reembolso: TipoReembolso | null;
-  nota_credito_id: number | null;
+  nota_credito_id: string | null;
   /** Solo viaja en show()/store() -- index() no la carga (ver DevolucionResource). */
   items?: DevolucionItem[];
   pagos?: DevolucionPagoResumen[];
@@ -71,14 +80,16 @@ export interface DevolucionesPagina {
 }
 
 export interface DevolucionItemDevueltoPayload {
-  venta_detalle_id?: number;
+  /** DAT-08: ulid de la línea de la venta origen. */
+  venta_detalle_id?: string;
   variante_id: number;
   cantidad: number;
   va_a_merma: boolean;
 }
 
 export interface DevolucionFormPayload {
-  venta_id: number;
+  /** DAT-08: ulid de la venta origen. */
+  venta_id: string;
   tipo: TipoDevolucion;
   items_devueltos: DevolucionItemDevueltoPayload[];
   items_nuevos?: DevolucionItemNuevoPayload[];
@@ -96,6 +107,9 @@ export interface DevolucionFormPayload {
  * NotaCreditoService.obtener(nota_credito_id).
  */
 export interface DevolucionNotaCreditoInfo {
-  id: number;
+  /** DAT-08: ulid de la nota. */
+  id: string;
+  /** D-3, transitorio: número visible de la nota. */
+  numero: number;
   monto_original: string;
 }

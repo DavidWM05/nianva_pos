@@ -59,7 +59,7 @@ class EntradasTipadasDtoTest extends TestCase
         $venta = $this->crearVenta();
 
         $request = $this->validar(CrearDevolucionRequest::class, [
-            'venta_id' => $venta->id,
+            'venta_id' => $venta->ulid,
             'tipo' => 'devolucion',
             'items_devueltos' => [['variante_id' => $this->variante->id, 'cantidad' => 1]],
         ]);

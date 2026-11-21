@@ -29,7 +29,10 @@ export interface ClientesPagina {
 
 /** Espejo de VentaController::porCliente() (backend/app/Modules/Tpv). */
 export interface VentaResumen {
-  id: number;
+  /** DAT-08: ulid de la venta. */
+  id: string;
+  /** D-3, transitorio: número visible de la venta; lo reemplaza el folio de DAT-07. */
+  numero: number;
   fecha: string;
   total: string;
   estado: 'completada' | 'anulada';

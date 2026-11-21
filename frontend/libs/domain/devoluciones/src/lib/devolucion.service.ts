@@ -29,7 +29,7 @@ export class DevolucionService {
       .pipe(map((r) => ({ data: r.data, total: r.meta.total, permisos: r.meta.permisos })));
   }
 
-  obtener(id: number): Observable<Devolucion> {
+  obtener(id: string): Observable<Devolucion> {
     return this.http.get<RespuestaDe<'/devoluciones/{devolucion}', 'get'>>(urlApi(`/devoluciones/${id}`)).pipe(map((r) => r.data));
   }
 

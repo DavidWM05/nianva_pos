@@ -28,9 +28,9 @@ class PlanPagoRespuestaTest extends TestCase
         $venta = $this->crearVenta();
         $this->actingAs($this->usuario);
 
-        $this->postJson("/api/v1/ventas/{$venta->id}/plan-pago", ['numero_cuotas' => 2, 'periodicidad' => 'mensual'])
+        $this->postJson("/api/v1/ventas/{$venta->ulid}/plan-pago", ['numero_cuotas' => 2, 'periodicidad' => 'mensual'])
             ->assertCreated()
-            ->assertJsonPath('data.venta_id', $venta->id)
+            ->assertJsonPath('data.venta_id', $venta->ulid)
             ->assertJsonPath('data.periodicidad', 'mensual')
             ->assertJsonPath('data.numero_cuotas', 2)
             ->assertJsonMissingPath('data.tenant_id')

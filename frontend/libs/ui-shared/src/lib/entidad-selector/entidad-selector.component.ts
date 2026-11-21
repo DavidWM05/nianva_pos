@@ -21,7 +21,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { debounceTime, filter, map } from 'rxjs';
 
-import { BuscadorDeHijos, BuscadorEntidad, EntidadBuscable } from './entidad-selector.types';
+import { BuscadorDeHijos, BuscadorEntidad, EntidadBuscable, IdEntidad } from './entidad-selector.types';
 
 /** Lo que dispara una busqueda: el texto escrito (con al menos un caracter). */
 export interface BusquedaEntidadEvento {
@@ -51,21 +51,23 @@ const PAUSA_BUSQUEDA_MS = 300;
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class EntidadSelectorComponent implements OnChanges {
-  @Input({ required: true }) buscador!: BuscadorEntidad;
+export class EntidadSelectorComponent<I extends IdEntidad = IdEntidad> implements OnChanges {
+  // DAT-08: I es el tipo del id de la entidad (number en catálogos, el ulid string en documentos);
+  // Angular lo infiere del buscador que recibe.
+  @Input({ required: true }) buscador!: BuscadorEntidad<EntidadBuscable<I>>;
   /** Presente => se muestra el select en cascada de "hijos" de la entidad elegida. */
-  @Input() buscadorHijos?: BuscadorDeHijos;
+  @Input() buscadorHijos?: BuscadorDeHijos<EntidadBuscable, I>;
 
   @Input() label = 'Buscar';
   @Input() labelHijos = 'Elemento';
   @Input() placeholder = 'Buscar por nombre...';
 
-  @Input() valorInicial: number | null = null;
+  @Input() valorInicial: I | null = null;
   @Input() valorInicialHijo: number | null = null;
   /** Modo visualizar (ver el reporte del punto 1 de Nucleo): deshabilita ambos selectores. */
   @Input() disabled = false;
 
-  @Output() seleccionado = new EventEmitter<number | null>();
+  @Output() seleccionado = new EventEmitter<I | null>();
   @Output() hijoSeleccionado = new EventEmitter<number | null>();
 
   // Lee el <input> real dentro del mat-form-field via el host, en vez de
@@ -78,13 +80,13 @@ export class EntidadSelectorComponent implements OnChanges {
   private readonly cdr = inject(ChangeDetectorRef);
 
   /** Lo que hay en el input: el texto que se escribe, o la entidad elegida. */
-  protected readonly busqueda = new FormControl<string | EntidadBuscable | null>(null);
-  protected readonly sugerencias = signal<EntidadBuscable[]>([]);
-  protected readonly entidadElegida = signal<EntidadBuscable | null>(null);
+  protected readonly busqueda = new FormControl<string | EntidadBuscable<I> | null>(null);
+  protected readonly sugerencias = signal<EntidadBuscable<I>[]>([]);
+  protected readonly entidadElegida = signal<EntidadBuscable<I> | null>(null);
   protected readonly hijos = signal<EntidadBuscable[]>([]);
   protected hijoElegidoId: number | null = null;
 
-  protected readonly nombreDe = (valor: string | EntidadBuscable | null): string =>
+  protected readonly nombreDe = (valor: string | EntidadBuscable<I> | null): string =>
     typeof valor === 'string' ? valor : (valor?.nombre ?? '');
 
   constructor() {
@@ -119,7 +121,7 @@ export class EntidadSelectorComponent implements OnChanges {
     this.buscador.buscar(evento.query).subscribe((resultados) => this.sugerencias.set(resultados));
   }
 
-  onSeleccionar(entidad: EntidadBuscable): void {
+  onSeleccionar(entidad: EntidadBuscable<I>): void {
     this.entidadElegida.set(entidad);
     this.hijoElegidoId = null;
     this.hijos.set([]);
@@ -138,7 +140,7 @@ export class EntidadSelectorComponent implements OnChanges {
     this.autoCompleteHost?.nativeElement.querySelector<HTMLInputElement>('input')?.focus();
   }
 
-  private cargarHijos(padreId: number, hijoInicialId: number | null): void {
+  private cargarHijos(padreId: I, hijoInicialId: number | null): void {
     if (!this.buscadorHijos) return;
 
     this.buscadorHijos.hijosDe(padreId).subscribe((hijos) => {

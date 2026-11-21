@@ -26,5 +26,5 @@ export interface AuditLogEntry {
  * este proyecto en particular.
  */
 export abstract class AuditLogSource {
-  abstract listar(tabla: string, registroId: number): Observable<AuditLogEntry[]>;
+  abstract listar(tabla: string, registroId: number | string): Observable<AuditLogEntry[]>;
 }

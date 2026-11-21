@@ -38,7 +38,7 @@ class RegistrarDevolucionAtomicidadTest extends TestCase
         $this->actingAs($this->usuario);
 
         $this->postJson('/api/v1/devoluciones', [
-            'venta_id' => $venta->id,
+            'venta_id' => $venta->ulid,
             'tipo' => 'devolucion',
             'items_devueltos' => [['variante_id' => $this->variante->id, 'cantidad' => 1]],
             'pagos' => [['metodo_pago_id' => $this->metodoPago->id, 'monto' => 100]],

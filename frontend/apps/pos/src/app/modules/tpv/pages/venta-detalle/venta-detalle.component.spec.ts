@@ -3,6 +3,7 @@ import { ActivatedRoute, convertToParamMap, provideRouter } from '@angular/route
 import { AuditLogSource } from '@nianva/ui-shared';
 import { of } from 'rxjs';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { ulidDePrueba } from '../../../../testing/ulid-de-prueba';
 
 // jsdom no implementa ResizeObserver -- lo usa PrimeNG's TabList detras de
 // RecordTabsComponent (ver el mismo stub en cliente-detalle.component.spec.ts).
@@ -24,7 +25,8 @@ describe('VentaDetalleComponent', () => {
   let fixture: ComponentFixture<VentaDetalleComponent>;
 
   const venta: Venta = {
-    id: 42,
+    id: ulidDePrueba(42),
+    numero: 42,
     fecha: '2026-07-01T10:00:00Z',
     cliente: { id: 1, nombre: 'Ana Pérez' },
     total: '150.00',
@@ -38,7 +40,7 @@ describe('VentaDetalleComponent', () => {
     metodos_pago: [{ metodo_pago_id: 1, nombre: 'Efectivo', monto: '150.00' }],
     detalles: [
       {
-        id: 1,
+        id: ulidDePrueba(1),
         variante_id: 10,
         variante: { id: 10, nombre: 'M / Azul', producto_nombre: 'Playera' },
         cantidad: '2.000',

@@ -7,6 +7,7 @@ import { describe, expect, it, vi } from 'vitest';
 
 import { PlanesPagoPagina, PlanPago, PlanPagoService } from '@nianva/domain-ventas-plazos';
 import { PlanesPagoListComponent } from './planes-pago-list.component';
+import { ulidDePrueba } from '../../../../testing/ulid-de-prueba';
 
 describe('PlanesPagoListComponent', () => {
   let fixture: ComponentFixture<PlanesPagoListComponent>;
@@ -16,7 +17,7 @@ describe('PlanesPagoListComponent', () => {
     {
       id: 1,
       cliente: { id: 9, nombre: 'Juan Pérez' },
-      venta_id: 3,
+      venta_id: ulidDePrueba(3),
       concepto: 'Venta #3 - Pago a plazos',
       monto_total: '550.00',
       interes_total: '50.00',

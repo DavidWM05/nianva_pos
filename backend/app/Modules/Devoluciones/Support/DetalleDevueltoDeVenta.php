@@ -30,10 +30,12 @@ final class DetalleDevueltoDeVenta implements DataAwareRule, ValidationRule
         $prefijo = substr($attribute, 0, strrpos($attribute, '.') + 1);
         $variante = data_get($this->datos, $prefijo.'variante_id');
         $venta = $this->datos['venta_id'] ?? null;
-        if (! is_numeric($value) || ! is_numeric($variante) || ! is_numeric($venta)) {
+        // DAT-08: la línea y la venta llegan por su ulid publicado. Un tipo inválido lo rechazan
+        // las reglas 'ulid' del campo; aquí solo se comprueba la pertenencia.
+        if (! is_string($value) || ! is_numeric($variante) || ! is_string($venta)) {
             return;
         }
-        if (! VentaDetalle::query()->whereKey((int) $value)->where('venta_id', (int) $venta)->where('variante_id', (int) $variante)->whereHas('venta', fn (Builder $q) => $q->where('tenant_id', $this->tenantId))->exists()) {
+        if (! VentaDetalle::query()->where('ulid', strtolower($value))->where('variante_id', (int) $variante)->whereHas('venta', fn (Builder $q) => $q->where('ulid', strtolower($venta))->where('tenant_id', $this->tenantId))->exists()) {
             $fail('La línea devuelta debe pertenecer a la venta, variante y tenant.');
         }
     }

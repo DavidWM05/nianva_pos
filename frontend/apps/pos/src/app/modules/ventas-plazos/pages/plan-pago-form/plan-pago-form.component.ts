@@ -65,7 +65,8 @@ export class PlanPagoFormComponent {
   protected readonly buscadorVenta = inject(BUSCADOR_VENTA);
   protected readonly periodicidades = PERIODICIDADES;
 
-  protected readonly ventaId = signal<number | null>(null);
+  // DAT-08: ulid de la venta elegida.
+  protected readonly ventaId = signal<string | null>(null);
   protected readonly numeroCuotas = signal<number | null>(6);
   protected readonly tasaInteres = signal<number | null>(null);
   protected readonly periodicidad = signal<Periodicidad>('mensual');

@@ -177,10 +177,10 @@ class AtributosTest extends TestCase
         $regla = ReglaPrecio::factory()->create(['tenant_id' => $t, 'aplica_a' => 'variante', 'variante_id' => $variante->id]);
 
         $this->getJson("/api/v1/productos/{$producto->id}")->assertOk()->assertJsonPath('data.variantes.0.nombre', null);
-        $this->getJson("/api/v1/ventas/{$venta->id}")->assertOk()->assertJsonPath('data.detalles.0.variante.nombre', null);
+        $this->getJson("/api/v1/ventas/{$venta->ulid}")->assertOk()->assertJsonPath('data.detalles.0.variante.nombre', null);
         $this->getJson('/api/v1/ventas/reporte')->assertOk()->assertJsonPath('data.top_productos.0.nombre', null);
-        $this->getJson("/api/v1/apartados/{$apartado->id}")->assertOk()->assertJsonPath('data.detalles.0.variante.nombre', null);
-        $this->getJson("/api/v1/devoluciones/{$devolucion->id}")->assertOk()->assertJsonPath('data.items.0.variante.nombre', null);
+        $this->getJson("/api/v1/apartados/{$apartado->ulid}")->assertOk()->assertJsonPath('data.detalles.0.variante.nombre', null);
+        $this->getJson("/api/v1/devoluciones/{$devolucion->ulid}")->assertOk()->assertJsonPath('data.items.0.variante.nombre', null);
         $this->getJson("/api/v1/reglas-precio/{$regla->id}")->assertOk()->assertJsonPath('data.variante.nombre', null);
     }
 

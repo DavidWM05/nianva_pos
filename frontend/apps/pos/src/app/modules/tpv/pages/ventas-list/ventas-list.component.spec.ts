@@ -8,6 +8,7 @@ import { describe, expect, it, vi } from 'vitest';
 
 import { Venta, VentaService, VentasPagina, VentasPermisos } from '@nianva/domain-tpv';
 import { VentasListComponent } from './ventas-list.component';
+import { ulidDePrueba } from '../../../../testing/ulid-de-prueba';
 
 describe('VentasListComponent', () => {
   let fixture: ComponentFixture<VentasListComponent>;
@@ -16,7 +17,8 @@ describe('VentasListComponent', () => {
 
   const ventas: Venta[] = [
     {
-      id: 1,
+      id: ulidDePrueba(1),
+      numero: 1,
       fecha: '2026-07-22T10:00:00.000000Z',
       cliente: { id: 9, nombre: 'Publico General' },
       total: '330.00',
@@ -79,7 +81,7 @@ describe('VentasListComponent', () => {
 
     fixture.componentInstance.irADetalle(ventas[0]);
 
-    expect(router.navigate).toHaveBeenCalledWith(['/tpv/ventas', 1]);
+    expect(router.navigate).toHaveBeenCalledWith(['/tpv/ventas', ulidDePrueba(1)]);
   });
 
   it('anular pide un motivo y lo envia al confirmar', async () => {
@@ -96,7 +98,7 @@ describe('VentasListComponent', () => {
     fixture.componentInstance['motivoAnulacion'].set('Cliente se arrepintió');
     fixture.componentInstance.confirmarAnulacion();
 
-    expect(ventaService.anular).toHaveBeenCalledWith(1, 'Cliente se arrepintió');
+    expect(ventaService.anular).toHaveBeenCalledWith(ulidDePrueba(1), 'Cliente se arrepintió');
   });
   it('si la venta ya estaba anulada, recarga la lista y muestra el mensaje', async () => {
     await crearComponente({ anular: true });

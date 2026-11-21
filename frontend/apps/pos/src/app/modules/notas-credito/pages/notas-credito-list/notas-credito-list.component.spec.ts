@@ -8,6 +8,7 @@ import { describe, expect, it, vi } from 'vitest';
 import { BUSCADOR_CLIENTE } from '../../../../core/buscadores-entidad.tokens';
 import { NotaCredito, NotaCreditoService, NotasCreditoPagina } from '@nianva/domain-notas-credito';
 import { NotasCreditoListComponent } from './notas-credito-list.component';
+import { ulidDePrueba } from '../../../../testing/ulid-de-prueba';
 
 describe('NotasCreditoListComponent', () => {
   let fixture: ComponentFixture<NotasCreditoListComponent>;
@@ -15,9 +16,11 @@ describe('NotasCreditoListComponent', () => {
 
   const notas: NotaCredito[] = [
     {
-      id: 1,
+      id: ulidDePrueba(1),
+      numero: 1,
       cliente: { id: 9, nombre: 'Juan Pérez' },
-      devolucion_id: 3,
+      devolucion_id: ulidDePrueba(3),
+      devolucion_numero: 3,
       monto_original: '200.00',
       saldo_disponible: '200.00',
       fecha_expiracion: '2026-12-01',
@@ -72,6 +75,6 @@ describe('NotasCreditoListComponent', () => {
 
     fixture.componentInstance.irADetalle(notas[0]);
 
-    expect(navigateSpy).toHaveBeenCalledWith(['/notas-credito', 1]);
+    expect(navigateSpy).toHaveBeenCalledWith(['/notas-credito', ulidDePrueba(1)]);
   });
 });

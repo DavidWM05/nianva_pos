@@ -134,7 +134,7 @@ class CajaControllerTest extends TestCase
         $sesion = app(CajaService::class)->abrirCajaConSucursal(Bloqueos04e::sucursal($sucursal->id), $usuario->id, 500);
         $this->actingAs($usuario);
 
-        $respuesta = $this->patchJson("/api/v1/caja/{$sesion->id}/cerrar", ['conteos' => [['metodo_pago_id' => MetodoEfectivo::id(), 'monto' => 480]]]);
+        $respuesta = $this->patchJson("/api/v1/caja/{$sesion->ulid}/cerrar", ['conteos' => [['metodo_pago_id' => MetodoEfectivo::id(), 'monto' => 480]]]);
 
         $respuesta->assertOk()
             ->assertJsonPath('data.estado', 'cerrada')
@@ -165,7 +165,7 @@ class CajaControllerTest extends TestCase
         $this->actingAs($usuario);
 
         // total_teorico = apertura(500) + ventas(0) - gastos(80) = 420.
-        $respuesta = $this->patchJson("/api/v1/caja/{$sesion->id}/cerrar", ['conteos' => [['metodo_pago_id' => MetodoEfectivo::id(), 'monto' => 420]]]);
+        $respuesta = $this->patchJson("/api/v1/caja/{$sesion->ulid}/cerrar", ['conteos' => [['metodo_pago_id' => MetodoEfectivo::id(), 'monto' => 420]]]);
 
         $respuesta->assertOk()->assertJsonPath('data.diferencia', '0.00');
     }

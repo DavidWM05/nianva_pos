@@ -9,7 +9,7 @@
     </div>
   } @else if (ventaRegistrada(); as venta) {
     <div class="venta__confirmacion">
-      <h2>Venta #{{ venta.id }} registrada</h2>
+      <h2>Venta #{{ venta.numero }} registrada</h2>
       <p>Total: {{ venta.total | dinero }}</p>
       <button matButton="filled" type="button" (click)="nuevaVenta()"><i class="pi pi-plus" aria-hidden="true"></i> Nueva venta</button>
     </div>

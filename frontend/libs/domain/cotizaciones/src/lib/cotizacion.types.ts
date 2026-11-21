@@ -40,7 +40,8 @@ export interface Cotizacion {
   fecha_vencimiento: string | null;
   observaciones: string | null;
   uso_cfdi: string | null;
-  venta_id: number | null;
+  /** DAT-08: ulid de la venta de la conversión. */
+  venta_id: string | null;
   /** Solo viaja en show()/store()/update() -- index() no lo carga. */
   detalles?: CotizacionDetalle[];
   created_at: string;

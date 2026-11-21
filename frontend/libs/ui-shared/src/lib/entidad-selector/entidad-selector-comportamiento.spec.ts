@@ -4,7 +4,7 @@ import { of } from 'rxjs';
 import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { EntidadSelectorComponent } from './entidad-selector.component';
-import { BuscadorDeHijos, BuscadorEntidad, EntidadBuscable } from './entidad-selector.types';
+import { BuscadorDeHijos, BuscadorEntidad, EntidadBuscable, IdEntidad } from './entidad-selector.types';
 
 // Serie 50d: comportamiento visible del selector, sin depender de la libreria del
 // autocompletado. Debe pasar igual antes y despues de quitar PrimeNG.
@@ -100,7 +100,7 @@ describe('EntidadSelectorComponent (comportamiento)', () => {
 
   it('elegir una sugerencia emite su id y la muestra en el input', async () => {
     await estabilizar();
-    const emitidos: Array<number | null> = [];
+    const emitidos: Array<IdEntidad | null> = [];
     component.seleccionado.subscribe((id) => emitidos.push(id));
 
     vi.useFakeTimers();

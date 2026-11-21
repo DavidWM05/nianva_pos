@@ -7,6 +7,7 @@ import { describe, expect, it, vi } from 'vitest';
 
 import { Apartado, ApartadoService, ApartadosListaPermisos, ApartadosPagina } from '@nianva/domain-apartados';
 import { ApartadosListComponent } from './apartados-list.component';
+import { ulidDePrueba } from '../../../../testing/ulid-de-prueba';
 
 describe('ApartadosListComponent', () => {
   let fixture: ComponentFixture<ApartadosListComponent>;
@@ -22,7 +23,8 @@ describe('ApartadosListComponent', () => {
 
   const apartados: Apartado[] = [
     {
-      id: 1,
+      id: ulidDePrueba(1),
+      numero: 1,
       fecha_creacion: '2026-07-01T10:00:00.000000Z',
       cliente: { id: 9, nombre: 'Maria Lopez' },
       total: '600.00',
@@ -36,7 +38,8 @@ describe('ApartadosListComponent', () => {
       notas: null,
     },
     {
-      id: 2,
+      id: ulidDePrueba(2),
+      numero: 2,
       fecha_creacion: '2026-06-01T10:00:00.000000Z',
       cliente: { id: 10, nombre: 'Juan Perez' },
       total: '300.00',

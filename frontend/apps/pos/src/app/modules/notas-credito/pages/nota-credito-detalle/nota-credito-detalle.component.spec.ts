@@ -5,6 +5,7 @@ import { ActivatedRoute, convertToParamMap, provideRouter } from '@angular/route
 import { AuditLogSource } from '@nianva/ui-shared';
 import { of } from 'rxjs';
 import { describe, expect, it, vi } from 'vitest';
+import { ulidDePrueba } from '../../../../testing/ulid-de-prueba';
 
 // jsdom no implementa ResizeObserver -- lo usa PrimeNG's TabList (detras de
 // RecordTabsComponent) en ngAfterViewInit. Mismo stub que
@@ -28,9 +29,11 @@ describe('NotaCreditoDetalleComponent', () => {
 
   function notaCon(overrides: Partial<NotaCredito>): NotaCredito {
     return {
-      id: 5,
+      id: ulidDePrueba(5),
+      numero: 5,
       cliente: { id: 9, nombre: 'Juan Pérez' },
-      devolucion_id: 3,
+      devolucion_id: ulidDePrueba(3),
+      devolucion_numero: 3,
       monto_original: '500.00',
       saldo_disponible: '300.00',
       fecha_expiracion: '2026-12-01',
@@ -53,7 +56,7 @@ describe('NotaCreditoDetalleComponent', () => {
         provideRouter([]),
         { provide: NotaCreditoService, useValue: notaCreditoService },
         { provide: AuditLogSource, useValue: { listar: vi.fn().mockReturnValue(of([])) } },
-        { provide: ActivatedRoute, useValue: { snapshot: { paramMap: convertToParamMap({ id: '5' }) } } },
+        { provide: ActivatedRoute, useValue: { snapshot: { paramMap: convertToParamMap({ id: ulidDePrueba(5) }) } } },
       ],
     }).compileComponents();
 
@@ -64,7 +67,7 @@ describe('NotaCreditoDetalleComponent', () => {
   it('carga la nota de crédito por id de la ruta y muestra sus datos', async () => {
     await crearComponente(notaCon({}));
 
-    expect(notaCreditoService.obtener).toHaveBeenCalledWith(5);
+    expect(notaCreditoService.obtener).toHaveBeenCalledWith(ulidDePrueba(5));
     const texto = (fixture.nativeElement as HTMLElement).textContent ?? '';
     expect(texto).toContain('Juan Pérez');
     expect(texto).toContain('300.00');
@@ -80,7 +83,7 @@ describe('NotaCreditoDetalleComponent', () => {
   it('con usos, lista cada venta vinculada con su monto', async () => {
     await crearComponente(
       notaCon({
-        usos: [{ id: 1, venta_id: 42, monto_usado: '200.00', created_at: '2026-07-20T10:00:00Z', venta: { id: 42, fecha: '2026-07-20T10:00:00Z', total: '200.00' } }],
+        usos: [{ id: ulidDePrueba(1), venta_id: ulidDePrueba(42), monto_usado: '200.00', created_at: '2026-07-20T10:00:00Z', venta: { id: ulidDePrueba(42), numero: 42, fecha: '2026-07-20T10:00:00Z', total: '200.00' } }],
       }),
     );
 

@@ -1,7 +1,7 @@
 <ui-page-header clave="notas-credito" />
 <ui-page [estado]="estado()" forma="detalle" (reintentar)="reintentar()">
   @if (notaCredito(); as nota) {
-    <h2>Nota de crédito #{{ nota.id }}</h2>
+    <h2>Nota de crédito #{{ nota.numero }}</h2>
     <ui-badge entidad="notaCredito" [estado]="nota.estado" />
 
     <nucleo-record-tabs [tabs]="tabs">
@@ -27,7 +27,7 @@
             <dt>Devolución origen</dt>
             <dd>
               <a [routerLink]="['/devoluciones', nota.devolucion_id]"
-                >Devolución #{{ nota.devolucion_id }}</a
+                >Devolución #{{ nota.devolucion_numero }}</a
               >
             </dd>
           </dl>

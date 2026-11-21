@@ -33,7 +33,7 @@ class DevolucionControllerTest extends TestCase
      * @param  list<string>  $permisos
      * @return array{tenant: Tenant, sucursal: Sucursal, usuario: Usuario, cliente: Cliente,
      *     efectivo: MetodoPago, tarjeta: MetodoPago, varianteE: ProductoVariante, varianteF: ProductoVariante,
-     *     varianteG: ProductoVariante, ventaOrigenId: int}
+     *     varianteG: ProductoVariante, ventaOrigenId: string}
      */
     private function prepararTenantConVentaOrigen(
         array $permisos = ['devoluciones.ver', 'devoluciones.crear'],
@@ -93,7 +93,7 @@ class DevolucionControllerTest extends TestCase
         $ventaOrigen = app(VentaService::class)->registrarVentaConBloqueos($datos04e3, $items04e3, [['metodo_pago_id' => $efectivo->id, 'monto' => 300]], $caja04e3, $stocks04e3);
 
         return compact('tenant', 'sucursal', 'usuario', 'cliente', 'efectivo', 'tarjeta', 'varianteE', 'varianteF', 'varianteG')
-            + ['ventaOrigenId' => $ventaOrigen->id];
+            + ['ventaOrigenId' => $ventaOrigen->ulid];
     }
 
     public function test_store_devolucion_simple_regresa_stock_y_registra_reembolso(): void

@@ -80,7 +80,7 @@ class FotoPorLineaTest extends TestCase
 
         $this->assertSame($antes, $this->foto(VentaDetalle::query()->where('venta_id', $venta->id)->firstOrFail()));
         $this->assertSame(['100.00', '50.00', '16.0000', '13.79'], [$antes['precio_unitario'], $antes['costo_unitario'], $antes['tasa_impuesto'], $antes['impuesto']]);
-        $this->actingAs($this->usuario)->getJson("/api/v1/ventas/{$venta->id}")
+        $this->actingAs($this->usuario)->getJson("/api/v1/ventas/{$venta->ulid}")
             ->assertOk()
             ->assertJsonPath('data.detalles.0.precio_unitario', '100.00')
             ->assertJsonPath('data.detalles.0.tasa_impuesto', '16.0000')
@@ -126,7 +126,7 @@ class FotoPorLineaTest extends TestCase
         $this->cambiarCatalogo();
 
         $this->actingAs($this->usuario)->postJson('/api/v1/devoluciones', [
-            'venta_id' => $venta->id,
+            'venta_id' => $venta->ulid,
             'tipo' => 'devolucion',
             'items_devueltos' => [['variante_id' => $this->variante->id, 'cantidad' => 1, 'va_a_merma' => false]],
             'pagos' => [['metodo_pago_id' => $this->metodoPago->id, 'monto' => 100]],
@@ -141,16 +141,16 @@ class FotoPorLineaTest extends TestCase
     public function test_liquidar_un_apartado_cobra_el_precio_del_apartado_aunque_cambie_el_catalogo(): void
     {
         $apartado = $this->crearApartado();
-        $this->actingAs($this->usuario)->postJson("/api/v1/apartados/{$apartado->id}/abonos", [
+        $this->actingAs($this->usuario)->postJson("/api/v1/apartados/{$apartado->ulid}/abonos", [
             'monto' => 100,
             'pagos' => [['metodo_pago_id' => $this->metodoPago->id, 'monto' => 100]],
         ])->assertOk();
 
         $this->producto->update(['precio_venta' => 180]);
 
-        $ventaId = $this->patchJson("/api/v1/apartados/{$apartado->id}/liquidar")->assertOk()->json('data.venta_id');
+        $ventaId = $this->patchJson("/api/v1/apartados/{$apartado->ulid}/liquidar")->assertOk()->json('data.venta_id');
 
-        $venta = Venta::query()->findOrFail($ventaId);
+        $venta = Venta::query()->where('ulid', $ventaId)->firstOrFail();
         $this->assertSame('100.00', (string) $venta->total);
         $linea = VentaDetalle::query()->where('venta_id', $venta->id)->firstOrFail();
         $this->assertSame('100.00', (string) $linea->getAttribute('precio_unitario'));

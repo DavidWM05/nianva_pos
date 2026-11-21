@@ -1008,7 +1008,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/gift-cards/{id}/recargar": {
+    "/gift-cards/{giftCard}/recargar": {
         parameters: {
             query?: never;
             header?: never;
@@ -1017,6 +1017,10 @@ export interface paths {
         };
         get?: never;
         put?: never;
+        /**
+         * DAT-08: la ruta resuelve la tarjeta por ulid (binding); la Action sigue recibiendo el id
+         *     interno y bloqueando por él
+         */
         post: operations["giftCard.recargar"];
         delete?: never;
         options?: never;
@@ -1024,7 +1028,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/gift-cards/{id}/cancelar": {
+    "/gift-cards/{giftCard}/cancelar": {
         parameters: {
             query?: never;
             header?: never;
@@ -2381,7 +2385,13 @@ export interface components {
         /** ApartadoResource */
         ApartadoResource: {
             lista_precio_id: number | null;
-            id: number;
+            /** @description DAT-08: el identificador público es el ulid; el id interno no sale de la API. */
+            id: string;
+            /**
+             * @description D-3, transitorio: número visible del apartado (= id interno), solo para mostrarlo; lo
+             *     reemplaza el folio de DAT-07.
+             */
+            numero: number;
             /** Format: date-time */
             fecha_creacion: string;
             cliente?: {
@@ -2399,10 +2409,10 @@ export interface components {
             /** Format: date-time */
             fecha_cancelado: string | null;
             motivo_cancelacion: string | null;
-            venta_id: number | null;
+            venta_id: string | null;
             notas: string | null;
             detalles?: {
-                id: number;
+                id: string;
                 variante_id: number;
                 variante: {
                     id: number;
@@ -2422,7 +2432,7 @@ export interface components {
                 unidad_medida_id: number;
             }[];
             abonos?: {
-                id: number;
+                id: string;
                 monto: string;
                 /** Format: date-time */
                 fecha: string;
@@ -2480,7 +2490,13 @@ export interface components {
         };
         /** CajaSesionResource */
         CajaSesionResource: {
-            id: number;
+            /** @description DAT-08: el identificador público es el ulid; el id interno no sale de la API. */
+            id: string;
+            /**
+             * @description D-3, transitorio: número visible de la sesión (= id interno), solo para mostrarlo; lo
+             *     reemplaza el folio de DAT-07.
+             */
+            numero: number;
             sucursal_id: number;
             usuario_id: number;
             monto_apertura: string;
@@ -2638,7 +2654,7 @@ export interface components {
             fecha_vencimiento: string | null;
             observaciones: string | null;
             uso_cfdi: string | null;
-            venta_id: number | null;
+            venta_id: string | null;
             detalles?: components["schemas"]["CotizacionDetalleResource"][];
             /** Format: date-time */
             created_at: string;
@@ -2697,11 +2713,12 @@ export interface components {
         };
         /** CrearDevolucionRequest */
         CrearDevolucionRequest: {
-            venta_id: number;
+            /** @description DAT-08: la venta y sus líneas llegan por el ulid publicado; toDto() las traduce al id. */
+            venta_id: string;
             /** @enum {string} */
             tipo: "devolucion" | "cambio";
             items_devueltos: {
-                venta_detalle_id?: number | null;
+                venta_detalle_id?: string | null;
                 variante_id: number;
                 cantidad: number;
                 va_a_merma?: boolean | null;
@@ -2838,7 +2855,8 @@ export interface components {
             cupon_codigo?: string | null;
             descuento_manual?: number | null;
             gift_card_codigo?: string | null;
-            nota_credito_id?: number | null;
+            /** @description DAT-08: la nota llega por su ulid publicado; toDto() la traduce al id. */
+            nota_credito_id?: string | null;
         };
         /** CrmCampana */
         CrmCampana: {
@@ -2888,7 +2906,7 @@ export interface components {
         /** CuentaCobrarResource */
         CuentaCobrarResource: {
             id: number;
-            venta_id: number;
+            venta_id: string | null;
             cliente?: {
                 id: number;
                 nombre: string;
@@ -2958,25 +2976,39 @@ export interface components {
         };
         /** DevolucionResource */
         DevolucionResource: {
-            id: number;
+            /** @description DAT-08: el identificador público es el ulid; el id interno no sale de la API. */
+            id: string;
+            /**
+             * @description D-3, transitorio: número visible de la devolución (= id interno), solo para mostrarlo;
+             *     lo reemplaza el folio de DAT-07.
+             */
+            numero: number;
             /** Format: date-time */
             fecha: string;
             /** @enum {string} */
             tipo: "devolucion" | "cambio";
             venta?: {
-                id: number;
+                id: string;
+                /** @description D-3, transitorio: el número de la venta origen, para mostrarla. */
+                numero: number;
                 cliente_nombre: string;
             } | null;
-            venta_sombra_id: number | null;
+            venta_sombra_id: string | null;
+            /**
+             * @description D-3, transitorio: número visible de la venta sombra (= id interno), solo para mostrarlo;
+             *     lo reemplaza el folio de DAT-07.
+             */
+            venta_sombra_numero: number | null;
             monto_devolucion: string;
             monto_cambio: string;
             diferencia: string;
             motivo: string | null;
             /** @enum {string} */
             tipo_reembolso: "efectivo" | "nota_credito";
-            nota_credito_id: number | null;
+            /** @description Devoluciones es base y NotasCredito extensión (ARQ-03): sin relación, se lee el ulid por tabla. */
+            nota_credito_id: string | null;
             items?: {
-                id: number;
+                id: string;
                 /** @enum {string} */
                 tipo: "devuelto" | "nuevo";
                 variante_id: number;
@@ -3054,7 +3086,8 @@ export interface components {
         };
         /** GiftCardResource */
         GiftCardResource: {
-            id: number;
+            /** @description DAT-08: el identificador público es el ulid; el número visible es `codigo`. */
+            id: string;
             cliente?: {
                 id: number;
                 nombre: string;
@@ -3065,7 +3098,7 @@ export interface components {
             /** Format: date-time */
             fecha_expiracion: string | null;
             recargas?: {
-                id: number;
+                id: string;
                 monto: string;
                 usuario: {
                     id: number;
@@ -3331,12 +3364,23 @@ export interface components {
         };
         /** NotaCreditoResource */
         NotaCreditoResource: {
-            id: number;
+            /** @description DAT-08: el identificador público es el ulid; el id interno no sale de la API. */
+            id: string;
+            /**
+             * @description D-3, transitorio: número visible de la nota (= id interno), solo para mostrarlo; lo
+             *     reemplaza el folio de DAT-07.
+             */
+            numero: number;
             cliente?: {
                 id: number;
                 nombre: string;
             };
-            devolucion_id: number;
+            devolucion_id: string | null;
+            /**
+             * @description D-3, transitorio: número visible de la devolución de origen (= id interno), solo para
+             *     mostrarlo; lo reemplaza el folio de DAT-07.
+             */
+            devolucion_numero: number | null;
             monto_original: string;
             saldo_disponible: string;
             /** Format: date-time */
@@ -3345,12 +3389,14 @@ export interface components {
             estado: "activa" | "usada_parcial" | "usada_total" | "expirada" | "cancelada";
             /** @description Campos explicitos (ARQ-12b): el modelo crudo no documentaba la venta que carga show(). */
             usos?: {
-                id: number;
-                venta_id: number;
+                id: string;
+                venta_id: string | null;
                 monto_usado: string;
                 created_at: string;
                 venta: {
-                    id: number;
+                    id: string;
+                    /** @description D-3, transitorio: el número de la venta, para mostrarla. */
+                    numero: number;
                     fecha: string;
                     total: string;
                 } | null;
@@ -3462,7 +3508,7 @@ export interface components {
                 id: number;
                 nombre: string;
             };
-            venta_id: number | null;
+            venta_id: string | null;
             concepto: string;
             monto_total: string;
             interes_total: string;
@@ -3667,7 +3713,8 @@ export interface components {
         /** RegistrarPagoPrestamoRequest */
         RegistrarPagoPrestamoRequest: {
             monto: number;
-            caja_sesion_id?: number | null;
+            /** @description DAT-08 (D-10, cambio mínimo en módulo congelado): la sesión de caja llega por su ulid. */
+            caja_sesion_id?: string | null;
             notas?: string | null;
         };
         /** RegistrarPagoRequest */
@@ -3818,7 +3865,7 @@ export interface components {
         };
         /** VentaLineaResource */
         VentaLineaResource: {
-            id: number;
+            id: string;
             variante_id: number;
             variante: {
                 id: number;
@@ -3843,7 +3890,13 @@ export interface components {
         /** VentaResource */
         VentaResource: {
             lista_precio_id: number | null;
-            id: number;
+            /** @description DAT-08: el identificador público es el ulid; el id interno no sale de la API. */
+            id: string;
+            /**
+             * @description D-3, transitorio: número visible del documento (= id interno), solo para mostrarlo y
+             *     para buscar la venta en la devolución; lo reemplaza el folio de DAT-07.
+             */
+            numero: number;
             /** Format: date-time */
             fecha: string;
             cliente?: {
@@ -4108,8 +4161,8 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description The apartado ID */
-                apartado: number;
+                /** @description The apartado ulid */
+                apartado: string;
             };
             cookie?: never;
         };
@@ -4140,8 +4193,8 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description The apartado ID */
-                apartado: number;
+                /** @description The apartado ulid */
+                apartado: string;
             };
             cookie?: never;
         };
@@ -4172,8 +4225,8 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description The apartado ID */
-                apartado: number;
+                /** @description The apartado ulid */
+                apartado: string;
             };
             cookie?: never;
         };
@@ -4199,8 +4252,8 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description The apartado ID */
-                apartado: number;
+                /** @description The apartado ulid */
+                apartado: string;
             };
             cookie?: never;
         };
@@ -4479,7 +4532,11 @@ export interface operations {
         parameters: {
             query: {
                 tabla: string;
-                registro_id: number;
+                /**
+                 * @description DAT-08: los registros que la API publica por ulid (modelo con RutaPorUlid) se piden
+                 *     por ese ulid; el resto, por su id. toDto() traduce el ulid al id interno.
+                 */
+                registro_id: string;
             };
             header?: never;
             path?: never;
@@ -4635,8 +4692,8 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description The caja sesion ID */
-                cajaSesion: number;
+                /** @description The caja sesion ulid */
+                cajaSesion: string;
             };
             cookie?: never;
         };
@@ -6227,6 +6284,8 @@ export interface operations {
     "devolucion.index": {
         parameters: {
             query?: {
+                /** @description DAT-08: el filtro recibe el ulid de la venta, el mismo id que publica VentaResource. */
+                filtro_venta_id?: string;
                 sort_field?: string;
             };
             header?: never;
@@ -6275,7 +6334,8 @@ export interface operations {
                     "application/json": {
                         data: components["schemas"]["DevolucionResource"] & Record<string, never>;
                         nota_credito: {
-                            id: number;
+                            id: string;
+                            numero: number;
                             monto_original: string;
                         } | null;
                     };
@@ -6290,8 +6350,8 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description The devolucion ID */
-                devolucion: number;
+                /** @description The devolucion ulid */
+                devolucion: string;
             };
             cookie?: never;
         };
@@ -6387,7 +6447,8 @@ export interface operations {
     "gasto.index": {
         parameters: {
             query: {
-                caja_sesion_id: number;
+                /** @description DAT-08: la sesión de caja llega por su ulid publicado; toDto() la traduce al id. */
+                caja_sesion_id: string;
             };
             header?: never;
             path?: never;
@@ -6500,8 +6561,8 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description The gift card ID */
-                giftCard: number;
+                /** @description The gift card ulid */
+                giftCard: string;
             };
             cookie?: never;
         };
@@ -6527,7 +6588,8 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                id: number;
+                /** @description The gift card ulid */
+                giftCard: string;
             };
             cookie?: never;
         };
@@ -6549,6 +6611,7 @@ export interface operations {
                 };
             };
             401: components["responses"]["AuthenticationException"];
+            404: components["responses"]["ModelNotFoundException"];
             422: components["responses"]["ValidationException"];
         };
     };
@@ -6557,7 +6620,8 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                id: number;
+                /** @description The gift card ulid */
+                giftCard: string;
             };
             cookie?: never;
         };
@@ -6575,6 +6639,7 @@ export interface operations {
                 };
             };
             401: components["responses"]["AuthenticationException"];
+            404: components["responses"]["ModelNotFoundException"];
         };
     };
     "inicio.resumen": {
@@ -6598,7 +6663,9 @@ export interface operations {
                                 total: string;
                             };
                             apartados_por_vencer: {
-                                id: number;
+                                /** @description DAT-08: ulid como id público; `numero` es el transitorio de D-3 (DAT-07). */
+                                id: string;
+                                numero: number;
                                 cliente_nombre: string | null;
                                 /** Format: date-time */
                                 fecha_vencimiento: string;
@@ -7204,8 +7271,8 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description The nota credito ID */
-                notaCredito: number;
+                /** @description The nota credito ulid */
+                notaCredito: string;
             };
             cookie?: never;
         };
@@ -7767,8 +7834,8 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description The venta ID */
-                venta: number;
+                /** @description The venta ulid */
+                venta: string;
             };
             cookie?: never;
         };
@@ -9534,7 +9601,9 @@ export interface operations {
                 content: {
                     "application/json": {
                         data: {
-                            id: number;
+                            /** @description DAT-08: ulid como id público; `numero` es el transitorio de D-3 (DAT-07). */
+                            id: string;
+                            numero: number;
                             fecha: string;
                             total: string;
                             /** @enum {string} */
@@ -9551,6 +9620,11 @@ export interface operations {
     "venta.index": {
         parameters: {
             query?: {
+                /**
+                 * @description D-7, transitorio: la devolución busca la venta por su `numero` (= id interno) hasta que
+                 *      exista el folio de DAT-07. Un valor no numérico no encuentra nada.
+                 */
+                filtro_numero?: string;
                 sort_field?: string;
             };
             header?: never;
@@ -9704,8 +9778,8 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description The venta ID */
-                venta: number;
+                /** @description The venta ulid */
+                venta: string;
             };
             cookie?: never;
         };
@@ -9731,8 +9805,8 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description The venta ID */
-                venta: number;
+                /** @description The venta ulid */
+                venta: string;
             };
             cookie?: never;
         };

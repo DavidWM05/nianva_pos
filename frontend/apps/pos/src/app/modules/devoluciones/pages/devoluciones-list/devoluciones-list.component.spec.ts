@@ -7,6 +7,7 @@ import { describe, expect, it, vi } from 'vitest';
 
 import { Devolucion, DevolucionesPagina, DevolucionesPermisos, DevolucionService } from '@nianva/domain-devoluciones';
 import { DevolucionesListComponent } from './devoluciones-list.component';
+import { ulidDePrueba } from '../../../../testing/ulid-de-prueba';
 
 describe('DevolucionesListComponent', () => {
   let fixture: ComponentFixture<DevolucionesListComponent>;
@@ -14,11 +15,13 @@ describe('DevolucionesListComponent', () => {
 
   const devoluciones: Devolucion[] = [
     {
-      id: 1,
+      id: ulidDePrueba(1),
+      numero: 1,
       fecha: '2026-07-20T10:00:00.000000Z',
       tipo: 'devolucion',
-      venta: { id: 55, cliente_nombre: 'Publico General' },
+      venta: { id: ulidDePrueba(55), numero: 55, cliente_nombre: 'Publico General' },
       venta_sombra_id: null,
+      venta_sombra_numero: null,
       monto_devolucion: '120.00',
       monto_cambio: '0.00',
       diferencia: '-120.00',
@@ -27,11 +30,13 @@ describe('DevolucionesListComponent', () => {
       nota_credito_id: null,
     },
     {
-      id: 2,
+      id: ulidDePrueba(2),
+      numero: 2,
       fecha: '2026-07-21T10:00:00.000000Z',
       tipo: 'cambio',
-      venta: { id: 56, cliente_nombre: 'Maria Lopez' },
-      venta_sombra_id: 99,
+      venta: { id: ulidDePrueba(56), numero: 56, cliente_nombre: 'Maria Lopez' },
+      venta_sombra_id: ulidDePrueba(99),
+      venta_sombra_numero: 99,
       monto_devolucion: '120.00',
       monto_cambio: '400.00',
       diferencia: '280.00',

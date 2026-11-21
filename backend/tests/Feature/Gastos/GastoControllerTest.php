@@ -86,7 +86,7 @@ class GastoControllerTest extends TestCase
         $this->postJson('/api/v1/gastos', ['descripcion' => 'Luz', 'monto' => 80])->assertCreated();
         $this->postJson('/api/v1/gastos', ['descripcion' => 'Agua', 'monto' => 40])->assertCreated();
 
-        $respuesta = $this->getJson("/api/v1/gastos?caja_sesion_id={$sesion->id}");
+        $respuesta = $this->getJson("/api/v1/gastos?caja_sesion_id={$sesion->ulid}");
 
         $respuesta->assertOk()->assertJsonCount(2, 'data');
     }
@@ -97,6 +97,6 @@ class GastoControllerTest extends TestCase
         $sesion = app(CajaService::class)->abrirCajaConSucursal(Bloqueos04e::sucursal($sucursal->id), $usuario->id, 500);
         $this->actingAs($usuario);
 
-        $this->getJson("/api/v1/gastos?caja_sesion_id={$sesion->id}")->assertForbidden();
+        $this->getJson("/api/v1/gastos?caja_sesion_id={$sesion->ulid}")->assertForbidden();
     }
 }

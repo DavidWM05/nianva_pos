@@ -80,7 +80,8 @@ export class VentaDetalleComponent implements OnInit {
   ];
 
   ngOnInit(): void {
-    const id = Number(this.route.snapshot.paramMap.get('id'));
+    // DAT-08: el parámetro de la ruta es el ulid; nunca Number().
+    const id = this.route.snapshot.paramMap.get('id') ?? '';
 
     this.ventaService.obtener(id).subscribe((venta) => {
       this.venta.set(venta);

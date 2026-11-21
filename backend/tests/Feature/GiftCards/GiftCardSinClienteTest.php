@@ -37,7 +37,7 @@ class GiftCardSinClienteTest extends TestCase
         $giftCard = GiftCard::factory()->create(['tenant_id' => $tenant->id, 'cliente_id' => null]);
 
         $this->actuar($tenant);
-        $this->getJson("/api/v1/gift-cards/{$giftCard->id}")
+        $this->getJson("/api/v1/gift-cards/{$giftCard->ulid}")
             ->assertOk()
             ->assertJsonPath('data.cliente', null);
     }

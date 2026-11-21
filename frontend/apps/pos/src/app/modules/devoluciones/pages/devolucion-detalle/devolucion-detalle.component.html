@@ -4,8 +4,8 @@
   @if (devolucion(); as devolucionActual) {
     <div>
       <h2>
-        {{ devolucionActual.tipo === 'cambio' ? 'Cambio' : 'Devolución' }} #{{ devolucionActual.id }} — Venta #{{
-          devolucionActual.venta?.id
+        {{ devolucionActual.tipo === 'cambio' ? 'Cambio' : 'Devolución' }} #{{ devolucionActual.numero }} — Venta #{{
+          devolucionActual.venta?.numero
         }}
       </h2>
     </div>
@@ -41,9 +41,7 @@
               <dd>
                 @if (devolucionActual.tipo_reembolso === 'nota_credito' && devolucionActual.nota_credito_id) {
                   Nota de crédito
-                  <a [routerLink]="['/notas-credito', devolucionActual.nota_credito_id]">
-                    #{{ devolucionActual.nota_credito_id }}
-                  </a>
+                  <a [routerLink]="['/notas-credito', devolucionActual.nota_credito_id]">Ver nota</a>
                 } @else {
                   Efectivo / método original
                 }
@@ -55,7 +53,7 @@
             }
             @if (devolucionActual.venta_sombra_id) {
               <dt>Venta sombra generada</dt>
-              <dd>Venta #{{ devolucionActual.venta_sombra_id }}</dd>
+              <dd><a [routerLink]="['/tpv/ventas', devolucionActual.venta_sombra_id]">Venta #{{ devolucionActual.venta_sombra_numero }}</a></dd>
             }
           </dl>
 

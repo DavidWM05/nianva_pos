@@ -7,12 +7,14 @@ import { describe, expect, it, vi } from 'vitest';
 import { proveedoresDePantalla } from '../../../../testing/proveedores-pantalla';
 import { Venta, VentaService } from '@nianva/domain-tpv';
 import { VentaDetalleComponent } from './venta-detalle.component';
+import { ulidDePrueba } from '../../../../testing/ulid-de-prueba';
 
 // Cierre de la Fase 2: el detalle de venta usa ui-page-header (nombre por clave), ui-badge
 // (REGISTRO_ESTADOS) y ui-tabla para las lineas, como los demas detalles migrados.
 describe('VentaDetalleComponent con libs/ui', () => {
   const venta: Venta = {
-    id: 42,
+    id: ulidDePrueba(42),
+    numero: 42,
     fecha: '2026-07-01T10:00:00Z',
     cliente: { id: 1, nombre: 'Ana' },
     total: '1500.00',
@@ -26,7 +28,7 @@ describe('VentaDetalleComponent con libs/ui', () => {
     metodos_pago: [{ metodo_pago_id: 1, nombre: 'Efectivo', monto: '1500.00' }],
     detalles: [
       {
-        id: 1,
+        id: ulidDePrueba(1),
         variante_id: 10,
         variante: { id: 10, nombre: 'M / Azul', producto_nombre: 'Playera' },
         cantidad: '2.000',

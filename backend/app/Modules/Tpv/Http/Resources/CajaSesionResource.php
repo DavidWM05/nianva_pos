@@ -17,7 +17,11 @@ class CajaSesionResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'id' => $this->id,
+            // DAT-08: el identificador público es el ulid; el id interno no sale de la API.
+            'id' => (string) $this->resource->getAttribute('ulid'),
+            // D-3, transitorio: número visible de la sesión (= id interno), solo para mostrarlo; lo
+            // reemplaza el folio de DAT-07.
+            'numero' => (int) $this->getKey(),
             'sucursal_id' => $this->sucursal_id,
             'usuario_id' => $this->usuario_id,
             'monto_apertura' => DecimalApi::dinero($this->monto_apertura),

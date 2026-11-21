@@ -40,7 +40,7 @@ test('apartados: crear, buscar y registrar un abono con pago mixto', async ({
   const respuesta = page.waitForResponse(
     (r) =>
       r.request().method() === 'POST' &&
-      /\/apartados\/\d+\/abonos$/.test(new URL(r.url()).pathname),
+      /\/apartados\/[0-9a-hjkmnp-tv-z]{26}\/abonos$/.test(new URL(r.url()).pathname),
   );
   await page.getByRole('button', { name: /Registrar abono$/ }).click();
   expect((await respuesta).status()).toBe(200);
