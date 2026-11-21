@@ -25,7 +25,11 @@ class VentaResource extends JsonResource
     {
         return [
             'lista_precio_id' => $this->resource->getAttribute('lista_precio_id') === null ? null : (int) $this->resource->getAttribute('lista_precio_id'),
-            'id' => $this->id,
+            // DAT-08: el identificador público es el ulid; el id interno no sale de la API.
+            'id' => (string) $this->resource->getAttribute('ulid'),
+            // D-3, transitorio: número visible del documento (= id interno), solo para mostrarlo y
+            // para buscar la venta en la devolución; lo reemplaza el folio de DAT-07.
+            'numero' => (int) $this->getKey(),
             'fecha' => $this->fecha,
             'cliente' => $this->whenLoaded(
                 'cliente',

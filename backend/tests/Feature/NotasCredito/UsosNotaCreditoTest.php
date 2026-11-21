@@ -38,11 +38,11 @@ class UsosNotaCreditoTest extends TestCase
         $usuario->roles()->attach($rol->id);
         $this->actingAs($usuario);
 
-        $this->getJson("/api/v1/notas-credito/{$nota->id}")
+        $this->getJson("/api/v1/notas-credito/{$nota->ulid}")
             ->assertOk()
-            ->assertJsonPath('data.usos.0.id', $uso->id)
+            ->assertJsonPath('data.usos.0.id', $uso->ulid)
             ->assertJsonPath('data.usos.0.monto_usado', '12.50')
-            ->assertJsonPath('data.usos.0.venta.id', $uso->venta_id)
+            ->assertJsonPath('data.usos.0.venta.id', $uso->venta->ulid)
             ->assertJsonMissingPath('data.usos.0.nota_credito_id');
     }
 }

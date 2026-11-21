@@ -7,6 +7,7 @@ import { describe, expect, it, vi } from 'vitest';
 
 import { CuentaCobrar, CuentaCobrarService, CuentasCobrarPagina } from '@nianva/domain-cuentas-cobrar';
 import { CuentasCobrarListComponent } from './cuentas-cobrar-list.component';
+import { ulidDePrueba } from '../../../../testing/ulid-de-prueba';
 
 describe('CuentasCobrarListComponent', () => {
   let fixture: ComponentFixture<CuentasCobrarListComponent>;
@@ -15,7 +16,7 @@ describe('CuentasCobrarListComponent', () => {
   const cuentas: CuentaCobrar[] = [
     {
       id: 1,
-      venta_id: 42,
+      venta_id: ulidDePrueba(42),
       cliente: { id: 9, nombre: 'Juan Pérez' },
       monto_total: '500.00',
       saldo_pendiente: '500.00',

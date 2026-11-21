@@ -14,7 +14,8 @@ export interface ApartadoDetalleVariante {
 }
 
 export interface ApartadoDetalle {
-  id: number;
+  /** DAT-08: ulid de la línea. */
+  id: string;
   variante_id: number;
   variante: ApartadoDetalleVariante | null;
   cantidad: string;
@@ -29,7 +30,8 @@ export interface ApartadoAbonoPagoResumen {
 }
 
 export interface ApartadoAbono {
-  id: number;
+  /** DAT-08: ulid del abono. */
+  id: string;
   monto: string;
   fecha: string;
   notas: string | null;
@@ -37,7 +39,10 @@ export interface ApartadoAbono {
 }
 
 export interface Apartado {
-  id: number;
+  /** DAT-08: ulid; es el que va en la ruta /apartados/:id y en la API. */
+  id: string;
+  /** D-3, transitorio: número visible (= id interno); lo reemplaza el folio de DAT-07. */
+  numero: number;
   fecha_creacion: string;
   cliente?: ApartadoClienteResumen | null;
   total: string;
@@ -47,7 +52,8 @@ export interface Apartado {
   fecha_completado: string | null;
   fecha_cancelado: string | null;
   motivo_cancelacion: string | null;
-  venta_id: number | null;
+  /** DAT-08: ulid de la venta de la liquidación. */
+  venta_id: string | null;
   notas: string | null;
   /** Solo viaja en show() -- index() no la carga (ver ApartadoController). */
   detalles?: ApartadoDetalle[];

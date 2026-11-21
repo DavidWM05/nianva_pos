@@ -16,7 +16,7 @@ import { Gasto } from './gasto.types';
 export class GastoService {
   private readonly http = inject(HttpClient);
 
-  listar(cajaSesionId: number): Observable<Gasto[]> {
+  listar(cajaSesionId: string): Observable<Gasto[]> {
     return this.http
       .get<RespuestaDe<'/gastos', 'get'>>(urlApi(`/gastos`), { params: { caja_sesion_id: cajaSesionId } })
       .pipe(map((r) => r.data));

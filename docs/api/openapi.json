@@ -169,9 +169,9 @@
                         "name": "apartado",
                         "in": "path",
                         "required": true,
-                        "description": "The apartado ID",
+                        "description": "The apartado ulid",
                         "schema": {
-                            "type": "integer"
+                            "type": "string"
                         }
                     }
                 ],
@@ -250,9 +250,9 @@
                         "name": "apartado",
                         "in": "path",
                         "required": true,
-                        "description": "The apartado ID",
+                        "description": "The apartado ulid",
                         "schema": {
-                            "type": "integer"
+                            "type": "string"
                         }
                     }
                 ],
@@ -308,9 +308,9 @@
                         "name": "apartado",
                         "in": "path",
                         "required": true,
-                        "description": "The apartado ID",
+                        "description": "The apartado ulid",
                         "schema": {
-                            "type": "integer"
+                            "type": "string"
                         }
                     }
                 ],
@@ -353,9 +353,9 @@
                         "name": "apartado",
                         "in": "path",
                         "required": true,
-                        "description": "The apartado ID",
+                        "description": "The apartado ulid",
                         "schema": {
-                            "type": "integer"
+                            "type": "string"
                         }
                     }
                 ],
@@ -954,8 +954,10 @@
                         "name": "registro_id",
                         "in": "query",
                         "required": true,
+                        "description": "DAT-08: los registros que la API publica por ulid (modelo con RutaPorUlid) se piden\npor ese ulid; el resto, por su id. toDto() traduce el ulid al id interno.",
                         "schema": {
-                            "type": "integer"
+                            "type": "string",
+                            "maxLength": 26
                         }
                     }
                 ],
@@ -1381,9 +1383,9 @@
                         "name": "cajaSesion",
                         "in": "path",
                         "required": true,
-                        "description": "The caja sesion ID",
+                        "description": "The caja sesion ulid",
                         "schema": {
-                            "type": "integer"
+                            "type": "string"
                         }
                     }
                 ],
@@ -4672,6 +4674,14 @@
                 ],
                 "parameters": [
                     {
+                        "name": "filtro_venta_id",
+                        "in": "query",
+                        "description": "DAT-08: el filtro recibe el ulid de la venta, el mismo id que publica VentaResource.",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
                         "name": "sort_field",
                         "in": "query",
                         "schema": {
@@ -4786,6 +4796,9 @@
                                             ],
                                             "properties": {
                                                 "id": {
+                                                    "type": "string"
+                                                },
+                                                "numero": {
                                                     "type": "integer"
                                                 },
                                                 "monto_original": {
@@ -4795,6 +4808,7 @@
                                             },
                                             "required": [
                                                 "id",
+                                                "numero",
                                                 "monto_original"
                                             ]
                                         }
@@ -4827,9 +4841,9 @@
                         "name": "devolucion",
                         "in": "path",
                         "required": true,
-                        "description": "The devolucion ID",
+                        "description": "The devolucion ulid",
                         "schema": {
-                            "type": "integer"
+                            "type": "string"
                         }
                     }
                 ],
@@ -4997,8 +5011,9 @@
                         "name": "caja_sesion_id",
                         "in": "query",
                         "required": true,
+                        "description": "DAT-08: la sesi\u00f3n de caja llega por su ulid publicado; toDto() la traduce al id.",
                         "schema": {
-                            "type": "integer"
+                            "type": "string"
                         }
                     }
                 ],
@@ -5190,9 +5205,9 @@
                         "name": "giftCard",
                         "in": "path",
                         "required": true,
-                        "description": "The gift card ID",
+                        "description": "The gift card ulid",
                         "schema": {
-                            "type": "integer"
+                            "type": "string"
                         }
                     }
                 ],
@@ -5235,19 +5250,21 @@
                 }
             }
         },
-        "/gift-cards/{id}/recargar": {
+        "/gift-cards/{giftCard}/recargar": {
             "post": {
                 "operationId": "giftCard.recargar",
+                "summary": "DAT-08: la ruta resuelve la tarjeta por ulid (binding); la Action sigue recibiendo el id\ninterno y bloqueando por \u00e9l",
                 "tags": [
                     "GiftCard"
                 ],
                 "parameters": [
                     {
-                        "name": "id",
+                        "name": "giftCard",
                         "in": "path",
                         "required": true,
+                        "description": "The gift card ulid",
                         "schema": {
-                            "type": "integer"
+                            "type": "string"
                         }
                     }
                 ],
@@ -5283,13 +5300,16 @@
                     "401": {
                         "$ref": "#/components/responses/AuthenticationException"
                     },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
                     "422": {
                         "$ref": "#/components/responses/ValidationException"
                     }
                 }
             }
         },
-        "/gift-cards/{id}/cancelar": {
+        "/gift-cards/{giftCard}/cancelar": {
             "post": {
                 "operationId": "giftCard.cancelar",
                 "tags": [
@@ -5297,11 +5317,12 @@
                 ],
                 "parameters": [
                     {
-                        "name": "id",
+                        "name": "giftCard",
                         "in": "path",
                         "required": true,
+                        "description": "The gift card ulid",
                         "schema": {
-                            "type": "integer"
+                            "type": "string"
                         }
                     }
                 ],
@@ -5324,6 +5345,9 @@
                                 }
                             }
                         }
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
                     },
                     "401": {
                         "$ref": "#/components/responses/AuthenticationException"
@@ -5371,6 +5395,10 @@
                                                         "type": "object",
                                                         "properties": {
                                                             "id": {
+                                                                "type": "string",
+                                                                "description": "DAT-08: ulid como id p\u00fablico; `numero` es el transitorio de D-3 (DAT-07)."
+                                                            },
+                                                            "numero": {
                                                                 "type": "integer"
                                                             },
                                                             "cliente_nombre": {
@@ -5394,6 +5422,7 @@
                                                         },
                                                         "required": [
                                                             "id",
+                                                            "numero",
                                                             "cliente_nombre",
                                                             "fecha_vencimiento",
                                                             "total",
@@ -6630,9 +6659,9 @@
                         "name": "notaCredito",
                         "in": "path",
                         "required": true,
-                        "description": "The nota credito ID",
+                        "description": "The nota credito ulid",
                         "schema": {
-                            "type": "integer"
+                            "type": "string"
                         }
                     }
                 ],
@@ -7715,9 +7744,9 @@
                         "name": "venta",
                         "in": "path",
                         "required": true,
-                        "description": "The venta ID",
+                        "description": "The venta ulid",
                         "schema": {
-                            "type": "integer"
+                            "type": "string"
                         }
                     }
                 ],
@@ -11170,6 +11199,10 @@
                                                 "type": "object",
                                                 "properties": {
                                                     "id": {
+                                                        "type": "string",
+                                                        "description": "DAT-08: ulid como id p\u00fablico; `numero` es el transitorio de D-3 (DAT-07)."
+                                                    },
+                                                    "numero": {
                                                         "type": "integer"
                                                     },
                                                     "fecha": {
@@ -11192,6 +11225,7 @@
                                                 },
                                                 "required": [
                                                     "id",
+                                                    "numero",
                                                     "fecha",
                                                     "total",
                                                     "estado",
@@ -11223,6 +11257,14 @@
                     "Venta"
                 ],
                 "parameters": [
+                    {
+                        "name": "filtro_numero",
+                        "in": "query",
+                        "description": "D-7, transitorio: la devoluci\u00f3n busca la venta por su `numero` (= id interno) hasta que\n exista el folio de DAT-07. Un valor no num\u00e9rico no encuentra nada.",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
                     {
                         "name": "sort_field",
                         "in": "query",
@@ -11605,9 +11647,9 @@
                         "name": "venta",
                         "in": "path",
                         "required": true,
-                        "description": "The venta ID",
+                        "description": "The venta ulid",
                         "schema": {
-                            "type": "integer"
+                            "type": "string"
                         }
                     }
                 ],
@@ -11662,9 +11704,9 @@
                         "name": "venta",
                         "in": "path",
                         "required": true,
-                        "description": "The venta ID",
+                        "description": "The venta ulid",
                         "schema": {
-                            "type": "integer"
+                            "type": "string"
                         }
                     }
                 ],
@@ -12130,7 +12172,12 @@
                         ]
                     },
                     "id": {
-                        "type": "integer"
+                        "type": "string",
+                        "description": "DAT-08: el identificador p\u00fablico es el ulid; el id interno no sale de la API."
+                    },
+                    "numero": {
+                        "type": "integer",
+                        "description": "D-3, transitorio: n\u00famero visible del apartado (= id interno), solo para mostrarlo; lo\nreemplaza el folio de DAT-07."
                     },
                     "fecha_creacion": {
                         "type": "string",
@@ -12199,7 +12246,7 @@
                     },
                     "venta_id": {
                         "type": [
-                            "integer",
+                            "string",
                             "null"
                         ]
                     },
@@ -12215,7 +12262,7 @@
                             "type": "object",
                             "properties": {
                                 "id": {
-                                    "type": "integer"
+                                    "type": "string"
                                 },
                                 "variante_id": {
                                     "type": "integer"
@@ -12302,7 +12349,7 @@
                             "type": "object",
                             "properties": {
                                 "id": {
-                                    "type": "integer"
+                                    "type": "string"
                                 },
                                 "monto": {
                                     "type": "string",
@@ -12355,6 +12402,7 @@
                 "required": [
                     "lista_precio_id",
                     "id",
+                    "numero",
                     "fecha_creacion",
                     "total",
                     "total_abonado",
@@ -12533,7 +12581,12 @@
                 "type": "object",
                 "properties": {
                     "id": {
-                        "type": "integer"
+                        "type": "string",
+                        "description": "DAT-08: el identificador p\u00fablico es el ulid; el id interno no sale de la API."
+                    },
+                    "numero": {
+                        "type": "integer",
+                        "description": "D-3, transitorio: n\u00famero visible de la sesi\u00f3n (= id interno), solo para mostrarlo; lo\nreemplaza el folio de DAT-07."
                     },
                     "sucursal_id": {
                         "type": "integer"
@@ -12600,6 +12653,7 @@
                 },
                 "required": [
                     "id",
+                    "numero",
                     "sucursal_id",
                     "usuario_id",
                     "monto_apertura",
@@ -13175,7 +13229,7 @@
                     },
                     "venta_id": {
                         "type": [
-                            "integer",
+                            "string",
                             "null"
                         ]
                     },
@@ -13462,7 +13516,8 @@
                 "type": "object",
                 "properties": {
                     "venta_id": {
-                        "type": "integer"
+                        "type": "string",
+                        "description": "DAT-08: la venta y sus l\u00edneas llegan por el ulid publicado; toDto() las traduce al id."
                     },
                     "tipo": {
                         "type": "string",
@@ -13478,7 +13533,7 @@
                             "properties": {
                                 "venta_detalle_id": {
                                     "type": [
-                                        "integer",
+                                        "string",
                                         "null"
                                     ]
                                 },
@@ -14133,9 +14188,10 @@
                     },
                     "nota_credito_id": {
                         "type": [
-                            "integer",
+                            "string",
                             "null"
-                        ]
+                        ],
+                        "description": "DAT-08: la nota llega por su ulid publicado; toDto() la traduce al id."
                     }
                 },
                 "required": [
@@ -14326,7 +14382,10 @@
                         "type": "integer"
                     },
                     "venta_id": {
-                        "type": "integer"
+                        "type": [
+                            "string",
+                            "null"
+                        ]
                     },
                     "cliente": {
                         "type": "object",
@@ -14606,7 +14665,12 @@
                 "type": "object",
                 "properties": {
                     "id": {
-                        "type": "integer"
+                        "type": "string",
+                        "description": "DAT-08: el identificador p\u00fablico es el ulid; el id interno no sale de la API."
+                    },
+                    "numero": {
+                        "type": "integer",
+                        "description": "D-3, transitorio: n\u00famero visible de la devoluci\u00f3n (= id interno), solo para mostrarlo;\nlo reemplaza el folio de DAT-07."
                     },
                     "fecha": {
                         "type": "string",
@@ -14626,7 +14690,11 @@
                         ],
                         "properties": {
                             "id": {
-                                "type": "integer"
+                                "type": "string"
+                            },
+                            "numero": {
+                                "type": "integer",
+                                "description": "D-3, transitorio: el n\u00famero de la venta origen, para mostrarla."
                             },
                             "cliente_nombre": {
                                 "type": "string"
@@ -14634,14 +14702,22 @@
                         },
                         "required": [
                             "id",
+                            "numero",
                             "cliente_nombre"
                         ]
                     },
                     "venta_sombra_id": {
                         "type": [
-                            "integer",
+                            "string",
                             "null"
                         ]
+                    },
+                    "venta_sombra_numero": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ],
+                        "description": "D-3, transitorio: n\u00famero visible de la venta sombra (= id interno), solo para mostrarlo;\nlo reemplaza el folio de DAT-07."
                     },
                     "monto_devolucion": {
                         "type": "string",
@@ -14670,9 +14746,10 @@
                     },
                     "nota_credito_id": {
                         "type": [
-                            "integer",
+                            "string",
                             "null"
-                        ]
+                        ],
+                        "description": "Devoluciones es base y NotasCredito extensi\u00f3n (ARQ-03): sin relaci\u00f3n, se lee el ulid por tabla."
                     },
                     "items": {
                         "type": "array",
@@ -14680,7 +14757,7 @@
                             "type": "object",
                             "properties": {
                                 "id": {
-                                    "type": "integer"
+                                    "type": "string"
                                 },
                                 "tipo": {
                                     "type": "string",
@@ -14799,9 +14876,11 @@
                 },
                 "required": [
                     "id",
+                    "numero",
                     "fecha",
                     "tipo",
                     "venta_sombra_id",
+                    "venta_sombra_numero",
                     "monto_devolucion",
                     "monto_cambio",
                     "diferencia",
@@ -15000,7 +15079,8 @@
                 "type": "object",
                 "properties": {
                     "id": {
-                        "type": "integer"
+                        "type": "string",
+                        "description": "DAT-08: el identificador p\u00fablico es el ulid; el n\u00famero visible es `codigo`."
                     },
                     "cliente": {
                         "type": [
@@ -15044,7 +15124,7 @@
                             "type": "object",
                             "properties": {
                                 "id": {
-                                    "type": "integer"
+                                    "type": "string"
                                 },
                                 "monto": {
                                     "type": "string",
@@ -16095,7 +16175,12 @@
                 "type": "object",
                 "properties": {
                     "id": {
-                        "type": "integer"
+                        "type": "string",
+                        "description": "DAT-08: el identificador p\u00fablico es el ulid; el id interno no sale de la API."
+                    },
+                    "numero": {
+                        "type": "integer",
+                        "description": "D-3, transitorio: n\u00famero visible de la nota (= id interno), solo para mostrarlo; lo\nreemplaza el folio de DAT-07."
                     },
                     "cliente": {
                         "type": "object",
@@ -16113,7 +16198,17 @@
                         ]
                     },
                     "devolucion_id": {
-                        "type": "integer"
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "devolucion_numero": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ],
+                        "description": "D-3, transitorio: n\u00famero visible de la devoluci\u00f3n de origen (= id interno), solo para\nmostrarlo; lo reemplaza el folio de DAT-07."
                     },
                     "monto_original": {
                         "type": "string",
@@ -16147,10 +16242,13 @@
                             "type": "object",
                             "properties": {
                                 "id": {
-                                    "type": "integer"
+                                    "type": "string"
                                 },
                                 "venta_id": {
-                                    "type": "integer"
+                                    "type": [
+                                        "string",
+                                        "null"
+                                    ]
                                 },
                                 "monto_usado": {
                                     "type": "string",
@@ -16166,7 +16264,11 @@
                                     ],
                                     "properties": {
                                         "id": {
-                                            "type": "integer"
+                                            "type": "string"
+                                        },
+                                        "numero": {
+                                            "type": "integer",
+                                            "description": "D-3, transitorio: el n\u00famero de la venta, para mostrarla."
                                         },
                                         "fecha": {
                                             "type": "string"
@@ -16178,6 +16280,7 @@
                                     },
                                     "required": [
                                         "id",
+                                        "numero",
                                         "fecha",
                                         "total"
                                     ]
@@ -16199,7 +16302,9 @@
                 },
                 "required": [
                     "id",
+                    "numero",
                     "devolucion_id",
+                    "devolucion_numero",
                     "monto_original",
                     "saldo_disponible",
                     "fecha_expiracion",
@@ -16633,7 +16738,7 @@
                     },
                     "venta_id": {
                         "type": [
-                            "integer",
+                            "string",
                             "null"
                         ]
                     },
@@ -17434,9 +17539,10 @@
                     },
                     "caja_sesion_id": {
                         "type": [
-                            "integer",
+                            "string",
                             "null"
-                        ]
+                        ],
+                        "description": "DAT-08 (D-10, cambio m\u00ednimo en m\u00f3dulo congelado): la sesi\u00f3n de caja llega por su ulid."
                     },
                     "notas": {
                         "type": [
@@ -18058,7 +18164,7 @@
                 "type": "object",
                 "properties": {
                     "id": {
-                        "type": "integer"
+                        "type": "string"
                     },
                     "variante_id": {
                         "type": "integer"
@@ -18172,7 +18278,12 @@
                         ]
                     },
                     "id": {
-                        "type": "integer"
+                        "type": "string",
+                        "description": "DAT-08: el identificador p\u00fablico es el ulid; el id interno no sale de la API."
+                    },
+                    "numero": {
+                        "type": "integer",
+                        "description": "D-3, transitorio: n\u00famero visible del documento (= id interno), solo para mostrarlo y\npara buscar la venta en la devoluci\u00f3n; lo reemplaza el folio de DAT-07."
                     },
                     "fecha": {
                         "type": "string",
@@ -18268,6 +18379,7 @@
                 "required": [
                     "lista_precio_id",
                     "id",
+                    "numero",
                     "fecha",
                     "total",
                     "descuento_cupon",

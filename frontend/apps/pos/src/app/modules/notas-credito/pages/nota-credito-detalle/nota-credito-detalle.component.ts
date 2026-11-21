@@ -69,10 +69,10 @@ export class NotaCreditoDetalleComponent implements OnInit {
   protected readonly notaCredito = signal<NotaCredito | null>(null);
 
   ngOnInit(): void {
-    this.cargar(Number(this.route.snapshot.paramMap.get('id')));
+    this.cargar(this.route.snapshot.paramMap.get('id') ?? '');
   }
 
-  private cargar(id: number): void {
+  private cargar(id: string): void {
     this.cargando.set(true);
     this.error.set(false);
 
@@ -97,7 +97,7 @@ export class NotaCreditoDetalleComponent implements OnInit {
   protected readonly historial = computed(() =>
     (this.notaCredito()?.usos ?? []).map((fila) => ({
       ...fila,
-      ventaTexto: 'Venta #' + fila.venta_id,
+      ventaTexto: 'Venta #' + (fila.venta?.numero ?? '—'),
     })),
   );
   protected readonly filasHistorial = computed(() =>
@@ -122,12 +122,13 @@ export class NotaCreditoDetalleComponent implements OnInit {
     { tipo: 'acciones', acciones: () => [{ tipo: 'ver' }] },
   ];
 
-  verVenta(id: number): void {
+  verVenta(id: string | null): void {
+    if (id === null) return;
     this.router.navigate(['/tpv/ventas', id]);
   }
 
   reintentar(): void {
-    this.cargar(Number(this.route.snapshot.paramMap.get('id')));
+    this.cargar(this.route.snapshot.paramMap.get('id') ?? '');
   }
 
   cambiarPaginaHistorial(evento: CambioListado): void {

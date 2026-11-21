@@ -26,10 +26,12 @@ class DevolucionController extends Controller
 
     public function index(Request $request)
     {
-        $query = Devolucion::query()->with(['venta:id,cliente_id', 'venta.cliente:id,nombre']);
+        $query = Devolucion::query()->with(['venta:id,ulid,cliente_id', 'venta.cliente:id,nombre', 'ventaSombra:id,ulid']);
 
-        if ($ventaId = $request->query('filtro_venta_id')) {
-            $query->where('venta_id', (int) $ventaId);
+        // DAT-08: el filtro recibe el ulid de la venta, el mismo id que publica VentaResource.
+        $ventaUlid = $request->query('filtro_venta_id');
+        if (is_string($ventaUlid) && $ventaUlid !== '') {
+            $query->whereHas('venta', fn ($q) => $q->where('ulid', strtolower($ventaUlid)));
         }
 
         $sortField = $request->query('sort_field');
@@ -83,7 +85,7 @@ class DevolucionController extends Controller
 
         return response()->json([
             'data' => new DevolucionResource($devolucion),
-            'nota_credito' => $nota ? ['id' => $nota->id, 'monto_original' => DecimalApi::dinero($nota->monto_original)] : null,
+            'nota_credito' => $nota ? ['id' => (string) $nota->getAttribute('ulid'), 'numero' => (int) $nota->getKey(), 'monto_original' => DecimalApi::dinero($nota->monto_original)] : null,
         ], 201);
     }
 }

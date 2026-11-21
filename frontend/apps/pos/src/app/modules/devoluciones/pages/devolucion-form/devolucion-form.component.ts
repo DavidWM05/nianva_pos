@@ -20,7 +20,8 @@ import { DevolucionFormPayload, DevolucionService, TipoDevolucion, TipoReembolso
 
 
 interface LineaDevuelta {
-  venta_detalle_id?: number;
+  /** DAT-08: ulid de la línea de la venta origen. */
+  venta_detalle_id?: string;
   factor: string;
   variante_id: number;
   etiqueta: string;
@@ -48,11 +49,12 @@ function cantidadDevuelta(control: AbstractControl<number>): ValidationErrors | 
 
 /**
  * Creacion de devolucion/cambio. Dos formas de entrar (ver el reporte,
- * punto 1): buscando la venta origen por id a mano, o navegando aqui con
- * `?venta_id=` desde el boton "Devolver" en el detalle de una venta
- * (ver VentasListComponent en TPV) -- ambas terminan en el mismo estado,
- * asi que se resuelven con el mismo codigo (ngOnInit solo pre-llena el
- * campo de busqueda si el query param esta presente).
+ * punto 1): buscando la venta origen por su numero a mano (D-7, transitorio
+ * hasta el folio de DAT-07), o navegando aqui con `?venta_id=` (el ulid)
+ * desde el boton "Devolver" en el detalle de una venta (ver
+ * VentasListComponent en TPV) -- ambas terminan en el mismo estado: la
+ * busqueda por numero resuelve el ulid y las dos cargan la venta con
+ * cargarVenta().
  *
  * Reutiliza LineasProductoComponent (items nuevos de un cambio) y
  * LineasPagoComponent (pago de la diferencia) de TPV tal cual -- mismos
@@ -76,6 +78,7 @@ export class DevolucionFormComponent implements OnInit {
   private readonly devolucionService = inject(DevolucionService);
   private readonly toast = inject(ToastService);
 
+  /** D-7, transitorio: el campo de búsqueda es el `numero` de la venta (lo reemplaza el folio de DAT-07). */
   protected readonly ventaIdBusqueda = signal<number | null>(null);
   protected readonly ventaOrigen = signal<Venta | null>(null);
   protected readonly cargandoVenta = signal(false);
@@ -127,22 +130,42 @@ export class DevolucionFormComponent implements OnInit {
   ngOnInit(): void {
     const ventaIdParam = this.route.snapshot.queryParamMap.get('venta_id');
     if (ventaIdParam) {
-      this.ventaIdBusqueda.set(Number(ventaIdParam));
-      this.buscarVenta();
+      // DAT-08: el botón "Devolver" del detalle de la venta manda su ulid.
+      this.cargarVenta(ventaIdParam);
     }
   }
 
   buscarVenta(): void {
-    const id = this.ventaIdBusqueda();
-    if (id === null) return;
+    const numero = this.ventaIdBusqueda();
+    if (numero === null) return;
 
+    this.cargandoVenta.set(true);
+    this.ventaService.buscarPorNumero(numero).subscribe({
+      next: (ulid) => {
+        if (ulid === null) {
+          this.cargandoVenta.set(false);
+          this.toast.error('No se encontró la venta o no tienes permiso para verla.');
+          return;
+        }
+        this.cargarVenta(ulid);
+      },
+      error: () => {
+        this.cargandoVenta.set(false);
+        this.toast.error('No se encontró la venta o no tienes permiso para verla.');
+      },
+    });
+  }
+
+  private cargarVenta(ulid: string): void {
     this.cargandoVenta.set(true);
     this.ventaOrigen.set(null);
     this.reiniciarLineas();
 
-    this.ventaService.obtener(id).subscribe({
+    this.ventaService.obtener(ulid).subscribe({
       next: (venta) => {
         this.ventaOrigen.set(venta);
+        // El campo de búsqueda refleja el número de la venta cargada (también la que llegó por ?venta_id=).
+        this.ventaIdBusqueda.set(venta.numero);
         this.lineasDevueltas.set(
           (venta.detalles ?? []).map((detalle) => ({
             variante_id: detalle.variante_id,

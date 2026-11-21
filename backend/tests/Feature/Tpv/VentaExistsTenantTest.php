@@ -40,7 +40,7 @@ class VentaExistsTenantTest extends TestCase
         $this->actingAs($this->usuario);
 
         $this->postJson('/api/v1/ventas', $this->payloadVenta([
-            'nota_credito_id' => $this->notaCreditoB->id,
+            'nota_credito_id' => $this->notaCreditoB->ulid,
         ]))->assertStatus(422)->assertJsonValidationErrors(['nota_credito_id']);
     }
 }

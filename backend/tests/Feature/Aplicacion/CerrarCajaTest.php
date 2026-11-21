@@ -74,7 +74,7 @@ class CerrarCajaTest extends TestCase
         $this->actingAs($this->usuario);
 
         // 500 apertura + 100 ventas + 30 CxC + 20 GC - 10 CxP - 80 gastos = 560.
-        $this->patchJson("/api/v1/caja/{$this->caja->id}/cerrar", ['conteos' => [['metodo_pago_id' => MetodoEfectivo::id(), 'monto' => 560]]])
+        $this->patchJson("/api/v1/caja/{$this->caja->ulid}/cerrar", ['conteos' => [['metodo_pago_id' => MetodoEfectivo::id(), 'monto' => 560]]])
             ->assertOk()
             ->assertJsonPath('data.estado', 'cerrada')
             ->assertJsonPath('data.total_ventas_sistema', '100.00')
@@ -96,7 +96,7 @@ class CerrarCajaTest extends TestCase
 
         $this->actingAs($this->usuario);
 
-        $this->patchJson("/api/v1/caja/{$this->caja->id}/cerrar", ['conteos' => [['metodo_pago_id' => MetodoEfectivo::id(), 'monto' => 500]]])
+        $this->patchJson("/api/v1/caja/{$this->caja->ulid}/cerrar", ['conteos' => [['metodo_pago_id' => MetodoEfectivo::id(), 'monto' => 500]]])
             ->assertStatus(500);
 
         $sesion = CajaSesion::findOrFail($this->caja->id);

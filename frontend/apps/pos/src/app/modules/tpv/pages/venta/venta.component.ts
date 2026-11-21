@@ -136,7 +136,8 @@ export class VentaComponent implements OnInit {
   // antemano (NotaCreditoService.activasPorCliente ya lo trae), asi que el
   // monto a aplicar se calcula exacto, sin que el cajero tenga que adivinar.
   protected readonly notasCreditoDisponibles = signal<NotaCredito[]>([]);
-  protected readonly notaCreditoSeleccionadaId = signal<number | null>(null);
+  // DAT-08: ulid de la nota de crédito elegida.
+  protected readonly notaCreditoSeleccionadaId = signal<string | null>(null);
   protected readonly notasCreditoOpciones = computed(() =>
     this.notasCreditoDisponibles().map((n) => ({
       id: n.id,

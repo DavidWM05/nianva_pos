@@ -61,7 +61,8 @@ export class PlanPagoService {
   }
 
   crearPlan(
-    ventaId: number,
+    // DAT-08: ulid de la venta.
+    ventaId: string,
     payload: PlanPagoCrearPayload,
   ): Observable<PlanPagoCreado> {
     const cuerpo: CuerpoDe<'/ventas/{venta}/plan-pago', 'post'> = payload;

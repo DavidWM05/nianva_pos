@@ -22,9 +22,9 @@ class ValidacionesNegocioTest extends TestCase
     {
         $this->actingAs($this->usuario);
 
-        $this->patchJson("/api/v1/caja/{$this->caja->id}/cerrar", ['conteos' => [['metodo_pago_id' => MetodoEfectivo::id(), 'monto' => 500]]])->assertOk();
+        $this->patchJson("/api/v1/caja/{$this->caja->ulid}/cerrar", ['conteos' => [['metodo_pago_id' => MetodoEfectivo::id(), 'monto' => 500]]])->assertOk();
 
-        $this->patchJson("/api/v1/caja/{$this->caja->id}/cerrar", ['conteos' => [['metodo_pago_id' => MetodoEfectivo::id(), 'monto' => 500]]])
+        $this->patchJson("/api/v1/caja/{$this->caja->ulid}/cerrar", ['conteos' => [['metodo_pago_id' => MetodoEfectivo::id(), 'monto' => 500]]])
             ->assertStatus(422)
             ->assertJsonPath('error_code', 'caja_ya_cerrada')
             ->assertJsonPath('caja_sesion_id', $this->caja->id);
@@ -46,7 +46,7 @@ class ValidacionesNegocioTest extends TestCase
         $venta->update(['estado' => 'anulada']);
         $this->actingAs($this->usuario);
 
-        $this->patchJson("/api/v1/ventas/{$venta->id}/anular", ['motivo' => 'prueba'])
+        $this->patchJson("/api/v1/ventas/{$venta->ulid}/anular", ['motivo' => 'prueba'])
             ->assertStatus(422)
             ->assertJsonPath('error_code', 'venta_ya_anulada')
             ->assertJsonPath('venta_id', $venta->id);

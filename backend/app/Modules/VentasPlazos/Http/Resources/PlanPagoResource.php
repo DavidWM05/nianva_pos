@@ -3,6 +3,7 @@
 namespace App\Modules\VentasPlazos\Http\Resources;
 
 use App\Modules\Nucleo\Support\DecimalApi;
+use App\Modules\Nucleo\Support\UlidPublico;
 use App\Modules\VentasPlazos\Models\PlanPagoCliente;
 use App\Modules\VentasPlazos\Models\PlanPagoClienteCuota;
 use Illuminate\Http\Request;
@@ -16,7 +17,7 @@ class PlanPagoResource extends JsonResource
         return [
             'id' => $this->id,
             'cliente' => $this->whenLoaded('cliente', fn () => ['id' => $this->cliente->id, 'nombre' => $this->cliente->nombre]),
-            'venta_id' => $this->venta_id,
+            'venta_id' => UlidPublico::de($this->resource, 'venta'),
             'concepto' => $this->concepto,
             'monto_total' => DecimalApi::dinero($this->monto_total),
             'interes_total' => DecimalApi::dinero($this->interes_total),

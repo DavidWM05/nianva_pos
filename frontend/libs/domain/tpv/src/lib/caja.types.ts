@@ -8,7 +8,10 @@ export type CajaMetodoCierre = components['schemas']['CajaCierreMetodoResource']
 export type EstadoCaja = 'abierta' | 'cerrada';
 
 export interface CajaSesion {
-  id: number;
+  /** DAT-08: ulid de la sesión. */
+  id: string;
+  /** D-3, transitorio: número visible (= id interno); lo reemplaza el folio de DAT-07. */
+  numero: number;
   sucursal_id: number;
   usuario_id: number;
   monto_apertura: string;

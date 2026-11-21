@@ -9,6 +9,7 @@ import { describe, expect, it, vi } from 'vitest';
 
 import { CajaActual, CajaService, CajaSesion, Gasto, GastoService } from '@nianva/domain-tpv';
 import { CajaComponent } from './caja.component';
+import { ulidDePrueba } from '../../../../testing/ulid-de-prueba';
 
 describe('CajaComponent', () => {
   let fixture: ComponentFixture<CajaComponent>;
@@ -17,7 +18,8 @@ describe('CajaComponent', () => {
   let toastService: { success: ReturnType<typeof vi.fn>; error: ReturnType<typeof vi.fn> };
 
   const sesionAbierta: CajaSesion = {
-    id: 1,
+    id: ulidDePrueba(1),
+    numero: 1,
     sucursal_id: 1,
     usuario_id: 1,
     monto_apertura: '500.00',
@@ -116,7 +118,7 @@ describe('CajaComponent', () => {
       permisos: { abrir: true, cerrar: true, gastos_ver: true, gastos_crear: true },
     });
     gastoService.listar.mockReturnValue(of(gastos));
-    fixture.componentInstance['cargarGastos'](1);
+    fixture.componentInstance['cargarGastos'](ulidDePrueba(1));
     fixture.detectChanges();
 
     const texto = (fixture.nativeElement as HTMLElement).textContent ?? '';

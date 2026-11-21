@@ -17,7 +17,7 @@ async function axeEnPantallas(page: Page): Promise<void> {
 
   await abrirPantalla(page, '/tpv/ventas');
   await page.locator('tbody tr').first().locator('[aria-label^="Ver"]').first().click();
-  await expect(page).toHaveURL(/\/tpv\/ventas\/\d+$/);
+  await expect(page).toHaveURL(/\/tpv\/ventas\/[0-9a-hjkmnp-tv-z]{26}$/);
   await expect(page.getByRole('heading', { name: /^Venta #\d+$/ })).toBeVisible();
   await expect(page.locator('ui-page-header h1')).toHaveText('Ventas');
   await sinViolacionesSerias(page);

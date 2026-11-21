@@ -31,7 +31,7 @@ export class CajaService {
    * pagos CxP) para que nadie pueda cerrar la caja con una diferencia
    * manipulada -- ver el docblock del Controller.
    */
-  cerrar(id: number, conteos: CajaConteo[]): Observable<{ sesion: CajaSesion; desglose: CajaDesglose }> {
+  cerrar(id: string, conteos: CajaConteo[]): Observable<{ sesion: CajaSesion; desglose: CajaDesglose }> {
     const cuerpo: CuerpoDe<'/caja/{cajaSesion}/cerrar', 'patch'> = { conteos };
 
     return this.http

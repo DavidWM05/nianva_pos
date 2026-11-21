@@ -6,6 +6,7 @@ import { AuditLogSource, ToastService } from '@nianva/ui-shared';
 import { of } from 'rxjs';
 import { By } from '@angular/platform-browser';
 import { describe, expect, it, vi } from 'vitest';
+import { ulidDePrueba } from '../../../../testing/ulid-de-prueba';
 
 // jsdom (el entorno de estos tests) no implementa ResizeObserver -- lo usa
 // PrimeNG's TabList (detras de RecordTabsComponent) en ngAfterViewInit.
@@ -36,7 +37,8 @@ describe('ApartadoDetalleComponent', () => {
 
   function apartadoBase(overrides: Partial<Apartado> = {}): Apartado {
     return {
-      id: 7,
+      id: ulidDePrueba(7),
+      numero: 7,
       fecha_creacion: '2026-07-01T10:00:00.000000Z',
       cliente: { id: 9, nombre: 'Maria Lopez' },
       total: '600.00',
@@ -97,7 +99,7 @@ describe('ApartadoDetalleComponent', () => {
     apartadoService.liquidar.mockReturnValue(of(apartadoBase({ estado: 'completado', total_abonado: '600.00' })));
     fixture.componentInstance.liquidar();
 
-    expect(apartadoService.liquidar).toHaveBeenCalledWith(7);
+    expect(apartadoService.liquidar).toHaveBeenCalledWith(ulidDePrueba(7));
   });
 
   it('registra un abono con pago mixto que cuadra con el monto capturado', async () => {
@@ -116,7 +118,7 @@ describe('ApartadoDetalleComponent', () => {
 
     fixture.componentInstance.registrarAbono();
 
-    expect(apartadoService.registrarAbono).toHaveBeenCalledWith(7, {
+    expect(apartadoService.registrarAbono).toHaveBeenCalledWith(ulidDePrueba(7), {
       monto: 120,
       pagos: [{ metodo_pago_id: 1, monto: 120 }],
     });

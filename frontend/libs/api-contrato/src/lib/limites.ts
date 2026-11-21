@@ -697,7 +697,7 @@ export const LIMITES = {
       }
     }
   },
-  "/gift-cards/{id}/recargar": {
+  "/gift-cards/{giftCard}/recargar": {
     "post": {
       "monto": {
         "requerido": true,

@@ -69,7 +69,11 @@ class GiftCardController extends Controller
         return new GiftCardResource($giftCard);
     }
 
-    public function recargar(RecargarGiftCardRequest $request, int $id, RecargarGiftCard $action)
+    /**
+     * DAT-08: la ruta resuelve la tarjeta por ulid (binding); la Action sigue recibiendo el id
+     * interno y bloqueando por él.
+     */
+    public function recargar(RecargarGiftCardRequest $request, GiftCard $giftCard, RecargarGiftCard $action)
     {
         $usuario = $request->user();
 
@@ -77,14 +81,14 @@ class GiftCardController extends Controller
             abort(401);
         }
 
-        $giftCard = $action->ejecutar($request->toDto(), $id, $usuario);
+        $giftCard = $action->ejecutar($request->toDto(), (int) $giftCard->getKey(), $usuario);
 
         return new GiftCardResource($giftCard);
     }
 
-    public function cancelar(int $id, CancelarGiftCard $action)
+    public function cancelar(GiftCard $giftCard, CancelarGiftCard $action)
     {
-        $action->ejecutar($id);
+        $action->ejecutar((int) $giftCard->getKey());
 
         return response()->json(['message' => 'Gift Card cancelada correctamente.']);
     }

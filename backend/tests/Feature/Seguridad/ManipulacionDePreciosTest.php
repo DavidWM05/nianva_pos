@@ -102,7 +102,7 @@ class ManipulacionDePreciosTest extends TestCase
         $this->actingAs($this->usuario);
 
         $respuesta = $this->postJson('/api/v1/devoluciones', [
-            'venta_id' => $venta->id,
+            'venta_id' => $venta->ulid,
             'tipo' => 'devolucion',
             'items_devueltos' => [[
                 'variante_id' => $this->variante->id,

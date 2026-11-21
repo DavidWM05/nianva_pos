@@ -1,9 +1,9 @@
 <ui-page-header clave="apartados" subtitulo="Detalle del registro" />
 <div>
-  <ui-page [estado]="cargando() ? 'cargando' : error() ? 'error' : 'listo'" forma="detalle" (reintentar)="cargar(apartado()?.id ?? 0)">
+  <ui-page [estado]="cargando() ? 'cargando' : error() ? 'error' : 'listo'" forma="detalle" (reintentar)="cargar(apartado()?.id ?? '')">
   @if (apartado(); as apartadoActual) {
     <div>
-      <h2>Apartado #{{ apartadoActual.id }} — {{ apartadoActual.cliente?.nombre ?? '—' }}</h2>
+      <h2>Apartado #{{ apartadoActual.numero }} — {{ apartadoActual.cliente?.nombre ?? '—' }}</h2>
       <ui-badge entidad="apartado" [estado]="apartadoActual.estado" />
     </div>
 
@@ -91,7 +91,7 @@
 
 <ui-modal titulo="Apartado cancelado" [visible]="resultadoCancelacion() !== null" (visibleChange)="cerrarResultadoCancelacion()">
   @if (resultadoCancelacion(); as resultado) {
-    <p>El apartado #{{ resultado.apartado.id }} fue cancelado.</p>
+    <p>El apartado #{{ resultado.apartado.numero }} fue cancelado.</p>
     @if (resultado.tieneAbonosPendientes) {
       <p>
         Este apartado tenía {{ resultado.montoAbonadoPendiente | dinero }} ya abonados. Ese monto no se reembolsó

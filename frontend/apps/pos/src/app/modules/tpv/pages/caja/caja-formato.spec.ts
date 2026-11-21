@@ -8,12 +8,14 @@ import { describe, expect, it, vi } from 'vitest';
 
 import { CajaActual, CajaService, CajaSesion, Gasto, GastoService } from '@nianva/domain-tpv';
 import { CajaComponent } from './caja.component';
+import { ulidDePrueba } from '../../../../testing/ulid-de-prueba';
 
 // UI-05: todos los montos de la caja con el pipe dinero (formato regional es-MX del spec).
 describe('CajaComponent formato por pipe', () => {
   const permisos = { abrir: true, cerrar: true, gastos_ver: true, gastos_crear: true };
   const sesionAbierta: CajaSesion = {
-    id: 1,
+    id: ulidDePrueba(1),
+    numero: 1,
     sucursal_id: 1,
     usuario_id: 1,
     monto_apertura: '1500.00',

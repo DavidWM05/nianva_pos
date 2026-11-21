@@ -47,7 +47,7 @@ class OperacionesSensiblesTest extends TestCase
     {
         $venta = $this->crearVenta();
         $this->actingAs($this->usuario)
-            ->patchJson("/api/v1/ventas/{$venta->id}/anular", ['motivo' => 'prueba'])
+            ->patchJson("/api/v1/ventas/{$venta->ulid}/anular", ['motivo' => 'prueba'])
             ->assertOk();
         $this->assertGreaterThan(0, $this->auditoria('ventas', $venta->id));
 
@@ -58,13 +58,13 @@ class OperacionesSensiblesTest extends TestCase
         ]);
         $antes = $this->auditoria('ventas', $anulada->id);
         $this->actingAs($this->usuario)
-            ->patchJson("/api/v1/ventas/{$anulada->id}/anular", ['motivo' => 'otra'])
+            ->patchJson("/api/v1/ventas/{$anulada->ulid}/anular", ['motivo' => 'otra'])
             ->assertUnprocessable();
         $this->assertSame($antes, $this->auditoria('ventas', $anulada->id));
 
         $apartado = $this->crearApartado();
         $this->actingAs($this->usuario)
-            ->patchJson("/api/v1/apartados/{$apartado->id}/cancelar", ['motivo' => 'prueba'])
+            ->patchJson("/api/v1/apartados/{$apartado->ulid}/cancelar", ['motivo' => 'prueba'])
             ->assertOk();
         $this->assertGreaterThan(0, $this->auditoria('apartados', $apartado->id));
 
@@ -77,7 +77,7 @@ class OperacionesSensiblesTest extends TestCase
         $this->assertGreaterThan(0, $this->auditoria('productos', $producto->id));
 
         $this->actingAs($this->usuario)
-            ->patchJson("/api/v1/caja/{$this->caja->id}/cerrar", ['conteos' => [['metodo_pago_id' => MetodoEfectivo::id(), 'monto' => 0]]])
+            ->patchJson("/api/v1/caja/{$this->caja->ulid}/cerrar", ['conteos' => [['metodo_pago_id' => MetodoEfectivo::id(), 'monto' => 0]]])
             ->assertOk();
         $this->assertGreaterThan(0, $this->auditoria('caja_sesiones', $this->caja->id));
 

@@ -21,6 +21,7 @@ if (typeof globalThis.ResizeObserver === 'undefined') {
 
 import { PlanPago, PlanPagoService } from '@nianva/domain-ventas-plazos';
 import { PlanPagoDetalleComponent } from './plan-pago-detalle.component';
+import { ulidDePrueba } from '../../../../testing/ulid-de-prueba';
 
 describe('PlanPagoDetalleComponent', () => {
   let fixture: ComponentFixture<PlanPagoDetalleComponent>;
@@ -31,7 +32,7 @@ describe('PlanPagoDetalleComponent', () => {
     return {
       id: 7,
       cliente: { id: 9, nombre: 'Juan Pérez' },
-      venta_id: 3,
+      venta_id: ulidDePrueba(3),
       concepto: 'Venta #3 - Pago a plazos',
       monto_total: '550.00',
       interes_total: '50.00',

@@ -4,10 +4,12 @@ import { describe, expect, it, vi } from 'vitest';
 
 import { Venta, VentaService, VentasPagina } from '@nianva/domain-tpv';
 import { VentaBuscadorService } from './venta-buscador.service';
+import { ulidDePrueba } from '../../testing/ulid-de-prueba';
 
 describe('VentaBuscadorService', () => {
   const ventaCompletada: Venta = {
-    id: 3,
+    id: ulidDePrueba(3),
+    numero: 3,
     fecha: '2026-07-01',
     cliente: { id: 9, nombre: 'Juan Pérez' },
     total: '500.00',
@@ -19,7 +21,7 @@ describe('VentaBuscadorService', () => {
     fecha_anulacion: null,
     es_venta_sombra: false,
   };
-  const ventaAnulada: Venta = { ...ventaCompletada, id: 4, estado: 'anulada' };
+  const ventaAnulada: Venta = { ...ventaCompletada, id: ulidDePrueba(4), estado: 'anulada' };
 
   function paginaCon(data: Venta[]): VentasPagina {
     return { data, total: data.length, permisos: { anular: true } };
@@ -40,15 +42,15 @@ describe('VentaBuscadorService', () => {
     const resultado = await servicio.buscar('Juan').toPromise();
 
     expect(listar).toHaveBeenCalledWith(expect.objectContaining({ first: 0 }), 'Juan');
-    expect(resultado).toEqual([{ id: 3, nombre: 'Venta #3 — Juan Pérez — $500.00' }]);
+    expect(resultado).toEqual([{ id: ulidDePrueba(3), nombre: 'Venta #3 — Juan Pérez — $500.00' }]);
   });
 
   it('obtener() adapta la venta al contrato EntidadBuscable', async () => {
     const obtener = vi.fn().mockReturnValue(of(ventaCompletada));
     const servicio = crearServicio({ obtener });
 
-    const resultado = await servicio.obtener(3).toPromise();
+    const resultado = await servicio.obtener(ulidDePrueba(3)).toPromise();
 
-    expect(resultado).toEqual({ id: 3, nombre: 'Venta #3 — Juan Pérez — $500.00' });
+    expect(resultado).toEqual({ id: ulidDePrueba(3), nombre: 'Venta #3 — Juan Pérez — $500.00' });
   });
 });

@@ -8,6 +8,7 @@ import { describe, expect, it, vi } from 'vitest';
 import { BUSCADOR_CLIENTE } from '../../../../core/buscadores-entidad.tokens';
 import { GiftCard, GiftCardService, GiftCardsPagina } from '@nianva/domain-gift-cards';
 import { GiftCardsListComponent } from './gift-cards-list.component';
+import { ulidDePrueba } from '../../../../testing/ulid-de-prueba';
 
 describe('GiftCardsListComponent', () => {
   let fixture: ComponentFixture<GiftCardsListComponent>;
@@ -15,7 +16,7 @@ describe('GiftCardsListComponent', () => {
 
   const giftCards: GiftCard[] = [
     {
-      id: 1,
+      id: ulidDePrueba(1),
       cliente: { id: 9, nombre: 'Juan Pérez' },
       codigo: 'GC-1-ABCD1234',
       saldo_inicial: '500.00',
@@ -87,6 +88,6 @@ describe('GiftCardsListComponent', () => {
 
     fixture.componentInstance.irADetalle(giftCards[0]);
 
-    expect(navigateSpy).toHaveBeenCalledWith(['/gift-cards', 1]);
+    expect(navigateSpy).toHaveBeenCalledWith(['/gift-cards', ulidDePrueba(1)]);
   });
 });

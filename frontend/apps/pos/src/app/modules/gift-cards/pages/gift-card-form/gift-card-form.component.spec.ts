@@ -9,6 +9,7 @@ import { describe, expect, it, vi } from 'vitest';
 import { BUSCADOR_CLIENTE } from '../../../../core/buscadores-entidad.tokens';
 import { GiftCard, GiftCardService } from '@nianva/domain-gift-cards';
 import { GiftCardFormComponent } from './gift-card-form.component';
+import { ulidDePrueba } from '../../../../testing/ulid-de-prueba';
 
 describe('GiftCardFormComponent', () => {
   let fixture: ComponentFixture<GiftCardFormComponent>;
@@ -16,7 +17,7 @@ describe('GiftCardFormComponent', () => {
   let router: Router;
 
   const giftCardCreada: GiftCard = {
-    id: 10,
+    id: ulidDePrueba(10),
     cliente: null,
     codigo: 'GC-1-ZZZZ9999',
     saldo_inicial: '300.00',
@@ -55,7 +56,7 @@ describe('GiftCardFormComponent', () => {
     fixture.componentInstance.emitir();
 
     expect(giftCardService.emitir).toHaveBeenCalledWith({ cliente_id: null, monto: 300, fecha_expiracion: null });
-    expect(router.navigate).toHaveBeenCalledWith(['/gift-cards', 10]);
+    expect(router.navigate).toHaveBeenCalledWith(['/gift-cards', ulidDePrueba(10)]);
   });
 
   it('sin monto, emitir() no llama al backend', async () => {

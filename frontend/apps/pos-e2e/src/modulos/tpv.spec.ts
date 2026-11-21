@@ -82,12 +82,12 @@ test('tpv: abrir caja, cobrar con pago mixto, ver el detalle y el listado, cerra
   const respuesta = await ventaCreada;
   expect(respuesta.status()).toBe(201);
   const venta: { data: { id: number; fecha: string } } = await respuesta.json();
-  await expect(page.getByRole('heading', { name: `Venta #${venta.data.id} registrada`, exact: true })).toBeVisible();
+  await expect(page.getByRole('heading', { name: `Venta #${venta.data.numero} registrada`, exact: true })).toBeVisible();
   await capturarPantalla50n(page, 'venta-registrada');
 
   // Detalle: resumen con el pago mixto y las dos lineas.
   await abrirPantalla(page, `/tpv/ventas/${venta.data.id}`);
-  await expect(page.getByRole('heading', { name: `Venta #${venta.data.id}`, exact: true })).toBeVisible();
+  await expect(page.getByRole('heading', { name: `Venta #${venta.data.numero}`, exact: true })).toBeVisible();
   await expect(page.getByText('Efectivo + Tarjeta', { exact: true })).toBeVisible();
   await capturarPantalla50n(page, 'venta-detalle-general');
   await page.getByRole('tab', { name: /L.neas/ }).click();

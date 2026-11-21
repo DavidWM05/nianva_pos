@@ -65,7 +65,7 @@ class PresentacionesApiTest extends TestCase
         $this->postJson($ruta, ['nombre' => 'Sin código', 'factor' => 3])->assertCreated();
     }
 
-    private function venta(array $d, Presentacion $p): int
+    private function venta(array $d, Presentacion $p): string
     {
         return $this->postJson('/api/v1/ventas', ['cliente_id' => $d['cliente']->id, 'items' => [['variante_id' => $d['variante']->id, 'presentacion_id' => $p->id, 'cantidad' => 2]], 'pagos' => [['metodo_pago_id' => $d['metodo']->id, 'monto' => 100]]])->assertCreated()->assertJsonPath('data.total', '100.00')->json('data.id');
     }
@@ -78,7 +78,7 @@ class PresentacionesApiTest extends TestCase
         $this->assertSame(8, $d['stock']->refresh()->stock_actual);
         $this->assertSame(12, Kardex::firstOrFail()->cantidad);
         $p->update(['factor' => '9.000']);
-        app(AnularVenta::class)->ejecutar(new AnularVentaDto('Revisión'), Venta::findOrFail($id), $d['usuario']);
+        app(AnularVenta::class)->ejecutar(new AnularVentaDto('Revisión'), Venta::query()->where('ulid', $id)->firstOrFail(), $d['usuario']);
         $this->assertSame(20, $d['stock']->refresh()->stock_actual);
     }
 

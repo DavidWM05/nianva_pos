@@ -21,7 +21,7 @@
   } @else {
     <ui-section titulo="Venta origen">
       <p>
-        Venta #{{ ventaOrigen()!.id }} — {{ ventaOrigen()!.cliente?.nombre ?? '—' }} — Total: {{ ventaOrigen()!.total | dinero }}
+        Venta #{{ ventaOrigen()!.numero }} — {{ ventaOrigen()!.cliente?.nombre ?? '—' }} — Total: {{ ventaOrigen()!.total | dinero }}
         <button matButton="text" type="button" (click)="cambiarVenta()">Cambiar venta</button>
       </p>
 

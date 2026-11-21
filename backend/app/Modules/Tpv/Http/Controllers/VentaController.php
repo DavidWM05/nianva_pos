@@ -48,14 +48,16 @@ class VentaController extends Controller
         $ventas = Venta::where('cliente_id', $cliente->id)
             ->orderByDesc('fecha')
             ->limit(50)
-            ->get(['id', 'fecha', 'total', 'estado', 'es_venta_sombra']);
+            ->get(['id', 'ulid', 'fecha', 'total', 'estado', 'es_venta_sombra']);
 
         // Las mismas columnas del get(), mapeadas una por una: así el contrato publica esas cinco
         // y no la venta completa.
         $filas = [];
         foreach ($ventas as $venta) {
             $filas[] = [
-                'id' => (int) $venta->getKey(),
+                // DAT-08: ulid como id público; `numero` es el transitorio de D-3 (DAT-07).
+                'id' => (string) $venta->getAttribute('ulid'),
+                'numero' => (int) $venta->getKey(),
                 'fecha' => $venta->getAttribute('fecha'),
                 'total' => DecimalApi::dinero($venta->getAttribute('total')),
                 /** @var 'completada'|'anulada' */
@@ -73,6 +75,13 @@ class VentaController extends Controller
 
         if ($clienteNombre = $request->query('filtro_cliente')) {
             $query->whereHas('cliente', fn ($q) => $q->where('nombre', 'like', "%{$clienteNombre}%"));
+        }
+
+        // D-7, transitorio: la devolución busca la venta por su `numero` (= id interno) hasta que
+        // exista el folio de DAT-07. Un valor no numérico no encuentra nada.
+        $numero = $request->query('filtro_numero');
+        if (is_string($numero) && $numero !== '') {
+            $query->whereKey(ctype_digit($numero) ? (int) $numero : 0);
         }
 
         $sortField = $request->query('sort_field');

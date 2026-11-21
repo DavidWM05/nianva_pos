@@ -13,7 +13,8 @@ class GiftCardResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'id' => $this->id,
+            // DAT-08: el identificador público es el ulid; el número visible es `codigo`.
+            'id' => (string) $this->resource->getAttribute('ulid'),
             /** @var array{id: int, nombre: string}|null */
             'cliente' => $this->whenLoaded('cliente', fn () => ['id' => $this->cliente->id, 'nombre' => $this->cliente->nombre]),
             'codigo' => $this->codigo,
@@ -21,7 +22,7 @@ class GiftCardResource extends JsonResource
             'saldo_actual' => DecimalApi::dinero($this->saldo_actual),
             'fecha_expiracion' => $this->fecha_expiracion,
             'recargas' => $this->whenLoaded('recargas', fn () => $this->recargas->map(fn ($r) => [
-                'id' => $r->id,
+                'id' => (string) $r->getAttribute('ulid'),
                 'monto' => DecimalApi::dinero($r->monto),
                 'usuario' => $r->usuario ? ['id' => $r->usuario->id, 'nombre' => $r->usuario->nombre] : null,
                 'fecha' => $r->fecha,

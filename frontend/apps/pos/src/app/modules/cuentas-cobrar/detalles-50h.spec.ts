@@ -9,6 +9,7 @@ import {
 import { of, throwError } from 'rxjs';
 import { describe, expect, it, vi } from 'vitest';
 import { proveedoresDePantalla } from '../../testing/proveedores-pantalla';
+import { ulidDePrueba } from '../../testing/ulid-de-prueba';
 import { MetodoPagoService } from '@nianva/domain-tpv';
 import { CuentaCobrarDetalleComponent } from '../cuentas-cobrar/pages/cuenta-cobrar-detalle/cuenta-cobrar-detalle.component';
 import { CuentaCobrarService } from '@nianva/domain-cuentas-cobrar';
@@ -48,6 +49,9 @@ const pantallas = [
     servicio: PlanPagoService,
   },
 ];
+// DAT-08 etapa 2: gift cards y notas de crédito se resuelven por ulid; las demás pantallas, de la
+// etapa 3, conservan su id numérico.
+const CON_ULID = new Set(['gift-cards', 'notas-credito']);
 for (const pantalla of pantallas) {
   describe('50h detalle ' + pantalla.nombre, () => {
     async function crear(falla = false) {
@@ -86,7 +90,7 @@ for (const pantalla of pantallas) {
           {
             provide: ActivatedRoute,
             useValue: {
-              snapshot: { paramMap: convertToParamMap({ id: '5' }) },
+              snapshot: { paramMap: convertToParamMap({ id: CON_ULID.has(pantalla.nombre) ? ulidDePrueba(5) : '5' }) },
             },
           },
           { provide: MetodoPagoService, useValue: { listar: () => of([]) } },
@@ -160,7 +164,7 @@ for (const pantalla of pantallas) {
       expect(boton).toBeDefined();
       boton?.click();
       fixture.detectChanges();
-      expect(obtener).toHaveBeenNthCalledWith(2, 5);
+      expect(obtener).toHaveBeenNthCalledWith(2, CON_ULID.has(pantalla.nombre) ? ulidDePrueba(5) : 5);
       expect(
         (fixture.nativeElement as HTMLElement).querySelector(
           'nucleo-record-tabs',

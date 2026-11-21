@@ -23,6 +23,7 @@ if (typeof globalThis.ResizeObserver === 'undefined') {
 import { MetodoPagoService } from '@nianva/domain-tpv';
 import { CuentaCobrar, CuentaCobrarService } from '@nianva/domain-cuentas-cobrar';
 import { CuentaCobrarDetalleComponent } from './cuenta-cobrar-detalle.component';
+import { ulidDePrueba } from '../../../../testing/ulid-de-prueba';
 
 describe('CuentaCobrarDetalleComponent', () => {
   let fixture: ComponentFixture<CuentaCobrarDetalleComponent>;
@@ -33,7 +34,7 @@ describe('CuentaCobrarDetalleComponent', () => {
   function cuentaCon(overrides: Partial<CuentaCobrar>): CuentaCobrar {
     return {
       id: 5,
-      venta_id: 42,
+      venta_id: ulidDePrueba(42),
       cliente: { id: 9, nombre: 'Juan Pérez' },
       monto_total: '500.00',
       saldo_pendiente: '300.00',

@@ -10,6 +10,7 @@ use App\Modules\Inventario\Support\ReglasVariante;
 use App\Modules\Nucleo\Http\Requests\SolicitudNegocio;
 use App\Modules\Nucleo\Support\Cantidad;
 use App\Modules\Nucleo\Support\ReglasTenant;
+use App\Modules\Nucleo\Support\UlidPublico;
 use App\Modules\Tpv\Dtos\CrearVentaDto;
 use App\Modules\Tpv\Dtos\LineaVentaDto;
 use App\Modules\Tpv\Dtos\PagoDto;
@@ -36,7 +37,8 @@ class CrearVentaRequest extends SolicitudNegocio
             'cupon_codigo' => ['nullable', 'string'],
             'descuento_manual' => ['nullable', 'numeric', 'decimal:0,2', 'min:0'],
             'gift_card_codigo' => ['nullable', 'string', 'max:50'],
-            'nota_credito_id' => ['nullable', 'integer', ReglasTenant::existe('notas_credito', $tenantId)],
+            // DAT-08: la nota llega por su ulid publicado; toDto() la traduce al id.
+            'nota_credito_id' => ['nullable', 'string', 'ulid', ReglasTenant::existeUlid('notas_credito', $tenantId)],
         ];
     }
 
@@ -77,7 +79,7 @@ class CrearVentaRequest extends SolicitudNegocio
             cuponCodigo: isset($v['cupon_codigo']) ? (string) $v['cupon_codigo'] : null,
             descuentoManual: round((float) ($v['descuento_manual'] ?? 0), 2),
             giftCardCodigo: isset($v['gift_card_codigo']) ? (string) $v['gift_card_codigo'] : null,
-            notaCreditoId: isset($v['nota_credito_id']) ? (int) $v['nota_credito_id'] : null,
+            notaCreditoId: isset($v['nota_credito_id']) ? UlidPublico::idInterno('notas_credito', (string) $v['nota_credito_id']) : null,
         );
     }
 

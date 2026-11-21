@@ -208,7 +208,7 @@ class AislamientoBindingTest extends TestCase
             'monto' => 10,
         ]);
         $gastos = $this->actingAs($this->usuario)
-            ->getJson('/api/v1/gastos?caja_sesion_id='.$caja->id)
+            ->getJson('/api/v1/gastos?caja_sesion_id='.$caja->ulid)
             ->assertOk()
             ->json('data');
         if ($gastos !== []) {

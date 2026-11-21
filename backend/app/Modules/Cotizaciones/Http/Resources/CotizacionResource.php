@@ -6,6 +6,7 @@ namespace App\Modules\Cotizaciones\Http\Resources;
 
 use App\Modules\Cotizaciones\Models\Cotizacion;
 use App\Modules\Nucleo\Support\DecimalApi;
+use App\Modules\Nucleo\Support\UlidPublico;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -36,7 +37,7 @@ class CotizacionResource extends JsonResource
             'fecha_vencimiento' => $this->fecha_vencimiento,
             'observaciones' => $this->observaciones,
             'uso_cfdi' => $this->uso_cfdi,
-            'venta_id' => $this->venta_id,
+            'venta_id' => UlidPublico::de($this->resource, 'venta'),
             'detalles' => CotizacionDetalleResource::collection($this->whenLoaded('detalles')),
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,

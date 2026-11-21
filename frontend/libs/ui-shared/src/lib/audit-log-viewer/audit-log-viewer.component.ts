@@ -25,7 +25,8 @@ export class AuditLogViewerComponent implements OnChanges {
   private readonly source = inject(AuditLogSource);
 
   @Input({ required: true }) tabla!: string;
-  @Input({ required: true }) registroId!: number;
+  /** DAT-08: el ulid publicado en documentos; el id en catálogos. */
+  @Input({ required: true }) registroId!: number | string;
 
   protected readonly loading = signal(false);
   protected readonly entries = signal<AuditLogEntry[]>([]);

@@ -10,15 +10,17 @@ import { BUSCADOR_PRODUCTO, BUSCADOR_VARIANTE_DE_PRODUCTO } from '../../../../co
 import { MetodoPagoService, Venta, VentaService } from '@nianva/domain-tpv';
 import { DevolucionService } from '@nianva/domain-devoluciones';
 import { DevolucionFormComponent } from './devolucion-form.component';
+import { ulidDePrueba } from '../../../../testing/ulid-de-prueba';
 
 describe('DevolucionFormComponent', () => {
   let fixture: ComponentFixture<DevolucionFormComponent>;
-  let ventaService: { obtener: ReturnType<typeof vi.fn>; cotizar: ReturnType<typeof vi.fn> };
+  let ventaService: { obtener: ReturnType<typeof vi.fn>; buscarPorNumero: ReturnType<typeof vi.fn>; cotizar: ReturnType<typeof vi.fn> };
   let devolucionService: { registrar: ReturnType<typeof vi.fn> };
   let toastService: { success: ReturnType<typeof vi.fn>; error: ReturnType<typeof vi.fn> };
 
   const ventaOrigen: Venta = {
-    id: 55,
+    id: ulidDePrueba(55),
+    numero: 55,
     fecha: '2026-07-01T10:00:00.000000Z',
     cliente: { id: 9, nombre: 'Publico General' },
     total: '300.00',
@@ -31,7 +33,7 @@ describe('DevolucionFormComponent', () => {
     es_venta_sombra: false,
     detalles: [
       {
-        id: 1,
+        id: ulidDePrueba(1),
         variante_id: 5,
         variante: { id: 5, nombre: 'M', producto_nombre: 'Camisa' },
         cantidad: '2.000',
@@ -40,7 +42,7 @@ describe('DevolucionFormComponent', () => {
         subtotal: '240.00',
       },
       {
-        id: 2,
+        id: ulidDePrueba(2),
         variante_id: 6,
         variante: { id: 6, nombre: 'Unica', producto_nombre: 'Corbata' },
         cantidad: '1.000',
@@ -51,9 +53,10 @@ describe('DevolucionFormComponent', () => {
     ],
   };
 
-  async function crearComponente(ventaIdQueryParam: string | null = '55'): Promise<void> {
+  async function crearComponente(ventaIdQueryParam: string | null = ulidDePrueba(55)): Promise<void> {
     ventaService = {
       obtener: vi.fn().mockReturnValue(of(ventaOrigen)),
+      buscarPorNumero: vi.fn().mockReturnValue(of(ulidDePrueba(55))),
       cotizar: vi.fn().mockReturnValue(of({ items: [], subtotal: 0 })),
     };
     devolucionService = { registrar: vi.fn() };
@@ -86,9 +89,9 @@ describe('DevolucionFormComponent', () => {
   }
 
   it('con ?venta_id= en la URL, busca la venta automaticamente y precarga sus lineas', async () => {
-    await crearComponente('55');
+    await crearComponente(ulidDePrueba(55));
 
-    expect(ventaService.obtener).toHaveBeenCalledWith(55);
+    expect(ventaService.obtener).toHaveBeenCalledWith(ulidDePrueba(55));
     expect(fixture.componentInstance['lineasDevueltas']()).toHaveLength(2);
   });
 

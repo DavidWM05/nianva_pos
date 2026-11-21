@@ -35,7 +35,19 @@ export class VentaService {
       .pipe(map((r) => ({ data: r.data, total: r.meta.total, permisos: r.meta.permisos })));
   }
 
-  obtener(id: number): Observable<Venta> {
+  /**
+   * D-7, transitorio: la devolución busca la venta por su `numero` (el id interno que publica el
+   * backend) hasta que exista el folio de DAT-07. Devuelve el ulid de la venta, o null.
+   */
+  buscarPorNumero(numero: number): Observable<string | null> {
+    const params = new HttpParams().set('filtro_numero', numero).set('rows', 1);
+
+    return this.http
+      .get<RespuestaDe<'/ventas', 'get'>>(urlApi(`/ventas`), { params })
+      .pipe(map((r) => r.data[0]?.id ?? null));
+  }
+
+  obtener(id: string): Observable<Venta> {
     return this.http.get<RespuestaDe<'/ventas/{venta}', 'get'>>(urlApi(`/ventas/${id}`)).pipe(map((r) => r.data));
   }
 
@@ -45,7 +57,7 @@ export class VentaService {
     return this.http.post<RespuestaDe<'/ventas', 'post'>>(urlApi(`/ventas`), cuerpo).pipe(map((r) => r.data));
   }
 
-  anular(id: number, motivo: string): Observable<Venta> {
+  anular(id: string, motivo: string): Observable<Venta> {
     const cuerpo: CuerpoDe<'/ventas/{venta}/anular', 'patch'> = { motivo };
 
     return this.http

@@ -23,6 +23,7 @@ if (typeof globalThis.ResizeObserver === 'undefined') {
 import { MetodoPagoService } from '@nianva/domain-tpv';
 import { Cotizacion, CotizacionService } from '@nianva/domain-cotizaciones';
 import { CotizacionDetalleComponent } from './cotizacion-detalle.component';
+import { ulidDePrueba } from '../../../../testing/ulid-de-prueba';
 
 describe('CotizacionDetalleComponent', () => {
   let fixture: ComponentFixture<CotizacionDetalleComponent>;
@@ -101,7 +102,7 @@ describe('CotizacionDetalleComponent', () => {
   });
 
   it('ya convertida: puedeConvertir(), puedeEditar() y puedeAnular() son todos falsos', async () => {
-    await crearComponente(cotizacionCon({ estado: 'convertida', venta_id: 88 }));
+    await crearComponente(cotizacionCon({ estado: 'convertida', venta_id: ulidDePrueba(88) }));
 
     expect(fixture.componentInstance['puedeConvertir']()).toBe(false);
     expect(fixture.componentInstance['puedeEditar']()).toBe(false);

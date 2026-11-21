@@ -7,6 +7,7 @@ namespace App\Modules\Tpv\Models;
 use App\Modules\Crm\Models\Cliente;
 use App\Modules\Nucleo\Models\Concerns\BelongsToSucursal;
 use App\Modules\Nucleo\Models\Concerns\BelongsToTenant;
+use App\Modules\Nucleo\Models\Concerns\RutaPorUlid;
 use App\Modules\Nucleo\Models\Concerns\TieneUlid;
 use App\Modules\Nucleo\Models\Sucursal;
 use App\Modules\Nucleo\Models\Tenant;
@@ -37,6 +38,7 @@ class Venta extends Model
     /** @use HasFactory<VentaFactory> */
     use HasFactory;
 
+    use RutaPorUlid;
     use TieneUlid;
 
     const CREATED_AT = 'fecha';

@@ -7,6 +7,7 @@ import { CajaActual, CajaService } from '@nianva/domain-tpv';
 import { InicioResumen, InicioService } from '@nianva/domain-nucleo';
 import { proveedoresDePantalla } from '../../../../testing/proveedores-pantalla';
 import { InicioComponent } from './inicio.component';
+import { ulidDePrueba } from '../../../../testing/ulid-de-prueba';
 
 describe('InicioComponent', () => {
   let fixture: ComponentFixture<InicioComponent>;
@@ -14,7 +15,7 @@ describe('InicioComponent', () => {
   const resumen: InicioResumen = {
     ventas_hoy: { cantidad: 3, total: '450.50' },
     apartados_por_vencer: [
-      { id: 1, cliente_nombre: 'Ana Pérez', fecha_vencimiento: '2026-07-25', total: '200.00', total_abonado: '50.00' },
+      { id: ulidDePrueba(1), numero: 1, cliente_nombre: 'Ana Pérez', fecha_vencimiento: '2026-07-25', total: '200.00', total_abonado: '50.00' },
     ],
   };
 
@@ -52,7 +53,8 @@ describe('InicioComponent', () => {
   it('muestra "Abierta" y el resumen de ventas de la sesion cuando hay una caja abierta', async () => {
     const cajaAbierta: CajaActual = {
       sesion: {
-        id: 1,
+        id: ulidDePrueba(1),
+        numero: 1,
         sucursal_id: 1,
         usuario_id: 1,
         monto_apertura: '0.00',
@@ -80,7 +82,7 @@ describe('InicioComponent', () => {
     const texto = (fixture.nativeElement as HTMLElement).textContent ?? '';
     expect(texto).toContain('Ana Pérez');
 
-    const enlace = (fixture.nativeElement as HTMLElement).querySelector('a[href="/apartados/1"]');
+    const enlace = (fixture.nativeElement as HTMLElement).querySelector(`a[href="/apartados/${ulidDePrueba(1)}"]`);
     expect(enlace).toBeTruthy();
   });
 

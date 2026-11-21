@@ -25,7 +25,8 @@ export interface VentaDetalle {
   presentacion_id?: number | null;
   presentacion_nombre?: string;
   factor?: string;
-  id: number;
+  /** DAT-08: ulid de la línea; la devolución lo manda en venta_detalle_id. */
+  id: string;
   variante_id: number;
   variante: VentaDetalleVariante | null;
   cantidad: NonNullable<VentaResource['detalles']>[number]['cantidad'];
@@ -35,7 +36,10 @@ export interface VentaDetalle {
 }
 
 export interface Venta {
-  id: number;
+  /** DAT-08: ulid; es el que va en la ruta /tpv/ventas/:id y en la API. */
+  id: string;
+  /** D-3, transitorio: número visible (= id interno); lo reemplaza el folio de DAT-07. */
+  numero: number;
   fecha: string;
   cliente?: VentaClienteResumen | null;
   total: string;
@@ -130,5 +134,6 @@ export interface VentaFormPayload {
    * manda el codigo.
    */
   gift_card_codigo?: string | null;
-  nota_credito_id?: number | null;
+  /** DAT-08: ulid de la nota de crédito. */
+  nota_credito_id?: string | null;
 }

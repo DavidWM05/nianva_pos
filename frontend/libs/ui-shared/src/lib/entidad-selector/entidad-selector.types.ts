@@ -7,8 +7,14 @@ import { Observable } from 'rxjs';
  * esta forma (por ejemplo, una variante sin atributos no tiene `nombre`
  * -- el adapter de Inventario pone "Variante #id" antes de devolverla).
  */
-export interface EntidadBuscable {
-  id: number;
+/**
+ * DAT-08: los catálogos se identifican por su id numérico; los documentos (una venta) y, desde la
+ * etapa 3, los clientes, por el ulid que publica la API. El selector es genérico en ese tipo.
+ */
+export type IdEntidad = number | string;
+
+export interface EntidadBuscable<I extends IdEntidad = number> {
+  id: I;
   nombre: string;
   /**
    * Opcional -- solo lo llenan buscadores de entidades con noción de stock
@@ -30,9 +36,9 @@ export interface EntidadBuscable {
  * de entidad en app.config.ts. Asi ningun modulo consumidor (Precios,
  * TPV) importa el servicio concreto de otro modulo.
  */
-export abstract class BuscadorEntidad<T extends EntidadBuscable = EntidadBuscable> {
+export abstract class BuscadorEntidad<T extends EntidadBuscable<IdEntidad> = EntidadBuscable> {
   abstract buscar(texto: string): Observable<T[]>;
-  abstract obtener(id: number): Observable<T>;
+  abstract obtener(id: T['id']): Observable<T>;
 }
 
 /**
@@ -42,6 +48,6 @@ export abstract class BuscadorEntidad<T extends EntidadBuscable = EntidadBuscabl
  * tienen hijos -- solo se inyecta cuando EntidadSelectorComponent se usa
  * en modo cascada.
  */
-export abstract class BuscadorDeHijos<H extends EntidadBuscable = EntidadBuscable> {
-  abstract hijosDe(padreId: number): Observable<H[]>;
+export abstract class BuscadorDeHijos<H extends EntidadBuscable = EntidadBuscable, P extends IdEntidad = number> {
+  abstract hijosDe(padreId: P): Observable<H[]>;
 }

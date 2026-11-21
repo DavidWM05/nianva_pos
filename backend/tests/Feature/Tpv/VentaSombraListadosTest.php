@@ -24,7 +24,7 @@ class VentaSombraListadosTest extends TestCase
             'cliente_id' => $this->cliente->id, 'caja_sesion_id' => null,
             'es_venta_sombra' => true, 'total' => '900.00']);
         $this->actingAs($this->usuario);
-        $this->getJson('/api/v1/ventas')->assertOk()->assertJsonFragment(['id' => $sombra->id, 'es_venta_sombra' => true]);
+        $this->getJson('/api/v1/ventas')->assertOk()->assertJsonFragment(['id' => $sombra->ulid, 'es_venta_sombra' => true]);
         $this->getJson('/api/v1/ventas/reporte?fecha_desde='.now()->toDateString().'&fecha_hasta='.now()->toDateString())
             ->assertOk()->assertJsonPath('data.numero_ventas', 1)
             ->assertJsonPath('data.total_ventas', DecimalApi::dinero($venta->total));

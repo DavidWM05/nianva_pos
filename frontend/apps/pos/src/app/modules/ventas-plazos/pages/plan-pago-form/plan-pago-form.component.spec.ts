@@ -10,6 +10,7 @@ import { describe, expect, it, vi } from 'vitest';
 import { BUSCADOR_VENTA } from '../../../../core/buscadores-entidad.tokens';
 import { PlanPago, PlanPagoService } from '@nianva/domain-ventas-plazos';
 import { PlanPagoFormComponent } from './plan-pago-form.component';
+import { ulidDePrueba } from '../../../../testing/ulid-de-prueba';
 
 describe('PlanPagoFormComponent', () => {
   let fixture: ComponentFixture<PlanPagoFormComponent>;
@@ -18,7 +19,7 @@ describe('PlanPagoFormComponent', () => {
 
   const planCreado: PlanPago = {
     id: 7,
-    venta_id: 3,
+    venta_id: ulidDePrueba(3),
     concepto: 'Venta #3 - Pago a plazos',
     monto_total: '550.00',
     interes_total: '50.00',
@@ -62,13 +63,13 @@ describe('PlanPagoFormComponent', () => {
     await crearComponente();
     planPagoService.crearPlan.mockReturnValue(of(planCreado));
 
-    fixture.componentInstance['ventaId'].set(3);
+    fixture.componentInstance['ventaId'].set(ulidDePrueba(3));
     fixture.componentInstance['numeroCuotas'].set(6);
     fixture.componentInstance['tasaInteres'].set(10);
     fixture.componentInstance.crear();
 
     expect(planPagoService.crearPlan).toHaveBeenCalledWith(
-      3,
+      ulidDePrueba(3),
       expect.objectContaining({ numero_cuotas: 6, tasa_interes: 10, periodicidad: 'mensual' }),
     );
     expect(router.navigate).toHaveBeenCalledWith(['/ventas-plazos', 7]);
@@ -93,7 +94,7 @@ describe('PlanPagoFormComponent', () => {
       ),
     );
 
-    fixture.componentInstance['ventaId'].set(3);
+    fixture.componentInstance['ventaId'].set(ulidDePrueba(3));
     fixture.componentInstance['numeroCuotas'].set(6);
     fixture.componentInstance.crear();
 

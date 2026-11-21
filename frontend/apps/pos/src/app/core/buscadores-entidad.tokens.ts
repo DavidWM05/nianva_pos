@@ -44,7 +44,8 @@ export const BUSCADOR_RECETA = new InjectionToken<BuscadorEntidad>('BUSCADOR_REC
  * "Venta #id - cliente - $total". Prerrequisito de Ventas a Plazos (elegir
  * la venta sobre la que se arma un plan de pago).
  */
-export const BUSCADOR_VENTA = new InjectionToken<BuscadorEntidad>('BUSCADOR_VENTA');
+// DAT-08: la venta se identifica por su ulid.
+export const BUSCADOR_VENTA = new InjectionToken<BuscadorEntidad<EntidadBuscable<string>>>('BUSCADOR_VENTA');
 
 /** Selección de listas de precio activas para una operación de venta. */
 export const BUSCADOR_LISTA_PRECIO = new InjectionToken<BuscadorEntidad>('BUSCADOR_LISTA_PRECIO');

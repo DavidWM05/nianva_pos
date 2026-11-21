@@ -15,7 +15,7 @@ export type EntradaAuditoriaRegistro = RespuestaDe<'/auditoria', 'get'>['data'][
 export class AuditoriaRegistroService {
   private readonly http = inject(HttpClient);
 
-  listar(tabla: string, registroId: number): Observable<EntradaAuditoriaRegistro[]> {
+  listar(tabla: string, registroId: number | string): Observable<EntradaAuditoriaRegistro[]> {
     return this.http
       .get<RespuestaDe<'/auditoria', 'get'>>(urlApi(`/auditoria`), {
         params: { tabla, registro_id: String(registroId) },
