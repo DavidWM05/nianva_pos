@@ -47,6 +47,8 @@ Generado con `php artisan errores:catalogo` desde las excepciones de negocio y e
 | `gift_card_saldo_insuficiente` | 422 | `App\Modules\GiftCards\Exceptions\GiftCardSaldoInsuficienteException` | GiftCards | — |
 | `gift_card_sin_saldo` | 422 | `App\Modules\GiftCards\Exceptions\GiftCardSinSaldoException` | GiftCards | — |
 | `gift_card_ya_cancelada` | 422 | `App\Modules\GiftCards\Exceptions\GiftCardYaCanceladaException` | GiftCards | — |
+| `idempotencia_clave_invalida` | 422 | `App\Modules\Nucleo\Exceptions\ClaveIdempotenciaInvalidaException` | Nucleo | — |
+| `idempotencia_conflicto` | 409 | `App\Modules\Nucleo\Exceptions\ConflictoIdempotenciaException` | Nucleo | — |
 | `libro_inmutable` | 409 | `App\Modules\Nucleo\Exceptions\LibroInmutableException` | Nucleo | libro, operacion |
 | `lista_precio_no_disponible` | 422 | `App\Modules\Precios\Exceptions\ListaPrecioNoDisponibleException` | Precios | lista_precio_id |
 | `metodo_efectivo_no_existe` | 422 | `App\Modules\Nucleo\Exceptions\MetodoEfectivoNoExisteException` | Nucleo | — |

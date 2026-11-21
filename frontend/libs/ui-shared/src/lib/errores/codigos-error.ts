@@ -44,6 +44,8 @@ export const CODIGOS_ERROR = [
   'gift_card_saldo_insuficiente',
   'gift_card_sin_saldo',
   'gift_card_ya_cancelada',
+  'idempotencia_clave_invalida',
+  'idempotencia_conflicto',
   'libro_inmutable',
   'lista_precio_no_disponible',
   'metodo_efectivo_no_existe',

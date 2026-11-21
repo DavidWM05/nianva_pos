@@ -1,5 +1,5 @@
 import { RespuestaDe, CuerpoDe } from '@nianva/api-contrato';
-import { urlApi } from '@nianva/core-http';
+import { urlApi, opcionesIdempotencia } from '@nianva/core-http';
 import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable, map } from 'rxjs';
@@ -44,10 +44,10 @@ export class CompraService {
       .pipe(map((r) => r.data));
   }
 
-  registrar(payload: CompraFormPayload): Observable<void> {
+  registrar(payload: CompraFormPayload, llaveIdempotencia?: string): Observable<void> {
     const cuerpo: CuerpoDe<'/compras', 'post'> = payload;
     return this.http
-      .post<RespuestaDe<'/compras', 'post'>>(urlApi(`/compras`), cuerpo)
+      .post<RespuestaDe<'/compras', 'post'>>(urlApi(`/compras`), cuerpo, opcionesIdempotencia(llaveIdempotencia))
       .pipe(map(() => undefined));
   }
 }

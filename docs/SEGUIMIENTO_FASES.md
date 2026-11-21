@@ -135,7 +135,7 @@ Conflicto que se resuelve aquí: C6. En las Fases 3 a 5, los Services pasan a re
 | Regla | Qué pide | Estado | Dónde se verifica | Encargo |
 |---|---|---|---|---|
 | DAT-07 | Folios por serie | En curso | A1 asigna folios por sucursal y tipo, incluida la serie OP aprobada para producción. A5 retira el número transitorio. | A1, A5 |
-| API-07 | Idempotencia en dinero | Pendiente | — | — |
+| API-07 | Idempotencia en dinero | En curso | A2 admite Idempotency-Key opcional en mutaciones monetarias. A5 vuelve obligatoria la cabecera tras integrar los formularios. | A2, A5 |
 | SEG-05 | Autorización de supervisor | Pendiente | — | — |
 | SEG-12 | PIN de caja y terminal | Pendiente | Incluye `terminal` en `GET /sesion`, movido desde API-09 de la Fase 2 | — |
 | UI-12 | Impresos | Pendiente | Incluye el e2e de dos impresiones seguidas desde la misma pantalla y con la misma sesión (SEG-06), que pasó aquí desde la Fase 2 porque hoy no hay impresos. La infraestructura de e2e con backend ya existe (`apps/pos-e2e`, 48c) | — |

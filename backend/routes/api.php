@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Aplicacion\Idempotencia\Idempotencia;
 use App\Modules\Apartados\Http\Controllers\ApartadoController;
 use App\Modules\Auditoria\Http\Controllers\AuditoriaController;
 use App\Modules\Configuracion\Http\Controllers\ConfiguracionController;
@@ -211,7 +212,7 @@ Route::middleware('auth:sanctum')->group(function () {
         // antes no existia (ver el reporte del bug "no puedo ingresar
         // stock"). compras.ver/crear ya estaban en el catalogo de permisos
         // sembrado, sin usarse hasta ahora.
-        Route::post('/compras', [CompraController::class, 'store'])->middleware('permiso:compras.crear');
+        Route::post('/compras', [CompraController::class, 'store'])->middleware('permiso:compras.crear')->middleware(Idempotencia::class);
 
         // Precios y Promociones: tercer modulo real.
         Route::get('/precios/listas', [ListaPrecioController::class, 'index'])->middleware('permiso:listas_precio.ver');
@@ -257,16 +258,16 @@ Route::middleware('auth:sanctum')->group(function () {
             ->middleware('permiso:metodos_pago.eliminar');
 
         Route::get('/caja/actual', [CajaController::class, 'actual'])->middleware('permiso:caja.ver');
-        Route::post('/caja/abrir', [CajaController::class, 'abrir'])->middleware('permiso:caja.abrir');
-        Route::patch('/caja/{cajaSesion}/cerrar', [CajaController::class, 'cerrar'])->middleware('permiso:caja.cerrar');
+        Route::post('/caja/abrir', [CajaController::class, 'abrir'])->middleware('permiso:caja.abrir')->middleware(Idempotencia::class);
+        Route::patch('/caja/{cajaSesion}/cerrar', [CajaController::class, 'cerrar'])->middleware('permiso:caja.cerrar')->middleware(Idempotencia::class);
 
         Route::get('/ventas', [VentaController::class, 'index'])->middleware('permiso:ventas.ver');
-        Route::post('/ventas', [VentaController::class, 'store'])->middleware(['permiso:ventas.crear', SeleccionarListaPrecio::class]);
+        Route::post('/ventas', [VentaController::class, 'store'])->middleware(['permiso:ventas.crear', SeleccionarListaPrecio::class])->middleware(Idempotencia::class);
         Route::get('/ventas/codigo', CodigoVentaController::class)->middleware('permiso:ventas.crear');
         Route::post('/ventas/cotizar', [VentaController::class, 'cotizar'])->middleware(['permiso:ventas.crear', SeleccionarListaPrecio::class]);
         Route::get('/ventas/reporte', [VentaController::class, 'reporte'])->middleware('permiso:reportes.ver');
         Route::get('/ventas/{venta}', [VentaController::class, 'show'])->middleware('permiso:ventas.ver');
-        Route::patch('/ventas/{venta}/anular', [VentaController::class, 'anular'])->middleware('permiso:ventas.anular');
+        Route::patch('/ventas/{venta}/anular', [VentaController::class, 'anular'])->middleware('permiso:ventas.anular')->middleware(Idempotencia::class);
 
         // Apartados: quinto modulo real, reutiliza el mismo carrito/cotizacion
         // de TPV (ver ApartadoService, que depende de VentaService/InventarioService).
@@ -275,21 +276,21 @@ Route::middleware('auth:sanctum')->group(function () {
         // en esencia, cobrar el saldo final, el mismo gesto que abonar) para
         // que un vendedor pueda cerrar un apartado sin ser admin.
         Route::get('/apartados', [ApartadoController::class, 'index'])->middleware('permiso:apartados.ver');
-        Route::post('/apartados', [ApartadoController::class, 'store'])->middleware(['permiso:apartados.crear', SeleccionarListaPrecio::class]);
+        Route::post('/apartados', [ApartadoController::class, 'store'])->middleware(['permiso:apartados.crear', SeleccionarListaPrecio::class])->middleware(Idempotencia::class);
         Route::get('/apartados/{apartado}', [ApartadoController::class, 'show'])->middleware('permiso:apartados.ver');
         Route::post('/apartados/{apartado}/abonos', [ApartadoController::class, 'registrarAbono'])
-            ->middleware('permiso:apartados.abonar');
+            ->middleware('permiso:apartados.abonar')->middleware(Idempotencia::class);
         Route::patch('/apartados/{apartado}/liquidar', [ApartadoController::class, 'liquidar'])
-            ->middleware('permiso:apartados.abonar');
+            ->middleware('permiso:apartados.abonar')->middleware(Idempotencia::class);
         Route::patch('/apartados/{apartado}/cancelar', [ApartadoController::class, 'cancelar'])
-            ->middleware('permiso:apartados.cancelar');
+            ->middleware('permiso:apartados.cancelar')->middleware(Idempotencia::class);
 
         // Devoluciones: sexto modulo real. Reutiliza VentaService (venta
         // sombra de un cambio) e InventarioService (ver DevolucionService) --
         // sin permiso propio de "cambio" vs "devolucion", el catalogo
         // sembrado solo tiene devoluciones.ver/crear para ambos casos.
         Route::get('/devoluciones', [DevolucionController::class, 'index'])->middleware('permiso:devoluciones.ver');
-        Route::post('/devoluciones', [DevolucionController::class, 'store'])->middleware('permiso:devoluciones.crear');
+        Route::post('/devoluciones', [DevolucionController::class, 'store'])->middleware('permiso:devoluciones.crear')->middleware(Idempotencia::class);
         Route::get('/devoluciones/{devolucion}', [DevolucionController::class, 'show'])
             ->middleware('permiso:devoluciones.ver');
 
@@ -297,7 +298,7 @@ Route::middleware('auth:sanctum')->group(function () {
         // de la vista de caja de TPV (ver el reporte). index() siempre
         // exige caja_sesion_id (no pagina un historial general).
         Route::get('/gastos', [GastoController::class, 'index'])->middleware('permiso:gastos.ver');
-        Route::post('/gastos', [GastoController::class, 'store'])->middleware('permiso:gastos.crear');
+        Route::post('/gastos', [GastoController::class, 'store'])->middleware('permiso:gastos.crear')->middleware(Idempotencia::class);
 
         // Configuracion (moneda, ticket, logo, backup): octavo modulo real.
         // Un solo permiso (configuracion.editar) gatea tanto ver como
@@ -325,7 +326,7 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::get('/cotizaciones/{cotizacion}', [CotizacionController::class, 'show'])->middleware('permiso:cotizaciones.ver');
             Route::put('/cotizaciones/{cotizacion}', [CotizacionController::class, 'update'])->middleware(['permiso:cotizaciones.editar', SeleccionarListaPrecio::class]);
             Route::delete('/cotizaciones/{cotizacion}', [CotizacionController::class, 'destroy'])->middleware('permiso:cotizaciones.eliminar');
-            Route::post('/cotizaciones/{cotizacion}/convertir', [CotizacionController::class, 'convertir'])->middleware('permiso:cotizaciones.convertir');
+            Route::post('/cotizaciones/{cotizacion}/convertir', [CotizacionController::class, 'convertir'])->middleware('permiso:cotizaciones.convertir')->middleware(Idempotencia::class);
         });
 
         // Cuentas por Cobrar (CxC)
@@ -333,8 +334,8 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::get('/cuentas-cobrar', [CuentaCobrarController::class, 'index'])->middleware('permiso:cuentas_cobrar.ver');
             Route::get('/cuentas-cobrar/reporte', [CuentaCobrarController::class, 'reporte'])->middleware('permiso:reportes_cuentas_cobrar.ver');
             Route::get('/cuentas-cobrar/{cuentaCobrar}', [CuentaCobrarController::class, 'show'])->middleware('permiso:cuentas_cobrar.ver');
-            Route::post('/cuentas-cobrar/{cuentaCobrar}/abonos', [CuentaCobrarController::class, 'registrarAbono'])->middleware('permiso:cuentas_cobrar.registrar_abono');
-            Route::post('/cuentas-cobrar/{cuentaCobrar}/anular', [CuentaCobrarController::class, 'anular'])->middleware('permiso:cuentas_cobrar.anular');
+            Route::post('/cuentas-cobrar/{cuentaCobrar}/abonos', [CuentaCobrarController::class, 'registrarAbono'])->middleware('permiso:cuentas_cobrar.registrar_abono')->middleware(Idempotencia::class);
+            Route::post('/cuentas-cobrar/{cuentaCobrar}/anular', [CuentaCobrarController::class, 'anular'])->middleware('permiso:cuentas_cobrar.anular')->middleware(Idempotencia::class);
         });
 
         // Cuentas por Pagar (CxP)
@@ -342,8 +343,8 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::get('/cuentas-pagar', [CuentaPagarController::class, 'index'])->middleware('permiso:cuentas_pagar.ver');
             Route::get('/cuentas-pagar/reporte', [CuentaPagarController::class, 'reporte'])->middleware('permiso:reportes_cuentas_pagar.ver');
             Route::get('/cuentas-pagar/{cuentaPagar}', [CuentaPagarController::class, 'show'])->middleware('permiso:cuentas_pagar.ver');
-            Route::post('/cuentas-pagar/{cuentaPagar}/pagos', [CuentaPagarController::class, 'registrarPago'])->middleware('permiso:cuentas_pagar.registrar_pago');
-            Route::post('/cuentas-pagar/{cuentaPagar}/anular', [CuentaPagarController::class, 'anular'])->middleware('permiso:cuentas_pagar.anular');
+            Route::post('/cuentas-pagar/{cuentaPagar}/pagos', [CuentaPagarController::class, 'registrarPago'])->middleware('permiso:cuentas_pagar.registrar_pago')->middleware(Idempotencia::class);
+            Route::post('/cuentas-pagar/{cuentaPagar}/anular', [CuentaPagarController::class, 'anular'])->middleware('permiso:cuentas_pagar.anular')->middleware(Idempotencia::class);
         });
 
         // CRM Avanzado (extension del modulo CRM existente)
@@ -368,10 +369,10 @@ Route::middleware('auth:sanctum')->group(function () {
         // Gift Cards
         Route::middleware('modulo:gift_cards')->group(function () {
             Route::get('/gift-cards', [GiftCardController::class, 'index'])->middleware('permiso:gift_cards.ver');
-            Route::post('/gift-cards', [GiftCardController::class, 'store'])->middleware('permiso:gift_cards.emitir');
+            Route::post('/gift-cards', [GiftCardController::class, 'store'])->middleware('permiso:gift_cards.emitir')->middleware(Idempotencia::class);
             Route::get('/gift-cards/{giftCard}', [GiftCardController::class, 'show'])->middleware('permiso:gift_cards.ver');
-            Route::post('/gift-cards/{giftCard}/recargar', [GiftCardController::class, 'recargar'])->middleware('permiso:gift_cards.recargar');
-            Route::post('/gift-cards/{giftCard}/cancelar', [GiftCardController::class, 'cancelar'])->middleware('permiso:gift_cards.cancelar');
+            Route::post('/gift-cards/{giftCard}/recargar', [GiftCardController::class, 'recargar'])->middleware('permiso:gift_cards.recargar')->middleware(Idempotencia::class);
+            Route::post('/gift-cards/{giftCard}/cancelar', [GiftCardController::class, 'cancelar'])->middleware('permiso:gift_cards.cancelar')->middleware(Idempotencia::class);
         });
 
         // Notas de Credito
@@ -400,8 +401,8 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::middleware('modulo:ventas_plazos')->group(function () {
             Route::get('/planes-pago-cliente', [PlanPagoController::class, 'index'])->middleware('permiso:ventas_plazos.ver');
             Route::get('/planes-pago-cliente/{plan}', [PlanPagoController::class, 'show'])->middleware('permiso:ventas_plazos.ver');
-            Route::post('/ventas/{venta}/plan-pago', [PlanPagoController::class, 'crearPlan'])->middleware('permiso:ventas_plazos.crear');
-            Route::post('/planes-pago-cliente/{plan}/pagar-cuota', [PlanPagoController::class, 'pagarCuota'])->middleware('permiso:ventas_plazos.crear');
+            Route::post('/ventas/{venta}/plan-pago', [PlanPagoController::class, 'crearPlan'])->middleware('permiso:ventas_plazos.crear')->middleware(Idempotencia::class);
+            Route::post('/planes-pago-cliente/{plan}/pagar-cuota', [PlanPagoController::class, 'pagarCuota'])->middleware('permiso:ventas_plazos.crear')->middleware(Idempotencia::class);
         });
 
         // Payroll / Nomina
@@ -420,7 +421,7 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::get('/prestamos', [PrestamoController::class, 'index'])->middleware('permiso:prestamos.ver');
             Route::get('/prestamos/{prestamo}', [PrestamoController::class, 'show'])->middleware('permiso:prestamos.ver');
             Route::post('/prestamos', [PrestamoController::class, 'store'])->middleware('permiso:prestamos.crear');
-            Route::post('/prestamos/{id}/pagos', [PrestamoController::class, 'registrarPago'])->middleware('permiso:prestamos.pagar');
+            Route::post('/prestamos/{id}/pagos', [PrestamoController::class, 'registrarPago'])->middleware('permiso:prestamos.pagar')->middleware(Idempotencia::class);
         });
     });
 });

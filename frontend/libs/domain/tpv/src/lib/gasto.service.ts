@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import type { CuerpoDe, RespuestaDe } from '@nianva/api-contrato';
-import { urlApi } from '@nianva/core-http';
+import { urlApi, opcionesIdempotencia } from '@nianva/core-http';
 import { Observable, map } from 'rxjs';
 
 import { Gasto } from './gasto.types';
@@ -22,11 +22,11 @@ export class GastoService {
       .pipe(map((r) => r.data));
   }
 
-  registrar(descripcion: string, monto: number): Observable<Gasto> {
+  registrar(descripcion: string, monto: number, llaveIdempotencia?: string): Observable<Gasto> {
     const cuerpo: CuerpoDe<'/gastos', 'post'> = { descripcion, monto };
 
     return this.http
-      .post<RespuestaDe<'/gastos', 'post'>>(urlApi(`/gastos`), cuerpo)
+      .post<RespuestaDe<'/gastos', 'post'>>(urlApi(`/gastos`), cuerpo, opcionesIdempotencia(llaveIdempotencia))
       .pipe(map((r) => r.data));
   }
 }

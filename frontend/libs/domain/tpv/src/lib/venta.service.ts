@@ -1,5 +1,5 @@
 import { CuerpoDe, RespuestaDe } from '@nianva/api-contrato';
-import { ConsultaPagina, urlApi } from '@nianva/core-http';
+import { ConsultaPagina, urlApi, opcionesIdempotencia } from '@nianva/core-http';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable, map, of } from 'rxjs';
@@ -63,17 +63,17 @@ export class VentaService {
     return this.http.get<RespuestaDe<'/ventas/{venta}', 'get'>>(urlApi(`/ventas/${id}`)).pipe(map((r) => r.data));
   }
 
-  registrar(payload: VentaFormPayload): Observable<Venta> {
+  registrar(payload: VentaFormPayload, llaveIdempotencia?: string): Observable<Venta> {
     const cuerpo: CuerpoDe<'/ventas', 'post'> = payload;
 
-    return this.http.post<RespuestaDe<'/ventas', 'post'>>(urlApi(`/ventas`), cuerpo).pipe(map((r) => r.data));
+    return this.http.post<RespuestaDe<'/ventas', 'post'>>(urlApi(`/ventas`), cuerpo, opcionesIdempotencia(llaveIdempotencia)).pipe(map((r) => r.data));
   }
 
-  anular(id: string, motivo: string): Observable<Venta> {
+  anular(id: string, motivo: string, llaveIdempotencia?: string): Observable<Venta> {
     const cuerpo: CuerpoDe<'/ventas/{venta}/anular', 'patch'> = { motivo };
 
     return this.http
-      .patch<RespuestaDe<'/ventas/{venta}/anular', 'patch'>>(urlApi(`/ventas/${id}/anular`), cuerpo)
+      .patch<RespuestaDe<'/ventas/{venta}/anular', 'patch'>>(urlApi(`/ventas/${id}/anular`), cuerpo, opcionesIdempotencia(llaveIdempotencia))
       .pipe(map((r) => r.data));
   }
 

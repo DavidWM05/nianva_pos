@@ -1,5 +1,5 @@
 import { RespuestaDe, CuerpoDe } from '@nianva/api-contrato';
-import { ConsultaPagina, urlApi } from '@nianva/core-http';
+import { ConsultaPagina, urlApi, opcionesIdempotencia } from '@nianva/core-http';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable, map } from 'rxjs';
@@ -62,11 +62,13 @@ export class PrestamoService {
   registrarPago(
     id: number,
     payload: RegistrarPagoPrestamoPayload,
+    llaveIdempotencia?: string,
   ): Observable<void> {
     return this.http
       .post<RespuestaDe<'/prestamos/{id}/pagos', 'post'>>(
         urlApi(`/prestamos/${id}/pagos`),
         payload satisfies CuerpoDe<'/prestamos/{id}/pagos', 'post'>,
+        opcionesIdempotencia(llaveIdempotencia),
       )
       .pipe(map(() => undefined));
   }

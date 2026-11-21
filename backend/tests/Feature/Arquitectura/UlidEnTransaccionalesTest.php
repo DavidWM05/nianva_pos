@@ -71,6 +71,9 @@ class UlidEnTransaccionalesTest extends TestCase
         'Infraestructura interna de folios' => [
             'folio_contadores',
         ],
+        'Infraestructura interna de idempotencia' => [
+            'solicitudes_idempotentes',
+        ],
         'Catálogos del back office: llegan a la terminal ya hechos' => [
             'atributo_valores', 'atributos', 'categorias', 'configuracion_seguridad',
             'configuracion_tenant', 'crm_campanas', 'cupones', 'departamentos',
