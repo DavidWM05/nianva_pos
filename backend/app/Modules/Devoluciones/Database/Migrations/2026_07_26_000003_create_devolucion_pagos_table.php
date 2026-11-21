@@ -10,6 +10,7 @@ return new class extends Migration
     {
         Schema::create('devolucion_pagos', function (Blueprint $table) {
             $table->id();
+            $table->char('ulid', 26)->unique();
             $table->foreignId('devolucion_id')->constrained('devoluciones')->cascadeOnDelete();
             $table->foreignId('metodo_pago_id')->constrained('metodos_pago')->restrictOnDelete();
             $table->decimal('monto', 12, 2)->comment('monto de este metodo en el reembolso o cobro de diferencia');

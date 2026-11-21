@@ -6,6 +6,7 @@ use App\Modules\Crm\Models\Cliente;
 use App\Modules\CuentasCobrar\Database\Factories\CuentaCobrarFactory;
 use App\Modules\Nucleo\Models\Concerns\BelongsToSucursal;
 use App\Modules\Nucleo\Models\Concerns\BelongsToTenant;
+use App\Modules\Nucleo\Models\Concerns\TieneUlid;
 use App\Modules\Nucleo\Models\Tenant;
 use App\Modules\Tpv\Models\Venta;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
@@ -25,6 +26,8 @@ class CuentaCobrar extends Model
 
     /** @use HasFactory<CuentaCobrarFactory> */
     use HasFactory;
+
+    use TieneUlid;
 
     protected $table = 'cuentas_cobrar';
 

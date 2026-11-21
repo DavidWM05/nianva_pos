@@ -4,6 +4,7 @@ namespace App\Modules\Gastos\Models;
 
 use App\Modules\Gastos\Database\Factories\GastoFactory;
 use App\Modules\Nucleo\Models\Concerns\BelongsToTenantViaRelacion;
+use App\Modules\Nucleo\Models\Concerns\TieneUlid;
 use App\Modules\Nucleo\Models\Sucursal;
 use App\Modules\Nucleo\Models\Usuario;
 use App\Modules\Tpv\Models\CajaSesion;
@@ -25,6 +26,8 @@ class Gasto extends Model
 
     /** @use HasFactory<GastoFactory> */
     use HasFactory;
+
+    use TieneUlid;
 
     const CREATED_AT = 'fecha';
 

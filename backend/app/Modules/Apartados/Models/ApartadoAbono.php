@@ -6,6 +6,7 @@ namespace App\Modules\Apartados\Models;
 
 use App\Modules\Apartados\Database\Factories\ApartadoAbonoFactory;
 use App\Modules\Nucleo\Models\Concerns\BelongsToTenantViaRelacion;
+use App\Modules\Nucleo\Models\Concerns\TieneUlid;
 use App\Modules\Nucleo\Models\Usuario;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -24,6 +25,8 @@ class ApartadoAbono extends Model
 
     /** @use HasFactory<ApartadoAbonoFactory> */
     use HasFactory;
+
+    use TieneUlid;
 
     const CREATED_AT = 'fecha';
 

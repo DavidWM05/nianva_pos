@@ -5,6 +5,7 @@ namespace App\Modules\Tpv\Models;
 use App\Modules\Inventario\Models\ProductoVariante;
 use App\Modules\Nucleo\Casts\CantidadDecimal;
 use App\Modules\Nucleo\Models\Concerns\BelongsToTenantViaRelacion;
+use App\Modules\Nucleo\Models\Concerns\TieneUlid;
 use App\Modules\Precios\Models\ReglaPrecio;
 use App\Modules\Tpv\Database\Factories\VentaDetalleFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
@@ -39,6 +40,8 @@ class VentaDetalle extends Model
 
     /** @use HasFactory<VentaDetalleFactory> */
     use HasFactory;
+
+    use TieneUlid;
 
     public $timestamps = false;
 

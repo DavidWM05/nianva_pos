@@ -12,6 +12,7 @@ return new class extends Migration
     {
         Schema::create('caja_cierre_metodos', function (Blueprint $table): void {
             $table->id();
+            $table->char('ulid', 26)->unique();
             $table->foreignId('caja_sesion_id')->constrained('caja_sesiones')->restrictOnDelete();
             $table->foreignId('metodo_pago_id')->constrained('metodos_pago')->restrictOnDelete();
             $table->decimal('total_teorico', 12, 2);

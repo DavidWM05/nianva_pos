@@ -7,6 +7,7 @@ use App\Modules\Devoluciones\Models\Devolucion;
 use App\Modules\NotasCredito\Database\Factories\NotaCreditoFactory;
 use App\Modules\Nucleo\Models\Concerns\BelongsToSucursal;
 use App\Modules\Nucleo\Models\Concerns\BelongsToTenant;
+use App\Modules\Nucleo\Models\Concerns\TieneUlid;
 use App\Modules\Nucleo\Models\Tenant;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -25,6 +26,8 @@ class NotaCredito extends Model
 
     /** @use HasFactory<NotaCreditoFactory> */
     use HasFactory;
+
+    use TieneUlid;
 
     protected $table = 'notas_credito';
 

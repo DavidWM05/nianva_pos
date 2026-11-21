@@ -6,6 +6,7 @@ namespace App\Modules\Apartados\Models;
 
 use App\Modules\Apartados\Database\Factories\ApartadoLineaReglaFactory;
 use App\Modules\Nucleo\Models\Concerns\BelongsToTenantViaRelacion;
+use App\Modules\Nucleo\Models\Concerns\TieneUlid;
 use App\Modules\Nucleo\Scopes\TenantScopeViaRelacion;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Builder;
@@ -30,6 +31,8 @@ class ApartadoLineaRegla extends Model
 
     /** @use HasFactory<ApartadoLineaReglaFactory> */
     use HasFactory;
+
+    use TieneUlid;
 
     public $timestamps = false;
 

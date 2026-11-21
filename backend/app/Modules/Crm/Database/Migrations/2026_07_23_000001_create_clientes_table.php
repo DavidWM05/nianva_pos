@@ -10,6 +10,8 @@ return new class extends Migration
     {
         Schema::create('clientes', function (Blueprint $table) {
             $table->id();
+            $table->char('ulid', 26);
+            $table->unique(['tenant_id', 'ulid']);
             $table->foreignId('tenant_id')->constrained('tenants')->cascadeOnDelete();
             $table->string('nombre', 200);
             $table->string('documento_fiscal', 30)->nullable();

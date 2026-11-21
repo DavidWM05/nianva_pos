@@ -7,6 +7,7 @@ use App\Modules\Inventario\Models\Compra;
 use App\Modules\Inventario\Models\Proveedor;
 use App\Modules\Nucleo\Models\Concerns\BelongsToSucursal;
 use App\Modules\Nucleo\Models\Concerns\BelongsToTenant;
+use App\Modules\Nucleo\Models\Concerns\TieneUlid;
 use App\Modules\Nucleo\Models\Tenant;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -25,6 +26,8 @@ class CuentaPagar extends Model
 
     /** @use HasFactory<CuentaPagarFactory> */
     use HasFactory;
+
+    use TieneUlid;
 
     protected $table = 'cuentas_pagar';
 

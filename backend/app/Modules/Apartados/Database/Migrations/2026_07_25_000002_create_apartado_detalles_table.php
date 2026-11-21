@@ -10,6 +10,7 @@ return new class extends Migration
     {
         Schema::create('apartado_detalles', function (Blueprint $table) {
             $table->id();
+            $table->char('ulid', 26)->unique();
             $table->foreignId('apartado_id')->constrained('apartados')->cascadeOnDelete();
             $table->foreignId('variante_id')->constrained('producto_variantes')->restrictOnDelete();
             $table->decimal('cantidad', 14, 3);

@@ -10,6 +10,8 @@ return new class extends Migration
     {
         Schema::create('transformaciones_producto', function (Blueprint $table) {
             $table->id();
+            $table->char('ulid', 26);
+            $table->unique(['tenant_id', 'ulid']);
             $table->foreignId('tenant_id')->constrained('tenants')->cascadeOnDelete();
             $table->foreignId('sucursal_id')->constrained('sucursales')->restrictOnDelete();
             $table->foreignId('variante_origen_id')->constrained('producto_variantes')->restrictOnDelete();

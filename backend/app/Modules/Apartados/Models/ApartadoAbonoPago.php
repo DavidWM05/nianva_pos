@@ -4,6 +4,7 @@ namespace App\Modules\Apartados\Models;
 
 use App\Modules\Apartados\Database\Factories\ApartadoAbonoPagoFactory;
 use App\Modules\Nucleo\Models\Concerns\BelongsToTenantViaRelacion;
+use App\Modules\Nucleo\Models\Concerns\TieneUlid;
 use App\Modules\Nucleo\Models\MetodoPago;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -24,6 +25,8 @@ class ApartadoAbonoPago extends Model
 
     /** @use HasFactory<ApartadoAbonoPagoFactory> */
     use HasFactory;
+
+    use TieneUlid;
 
     public $timestamps = false;
 

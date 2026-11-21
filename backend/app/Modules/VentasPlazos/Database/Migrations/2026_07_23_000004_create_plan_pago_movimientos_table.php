@@ -17,6 +17,7 @@ return new class extends Migration
     {
         Schema::create('plan_pago_movimientos', function (Blueprint $table) {
             $table->id();
+            $table->char('ulid', 26)->unique();
             $table->foreignId('plan_pago_cliente_id')->constrained('planes_pago_cliente')->cascadeOnDelete();
             $table->enum('tipo', ['saldo_inicial', 'pago_cuota']);
             $table->string('referencia_tabla', 60)->nullable();

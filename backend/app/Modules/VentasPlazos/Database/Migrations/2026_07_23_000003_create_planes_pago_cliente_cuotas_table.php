@@ -10,6 +10,7 @@ return new class extends Migration
     {
         Schema::create('planes_pago_cliente_cuotas', function (Blueprint $table) {
             $table->id();
+            $table->char('ulid', 26)->unique();
             $table->foreignId('plan_pago_cliente_id')->constrained('planes_pago_cliente')->cascadeOnDelete();
             $table->integer('numero_cuota');
             $table->decimal('monto', 12, 2);

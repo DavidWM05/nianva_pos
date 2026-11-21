@@ -6,6 +6,7 @@ namespace App\Modules\VentasPlazos\Models;
 
 use App\Modules\Nucleo\Models\Concerns\BelongsToTenantViaRelacion;
 use App\Modules\Nucleo\Models\Concerns\EsLibroDeMovimientos;
+use App\Modules\Nucleo\Models\Concerns\TieneUlid;
 use App\Modules\Nucleo\Scopes\TenantScopeViaRelacion;
 use App\Modules\VentasPlazos\Database\Factories\PlanPagoMovimientoFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
@@ -33,6 +34,8 @@ class PlanPagoMovimiento extends Model
 
     /** @use HasFactory<PlanPagoMovimientoFactory> */
     use HasFactory;
+
+    use TieneUlid;
 
     const CREATED_AT = 'fecha';
 

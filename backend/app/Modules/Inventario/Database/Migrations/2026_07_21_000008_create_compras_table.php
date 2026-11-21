@@ -10,6 +10,8 @@ return new class extends Migration
     {
         Schema::create('compras', function (Blueprint $table) {
             $table->id();
+            $table->char('ulid', 26);
+            $table->unique(['tenant_id', 'ulid']);
             $table->foreignId('tenant_id')->constrained('tenants')->cascadeOnDelete();
             $table->foreignId('proveedor_id')->constrained('proveedores')->restrictOnDelete();
             $table->foreignId('sucursal_id')->constrained('sucursales')->restrictOnDelete();

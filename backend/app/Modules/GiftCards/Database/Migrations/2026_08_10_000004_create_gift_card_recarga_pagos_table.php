@@ -12,6 +12,7 @@ return new class extends Migration
     {
         Schema::create('gift_card_recarga_pagos', function (Blueprint $table): void {
             $table->id();
+            $table->char('ulid', 26)->unique();
             $table->foreignId('recarga_id')->constrained('gift_card_recargas')->restrictOnDelete();
             $table->foreignId('metodo_pago_id')->constrained('metodos_pago')->restrictOnDelete();
             $table->decimal('monto', 12, 2);

@@ -6,6 +6,7 @@ use App\Modules\Devoluciones\Database\Factories\DevolucionItemFactory;
 use App\Modules\Inventario\Models\ProductoVariante;
 use App\Modules\Nucleo\Casts\CantidadDecimal;
 use App\Modules\Nucleo\Models\Concerns\BelongsToTenantViaRelacion;
+use App\Modules\Nucleo\Models\Concerns\TieneUlid;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -41,6 +42,8 @@ class DevolucionItem extends Model
 
     /** @use HasFactory<DevolucionItemFactory> */
     use HasFactory;
+
+    use TieneUlid;
 
     public $timestamps = false;
 

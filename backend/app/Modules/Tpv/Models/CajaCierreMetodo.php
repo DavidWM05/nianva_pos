@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\Tpv\Models;
 
 use App\Modules\Nucleo\Models\Concerns\BelongsToTenantViaRelacion;
+use App\Modules\Nucleo\Models\Concerns\TieneUlid;
 use App\Modules\Nucleo\Models\MetodoPago;
 use App\Modules\Nucleo\Scopes\TenantScopeViaRelacion;
 use App\Modules\Tpv\Database\Factories\CajaCierreMetodoFactory;
@@ -21,6 +22,8 @@ class CajaCierreMetodo extends Model
 
     /** @use HasFactory<CajaCierreMetodoFactory> */
     use HasFactory;
+
+    use TieneUlid;
 
     public $timestamps = false;
 

@@ -17,6 +17,7 @@ return new class extends Migration
     {
         Schema::create('apartado_linea_reglas', function (Blueprint $table) {
             $table->id();
+            $table->char('ulid', 26)->unique();
             $table->foreignId('apartado_detalle_id')->constrained('apartado_detalles')->cascadeOnDelete();
             $table->unsignedBigInteger('regla_precio_id');
             $table->string('regla_nombre', 120);

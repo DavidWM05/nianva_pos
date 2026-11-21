@@ -10,6 +10,7 @@ return new class extends Migration
     {
         Schema::create('abonos_pagar', function (Blueprint $table) {
             $table->id();
+            $table->char('ulid', 26)->unique();
             $table->foreignId('cuenta_pagar_id')->constrained('cuentas_pagar')->cascadeOnDelete();
             $table->foreignId('caja_sesion_id')->nullable()->constrained('caja_sesiones')->nullOnDelete()
                 ->comment('Caja de donde salio');
