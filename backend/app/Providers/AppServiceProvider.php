@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\OpenApi\CabeceraIdempotencia;
 use App\OpenApi\ReglaDecimal;
 use Dedoc\Scramble\Scramble;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -39,7 +40,7 @@ class AppServiceProvider extends ServiceProvider
         Model::preventAccessingMissingAttributes(! app()->isProduction());
 
         // UI-11b: la regla `decimal:min,max` sale en el contrato como `multipleOf`.
-        Scramble::configure()->withRuleTransformers(ReglaDecimal::class);
+        Scramble::configure()->withRuleTransformers(ReglaDecimal::class)->withOperationTransformers(CabeceraIdempotencia::class);
     }
 
     /**

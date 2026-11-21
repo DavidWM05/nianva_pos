@@ -1,5 +1,5 @@
 import { RespuestaDe, CuerpoDe } from '@nianva/api-contrato';
-import { ConsultaPagina, urlApi } from '@nianva/core-http';
+import { ConsultaPagina, urlApi, opcionesIdempotencia } from '@nianva/core-http';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable, map } from 'rxjs';
@@ -72,30 +72,32 @@ export class GiftCardService {
       .pipe(map((r) => r.data));
   }
 
-  emitir(payload: GiftCardEmitirPayload): Observable<GiftCard> {
+  emitir(payload: GiftCardEmitirPayload, llaveIdempotencia?: string): Observable<GiftCard> {
     const cuerpo: CuerpoDe<'/gift-cards', 'post'> = payload;
 
     return this.http
-      .post<RespuestaDe<'/gift-cards', 'post'>>(urlApi(`/gift-cards`), cuerpo)
+      .post<RespuestaDe<'/gift-cards', 'post'>>(urlApi(`/gift-cards`), cuerpo, opcionesIdempotencia(llaveIdempotencia))
       .pipe(map((r) => r.data));
   }
 
-  recargar(id: string, monto: number, pagos: PagoRecarga[]): Observable<GiftCard> {
+  recargar(id: string, monto: number, pagos: PagoRecarga[], llaveIdempotencia?: string): Observable<GiftCard> {
     const cuerpo: CuerpoDe<'/gift-cards/{giftCard}/recargar', 'post'> = { monto, pagos };
 
     return this.http
       .post<RespuestaDe<'/gift-cards/{giftCard}/recargar', 'post'>>(
         urlApi(`/gift-cards/${id}/recargar`),
         cuerpo,
+        opcionesIdempotencia(llaveIdempotencia),
       )
       .pipe(map((r) => r.data));
   }
 
-  cancelar(id: string): Observable<void> {
+  cancelar(id: string, llaveIdempotencia?: string): Observable<void> {
     return this.http
       .post<RespuestaDe<'/gift-cards/{giftCard}/cancelar', 'post'>>(
         urlApi(`/gift-cards/${id}/cancelar`),
         {},
+        opcionesIdempotencia(llaveIdempotencia),
       )
       .pipe(map(() => undefined));
   }

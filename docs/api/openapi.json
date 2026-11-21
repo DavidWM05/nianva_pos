@@ -109,6 +109,16 @@
                 "tags": [
                     "Apartado"
                 ],
+                "parameters": [
+                    {
+                        "name": "Idempotency-Key",
+                        "in": "header",
+                        "description": "ULID opcional. Repetir la misma operaci\u00f3n conserva la respuesta durante 24 horas. Una carga diferente con la misma llave devuelve 409.",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -254,6 +264,14 @@
                         "schema": {
                             "type": "string"
                         }
+                    },
+                    {
+                        "name": "Idempotency-Key",
+                        "in": "header",
+                        "description": "ULID opcional. Repetir la misma operaci\u00f3n conserva la respuesta durante 24 horas. Una carga diferente con la misma llave devuelve 409.",
+                        "schema": {
+                            "type": "string"
+                        }
                     }
                 ],
                 "requestBody": {
@@ -312,6 +330,14 @@
                         "schema": {
                             "type": "string"
                         }
+                    },
+                    {
+                        "name": "Idempotency-Key",
+                        "in": "header",
+                        "description": "ULID opcional. Repetir la misma operaci\u00f3n conserva la respuesta durante 24 horas. Una carga diferente con la misma llave devuelve 409.",
+                        "schema": {
+                            "type": "string"
+                        }
                     }
                 ],
                 "responses": {
@@ -354,6 +380,14 @@
                         "in": "path",
                         "required": true,
                         "description": "The apartado ulid",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "Idempotency-Key",
+                        "in": "header",
+                        "description": "ULID opcional. Repetir la misma operaci\u00f3n conserva la respuesta durante 24 horas. Una carga diferente con la misma llave devuelve 409.",
                         "schema": {
                             "type": "string"
                         }
@@ -1333,6 +1367,16 @@
                 "tags": [
                     "Caja"
                 ],
+                "parameters": [
+                    {
+                        "name": "Idempotency-Key",
+                        "in": "header",
+                        "description": "ULID opcional. Repetir la misma operaci\u00f3n conserva la respuesta durante 24 horas. Una carga diferente con la misma llave devuelve 409.",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -1384,6 +1428,14 @@
                         "in": "path",
                         "required": true,
                         "description": "The caja sesion ulid",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "Idempotency-Key",
+                        "in": "header",
+                        "description": "ULID opcional. Repetir la misma operaci\u00f3n conserva la respuesta durante 24 horas. Una carga diferente con la misma llave devuelve 409.",
                         "schema": {
                             "type": "string"
                         }
@@ -2118,6 +2170,16 @@
                 "tags": [
                     "Compra"
                 ],
+                "parameters": [
+                    {
+                        "name": "Idempotency-Key",
+                        "in": "header",
+                        "description": "ULID opcional. Repetir la misma operaci\u00f3n conserva la respuesta durante 24 horas. Una carga diferente con la misma llave devuelve 409.",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -2657,6 +2719,14 @@
                         "in": "path",
                         "required": true,
                         "description": "The cotizacion ulid",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "Idempotency-Key",
+                        "in": "header",
+                        "description": "ULID opcional. Repetir la misma operaci\u00f3n conserva la respuesta durante 24 horas. Una carga diferente con la misma llave devuelve 409.",
                         "schema": {
                             "type": "string"
                         }
@@ -3504,6 +3574,14 @@
                         "schema": {
                             "type": "string"
                         }
+                    },
+                    {
+                        "name": "Idempotency-Key",
+                        "in": "header",
+                        "description": "ULID opcional. Repetir la misma operaci\u00f3n conserva la respuesta durante 24 horas. Una carga diferente con la misma llave devuelve 409.",
+                        "schema": {
+                            "type": "string"
+                        }
                     }
                 ],
                 "requestBody": {
@@ -3599,6 +3677,14 @@
                         "in": "path",
                         "required": true,
                         "description": "The cuenta cobrar ulid",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "Idempotency-Key",
+                        "in": "header",
+                        "description": "ULID opcional. Repetir la misma operaci\u00f3n conserva la respuesta durante 24 horas. Una carga diferente con la misma llave devuelve 409.",
                         "schema": {
                             "type": "string"
                         }
@@ -3876,6 +3962,14 @@
                         "schema": {
                             "type": "string"
                         }
+                    },
+                    {
+                        "name": "Idempotency-Key",
+                        "in": "header",
+                        "description": "ULID opcional. Repetir la misma operaci\u00f3n conserva la respuesta durante 24 horas. Una carga diferente con la misma llave devuelve 409.",
+                        "schema": {
+                            "type": "string"
+                        }
                     }
                 ],
                 "requestBody": {
@@ -3971,6 +4065,14 @@
                         "in": "path",
                         "required": true,
                         "description": "The cuenta pagar ulid",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "Idempotency-Key",
+                        "in": "header",
+                        "description": "ULID opcional. Repetir la misma operaci\u00f3n conserva la respuesta durante 24 horas. Una carga diferente con la misma llave devuelve 409.",
                         "schema": {
                             "type": "string"
                         }
@@ -4794,6 +4896,16 @@
                 "tags": [
                     "Devolucion"
                 ],
+                "parameters": [
+                    {
+                        "name": "Idempotency-Key",
+                        "in": "header",
+                        "description": "ULID opcional. Repetir la misma operaci\u00f3n conserva la respuesta durante 24 horas. Una carga diferente con la misma llave devuelve 409.",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -5090,6 +5202,16 @@
                 "tags": [
                     "Gasto"
                 ],
+                "parameters": [
+                    {
+                        "name": "Idempotency-Key",
+                        "in": "header",
+                        "description": "ULID opcional. Repetir la misma operaci\u00f3n conserva la respuesta durante 24 horas. Una carga diferente con la misma llave devuelve 409.",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -5193,6 +5315,16 @@
                 "operationId": "giftCard.store",
                 "tags": [
                     "GiftCard"
+                ],
+                "parameters": [
+                    {
+                        "name": "Idempotency-Key",
+                        "in": "header",
+                        "description": "ULID opcional. Repetir la misma operaci\u00f3n conserva la respuesta durante 24 horas. Una carga diferente con la misma llave devuelve 409.",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
                 ],
                 "requestBody": {
                     "required": true,
@@ -5304,6 +5436,14 @@
                         "schema": {
                             "type": "string"
                         }
+                    },
+                    {
+                        "name": "Idempotency-Key",
+                        "in": "header",
+                        "description": "ULID opcional. Repetir la misma operaci\u00f3n conserva la respuesta durante 24 horas. Una carga diferente con la misma llave devuelve 409.",
+                        "schema": {
+                            "type": "string"
+                        }
                     }
                 ],
                 "requestBody": {
@@ -5359,6 +5499,14 @@
                         "in": "path",
                         "required": true,
                         "description": "The gift card ulid",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "Idempotency-Key",
+                        "in": "header",
+                        "description": "ULID opcional. Repetir la misma operaci\u00f3n conserva la respuesta durante 24 horas. Una carga diferente con la misma llave devuelve 409.",
                         "schema": {
                             "type": "string"
                         }
@@ -7786,6 +7934,14 @@
                         "schema": {
                             "type": "string"
                         }
+                    },
+                    {
+                        "name": "Idempotency-Key",
+                        "in": "header",
+                        "description": "ULID opcional. Repetir la misma operaci\u00f3n conserva la respuesta durante 24 horas. Una carga diferente con la misma llave devuelve 409.",
+                        "schema": {
+                            "type": "string"
+                        }
                     }
                 ],
                 "requestBody": {
@@ -7851,6 +8007,14 @@
                         "in": "path",
                         "required": true,
                         "description": "The plan ulid",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "Idempotency-Key",
+                        "in": "header",
+                        "description": "ULID opcional. Repetir la misma operaci\u00f3n conserva la respuesta durante 24 horas. Una carga diferente con la misma llave devuelve 409.",
                         "schema": {
                             "type": "string"
                         }
@@ -8326,6 +8490,14 @@
                         "required": true,
                         "schema": {
                             "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "Idempotency-Key",
+                        "in": "header",
+                        "description": "ULID opcional. Repetir la misma operaci\u00f3n conserva la respuesta durante 24 horas. Una carga diferente con la misma llave devuelve 409.",
+                        "schema": {
+                            "type": "string"
                         }
                     }
                 ],
@@ -11443,6 +11615,16 @@
                 "tags": [
                     "Venta"
                 ],
+                "parameters": [
+                    {
+                        "name": "Idempotency-Key",
+                        "in": "header",
+                        "description": "ULID opcional. Repetir la misma operaci\u00f3n conserva la respuesta durante 24 horas. Una carga diferente con la misma llave devuelve 409.",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -11808,6 +11990,14 @@
                         "in": "path",
                         "required": true,
                         "description": "The venta ulid",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "Idempotency-Key",
+                        "in": "header",
+                        "description": "ULID opcional. Repetir la misma operaci\u00f3n conserva la respuesta durante 24 horas. Una carga diferente con la misma llave devuelve 409.",
                         "schema": {
                             "type": "string"
                         }

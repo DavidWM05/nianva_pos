@@ -1,5 +1,5 @@
 import { RespuestaDe, CuerpoDe } from '@nianva/api-contrato';
-import { ConsultaPagina, urlApi } from '@nianva/core-http';
+import { ConsultaPagina, urlApi, opcionesIdempotencia } from '@nianva/core-http';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable, map } from 'rxjs';
@@ -64,6 +64,7 @@ export class PlanPagoService {
     // DAT-08: ulid de la venta.
     ventaId: string,
     payload: PlanPagoCrearPayload,
+    llaveIdempotencia?: string,
   ): Observable<PlanPagoCreado> {
     const cuerpo: CuerpoDe<'/ventas/{venta}/plan-pago', 'post'> = payload;
 
@@ -71,6 +72,7 @@ export class PlanPagoService {
       .post<RespuestaDe<'/ventas/{venta}/plan-pago', 'post'>>(
         urlApi(`/ventas/${ventaId}/plan-pago`),
         cuerpo,
+        opcionesIdempotencia(llaveIdempotencia),
       )
       .pipe(map((r) => r.data));
   }
@@ -78,6 +80,7 @@ export class PlanPagoService {
   pagarCuota(
     planId: string,
     payload: PagarCuotaPayload,
+    llaveIdempotencia?: string,
   ): Observable<PlanPagoCuota> {
     const cuerpo: CuerpoDe<'/planes-pago-cliente/{plan}/pagar-cuota', 'post'> =
       payload;
@@ -86,6 +89,7 @@ export class PlanPagoService {
       .post<RespuestaDe<'/planes-pago-cliente/{plan}/pagar-cuota', 'post'>>(
         urlApi(`/planes-pago-cliente/${planId}/pagar-cuota`),
         cuerpo,
+        opcionesIdempotencia(llaveIdempotencia),
       )
       .pipe(map((r) => r.data));
   }

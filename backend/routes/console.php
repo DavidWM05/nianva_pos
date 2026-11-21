@@ -2,6 +2,7 @@
 
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schedule;
 
 Artisan::command('inspire', function () {
@@ -15,3 +16,8 @@ Artisan::command('inspire', function () {
 // background, con el periodo de gracia de LicenciaClienteService como red
 // de seguridad si el servidor no responde.
 Schedule::command('licencia:revalidar')->cron(config('licencias.revalidacion_cron', '0 3 * * *'));
+
+Schedule::call(static fn (): int => DB::table('solicitudes_idempotentes')->where('vence_en', '<=', now())->delete())
+    ->name('idempotencia:depurar')
+    ->hourly()
+    ->withoutOverlapping();

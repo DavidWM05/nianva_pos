@@ -1,5 +1,5 @@
 import { CuerpoDe, RespuestaDe } from '@nianva/api-contrato';
-import { CODIGOS_EN_PANTALLA, ConsultaPagina, urlApi } from '@nianva/core-http';
+import { CODIGOS_EN_PANTALLA, ConsultaPagina, urlApi, opcionesIdempotencia } from '@nianva/core-http';
 import { HttpClient, HttpContext, HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable, map } from 'rxjs';
@@ -97,10 +97,10 @@ export class CotizacionService {
    * monto_recibido/cambio (el docblock del metodo los menciona pero el
    * codigo nunca los lee). No inventar ese campo aqui.
    */
-  convertir(id: string, metodoPagoId: number): Observable<{ ventaId: string }> {
+  convertir(id: string, metodoPagoId: number, llaveIdempotencia?: string): Observable<{ ventaId: string }> {
     const cuerpo: CuerpoDe<'/cotizaciones/{cotizacion}/convertir', 'post'> = { metodo_pago_id: metodoPagoId };
     return this.http
-      .post<RespuestaDe<'/cotizaciones/{cotizacion}/convertir', 'post'>>(urlApi(`/cotizaciones/${id}/convertir`), cuerpo)
+      .post<RespuestaDe<'/cotizaciones/{cotizacion}/convertir', 'post'>>(urlApi(`/cotizaciones/${id}/convertir`), cuerpo, opcionesIdempotencia(llaveIdempotencia))
       .pipe(map((r) => ({ ventaId: r.venta_id })));
   }
 }

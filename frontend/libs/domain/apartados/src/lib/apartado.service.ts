@@ -1,5 +1,5 @@
 import { CuerpoDe, RespuestaDe } from '@nianva/api-contrato';
-import { ConsultaPagina, urlApi } from '@nianva/core-http';
+import { ConsultaPagina, urlApi, opcionesIdempotencia } from '@nianva/core-http';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable, map } from 'rxjs';
@@ -44,28 +44,29 @@ export class ApartadoService {
       .pipe(map((r) => ({ apartado: r.data, permisos: r.meta.permisos })));
   }
 
-  crear(payload: ApartadoFormPayload): Observable<Apartado> {
+  crear(payload: ApartadoFormPayload, llaveIdempotencia?: string): Observable<Apartado> {
     const cuerpo: CuerpoDe<'/apartados', 'post'> = payload;
-    return this.http.post<RespuestaDe<'/apartados', 'post'>>(urlApi(`/apartados`), cuerpo).pipe(map((r) => r.data));
+    return this.http.post<RespuestaDe<'/apartados', 'post'>>(urlApi(`/apartados`), cuerpo, opcionesIdempotencia(llaveIdempotencia)).pipe(map((r) => r.data));
   }
 
-  registrarAbono(id: string, payload: AbonoFormPayload): Observable<Apartado> {
+  registrarAbono(id: string, payload: AbonoFormPayload, llaveIdempotencia?: string): Observable<Apartado> {
     const cuerpo: CuerpoDe<'/apartados/{apartado}/abonos', 'post'> = payload;
     return this.http
-      .post<RespuestaDe<'/apartados/{apartado}/abonos', 'post'>>(urlApi(`/apartados/${id}/abonos`), cuerpo)
+      .post<RespuestaDe<'/apartados/{apartado}/abonos', 'post'>>(urlApi(`/apartados/${id}/abonos`), cuerpo, opcionesIdempotencia(llaveIdempotencia))
       .pipe(map((r) => r.data));
   }
 
-  liquidar(id: string): Observable<Apartado> {
-    return this.http.patch<RespuestaDe<'/apartados/{apartado}/liquidar', 'patch'>>(urlApi(`/apartados/${id}/liquidar`), {}).pipe(map((r) => r.data));
+  liquidar(id: string, llaveIdempotencia?: string): Observable<Apartado> {
+    return this.http.patch<RespuestaDe<'/apartados/{apartado}/liquidar', 'patch'>>(urlApi(`/apartados/${id}/liquidar`), {}, opcionesIdempotencia(llaveIdempotencia)).pipe(map((r) => r.data));
   }
 
-  cancelar(id: string, motivo: string): Observable<ResultadoCancelacion> {
+  cancelar(id: string, motivo: string, llaveIdempotencia?: string): Observable<ResultadoCancelacion> {
     const cuerpo: CuerpoDe<'/apartados/{apartado}/cancelar', 'patch'> = { motivo };
     return this.http
       .patch<RespuestaDe<'/apartados/{apartado}/cancelar', 'patch'>>(
         urlApi(`/apartados/${id}/cancelar`),
         cuerpo,
+        opcionesIdempotencia(llaveIdempotencia),
       )
       .pipe(
         map((r) => ({

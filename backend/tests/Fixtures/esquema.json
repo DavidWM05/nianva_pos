@@ -9311,6 +9311,83 @@
         ],
         "llaves_foraneas": []
     },
+    "solicitudes_idempotentes": {
+        "columnas": [
+            {
+                "nombre": "cabeceras",
+                "tipo": "text",
+                "nullable": true,
+                "default": null
+            },
+            {
+                "nombre": "cuerpo",
+                "tipo": "text",
+                "nullable": true,
+                "default": null
+            },
+            {
+                "nombre": "estado_http",
+                "tipo": "integer",
+                "nullable": true,
+                "default": null
+            },
+            {
+                "nombre": "huella",
+                "tipo": "varchar",
+                "nullable": false,
+                "default": null
+            },
+            {
+                "nombre": "llave",
+                "tipo": "varchar",
+                "nullable": false,
+                "default": null
+            },
+            {
+                "nombre": "tenant_id",
+                "tipo": "integer",
+                "nullable": false,
+                "default": null
+            },
+            {
+                "nombre": "vence_en",
+                "tipo": "datetime",
+                "nullable": false,
+                "default": null
+            }
+        ],
+        "indices": [
+            {
+                "nombre": "solicitudes_idempotentes_vence_en_index",
+                "columnas": [
+                    "vence_en"
+                ],
+                "unico": false
+            },
+            {
+                "nombre": "sqlite_autoindex_solicitudes_idempotentes_1",
+                "columnas": [
+                    "tenant_id",
+                    "llave"
+                ],
+                "unico": true
+            }
+        ],
+        "llaves_foraneas": [
+            {
+                "nombre": null,
+                "columnas": [
+                    "tenant_id"
+                ],
+                "tabla_foranea": "tenants",
+                "columnas_foraneas": [
+                    "id"
+                ],
+                "on_update": "no action",
+                "on_delete": "cascade"
+            }
+        ]
+    },
     "sucursales": {
         "columnas": [
             {

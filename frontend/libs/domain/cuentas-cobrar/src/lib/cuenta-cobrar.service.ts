@@ -1,5 +1,5 @@
 import { RespuestaDe, CuerpoDe } from '@nianva/api-contrato';
-import { ConsultaPagina, urlApi } from '@nianva/core-http';
+import { ConsultaPagina, urlApi, opcionesIdempotencia } from '@nianva/core-http';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable, map } from 'rxjs';
@@ -79,6 +79,7 @@ export class CuentaCobrarService {
   registrarAbono(
     id: string,
     payload: RegistrarAbonoPayload,
+    llaveIdempotencia?: string,
   ): Observable<RegistrarAbonoRespuesta> {
     const cuerpo: CuerpoDe<'/cuentas-cobrar/{cuentaCobrar}/abonos', 'post'> = payload;
 
@@ -86,6 +87,7 @@ export class CuentaCobrarService {
       .post<RespuestaDe<'/cuentas-cobrar/{cuentaCobrar}/abonos', 'post'>>(
         urlApi(`/cuentas-cobrar/${id}/abonos`),
         cuerpo,
+        opcionesIdempotencia(llaveIdempotencia),
       )
       .pipe(
         map((r) => {
@@ -98,11 +100,12 @@ export class CuentaCobrarService {
       );
   }
 
-  anular(id: string): Observable<void> {
+  anular(id: string, llaveIdempotencia?: string): Observable<void> {
     return this.http
       .post<RespuestaDe<'/cuentas-cobrar/{cuentaCobrar}/anular', 'post'>>(
         urlApi(`/cuentas-cobrar/${id}/anular`),
         {},
+        opcionesIdempotencia(llaveIdempotencia),
       )
       .pipe(map(() => undefined));
   }

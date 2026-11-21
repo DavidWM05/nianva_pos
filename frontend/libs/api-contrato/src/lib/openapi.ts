@@ -4122,7 +4122,10 @@ export interface operations {
     "apartado.store": {
         parameters: {
             query?: never;
-            header?: never;
+            header?: {
+                /** @description ULID opcional. Repetir la misma operación conserva la respuesta durante 24 horas. Una carga diferente con la misma llave devuelve 409. */
+                "Idempotency-Key"?: string;
+            };
             path?: never;
             cookie?: never;
         };
@@ -4182,7 +4185,10 @@ export interface operations {
     "apartado.registrarAbono": {
         parameters: {
             query?: never;
-            header?: never;
+            header?: {
+                /** @description ULID opcional. Repetir la misma operación conserva la respuesta durante 24 horas. Una carga diferente con la misma llave devuelve 409. */
+                "Idempotency-Key"?: string;
+            };
             path: {
                 /** @description The apartado ulid */
                 apartado: string;
@@ -4214,7 +4220,10 @@ export interface operations {
     "apartado.liquidar": {
         parameters: {
             query?: never;
-            header?: never;
+            header?: {
+                /** @description ULID opcional. Repetir la misma operación conserva la respuesta durante 24 horas. Una carga diferente con la misma llave devuelve 409. */
+                "Idempotency-Key"?: string;
+            };
             path: {
                 /** @description The apartado ulid */
                 apartado: string;
@@ -4241,7 +4250,10 @@ export interface operations {
     "apartado.cancelar": {
         parameters: {
             query?: never;
-            header?: never;
+            header?: {
+                /** @description ULID opcional. Repetir la misma operación conserva la respuesta durante 24 horas. Una carga diferente con la misma llave devuelve 409. */
+                "Idempotency-Key"?: string;
+            };
             path: {
                 /** @description The apartado ulid */
                 apartado: string;
@@ -4653,7 +4665,10 @@ export interface operations {
     "caja.abrir": {
         parameters: {
             query?: never;
-            header?: never;
+            header?: {
+                /** @description ULID opcional. Repetir la misma operación conserva la respuesta durante 24 horas. Una carga diferente con la misma llave devuelve 409. */
+                "Idempotency-Key"?: string;
+            };
             path?: never;
             cookie?: never;
         };
@@ -4681,7 +4696,10 @@ export interface operations {
     "caja.cerrar": {
         parameters: {
             query?: never;
-            header?: never;
+            header?: {
+                /** @description ULID opcional. Repetir la misma operación conserva la respuesta durante 24 horas. Una carga diferente con la misma llave devuelve 409. */
+                "Idempotency-Key"?: string;
+            };
             path: {
                 /** @description The caja sesion ulid */
                 cajaSesion: string;
@@ -5057,7 +5075,10 @@ export interface operations {
     "compra.store": {
         parameters: {
             query?: never;
-            header?: never;
+            header?: {
+                /** @description ULID opcional. Repetir la misma operación conserva la respuesta durante 24 horas. Una carga diferente con la misma llave devuelve 409. */
+                "Idempotency-Key"?: string;
+            };
             path?: never;
             cookie?: never;
         };
@@ -5360,7 +5381,10 @@ export interface operations {
     "cotizacion.convertir": {
         parameters: {
             query?: never;
-            header?: never;
+            header?: {
+                /** @description ULID opcional. Repetir la misma operación conserva la respuesta durante 24 horas. Una carga diferente con la misma llave devuelve 409. */
+                "Idempotency-Key"?: string;
+            };
             path: {
                 /** @description The cotizacion ulid */
                 cotizacion: string;
@@ -5716,7 +5740,10 @@ export interface operations {
     "cuentaCobrar.registrarAbono": {
         parameters: {
             query?: never;
-            header?: never;
+            header?: {
+                /** @description ULID opcional. Repetir la misma operación conserva la respuesta durante 24 horas. Una carga diferente con la misma llave devuelve 409. */
+                "Idempotency-Key"?: string;
+            };
             path: {
                 /** @description The cuenta cobrar ulid */
                 cuentaCobrar: string;
@@ -5758,7 +5785,10 @@ export interface operations {
     "cuentaCobrar.anular": {
         parameters: {
             query?: never;
-            header?: never;
+            header?: {
+                /** @description ULID opcional. Repetir la misma operación conserva la respuesta durante 24 horas. Una carga diferente con la misma llave devuelve 409. */
+                "Idempotency-Key"?: string;
+            };
             path: {
                 /** @description The cuenta cobrar ulid */
                 cuentaCobrar: string;
@@ -5880,7 +5910,10 @@ export interface operations {
     "cuentaPagar.registrarPago": {
         parameters: {
             query?: never;
-            header?: never;
+            header?: {
+                /** @description ULID opcional. Repetir la misma operación conserva la respuesta durante 24 horas. Una carga diferente con la misma llave devuelve 409. */
+                "Idempotency-Key"?: string;
+            };
             path: {
                 /** @description The cuenta pagar ulid */
                 cuentaPagar: string;
@@ -5922,7 +5955,10 @@ export interface operations {
     "cuentaPagar.anular": {
         parameters: {
             query?: never;
-            header?: never;
+            header?: {
+                /** @description ULID opcional. Repetir la misma operación conserva la respuesta durante 24 horas. Una carga diferente con la misma llave devuelve 409. */
+                "Idempotency-Key"?: string;
+            };
             path: {
                 /** @description The cuenta pagar ulid */
                 cuentaPagar: string;
@@ -6325,7 +6361,10 @@ export interface operations {
     "devolucion.store": {
         parameters: {
             query?: never;
-            header?: never;
+            header?: {
+                /** @description ULID opcional. Repetir la misma operación conserva la respuesta durante 24 horas. Una carga diferente con la misma llave devuelve 409. */
+                "Idempotency-Key"?: string;
+            };
             path?: never;
             cookie?: never;
         };
@@ -6482,7 +6521,10 @@ export interface operations {
     "gasto.store": {
         parameters: {
             query?: never;
-            header?: never;
+            header?: {
+                /** @description ULID opcional. Repetir la misma operación conserva la respuesta durante 24 horas. Una carga diferente con la misma llave devuelve 409. */
+                "Idempotency-Key"?: string;
+            };
             path?: never;
             cookie?: never;
         };
@@ -6540,7 +6582,10 @@ export interface operations {
     "giftCard.store": {
         parameters: {
             query?: never;
-            header?: never;
+            header?: {
+                /** @description ULID opcional. Repetir la misma operación conserva la respuesta durante 24 horas. Una carga diferente con la misma llave devuelve 409. */
+                "Idempotency-Key"?: string;
+            };
             path?: never;
             cookie?: never;
         };
@@ -6595,7 +6640,10 @@ export interface operations {
     "giftCard.recargar": {
         parameters: {
             query?: never;
-            header?: never;
+            header?: {
+                /** @description ULID opcional. Repetir la misma operación conserva la respuesta durante 24 horas. Una carga diferente con la misma llave devuelve 409. */
+                "Idempotency-Key"?: string;
+            };
             path: {
                 /** @description The gift card ulid */
                 giftCard: string;
@@ -6627,7 +6675,10 @@ export interface operations {
     "giftCard.cancelar": {
         parameters: {
             query?: never;
-            header?: never;
+            header?: {
+                /** @description ULID opcional. Repetir la misma operación conserva la respuesta durante 24 horas. Una carga diferente con la misma llave devuelve 409. */
+                "Idempotency-Key"?: string;
+            };
             path: {
                 /** @description The gift card ulid */
                 giftCard: string;
@@ -7841,7 +7892,10 @@ export interface operations {
     "planPago.crearPlan": {
         parameters: {
             query?: never;
-            header?: never;
+            header?: {
+                /** @description ULID opcional. Repetir la misma operación conserva la respuesta durante 24 horas. Una carga diferente con la misma llave devuelve 409. */
+                "Idempotency-Key"?: string;
+            };
             path: {
                 /** @description The venta ulid */
                 venta: string;
@@ -7873,7 +7927,10 @@ export interface operations {
     "planPago.pagarCuota": {
         parameters: {
             query?: never;
-            header?: never;
+            header?: {
+                /** @description ULID opcional. Repetir la misma operación conserva la respuesta durante 24 horas. Una carga diferente con la misma llave devuelve 409. */
+                "Idempotency-Key"?: string;
+            };
             path: {
                 /** @description The plan ulid */
                 plan: string;
@@ -8119,7 +8176,10 @@ export interface operations {
     "prestamo.registrarPago": {
         parameters: {
             query?: never;
-            header?: never;
+            header?: {
+                /** @description ULID opcional. Repetir la misma operación conserva la respuesta durante 24 horas. Una carga diferente con la misma llave devuelve 409. */
+                "Idempotency-Key"?: string;
+            };
             path: {
                 id: number;
             };
@@ -9680,7 +9740,10 @@ export interface operations {
     "venta.store": {
         parameters: {
             query?: never;
-            header?: never;
+            header?: {
+                /** @description ULID opcional. Repetir la misma operación conserva la respuesta durante 24 horas. Una carga diferente con la misma llave devuelve 409. */
+                "Idempotency-Key"?: string;
+            };
             path?: never;
             cookie?: never;
         };
@@ -9828,7 +9891,10 @@ export interface operations {
     "venta.anular": {
         parameters: {
             query?: never;
-            header?: never;
+            header?: {
+                /** @description ULID opcional. Repetir la misma operación conserva la respuesta durante 24 horas. Una carga diferente con la misma llave devuelve 409. */
+                "Idempotency-Key"?: string;
+            };
             path: {
                 /** @description The venta ulid */
                 venta: string;
