@@ -19,7 +19,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-#[Fillable([
+#[Fillable(['folio',
     'tenant_id', 'sucursal_id', 'venta_id', 'caja_sesion_id', 'venta_sombra_id', 'usuario_id',
     'tipo', 'monto_devolucion', 'monto_cambio', 'diferencia', 'motivo',
     'tipo_reembolso', 'nota_credito_id',

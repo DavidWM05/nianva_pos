@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Aplicacion\Cotizaciones;
 
+use App\Aplicacion\Folios\Folios;
 use App\Aplicacion\Inventario\RegistrarMovimiento;
 use App\Modules\Cotizaciones\Dtos\ConvertirCotizacionDto;
 use App\Modules\Cotizaciones\Models\Cotizacion;
@@ -34,7 +35,7 @@ final class ConvertirCotizacion
                 }
             }
 
-            return $this->service->convertirConBloqueos($cotizacion, ['usuario_id' => $usuario->id, 'metodo_pago_id' => $dto->metodoPagoId], $caja, $stocks);
+            return $this->service->convertirConBloqueos($cotizacion, ['usuario_id' => $usuario->id, 'metodo_pago_id' => $dto->metodoPagoId], $caja, $stocks, Folios::asignar((int) $cotizacion->getAttribute('tenant_id'), (int) $cotizacion->getAttribute('sucursal_id'), 'V'));
         };
 
         return DB::transactionLevel() > 0 ? $operacion() : DB::transaction($operacion);

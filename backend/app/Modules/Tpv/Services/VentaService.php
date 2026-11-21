@@ -66,7 +66,7 @@ class VentaService
      * @throws StockInsuficienteException si alguna linea no tiene stock suficiente.
      * @throws PagoNoCuadraException si la suma de pagos no coincide con el monto a cobrar.
      */
-    public function registrarVentaConBloqueos(array $datosVenta, array $items, array $pagos, ?CajaSesion $cajaSesion, array $stocks, ?array $fotosCopiadas = null): Venta
+    public function registrarVentaConBloqueos(array $datosVenta, array $items, array $pagos, ?CajaSesion $cajaSesion, array $stocks, ?array $fotosCopiadas = null, ?string $folio = null): Venta
     {
         $this->exigirTransaccion();
         if ($items === []) {
@@ -112,6 +112,7 @@ class VentaService
         $this->verificarPagos($pagos, $montoACobrar);
 
         $venta = Venta::query()->create([
+            'folio' => $folio,
             'lista_precio_id' => $datosVenta['lista_precio_id'] ?? null,
             'tenant_id' => $tenantId,
             'sucursal_id' => $sucursalId,

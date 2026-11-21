@@ -7,6 +7,7 @@ export interface OrdenProduccionReceta {
 
 /** OrdenProduccionResource (ajuste 9) -- ordenesIndex()/ordenesStore()/ordenesCambiarEstado() ya envuelven en Resource. */
 export interface OrdenProduccion {
+  folio?: string | null;
   /** DAT-08: ulid de la orden. */
   id: string;
   /** D-3, transitorio: número visible (= id interno); lo reemplaza el folio de DAT-07. */

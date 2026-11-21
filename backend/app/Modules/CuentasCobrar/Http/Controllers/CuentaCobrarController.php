@@ -24,7 +24,7 @@ class CuentaCobrarController extends Controller
 
     public function index(Request $request)
     {
-        $query = CuentaCobrar::query()->with(['cliente:id,ulid,nombre']);
+        $query = CuentaCobrar::query()->with(['cliente:id,ulid,nombre', 'venta:id,ulid,folio']);
 
         if ($estado = $request->query('filtro_estado')) {
             $query->where('estado', $estado);

@@ -63,6 +63,8 @@ class DevolucionService
         string $tipoReembolso = 'efectivo',
         ?CajaSesion $caja = null,
         array $stocks = [],
+        ?string $folio = null,
+        ?string $folioVentaSombra = null,
     ): Devolucion {
         $this->exigirTransaccion();
         if (! in_array($tipo, ['devolucion', 'cambio'], true)) {
@@ -120,6 +122,7 @@ class DevolucionService
                 pagos: [],
                 cajaSesion: $caja,
                 stocks: $stocks,
+                folio: $folioVentaSombra,
             );
 
             // El total real (con redondeos ya aplicados linea a linea)
@@ -137,6 +140,7 @@ class DevolucionService
         }
 
         $devolucion = Devolucion::query()->create([
+            'folio' => $folio,
             'tenant_id' => $tenantId,
             'sucursal_id' => $sucursalId,
             'venta_id' => $ventaOrigen->id,

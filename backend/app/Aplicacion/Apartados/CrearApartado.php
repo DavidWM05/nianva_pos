@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Aplicacion\Apartados;
 
+use App\Aplicacion\Folios\Folios;
 use App\Aplicacion\Inventario\RegistrarMovimiento;
 use App\Modules\Apartados\Dtos\CrearApartadoDto;
 use App\Modules\Apartados\Dtos\LineaApartadoDto;
@@ -34,7 +35,7 @@ final class CrearApartado
                 'tenant_id' => (int) $usuario->getAttribute('tenant_id'), 'sucursal_id' => $sucursalId,
                 'usuario_id' => $usuario->id, 'cliente_id' => $dto->clienteId, 'lista_precio_id' => $dto->listaPrecioId,
                 'fecha_vencimiento' => $dto->fechaVencimiento, 'notas' => $dto->notas,
-            ], $items, $stocks);
+            ], $items, $stocks, Folios::asignar((int) $usuario->getAttribute('tenant_id'), $sucursalId, 'A'));
         };
 
         return DB::transactionLevel() > 0 ? $operacion() : DB::transaction($operacion);

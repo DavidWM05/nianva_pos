@@ -26,7 +26,7 @@ class DevolucionController extends Controller
 
     public function index(Request $request)
     {
-        $query = Devolucion::query()->with(['venta:id,ulid,cliente_id', 'venta.cliente:id,nombre', 'ventaSombra:id,ulid']);
+        $query = Devolucion::query()->with(['venta:id,ulid,cliente_id,folio', 'venta.cliente:id,nombre', 'ventaSombra:id,ulid,folio']);
 
         // DAT-08: el filtro recibe el ulid de la venta, el mismo id que publica VentaResource.
         $ventaUlid = $request->query('filtro_venta_id');

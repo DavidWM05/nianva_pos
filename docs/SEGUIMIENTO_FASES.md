@@ -134,7 +134,7 @@ Conflicto que se resuelve aquí: C6. En las Fases 3 a 5, los Services pasan a re
 
 | Regla | Qué pide | Estado | Dónde se verifica | Encargo |
 |---|---|---|---|---|
-| DAT-07 | Folios por serie | Pendiente | — | — |
+| DAT-07 | Folios por serie | En curso | A1 asigna folios por sucursal y tipo, incluida la serie OP aprobada para producción. A5 retira el número transitorio. | A1, A5 |
 | API-07 | Idempotencia en dinero | Pendiente | — | — |
 | SEG-05 | Autorización de supervisor | Pendiente | — | — |
 | SEG-12 | PIN de caja y terminal | Pendiente | Incluye `terminal` en `GET /sesion`, movido desde API-09 de la Fase 2 | — |

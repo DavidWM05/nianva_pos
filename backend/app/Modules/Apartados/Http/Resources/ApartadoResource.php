@@ -31,6 +31,8 @@ class ApartadoResource extends JsonResource
             // D-3, transitorio: número visible del apartado (= id interno), solo para mostrarlo; lo
             // reemplaza el folio de DAT-07.
             'numero' => (int) $this->getKey(),
+            /** @var string|null */
+            'folio' => $this->resource->getAttribute('folio'),
             'fecha_creacion' => $this->fecha_creacion,
             'cliente' => $this->whenLoaded(
                 'cliente',

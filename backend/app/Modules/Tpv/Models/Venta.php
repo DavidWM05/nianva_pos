@@ -24,7 +24,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property int|null $caja_sesion_id Null solo en una venta sombra de un cambio sin movimiento monetario y sin caja abierta.
  * @property-read CajaSesion|null $cajaSesion
  */
-#[Fillable([
+#[Fillable(['folio',
     'lista_precio_id',
     'tenant_id', 'sucursal_id', 'caja_sesion_id', 'usuario_id', 'cliente_id', 'cupon_id',
     'total', 'descuento_cupon', 'descuento_manual', 'abono_previo', 'es_venta_sombra',

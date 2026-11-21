@@ -63,12 +63,13 @@ class ProduccionService
      * @param  array<string, mixed>  $data
      * @param  array<int, list<InsumoStock>>  $lotes
      */
-    public function crearOrdenConReceta(array $data, Receta $receta, array $lotes): OrdenProduccion
+    public function crearOrdenConReceta(array $data, Receta $receta, array $lotes, ?string $folio = null): OrdenProduccion
     {
         $this->exigirTransaccion();
         $this->verificarInsumos($this->necesidades($receta, (float) $data['cantidad_programada']), $lotes);
 
         return OrdenProduccion::query()->create([
+            'folio' => $folio,
             'tenant_id' => $data['tenant_id'], 'sucursal_id' => $data['sucursal_id'], 'receta_id' => $receta->getKey(),
             'usuario_id' => $data['usuario_id'], 'cantidad_programada' => $data['cantidad_programada'],
             'estado' => 'pendiente', 'notas' => $data['notas'] ?? null, 'fecha_programada' => $data['fecha_programada'] ?? null,

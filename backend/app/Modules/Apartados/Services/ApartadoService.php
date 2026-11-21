@@ -77,7 +77,7 @@ class ApartadoService
      * @param  list<array{variante_id:int, cantidad:int|float}>  $items
      * @param  array<int, InventarioStock>  $stocks
      */
-    public function crearApartadoConStocks(array $datosApartado, array $items, array $stocks): Apartado
+    public function crearApartadoConStocks(array $datosApartado, array $items, array $stocks, ?string $folio = null): Apartado
     {
         $this->exigirTransaccion();
         if ($items === []) {
@@ -92,6 +92,7 @@ class ApartadoService
         [$lineas, $total] = $this->resolverLineas($tenantId, $items, new ContextoPrecio($tenantId, $sucursalId, $datosApartado['cliente_id'], CarbonImmutable::now(), $datosApartado['lista_precio_id'] ?? null));
 
         $apartado = Apartado::query()->create([
+            'folio' => $folio,
             'lista_precio_id' => $datosApartado['lista_precio_id'] ?? null,
             'tenant_id' => $tenantId,
             'sucursal_id' => $sucursalId,
@@ -211,7 +212,7 @@ class ApartadoService
      *
      * @throws ApartadoSaldoInsuficienteException si total_abonado < total.
      */
-    public function liquidarConBloqueos(Apartado $apartado, int $usuarioId, ?CajaSesion $caja, array $stocks): Apartado
+    public function liquidarConBloqueos(Apartado $apartado, int $usuarioId, ?CajaSesion $caja, array $stocks, ?string $folioVenta = null): Apartado
     {
         $this->exigirTransaccion();
         if ($apartado->estado !== 'activo') {
@@ -278,6 +279,7 @@ class ApartadoService
             pagos: [],
             cajaSesion: $caja,
             stocks: $stocks,
+            folio: $folioVenta,
             fotosCopiadas: $fotos,
         );
 

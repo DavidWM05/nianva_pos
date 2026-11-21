@@ -225,7 +225,7 @@ class CotizacionService
      * @throws SinClienteException
      * @throws StockInsuficienteException
      */
-    public function convertirConBloqueos(Cotizacion $cotizacion, array $dataVenta, ?CajaSesion $caja, array $stocks): Venta
+    public function convertirConBloqueos(Cotizacion $cotizacion, array $dataVenta, ?CajaSesion $caja, array $stocks, ?string $folioVenta = null): Venta
     {
         $this->exigirTransaccion();
 
@@ -275,6 +275,7 @@ class CotizacionService
             $pagos,
             $caja,
             $stocks,
+            folio: $folioVenta,
         );
 
         $cotizacion->update([

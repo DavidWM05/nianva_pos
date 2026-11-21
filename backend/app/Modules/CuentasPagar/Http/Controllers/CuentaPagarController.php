@@ -18,7 +18,7 @@ class CuentaPagarController extends Controller
 
     public function index(Request $request)
     {
-        $query = CuentaPagar::query()->with(['proveedor:id,razon_social']);
+        $query = CuentaPagar::query()->with(['proveedor:id,razon_social', 'compra:id,ulid,folio']);
 
         if ($estado = $request->query('filtro_estado')) {
             $query->where('estado', $estado);

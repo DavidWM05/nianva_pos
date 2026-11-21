@@ -31,7 +31,7 @@ class CompraController extends Controller
 
         // DAT-08: ulid como id público; `numero` es el transitorio de D-3 (DAT-07).
         $compra = $registrarCompra->ejecutar($request->toDto(), $usuario);
-        $datos = ['id' => (string) $compra->getAttribute('ulid'), 'numero' => (int) $compra->getKey(), 'total' => DecimalApi::dinero($compra->total)];
+        $datos = ['id' => (string) $compra->getAttribute('ulid'), 'numero' => (int) $compra->getKey(), 'folio' => (string) $compra->getAttribute('folio'), 'total' => DecimalApi::dinero($compra->total)];
 
         return response()->json(['data' => $datos], 201);
     }

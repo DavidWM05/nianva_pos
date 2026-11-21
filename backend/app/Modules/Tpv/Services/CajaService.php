@@ -72,7 +72,7 @@ class CajaService
      * el encabezado suma los conteos y teóricos, nunca compara solo efectivo con tarjetas.
      */
     /** @param list<array{metodo_pago_id:int,monto:int|float|string}> $conteos */
-    public function cerrarCajaConSesion(CajaSesion $cajaSesion, array $conteos): CajaSesion
+    public function cerrarCajaConSesion(CajaSesion $cajaSesion, array $conteos, ?string $folio = null): CajaSesion
     {
         $this->exigirTransaccion();
         if ($cajaSesion->getAttribute('estado') === 'cerrada') {
@@ -105,7 +105,7 @@ class CajaService
             $teoricoTotal = $teoricoTotal->sumar($teorico);
             $contadoTotal = $contadoTotal->sumar($contado);
         }
-        $cajaSesion->update(['monto_cierre' => $contadoTotal->aCadena(), 'total_teorico' => $teoricoTotal->aCadena(), 'total_ventas_sistema' => $this->totalVentasSistema($cajaSesion), 'diferencia' => $contadoTotal->restar($teoricoTotal)->aCadena(), 'fecha_cierre' => now(), 'estado' => 'cerrada']);
+        $cajaSesion->update(['folio' => $folio, 'monto_cierre' => $contadoTotal->aCadena(), 'total_teorico' => $teoricoTotal->aCadena(), 'total_ventas_sistema' => $this->totalVentasSistema($cajaSesion), 'diferencia' => $contadoTotal->restar($teoricoTotal)->aCadena(), 'fecha_cierre' => now(), 'estado' => 'cerrada']);
 
         return $cajaSesion->refresh()->load('cierreMetodos.metodoPago');
     }
