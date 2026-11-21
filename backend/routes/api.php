@@ -27,6 +27,7 @@ use App\Modules\Inventario\Http\Controllers\ProductoController;
 use App\Modules\Inventario\Http\Controllers\ProductoVarianteController;
 use App\Modules\Inventario\Http\Controllers\ProveedorController;
 use App\Modules\NotasCredito\Http\Controllers\NotaCreditoController;
+use App\Modules\Nucleo\Http\Controllers\AutorizacionSupervisorController;
 use App\Modules\Nucleo\Http\Controllers\ConfiguracionSeguridadController;
 use App\Modules\Nucleo\Http\Controllers\DispositivosConfiablesController;
 use App\Modules\Nucleo\Http\Controllers\InicioController;
@@ -85,6 +86,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/sesion/bloquear', [PinSesionController::class, 'bloquear']);
         Route::post('/sesion/desbloquear', [PinSesionController::class, 'desbloquear'])->name('sesion.desbloquear');
         Route::put('/sesion/terminal', [SesionController::class, 'elegirTerminal']);
+        Route::post('/autorizaciones', [AutorizacionSupervisorController::class, 'store'])->middleware('permiso:caja.ver');
 
         Route::middleware('permiso:terminales.administrar')->group(function () {
             Route::get('/terminales', [TerminalController::class, 'index']);

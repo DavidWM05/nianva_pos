@@ -19,3 +19,11 @@ export function generarLlaveIdempotencia(): string {
 export function opcionesIdempotencia(llave?: string): { headers: Record<string, string> } | undefined {
   return llave === undefined ? undefined : { headers: { 'Idempotency-Key': llave } };
 }
+
+export function opcionesOperacionSupervisada(llave?: string, token?: string): { headers: Record<string, string> } | undefined {
+  if (token === undefined) {
+    return opcionesIdempotencia(llave);
+  }
+
+  return { headers: { ...opcionesIdempotencia(llave)?.headers, 'X-Autorizacion-Supervisor': token } };
+}

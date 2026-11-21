@@ -1,5 +1,5 @@
 import { CuerpoDe, RespuestaDe } from '@nianva/api-contrato';
-import { ConsultaPagina, urlApi, opcionesIdempotencia } from '@nianva/core-http';
+import { ConsultaPagina, urlApi, opcionesIdempotencia, opcionesOperacionSupervisada } from '@nianva/core-http';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable, map } from 'rxjs';
@@ -60,13 +60,13 @@ export class ApartadoService {
     return this.http.patch<RespuestaDe<'/apartados/{apartado}/liquidar', 'patch'>>(urlApi(`/apartados/${id}/liquidar`), {}, opcionesIdempotencia(llaveIdempotencia)).pipe(map((r) => r.data));
   }
 
-  cancelar(id: string, motivo: string, llaveIdempotencia?: string): Observable<ResultadoCancelacion> {
+  cancelar(id: string, motivo: string, llaveIdempotencia?: string, tokenSupervisor?: string): Observable<ResultadoCancelacion> {
     const cuerpo: CuerpoDe<'/apartados/{apartado}/cancelar', 'patch'> = { motivo };
     return this.http
       .patch<RespuestaDe<'/apartados/{apartado}/cancelar', 'patch'>>(
         urlApi(`/apartados/${id}/cancelar`),
         cuerpo,
-        opcionesIdempotencia(llaveIdempotencia),
+        opcionesOperacionSupervisada(llaveIdempotencia, tokenSupervisor),
       )
       .pipe(
         map((r) => ({

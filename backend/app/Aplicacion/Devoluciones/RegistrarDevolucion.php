@@ -6,6 +6,7 @@ namespace App\Aplicacion\Devoluciones;
 
 use App\Aplicacion\Folios\Folios;
 use App\Aplicacion\Inventario\RegistrarMovimiento;
+use App\Aplicacion\Supervisor\Supervisor;
 use App\Modules\Devoluciones\Dtos\CrearDevolucionDto;
 use App\Modules\Devoluciones\Dtos\ItemDevueltoDto;
 use App\Modules\Devoluciones\Dtos\ItemNuevoDto;
@@ -15,8 +16,10 @@ use App\Modules\Devoluciones\Services\DevolucionService;
 use App\Modules\Inventario\Dtos\MovimientoInventarioDto;
 use App\Modules\NotasCredito\Models\NotaCredito;
 use App\Modules\NotasCredito\Services\NotaCreditoService;
+use App\Modules\Nucleo\Dtos\OperacionSupervisorDto;
 use App\Modules\Nucleo\Models\Usuario;
 use App\Modules\Nucleo\Scopes\TenantScopeViaRelacion;
+use App\Modules\Nucleo\Support\AccionSupervisor;
 use App\Modules\Nucleo\Support\Dinero;
 use App\Modules\Tpv\Exceptions\CajaSesionNoAbiertaException;
 use App\Modules\Tpv\Models\CajaSesion;
@@ -42,7 +45,7 @@ class RegistrarDevolucion
      *
      * @return array{devolucion: Devolucion, nota_credito: ?NotaCredito}
      */
-    public function ejecutar(CrearDevolucionDto $dto, Usuario $usuario): array
+    public function ejecutar(CrearDevolucionDto $dto, Usuario $usuario, ?OperacionSupervisorDto $autorizacion = null): array
     {
         $ventaId = $dto->ventaId;
         $tipo = $dto->tipo;
@@ -82,6 +85,7 @@ class RegistrarDevolucion
             $tipoReembolso,
             $usuario,
             $dto,
+            $autorizacion,
         ) {
             $sucursalId = (int) $usuario->getAttribute('sucursal_id');
             $caja = CajaSesion::query()->withoutGlobalScope(TenantScopeViaRelacion::class)->where('sucursal_id', $sucursalId)->where('estado', 'abierta')->latest('id')->lockForUpdate()->first();
@@ -121,6 +125,9 @@ class RegistrarDevolucion
                         $monetarios[] = $pago;
                     }
                 }
+            }
+            if ($esReembolso && $monetarios !== []) {
+                Supervisor::consumir($autorizacion, AccionSupervisor::Reembolsar, (string) $ventaOrigen->getAttribute('ulid'), $sucursalId);
             }
             if ($monetarios !== [] && $caja === null) {
                 throw new CajaSesionNoAbiertaException($sucursalId);

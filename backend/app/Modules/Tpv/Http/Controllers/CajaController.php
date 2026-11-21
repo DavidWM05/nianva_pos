@@ -8,6 +8,7 @@ use App\Aplicacion\Caja\AbrirCaja;
 use App\Aplicacion\Caja\CerrarCaja;
 use App\Aplicacion\Caja\ObtenerCajaActual;
 use App\Http\Controllers\Controller;
+use App\Modules\Nucleo\Http\Support\OperacionSupervisorHttp;
 use App\Modules\Nucleo\Models\Usuario;
 use App\Modules\Nucleo\Support\DecimalApi;
 use App\Modules\Tpv\Http\Requests\AbrirCajaRequest;
@@ -15,6 +16,7 @@ use App\Modules\Tpv\Http\Requests\CerrarCajaRequest;
 use App\Modules\Tpv\Http\Resources\CajaSaldoResource;
 use App\Modules\Tpv\Http\Resources\CajaSesionResource;
 use App\Modules\Tpv\Models\CajaSesion;
+use Dedoc\Scramble\Attributes\HeaderParameter;
 use Illuminate\Http\Request;
 
 /**
@@ -71,11 +73,12 @@ class CajaController extends Controller
     /**
      * Orquestacion: App\Aplicacion\Caja\CerrarCaja.
      */
+    #[HeaderParameter(OperacionSupervisorHttp::CABECERA, description: 'Token opaco de supervisor para la operación autorizada.', type: 'string')]
     public function cerrar(CerrarCajaRequest $request, CajaSesion $cajaSesion, CerrarCaja $cerrarCaja)
     {
         $dto = $request->toDto();
 
-        $resultado = $cerrarCaja->ejecutar($cajaSesion, $dto->conteos);
+        $resultado = $cerrarCaja->ejecutar($cajaSesion, $dto->conteos, OperacionSupervisorHttp::de($request));
 
         return response()->json([
             'data' => new CajaSesionResource($resultado['sesion']),

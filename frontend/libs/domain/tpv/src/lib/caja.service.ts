@@ -1,5 +1,5 @@
 import { CuerpoDe, RespuestaDe } from '@nianva/api-contrato';
-import { urlApi, opcionesIdempotencia } from '@nianva/core-http';
+import { urlApi, opcionesIdempotencia, opcionesOperacionSupervisada } from '@nianva/core-http';
 import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable, map } from 'rxjs';
@@ -31,11 +31,11 @@ export class CajaService {
    * pagos CxP) para que nadie pueda cerrar la caja con una diferencia
    * manipulada -- ver el docblock del Controller.
    */
-  cerrar(id: string, conteos: CajaConteo[], llaveIdempotencia?: string): Observable<{ sesion: CajaSesion; desglose: CajaDesglose }> {
+  cerrar(id: string, conteos: CajaConteo[], llaveIdempotencia?: string, tokenSupervisor?: string): Observable<{ sesion: CajaSesion; desglose: CajaDesglose }> {
     const cuerpo: CuerpoDe<'/caja/{cajaSesion}/cerrar', 'patch'> = { conteos };
 
     return this.http
-      .patch<RespuestaDe<'/caja/{cajaSesion}/cerrar', 'patch'>>(urlApi(`/caja/${id}/cerrar`), cuerpo, opcionesIdempotencia(llaveIdempotencia))
+      .patch<RespuestaDe<'/caja/{cajaSesion}/cerrar', 'patch'>>(urlApi(`/caja/${id}/cerrar`), cuerpo, opcionesOperacionSupervisada(llaveIdempotencia, tokenSupervisor))
       .pipe(map((r) => ({ sesion: r.data, desglose: r.desglose })));
   }
 }

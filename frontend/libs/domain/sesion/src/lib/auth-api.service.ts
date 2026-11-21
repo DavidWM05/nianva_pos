@@ -68,6 +68,11 @@ export class AuthApiService {
     return this.http.post<void>(urlApi('/sesion/desbloquear'), cuerpo, { context: this.contextoErrorEnPantalla });
   }
 
+  solicitarAutorizacionSupervisor(cuerpo: CuerpoDe<'/autorizaciones', 'post'>): Observable<RespuestaDe<'/autorizaciones', 'post'>['data']> {
+    return this.http.post<RespuestaDe<'/autorizaciones', 'post'>>(urlApi('/autorizaciones'), cuerpo, { context: this.contextoErrorEnPantalla })
+      .pipe(map((respuesta) => respuesta.data));
+  }
+
   elegirTerminal(terminalId: number): Observable<void> {
     const cuerpo: CuerpoDe<'/sesion/terminal', 'put'> = { terminal_id: terminalId };
     return this.http.put<void>(urlApi('/sesion/terminal'), cuerpo, { context: this.contextoErrorEnPantalla });

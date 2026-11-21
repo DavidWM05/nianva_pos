@@ -7,7 +7,9 @@ use App\Http\Controllers\Controller;
 use App\Modules\Devoluciones\Http\Requests\CrearDevolucionRequest;
 use App\Modules\Devoluciones\Http\Resources\DevolucionResource;
 use App\Modules\Devoluciones\Models\Devolucion;
+use App\Modules\Nucleo\Http\Support\OperacionSupervisorHttp;
 use App\Modules\Nucleo\Support\DecimalApi;
+use Dedoc\Scramble\Attributes\HeaderParameter;
 use Illuminate\Http\Request;
 
 /**
@@ -68,6 +70,7 @@ class DevolucionController extends Controller
     /**
      * Orquestacion: App\Aplicacion\Devoluciones\RegistrarDevolucion.
      */
+    #[HeaderParameter(OperacionSupervisorHttp::CABECERA, description: 'Token opaco de supervisor para la operación autorizada.', type: 'string')]
     public function store(CrearDevolucionRequest $request, RegistrarDevolucion $registrarDevolucion)
     {
         $usuario = $request->user();
@@ -76,7 +79,7 @@ class DevolucionController extends Controller
             abort(401);
         }
 
-        $resultado = $registrarDevolucion->ejecutar($request->toDto(), $usuario);
+        $resultado = $registrarDevolucion->ejecutar($request->toDto(), $usuario, OperacionSupervisorHttp::de($request));
 
         $devolucion = $resultado['devolucion'];
         $nota = $resultado['nota_credito'];

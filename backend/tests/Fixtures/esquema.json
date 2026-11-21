@@ -1192,6 +1192,156 @@
             }
         ]
     },
+    "autorizaciones_supervisor": {
+        "columnas": [
+            {
+                "nombre": "accion",
+                "tipo": "varchar",
+                "nullable": false,
+                "default": null
+            },
+            {
+                "nombre": "consumida_en",
+                "tipo": "datetime",
+                "nullable": true,
+                "default": null
+            },
+            {
+                "nombre": "huella",
+                "tipo": "varchar",
+                "nullable": false,
+                "default": null
+            },
+            {
+                "nombre": "id",
+                "tipo": "integer",
+                "nullable": false,
+                "default": null
+            },
+            {
+                "nombre": "recurso",
+                "tipo": "varchar",
+                "nullable": true,
+                "default": null
+            },
+            {
+                "nombre": "sesion_hash",
+                "tipo": "varchar",
+                "nullable": true,
+                "default": null
+            },
+            {
+                "nombre": "solicitante_id",
+                "tipo": "integer",
+                "nullable": false,
+                "default": null
+            },
+            {
+                "nombre": "sucursal_id",
+                "tipo": "integer",
+                "nullable": false,
+                "default": null
+            },
+            {
+                "nombre": "supervisor_id",
+                "tipo": "integer",
+                "nullable": false,
+                "default": null
+            },
+            {
+                "nombre": "tenant_id",
+                "tipo": "integer",
+                "nullable": false,
+                "default": null
+            },
+            {
+                "nombre": "token_hash",
+                "tipo": "varchar",
+                "nullable": false,
+                "default": null
+            },
+            {
+                "nombre": "vence_en",
+                "tipo": "datetime",
+                "nullable": false,
+                "default": null
+            }
+        ],
+        "indices": [
+            {
+                "nombre": "autorizaciones_supervisor_tenant_id_token_hash_unique",
+                "columnas": [
+                    "tenant_id",
+                    "token_hash"
+                ],
+                "unico": true
+            },
+            {
+                "nombre": "autorizaciones_supervisor_vence_en_index",
+                "columnas": [
+                    "vence_en"
+                ],
+                "unico": false
+            },
+            {
+                "nombre": "primary",
+                "columnas": [
+                    "id"
+                ],
+                "unico": true
+            }
+        ],
+        "llaves_foraneas": [
+            {
+                "nombre": null,
+                "columnas": [
+                    "solicitante_id"
+                ],
+                "tabla_foranea": "usuarios",
+                "columnas_foraneas": [
+                    "id"
+                ],
+                "on_update": "no action",
+                "on_delete": "cascade"
+            },
+            {
+                "nombre": null,
+                "columnas": [
+                    "sucursal_id"
+                ],
+                "tabla_foranea": "sucursales",
+                "columnas_foraneas": [
+                    "id"
+                ],
+                "on_update": "no action",
+                "on_delete": "cascade"
+            },
+            {
+                "nombre": null,
+                "columnas": [
+                    "supervisor_id"
+                ],
+                "tabla_foranea": "usuarios",
+                "columnas_foraneas": [
+                    "id"
+                ],
+                "on_update": "no action",
+                "on_delete": "cascade"
+            },
+            {
+                "nombre": null,
+                "columnas": [
+                    "tenant_id"
+                ],
+                "tabla_foranea": "tenants",
+                "columnas_foraneas": [
+                    "id"
+                ],
+                "on_update": "no action",
+                "on_delete": "cascade"
+            }
+        ]
+    },
     "cache": {
         "columnas": [
             {

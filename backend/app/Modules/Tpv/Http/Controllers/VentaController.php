@@ -9,6 +9,7 @@ use App\Aplicacion\Ventas\RegistrarVenta;
 use App\Http\Controllers\Controller;
 use App\Modules\Crm\Models\Cliente;
 use App\Modules\Inventario\Models\ProductoVariante;
+use App\Modules\Nucleo\Http\Support\OperacionSupervisorHttp;
 use App\Modules\Nucleo\Models\Sucursal;
 use App\Modules\Nucleo\Services\TenantContext;
 use App\Modules\Nucleo\Support\DecimalApi;
@@ -25,6 +26,7 @@ use App\Modules\Tpv\Models\VentaDetalle;
 use App\Modules\Tpv\Models\VentaPago;
 use App\Modules\Tpv\Services\VentaService;
 use Carbon\CarbonImmutable;
+use Dedoc\Scramble\Attributes\HeaderParameter;
 use Illuminate\Http\Request;
 
 /**
@@ -121,6 +123,7 @@ class VentaController extends Controller
     /**
      * Orquestacion: App\Aplicacion\Ventas\RegistrarVenta.
      */
+    #[HeaderParameter(OperacionSupervisorHttp::CABECERA, description: 'Token opaco de supervisor para la operación autorizada.', type: 'string')]
     public function store(CrearVentaRequest $request, RegistrarVenta $registrarVenta)
     {
         $usuario = $request->user();
@@ -129,13 +132,14 @@ class VentaController extends Controller
             abort(401);
         }
 
-        $venta = $registrarVenta->ejecutar($request->toDto(), $usuario);
+        $venta = $registrarVenta->ejecutar($request->toDto(), $usuario, OperacionSupervisorHttp::de($request));
 
         $venta->load(['cliente', 'pagos.metodoPago', 'detalles.variante.producto', 'detalles.variante.valoresAtributo.valor.atributo']);
 
         return (new VentaResource($venta))->response()->setStatusCode(201);
     }
 
+    #[HeaderParameter(OperacionSupervisorHttp::CABECERA, description: 'Token opaco de supervisor para la operación autorizada.', type: 'string')]
     public function anular(AnularVentaRequest $request, Venta $venta, AnularVenta $anularVenta)
     {
         $usuario = $request->user();
@@ -144,7 +148,7 @@ class VentaController extends Controller
             abort(401);
         }
 
-        $venta = $anularVenta->ejecutar($request->toDto(), $venta, $usuario);
+        $venta = $anularVenta->ejecutar($request->toDto(), $venta, $usuario, OperacionSupervisorHttp::de($request));
         $venta->load(['cliente', 'pagos.metodoPago', 'detalles.variante.producto', 'detalles.variante.valoresAtributo.valor.atributo']);
 
         return new VentaResource($venta);

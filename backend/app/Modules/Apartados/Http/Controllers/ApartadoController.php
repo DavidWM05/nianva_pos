@@ -15,7 +15,9 @@ use App\Modules\Apartados\Http\Requests\CrearApartadoRequest;
 use App\Modules\Apartados\Http\Requests\RegistrarAbonoRequest;
 use App\Modules\Apartados\Http\Resources\ApartadoResource;
 use App\Modules\Apartados\Models\Apartado;
+use App\Modules\Nucleo\Http\Support\OperacionSupervisorHttp;
 use App\Modules\Nucleo\Support\DecimalApi;
+use Dedoc\Scramble\Attributes\HeaderParameter;
 use Illuminate\Http\Request;
 
 /**
@@ -112,6 +114,7 @@ class ApartadoController extends Controller
         return new ApartadoResource($apartado->fresh(['cliente', 'detalles.variante.producto', 'detalles.variante.valoresAtributo.valor.atributo', 'abonos.pagos.metodoPago']));
     }
 
+    #[HeaderParameter(OperacionSupervisorHttp::CABECERA, description: 'Token opaco de supervisor para la operación autorizada.', type: 'string')]
     public function cancelar(CancelarApartadoRequest $request, Apartado $apartado, CancelarApartado $cancelarApartado)
     {
         $usuario = $request->user();
@@ -120,7 +123,7 @@ class ApartadoController extends Controller
             abort(401);
         }
 
-        $resultado = $cancelarApartado->ejecutar($request->toDto(), $apartado, $usuario);
+        $resultado = $cancelarApartado->ejecutar($request->toDto(), $apartado, $usuario, OperacionSupervisorHttp::de($request));
 
         return response()->json([
             'data' => new ApartadoResource($resultado->apartado->load(['cliente', 'detalles.variante.producto', 'detalles.variante.valoresAtributo.valor.atributo', 'abonos.pagos.metodoPago'])),

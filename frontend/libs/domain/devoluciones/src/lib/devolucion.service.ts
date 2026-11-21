@@ -1,5 +1,5 @@
 import { CuerpoDe, RespuestaDe } from '@nianva/api-contrato';
-import { ConsultaPagina, urlApi, opcionesIdempotencia } from '@nianva/core-http';
+import { ConsultaPagina, urlApi, opcionesOperacionSupervisada } from '@nianva/core-http';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable, map } from 'rxjs';
@@ -33,10 +33,10 @@ export class DevolucionService {
     return this.http.get<RespuestaDe<'/devoluciones/{devolucion}', 'get'>>(urlApi(`/devoluciones/${id}`)).pipe(map((r) => r.data));
   }
 
-  registrar(payload: DevolucionFormPayload, llaveIdempotencia?: string): Observable<{ devolucion: Devolucion; notaCredito: DevolucionNotaCreditoInfo | null }> {
+  registrar(payload: DevolucionFormPayload, llaveIdempotencia?: string, tokenSupervisor?: string): Observable<{ devolucion: Devolucion; notaCredito: DevolucionNotaCreditoInfo | null }> {
     const cuerpo: CuerpoDe<'/devoluciones', 'post'> = payload;
     return this.http
-      .post<RespuestaDe<'/devoluciones', 'post'>>(urlApi(`/devoluciones`), cuerpo, opcionesIdempotencia(llaveIdempotencia))
+      .post<RespuestaDe<'/devoluciones', 'post'>>(urlApi(`/devoluciones`), cuerpo, opcionesOperacionSupervisada(llaveIdempotencia, tokenSupervisor))
       .pipe(map((r) => ({ devolucion: r.data, notaCredito: r.nota_credito })));
   }
 }
