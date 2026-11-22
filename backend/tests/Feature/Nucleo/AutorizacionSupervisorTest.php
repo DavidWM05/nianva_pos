@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Nucleo;
 
+use App\Modules\Configuracion\Models\ConfiguracionTenant;
 use App\Modules\Nucleo\Database\Seeders\NucleoRolesPermisosSeeder;
 use App\Modules\Nucleo\Models\Usuario;
 use App\Modules\Nucleo\Support\MetodoEfectivo;
@@ -32,7 +33,6 @@ class AutorizacionSupervisorTest extends TestCase
         $ruta = "/api/v1/ventas/{$venta->ulid}/anular";
         $datos = ['motivo' => 'Operación duplicada'];
 
-        config(['supervisor.exigir' => true]);
         $this->actingAs($this->usuario);
         $this->patchJson($ruta, $datos)->assertForbidden()->assertJsonPath('error_code', 'supervisor_requerido');
 
@@ -61,7 +61,7 @@ class AutorizacionSupervisorTest extends TestCase
     public function test_el_descuento_superior_al_margen_requiere_token_y_un_fallo_revierte_su_consumo(): void
     {
         $supervisor = $this->prepararSupervisor(['caja.ver', 'ventas.crear']);
-        config(['supervisor.margen_descuento' => '5.00']);
+        ConfiguracionTenant::actual()->update(['margen_descuento_supervisor' => '5.00']);
         $datos = $this->payloadVenta(['descuento_manual' => 10]);
         $this->postJson('/api/v1/ventas', $datos)->assertForbidden()->assertJsonPath('error_code', 'supervisor_requerido');
 
@@ -86,7 +86,7 @@ class AutorizacionSupervisorTest extends TestCase
         $token = $this->emitirPara($supervisor, 'apartados.cancelar', $apartado->ulid, $datos);
         $this->patchJson($ruta, $datos, ['X-Autorizacion-Supervisor' => $token])->assertOk();
 
-        config(['supervisor.umbral_descuadre' => '5.00']);
+        ConfiguracionTenant::actual()->update(['umbral_descuadre_supervisor' => '5.00']);
         $datos = ['conteos' => [['metodo_pago_id' => MetodoEfectivo::id(), 'monto' => 10]]];
         $ruta = "/api/v1/caja/{$this->caja->ulid}/cerrar";
         $this->patchJson($ruta, $datos)->assertForbidden()->assertJsonPath('error_code', 'supervisor_requerido');
@@ -162,7 +162,6 @@ class AutorizacionSupervisorTest extends TestCase
         ]);
         $supervisor->forceFill(['pin_caja_hash' => Hash::make('7049')])->save();
 
-        config(['supervisor.exigir' => true]);
         $this->actingAs($this->usuario);
 
         return $supervisor;

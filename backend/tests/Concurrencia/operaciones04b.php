@@ -11,6 +11,7 @@ use App\Modules\Inventario\Dtos\CompraDto;
 use App\Modules\Inventario\Dtos\LineaCompraDto;
 use App\Modules\Inventario\Dtos\MovimientoInventarioDto;
 use App\Modules\Nucleo\Exceptions\ExcepcionNegocio;
+use App\Modules\Nucleo\Support\AccionSupervisor;
 use App\Modules\Nucleo\Support\MetodoEfectivo;
 use App\Modules\Tpv\Dtos\AbrirCajaDto;
 use App\Modules\Tpv\Dtos\AnularVentaDto;
@@ -18,6 +19,7 @@ use App\Modules\Tpv\Models\CajaSesion;
 use App\Modules\Tpv\Models\Venta;
 use Illuminate\Database\Events\QueryExecuted;
 use Illuminate\Support\Facades\DB;
+use Tests\Support\AutorizaOperaciones;
 
 $operacion = $argv[1];
 // Los parámetros se leen antes de observar: el dato vigente lo relee la Action bajo bloqueo.
@@ -39,10 +41,14 @@ DB::listen(static function (QueryExecuted $consulta) use ($tabla, &$observado, $
 });
 
 try {
+    $fixture = new class
+    {
+        use AutorizaOperaciones;
+    };
     $resultado = match ($operacion) {
         'abrir' => app(AbrirCaja::class)->ejecutar(new AbrirCajaDto(50), $usuario),
         'cerrar' => app(CerrarCaja::class)->ejecutar($caja, [['metodo_pago_id' => MetodoEfectivo::id(), 'monto' => 50]])['sesion'],
-        'anular' => app(AnularVenta::class)->ejecutar(new AnularVentaDto('Concurrencia 04b'), $venta, $usuario),
+        'anular' => app(AnularVenta::class)->ejecutar(new AnularVentaDto('Concurrencia 04b'), $venta, $usuario, $fixture::conSupervisor($usuario, AccionSupervisor::AnularVenta, [], $venta->ulid)),
         'movimiento' => app(RegistrarMovimiento::class)->ejecutar(new MovimientoInventarioDto($datos['variante'], $datos['sucursal'], 'salida', 1, 'ajuste', $usuario->id)),
         'compra' => app(RegistrarCompra::class)->ejecutar(new CompraDto($datos['proveedor'], null, [new LineaCompraDto($datos['variante'], 1, 30)]), $usuario),
     };

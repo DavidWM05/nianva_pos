@@ -274,6 +274,18 @@ export const LIMITES = {
         "requerido": true,
         "maxLength": 5
       },
+      "margen_descuento_supervisor": {
+        "requerido": false,
+        "minimum": 0,
+        "maximum": 9999999999.99,
+        "decimales": 2
+      },
+      "umbral_descuadre_supervisor": {
+        "requerido": false,
+        "minimum": 0,
+        "maximum": 9999999999.99,
+        "decimales": 2
+      },
       "zona_horaria": {
         "requerido": false
       },

@@ -22,7 +22,7 @@ describe('VentaComponent', () => {
   const cajaAbierta: CajaActual = {
     sesion: {
       id: ulidDePrueba(1),
-      numero: 1,
+      folio: 'C-1-1',
       sucursal_id: 1,
       usuario_id: 1,
       monto_apertura: '500.00',
@@ -223,10 +223,9 @@ describe('VentaComponent', () => {
     const notas: NotaCredito[] = [
       {
         id: ulidDePrueba(3),
-        numero: 3,
+        folio: 'D-1-1',
         cliente: { id: ulidDePrueba(9), nombre: 'Juan' },
         devolucion_id: ulidDePrueba(1),
-        devolucion_numero: 1,
         monto_original: '500.00',
         saldo_disponible: '80.00',
         fecha_expiracion: null,
@@ -264,10 +263,9 @@ describe('VentaComponent', () => {
     const notas: NotaCredito[] = [
       {
         id: ulidDePrueba(3),
-        numero: 3,
+        folio: 'D-1-1',
         cliente: { id: ulidDePrueba(9), nombre: 'Juan' },
         devolucion_id: ulidDePrueba(1),
-        devolucion_numero: 1,
         monto_original: '500.00',
         saldo_disponible: '200.00',
         fecha_expiracion: null,

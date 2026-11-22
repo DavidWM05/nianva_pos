@@ -35,18 +35,6 @@ export class VentaService {
       .pipe(map((r) => ({ data: r.data, total: r.meta.total, permisos: r.meta.permisos })));
   }
 
-  /**
-   * D-7, transitorio: la devolución busca la venta por su `numero` (el id interno que publica el
-   * backend) hasta que exista el folio de DAT-07. Devuelve el ulid de la venta, o null.
-   */
-  buscarPorNumero(numero: number): Observable<string | null> {
-    const params = new HttpParams().set('filtro_numero', numero).set('rows', 1);
-
-    return this.http
-      .get<RespuestaDe<'/ventas', 'get'>>(urlApi(`/ventas`), { params })
-      .pipe(map((r) => r.data[0]?.id ?? null));
-  }
-
   buscarPorFolio(folio: string): Observable<string | null> {
     folio = folio.trim();
     if (!folio) {

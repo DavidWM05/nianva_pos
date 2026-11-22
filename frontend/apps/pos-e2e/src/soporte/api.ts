@@ -1,4 +1,5 @@
 import type { Page } from '@playwright/test';
+import { generarLlaveIdempotencia } from '../../../../libs/core/http/src/lib/idempotencia';
 
 const API = 'http://127.0.0.1:' + (process.env['POS_E2E_BACKEND_PORT'] ?? '8100') + '/api/v1';
 
@@ -51,7 +52,7 @@ export function crearCliente(page: Page, nombre: string): Promise<{ id: number }
  * cierra y la vuelve a abrir; si falla a la mitad, los specs que venden despues no dependen de el.
  */
 export async function asegurarCajaAbierta(page: Page): Promise<void> {
-  const resultado = await page.evaluate(async (api) => {
+  const resultado = await page.evaluate(async ({ api, llave }) => {
     const coincidencia = document.cookie.match(/(?:^|;\s*)XSRF-TOKEN=([^;]+)/);
     const token = coincidencia ? decodeURIComponent(coincidencia[1]) : '';
     const cabeceras = { Accept: 'application/json', 'Content-Type': 'application/json', 'X-XSRF-TOKEN': token };
@@ -65,12 +66,12 @@ export async function asegurarCajaAbierta(page: Page): Promise<void> {
     const apertura = await fetch(`${api}/caja/abrir`, {
       method: 'POST',
       credentials: 'include',
-      headers: cabeceras,
+      headers: { ...cabeceras, 'Idempotency-Key': llave },
       body: JSON.stringify({ monto_apertura: 500 }),
     });
 
     return apertura.status;
-  }, API);
+  }, { api: API, llave: generarLlaveIdempotencia() });
 
   if (resultado !== 200 && resultado !== 201) {
     throw new Error(`No se pudo dejar la caja abierta: ${resultado}`);

@@ -2540,6 +2540,12 @@
                 "default": null
             },
             {
+                "nombre": "margen_descuento_supervisor",
+                "tipo": "numeric",
+                "nullable": true,
+                "default": null
+            },
+            {
                 "nombre": "mensaje_ticket",
                 "tipo": "text",
                 "nullable": true,
@@ -2591,6 +2597,12 @@
                 "nombre": "tenant_id",
                 "tipo": "integer",
                 "nullable": false,
+                "default": null
+            },
+            {
+                "nombre": "umbral_descuadre_supervisor",
+                "tipo": "numeric",
+                "nullable": true,
                 "default": null
             },
             {

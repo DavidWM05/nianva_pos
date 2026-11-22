@@ -20,6 +20,8 @@ class ConfiguracionTenantResource extends JsonResource
             'cupon_combinable_con_promociones' => $this->cupon_combinable_con_promociones,
             'tasa_iva_default' => DecimalApi::tasa($this->tasa_iva_default),
             'moneda' => $this->moneda,
+            'margen_descuento_supervisor' => DecimalApi::dinero($this->margen_descuento_supervisor ?? ConfiguracionTenant::MARGEN_DESCUENTO_SUPERVISOR_DEFAULT),
+            'umbral_descuadre_supervisor' => DecimalApi::dinero($this->umbral_descuadre_supervisor ?? ConfiguracionTenant::UMBRAL_DESCUADRE_SUPERVISOR_DEFAULT),
             'zona_horaria' => $this->zona_horaria,
             'mensaje_ticket' => $this->mensaje_ticket,
             'logo_url' => $this->logo_url,

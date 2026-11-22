@@ -7,6 +7,8 @@ export interface ConfiguracionTenant {
   cupon_combinable_con_promociones?: boolean;
   tasa_iva_default?: string;
   moneda: string;
+  margen_descuento_supervisor?: string;
+  umbral_descuadre_supervisor?: string;
   mensaje_ticket: string | null;
   /** Solo texto (URL) por ahora -- sin subida de archivo, ver el reporte. */
   logo_url: string | null;
@@ -22,8 +24,12 @@ export interface ConfiguracionTenant {
 
 export type ConfiguracionTenantFormPayload = Omit<
   ConfiguracionTenant,
-  'backup_ultimo' | 'tasa_iva_default'
-> & { tasa_iva_default?: number };
+  'backup_ultimo' | 'tasa_iva_default' | 'margen_descuento_supervisor' | 'umbral_descuadre_supervisor'
+> & {
+  tasa_iva_default?: number;
+  margen_descuento_supervisor?: number;
+  umbral_descuadre_supervisor?: number;
+};
 
 /**
  * Espejo de ConfiguracionSeguridadController::show()/update() -- dias de

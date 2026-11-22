@@ -2,12 +2,15 @@
 
 namespace Tests\Feature\Devoluciones;
 
+use App\Modules\Nucleo\Support\AccionSupervisor;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\Support\AutorizaOperaciones;
 use Tests\Support\PreparaNegocio;
 use Tests\TestCase;
 
 class DevolucionExistsTenantTest extends TestCase
 {
+    use AutorizaOperaciones;
     use PreparaNegocio;
     use RefreshDatabase;
 
@@ -71,11 +74,12 @@ class DevolucionExistsTenantTest extends TestCase
         $venta = $this->crearVenta();
         $this->actingAs($this->usuario);
 
-        $this->postJson('/api/v1/devoluciones', [
+        $datosSupervisor1 = [
             'venta_id' => $venta->ulid,
             'tipo' => 'devolucion',
             'items_devueltos' => [['variante_id' => $this->variante->id, 'cantidad' => 1]],
             'pagos' => [['metodo_pago_id' => $this->metodoPagoGlobal->id, 'monto' => 100]],
-        ])->assertCreated();
+        ];
+        $this->postJson('/api/v1/devoluciones', $datosSupervisor1, ['X-Autorizacion-Supervisor' => self::conSupervisor($this->usuario, AccionSupervisor::Reembolsar, $datosSupervisor1, $venta->ulid)->token])->assertCreated();
     }
 }

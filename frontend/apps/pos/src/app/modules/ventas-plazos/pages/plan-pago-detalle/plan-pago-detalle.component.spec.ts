@@ -31,7 +31,7 @@ describe('PlanPagoDetalleComponent', () => {
   function planCon(overrides: Partial<PlanPago>): PlanPago {
     return {
       id: ulidDePrueba(7),
-      numero: 7,
+      folio: 'V-1-7',
       cliente: { id: ulidDePrueba(9), nombre: 'Juan Pérez' },
       venta_id: ulidDePrueba(3),
       concepto: 'Venta #3 - Pago a plazos',

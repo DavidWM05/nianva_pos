@@ -32,8 +32,7 @@ export interface ClientesPagina {
 export interface VentaResumen {
   /** DAT-08: ulid de la venta. */
   id: string;
-  /** D-3, transitorio: número visible de la venta; lo reemplaza el folio de DAT-07. */
-  numero: number;
+  folio: string | null;
   fecha: string;
   total: string;
   estado: 'completada' | 'anulada';

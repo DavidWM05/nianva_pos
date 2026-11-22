@@ -43,8 +43,6 @@ export interface Apartado {
   folio?: string | null;
   /** DAT-08: ulid; es el que va en la ruta /apartados/:id y en la API. */
   id: string;
-  /** D-3, transitorio: número visible (= id interno); lo reemplaza el folio de DAT-07. */
-  numero: number;
   fecha_creacion: string;
   cliente?: ApartadoClienteResumen | null;
   total: string;

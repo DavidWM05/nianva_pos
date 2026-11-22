@@ -26,7 +26,7 @@ export function impresoDeVenta(venta: ImpresoVentaResource): Impreso {
       ],
       filas: venta.lineas.map((linea) => [
         { texto: descripcionDeLinea(linea), detalle: linea.precio_unitario },
-        { cantidad: linea.cantidad, unidad: linea.presentacion_nombre ?? '' },
+        { cantidad: linea.cantidad, unidad: linea.presentacion_nombre ?? linea.unidad_medida_nombre ?? '' },
         { dinero: linea.subtotal },
       ]),
     },

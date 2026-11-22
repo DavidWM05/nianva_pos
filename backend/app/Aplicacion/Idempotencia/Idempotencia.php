@@ -10,6 +10,7 @@ use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use stdClass;
 use Symfony\Component\HttpFoundation\Response;
 use Throwable;
 
@@ -19,10 +20,7 @@ final class Idempotencia
     {
         $llave = $request->headers->get('Idempotency-Key');
 
-        if ($llave === null) {
-            return $next($request);
-        }
-        if (! Str::isUlid($llave)) {
+        if ($llave === null || ! Str::isUlid($llave)) {
             throw new ClaveIdempotenciaInvalidaException;
         }
 
@@ -52,7 +50,7 @@ final class Idempotencia
                 }
                 if ($guardada->estado_http !== null) {
                     $respuesta = new Response(
-                        $guardada->cuerpo,
+                        $this->cuerpoDelReintento($guardada->cuerpo),
                         (int) $guardada->estado_http,
                         json_decode($guardada->cabeceras, true, 512, JSON_THROW_ON_ERROR),
                     );
@@ -87,6 +85,43 @@ final class Idempotencia
 
             throw $error;
         }
+    }
+
+    private function cuerpoDelReintento(string $cuerpo): string
+    {
+        // Durante 24 horas pueden quedar respuestas confirmadas con el contrato anterior.
+        $datos = json_decode($cuerpo);
+        if ($datos instanceof stdClass && ($datos->nota_credito ?? null) instanceof stdClass
+            && isset($datos->nota_credito->numero) && is_string($datos->data->folio ?? null)) {
+            $datos->nota_credito->folio = $datos->data->folio;
+        }
+        if (! $this->retirarNumerosTransitorios($datos)) {
+            return $cuerpo;
+        }
+
+        return json_encode($datos, JSON_THROW_ON_ERROR | JSON_PRESERVE_ZERO_FRACTION);
+    }
+
+    private function retirarNumerosTransitorios(mixed $datos): bool
+    {
+        if (! is_array($datos) && ! $datos instanceof stdClass) {
+            return false;
+        }
+
+        $cambio = false;
+        $valores = $datos instanceof stdClass ? get_object_vars($datos) : $datos;
+        foreach ($valores as $campo => $valor) {
+            if ($datos instanceof stdClass && in_array($campo, ['numero', 'venta_sombra_numero', 'compra_numero', 'devolucion_numero'], true)) {
+                unset($datos->{$campo});
+                $cambio = true;
+
+                continue;
+            }
+
+            $cambio = $this->retirarNumerosTransitorios($valor) || $cambio;
+        }
+
+        return $cambio;
     }
 
     /** @param array<mixed> $datos

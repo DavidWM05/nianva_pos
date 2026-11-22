@@ -2495,6 +2495,8 @@ export interface components {
             cupon_combinable_con_promociones?: boolean;
             tasa_iva_default?: number;
             moneda: string;
+            margen_descuento_supervisor?: number;
+            umbral_descuadre_supervisor?: number;
             zona_horaria?: string;
             mensaje_ticket?: string | null;
             /** Format: uri */
@@ -2542,11 +2544,6 @@ export interface components {
             lista_precio_id: number | null;
             /** @description DAT-08: el identificador público es el ulid; el id interno no sale de la API. */
             id: string;
-            /**
-             * @description D-3, transitorio: número visible del apartado (= id interno), solo para mostrarlo; lo
-             *     reemplaza el folio de DAT-07.
-             */
-            numero: number;
             folio: string | null;
             /** Format: date-time */
             fecha_creacion: string;
@@ -2664,11 +2661,6 @@ export interface components {
         CajaSesionResource: {
             /** @description DAT-08: el identificador público es el ulid; el id interno no sale de la API. */
             id: string;
-            /**
-             * @description D-3, transitorio: número visible de la sesión (= id interno), solo para mostrarlo; lo
-             *     reemplaza el folio de DAT-07.
-             */
-            numero: number;
             folio: string | null;
             sucursal_id: number;
             usuario_id: number;
@@ -2764,6 +2756,8 @@ export interface components {
             cupon_combinable_con_promociones: boolean;
             tasa_iva_default: string;
             moneda: string;
+            margen_descuento_supervisor: string;
+            umbral_descuadre_supervisor: string;
             zona_horaria: string;
             mensaje_ticket: string | null;
             logo_url: string | null;
@@ -3083,11 +3077,6 @@ export interface components {
         CuentaCobrarResource: {
             /** @description DAT-08: el identificador público es el ulid; el id interno no sale de la API. */
             id: string;
-            /**
-             * @description D-3, transitorio: número visible de la cuenta (= id interno), solo para mostrarlo; lo
-             *     reemplaza el folio de DAT-07.
-             */
-            numero: number;
             folio?: string;
             venta_id: string | null;
             cliente?: {
@@ -3109,15 +3098,8 @@ export interface components {
         CuentaPagarResource: {
             /** @description DAT-08: el identificador público es el ulid; el id interno no sale de la API. */
             id: string;
-            /**
-             * @description D-3, transitorio: número visible de la cuenta (= id interno), solo para mostrarlo; lo
-             *     reemplaza el folio de DAT-07.
-             */
-            numero: number;
             folio?: string;
             compra_id: string | null;
-            /** @description D-3, transitorio: número visible de la compra de origen. */
-            compra_numero: number | null;
             proveedor?: {
                 id: number;
                 razon_social: string;
@@ -3174,11 +3156,6 @@ export interface components {
         DevolucionResource: {
             /** @description DAT-08: el identificador público es el ulid; el id interno no sale de la API. */
             id: string;
-            /**
-             * @description D-3, transitorio: número visible de la devolución (= id interno), solo para mostrarlo;
-             *     lo reemplaza el folio de DAT-07.
-             */
-            numero: number;
             folio: string | null;
             /** Format: date-time */
             fecha: string;
@@ -3186,18 +3163,11 @@ export interface components {
             tipo: "devolucion" | "cambio";
             venta?: {
                 id: string;
-                /** @description D-3, transitorio: el número de la venta origen, para mostrarla. */
-                numero: number;
                 folio: string | null;
                 cliente_nombre: string;
             } | null;
             venta_sombra_id: string | null;
             venta_sombra_folio: string | null;
-            /**
-             * @description D-3, transitorio: número visible de la venta sombra (= id interno), solo para mostrarlo;
-             *     lo reemplaza el folio de DAT-07.
-             */
-            venta_sombra_numero: number | null;
             monto_devolucion: string;
             monto_cambio: string;
             diferencia: string;
@@ -3499,6 +3469,31 @@ export interface components {
                 mensaje_ticket: string | null;
             };
         };
+        /** ImpresoVentaLineaResource */
+        ImpresoVentaLineaResource: {
+            id: string;
+            variante_id: number;
+            variante: {
+                id: number;
+                nombre: string | null;
+                producto_nombre: string;
+            } | null;
+            cantidad: string;
+            precio_unitario: string;
+            descuento_aplicado: string;
+            subtotal: string;
+            /** @description DAT-03: la foto de la línea, nunca el catálogo actual. */
+            lista_precio_nombre: string | null;
+            regla_nombre: string | null;
+            tasa_impuesto: string;
+            exento: boolean;
+            impuesto: string;
+            unidad_medida_id: number;
+            presentacion_id?: number | null;
+            presentacion_nombre?: string;
+            factor?: string;
+            unidad_medida_nombre: string | null;
+        };
         /** ImpresoVentaResource */
         ImpresoVentaResource: {
             encabezado: {
@@ -3511,7 +3506,7 @@ export interface components {
                 fecha: string | null;
                 usuario: string | null;
             };
-            lineas: components["schemas"]["VentaLineaResource"][];
+            lineas: components["schemas"]["ImpresoVentaLineaResource"][];
             totales: {
                 total: string;
                 descuento_cupon: string;
@@ -3650,22 +3645,12 @@ export interface components {
         NotaCreditoResource: {
             /** @description DAT-08: el identificador público es el ulid; el id interno no sale de la API. */
             id: string;
-            /**
-             * @description D-3, transitorio: número visible de la nota (= id interno), solo para mostrarlo; lo
-             *     reemplaza el folio de DAT-07.
-             */
-            numero: number;
             folio?: string;
             cliente?: {
                 id: string;
                 nombre: string;
             };
             devolucion_id: string | null;
-            /**
-             * @description D-3, transitorio: número visible de la devolución de origen (= id interno), solo para
-             *     mostrarlo; lo reemplaza el folio de DAT-07.
-             */
-            devolucion_numero: number | null;
             monto_original: string;
             saldo_disponible: string;
             /** Format: date-time */
@@ -3680,8 +3665,7 @@ export interface components {
                 created_at: string;
                 venta: {
                     id: string;
-                    /** @description D-3, transitorio: el número de la venta, para mostrarla. */
-                    numero: number;
+                    folio: string | null;
                     fecha: string;
                     total: string;
                 } | null;
@@ -3693,8 +3677,6 @@ export interface components {
         OrdenProduccionResource: {
             /** @description DAT-08: el identificador público es el ulid; el id interno no sale de la API. */
             id: string;
-            /** @description D-3, transitorio: número visible de la orden (= id interno); lo reemplaza el folio de DAT-07. */
-            numero: number;
             folio: string | null;
             receta?: {
                 id: number;
@@ -3783,8 +3765,6 @@ export interface components {
         PlanPagoResource: {
             /** @description DAT-08: el identificador público es el ulid; el id interno no sale de la API. */
             id: string;
-            /** @description D-3, transitorio: número visible del plan (= id interno); lo reemplaza el folio de DAT-07. */
-            numero: number;
             folio?: string;
             cliente?: {
                 id: string;
@@ -4191,11 +4171,6 @@ export interface components {
             lista_precio_id: number | null;
             /** @description DAT-08: el identificador público es el ulid; el id interno no sale de la API. */
             id: string;
-            /**
-             * @description D-3, transitorio: número visible del documento (= id interno), solo para mostrarlo y
-             *     para buscar la venta en la devolución; lo reemplaza el folio de DAT-07.
-             */
-            numero: number;
             folio: string | null;
             /** Format: date-time */
             fecha: string;
@@ -4356,6 +4331,7 @@ export type GuardarTerminalRequest = components['schemas']['GuardarTerminalReque
 export type GuardarUnidadMedidaRequest = components['schemas']['GuardarUnidadMedidaRequest'];
 export type ImpresoAbonoResource = components['schemas']['ImpresoAbonoResource'];
 export type ImpresoCorteResource = components['schemas']['ImpresoCorteResource'];
+export type ImpresoVentaLineaResource = components['schemas']['ImpresoVentaLineaResource'];
 export type ImpresoVentaResource = components['schemas']['ImpresoVentaResource'];
 export type InsumoResource = components['schemas']['InsumoResource'];
 export type InsumoStock = components['schemas']['InsumoStock'];
@@ -4441,9 +4417,9 @@ export interface operations {
     "apartado.store": {
         parameters: {
             query?: never;
-            header?: {
-                /** @description ULID opcional. Repetir la misma operación conserva la respuesta durante 24 horas. Una carga diferente con la misma llave devuelve 409. */
-                "Idempotency-Key"?: string;
+            header: {
+                /** @description ULID obligatorio. Repetir la misma operación conserva la respuesta durante 24 horas. Una carga diferente con la misma llave devuelve 409. */
+                "Idempotency-Key": string;
             };
             path?: never;
             cookie?: never;
@@ -4504,9 +4480,9 @@ export interface operations {
     "apartado.registrarAbono": {
         parameters: {
             query?: never;
-            header?: {
-                /** @description ULID opcional. Repetir la misma operación conserva la respuesta durante 24 horas. Una carga diferente con la misma llave devuelve 409. */
-                "Idempotency-Key"?: string;
+            header: {
+                /** @description ULID obligatorio. Repetir la misma operación conserva la respuesta durante 24 horas. Una carga diferente con la misma llave devuelve 409. */
+                "Idempotency-Key": string;
             };
             path: {
                 /** @description The apartado ulid */
@@ -4539,9 +4515,9 @@ export interface operations {
     "apartado.liquidar": {
         parameters: {
             query?: never;
-            header?: {
-                /** @description ULID opcional. Repetir la misma operación conserva la respuesta durante 24 horas. Una carga diferente con la misma llave devuelve 409. */
-                "Idempotency-Key"?: string;
+            header: {
+                /** @description ULID obligatorio. Repetir la misma operación conserva la respuesta durante 24 horas. Una carga diferente con la misma llave devuelve 409. */
+                "Idempotency-Key": string;
             };
             path: {
                 /** @description The apartado ulid */
@@ -4569,11 +4545,11 @@ export interface operations {
     "apartado.cancelar": {
         parameters: {
             query?: never;
-            header?: {
+            header: {
                 /** @description Token opaco de supervisor para la operación autorizada. */
                 "X-Autorizacion-Supervisor"?: string;
-                /** @description ULID opcional. Repetir la misma operación conserva la respuesta durante 24 horas. Una carga diferente con la misma llave devuelve 409. */
-                "Idempotency-Key"?: string;
+                /** @description ULID obligatorio. Repetir la misma operación conserva la respuesta durante 24 horas. Una carga diferente con la misma llave devuelve 409. */
+                "Idempotency-Key": string;
             };
             path: {
                 /** @description The apartado ulid */
@@ -5041,9 +5017,9 @@ export interface operations {
     "caja.abrir": {
         parameters: {
             query?: never;
-            header?: {
-                /** @description ULID opcional. Repetir la misma operación conserva la respuesta durante 24 horas. Una carga diferente con la misma llave devuelve 409. */
-                "Idempotency-Key"?: string;
+            header: {
+                /** @description ULID obligatorio. Repetir la misma operación conserva la respuesta durante 24 horas. Una carga diferente con la misma llave devuelve 409. */
+                "Idempotency-Key": string;
             };
             path?: never;
             cookie?: never;
@@ -5072,11 +5048,11 @@ export interface operations {
     "caja.cerrar": {
         parameters: {
             query?: never;
-            header?: {
+            header: {
                 /** @description Token opaco de supervisor para la operación autorizada. */
                 "X-Autorizacion-Supervisor"?: string;
-                /** @description ULID opcional. Repetir la misma operación conserva la respuesta durante 24 horas. Una carga diferente con la misma llave devuelve 409. */
-                "Idempotency-Key"?: string;
+                /** @description ULID obligatorio. Repetir la misma operación conserva la respuesta durante 24 horas. Una carga diferente con la misma llave devuelve 409. */
+                "Idempotency-Key": string;
             };
             path: {
                 /** @description The caja sesion ulid */
@@ -5453,9 +5429,9 @@ export interface operations {
     "compra.store": {
         parameters: {
             query?: never;
-            header?: {
-                /** @description ULID opcional. Repetir la misma operación conserva la respuesta durante 24 horas. Una carga diferente con la misma llave devuelve 409. */
-                "Idempotency-Key"?: string;
+            header: {
+                /** @description ULID obligatorio. Repetir la misma operación conserva la respuesta durante 24 horas. Una carga diferente con la misma llave devuelve 409. */
+                "Idempotency-Key": string;
             };
             path?: never;
             cookie?: never;
@@ -5474,7 +5450,6 @@ export interface operations {
                     "application/json": {
                         data: {
                             id: string;
-                            numero: number;
                             folio: string;
                             total: string;
                         };
@@ -5759,9 +5734,9 @@ export interface operations {
     "cotizacion.convertir": {
         parameters: {
             query?: never;
-            header?: {
-                /** @description ULID opcional. Repetir la misma operación conserva la respuesta durante 24 horas. Una carga diferente con la misma llave devuelve 409. */
-                "Idempotency-Key"?: string;
+            header: {
+                /** @description ULID obligatorio. Repetir la misma operación conserva la respuesta durante 24 horas. Una carga diferente con la misma llave devuelve 409. */
+                "Idempotency-Key": string;
             };
             path: {
                 /** @description The cotizacion ulid */
@@ -6118,9 +6093,9 @@ export interface operations {
     "cuentaCobrar.registrarAbono": {
         parameters: {
             query?: never;
-            header?: {
-                /** @description ULID opcional. Repetir la misma operación conserva la respuesta durante 24 horas. Una carga diferente con la misma llave devuelve 409. */
-                "Idempotency-Key"?: string;
+            header: {
+                /** @description ULID obligatorio. Repetir la misma operación conserva la respuesta durante 24 horas. Una carga diferente con la misma llave devuelve 409. */
+                "Idempotency-Key": string;
             };
             path: {
                 /** @description The cuenta cobrar ulid */
@@ -6163,9 +6138,9 @@ export interface operations {
     "cuentaCobrar.anular": {
         parameters: {
             query?: never;
-            header?: {
-                /** @description ULID opcional. Repetir la misma operación conserva la respuesta durante 24 horas. Una carga diferente con la misma llave devuelve 409. */
-                "Idempotency-Key"?: string;
+            header: {
+                /** @description ULID obligatorio. Repetir la misma operación conserva la respuesta durante 24 horas. Una carga diferente con la misma llave devuelve 409. */
+                "Idempotency-Key": string;
             };
             path: {
                 /** @description The cuenta cobrar ulid */
@@ -6288,9 +6263,9 @@ export interface operations {
     "cuentaPagar.registrarPago": {
         parameters: {
             query?: never;
-            header?: {
-                /** @description ULID opcional. Repetir la misma operación conserva la respuesta durante 24 horas. Una carga diferente con la misma llave devuelve 409. */
-                "Idempotency-Key"?: string;
+            header: {
+                /** @description ULID obligatorio. Repetir la misma operación conserva la respuesta durante 24 horas. Una carga diferente con la misma llave devuelve 409. */
+                "Idempotency-Key": string;
             };
             path: {
                 /** @description The cuenta pagar ulid */
@@ -6333,9 +6308,9 @@ export interface operations {
     "cuentaPagar.anular": {
         parameters: {
             query?: never;
-            header?: {
-                /** @description ULID opcional. Repetir la misma operación conserva la respuesta durante 24 horas. Una carga diferente con la misma llave devuelve 409. */
-                "Idempotency-Key"?: string;
+            header: {
+                /** @description ULID obligatorio. Repetir la misma operación conserva la respuesta durante 24 horas. Una carga diferente con la misma llave devuelve 409. */
+                "Idempotency-Key": string;
             };
             path: {
                 /** @description The cuenta pagar ulid */
@@ -6739,11 +6714,11 @@ export interface operations {
     "devolucion.store": {
         parameters: {
             query?: never;
-            header?: {
+            header: {
                 /** @description Token opaco de supervisor para la operación autorizada. */
                 "X-Autorizacion-Supervisor"?: string;
-                /** @description ULID opcional. Repetir la misma operación conserva la respuesta durante 24 horas. Una carga diferente con la misma llave devuelve 409. */
-                "Idempotency-Key"?: string;
+                /** @description ULID obligatorio. Repetir la misma operación conserva la respuesta durante 24 horas. Una carga diferente con la misma llave devuelve 409. */
+                "Idempotency-Key": string;
             };
             path?: never;
             cookie?: never;
@@ -6763,7 +6738,7 @@ export interface operations {
                         data: components["schemas"]["DevolucionResource"] & Record<string, never>;
                         nota_credito: {
                             id: string;
-                            numero: number;
+                            folio: string;
                             monto_original: string;
                         } | null;
                     };
@@ -6901,9 +6876,9 @@ export interface operations {
     "gasto.store": {
         parameters: {
             query?: never;
-            header?: {
-                /** @description ULID opcional. Repetir la misma operación conserva la respuesta durante 24 horas. Una carga diferente con la misma llave devuelve 409. */
-                "Idempotency-Key"?: string;
+            header: {
+                /** @description ULID obligatorio. Repetir la misma operación conserva la respuesta durante 24 horas. Una carga diferente con la misma llave devuelve 409. */
+                "Idempotency-Key": string;
             };
             path?: never;
             cookie?: never;
@@ -6962,9 +6937,9 @@ export interface operations {
     "giftCard.store": {
         parameters: {
             query?: never;
-            header?: {
-                /** @description ULID opcional. Repetir la misma operación conserva la respuesta durante 24 horas. Una carga diferente con la misma llave devuelve 409. */
-                "Idempotency-Key"?: string;
+            header: {
+                /** @description ULID obligatorio. Repetir la misma operación conserva la respuesta durante 24 horas. Una carga diferente con la misma llave devuelve 409. */
+                "Idempotency-Key": string;
             };
             path?: never;
             cookie?: never;
@@ -7020,9 +6995,9 @@ export interface operations {
     "giftCard.recargar": {
         parameters: {
             query?: never;
-            header?: {
-                /** @description ULID opcional. Repetir la misma operación conserva la respuesta durante 24 horas. Una carga diferente con la misma llave devuelve 409. */
-                "Idempotency-Key"?: string;
+            header: {
+                /** @description ULID obligatorio. Repetir la misma operación conserva la respuesta durante 24 horas. Una carga diferente con la misma llave devuelve 409. */
+                "Idempotency-Key": string;
             };
             path: {
                 /** @description The gift card ulid */
@@ -7055,9 +7030,9 @@ export interface operations {
     "giftCard.cancelar": {
         parameters: {
             query?: never;
-            header?: {
-                /** @description ULID opcional. Repetir la misma operación conserva la respuesta durante 24 horas. Una carga diferente con la misma llave devuelve 409. */
-                "Idempotency-Key"?: string;
+            header: {
+                /** @description ULID obligatorio. Repetir la misma operación conserva la respuesta durante 24 horas. Una carga diferente con la misma llave devuelve 409. */
+                "Idempotency-Key": string;
             };
             path: {
                 /** @description The gift card ulid */
@@ -7186,9 +7161,8 @@ export interface operations {
                                 total: string;
                             };
                             apartados_por_vencer: {
-                                /** @description DAT-08: ulid como id público; `numero` es el transitorio de D-3 (DAT-07). */
                                 id: string;
-                                numero: number;
+                                folio: unknown;
                                 cliente_nombre: string | null;
                                 /** Format: date-time */
                                 fecha_vencimiento: string;
@@ -8422,9 +8396,9 @@ export interface operations {
     "planPago.crearPlan": {
         parameters: {
             query?: never;
-            header?: {
-                /** @description ULID opcional. Repetir la misma operación conserva la respuesta durante 24 horas. Una carga diferente con la misma llave devuelve 409. */
-                "Idempotency-Key"?: string;
+            header: {
+                /** @description ULID obligatorio. Repetir la misma operación conserva la respuesta durante 24 horas. Una carga diferente con la misma llave devuelve 409. */
+                "Idempotency-Key": string;
             };
             path: {
                 /** @description The venta ulid */
@@ -8457,9 +8431,9 @@ export interface operations {
     "planPago.pagarCuota": {
         parameters: {
             query?: never;
-            header?: {
-                /** @description ULID opcional. Repetir la misma operación conserva la respuesta durante 24 horas. Una carga diferente con la misma llave devuelve 409. */
-                "Idempotency-Key"?: string;
+            header: {
+                /** @description ULID obligatorio. Repetir la misma operación conserva la respuesta durante 24 horas. Una carga diferente con la misma llave devuelve 409. */
+                "Idempotency-Key": string;
             };
             path: {
                 /** @description The plan ulid */
@@ -8706,9 +8680,9 @@ export interface operations {
     "prestamo.registrarPago": {
         parameters: {
             query?: never;
-            header?: {
-                /** @description ULID opcional. Repetir la misma operación conserva la respuesta durante 24 horas. Una carga diferente con la misma llave devuelve 409. */
-                "Idempotency-Key"?: string;
+            header: {
+                /** @description ULID obligatorio. Repetir la misma operación conserva la respuesta durante 24 horas. Una carga diferente con la misma llave devuelve 409. */
+                "Idempotency-Key": string;
             };
             path: {
                 id: number;
@@ -10412,9 +10386,7 @@ export interface operations {
                 content: {
                     "application/json": {
                         data: {
-                            /** @description DAT-08: ulid como id público; `numero` es el transitorio de D-3 (DAT-07). */
                             id: string;
-                            numero: number;
                             folio: string;
                             fecha: string;
                             total: string;
@@ -10432,11 +10404,6 @@ export interface operations {
     "venta.index": {
         parameters: {
             query?: {
-                /**
-                 * @description D-7, transitorio: la devolución busca la venta por su `numero` (= id interno) hasta que
-                 *      exista el folio de DAT-07. Un valor no numérico no encuentra nada.
-                 */
-                filtro_numero?: string;
                 filtro_folio?: string;
                 sort_field?: string;
             };
@@ -10468,11 +10435,11 @@ export interface operations {
     "venta.store": {
         parameters: {
             query?: never;
-            header?: {
+            header: {
                 /** @description Token opaco de supervisor para la operación autorizada. */
                 "X-Autorizacion-Supervisor"?: string;
-                /** @description ULID opcional. Repetir la misma operación conserva la respuesta durante 24 horas. Una carga diferente con la misma llave devuelve 409. */
-                "Idempotency-Key"?: string;
+                /** @description ULID obligatorio. Repetir la misma operación conserva la respuesta durante 24 horas. Una carga diferente con la misma llave devuelve 409. */
+                "Idempotency-Key": string;
             };
             path?: never;
             cookie?: never;
@@ -10621,11 +10588,11 @@ export interface operations {
     "venta.anular": {
         parameters: {
             query?: never;
-            header?: {
+            header: {
                 /** @description Token opaco de supervisor para la operación autorizada. */
                 "X-Autorizacion-Supervisor"?: string;
-                /** @description ULID opcional. Repetir la misma operación conserva la respuesta durante 24 horas. Una carga diferente con la misma llave devuelve 409. */
-                "Idempotency-Key"?: string;
+                /** @description ULID obligatorio. Repetir la misma operación conserva la respuesta durante 24 horas. Una carga diferente con la misma llave devuelve 409. */
+                "Idempotency-Key": string;
             };
             path: {
                 /** @description The venta ulid */

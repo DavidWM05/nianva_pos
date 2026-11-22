@@ -9,14 +9,17 @@ use App\Modules\Inventario\Models\ProductoVariante;
 use App\Modules\Nucleo\Models\Permiso;
 use App\Modules\Nucleo\Models\Rol;
 use App\Modules\Nucleo\Models\Usuario;
+use App\Modules\Nucleo\Support\AccionSupervisor;
 use App\Modules\Nucleo\Support\MetodoEfectivo;
 use App\Modules\Tpv\Models\Venta;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\Support\AutorizaOperaciones;
 use Tests\Support\PreparaNegocio;
 use Tests\TestCase;
 
 class OperacionesSensiblesTest extends TestCase
 {
+    use AutorizaOperaciones;
     use PreparaNegocio;
     use RefreshDatabase;
 
@@ -46,8 +49,9 @@ class OperacionesSensiblesTest extends TestCase
     public function test_operaciones_exitosas_dejan_auditoria_y_la_fallida_no(): void
     {
         $venta = $this->crearVenta();
+        $datosSupervisor1 = ['motivo' => 'prueba'];
         $this->actingAs($this->usuario)
-            ->patchJson("/api/v1/ventas/{$venta->ulid}/anular", ['motivo' => 'prueba'])
+            ->patchJson("/api/v1/ventas/{$venta->ulid}/anular", $datosSupervisor1, ['X-Autorizacion-Supervisor' => self::conSupervisor($this->usuario, AccionSupervisor::AnularVenta, $datosSupervisor1, $venta->ulid)->token])
             ->assertOk();
         $this->assertGreaterThan(0, $this->auditoria('ventas', $venta->id));
 
@@ -63,8 +67,9 @@ class OperacionesSensiblesTest extends TestCase
         $this->assertSame($antes, $this->auditoria('ventas', $anulada->id));
 
         $apartado = $this->crearApartado();
+        $datosSupervisor2 = ['motivo' => 'prueba'];
         $this->actingAs($this->usuario)
-            ->patchJson("/api/v1/apartados/{$apartado->ulid}/cancelar", ['motivo' => 'prueba'])
+            ->patchJson("/api/v1/apartados/{$apartado->ulid}/cancelar", $datosSupervisor2, ['X-Autorizacion-Supervisor' => self::conSupervisor($this->usuario, AccionSupervisor::CancelarApartado, $datosSupervisor2, $apartado->ulid)->token])
             ->assertOk();
         $this->assertGreaterThan(0, $this->auditoria('apartados', $apartado->id));
 
@@ -76,8 +81,9 @@ class OperacionesSensiblesTest extends TestCase
             ])->assertOk();
         $this->assertGreaterThan(0, $this->auditoria('productos', $producto->id));
 
+        $datosSupervisor3 = ['conteos' => [['metodo_pago_id' => MetodoEfectivo::id(), 'monto' => 0]]];
         $this->actingAs($this->usuario)
-            ->patchJson("/api/v1/caja/{$this->caja->ulid}/cerrar", ['conteos' => [['metodo_pago_id' => MetodoEfectivo::id(), 'monto' => 0]]])
+            ->patchJson("/api/v1/caja/{$this->caja->ulid}/cerrar", $datosSupervisor3, ['X-Autorizacion-Supervisor' => self::conSupervisor($this->usuario, AccionSupervisor::CerrarCaja, $datosSupervisor3, $this->caja->ulid)->token])
             ->assertOk();
         $this->assertGreaterThan(0, $this->auditoria('caja_sesiones', $this->caja->id));
 

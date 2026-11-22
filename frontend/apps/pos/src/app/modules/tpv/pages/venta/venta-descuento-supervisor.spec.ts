@@ -34,7 +34,7 @@ describe('VentaComponent (descuento y supervisor)', () => {
   const cajaAbierta: CajaActual = {
     sesion: {
       id: ulidDePrueba(1),
-      numero: 1,
+      folio: 'C-1-1',
       sucursal_id: 1,
       usuario_id: 1,
       monto_apertura: '500.00',
@@ -54,7 +54,7 @@ describe('VentaComponent (descuento y supervisor)', () => {
     respuestas = [];
     const registrar = vi.fn((payload: Record<string, unknown>, llave?: string, token?: string) => {
       llamadas.push({ payload, llave, token });
-      return (respuestas.shift() ?? (() => of({ id: ulidDePrueba(7), numero: 7, total: 190 })))();
+      return (respuestas.shift() ?? (() => of({ id: ulidDePrueba(7), folio: 'V-1-7', total: 190 })))();
     });
 
     await TestBed.configureTestingModule({

@@ -14,8 +14,6 @@ export interface DevolucionVentaResumen {
   folio?: string | null;
   /** DAT-08: ulid de la venta origen. */
   id: string;
-  /** D-3, transitorio: número visible de la venta; lo reemplaza el folio de DAT-07. */
-  numero: number;
   cliente_nombre: string | null;
 }
 
@@ -51,14 +49,10 @@ export interface Devolucion {
   venta_sombra_folio?: string | null;
   /** DAT-08: ulid; es el que va en la ruta /devoluciones/:id y en la API. */
   id: string;
-  /** D-3, transitorio: número visible (= id interno); lo reemplaza el folio de DAT-07. */
-  numero: number;
   fecha: string;
   tipo: TipoDevolucion;
   venta?: DevolucionVentaResumen | null;
   venta_sombra_id: string | null;
-  /** D-3, transitorio: número visible de la venta sombra; lo reemplaza el folio de DAT-07. */
-  venta_sombra_numero: number | null;
   monto_devolucion: string;
   monto_cambio: string;
   /** Negativo = reembolso al cliente; positivo = cobro adicional. Ya viene calculado por el backend. */
@@ -112,7 +106,6 @@ export interface DevolucionFormPayload {
 export interface DevolucionNotaCreditoInfo {
   /** DAT-08: ulid de la nota. */
   id: string;
-  /** D-3, transitorio: número visible de la nota. */
-  numero: number;
+  folio: string | null;
   monto_original: string;
 }

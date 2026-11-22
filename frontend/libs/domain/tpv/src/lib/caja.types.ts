@@ -11,8 +11,6 @@ export interface CajaSesion {
   folio?: components['schemas']['CajaSesionResource']['folio'];
   /** DAT-08: ulid de la sesión. */
   id: string;
-  /** D-3, transitorio: número visible (= id interno); lo reemplaza el folio de DAT-07. */
-  numero: number;
   sucursal_id: number;
   usuario_id: number;
   monto_apertura: string;

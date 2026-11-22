@@ -11,11 +11,13 @@ use App\Modules\Devoluciones\Models\DevolucionItem;
 use App\Modules\Inventario\Models\CompraDetalle;
 use App\Modules\Inventario\Models\InventarioStock;
 use App\Modules\Inventario\Models\ProductoVariante;
+use App\Modules\Nucleo\Support\AccionSupervisor;
 use App\Modules\Tpv\Models\Venta;
 use App\Modules\Tpv\Models\VentaDetalle;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Schema;
+use Tests\Support\AutorizaOperaciones;
 use Tests\Support\PreparaNegocio;
 use Tests\TestCase;
 
@@ -26,6 +28,7 @@ use Tests\TestCase;
  */
 class FotoPorLineaTest extends TestCase
 {
+    use AutorizaOperaciones;
     use PreparaNegocio;
     use RefreshDatabase;
 
@@ -125,12 +128,13 @@ class FotoPorLineaTest extends TestCase
         $venta = $this->crearVenta();
         $this->cambiarCatalogo();
 
-        $this->actingAs($this->usuario)->postJson('/api/v1/devoluciones', [
+        $datosSupervisor1 = [
             'venta_id' => $venta->ulid,
             'tipo' => 'devolucion',
             'items_devueltos' => [['variante_id' => $this->variante->id, 'cantidad' => 1, 'va_a_merma' => false]],
             'pagos' => [['metodo_pago_id' => $this->metodoPago->id, 'monto' => 100]],
-        ])->assertCreated();
+        ];
+        $this->actingAs($this->usuario)->postJson('/api/v1/devoluciones', $datosSupervisor1, ['X-Autorizacion-Supervisor' => self::conSupervisor($this->usuario, AccionSupervisor::Reembolsar, $datosSupervisor1, $venta->ulid)->token])->assertCreated();
 
         $devuelto = $this->foto(DevolucionItem::query()->where('tipo', 'devuelto')->firstOrFail());
         $original = $this->foto(VentaDetalle::query()->where('venta_id', $venta->id)->firstOrFail());

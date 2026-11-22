@@ -4,7 +4,7 @@ import { crearSupervisor } from './backend';
 import type { ErroresDePantalla } from './humo';
 
 /**
- * Fase 4, B2 (SEG-05): con SUPERVISOR_EXIGIR (backend-server.mjs), las operaciones de dinero
+ * Fase 4 (SEG-05): las operaciones de dinero
  * protegidas abren el dialogo "Autorización de supervisor". La supervisora del e2e tiene los roles
  * del vendedor del escenario, nombre propio para elegirla y PIN de caja.
  */

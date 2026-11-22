@@ -11,7 +11,7 @@
             <dt>Proveedor</dt>
             <dd>{{ c.proveedor?.razon_social ?? 'Sin proveedor' }}</dd>
             <dt>Compra origen</dt>
-            <dd>Compra #{{ c.compra_numero }}</dd>
+            <dd>Compra {{ c.folio ?? 'sin folio' }}</dd>
             <dt>Creada</dt>
             <dd>{{ c.created_at | fechaHora }}</dd>
             <dt>Vence</dt>

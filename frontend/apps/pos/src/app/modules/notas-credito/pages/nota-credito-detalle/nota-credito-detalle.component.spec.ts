@@ -30,10 +30,9 @@ describe('NotaCreditoDetalleComponent', () => {
   function notaCon(overrides: Partial<NotaCredito>): NotaCredito {
     return {
       id: ulidDePrueba(5),
-      numero: 5,
+      folio: 'D-1-3',
       cliente: { id: ulidDePrueba(9), nombre: 'Juan Pérez' },
       devolucion_id: ulidDePrueba(3),
-      devolucion_numero: 3,
       monto_original: '500.00',
       saldo_disponible: '300.00',
       fecha_expiracion: '2026-12-01',
@@ -83,12 +82,12 @@ describe('NotaCreditoDetalleComponent', () => {
   it('con usos, lista cada venta vinculada con su monto', async () => {
     await crearComponente(
       notaCon({
-        usos: [{ id: ulidDePrueba(1), venta_id: ulidDePrueba(42), monto_usado: '200.00', created_at: '2026-07-20T10:00:00Z', venta: { id: ulidDePrueba(42), numero: 42, fecha: '2026-07-20T10:00:00Z', total: '200.00' } }],
+        usos: [{ id: ulidDePrueba(1), venta_id: ulidDePrueba(42), monto_usado: '200.00', created_at: '2026-07-20T10:00:00Z', venta: { id: ulidDePrueba(42), folio: 'V-1-42', fecha: '2026-07-20T10:00:00Z', total: '200.00' } }],
       }),
     );
 
     const texto = (fixture.nativeElement as HTMLElement).textContent ?? '';
-    expect(texto).toContain('Venta #42');
+    expect(texto).toContain('Venta V-1-42');
     expect(texto).toContain('200.00');
   });
 });

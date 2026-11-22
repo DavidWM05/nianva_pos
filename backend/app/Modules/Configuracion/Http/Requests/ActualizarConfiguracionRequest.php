@@ -33,6 +33,8 @@ class ActualizarConfiguracionRequest extends SolicitudNegocio
             'cupon_combinable_con_promociones' => ['sometimes', 'boolean'],
             'tasa_iva_default' => ['sometimes', 'numeric', 'decimal:0,4', 'regex:/\A(?:0|8|16)(?:\.0{1,4})?\z/'],
             'moneda' => ['required', 'string', 'max:5'],
+            'margen_descuento_supervisor' => ['sometimes', 'numeric', 'decimal:0,2', 'min:0', 'max:9999999999.99'],
+            'umbral_descuadre_supervisor' => ['sometimes', 'numeric', 'decimal:0,2', 'min:0', 'max:9999999999.99'],
             'zona_horaria' => ['sometimes', 'string', 'timezone:all'],
             'mensaje_ticket' => ['nullable', 'string'],
             'logo_url' => ['nullable', 'string', 'max:500', 'url'],
@@ -70,6 +72,8 @@ class ActualizarConfiguracionRequest extends SolicitudNegocio
             backupFrecuencia: (string) $v['backup_frecuencia'],
             codigoBarrasAutomatico: (bool) $v['codigo_barras_automatico'],
             presentes: array_keys($v),
+            margenDescuentoSupervisor: isset($v['margen_descuento_supervisor']) ? (string) $v['margen_descuento_supervisor'] : null,
+            umbralDescuadreSupervisor: isset($v['umbral_descuadre_supervisor']) ? (string) $v['umbral_descuadre_supervisor'] : null,
             cuponCombinableConPromociones: isset($v['cupon_combinable_con_promociones']) ? (bool) $v['cupon_combinable_con_promociones'] : null,
             tasaIvaDefault: isset($v['tasa_iva_default']) ? (string) $v['tasa_iva_default'] : null,
         );

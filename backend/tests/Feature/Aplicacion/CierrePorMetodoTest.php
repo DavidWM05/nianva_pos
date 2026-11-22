@@ -12,6 +12,7 @@ use App\Aplicacion\Ventas\AnularVenta;
 use App\Aplicacion\Ventas\RegistrarVenta;
 use App\Modules\Gastos\Dtos\CrearGastoDto;
 use App\Modules\Nucleo\Models\MetodoPago;
+use App\Modules\Nucleo\Support\AccionSupervisor;
 use App\Modules\Nucleo\Support\MetodoEfectivo;
 use App\Modules\Tpv\Dtos\AbrirCajaDto;
 use App\Modules\Tpv\Dtos\AnularVentaDto;
@@ -25,11 +26,13 @@ use App\Modules\Tpv\Models\CajaMovimiento;
 use App\Modules\Tpv\Models\CajaSesionSaldo;
 use App\Modules\Tpv\Models\Venta;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\Support\AutorizaOperaciones;
 use Tests\Support\PreparaArq04b;
 use Tests\TestCase;
 
 class CierrePorMetodoTest extends TestCase
 {
+    use AutorizaOperaciones;
     use PreparaArq04b;
     use RefreshDatabase;
 
@@ -89,7 +92,7 @@ class CierrePorMetodoTest extends TestCase
         $venta = $this->vender($d);
         $cerrada = app(CerrarCaja::class)->ejecutar($d['caja'], [['metodo_pago_id' => $d['metodo']->id, 'monto' => 150]])['sesion'];
         $actual = app(AbrirCaja::class)->ejecutar(new AbrirCajaDto(20), $d['usuario']);
-        app(AnularVenta::class)->ejecutar(new AnularVentaDto('Anulación tardía'), $venta, $d['usuario']);
+        app(AnularVenta::class)->ejecutar(new AnularVentaDto('Anulación tardía'), $venta, $d['usuario'], self::conSupervisor($d['usuario'], AccionSupervisor::AnularVenta, [], $venta->ulid));
 
         $this->assertSame('150.00', $cerrada->fresh()->getAttribute('saldo_teorico'));
         $this->assertSame('150.00', $cerrada->fresh()->monto_cierre);

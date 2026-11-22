@@ -20,7 +20,6 @@ describe('DevolucionFormComponent', () => {
 
   const ventaOrigen: Venta = {
     id: ulidDePrueba(55),
-    numero: 55,
     folio: 'V-1-55',
     fecha: '2026-07-01T10:00:00.000000Z',
     cliente: { id: ulidDePrueba(9), nombre: 'Publico General' },

@@ -42,9 +42,8 @@ class ObtenerResumenInicio
                 'total' => round((float) (clone $ventasHoy)->sum('total'), 2),
             ],
             'apartados_por_vencer' => $apartadosPorVencer->map(fn (Apartado $apartado) => [
-                // DAT-08: ulid como id público; `numero` es el transitorio de D-3 (DAT-07).
                 'id' => (string) $apartado->getAttribute('ulid'),
-                'numero' => (int) $apartado->getKey(),
+                'folio' => $apartado->getAttribute('folio'),
                 'cliente_nombre' => $apartado->cliente === null ? null : $apartado->cliente->nombre,
                 'fecha_vencimiento' => $apartado->fecha_vencimiento ?? throw new \LogicException('Apartado por vencer sin fecha de vencimiento.'),
                 'total' => $apartado->total,

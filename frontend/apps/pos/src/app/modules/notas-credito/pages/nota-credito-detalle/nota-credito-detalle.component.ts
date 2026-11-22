@@ -97,7 +97,7 @@ export class NotaCreditoDetalleComponent implements OnInit {
   protected readonly historial = computed(() =>
     (this.notaCredito()?.usos ?? []).map((fila) => ({
       ...fila,
-      ventaTexto: 'Venta #' + (fila.venta?.numero ?? '—'),
+      ventaTexto: 'Venta ' + (fila.venta?.folio ?? 'sin folio'),
     })),
   );
   protected readonly filasHistorial = computed(() =>

@@ -14,7 +14,6 @@ import { ulidDePrueba } from '../../../../testing/ulid-de-prueba';
 describe('VentaDetalleComponent con libs/ui', () => {
   const venta: Venta = {
     id: ulidDePrueba(42),
-    numero: 42,
     folio: 'V-1-42',
     fecha: '2026-07-01T10:00:00Z',
     cliente: { id: ulidDePrueba(1), nombre: 'Ana' },

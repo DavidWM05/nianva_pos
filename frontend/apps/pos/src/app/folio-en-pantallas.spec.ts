@@ -10,12 +10,8 @@ import { describe, expect, it } from 'vitest';
  */
 const MODULOS = join(process.cwd(), 'apps', 'pos', 'src', 'app', 'modules');
 
-/**
- * Solo baja. Cada entrada con su razon:
- * - los usos de una nota de credito traen su venta sin folio (NotaCreditoResource.usos[].venta):
- *   falta en el servidor.
- */
-const PENDIENTES: string[] = ['notas-credito/pages/nota-credito-detalle/nota-credito-detalle.component.ts'];
+// Solo baja.
+const PENDIENTES: string[] = [];
 
 function archivos(): string[] {
   return readdirSync(MODULOS, { recursive: true, encoding: 'utf8' })
@@ -33,5 +29,10 @@ describe('Folio en las pantallas (DAT-07, F4-5)', () => {
 
   it('PENDIENTES solo baja: cada archivo de la lista todavia lee el numero', () => {
     expect(PENDIENTES.filter((ruta) => !muestraNumero(ruta))).toEqual([]);
+  });
+
+  it('ningun archivo de modules lee los campos *_numero retirados', () => {
+    const numeroRetirado = /(?:\.|\[\s*['"])\w+_numero\b/;
+    expect(archivos().filter((ruta) => numeroRetirado.test(readFileSync(join(MODULOS, ruta), 'utf8')))).toEqual([]);
   });
 });

@@ -12,6 +12,7 @@ use App\Modules\Inventario\Dtos\MovimientoInventarioDto;
 use App\Modules\Inventario\Models\InventarioStock;
 use App\Modules\Inventario\Models\Kardex;
 use App\Modules\Inventario\Models\ProductoVariante;
+use App\Modules\Nucleo\Support\AccionSupervisor;
 use App\Modules\Nucleo\Support\Dinero;
 use App\Modules\Produccion\Dtos\CrearOrdenProduccionDto;
 use App\Modules\Produccion\Dtos\CrearTransformacionDto;
@@ -21,11 +22,13 @@ use App\Modules\Produccion\Models\Receta;
 use App\Modules\Produccion\Models\RecetaIngrediente;
 use App\Modules\UnidadesMedida\Models\UnidadMedida;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\Support\AutorizaOperaciones;
 use Tests\Support\PreparaNegocio;
 use Tests\TestCase;
 
 class CantidadesFlujoTest extends TestCase
 {
+    use AutorizaOperaciones;
     use PreparaNegocio;
     use RefreshDatabase;
 
@@ -74,17 +77,19 @@ class CantidadesFlujoTest extends TestCase
         $id = $this->postJson('/api/v1/apartados', ['cliente_id' => $this->cliente->ulid,
             'items' => [['variante_id' => $this->variante->id, 'cantidad' => 0.5]],
         ])->assertCreated()->json('data.id');
-        $this->patchJson('/api/v1/apartados/'.$id.'/cancelar', ['motivo' => 'Prueba de fracción'])->assertOk();
+        $datosSupervisor1 = ['motivo' => 'Prueba de fracción'];
+        $this->patchJson('/api/v1/apartados/'.$id.'/cancelar', $datosSupervisor1, ['X-Autorizacion-Supervisor' => self::conSupervisor($this->usuario, AccionSupervisor::CancelarApartado, $datosSupervisor1, $id)->token])->assertOk();
         $this->assertSame(50, InventarioStock::where('variante_id', $this->variante->id)->value('stock_actual'));
     }
 
     public function test_devolver_medio_restituye_el_stock_y_reembolsa_su_importe(): void
     {
         $venta = $this->crearVenta();
-        $this->postJson('/api/v1/devoluciones', ['venta_id' => $venta->ulid, 'tipo' => 'devolucion',
+        $datosSupervisor1 = ['venta_id' => $venta->ulid, 'tipo' => 'devolucion',
             'items_devueltos' => [['variante_id' => $this->variante->id, 'cantidad' => 0.5]],
             'pagos' => [['metodo_pago_id' => $this->metodoPago->id, 'monto' => 50]],
-        ])->assertCreated()->assertJsonPath('data.items.0.cantidad', '0.500');
+        ];
+        $this->postJson('/api/v1/devoluciones', $datosSupervisor1, ['X-Autorizacion-Supervisor' => self::conSupervisor($this->usuario, AccionSupervisor::Reembolsar, $datosSupervisor1, $venta->ulid)->token])->assertCreated()->assertJsonPath('data.items.0.cantidad', '0.500');
         $this->assertSame(49.5, InventarioStock::where('variante_id', $this->variante->id)->value('stock_actual'));
     }
 

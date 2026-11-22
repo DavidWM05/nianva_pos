@@ -9,6 +9,7 @@ export function prepararSaldos50h(lectura = false): {
   venta: number;
   /** Folio de la venta (DAT-07): la factory no lo asigna, se le pone uno unico. */
   ventaFolio: string;
+  devolucionFolio: string;
 } {
   const backend = path.resolve(__dirname, '../../../../../backend');
   const codigo = String.raw`
@@ -26,6 +27,7 @@ $proveedor = App\Modules\Inventario\Models\Proveedor::factory()->create(['tenant
 $compra = App\Modules\Inventario\Models\Compra::factory()->create(['tenant_id' => $t, 'proveedor_id' => $proveedor->id, 'sucursal_id' => $usuario->sucursal_id, 'usuario_id' => $usuario->id, 'total' => 100]);
 $pagar = App\Modules\CuentasPagar\Models\CuentaPagar::factory()->create(['compra_id' => $compra->id]);
 $devolucion = App\Modules\Devoluciones\Models\Devolucion::factory()->create(['venta_id' => $venta->id, 'monto_devolucion' => 100]);
+$devolucion->forceFill(['folio' => 'D-E2E-'.$devolucion->id])->save();
 $nota = App\Modules\NotasCredito\Models\NotaCredito::factory()->create(['devolucion_id' => $devolucion->id]);
 if ($lectura) {
     App\Modules\GiftCards\Models\GiftCard::factory()->create(['tenant_id' => $t, 'cliente_id' => $cliente->id]);
@@ -33,7 +35,7 @@ if ($lectura) {
     App\Modules\VentasPlazos\Models\PlanPagoClienteCuota::factory()->create(['plan_pago_cliente_id' => $plan->id]);
     App\Modules\Crm\Models\Cliente::factory()->create(['tenant_id' => $t, 'nombre' => 'Cliente sin notas lectura 50h']);
 }
-echo json_encode(['cobrar' => $cobrar->id, 'pagar' => $pagar->id, 'nota' => $nota->id, 'venta' => $venta->id, 'ventaFolio' => $venta->folio]);
+echo json_encode(['cobrar' => $cobrar->id, 'pagar' => $pagar->id, 'nota' => $nota->id, 'venta' => $venta->id, 'ventaFolio' => $venta->folio, 'devolucionFolio' => $devolucion->folio]);
 `;
   return JSON.parse(
     execFileSync('php', ['-r', codigo], {

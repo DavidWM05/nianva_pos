@@ -16,7 +16,7 @@ describe('CuentasCobrarListComponent', () => {
   const cuentas: CuentaCobrar[] = [
     {
       id: ulidDePrueba(1),
-      numero: 1,
+      folio: 'V-1-1',
       venta_id: ulidDePrueba(42),
       cliente: { id: ulidDePrueba(9), nombre: 'Juan Pérez' },
       monto_total: '500.00',

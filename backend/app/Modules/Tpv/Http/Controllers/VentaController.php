@@ -57,9 +57,7 @@ class VentaController extends Controller
         $filas = [];
         foreach ($ventas as $venta) {
             $filas[] = [
-                // DAT-08: ulid como id público; `numero` es el transitorio de D-3 (DAT-07).
                 'id' => (string) $venta->getAttribute('ulid'),
-                'numero' => (int) $venta->getKey(),
                 'folio' => $venta->getAttribute('folio'),
                 'fecha' => $venta->getAttribute('fecha'),
                 'total' => DecimalApi::dinero($venta->getAttribute('total')),
@@ -80,15 +78,9 @@ class VentaController extends Controller
             $query->whereHas('cliente', fn ($q) => $q->where('nombre', 'like', "%{$clienteNombre}%"));
         }
 
-        // D-7, transitorio: la devolución busca la venta por su `numero` (= id interno) hasta que
-        // exista el folio de DAT-07. Un valor no numérico no encuentra nada.
-        $numero = $request->query('filtro_numero');
         $folio = $request->query('filtro_folio');
         if (is_string($folio) && $folio !== '') {
             $query->where('folio', $folio);
-        }
-        if (is_string($numero) && $numero !== '') {
-            $query->whereKey(ctype_digit($numero) ? (int) $numero : 0);
         }
 
         $sortField = $request->query('sort_field');

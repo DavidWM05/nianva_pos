@@ -18,14 +18,17 @@ use App\Modules\Nucleo\Models\Sucursal;
 use App\Modules\Nucleo\Models\Tenant;
 use App\Modules\Nucleo\Models\Usuario;
 use App\Modules\Nucleo\Services\TenantContext;
+use App\Modules\Nucleo\Support\AccionSupervisor;
 use App\Modules\Tpv\Dtos\AbrirCajaDto;
 use App\Modules\Tpv\Services\CajaService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\Support\AutorizaOperaciones;
 use Tests\Support\Bloqueos04e;
 use Tests\TestCase;
 
 class ApartadoControllerTest extends TestCase
 {
+    use AutorizaOperaciones;
     use RefreshDatabase;
 
     /**
@@ -215,7 +218,8 @@ class ApartadoControllerTest extends TestCase
             'pagos' => [['metodo_pago_id' => $ctx['efectivo']->id, 'monto' => 100]],
         ])->assertOk();
 
-        $respuesta = $this->patchJson("/api/v1/apartados/{$apartado['id']}/cancelar", ['motivo' => 'Cliente se arrepintio']);
+        $datosSupervisor1 = ['motivo' => 'Cliente se arrepintio'];
+        $respuesta = $this->patchJson("/api/v1/apartados/{$apartado['id']}/cancelar", $datosSupervisor1, ['X-Autorizacion-Supervisor' => self::conSupervisor($ctx['usuario'], AccionSupervisor::CancelarApartado, $datosSupervisor1, $apartado['id'])->token]);
 
         $respuesta->assertOk()
             ->assertJsonPath('data.estado', 'cancelado')

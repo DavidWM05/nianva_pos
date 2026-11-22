@@ -17,10 +17,9 @@ describe('NotasCreditoListComponent', () => {
   const notas: NotaCredito[] = [
     {
       id: ulidDePrueba(1),
-      numero: 1,
+      folio: 'D-1-3',
       cliente: { id: ulidDePrueba(9), nombre: 'Juan Pérez' },
       devolucion_id: ulidDePrueba(3),
-      devolucion_numero: 3,
       monto_original: '200.00',
       saldo_disponible: '200.00',
       fecha_expiracion: '2026-12-01',

@@ -27,7 +27,7 @@
             <dt>Devolución origen</dt>
             <dd>
               <a [routerLink]="['/devoluciones', nota.devolucion_id]"
-                >Devolución #{{ nota.devolucion_numero }}</a
+                >Devolución {{ nota.folio ?? 'sin folio' }}</a
               >
             </dd>
           </dl>

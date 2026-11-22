@@ -9,9 +9,11 @@ use App\Modules\Auditoria\Models\Auditoria;
 use App\Modules\Devoluciones\Models\Devolucion;
 use App\Modules\GiftCards\Models\GiftCard;
 use App\Modules\NotasCredito\Models\NotaCredito;
+use App\Modules\Nucleo\Support\AccionSupervisor;
 use App\Modules\Tpv\Models\VentaDetalle;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Str;
+use Tests\Support\AutorizaOperaciones;
 use Tests\Support\PreparaNegocio;
 use Tests\TestCase;
 
@@ -22,6 +24,7 @@ use Tests\TestCase;
  */
 class UlidApiVentasTest extends TestCase
 {
+    use AutorizaOperaciones;
     use PreparaNegocio;
     use RefreshDatabase;
 
@@ -79,16 +82,16 @@ class UlidApiVentasTest extends TestCase
         $datos = $this->getJson("/api/v1/ventas/{$venta->ulid}")->assertOk()->json('data');
 
         $this->assertSame($venta->ulid, $datos['id']);
-        $this->assertSame($venta->getKey(), $datos['numero']);
+        $this->assertArrayNotHasKey('numero', $datos);
         $linea = VentaDetalle::query()->where('venta_id', $venta->id)->firstOrFail();
         $this->assertSame($linea->ulid, $datos['detalles'][0]['id']);
 
         $apartado = $this->crearApartado();
         $this->getJson("/api/v1/apartados/{$apartado->ulid}")
-            ->assertJsonPath('data.numero', $apartado->getKey());
+            ->assertJsonMissingPath('data.numero');
         $this->getJson('/api/v1/caja/actual')
             ->assertJsonPath('data.id', $this->caja->ulid)
-            ->assertJsonPath('data.numero', $this->caja->getKey());
+            ->assertJsonMissingPath('data.numero');
     }
 
     public function test_las_referencias_publicadas_llevan_el_ulid_del_relacionado(): void
@@ -99,7 +102,7 @@ class UlidApiVentasTest extends TestCase
         $this->getJson("/api/v1/devoluciones/{$devolucion->ulid}")
             ->assertOk()
             ->assertJsonPath('data.venta.id', $venta->ulid)
-            ->assertJsonPath('data.venta.numero', $venta->getKey())
+            ->assertJsonMissingPath('data.venta.numero')
             ->assertJsonPath('data.venta_sombra_id', $venta->ulid);
 
         $nota = NotaCredito::factory()->create(['tenant_id' => $this->tenant->id, 'cliente_id' => $this->cliente->id, 'devolucion_id' => $devolucion->id]);
@@ -119,13 +122,13 @@ class UlidApiVentasTest extends TestCase
 
         $this->getJson("/api/v1/devoluciones/{$conSombra->ulid}")
             ->assertJsonPath('data.venta_sombra_id', $sombra->ulid)
-            ->assertJsonPath('data.venta_sombra_numero', $sombra->getKey());
+            ->assertJsonMissingPath('data.venta_sombra_numero');
         $this->getJson("/api/v1/devoluciones/{$sinSombra->ulid}")
             ->assertJsonPath('data.venta_sombra_id', null)
-            ->assertJsonPath('data.venta_sombra_numero', null);
+            ->assertJsonMissingPath('data.venta_sombra_numero');
         $this->getJson('/api/v1/devoluciones')
             ->assertOk()
-            ->assertJsonPath('data.0.venta_sombra_numero', fn ($valor) => $valor === null || is_int($valor));
+            ->assertJsonMissingPath('data.0.venta_sombra_numero');
     }
 
     public function test_la_nota_publica_el_folio_de_su_devolucion(): void
@@ -156,10 +159,10 @@ class UlidApiVentasTest extends TestCase
         $this->getJson("/api/v1/notas-credito/{$nota->ulid}")
             ->assertOk()
             ->assertJsonPath('data.devolucion_id', $devolucion->ulid)
-            ->assertJsonPath('data.devolucion_numero', $devolucion->getKey());
+            ->assertJsonMissingPath('data.devolucion_numero');
         $this->getJson('/api/v1/notas-credito')
             ->assertOk()
-            ->assertJsonPath('data.0.devolucion_numero', $devolucion->getKey());
+            ->assertJsonMissingPath('data.0.devolucion_numero');
     }
 
     public function test_la_devolucion_recibe_la_venta_y_la_linea_por_ulid(): void
@@ -180,11 +183,12 @@ class UlidApiVentasTest extends TestCase
         $this->postJson('/api/v1/devoluciones', ['venta_id' => $venta->ulid, 'tipo' => 'devolucion', 'items_devueltos' => [$item + ['venta_detalle_id' => $linea->getKey()]]])
             ->assertStatus(422)->assertJsonValidationErrors(['items_devueltos.0.venta_detalle_id']);
 
-        $this->postJson('/api/v1/devoluciones', [
+        $datosSupervisor1 = [
             'venta_id' => $venta->ulid, 'tipo' => 'devolucion',
             'items_devueltos' => [$item + ['venta_detalle_id' => $linea->ulid]],
             'pagos' => [['metodo_pago_id' => $this->metodoPago->id, 'monto' => 100]],
-        ])->assertCreated()->assertJsonPath('data.venta.id', $venta->ulid);
+        ];
+        $this->postJson('/api/v1/devoluciones', $datosSupervisor1, ['X-Autorizacion-Supervisor' => self::conSupervisor($this->usuario, AccionSupervisor::Reembolsar, $datosSupervisor1, $venta->ulid)->token])->assertCreated()->assertJsonPath('data.venta.id', $venta->ulid);
         $this->assertSame($venta->id, Devolucion::query()->latest('id')->firstOrFail()->venta_id);
     }
 
@@ -225,18 +229,23 @@ class UlidApiVentasTest extends TestCase
         $venta = $this->crearVenta();
         $this->crearVenta();
 
+        $sinFiltro = $this->getJson('/api/v1/ventas')->assertOk()->json();
         $this->getJson("/api/v1/ventas?filtro_numero={$venta->getKey()}")
             ->assertOk()
-            ->assertJsonCount(1, 'data')
-            ->assertJsonPath('data.0.id', $venta->ulid);
-        $this->getJson('/api/v1/ventas?filtro_numero=abc')->assertOk()->assertJsonCount(0, 'data');
-        $this->getJson("/api/v1/ventas?filtro_numero={$this->ventaB->getKey()}")->assertOk()->assertJsonCount(0, 'data');
+            ->assertExactJson($sinFiltro)
+            ->assertJsonFragment(['id' => $venta->ulid]);
+        $this->getJson('/api/v1/ventas?filtro_numero=abc')->assertOk()->assertExactJson($sinFiltro);
+        $this->getJson("/api/v1/ventas?filtro_numero={$this->ventaB->getKey()}")
+            ->assertOk()
+            ->assertExactJson($sinFiltro)
+            ->assertJsonMissing(['id' => $this->ventaB->ulid]);
     }
 
     public function test_la_auditoria_por_registro_recibe_el_ulid_de_los_documentos(): void
     {
         $venta = $this->crearVenta();
-        $this->patchJson("/api/v1/ventas/{$venta->ulid}/anular", ['motivo' => 'prueba'])->assertOk();
+        $datosSupervisor1 = ['motivo' => 'prueba'];
+        $this->patchJson("/api/v1/ventas/{$venta->ulid}/anular", $datosSupervisor1, ['X-Autorizacion-Supervisor' => self::conSupervisor($this->usuario, AccionSupervisor::AnularVenta, $datosSupervisor1, $venta->ulid)->token])->assertOk();
         $this->assertTrue(Auditoria::query()->where('tabla_afectada', 'ventas')->where('registro_id', $venta->id)->exists());
 
         $this->getJson("/api/v1/auditoria?tabla=ventas&registro_id={$venta->ulid}")

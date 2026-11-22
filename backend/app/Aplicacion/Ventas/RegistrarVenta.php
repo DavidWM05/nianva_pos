@@ -7,6 +7,7 @@ namespace App\Aplicacion\Ventas;
 use App\Aplicacion\Folios\Folios;
 use App\Aplicacion\Inventario\RegistrarMovimiento;
 use App\Aplicacion\Supervisor\Supervisor;
+use App\Modules\Configuracion\Models\ConfiguracionTenant;
 use App\Modules\GiftCards\Models\GiftCard;
 use App\Modules\GiftCards\Services\GiftCardService;
 use App\Modules\Inventario\Dtos\MovimientoInventarioDto;
@@ -27,6 +28,7 @@ use App\Modules\Precios\Support\LineaCarrito;
 use App\Modules\Tpv\Dtos\CrearVentaDto;
 use App\Modules\Tpv\Dtos\LineaVentaDto;
 use App\Modules\Tpv\Dtos\PagoDto;
+use App\Modules\Tpv\Exceptions\VentaTotalNegativoException;
 use App\Modules\Tpv\Models\CajaSesion;
 use App\Modules\Tpv\Models\Venta;
 use App\Modules\Tpv\Services\VentaService;
@@ -119,7 +121,12 @@ class RegistrarVenta
             $caja = CajaSesion::query()->withoutGlobalScope(TenantScopeViaRelacion::class)->where('sucursal_id', (int) $usuario->getAttribute('sucursal_id'))->where('estado', 'abierta')->latest('id')->lockForUpdate()->first();
             $notaCredito = null;
             $totalEstimado = round($subtotal - $descuentoManual - $descuentoCupon, 2);
-            if (Dinero::desde(sprintf('%.2F', $descuentoManual))->comparar(Dinero::desde((string) config('supervisor.margen_descuento'))) > 0) {
+            if ($caja !== null && $totalEstimado < 0) {
+                throw new VentaTotalNegativoException($subtotal, $descuentoManual, $descuentoCupon);
+            }
+            $configuracion = ConfiguracionTenant::query()->where('tenant_id', $tenantId)->first();
+            $margen = $configuracion->margen_descuento_supervisor ?? ConfiguracionTenant::MARGEN_DESCUENTO_SUPERVISOR_DEFAULT;
+            if (Dinero::desde(sprintf('%.2F', $descuentoManual))->comparar(Dinero::desde($margen)) > 0) {
                 Supervisor::consumir($autorizacion, AccionSupervisor::DescuentoVenta);
             }
             $pagosExtra = [];

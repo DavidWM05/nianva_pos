@@ -104,11 +104,7 @@ final class Supervisor
     public static function consumir(?OperacionSupervisorDto $operacion, AccionSupervisor $accion, ?string $recurso = null, ?int $sucursalId = null): void
     {
         if ($operacion?->token === null) {
-            if (config()->boolean('supervisor.exigir')) {
-                throw new SupervisorRequeridoException;
-            }
-
-            return;
+            throw new SupervisorRequeridoException;
         }
 
         if (DB::transactionLevel() === 0) {

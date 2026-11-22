@@ -19,7 +19,7 @@ describe('OrdenesListComponent', () => {
 
   const ordenPendiente: OrdenProduccion = {
     id: ulidDePrueba(1),
-    numero: 1,
+    folio: 'OP-1-1',
     cantidad_programada: '20.000',
     cantidad_producida: null,
     estado: 'pendiente',

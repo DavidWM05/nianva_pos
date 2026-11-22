@@ -16,9 +16,8 @@ describe('CuentasPagarListComponent', () => {
   const cuentas: CuentaPagar[] = [
     {
       id: ulidDePrueba(1),
-      numero: 1,
       compra_id: ulidDePrueba(42),
-      compra_numero: 42,
+      folio: 'CO-1-42',
       proveedor: { id: 7, razon_social: 'Textiles del Norte' },
       monto_total: '1000.00',
       saldo_pendiente: '1000.00',

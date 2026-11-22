@@ -15,7 +15,7 @@ describe('CajaComponent formato por pipe', () => {
   const permisos = { abrir: true, cerrar: true, gastos_ver: true, gastos_crear: true };
   const sesionAbierta: CajaSesion = {
     id: ulidDePrueba(1),
-    numero: 1,
+    folio: 'C-1-1',
     sucursal_id: 1,
     usuario_id: 1,
     monto_apertura: '1500.00',

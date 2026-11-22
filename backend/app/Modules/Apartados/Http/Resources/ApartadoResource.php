@@ -28,9 +28,6 @@ class ApartadoResource extends JsonResource
             'lista_precio_id' => $this->resource->getAttribute('lista_precio_id') === null ? null : (int) $this->resource->getAttribute('lista_precio_id'),
             // DAT-08: el identificador público es el ulid; el id interno no sale de la API.
             'id' => (string) $this->resource->getAttribute('ulid'),
-            // D-3, transitorio: número visible del apartado (= id interno), solo para mostrarlo; lo
-            // reemplaza el folio de DAT-07.
-            'numero' => (int) $this->getKey(),
             /** @var string|null */
             'folio' => $this->resource->getAttribute('folio'),
             'fecha_creacion' => $this->fecha_creacion,
