@@ -32,6 +32,10 @@ export interface BusquedaEntidadEvento {
 /** Pausa tras la ultima tecla antes de buscar, para no pedir una busqueda por letra. */
 const PAUSA_BUSQUEDA_MS = 300;
 
+// Una pantalla puede tener varios selectores (la venta tiene cliente, lista de precio y producto):
+// el contador hace unico el id que enlaza cada label con su control (UI-17).
+let siguienteSelector = 0;
+
 /**
  * Buscador generico de una entidad (autocomplete server-side via
  * `buscador`, recibido por @Input) con, opcionalmente, un segundo
@@ -86,6 +90,10 @@ export class EntidadSelectorComponent<I extends IdEntidad = IdEntidad> implement
   protected readonly hijos = signal<EntidadBuscable[]>([]);
   protected hijoElegidoId: number | null = null;
 
+  private readonly numero = ++siguienteSelector;
+  protected readonly idPrincipal = `entidad-selector-principal-${this.numero}`;
+  protected readonly idHijo = `entidad-selector-hijo-${this.numero}`;
+
   protected readonly nombreDe = (valor: string | EntidadBuscable<I> | null): string =>
     typeof valor === 'string' ? valor : (valor?.nombre ?? '');
 
@@ -138,6 +146,20 @@ export class EntidadSelectorComponent<I extends IdEntidad = IdEntidad> implement
   /** Foco programatico en el input de busqueda principal -- usado por atajos de teclado (ver F2 en VentaComponent). */
   focus(): void {
     this.autoCompleteHost?.nativeElement.querySelector<HTMLInputElement>('input')?.focus();
+  }
+
+  /**
+   * Vacia el selector (texto, entidad elegida, sugerencias e hijos) sin emitir seleccion: quien lo
+   * llama ya sabe que lo limpia. Lo usa el carrito del TPV al agregar una linea o al cancelarla
+   * con Esc, para que la pantalla no siga mostrando una seleccion que ya descarto.
+   */
+  limpiar(): void {
+    this.busqueda.setValue(null, { emitEvent: false });
+    this.entidadElegida.set(null);
+    this.sugerencias.set([]);
+    this.hijos.set([]);
+    this.hijoElegidoId = null;
+    this.cdr.markForCheck();
   }
 
   private cargarHijos(padreId: I, hijoInicialId: number | null): void {

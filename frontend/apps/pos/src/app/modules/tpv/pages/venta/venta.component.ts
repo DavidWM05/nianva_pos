@@ -5,9 +5,12 @@ import { HttpErrorResponse } from '@angular/common/http';
 import {
   ChangeDetectionStrategy,
   Component,
+  ElementRef,
   HostListener,
+  Injector,
   OnInit,
   ViewChild,
+  afterNextRender,
   computed,
   inject,
   signal,
@@ -15,7 +18,9 @@ import {
 import { FormsModule } from '@angular/forms';
 import { MatButton } from '@angular/material/button';
 import { RouterLink } from '@angular/router';
+import { AtajosTecladoComponent, AtajoTeclado } from '@nianva/ui-actions';
 import { SkeletonComponent } from '@nianva/ui-feedback';
+import { FormActionsComponent, TactilComponent } from '@nianva/ui-layout';
 import {
   BtnEnviarComponent,
   CampoComponent,
@@ -72,6 +77,9 @@ import {
     CampoComponent,
     SelectFiltroComponent,
     DineroPipe,
+    AtajosTecladoComponent,
+    FormActionsComponent,
+    TactilComponent,
   ],
   templateUrl: './venta.component.html',
   styleUrl: './venta.component.scss',
@@ -89,10 +97,18 @@ export class VentaComponent implements OnInit {
   @ViewChild(LineasProductoComponent)
   private lineasProductoRef!: LineasProductoComponent;
   @ViewChild(LineasPagoComponent) private lineasPagoRef!: LineasPagoComponent;
+  @ViewChild('confirmacion') private confirmacionRef?: ElementRef<HTMLElement>;
+  private readonly injector = inject(Injector);
 
   /** Limites del contrato (UI-11b). El codigo de cupon mide lo que acepta el catalogo de cupones. */
   protected readonly limitesVenta = limitesDe('/ventas', 'post');
   protected readonly limitesCupon = limitesDe('/cupones', 'post');
+  /** UI-17: los atajos de onAtajoTeclado(), documentados en pantalla. */
+  protected readonly atajos: readonly AtajoTeclado[] = [
+    { teclas: ['F2'], accion: 'Buscar producto' },
+    { teclas: ['F4', 'F9'], accion: 'Cobrar' },
+    { teclas: ['Esc'], accion: 'Cancelar línea' },
+  ];
   protected readonly cargandoCaja = signal(true);
   protected readonly cajaAbierta = signal<CajaSesion | null>(null);
 
@@ -268,6 +284,10 @@ export class VentaComponent implements OnInit {
   protected onAtajoTeclado(event: KeyboardEvent): void {
     if (this.cargandoCaja() || !this.cajaAbierta() || this.ventaRegistrada())
       return;
+    // UI-17: un overlay abierto (sugerencias, lista de variantes o de metodos de pago) atiende su
+    // tecla antes y la marca como atendida. Sin esta guarda, el Esc que cerraba la lista de
+    // variantes tambien descartaba el producto elegido.
+    if (event.defaultPrevented) return;
 
     switch (event.key) {
       case 'F2':
@@ -360,6 +380,8 @@ export class VentaComponent implements OnInit {
         this.registrando.set(false);
         this.ventaRegistrada.set(venta);
         this.reiniciarCarrito();
+        // UI-17: el formulario desaparece; el foco pasa a la confirmacion en lugar de perderse.
+        afterNextRender(() => this.confirmacionRef?.nativeElement.focus(), { injector: this.injector });
       },
       error: (error: HttpErrorResponse) => {
         this.registrando.set(false);
@@ -371,6 +393,8 @@ export class VentaComponent implements OnInit {
   nuevaVenta(): void {
     this.listaPrecioId.set(null);
     this.ventaRegistrada.set(null);
+    // De vuelta a la captura, con el foco listo para el primer producto.
+    afterNextRender(() => this.lineasProductoRef?.focusBuscador(), { injector: this.injector });
   }
 
   private reiniciarCarrito(): void {

@@ -1,0 +1,19 @@
+.ui-atajos-teclado {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--nv-spacing-1) var(--nv-spacing-4);
+  margin: 0;
+  padding: 0;
+  list-style-type: none;
+  color: var(--nv-texto-suave);
+  font-size: var(--nv-font-size-xs);
+
+  kbd {
+    padding: 0 var(--nv-spacing-1);
+    border: 1px solid var(--nv-borde);
+    border-radius: var(--nv-radius-sm);
+    background: var(--nv-superficie);
+    color: var(--nv-texto);
+    font-family: var(--nv-font-family-mono);
+  }
+}
