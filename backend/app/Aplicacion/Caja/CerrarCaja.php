@@ -48,7 +48,7 @@ class CerrarCaja
                 ->sum('monto'), 2);
             $totalPagosCxp = round((float) AbonoPagar::where('caja_sesion_id', $cajaSesionId)->sum('monto'), 2);
 
-            $sesion = $this->cajaService->cerrarCajaConSesion($cajaSesion, $conteos, Folios::asignar((int) $cajaSesion->sucursal()->firstOrFail()->getAttribute('tenant_id'), (int) $cajaSesion->getAttribute('sucursal_id'), 'C'));
+            $sesion = $this->cajaService->cerrarCajaConSesion($cajaSesion, $conteos, Folios::asignar((int) $cajaSesion->sucursal()->firstOrFail()->getAttribute('tenant_id'), (int) $cajaSesion->getAttribute('sucursal_id'), 'C'), $autorizacion?->usuario->id);
             if (Dinero::desde(ltrim((string) $sesion->getAttribute('diferencia'), '-'))->comparar(Dinero::desde((string) config('supervisor.umbral_descuadre'))) > 0) {
                 Supervisor::consumir($autorizacion, AccionSupervisor::CerrarCaja, (string) $sesion->getAttribute('ulid'), (int) $sesion->getAttribute('sucursal_id'));
             }

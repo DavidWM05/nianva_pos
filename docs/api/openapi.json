@@ -5666,6 +5666,150 @@
                 }
             }
         },
+        "/apartados/{apartado}/abonos/{abono}/impreso": {
+            "get": {
+                "operationId": "apartados.impresoAbono",
+                "tags": [
+                    "ImpresoAbono"
+                ],
+                "parameters": [
+                    {
+                        "name": "apartado",
+                        "in": "path",
+                        "required": true,
+                        "description": "The apartado ulid",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "abono",
+                        "in": "path",
+                        "required": true,
+                        "description": "The abono ulid",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "`ImpresoAbonoResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/ImpresoAbonoResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    }
+                }
+            }
+        },
+        "/caja/{cajaSesion}/impreso": {
+            "get": {
+                "operationId": "impresosTpv.corte",
+                "tags": [
+                    "ImpresosTpv"
+                ],
+                "parameters": [
+                    {
+                        "name": "cajaSesion",
+                        "in": "path",
+                        "required": true,
+                        "description": "The caja sesion ulid",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "`ImpresoCorteResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/ImpresoCorteResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
+        "/ventas/{venta}/impreso": {
+            "get": {
+                "operationId": "impresosTpv.venta",
+                "tags": [
+                    "ImpresosTpv"
+                ],
+                "parameters": [
+                    {
+                        "name": "venta",
+                        "in": "path",
+                        "required": true,
+                        "description": "The venta ulid",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "`ImpresoVentaResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/ImpresoVentaResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
         "/inicio/resumen": {
             "get": {
                 "operationId": "inicio.resumen",
@@ -16647,6 +16791,374 @@
                 ],
                 "title": "GuardarUnidadMedidaRequest"
             },
+            "ImpresoAbonoResource": {
+                "type": "object",
+                "properties": {
+                    "encabezado": {
+                        "type": "object",
+                        "properties": {
+                            "empresa": {
+                                "type": "string"
+                            },
+                            "rfc": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ]
+                            },
+                            "telefono": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ]
+                            },
+                            "logo_url": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ]
+                            },
+                            "sucursal": {
+                                "type": "string"
+                            },
+                            "folio": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ]
+                            },
+                            "fecha": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ]
+                            },
+                            "usuario": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ]
+                            }
+                        },
+                        "required": [
+                            "empresa",
+                            "rfc",
+                            "telefono",
+                            "logo_url",
+                            "sucursal",
+                            "folio",
+                            "fecha",
+                            "usuario"
+                        ]
+                    },
+                    "lineas": {
+                        "type": "array",
+                        "items": {
+                            "type": "object"
+                        }
+                    },
+                    "totales": {
+                        "type": "object",
+                        "properties": {
+                            "abono": {
+                                "type": "string",
+                                "pattern": "^-?[0-9]+\\.[0-9]{2}$"
+                            },
+                            "saldo_anterior": {
+                                "type": "string",
+                                "pattern": "^-?[0-9]+\\.[0-9]{2}$"
+                            },
+                            "saldo_nuevo": {
+                                "type": "string",
+                                "pattern": "^-?[0-9]+\\.[0-9]{2}$"
+                            }
+                        },
+                        "required": [
+                            "abono",
+                            "saldo_anterior",
+                            "saldo_nuevo"
+                        ]
+                    },
+                    "pagos": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/PagoImpresoResource"
+                        }
+                    },
+                    "pie": {
+                        "type": "object",
+                        "properties": {
+                            "mensaje_ticket": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ]
+                            }
+                        },
+                        "required": [
+                            "mensaje_ticket"
+                        ]
+                    }
+                },
+                "required": [
+                    "encabezado",
+                    "lineas",
+                    "totales",
+                    "pagos",
+                    "pie"
+                ],
+                "title": "ImpresoAbonoResource"
+            },
+            "ImpresoCorteResource": {
+                "type": "object",
+                "properties": {
+                    "encabezado": {
+                        "type": "object",
+                        "properties": {
+                            "empresa": {
+                                "type": "string"
+                            },
+                            "rfc": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ]
+                            },
+                            "telefono": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ]
+                            },
+                            "logo_url": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ]
+                            },
+                            "sucursal": {
+                                "type": "string"
+                            },
+                            "folio": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ]
+                            },
+                            "fecha": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ]
+                            },
+                            "usuario": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ]
+                            }
+                        },
+                        "required": [
+                            "empresa",
+                            "rfc",
+                            "telefono",
+                            "logo_url",
+                            "sucursal",
+                            "folio",
+                            "fecha",
+                            "usuario"
+                        ]
+                    },
+                    "lineas": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/CajaCierreMetodoResource"
+                        }
+                    },
+                    "totales": {
+                        "type": "object",
+                        "properties": {
+                            "total_teorico": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ],
+                                "pattern": "^-?[0-9]+\\.[0-9]{2}$"
+                            },
+                            "monto_contado": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ],
+                                "pattern": "^-?[0-9]+\\.[0-9]{2}$"
+                            },
+                            "diferencia": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ],
+                                "pattern": "^-?[0-9]+\\.[0-9]{2}$"
+                            }
+                        },
+                        "required": [
+                            "total_teorico",
+                            "monto_contado",
+                            "diferencia"
+                        ]
+                    },
+                    "pagos": {
+                        "type": "array",
+                        "items": {
+                            "type": "object"
+                        }
+                    },
+                    "pie": {
+                        "type": "object",
+                        "properties": {
+                            "mensaje_ticket": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ]
+                            }
+                        },
+                        "required": [
+                            "mensaje_ticket"
+                        ]
+                    }
+                },
+                "required": [
+                    "encabezado",
+                    "lineas",
+                    "totales",
+                    "pagos",
+                    "pie"
+                ],
+                "title": "ImpresoCorteResource"
+            },
+            "ImpresoVentaResource": {
+                "type": "object",
+                "properties": {
+                    "encabezado": {
+                        "type": "object",
+                        "properties": {
+                            "empresa": {
+                                "type": "string"
+                            },
+                            "rfc": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ]
+                            },
+                            "telefono": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ]
+                            },
+                            "logo_url": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ]
+                            },
+                            "sucursal": {
+                                "type": "string"
+                            },
+                            "folio": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ]
+                            },
+                            "fecha": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ]
+                            },
+                            "usuario": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ]
+                            }
+                        },
+                        "required": [
+                            "empresa",
+                            "rfc",
+                            "telefono",
+                            "logo_url",
+                            "sucursal",
+                            "folio",
+                            "fecha",
+                            "usuario"
+                        ]
+                    },
+                    "lineas": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/VentaLineaResource"
+                        }
+                    },
+                    "totales": {
+                        "type": "object",
+                        "properties": {
+                            "total": {
+                                "type": "string",
+                                "pattern": "^-?[0-9]+\\.[0-9]{2}$"
+                            },
+                            "descuento_cupon": {
+                                "type": "string",
+                                "pattern": "^-?[0-9]+\\.[0-9]{2}$"
+                            },
+                            "descuento_manual": {
+                                "type": "string",
+                                "pattern": "^-?[0-9]+\\.[0-9]{2}$"
+                            },
+                            "abono_previo": {
+                                "type": "string",
+                                "pattern": "^-?[0-9]+\\.[0-9]{2}$"
+                            }
+                        },
+                        "required": [
+                            "total",
+                            "descuento_cupon",
+                            "descuento_manual",
+                            "abono_previo"
+                        ]
+                    },
+                    "pagos": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/PagoImpresoResource"
+                        }
+                    },
+                    "pie": {
+                        "type": "object",
+                        "properties": {
+                            "mensaje_ticket": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ]
+                            }
+                        },
+                        "required": [
+                            "mensaje_ticket"
+                        ]
+                    }
+                },
+                "required": [
+                    "encabezado",
+                    "lineas",
+                    "totales",
+                    "pagos",
+                    "pie"
+                ],
+                "title": "ImpresoVentaResource"
+            },
             "InsumoResource": {
                 "type": "object",
                 "properties": {
@@ -17343,6 +17855,30 @@
                     "cuota_id"
                 ],
                 "title": "PagarCuotaRequest"
+            },
+            "PagoImpresoResource": {
+                "type": "object",
+                "properties": {
+                    "metodo_pago_id": {
+                        "type": "integer"
+                    },
+                    "nombre": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "monto": {
+                        "type": "string",
+                        "pattern": "^-?[0-9]+\\.[0-9]{2}$"
+                    }
+                },
+                "required": [
+                    "metodo_pago_id",
+                    "nombre",
+                    "monto"
+                ],
+                "title": "PagoImpresoResource"
             },
             "PedidoItemResource": {
                 "type": "object",

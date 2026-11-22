@@ -21,6 +21,7 @@ use App\Modules\Inventario\Support\UnidadDeVariante;
 use App\Modules\Nucleo\Models\Sucursal;
 use App\Modules\Nucleo\Models\Usuario;
 use App\Modules\Nucleo\Support\Cantidad;
+use App\Modules\Nucleo\Support\Dinero;
 use App\Modules\Precios\Services\PricingService;
 use App\Modules\Precios\Support\Carrito;
 use App\Modules\Precios\Support\ContextoPrecio;
@@ -167,9 +168,14 @@ class ApartadoService
             throw new AbonoPagoNoCuadraException($monto, $sumaCentavos / 100);
         }
 
+        $abonado = Dinero::desde((string) $apartado->getAttribute('total_abonado'));
+        $importe = Dinero::desde(sprintf('%.2F', $monto));
+        $saldoAnterior = Dinero::desde((string) $apartado->getAttribute('total'))->restar($abonado);
         $abono = ApartadoAbono::query()->create([
             'apartado_id' => $apartado->id,
-            'monto' => $monto,
+            'monto' => $importe->aCadena(),
+            'saldo_anterior' => $saldoAnterior->aCadena(),
+            'saldo_nuevo' => $saldoAnterior->restar($importe)->aCadena(),
             'usuario_id' => $usuarioId,
             'notas' => $notas,
         ]);

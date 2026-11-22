@@ -20,6 +20,7 @@ class CajaSesionFactory extends Factory
                 'tenant_id' => Sucursal::query()->withoutGlobalScopes()->whereKey($a['sucursal_id'])->firstOrFail()->getAttribute('tenant_id'),
                 'sucursal_id' => $a['sucursal_id'],
             ])->id,
+            'usuario_cierre_id' => null,
             'monto_apertura' => 0,
             'monto_cierre' => null,
             'total_ventas_sistema' => null,
@@ -32,8 +33,9 @@ class CajaSesionFactory extends Factory
 
     public function cerrada(): static
     {
-        return $this->state(fn () => [
+        return $this->state(fn (array $a) => [
             'estado' => 'cerrada',
+            'usuario_cierre_id' => $a['usuario_id'],
             'monto_cierre' => 0,
             'total_ventas_sistema' => 0,
             'diferencia' => 0,

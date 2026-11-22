@@ -111,4 +111,9 @@ export class VentaService {
       .get<RespuestaDe<'/ventas/reporte', 'get'>>(urlApi(`/ventas/reporte`), { params })
       .pipe(map((r) => r.data));
   }
+
+  impreso(venta: string): Observable<RespuestaDe<'/ventas/{venta}/impreso', 'get'>['data']> {
+    return this.http.get<RespuestaDe<'/ventas/{venta}/impreso', 'get'>>(urlApi(`/ventas/${venta}/impreso`))
+      .pipe(map((respuesta) => respuesta.data));
+  }
 }

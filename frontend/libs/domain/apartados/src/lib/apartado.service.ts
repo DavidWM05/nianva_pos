@@ -76,4 +76,9 @@ export class ApartadoService {
         })),
       );
   }
+
+  impresoAbono(apartado: string, abono: string): Observable<RespuestaDe<'/apartados/{apartado}/abonos/{abono}/impreso', 'get'>['data']> {
+    return this.http.get<RespuestaDe<'/apartados/{apartado}/abonos/{abono}/impreso', 'get'>>(urlApi(`/apartados/${apartado}/abonos/${abono}/impreso`))
+      .pipe(map((respuesta) => respuesta.data));
+  }
 }
