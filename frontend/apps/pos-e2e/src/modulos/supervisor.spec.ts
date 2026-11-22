@@ -28,26 +28,27 @@ test.afterEach(async ({ page }) => {
 async function capturarVenta(page: Page, cantidad: number, descuento: number | null): Promise<void> {
   await agregarAgua50f(page);
   if (cantidad !== 1) {
-    // La cantidad dispara POST /ventas/cotizar: sin esperarla, el total se lee antes de que el
-    // servidor devuelva el precio y el pago deja de cuadrar.
-    const cotizado = page.waitForResponse(
-      (r) => r.request().method() === 'POST' && new URL(r.url()).pathname.endsWith('/ventas/cotizar'),
-    );
     await page.getByRole('spinbutton', { name: /^Cantidad de Agua 1L/ }).fill(String(cantidad));
     await page.keyboard.press('Tab');
-    await cotizado;
   }
   await expect(page.locator('.venta__total')).not.toHaveText(/\$0\.00/, { timeout: 20000 });
   if (descuento !== null) {
     await page.locator('.venta__totales').getByRole('textbox', { name: /^Descuento/ }).fill(String(descuento));
     await page.keyboard.press('Tab');
   }
-  const total = (await page.locator('.venta__total').textContent())?.replace(/[^0-9.]/g, '') ?? '';
   const pagos = page.locator('nucleo-lineas-pago');
   await pagos.getByRole('combobox').first().click();
   await page.getByRole('option', { name: 'Efectivo', exact: true }).click();
-  await pagos.getByPlaceholder('Monto', { exact: true }).first().fill(total);
-  await expect(page.getByRole('button', { name: /Registrar venta$/ })).toBeEnabled({ timeout: 20000 });
+  const monto = pagos.getByPlaceholder('Monto', { exact: true }).first();
+  const registrar = page.getByRole('button', { name: /Registrar venta$/ });
+  // Agregar la línea y cambiar la cantidad piden cada una POST /ventas/cotizar, y el total cambia
+  // cuando llega cada respuesta, en cualquier orden. Se vuelve a leer el total hasta que el pago
+  // cuadra, en lugar de esperar una respuesta concreta.
+  await expect(async () => {
+    const total = (await page.locator('.venta__total').textContent())?.replace(/[^0-9.]/g, '') ?? '';
+    await monto.fill(total);
+    await expect(registrar).toBeEnabled({ timeout: 2000 });
+  }).toPass({ timeout: 20000 });
 }
 
 async function abrirVenta(page: Page): Promise<void> {
