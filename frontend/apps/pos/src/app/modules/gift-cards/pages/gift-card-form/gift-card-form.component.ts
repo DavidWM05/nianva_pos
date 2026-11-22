@@ -25,6 +25,7 @@ import { EntidadSelectorComponent, ToastService } from '@nianva/ui-shared';
 
 import { BUSCADOR_CLIENTE } from '../../../../core/buscadores-entidad.tokens';
 import { GiftCardService } from '@nianva/domain-gift-cards';
+import { IntentoOperacion } from '../../../../core/operaciones/intento-operacion';
 
 /**
  * Solo "emitir" (POST /api/gift-cards) -- GiftCardController no tiene
@@ -58,6 +59,8 @@ export class GiftCardFormComponent {
   private readonly toast = inject(ToastService);
 
   protected readonly buscadorCliente = inject(BUSCADOR_CLIENTE);
+  // API-07: una llave por operacion; se conserva si el envio falla y se renueva al confirmar.
+  private readonly intentoEmision = new IntentoOperacion();
 
   protected readonly clienteId = signal<string | null>(null);
   protected readonly monto = signal<number | null>(null);
@@ -72,14 +75,16 @@ export class GiftCardFormComponent {
 
     this.guardando.set(true);
 
-    this.giftCardService
-      .emitir({
-        cliente_id: this.clienteId(),
-        monto,
-        fecha_expiracion: fechaExpiracion
-          ? fechaExpiracion.toISOString().slice(0, 10)
-          : null,
-      })
+    const emision = {
+      cliente_id: this.clienteId(),
+      monto,
+      fecha_expiracion: fechaExpiracion
+        ? fechaExpiracion.toISOString().slice(0, 10)
+        : null,
+    };
+
+    this.intentoEmision
+      .ejecutar(emision, (llave) => this.giftCardService.emitir(emision, llave))
       .subscribe({
         next: (giftCard) => {
           this.guardando.set(false);

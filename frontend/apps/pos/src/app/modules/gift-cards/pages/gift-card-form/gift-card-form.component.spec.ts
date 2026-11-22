@@ -55,7 +55,7 @@ describe('GiftCardFormComponent', () => {
     fixture.componentInstance['monto'].set(300);
     fixture.componentInstance.emitir();
 
-    expect(giftCardService.emitir).toHaveBeenCalledWith({ cliente_id: null, monto: 300, fecha_expiracion: null });
+    expect(giftCardService.emitir).toHaveBeenCalledWith({ cliente_id: null, monto: 300, fecha_expiracion: null }, expect.any(String));
     expect(router.navigate).toHaveBeenCalledWith(['/gift-cards', ulidDePrueba(10)]);
   });
 
@@ -77,6 +77,7 @@ describe('GiftCardFormComponent', () => {
 
     expect(giftCardService.emitir).toHaveBeenCalledWith(
       expect.objectContaining({ fecha_expiracion: '2026-12-01' }),
+      expect.any(String),
     );
   });
 });

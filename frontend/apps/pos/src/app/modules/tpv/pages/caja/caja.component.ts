@@ -11,6 +11,9 @@ import { ModalComponent } from '@nianva/ui-overlays';
 import { ToastService, esErrorNegocio, mensajeError } from '@nianva/ui-shared';
 
 import { CajaActual, CajaConteo, CajaDesglose, CajaService, CajaSesion, Gasto, GastoService } from '@nianva/domain-tpv';
+import { finalize } from 'rxjs';
+import { IntentoOperacion } from '../../../../core/operaciones/intento-operacion';
+import { AutorizacionSupervisorService } from '../../../../core/supervisor/autorizacion-supervisor.service';
 
 /**
  * Pantalla de caja: abrir/ver estado/cerrar la sesion de la sucursal del
@@ -52,6 +55,11 @@ export class CajaComponent implements OnInit {
   private readonly cajaService = inject(CajaService);
   private readonly gastoService = inject(GastoService);
   private readonly toast = inject(ToastService);
+  private readonly supervisor = inject(AutorizacionSupervisorService);
+  // API-07: una llave por operacion; se conserva si el envio falla y se renueva al confirmar.
+  private readonly intentoApertura = new IntentoOperacion();
+  private readonly intentoCierre = new IntentoOperacion();
+  private readonly intentoGasto = new IntentoOperacion();
 
   /** Limites del contrato (UI-11b): apertura, cierre y gasto. */
   protected readonly limitesApertura = limitesDe('/caja/abrir', 'post');
@@ -130,7 +138,7 @@ export class CajaComponent implements OnInit {
 
     this.abriendo.set(true);
 
-    this.cajaService.abrir(monto).subscribe({
+    this.intentoApertura.ejecutar({ monto_apertura: monto }, (llave) => this.cajaService.abrir(monto, llave)).subscribe({
       next: () => {
         this.abriendo.set(false);
         this.montoApertura.set(null);
@@ -156,23 +164,32 @@ export class CajaComponent implements OnInit {
 
     this.cerrando.set(true);
 
-    this.cajaService.cerrar(sesion.id, conteos).subscribe({
-      next: ({ sesion: cerrada, desglose }) => {
-        this.cerrando.set(false);
-        this.conteos.set({});
-        this.cajaRecienCerrada.set(cerrada);
-        this.desgloseCierre.set(desglose);
-        this.cargarEstado();
-      },
-      error: (error: HttpErrorResponse) => {
-        this.cerrando.set(false);
-        this.toast.error(mensajeError(error, 'No se pudo cerrar la caja.'));
-
-        if (esErrorNegocio(error, 'caja_ya_cerrada')) {
+    // SEG-05: con un descuadre arriba del umbral, el servidor pide supervisor (caja.cerrar).
+    this.supervisor
+      .ejecutar(
+        this.intentoCierre,
+        { accion: 'caja.cerrar', recurso: sesion.id, datos: { conteos }, descripcion: 'Cerrar la caja con descuadre' },
+        (llave, token) => this.cajaService.cerrar(sesion.id, conteos, llave, token),
+      )
+      // Si se cancela el dialogo del supervisor no hay respuesta: se libera el boton igual.
+      .pipe(finalize(() => this.cerrando.set(false)))
+      .subscribe({
+        next: ({ sesion: cerrada, desglose }) => {
+          this.cerrando.set(false);
+          this.conteos.set({});
+          this.cajaRecienCerrada.set(cerrada);
+          this.desgloseCierre.set(desglose);
           this.cargarEstado();
-        }
-      },
-    });
+        },
+        error: (error: HttpErrorResponse) => {
+          this.cerrando.set(false);
+          this.toast.error(mensajeError(error, 'No se pudo cerrar la caja.'));
+
+          if (esErrorNegocio(error, 'caja_ya_cerrada')) {
+            this.cargarEstado();
+          }
+        },
+      });
   }
 
   cerrarResumenDeCierre(): void {
@@ -197,7 +214,7 @@ export class CajaComponent implements OnInit {
 
     this.registrandoGasto.set(true);
 
-    this.gastoService.registrar(descripcion, monto).subscribe({
+    this.intentoGasto.ejecutar({ descripcion, monto }, (llave) => this.gastoService.registrar(descripcion, monto, llave)).subscribe({
       next: () => {
         this.registrandoGasto.set(false);
         this.mostrarModalGasto.set(false);

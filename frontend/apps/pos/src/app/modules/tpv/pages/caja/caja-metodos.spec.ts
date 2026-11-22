@@ -36,7 +36,7 @@ describe('Cuadre de caja por método', () => {
     capturar(2, '60');
     expect(fixture.nativeElement.textContent).toContain('-$5.00');
     fixture.componentInstance.cerrarCaja();
-    expect(cerrar).toHaveBeenCalledWith(1, [{ metodo_pago_id: 1, monto: 85 }, { metodo_pago_id: 2, monto: 60 }]);
+    expect(cerrar).toHaveBeenCalledWith(1, [{ metodo_pago_id: 1, monto: 85 }, { metodo_pago_id: 2, monto: 60 }], expect.any(String), undefined);
   });
 
   it('no envía el cierre si falta un conteo o queda fuera de los límites del contrato', async () => {

@@ -39,7 +39,7 @@ describe('Pagos explícitos de recarga', () => {
     expect(document.querySelector('nucleo-lineas-pago')).not.toBeNull();
     pagar();
     fixture.componentInstance.confirmarRecargar();
-    expect(recargar).toHaveBeenCalledWith(5, 200, [{ metodo_pago_id: 1, monto: 200 }]);
+    expect(recargar).toHaveBeenCalledWith(5, 200, [{ metodo_pago_id: 1, monto: 200 }], expect.any(String));
   });
 
   it('reacciona a caja_no_abierta por código sin depender del texto ni duplicar el toast', async () => {

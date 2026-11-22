@@ -88,7 +88,7 @@ describe('PlanPagoDetalleComponent', () => {
     fixture.componentInstance.abrirPagarCuota(cuota);
     fixture.componentInstance.confirmarPagarCuota();
 
-    expect(planPagoService.pagarCuota).toHaveBeenCalledWith(ulidDePrueba(7), { cuota_id: ulidDePrueba(1), monto: 275 });
+    expect(planPagoService.pagarCuota).toHaveBeenCalledWith(ulidDePrueba(7), { cuota_id: ulidDePrueba(1), monto: 275 }, expect.any(String));
     expect(toast.success).toHaveBeenCalled();
   });
 

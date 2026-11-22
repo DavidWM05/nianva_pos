@@ -99,7 +99,7 @@ describe('ApartadoDetalleComponent', () => {
     apartadoService.liquidar.mockReturnValue(of(apartadoBase({ estado: 'completado', total_abonado: '600.00' })));
     fixture.componentInstance.liquidar();
 
-    expect(apartadoService.liquidar).toHaveBeenCalledWith(ulidDePrueba(7));
+    expect(apartadoService.liquidar).toHaveBeenCalledWith(ulidDePrueba(7), expect.any(String));
   });
 
   it('registra un abono con pago mixto que cuadra con el monto capturado', async () => {
@@ -121,7 +121,7 @@ describe('ApartadoDetalleComponent', () => {
     expect(apartadoService.registrarAbono).toHaveBeenCalledWith(ulidDePrueba(7), {
       monto: 120,
       pagos: [{ metodo_pago_id: 1, monto: 120 }],
-    });
+    }, expect.any(String));
   });
 
   it('cancelar muestra los abonos pendientes que devuelve el backend', async () => {

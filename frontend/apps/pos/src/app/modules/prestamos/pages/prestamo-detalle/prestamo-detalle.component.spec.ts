@@ -104,7 +104,7 @@ describe('PrestamoDetalleComponent', () => {
     fixture.componentInstance['montoPago'].set(200);
     fixture.componentInstance.confirmarRegistrarPago();
 
-    expect(prestamoService.registrarPago).toHaveBeenCalledWith(5, { monto: 200 });
+    expect(prestamoService.registrarPago).toHaveBeenCalledWith(5, { monto: 200 }, expect.any(String));
     expect(toast.success).toHaveBeenCalledWith('Pago registrado.');
     expect(prestamoService.obtener).toHaveBeenCalledTimes(2); // 1 al iniciar + 1 al recargar
   });

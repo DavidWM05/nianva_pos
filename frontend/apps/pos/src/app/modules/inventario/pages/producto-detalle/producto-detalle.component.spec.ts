@@ -169,7 +169,7 @@ describe('ProductoDetalleComponent', () => {
       proveedor_id: 1,
       numero_comprobante: undefined,
       items: [{ variante_id: 10, cantidad: 15, precio_compra: 80 }],
-    });
+    }, expect.any(String));
     // Refresca ambos: el producto completo (stock) y el kardex de la
     // variante en la que se registro la compra.
     expect(productoService.obtener).toHaveBeenCalledTimes(2);

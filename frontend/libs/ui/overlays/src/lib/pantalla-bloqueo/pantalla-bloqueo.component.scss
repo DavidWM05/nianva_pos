@@ -1,0 +1,29 @@
+// Por encima de todo, tambien de los toasts y del contenedor de overlays de Material.
+.ui-pantalla-bloqueo {
+  position: fixed;
+  inset: 0;
+  z-index: calc(var(--nv-z-toast) + 1);
+  display: grid;
+  place-items: center;
+  overflow-y: auto;
+  padding: var(--nv-spacing-4);
+  background-color: var(--nv-fondo);
+}
+
+.ui-pantalla-bloqueo__tarjeta {
+  display: flex;
+  flex-direction: column;
+  gap: var(--nv-spacing-4);
+  width: 100%;
+  max-width: calc(var(--nv-spacing-16) * 6);
+  padding: var(--nv-spacing-6);
+  border: 1px solid;
+  border-color: var(--nv-borde);
+  border-radius: var(--nv-radius-lg);
+  background-color: var(--nv-superficie);
+}
+
+.ui-pantalla-bloqueo__titulo {
+  margin: 0;
+  font-size: var(--nv-font-size-xl);
+}

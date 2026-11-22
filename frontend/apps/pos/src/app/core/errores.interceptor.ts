@@ -16,6 +16,12 @@ export { CODIGOS_EN_PANTALLA, ERROR_EN_PANTALLA };
 const METODOS_QUE_MODIFICAN = new Set(['POST', 'PUT', 'PATCH', 'DELETE']);
 
 /**
+ * Codigos que atiende un flujo global y no un toast: el dialogo del supervisor (SEG-05) y la
+ * pantalla de bloqueo (SEG-12). El toast taparia el dialogo que ya pide lo que falta.
+ */
+const CODIGOS_DE_FLUJO_GLOBAL = new Set(['supervisor_requerido', 'sesion_bloqueada']);
+
+/**
  * Errores tecnicos (red, permisos y 5xx) que ninguna pantalla maneja bien:
  * un unico toast con el mensaje y, en 5xx, el correlation_id del backend
  * (SEG-11). Los 4xx de negocio/validacion, 401 y 419 siguen en su flujo
@@ -37,6 +43,7 @@ export const erroresInterceptor: HttpInterceptorFn = (req, next) => {
         error instanceof HttpErrorResponse
         && esUrlBackend(req.url)
         && ! req.context.get(ERROR_EN_PANTALLA)
+        && ! CODIGOS_DE_FLUJO_GLOBAL.has(leerErrorNegocio(error)?.codigo ?? '')
       ) {
         if (error.status === 0) {
           toast.errorTecnico('No hay conexión con el servidor. Revisa tu red e intenta de nuevo.');

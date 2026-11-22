@@ -1,7 +1,8 @@
 import { inject } from '@angular/core';
-import { CanActivateFn, Router } from '@angular/router';
+import { CanActivateFn, Router, UrlTree } from '@angular/router';
 
 import { AuthStateService } from './auth-state.service';
+import { BloqueoSesionService } from './bloqueo-sesion.service';
 
 /**
  * Protege el shell completo (ver app.routes.ts: se aplica al padre que
@@ -10,9 +11,20 @@ import { AuthStateService } from './auth-state.service';
  * nunca se llega a ver el sidebar en ese estado intermedio.
  */
 export const authGuard: CanActivateFn = () => {
+  const bloqueo = inject(BloqueoSesionService);
   const authState = inject(AuthStateService);
   const router = inject(Router);
 
+  // SEG-12: con la sesion bloqueada (tambien al recargar) se espera al desbloqueo, que recarga la
+  // sesion, y se decide despues; mandar al login perderia una sesion que sigue viva.
+  if (bloqueo.activa()) {
+    return bloqueo.esperarDesbloqueo().then(() => decidir(authState, router));
+  }
+
+  return decidir(authState, router);
+};
+
+function decidir(authState: AuthStateService, router: Router): boolean | UrlTree {
   if (!authState.autenticado()) {
     return router.createUrlTree(['/login']);
   }
@@ -22,7 +34,7 @@ export const authGuard: CanActivateFn = () => {
   }
 
   return true;
-};
+}
 
 /**
  * Para /two-factor/setup: exige sesion iniciada (un admin al que le falta

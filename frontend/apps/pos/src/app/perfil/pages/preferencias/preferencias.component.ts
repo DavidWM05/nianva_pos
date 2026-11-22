@@ -8,6 +8,7 @@ import { AuthStateService } from '../../../auth/auth-state.service';
 import { TwoFactorCodeInputComponent } from '../../../auth/two-factor-code-input/two-factor-code-input.component';
 import { CambiarPasswordFormComponent, CambiarPasswordFormValue } from '../../cambiar-password-form/cambiar-password-form.component';
 import { DispositivosConfiablesListComponent } from '../../dispositivos-confiables-list/dispositivos-confiables-list.component';
+import { PinCajaFormComponent } from '../../pin-caja-form/pin-caja-form.component';
 import { DispositivoConfiable, SeguridadService } from '@nianva/domain-perfil';
 
 /**
@@ -23,7 +24,14 @@ import { DispositivoConfiable, SeguridadService } from '@nianva/domain-perfil';
 @Component({
   selector: 'nucleo-preferencias',
   standalone: true,
-  imports: [MatButton, PageHeaderComponent, DispositivosConfiablesListComponent, CambiarPasswordFormComponent, TwoFactorCodeInputComponent],
+  imports: [
+    MatButton,
+    PageHeaderComponent,
+    DispositivosConfiablesListComponent,
+    CambiarPasswordFormComponent,
+    PinCajaFormComponent,
+    TwoFactorCodeInputComponent,
+  ],
   templateUrl: './preferencias.component.html',
   styleUrl: './preferencias.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

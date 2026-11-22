@@ -6,21 +6,45 @@ import { capturarPantalla50n } from '../soporte/capturas-50n';
 import { agregarAgua50f, pagarMixto50f } from '../soporte/flujo-50f';
 import { abrirPantalla, sinErrores, vigilarErrores } from '../soporte/humo';
 import { iniciarSesion } from '../soporte/sesion';
+import { autorizarComoSupervisora, dialogoSupervisor, prepararSupervisora, rechazosQuePidenSupervisor } from '../soporte/supervisor';
 
 // 50n-a: el flujo de caja y venta de punto a punto, antes y despues de migrar tpv y reportes a
 // libs/ui. Corre con un vendedor que ademas ve el reporte de ventas (reportes.ver): el rol admin
 // exige 2FA y el vendedor del escenario no tiene ese permiso.
 const USUARIO = 'tpv-e2e@abarrotes.test';
 
-async function cerrarCaja(page: Page, montoFisico: string): Promise<void> {
+/**
+ * SEG-05: con `pideSupervisor`, cada metodo se cuenta en su teorico y el efectivo con 150 MXN de mas:
+ * un descuadre de 150, arriba de los 100 que fija A5, sin depender de lo que se vendio antes. Ese
+ * cierre exige el dialogo del supervisor; el que cuadra exige que no aparezca.
+ */
+async function contarConDescuadre(page: Page): Promise<void> {
+  const efectivo = await page.getByLabel('Contado · Efectivo', { exact: true }).getAttribute('id');
+  for (const control of await page.locator('input[id^="caja-conteo-"]').all()) {
+    const texto = (await control.locator('xpath=preceding-sibling::p[1]').textContent()) ?? '';
+    const teorico = Number(texto.replace(/[^0-9.-]/g, ''));
+    await control.fill((teorico + ((await control.getAttribute('id')) === efectivo ? 150 : 0)).toFixed(2));
+  }
+}
+
+async function cerrarCaja(page: Page, montoFisico: string, pideSupervisor: boolean): Promise<void> {
   const controles = page.locator('input[id^="caja-conteo-"]');
   for (const control of await controles.all()) await control.fill('0');
   if (montoFisico !== '0') {
     await page.getByLabel('Contado · Efectivo', { exact: true }).fill('520');
     await page.getByLabel('Contado · Tarjeta', { exact: true }).fill('20');
   }
+  if (pideSupervisor) {
+    await contarConDescuadre(page);
+  }
   await page.getByRole('button', { name: 'Cerrar caja' }).click();
+  if (pideSupervisor) {
+    expect(await autorizarComoSupervisora(page)).toBe(201);
+  }
   await expect(page.getByRole('heading', { name: 'Caja cerrada', exact: true })).toBeVisible({ timeout: 20000 });
+  if (!pideSupervisor) {
+    await expect(dialogoSupervisor(page)).toHaveCount(0);
+  }
 }
 
 async function abrirCaja(page: Page): Promise<void> {
@@ -36,6 +60,8 @@ function dia(fecha: string, dias: number): string {
 
   return instante.toISOString().slice(0, 10);
 }
+
+test.beforeAll(() => prepararSupervisora());
 
 test.afterEach(async ({ page }) => {
   await asegurarCajaAbierta(page);
@@ -59,7 +85,7 @@ test('tpv: abrir caja, cobrar con pago mixto, ver el detalle y el listado, cerra
     if (!(await cajaAbierta.isVisible())) {
       break;
     }
-    await cerrarCaja(page, '0');
+    await cerrarCaja(page, '0', true);
     await page.getByRole('button', { name: 'Continuar' }).click();
   }
   await expect(page.getByRole('heading', { name: 'No hay caja abierta', exact: true })).toBeVisible();
@@ -113,7 +139,7 @@ test('tpv: abrir caja, cobrar con pago mixto, ver el detalle y el listado, cerra
   // Cierre: el resultado muestra la venta en el total del sistema.
   await abrirPantalla(page, '/tpv/caja');
   await expect(page.getByRole('heading', { name: 'Caja abierta', exact: true })).toBeVisible();
-  await cerrarCaja(page, '540');
+  await cerrarCaja(page, '540', false);
   await capturarPantalla50n(page, 'caja-resultado-cierre');
   await page.getByRole('button', { name: 'Continuar' }).click();
   await expect(page.getByRole('heading', { name: 'No hay caja abierta', exact: true })).toBeVisible();
@@ -137,5 +163,5 @@ test('tpv: abrir caja, cobrar con pago mixto, ver el detalle y el listado, cerra
   await expect(page.getByRole('cell', { name: /Tarjeta/ }).first()).toBeVisible();
   await capturarPantalla50n(page, 'reporte-ventas');
 
-  sinErrores(errores, '/tpv');
+  sinErrores(errores, '/tpv', rechazosQuePidenSupervisor(errores));
 });

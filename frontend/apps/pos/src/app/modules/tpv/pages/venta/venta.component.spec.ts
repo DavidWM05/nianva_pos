@@ -297,6 +297,8 @@ describe('VentaComponent', () => {
 
     expect(ventaService.registrar).toHaveBeenCalledWith(
       expect.objectContaining({ gift_card_codigo: 'GC-1-ABCD1234', nota_credito_id: ulidDePrueba(3) }),
+      expect.any(String),
+      undefined,
     );
   });
 

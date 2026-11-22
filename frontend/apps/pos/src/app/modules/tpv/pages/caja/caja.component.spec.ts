@@ -146,7 +146,7 @@ describe('CajaComponent', () => {
     fixture.componentInstance.registrarGasto();
     fixture.detectChanges();
 
-    expect(gastoService.registrar).toHaveBeenCalledWith('Agua', 40);
+    expect(gastoService.registrar).toHaveBeenCalledWith('Agua', 40, expect.any(String));
     expect(cajaService.actual).toHaveBeenCalledTimes(2);
 
     const texto = (fixture.nativeElement as HTMLElement).textContent ?? '';

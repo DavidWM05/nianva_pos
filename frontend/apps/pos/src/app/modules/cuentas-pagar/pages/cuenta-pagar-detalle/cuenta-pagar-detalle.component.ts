@@ -43,6 +43,7 @@ import {
 
 import { MetodoPago, MetodoPagoService } from '@nianva/domain-tpv';
 import { CuentaPagar, CuentaPagarService } from '@nianva/domain-cuentas-pagar';
+import { IntentoOperacion } from '../../../../core/operaciones/intento-operacion';
 
 /**
  * Vista de registro (RecordTabsComponent, obligatorio -- CLAUDE.md §4).
@@ -86,6 +87,9 @@ export class CuentaPagarDetalleComponent implements OnInit {
   private readonly metodoPagoService = inject(MetodoPagoService);
   private readonly confirmDialog = inject(ConfirmDialogService);
   private readonly toast = inject(ToastService);
+  // API-07: una llave por operacion; se conserva si el envio falla y se renueva al confirmar.
+  private readonly intentoPago = new IntentoOperacion();
+  private readonly intentoAnulacion = new IntentoOperacion();
 
   protected readonly tabs: RecordTabConfig[] = [
     { label: 'Cuenta por pagar', icon: 'pi pi-wallet' },
@@ -147,12 +151,14 @@ export class CuentaPagarDetalleComponent implements OnInit {
 
     this.pagando.set(true);
 
-    this.cuentaPagarService
-      .registrarPago(cuenta.id, {
-        monto,
-        metodo_pago_id: metodoPagoId,
-        referencia: this.referenciaPago() || null,
-      })
+    const pago = {
+      monto,
+      metodo_pago_id: metodoPagoId,
+      referencia: this.referenciaPago() || null,
+    };
+
+    this.intentoPago
+      .ejecutar({ cuenta: cuenta.id, ...pago }, (llave) => this.cuentaPagarService.registrarPago(cuenta.id, pago, llave))
       .subscribe({
         next: () => {
           this.pagando.set(false);
@@ -181,7 +187,7 @@ export class CuentaPagarDetalleComponent implements OnInit {
 
     if (!confirmado) return;
 
-    this.cuentaPagarService.anular(cuenta.id).subscribe({
+    this.intentoAnulacion.ejecutar({ cuenta: cuenta.id }, (llave) => this.cuentaPagarService.anular(cuenta.id, llave)).subscribe({
       next: () => {
         this.toast.success('Cuenta por pagar anulada.');
         this.cargar(cuenta.id);

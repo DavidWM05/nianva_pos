@@ -72,6 +72,7 @@ describe('PlanPagoFormComponent', () => {
     expect(planPagoService.crearPlan).toHaveBeenCalledWith(
       ulidDePrueba(3),
       expect.objectContaining({ numero_cuotas: 6, tasa_interes: 10, periodicidad: 'mensual' }),
+      expect.any(String),
     );
     expect(router.navigate).toHaveBeenCalledWith(['/ventas-plazos', ulidDePrueba(7)]);
   });

@@ -3,6 +3,7 @@ import { inject } from '@angular/core';
 import { esErrorNegocio } from '@nianva/ui-shared';
 import { catchError, throwError } from 'rxjs';
 
+import { BloqueoSesionService } from './bloqueo-sesion.service';
 import { SesionEntrePestanasService } from './sesion-entre-pestanas.service';
 
 /**
@@ -22,6 +23,7 @@ const CHEQUEOS_DE_SESION = ['/api/v1/user', '/api/v1/sesion'];
 
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const sesion = inject(SesionEntrePestanasService);
+  const bloqueo = inject(BloqueoSesionService);
 
   return next(req).pipe(
     catchError((error: unknown) => {
@@ -30,6 +32,11 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
       if (error instanceof HttpErrorResponse && error.status === 401 && !esChequeo) {
         const motivo = esErrorNegocio(error, 'sesion_inactiva') ? 'inactividad' : undefined;
         sesion.cerrarSesion(motivo);
+      }
+
+      // SEG-12: la sesion sigue viva pero bloqueada, tambien en el chequeo de arranque (recarga).
+      if (error instanceof HttpErrorResponse && error.status === 423 && esErrorNegocio(error, 'sesion_bloqueada')) {
+        bloqueo.activar();
       }
 
       return throwError(() => error);

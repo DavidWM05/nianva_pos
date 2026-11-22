@@ -10,9 +10,11 @@ import { BtnEnviarComponent, CampoComponent } from '@nianva/ui-forms';
 import { FormActionsComponent, PageComponent } from '@nianva/ui-layout';
 import { ModalComponent } from '@nianva/ui-overlays';
 import { DataTableLazyEvent, ToastService, esErrorNegocio, mensajeError } from '@nianva/ui-shared';
-import { Subject, debounceTime } from 'rxjs';
+import { Subject, debounceTime, finalize } from 'rxjs';
 
 import { Venta, VentaService, VentasPermisos } from '@nianva/domain-tpv';
+import { IntentoOperacion } from '../../../../core/operaciones/intento-operacion';
+import { AutorizacionSupervisorService } from '../../../../core/supervisor/autorizacion-supervisor.service';
 
 const PERMISOS_VACIOS: VentasPermisos = { anular: false };
 
@@ -51,6 +53,9 @@ export class VentasListComponent {
   private readonly ventaService = inject(VentaService);
   private readonly router = inject(Router);
   private readonly toast = inject(ToastService);
+  private readonly supervisor = inject(AutorizacionSupervisorService);
+  /** API-07 y SEG-05: la llave y el token de la anulacion en curso. */
+  private readonly intentoAnulacion = new IntentoOperacion();
 
   protected readonly columnas: ColumnaListado<FilaVenta>[] = [
     { tipo: 'principal', campo: 'clienteTexto', encabezado: 'Cliente' },
@@ -192,25 +197,33 @@ export class VentasListComponent {
 
     this.anulando.set(true);
 
-    this.ventaService.anular(venta.id, motivo).subscribe({
-      next: () => {
-        this.anulando.set(false);
-        this.ventaEnAnulacion.set(null);
-        this.toast.success('Venta anulada.');
-        this.cargar(this.ultimoEvento());
-      },
-      error: (error: HttpErrorResponse) => {
-        this.anulando.set(false);
-
-        if (esErrorNegocio(error, 'venta_ya_anulada')) {
-          this.toast.error(mensajeError(error, 'No se pudo anular la venta.'));
+    this.supervisor
+      .ejecutar(
+        this.intentoAnulacion,
+        { accion: 'ventas.anular', recurso: venta.id, datos: { motivo }, descripcion: `Anular la venta #${venta.numero}` },
+        (llave, token) => this.ventaService.anular(venta.id, motivo, llave, token),
+      )
+      // Si el cajero cancela el dialogo del supervisor no hay respuesta: se libera el boton igual.
+      .pipe(finalize(() => this.anulando.set(false)))
+      .subscribe({
+        next: () => {
+          this.anulando.set(false);
+          this.ventaEnAnulacion.set(null);
+          this.toast.success('Venta anulada.');
           this.cargar(this.ultimoEvento());
+        },
+        error: (error: HttpErrorResponse) => {
+          this.anulando.set(false);
 
-          return;
-        }
+          if (esErrorNegocio(error, 'venta_ya_anulada')) {
+            this.toast.error(mensajeError(error, 'No se pudo anular la venta.'));
+            this.cargar(this.ultimoEvento());
 
-        this.toast.error('No se pudo anular la venta.');
-      },
-    });
+            return;
+          }
+
+          this.toast.error('No se pudo anular la venta.');
+        },
+      });
   }
 }

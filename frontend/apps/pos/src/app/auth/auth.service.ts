@@ -35,6 +35,11 @@ export class AuthService {
     );
   }
 
+  /** SEG-12: bloquea la sesion; se desbloquea con el PIN de caja (BloqueoSesionComponent). */
+  bloquearSesion(): Observable<void> {
+    return this.api.bloquearSesion();
+  }
+
   /** GET /sesion (API-09): usuario, sucursal, permisos, modulos activos y formato regional. */
   obtenerSesion(): Observable<Sesion> {
     return this.api.obtenerSesion();

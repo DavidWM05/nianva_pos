@@ -17,6 +17,9 @@ import { LineasProductoCambio, LineasProductoComponent } from '../../../tpv/line
 import { ErrorNegocioTpv } from '../../../tpv/tpv-error.types';
 import { Venta, VentaItemPayload, VentaPagoPayload, VentaService } from '@nianva/domain-tpv';
 import { DevolucionFormPayload, DevolucionService, TipoDevolucion, TipoReembolso } from '@nianva/domain-devoluciones';
+import { finalize } from 'rxjs';
+import { IntentoOperacion } from '../../../../core/operaciones/intento-operacion';
+import { AutorizacionSupervisorService } from '../../../../core/supervisor/autorizacion-supervisor.service';
 
 
 interface LineaDevuelta {
@@ -77,6 +80,9 @@ export class DevolucionFormComponent implements OnInit {
   private readonly ventaService = inject(VentaService);
   private readonly devolucionService = inject(DevolucionService);
   private readonly toast = inject(ToastService);
+  private readonly supervisor = inject(AutorizacionSupervisorService);
+  /** API-07 y SEG-05: la llave y, si se reembolsa dinero, el token de la devolucion en curso. */
+  private readonly intentoDevolucion = new IntentoOperacion();
 
   /** D-7, transitorio: el campo de búsqueda es el `numero` de la venta (lo reemplaza el folio de DAT-07). */
   protected readonly ventaIdBusqueda = signal<number | null>(null);
@@ -270,26 +276,35 @@ export class DevolucionFormComponent implements OnInit {
     };
 
     const indicesEnviados = this.lineasDevueltas().flatMap((linea, indice) => linea.cantidad > 0 ? [indice] : []);
-    this.devolucionService.registrar(payload).subscribe({
-      next: ({ devolucion, notaCredito }) => {
-        this.registrando.set(false);
-        this.toast.success(
-          notaCredito
-            ? `Devolución registrada. Nota de crédito #${notaCredito.id} generada por $${notaCredito.monto_original}.`
-            : 'Devolución registrada.',
-        );
-        this.router.navigate(['/devoluciones', devolucion.id]);
-      },
-      error: (error: HttpErrorResponse) => {
-        this.registrando.set(false);
-        const errores = Object.fromEntries(Object.entries(erroresValidacion(error)).map(([clave, mensajes]) => [
-          clave.replace(/^items_devueltos\.(\d+)\./, (_, indice: string) => 'items_devueltos.' + indicesEnviados[Number(indice)] + '.'), mensajes,
-        ]));
-        aplicarErroresServidor(this.formularioLineas, { error: { errors: errores } });
-        const cuerpo = error.error as ErrorNegocioTpv | undefined;
-        this.toast.error(cuerpo?.message ?? 'No se pudo registrar la devolución.');
-      },
-    });
+    // SEG-05 (F4-7): toda devolucion con reembolso en dinero pide supervisor; lo decide el servidor.
+    this.supervisor
+      .ejecutar(
+        this.intentoDevolucion,
+        { accion: 'devoluciones.reembolsar', recurso: venta.id, datos: { ...payload }, descripcion: `Reembolsar dinero de la venta #${venta.numero}` },
+        (llave, token) => this.devolucionService.registrar(payload, llave, token),
+      )
+      // Si se cancela el dialogo del supervisor no hay respuesta: se libera el boton igual.
+      .pipe(finalize(() => this.registrando.set(false)))
+      .subscribe({
+        next: ({ devolucion, notaCredito }) => {
+          this.registrando.set(false);
+          this.toast.success(
+            notaCredito
+              ? `Devolución registrada. Nota de crédito #${notaCredito.id} generada por $${notaCredito.monto_original}.`
+              : 'Devolución registrada.',
+          );
+          this.router.navigate(['/devoluciones', devolucion.id]);
+        },
+        error: (error: HttpErrorResponse) => {
+          this.registrando.set(false);
+          const errores = Object.fromEntries(Object.entries(erroresValidacion(error)).map(([clave, mensajes]) => [
+            clave.replace(/^items_devueltos\.(\d+)\./, (_, indice: string) => 'items_devueltos.' + indicesEnviados[Number(indice)] + '.'), mensajes,
+          ]));
+          aplicarErroresServidor(this.formularioLineas, { error: { errors: errores } });
+          const cuerpo = error.error as ErrorNegocioTpv | undefined;
+          this.toast.error(cuerpo?.message ?? 'No se pudo registrar la devolución.');
+        },
+      });
   }
 
   private reiniciarLineas(): void {

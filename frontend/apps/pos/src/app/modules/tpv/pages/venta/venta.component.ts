@@ -24,6 +24,7 @@ import { FormActionsComponent, TactilComponent } from '@nianva/ui-layout';
 import {
   BtnEnviarComponent,
   CampoComponent,
+  InputDineroComponent,
   SelectFiltroComponent,
   SelectFiltroOpcion,
 } from '@nianva/ui-forms';
@@ -34,7 +35,10 @@ import {
   mensajeError,
 } from '@nianva/ui-shared';
 
+import { finalize } from 'rxjs';
 import { BUSCADOR_CLIENTE } from '../../../../core/buscadores-entidad.tokens';
+import { IntentoOperacion } from '../../../../core/operaciones/intento-operacion';
+import { AutorizacionSupervisorService } from '../../../../core/supervisor/autorizacion-supervisor.service';
 import { NotaCredito, NotaCreditoService } from '@nianva/domain-notas-credito';
 import { CajaService, CajaSesion, CuponValidacion, CuponValidacionService, Venta, VentaFormPayload, VentaItemPayload, VentaPagoPayload, VentaService } from '@nianva/domain-tpv';
 import {
@@ -75,6 +79,7 @@ import {
     SkeletonComponent,
     BtnEnviarComponent,
     CampoComponent,
+    InputDineroComponent,
     SelectFiltroComponent,
     DineroPipe,
     AtajosTecladoComponent,
@@ -91,6 +96,12 @@ export class VentaComponent implements OnInit {
   private readonly cuponValidacionService = inject(CuponValidacionService);
   private readonly notaCreditoService = inject(NotaCreditoService);
   private readonly toast = inject(ToastService);
+  private readonly supervisor = inject(AutorizacionSupervisorService);
+  /**
+   * API-07 y SEG-05: llave y token de la venta en curso. Si el carrito, el pago o el descuento
+   * cambian, el cuerpo es otro: llave nueva y el token del supervisor se descarta.
+   */
+  private readonly intentoVenta = new IntentoOperacion();
 
   protected readonly buscadorCliente = inject(BUSCADOR_CLIENTE);
 
@@ -130,10 +141,21 @@ export class VentaComponent implements OnInit {
   protected readonly cuponAplicado = signal<CuponValidacion | null>(null);
   protected readonly validandoCupon = signal(false);
 
+  // -- Descuento manual (SEG-05) --
+  // Importe en MXN, como lo recibe el servidor (`descuento_manual`), de 0 al subtotal. Arriba del
+  // margen que fija el servidor, la venta pide un supervisor (`ventas.descuento`).
+  protected readonly descuentoManual = signal<number | null>(null);
+  protected readonly descuentoValido = computed(() => {
+    const descuento = this.descuentoManual();
+
+    return descuento === null || (descuento >= 0 && aCentavos(descuento) <= aCentavos(this.subtotal()));
+  });
+
   protected readonly total = computed(() => {
     const descuento = this.cuponAplicado()?.descuento ?? 0;
+    const manual = this.descuentoValido() ? (this.descuentoManual() ?? 0) : 0;
 
-    return Math.max(0, aCentavos(this.subtotal()) - aCentavos(descuento)) / 100;
+    return Math.max(0, aCentavos(this.subtotal()) - aCentavos(descuento) - aCentavos(manual)) / 100;
   });
 
   // -- Gift Card --
@@ -217,7 +239,8 @@ export class VentaComponent implements OnInit {
     () =>
       this.pagoCuadra() &&
       this.clienteId() !== null &&
-      this.itemsActuales().length > 0,
+      this.itemsActuales().length > 0 &&
+      this.descuentoValido(),
   );
 
   protected readonly mensajeBloqueo = computed<string | null>(() => {
@@ -225,6 +248,8 @@ export class VentaComponent implements OnInit {
       return 'Agrega al menos un producto al carrito.';
     if (this.clienteId() === null)
       return 'Selecciona un cliente para continuar.';
+    if (!this.descuentoValido())
+      return 'El descuento debe estar entre $0 y el subtotal.';
     if (!this.pagoCuadra()) return 'El pago todavía no cuadra con el total.';
 
     return null;
@@ -373,21 +398,31 @@ export class VentaComponent implements OnInit {
       cupon_codigo: this.cuponAplicado()?.cupon.codigo ?? null,
       gift_card_codigo: this.giftCardCodigo().trim() || null,
       nota_credito_id: this.notaCreditoSeleccionadaId(),
+      // Solo si hay descuento: sin el, el cuerpo es el mismo de siempre.
+      ...(this.descuentoManual() ? { descuento_manual: this.descuentoManual() } : {}),
     };
 
-    this.ventaService.registrar(payload).subscribe({
-      next: (venta) => {
-        this.registrando.set(false);
-        this.ventaRegistrada.set(venta);
-        this.reiniciarCarrito();
-        // UI-17: el formulario desaparece; el foco pasa a la confirmacion en lugar de perderse.
-        afterNextRender(() => this.confirmacionRef?.nativeElement.focus(), { injector: this.injector });
-      },
-      error: (error: HttpErrorResponse) => {
-        this.registrando.set(false);
-        this.toast.error(mensajeError(error, 'No se pudo registrar la venta.'));
-      },
-    });
+    this.supervisor
+      .ejecutar(
+        this.intentoVenta,
+        { accion: 'ventas.descuento', datos: { ...payload }, descripcion: 'Aplicar un descuento fuera del margen' },
+        (llave, token) => this.ventaService.registrar(payload, llave, token),
+      )
+      // Si se cancela el dialogo del supervisor no hay respuesta: se libera el boton igual.
+      .pipe(finalize(() => this.registrando.set(false)))
+      .subscribe({
+        next: (venta) => {
+          this.registrando.set(false);
+          this.ventaRegistrada.set(venta);
+          this.reiniciarCarrito();
+          // UI-17: el formulario desaparece; el foco pasa a la confirmacion en lugar de perderse.
+          afterNextRender(() => this.confirmacionRef?.nativeElement.focus(), { injector: this.injector });
+        },
+        error: (error: HttpErrorResponse) => {
+          this.registrando.set(false);
+          this.toast.error(mensajeError(error, 'No se pudo registrar la venta.'));
+        },
+      });
   }
 
   nuevaVenta(): void {
@@ -407,5 +442,6 @@ export class VentaComponent implements OnInit {
     this.giftCardCodigo.set('');
     this.giftCardMontoEstimado.set(null);
     this.notaCreditoSeleccionadaId.set(null);
+    this.descuentoManual.set(null);
   }
 }

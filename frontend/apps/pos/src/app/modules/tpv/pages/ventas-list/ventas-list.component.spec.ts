@@ -98,7 +98,7 @@ describe('VentasListComponent', () => {
     fixture.componentInstance['motivoAnulacion'].set('Cliente se arrepintió');
     fixture.componentInstance.confirmarAnulacion();
 
-    expect(ventaService.anular).toHaveBeenCalledWith(ulidDePrueba(1), 'Cliente se arrepintió');
+    expect(ventaService.anular).toHaveBeenCalledWith(ulidDePrueba(1), 'Cliente se arrepintió', expect.any(String), undefined);
   });
   it('si la venta ya estaba anulada, recarga la lista y muestra el mensaje', async () => {
     await crearComponente({ anular: true });

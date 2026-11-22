@@ -3,7 +3,7 @@
     type="text"
     inputmode="numeric"
     autocomplete="off"
-    aria-label="PIN"
+    [attr.aria-label]="ariaLabel()"
     class="ui-input-pin__entrada"
     [value]="puntos()"
     [disabled]="deshabilitado()"

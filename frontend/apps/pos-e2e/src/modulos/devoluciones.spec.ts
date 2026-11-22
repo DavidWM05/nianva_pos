@@ -3,6 +3,9 @@ import { revisarAuditoria50f } from '../soporte/flujo-50f';
 import { expect, test } from '@playwright/test';
 import { abrirPantalla, sinErrores, vigilarErrores } from '../soporte/humo';
 import { iniciarSesion } from '../soporte/sesion';
+import { autorizarComoSupervisora, prepararSupervisora, rechazosQuePidenSupervisor } from '../soporte/supervisor';
+
+test.beforeAll(() => prepararSupervisora());
 import { agregarAgua50f, pagarMixto50f } from '../soporte/flujo-50f';
 
 test('devoluciones: buscar venta y registrar un reembolso con pago mixto', async ({
@@ -48,9 +51,12 @@ test('devoluciones: buscar venta y registrar un reembolso con pago mixto', async
   const respuesta = page.waitForResponse(
     (r) =>
       r.request().method() === 'POST' &&
-      new URL(r.url()).pathname === '/api/v1/devoluciones',
+      new URL(r.url()).pathname === '/api/v1/devoluciones' &&
+      r.request().headers()['x-autorizacion-supervisor'] !== undefined,
   );
   await page.getByRole('button', { name: /Registrar$/ }).click();
+  // SEG-05 (F4-7): toda devolución con reembolso en dinero pide supervisor.
+  expect(await autorizarComoSupervisora(page)).toBe(201);
   expect((await respuesta).status()).toBe(201);
   await expect(page.getByText(motivo, { exact: true })).toBeVisible({ timeout: 20000 });
   const ruta = new URL(page.url()).pathname;
@@ -62,5 +68,5 @@ test('devoluciones: buscar venta y registrar un reembolso con pago mixto', async
   await capturarPantalla50f(page, 'devoluciones-lista-con-datos');
   await page.getByRole('button', { name: 'Ver', exact: true }).first().click();
   await expect(page.getByText(motivo, { exact: true })).toBeVisible({ timeout: 20000 });
-  sinErrores(errores, '/devoluciones');
+  sinErrores(errores, '/devoluciones', rechazosQuePidenSupervisor(errores));
 });
