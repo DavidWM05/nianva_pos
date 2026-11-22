@@ -3,6 +3,9 @@ import { revisarAuditoria50f } from '../soporte/flujo-50f';
 import { expect, test } from '@playwright/test';
 import { abrirPantalla, sinErrores, vigilarErrores } from '../soporte/humo';
 import { iniciarSesion } from '../soporte/sesion';
+import { autorizarComoSupervisora, prepararSupervisora, rechazosQuePidenSupervisor } from '../soporte/supervisor';
+
+test.beforeAll(() => prepararSupervisora());
 import {
   agregarAgua50f,
   elegirCliente50f,
@@ -66,8 +69,10 @@ test('apartados: crear, buscar y registrar un abono con pago mixto', async ({
   await capturarPantalla50f(page, 'apartados-modal-cancelar');
   await page.getByRole('dialog').getByLabel('Motivo', { exact: true }).fill('Cierre E2E 50f');
   await page.getByRole('button', { name: /Confirmar cancelaci.n/ }).click();
+  // SEG-05: cancelar un apartado pide supervisor.
+  expect(await autorizarComoSupervisora(page)).toBe(201);
   await expect(page.getByRole('button', { name: 'Entendido', exact: true })).toBeVisible({ timeout: 20000 });
   await capturarPantalla50f(page, 'apartados-modal-resultado');
   await page.getByRole('button', { name: 'Entendido', exact: true }).click();
-  sinErrores(errores, '/apartados');
+  sinErrores(errores, '/apartados', rechazosQuePidenSupervisor(errores));
 });

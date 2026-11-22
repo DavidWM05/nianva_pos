@@ -109,7 +109,7 @@ describe('CuentaPagarDetalleComponent', () => {
     fixture.componentInstance['metodoPagoElegido'].set(1);
     fixture.componentInstance.confirmarPago();
 
-    expect(cuentaPagarService.registrarPago).toHaveBeenCalledWith(ulidDePrueba(5), { monto: 400, metodo_pago_id: 1, referencia: null });
+    expect(cuentaPagarService.registrarPago).toHaveBeenCalledWith(ulidDePrueba(5), { monto: 400, metodo_pago_id: 1, referencia: null }, expect.any(String));
     expect(toast.success).toHaveBeenCalledWith('Pago registrado.');
     expect(cuentaPagarService.obtener).toHaveBeenCalledTimes(2); // 1 al iniciar + 1 al recargar
   });
@@ -143,7 +143,7 @@ describe('CuentaPagarDetalleComponent', () => {
 
     await fixture.componentInstance.anular();
 
-    expect(cuentaPagarService.anular).toHaveBeenCalledWith(ulidDePrueba(5));
+    expect(cuentaPagarService.anular).toHaveBeenCalledWith(ulidDePrueba(5), expect.any(String));
     expect(toast.success).toHaveBeenCalledWith('Cuenta por pagar anulada.');
     expect(cuentaPagarService.obtener).toHaveBeenCalledTimes(2);
   });

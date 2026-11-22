@@ -87,6 +87,24 @@ export function crearUsuarioComo(base: string, correo: string): void {
   `);
 }
 
+/**
+ * SEG-12: deja `correo` con el PIN de caja `pin` (con hash, como PUT /sesion/pin). Asi cada spec de
+ * bloqueo o de supervisor no depende de que otro lo haya dado de alta por pantalla.
+ */
+export function conPinDeCaja(correo: string, pin: string): void {
+  enBackend(`${usuario(correo)}->forceFill(['pin_caja_hash' => Illuminate\\Support\\Facades\\Hash::make(${JSON.stringify(pin)})])->save();`);
+}
+
+/**
+ * SEG-05: un supervisor con los roles de `base`, el nombre dado (para elegirlo en el dialogo) y su
+ * PIN de caja. Si ya existe, lo deja igual que recien creado.
+ */
+export function crearSupervisor(base: string, correo: string, nombre: string, pin: string): void {
+  crearUsuarioComo(base, correo);
+  enBackend(`${usuario(correo)}->forceFill(['nombre' => ${JSON.stringify(nombre)}, 'apellido' => null])->save();`);
+  conPinDeCaja(correo, pin);
+}
+
 /** Codigo TOTP de 6 digitos (RFC 6238, SHA-1, 30 s), como el de una app de autenticacion. */
 export function codigoTotp(secreto: string, instante = Date.now()): string {
   const alfabeto = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';

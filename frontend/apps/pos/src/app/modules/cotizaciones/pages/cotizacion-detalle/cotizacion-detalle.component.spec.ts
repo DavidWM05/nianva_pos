@@ -117,7 +117,7 @@ describe('CotizacionDetalleComponent', () => {
     fixture.componentInstance['metodoPagoElegido'].set(1);
     fixture.componentInstance.confirmarConvertir();
 
-    expect(cotizacionService.convertir).toHaveBeenCalledWith(ulidDePrueba(5), 1);
+    expect(cotizacionService.convertir).toHaveBeenCalledWith(ulidDePrueba(5), 1, expect.any(String));
     expect(router.navigate).toHaveBeenCalledWith(['/tpv/ventas', 42]);
   });
 

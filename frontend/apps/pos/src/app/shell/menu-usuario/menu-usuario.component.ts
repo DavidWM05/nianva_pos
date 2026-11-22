@@ -3,9 +3,11 @@ import { MatButton } from '@angular/material/button';
 import { MatDivider } from '@angular/material/divider';
 import { MatMenu, MatMenuItem, MatMenuTrigger } from '@angular/material/menu';
 import { Router, RouterLink } from '@angular/router';
+import { ToastService, esErrorNegocio } from '@nianva/ui-shared';
 
 import { AuthService } from '../../auth/auth.service';
 import { AuthStateService } from '../../auth/auth-state.service';
+import { BloqueoSesionService } from '../../auth/bloqueo-sesion.service';
 import { TemaPreferido, TemaService } from '../../core/tema.service';
 
 interface OpcionTema {
@@ -32,6 +34,8 @@ export class MenuUsuarioComponent {
   private readonly auth = inject(AuthService);
   private readonly authState = inject(AuthStateService);
   private readonly router = inject(Router);
+  private readonly bloqueo = inject(BloqueoSesionService);
+  private readonly toast = inject(ToastService);
   protected readonly tema = inject(TemaService);
 
   protected readonly opcionesTema: readonly OpcionTema[] = [
@@ -48,6 +52,21 @@ export class MenuUsuarioComponent {
 
   protected elegirTema(valor: TemaPreferido): void {
     this.tema.establecer(valor);
+  }
+
+  /**
+   * SEG-12: bloquea la terminal sin cerrar la sesion; se desbloquea con el PIN de caja del mismo
+   * usuario. Sin PIN configurado el servidor responde 409 y se dice donde configurarlo.
+   */
+  protected bloquearSesion(): void {
+    this.auth.bloquearSesion().subscribe({
+      next: () => this.bloqueo.activar(),
+      error: (error: unknown) => {
+        if (esErrorNegocio(error, 'pin_caja_no_configurado')) {
+          this.toast.error('Configura tu PIN de caja en Preferencias antes de bloquear la sesión.', 'Sin PIN de caja');
+        }
+      },
+    });
   }
 
   /**

@@ -66,6 +66,10 @@
       @if (cuponAplicado(); as cupon) {
         <p>Descuento cupón: -{{ cupon.descuento | dinero }}</p>
       }
+      <!-- SEG-05: arriba del margen del servidor, registrar pide la autorizacion de un supervisor. -->
+      <ui-campo etiqueta="Descuento" ayuda="Importe en pesos, de 0 al subtotal.">
+        <ui-input-dinero [min]="0" [ngModel]="descuentoManual()" (ngModelChange)="descuentoManual.set($event)" />
+      </ui-campo>
       <p class="venta__total">Total: {{ total() | dinero }}</p>
     </section>
 

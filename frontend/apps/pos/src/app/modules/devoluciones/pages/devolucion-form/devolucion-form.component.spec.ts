@@ -172,7 +172,7 @@ describe('DevolucionFormComponent', () => {
 
     fixture.componentInstance.registrarDevolucion();
 
-    expect(devolucionService.registrar).toHaveBeenCalledWith(expect.objectContaining({ tipo_reembolso: 'nota_credito' }));
+    expect(devolucionService.registrar).toHaveBeenCalledWith(expect.objectContaining({ tipo_reembolso: 'nota_credito' }), expect.any(String), undefined);
   });
 
   it('registrarDevolucion() manda tipo_reembolso null cuando no hay reembolso al cliente (cobro adicional)', async () => {
@@ -192,7 +192,7 @@ describe('DevolucionFormComponent', () => {
 
     fixture.componentInstance.registrarDevolucion();
 
-    expect(devolucionService.registrar).toHaveBeenCalledWith(expect.objectContaining({ tipo_reembolso: null }));
+    expect(devolucionService.registrar).toHaveBeenCalledWith(expect.objectContaining({ tipo_reembolso: null }), expect.any(String), undefined);
   });
 
   it('si el backend generó una nota de credito, el toast de exito lo menciona', async () => {

@@ -11,6 +11,12 @@
   </section>
 
   <section class="preferencias__seccion">
+    <h2>PIN de caja</h2>
+    <p class="preferencias__descripcion">Con tu PIN desbloqueas la terminal y, si tu rol lo permite, autorizas como supervisor.</p>
+    <nucleo-pin-caja-form />
+  </section>
+
+  <section class="preferencias__seccion">
     <h2>Cambiar contraseña</h2>
 
     <nucleo-cambiar-password-form (guardar)="onGuardarPassword($event)" />

@@ -1,12 +1,25 @@
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { MatButton } from '@angular/material/button';
-import { PageHeaderComponent, SectionComponent } from '@nianva/ui-layout';
-import { DrawerComponent, ModalComponent, TamanoOverlay } from '@nianva/ui-overlays';
+import { CampoComponent, InputPinComponent } from '@nianva/ui-forms';
+import { FormActionsComponent, PageHeaderComponent, SectionComponent } from '@nianva/ui-layout';
+import { DrawerComponent, ModalComponent, PantallaBloqueoComponent, TamanoOverlay } from '@nianva/ui-overlays';
 
 @Component({
   selector: 'cat-overlays-page',
   standalone: true,
-  imports: [DrawerComponent, MatButton, ModalComponent, PageHeaderComponent, SectionComponent],
+  imports: [
+    CampoComponent,
+    DrawerComponent,
+    FormActionsComponent,
+    FormsModule,
+    InputPinComponent,
+    MatButton,
+    ModalComponent,
+    PageHeaderComponent,
+    PantallaBloqueoComponent,
+    SectionComponent,
+  ],
   template: `
     <ui-page-header clave="catalogo-overlays" subtitulo="Modal y drawer abiertos" />
 
@@ -20,6 +33,23 @@ import { DrawerComponent, ModalComponent, TamanoOverlay } from '@nianva/ui-overl
         <button matButton="outlined" type="button" (click)="abrirDrawer('lg')">Drawer lg</button>
       </p>
     </ui-section>
+
+    <ui-section titulo="Pantalla de bloqueo">
+      <p>
+        <button matButton="outlined" type="button" (click)="bloqueada.set(true)">Mostrar pantalla de bloqueo</button>
+      </p>
+    </ui-section>
+
+    @if (bloqueada()) {
+      <ui-pantalla-bloqueo titulo="Sesión bloqueada">
+        <p>Ingresa tu PIN de caja para continuar.</p>
+        <ui-campo etiqueta="PIN de caja"><ui-input-pin [longitud]="6" [(ngModel)]="pin" /></ui-campo>
+        <ui-form-actions>
+          <button matButton="outlined" type="button" (click)="bloqueada.set(false)">Cerrar sesión</button>
+          <button matButton="filled" type="button" (click)="bloqueada.set(false)">Desbloquear</button>
+        </ui-form-actions>
+      </ui-pantalla-bloqueo>
+    }
 
     <ui-modal
       [visible]="modalVisible()"
@@ -48,6 +78,8 @@ export class OverlaysPage {
   protected readonly drawerVisible = signal(true);
   protected readonly tamanoModal = signal<TamanoOverlay>('md');
   protected readonly tamanoDrawer = signal<TamanoOverlay>('lg');
+  protected readonly bloqueada = signal(false);
+  protected pin = '';
 
   protected abrirModal(tamano: TamanoOverlay): void {
     this.tamanoModal.set(tamano);

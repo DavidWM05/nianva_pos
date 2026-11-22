@@ -106,7 +106,7 @@ describe('GiftCardDetalleComponent', () => {
     fixture.componentInstance.onPagosRecarga({ pagos: [{ metodo_pago_id: 1, monto: 200 }], cuadra: true, suma: 200 });
     fixture.componentInstance.confirmarRecargar();
 
-    expect(giftCardService.recargar).toHaveBeenCalledWith(ulidDePrueba(5), 200, [{ metodo_pago_id: 1, monto: 200 }]);
+    expect(giftCardService.recargar).toHaveBeenCalledWith(ulidDePrueba(5), 200, [{ metodo_pago_id: 1, monto: 200 }], expect.any(String));
     expect(giftCardService.obtener).toHaveBeenCalledTimes(2); // 1 al iniciar + 1 al recargar
     expect(toast.success).toHaveBeenCalledWith('Gift card recargada.');
   });
@@ -140,7 +140,7 @@ describe('GiftCardDetalleComponent', () => {
 
     await fixture.componentInstance.cancelar();
 
-    expect(giftCardService.cancelar).toHaveBeenCalledWith(ulidDePrueba(5));
+    expect(giftCardService.cancelar).toHaveBeenCalledWith(ulidDePrueba(5), expect.any(String));
     expect(toast.success).toHaveBeenCalledWith('Gift card cancelada.');
     expect(giftCardService.obtener).toHaveBeenCalledTimes(2); // 1 al iniciar + 1 al recargar
   });

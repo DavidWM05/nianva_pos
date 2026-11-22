@@ -61,7 +61,7 @@ describe('ApartadoFormComponent', () => {
       items: [{ variante_id: 5, cantidad: 2 }],
       fecha_vencimiento: null,
       notas: null,
-    });
+    }, expect.any(String));
     expect(navigateSpy).toHaveBeenCalledWith(['/apartados', 42]);
   });
 });

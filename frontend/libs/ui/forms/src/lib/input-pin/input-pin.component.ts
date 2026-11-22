@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, forwardRef, input, output, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, ElementRef, computed, forwardRef, inject, input, output, signal } from '@angular/core';
 import { NG_VALUE_ACCESSOR } from '@angular/forms';
 
 import { CampoBase } from '../campo/campo-base';
@@ -19,6 +19,10 @@ export class InputPinComponent extends CampoBase {
   protected readonly longitudEfectiva = computed(() => Math.max(4, Math.min(6, this.longitud())));
   protected readonly puntos = computed(() => '•'.repeat(this.digitos().length));
   protected readonly teclas = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0'];
+  // Si ui-campo lo enlaza a su etiqueta (con un control de formulario), el nombre es la etiqueta;
+  // si no, "PIN".
+  protected readonly ariaLabel = computed(() => (this.idControl() ? null : 'PIN'));
+  private readonly elemento = inject<ElementRef<HTMLElement>>(ElementRef);
 
   writeValue(valor: unknown): void {
     const digitos = String(valor ?? '').replace(/\D/g, '').slice(0, this.longitudEfectiva());
@@ -29,6 +33,11 @@ export class InputPinComponent extends CampoBase {
   limpiar(): void {
     this.digitos.set('');
     this.notificar('');
+  }
+
+  /** Lleva el foco a la entrada del PIN: al abrir el bloqueo o tras un PIN incorrecto. */
+  focus(): void {
+    this.elemento.nativeElement.querySelector<HTMLInputElement>('.ui-input-pin__entrada')?.focus();
   }
 
   protected alTeclado(evento: KeyboardEvent): void {

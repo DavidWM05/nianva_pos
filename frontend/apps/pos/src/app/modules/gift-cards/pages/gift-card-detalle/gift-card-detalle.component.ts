@@ -45,6 +45,7 @@ import {
 } from '@nianva/ui-shared';
 
 import { GiftCard, GiftCardService, PagoRecarga } from '@nianva/domain-gift-cards';
+import { IntentoOperacion } from '../../../../core/operaciones/intento-operacion';
 
 /**
  * Vista de registro (RecordTabsComponent, obligatorio -- CLAUDE.md §4).
@@ -84,6 +85,9 @@ export class GiftCardDetalleComponent implements OnInit {
   private readonly giftCardService = inject(GiftCardService);
   private readonly confirmDialog = inject(ConfirmDialogService);
   private readonly toast = inject(ToastService);
+  // API-07: una llave por operacion; se conserva si el envio falla y se renueva al confirmar.
+  private readonly intentoRecarga = new IntentoOperacion();
+  private readonly intentoCancelacion = new IntentoOperacion();
 
   protected readonly tabs: RecordTabConfig[] = [
     { label: 'Gift Card', icon: 'pi pi-credit-card' },
@@ -151,7 +155,8 @@ export class GiftCardDetalleComponent implements OnInit {
     // eager-load de `recargas` -- usar esa respuesta directamente borraria
     // el historial ya cargado. Se recarga con obtener() (mismo patron que
     // anular() y CuentaCobrarDetalleComponent) para traer `recargas` completo.
-    this.giftCardService.recargar(giftCard.id, monto, this.pagosRecarga()).subscribe({
+    const pagos = this.pagosRecarga();
+    this.intentoRecarga.ejecutar({ gift_card: giftCard.id, monto, pagos }, (llave) => this.giftCardService.recargar(giftCard.id, monto, pagos, llave)).subscribe({
       next: () => {
         this.recargando.set(false);
         this.mostrarRecargar.set(false);
@@ -183,7 +188,7 @@ export class GiftCardDetalleComponent implements OnInit {
 
     if (!confirmado) return;
 
-    this.giftCardService.cancelar(giftCard.id).subscribe({
+    this.intentoCancelacion.ejecutar({ gift_card: giftCard.id }, (llave) => this.giftCardService.cancelar(giftCard.id, llave)).subscribe({
       next: () => {
         this.toast.success('Gift card cancelada.');
         this.cargar(giftCard.id);

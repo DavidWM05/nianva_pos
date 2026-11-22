@@ -1,6 +1,10 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { ConfirmDialogHostComponent, ToastHostComponent } from '@nianva/ui-shared';
+
+import { BloqueoSesionComponent } from './auth/bloqueo-sesion/bloqueo-sesion.component';
+import { BloqueoSesionService } from './auth/bloqueo-sesion.service';
+import { AutorizacionSupervisorHostComponent } from './core/supervisor/autorizacion-supervisor-host.component';
 
 /**
  * Raiz de la app -- deliberadamente NO conoce el sidebar/breadcrumb (ver
@@ -12,9 +16,11 @@ import { ConfirmDialogHostComponent, ToastHostComponent } from '@nianva/ui-share
 @Component({
   selector: 'nucleo-root',
   standalone: true,
-  imports: [RouterOutlet, ConfirmDialogHostComponent, ToastHostComponent],
+  imports: [RouterOutlet, AutorizacionSupervisorHostComponent, BloqueoSesionComponent, ConfirmDialogHostComponent, ToastHostComponent],
   templateUrl: './app.html',
   styleUrl: './app.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class App {}
+export class App {
+  protected readonly bloqueo = inject(BloqueoSesionService);
+}

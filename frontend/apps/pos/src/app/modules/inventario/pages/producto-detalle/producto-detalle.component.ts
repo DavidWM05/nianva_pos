@@ -38,6 +38,7 @@ import { ProductoFormComponent } from '../../producto-form/producto-form.compone
 import { ProveedorFormComponent } from '../../proveedor-form/proveedor-form.component';
 import { VarianteFormComponent } from '../../variante-form/variante-form.component';
 import { VariantesListComponent } from '../../variantes-list/variantes-list.component';
+import { IntentoOperacion } from '../../../../core/operaciones/intento-operacion';
 
 /**
  * Vista de registro de Inventario -- General (formulario + variantes con
@@ -89,6 +90,8 @@ export class ProductoDetalleComponent implements OnInit {
   // pagina orquesta la lectura de un flag de otro modulo, VarianteFormComponent
   // en si mismo no conoce Configuracion, solo recibe un boolean por @Input.
   private readonly configuracionService = inject(ConfiguracionService);
+  // API-07: una llave por operacion; se conserva si el envio falla y se renueva al confirmar.
+  private readonly intentoCompra = new IntentoOperacion();
 
   @ViewChild(ProductoFormComponent)
   private formularioProducto?: ProductoFormComponent;
@@ -308,7 +311,7 @@ export class ProductoDetalleComponent implements OnInit {
 
     this.registrandoCompra.set(true);
 
-    this.compraService.registrar(payload).subscribe({
+    this.intentoCompra.ejecutar(payload, (llave) => this.compraService.registrar(payload, llave)).subscribe({
       next: () => {
         this.registrandoCompra.set(false);
         this.mostrarFormularioCompra.set(false);

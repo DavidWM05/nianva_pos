@@ -29,6 +29,7 @@ import {
 
 import { BUSCADOR_VENTA } from '../../../../core/buscadores-entidad.tokens';
 import { Periodicidad, PlanPagoService } from '@nianva/domain-ventas-plazos';
+import { IntentoOperacion } from '../../../../core/operaciones/intento-operacion';
 
 const PERIODICIDADES: { label: string; value: Periodicidad }[] = [
   { label: 'Mensual', value: 'mensual' },
@@ -63,6 +64,8 @@ export class PlanPagoFormComponent {
   private readonly toast = inject(ToastService);
 
   protected readonly buscadorVenta = inject(BUSCADOR_VENTA);
+  // API-07: una llave por operacion; se conserva si el envio falla y se renueva al confirmar.
+  private readonly intentoPlan = new IntentoOperacion();
   protected readonly periodicidades = PERIODICIDADES;
 
   // DAT-08: ulid de la venta elegida.
@@ -86,13 +89,15 @@ export class PlanPagoFormComponent {
 
     this.guardando.set(true);
 
-    this.planPagoService
-      .crearPlan(ventaId, {
-        numero_cuotas: numeroCuotas,
-        tasa_interes: this.tasaInteres() ?? undefined,
-        periodicidad: this.periodicidad(),
-        fecha_inicio: this.fechaInicio() || null,
-      })
+    const plan = {
+      numero_cuotas: numeroCuotas,
+      tasa_interes: this.tasaInteres() ?? undefined,
+      periodicidad: this.periodicidad(),
+      fecha_inicio: this.fechaInicio() || null,
+    };
+
+    this.intentoPlan
+      .ejecutar({ venta: ventaId, ...plan }, (llave) => this.planPagoService.crearPlan(ventaId, plan, llave))
       .subscribe({
         next: (plan) => {
           this.guardando.set(false);

@@ -13,6 +13,7 @@ import { BUSCADOR_CLIENTE } from '../../../../core/buscadores-entidad.tokens';
 import { ErrorNegocioTpv } from '../../../tpv/tpv-error.types';
 import { LineasProductoCambio, LineasProductoComponent } from '../../../tpv/lineas-producto/lineas-producto.component';
 import { ApartadoItemPayload, ApartadoService } from '@nianva/domain-apartados';
+import { IntentoOperacion } from '../../../../core/operaciones/intento-operacion';
 
 
 /**
@@ -38,6 +39,8 @@ export class ApartadoFormComponent {
   private readonly toast = inject(ToastService);
 
   protected readonly buscadorCliente = inject(BUSCADOR_CLIENTE);
+  // API-07: una llave por operacion; se conserva si el envio falla y se renueva al confirmar.
+  private readonly intentoApartado = new IntentoOperacion();
 
   protected readonly clienteId = signal<string | null>(null);
   protected readonly itemsActuales = signal<ApartadoItemPayload[]>([]);
@@ -60,13 +63,15 @@ export class ApartadoFormComponent {
 
     const fecha = this.fechaVencimiento();
 
-    this.apartadoService
-      .crear({
-        cliente_id: clienteId,
-        items: this.itemsActuales(),
-        fecha_vencimiento: fecha ? fecha.toISOString().slice(0, 10) : null,
-        notas: this.notas().trim() || null,
-      })
+    const apartado = {
+      cliente_id: clienteId,
+      items: this.itemsActuales(),
+      fecha_vencimiento: fecha ? fecha.toISOString().slice(0, 10) : null,
+      notas: this.notas().trim() || null,
+    };
+
+    this.intentoApartado
+      .ejecutar(apartado, (llave) => this.apartadoService.crear(apartado, llave))
       .subscribe({
         next: (apartado) => {
           this.guardando.set(false);

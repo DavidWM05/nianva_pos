@@ -31,10 +31,17 @@ const env = {
   FRONTEND_URL: 'http://127.0.0.1:' + frontendPort,
   SANCTUM_STATEFUL_DOMAINS: '127.0.0.1:' + frontendPort + ',127.0.0.1:' + backendPort,
   CORS_ALLOWED_ORIGINS: 'http://127.0.0.1:' + frontendPort,
-  CACHE_STORE: 'array',
+  // SEG-12 y SEG-05: el bloqueo de la sesion y los intentos de PIN viven en la cache y deben durar
+  // entre peticiones; `array` se vacia en cada una. La tabla `cache` es de esta misma SQLite, que
+  // migrate:fresh deja vacia en cada corrida.
+  CACHE_STORE: 'database',
   // Los limitadores de intentos (throttle:login, PIN, supervisor) siguen en `array`, como antes: la
   // suite inicia sesion con el mismo usuario muchas veces por minuto. Los limites los prueba PHPUnit.
   CACHE_LIMITER: 'array',
+  // SEG-05 (F4-7): las operaciones de dinero piden supervisor como quedaran tras A5. Los umbrales
+  // de descuento y descuadre quedan en 0: los e2e usan montos claramente arriba (100 y 50 MXN,
+  // los valores por tenant que llegan con A5) donde piden supervisor, y cero donde no.
+  SUPERVISOR_EXIGIR: 'true',
   QUEUE_CONNECTION: 'sync',
 };
 

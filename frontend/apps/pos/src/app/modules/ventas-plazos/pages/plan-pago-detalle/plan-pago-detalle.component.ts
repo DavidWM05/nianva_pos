@@ -43,6 +43,7 @@ import {
 } from '@nianva/ui-shared';
 
 import { PlanPago, PlanPagoCuota, PlanPagoService } from '@nianva/domain-ventas-plazos';
+import { IntentoOperacion } from '../../../../core/operaciones/intento-operacion';
 
 /**
  * Vista de registro (RecordTabsComponent, obligatorio -- CLAUDE.md §4).
@@ -80,6 +81,8 @@ export class PlanPagoDetalleComponent implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly planPagoService = inject(PlanPagoService);
   private readonly toast = inject(ToastService);
+  // API-07: una llave por operacion; se conserva si el envio falla y se renueva al confirmar.
+  private readonly intentoCuota = new IntentoOperacion();
 
   protected readonly tabs: RecordTabConfig[] = [
     { label: 'Plan de pago', icon: 'pi pi-calendar-clock' },
@@ -117,8 +120,9 @@ export class PlanPagoDetalleComponent implements OnInit {
 
     this.pagando.set(true);
 
-    this.planPagoService
-      .pagarCuota(plan.id, { cuota_id: cuota.id, monto })
+    const pago = { cuota_id: cuota.id, monto };
+    this.intentoCuota
+      .ejecutar({ plan: plan.id, ...pago }, (llave) => this.planPagoService.pagarCuota(plan.id, pago, llave))
       .subscribe({
         next: () => {
           this.pagando.set(false);

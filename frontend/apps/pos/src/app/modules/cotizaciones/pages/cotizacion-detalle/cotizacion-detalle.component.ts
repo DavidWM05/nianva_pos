@@ -13,6 +13,7 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { AuditLogViewerComponent, ConfirmDialogService, RecordTabConfig, RecordTabsComponent, ToastService, mensajeError } from '@nianva/ui-shared';
 import { MetodoPago, MetodoPagoService } from '@nianva/domain-tpv';
 import { Cotizacion, CotizacionService } from '@nianva/domain-cotizaciones';
+import { IntentoOperacion } from '../../../../core/operaciones/intento-operacion';
 
 
 /**
@@ -40,6 +41,8 @@ export class CotizacionDetalleComponent implements OnInit {
   private readonly metodoPagoService = inject(MetodoPagoService);
   private readonly confirmDialog = inject(ConfirmDialogService);
   private readonly toast = inject(ToastService);
+  // API-07: una llave por operacion; se conserva si el envio falla y se renueva al confirmar.
+  private readonly intentoConversion = new IntentoOperacion();
 
   protected readonly tabs: RecordTabConfig[] = [
     { label: 'Cotización', icon: 'pi pi-file' },
@@ -92,18 +95,20 @@ export class CotizacionDetalleComponent implements OnInit {
 
     this.convirtiendo.set(true);
 
-    this.cotizacionService.convertir(cotizacion.id, metodoPagoId).subscribe({
-      next: ({ ventaId }) => {
-        this.convirtiendo.set(false);
-        this.mostrarConvertir.set(false);
-        this.toast.success('Cotización convertida a venta.');
-        this.router.navigate(['/tpv/ventas', ventaId]);
-      },
-      error: (error: HttpErrorResponse) => {
-        this.convirtiendo.set(false);
-        this.toast.error(mensajeError(error, 'No se pudo convertir la cotización.'));
-      },
-    });
+    this.intentoConversion
+      .ejecutar({ cotizacion: cotizacion.id, metodo_pago_id: metodoPagoId }, (llave) => this.cotizacionService.convertir(cotizacion.id, metodoPagoId, llave))
+      .subscribe({
+        next: ({ ventaId }) => {
+          this.convirtiendo.set(false);
+          this.mostrarConvertir.set(false);
+          this.toast.success('Cotización convertida a venta.');
+          this.router.navigate(['/tpv/ventas', ventaId]);
+        },
+        error: (error: HttpErrorResponse) => {
+          this.convirtiendo.set(false);
+          this.toast.error(mensajeError(error, 'No se pudo convertir la cotización.'));
+        },
+      });
   }
 
   async anular(): Promise<void> {

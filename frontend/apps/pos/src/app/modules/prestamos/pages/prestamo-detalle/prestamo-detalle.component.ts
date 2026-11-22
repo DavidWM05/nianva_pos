@@ -29,6 +29,7 @@ import {
 } from '@nianva/ui-shared';
 
 import { Prestamo, PrestamoService } from '@nianva/domain-prestamos';
+import { IntentoOperacion } from '../../../../core/operaciones/intento-operacion';
 
 /**
  * Vista de registro (RecordTabsComponent, obligatorio -- CLAUDE.md §4).
@@ -61,6 +62,8 @@ export class PrestamoDetalleComponent implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly prestamoService = inject(PrestamoService);
   private readonly toast = inject(ToastService);
+  // API-07: una llave por operacion; se conserva si el envio falla y se renueva al confirmar.
+  private readonly intentoPago = new IntentoOperacion();
 
   protected readonly tabs: RecordTabConfig[] = [
     { label: 'Préstamo', icon: 'pi pi-percentage' },
@@ -100,7 +103,7 @@ export class PrestamoDetalleComponent implements OnInit {
 
     this.pagando.set(true);
 
-    this.prestamoService.registrarPago(prestamo.id, { monto }).subscribe({
+    this.intentoPago.ejecutar({ prestamo: prestamo.id, monto }, (llave) => this.prestamoService.registrarPago(prestamo.id, { monto }, llave)).subscribe({
       next: () => {
         this.pagando.set(false);
         this.mostrarRegistrarPago.set(false);

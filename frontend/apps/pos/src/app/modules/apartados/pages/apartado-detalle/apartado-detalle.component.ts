@@ -14,6 +14,9 @@ import { ActivatedRoute } from '@angular/router';
 import { AuditLogViewerComponent, RecordTabConfig, RecordTabsComponent, ToastService, mensajeError } from '@nianva/ui-shared';
 import { LineasPagoCambio, LineasPagoComponent } from '../../../tpv/lineas-pago/lineas-pago.component';
 import { AbonoPagoPayload, Apartado, ApartadoDetallePermisos, ApartadoService, ResultadoCancelacion } from '@nianva/domain-apartados';
+import { finalize } from 'rxjs';
+import { IntentoOperacion } from '../../../../core/operaciones/intento-operacion';
+import { AutorizacionSupervisorService } from '../../../../core/supervisor/autorizacion-supervisor.service';
 
 
 const PERMISOS_VACIOS: ApartadoDetallePermisos = { abonar: false, cancelar: false };
@@ -40,6 +43,11 @@ export class ApartadoDetalleComponent implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly apartadoService = inject(ApartadoService);
   private readonly toast = inject(ToastService);
+  private readonly supervisor = inject(AutorizacionSupervisorService);
+  // API-07: una llave por operacion; se conserva si el envio falla y se renueva al confirmar.
+  private readonly intentoAbono = new IntentoOperacion();
+  private readonly intentoLiquidacion = new IntentoOperacion();
+  private readonly intentoCancelacion = new IntentoOperacion();
 
   @ViewChild(LineasPagoComponent) private lineasPagoRef?: LineasPagoComponent;
 
@@ -115,7 +123,8 @@ export class ApartadoDetalleComponent implements OnInit {
 
     this.registrandoAbono.set(true);
 
-    this.apartadoService.registrarAbono(apartado.id, { monto, pagos: this.pagosAbono() }).subscribe({
+    const abono = { monto, pagos: this.pagosAbono() };
+    this.intentoAbono.ejecutar({ apartado: apartado.id, ...abono }, (llave) => this.apartadoService.registrarAbono(apartado.id, abono, llave)).subscribe({
       next: (actualizado) => {
         this.apartado.set(actualizado);
         this.montoAbono.set(null);
@@ -136,7 +145,7 @@ export class ApartadoDetalleComponent implements OnInit {
 
     this.liquidando.set(true);
 
-    this.apartadoService.liquidar(apartado.id).subscribe({
+    this.intentoLiquidacion.ejecutar({ apartado: apartado.id }, (llave) => this.apartadoService.liquidar(apartado.id, llave)).subscribe({
       next: (actualizado) => {
         this.apartado.set(actualizado);
         this.liquidando.set(false);
@@ -165,18 +174,26 @@ export class ApartadoDetalleComponent implements OnInit {
 
     this.cancelando.set(true);
 
-    this.apartadoService.cancelar(apartado.id, motivo).subscribe({
-      next: (resultado) => {
-        this.apartado.set(resultado.apartado);
-        this.resultadoCancelacion.set(resultado);
-        this.cancelando.set(false);
-        this.mostrarCancelacion.set(false);
-      },
-      error: (error: HttpErrorResponse) => {
-        this.cancelando.set(false);
-        this.toast.error(mensajeError(error, 'No se pudo cancelar el apartado.'));
-      },
-    });
+    this.supervisor
+      .ejecutar(
+        this.intentoCancelacion,
+        { accion: 'apartados.cancelar', recurso: apartado.id, datos: { motivo }, descripcion: `Cancelar el apartado #${apartado.numero}` },
+        (llave, token) => this.apartadoService.cancelar(apartado.id, motivo, llave, token),
+      )
+      // Si se cancela el dialogo del supervisor no hay respuesta: se libera el boton igual.
+      .pipe(finalize(() => this.cancelando.set(false)))
+      .subscribe({
+        next: (resultado) => {
+          this.apartado.set(resultado.apartado);
+          this.resultadoCancelacion.set(resultado);
+          this.cancelando.set(false);
+          this.mostrarCancelacion.set(false);
+        },
+        error: (error: HttpErrorResponse) => {
+          this.cancelando.set(false);
+          this.toast.error(mensajeError(error, 'No se pudo cancelar el apartado.'));
+        },
+      });
   }
 
   cerrarResultadoCancelacion(): void {

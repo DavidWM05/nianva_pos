@@ -1,7 +1,16 @@
-<router-outlet />
+<!-- SEG-12: con la sesion bloqueada, todo esto queda inerte (ni foco ni clics) detras del bloqueo. -->
+<div [inert]="bloqueo.activa()">
+  <router-outlet />
 
-<!-- Montado una sola vez: ConfirmDialogService lo dispara desde cualquier modulo. -->
-<nucleo-confirm-dialog-host />
+  <!-- Montado una sola vez: ConfirmDialogService lo dispara desde cualquier modulo. -->
+  <nucleo-confirm-dialog-host />
 
-<!-- Montado una sola vez: ToastService lo dispara desde cualquier modulo. -->
-<nucleo-toast-host />
+  <!-- Montado una sola vez: AutorizacionSupervisorService lo abre cuando el servidor pide supervisor (SEG-05). -->
+  <nucleo-autorizacion-supervisor-host />
+
+  <!-- Montado una sola vez: ToastService lo dispara desde cualquier modulo. -->
+  <nucleo-toast-host />
+</div>
+
+<!-- Montado una sola vez: se muestra con 423 sesion_bloqueada o al bloquear la terminal (SEG-12). -->
+<nucleo-bloqueo-sesion />
