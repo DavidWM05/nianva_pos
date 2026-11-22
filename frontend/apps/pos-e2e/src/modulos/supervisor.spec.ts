@@ -28,8 +28,14 @@ test.afterEach(async ({ page }) => {
 async function capturarVenta(page: Page, cantidad: number, descuento: number | null): Promise<void> {
   await agregarAgua50f(page);
   if (cantidad !== 1) {
+    // La cantidad dispara POST /ventas/cotizar: sin esperarla, el total se lee antes de que el
+    // servidor devuelva el precio y el pago deja de cuadrar.
+    const cotizado = page.waitForResponse(
+      (r) => r.request().method() === 'POST' && new URL(r.url()).pathname.endsWith('/ventas/cotizar'),
+    );
     await page.getByRole('spinbutton', { name: /^Cantidad de Agua 1L/ }).fill(String(cantidad));
     await page.keyboard.press('Tab');
+    await cotizado;
   }
   await expect(page.locator('.venta__total')).not.toHaveText(/\$0\.00/, { timeout: 20000 });
   if (descuento !== null) {
