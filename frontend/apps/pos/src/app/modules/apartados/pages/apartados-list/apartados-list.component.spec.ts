@@ -24,7 +24,7 @@ describe('ApartadosListComponent', () => {
   const apartados: Apartado[] = [
     {
       id: ulidDePrueba(1),
-      numero: 1,
+      folio: 'A-1-1',
       fecha_creacion: '2026-07-01T10:00:00.000000Z',
       cliente: { id: ulidDePrueba(9), nombre: 'Maria Lopez' },
       total: '600.00',
@@ -39,7 +39,7 @@ describe('ApartadosListComponent', () => {
     },
     {
       id: ulidDePrueba(2),
-      numero: 2,
+      folio: 'A-1-2',
       fecha_creacion: '2026-06-01T10:00:00.000000Z',
       cliente: { id: ulidDePrueba(10), nombre: 'Juan Perez' },
       total: '300.00',

@@ -38,10 +38,6 @@ const env = {
   // Los limitadores de intentos (throttle:login, PIN, supervisor) siguen en `array`, como antes: la
   // suite inicia sesion con el mismo usuario muchas veces por minuto. Los limites los prueba PHPUnit.
   CACHE_LIMITER: 'array',
-  // SEG-05 (F4-7): las operaciones de dinero piden supervisor como quedaran tras A5. Los umbrales
-  // de descuento y descuadre quedan en 0: los e2e usan montos claramente arriba (100 y 50 MXN,
-  // los valores por tenant que llegan con A5) donde piden supervisor, y cero donde no.
-  SUPERVISOR_EXIGIR: 'true',
   QUEUE_CONNECTION: 'sync',
 };
 

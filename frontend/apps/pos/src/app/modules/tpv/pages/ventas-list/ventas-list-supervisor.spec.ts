@@ -15,7 +15,7 @@ import { VentasListComponent } from './ventas-list.component';
 // Idempotency-Key (API-07) y, con el token, se reintenta el mismo motivo con la misma llave.
 
 describe('VentasListComponent (anulacion con supervisor)', () => {
-  const venta = { id: ulidDePrueba(1), numero: 12, folio: 'V-1-12', estado: 'completada' } as Venta;
+  const venta = { id: ulidDePrueba(1), folio: 'V-1-12', estado: 'completada' } as Venta;
 
   it('pide ventas.anular sobre la venta con el motivo exacto y reintenta con la misma llave y el token', async () => {
     const anular = vi

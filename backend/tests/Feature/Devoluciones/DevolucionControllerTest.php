@@ -18,15 +18,18 @@ use App\Modules\Nucleo\Models\Sucursal;
 use App\Modules\Nucleo\Models\Tenant;
 use App\Modules\Nucleo\Models\Usuario;
 use App\Modules\Nucleo\Services\TenantContext;
+use App\Modules\Nucleo\Support\AccionSupervisor;
 use App\Modules\Tpv\Services\CajaService;
 use App\Modules\Tpv\Services\VentaService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\Support\AutorizaOperaciones;
 use Tests\Support\Bloqueos04c;
 use Tests\Support\Bloqueos04e;
 use Tests\TestCase;
 
 class DevolucionControllerTest extends TestCase
 {
+    use AutorizaOperaciones;
     use RefreshDatabase;
 
     /**
@@ -101,13 +104,14 @@ class DevolucionControllerTest extends TestCase
         $ctx = $this->prepararTenantConVentaOrigen();
         $this->actingAs($ctx['usuario']);
 
-        $respuesta = $this->postJson('/api/v1/devoluciones', [
+        $datosSupervisor1 = [
             'venta_id' => $ctx['ventaOrigenId'],
             'tipo' => 'devolucion',
             'items_devueltos' => [['variante_id' => $ctx['varianteE']->id, 'cantidad' => 1, 'va_a_merma' => false]],
             'pagos' => [['metodo_pago_id' => $ctx['efectivo']->id, 'monto' => 120]],
             'motivo' => 'Talla incorrecta',
-        ]);
+        ];
+        $respuesta = $this->postJson('/api/v1/devoluciones', $datosSupervisor1, ['X-Autorizacion-Supervisor' => self::conSupervisor($ctx['usuario'], AccionSupervisor::Reembolsar, $datosSupervisor1, $ctx['ventaOrigenId'])->token]);
 
         $respuesta->assertCreated()
             ->assertJsonPath('data.tipo', 'devolucion')
@@ -125,12 +129,13 @@ class DevolucionControllerTest extends TestCase
 
         $stockAntes = InventarioStock::sinTenant()->where('variante_id', $ctx['varianteE']->id)->first()->stock_actual;
 
-        $this->postJson('/api/v1/devoluciones', [
+        $datosSupervisor1 = [
             'venta_id' => $ctx['ventaOrigenId'],
             'tipo' => 'devolucion',
             'items_devueltos' => [['variante_id' => $ctx['varianteE']->id, 'cantidad' => 1, 'va_a_merma' => true]],
             'pagos' => [['metodo_pago_id' => $ctx['efectivo']->id, 'monto' => 120]],
-        ])->assertCreated()->assertJsonPath('data.items.0.va_a_merma', true);
+        ];
+        $this->postJson('/api/v1/devoluciones', $datosSupervisor1, ['X-Autorizacion-Supervisor' => self::conSupervisor($ctx['usuario'], AccionSupervisor::Reembolsar, $datosSupervisor1, $ctx['ventaOrigenId'])->token])->assertCreated()->assertJsonPath('data.items.0.va_a_merma', true);
 
         $this->assertSame($stockAntes, InventarioStock::sinTenant()->where('variante_id', $ctx['varianteE']->id)->first()->stock_actual);
     }
@@ -222,12 +227,13 @@ class DevolucionControllerTest extends TestCase
         $ctx = $this->prepararTenantConVentaOrigen();
         $this->actingAs($ctx['usuario']);
 
-        $creada = $this->postJson('/api/v1/devoluciones', [
+        $datosSupervisor1 = [
             'venta_id' => $ctx['ventaOrigenId'],
             'tipo' => 'devolucion',
             'items_devueltos' => [['variante_id' => $ctx['varianteE']->id, 'cantidad' => 1, 'va_a_merma' => false]],
             'pagos' => [['metodo_pago_id' => $ctx['efectivo']->id, 'monto' => 120]],
-        ])->json('data');
+        ];
+        $creada = $this->postJson('/api/v1/devoluciones', $datosSupervisor1, ['X-Autorizacion-Supervisor' => self::conSupervisor($ctx['usuario'], AccionSupervisor::Reembolsar, $datosSupervisor1, $ctx['ventaOrigenId'])->token])->json('data');
 
         $respuesta = $this->getJson("/api/v1/devoluciones/{$creada['id']}");
 

@@ -22,6 +22,7 @@ use App\Modules\GiftCards\Exceptions\RecargaPagoNoCuadraException;
 use App\Modules\GiftCards\Models\GiftCard;
 use App\Modules\GiftCards\Models\GiftCardRecarga;
 use App\Modules\Nucleo\Models\MetodoPago;
+use App\Modules\Nucleo\Support\AccionSupervisor;
 use App\Modules\Tpv\Dtos\CrearVentaDto;
 use App\Modules\Tpv\Dtos\LineaVentaDto;
 use App\Modules\Tpv\Dtos\PagoDto;
@@ -31,11 +32,13 @@ use App\Modules\Tpv\Models\CajaSesionSaldo;
 use App\Modules\Tpv\Models\Venta;
 use Closure;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\Support\AutorizaOperaciones;
 use Tests\Support\PreparaArq04b;
 use Tests\TestCase;
 
 class CuadrePorMetodoTest extends TestCase
 {
+    use AutorizaOperaciones;
     use PreparaArq04b;
     use RefreshDatabase;
 
@@ -153,7 +156,7 @@ class CuadrePorMetodoTest extends TestCase
         $d = $this->negocio04b();
         $venta = $this->vender($d);
         $metodo = MetodoPago::factory()->global()->create(['nombre' => 'Nota de Crédito', 'tipo' => 'digital']);
-        $resultado = app(RegistrarDevolucion::class)->ejecutar(new CrearDevolucionDto($venta->id, 'devolucion', [new ItemDevueltoDto($d['variante']->id, 1, false)], [], [new PagoDevolucionDto($d['metodo']->id, 40), new PagoDevolucionDto($metodo->id, 60)], null, 'efectivo'), $d['usuario']);
+        $resultado = app(RegistrarDevolucion::class)->ejecutar(new CrearDevolucionDto($venta->id, 'devolucion', [new ItemDevueltoDto($d['variante']->id, 1, false)], [], [new PagoDevolucionDto($d['metodo']->id, 40), new PagoDevolucionDto($metodo->id, 60)], null, 'efectivo'), $d['usuario'], self::conSupervisor($d['usuario'], AccionSupervisor::Reembolsar, [], $venta->ulid));
         $filas = CajaMovimiento::query()->where('referencia_tabla', 'devoluciones')->where('referencia_id', $resultado['devolucion']->id)->get();
         $this->assertCount(1, $filas);
         $this->assertSame('-40.00', $filas->sole()->getAttribute('monto'));

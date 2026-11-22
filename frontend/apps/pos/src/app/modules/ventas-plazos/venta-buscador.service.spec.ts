@@ -9,7 +9,6 @@ import { ulidDePrueba } from '../../testing/ulid-de-prueba';
 describe('VentaBuscadorService', () => {
   const ventaCompletada: Venta = {
     id: ulidDePrueba(3),
-    numero: 3,
     folio: 'V-1-3',
     fecha: '2026-07-01',
     cliente: { id: ulidDePrueba(9), nombre: 'Juan Pérez' },

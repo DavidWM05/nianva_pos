@@ -28,12 +28,12 @@ describe('DevolucionDetalleComponent', () => {
 
   const devolucionCambio: Devolucion = {
     id: ulidDePrueba(3),
-    numero: 3,
+    folio: 'D-1-3',
     fecha: '2026-07-22T10:00:00.000000Z',
     tipo: 'cambio',
-    venta: { id: ulidDePrueba(55), numero: 55, cliente_nombre: 'Publico General' },
+    venta: { id: ulidDePrueba(55), folio: 'V-1-55', cliente_nombre: 'Publico General' },
     venta_sombra_id: ulidDePrueba(99),
-    venta_sombra_numero: 99,
+    venta_sombra_folio: 'V-1-99',
     monto_devolucion: '120.00',
     monto_cambio: '400.00',
     diferencia: '280.00',
@@ -86,7 +86,7 @@ describe('DevolucionDetalleComponent', () => {
 
     const texto = (fixture.nativeElement as HTMLElement).textContent ?? '';
     expect(texto).toContain('+$280.00 (cobro adicional)');
-    expect(texto).toContain('Venta #99');
+    expect(texto).toContain('Venta V-1-99');
     expect(texto).toContain('Saco');
     expect(texto).not.toContain('Merma'); // ninguna linea de este ejemplo va a merma
   });

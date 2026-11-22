@@ -25,9 +25,6 @@ class DevolucionResource extends JsonResource
         return [
             // DAT-08: el identificador público es el ulid; el id interno no sale de la API.
             'id' => (string) $this->resource->getAttribute('ulid'),
-            // D-3, transitorio: número visible de la devolución (= id interno), solo para mostrarlo;
-            // lo reemplaza el folio de DAT-07.
-            'numero' => (int) $this->getKey(),
             /** @var string|null */
             'folio' => $this->resource->getAttribute('folio'),
             'fecha' => $this->fecha,
@@ -37,17 +34,12 @@ class DevolucionResource extends JsonResource
                 'venta',
                 fn () => $this->venta ? [
                     'id' => (string) $this->venta->getAttribute('ulid'),
-                    // D-3, transitorio: el número de la venta origen, para mostrarla.
-                    'numero' => (int) $this->venta->getKey(),
                     'folio' => $this->venta->getAttribute('folio') === null ? null : (string) $this->venta->getAttribute('folio'),
                     'cliente_nombre' => $this->venta->cliente?->nombre,
                 ] : null,
             ),
             'venta_sombra_id' => UlidPublico::de($this->resource, 'ventaSombra'),
             'venta_sombra_folio' => $this->resource->getRelation('ventaSombra')?->getAttribute('folio'),
-            // D-3, transitorio: número visible de la venta sombra (= id interno), solo para mostrarlo;
-            // lo reemplaza el folio de DAT-07.
-            'venta_sombra_numero' => $this->resource->getAttribute('venta_sombra_id') === null ? null : (int) $this->resource->getAttribute('venta_sombra_id'),
             'monto_devolucion' => DecimalApi::dinero($this->monto_devolucion),
             'monto_cambio' => DecimalApi::dinero($this->monto_cambio),
             'diferencia' => DecimalApi::dinero($this->diferencia),

@@ -34,9 +34,8 @@ describe('CuentaPagarDetalleComponent', () => {
   function cuentaCon(overrides: Partial<CuentaPagar>): CuentaPagar {
     return {
       id: ulidDePrueba(5),
-      numero: 5,
       compra_id: ulidDePrueba(42),
-      compra_numero: 42,
+      folio: 'CO-1-42',
       proveedor: { id: 7, razon_social: 'Textiles del Norte' },
       monto_total: '1000.00',
       saldo_pendiente: '600.00',

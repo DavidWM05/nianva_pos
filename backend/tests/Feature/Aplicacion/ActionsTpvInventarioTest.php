@@ -14,6 +14,7 @@ use App\Modules\Inventario\Dtos\CompraDto;
 use App\Modules\Inventario\Dtos\LineaCompraDto;
 use App\Modules\Inventario\Dtos\MovimientoInventarioDto;
 use App\Modules\Inventario\Models\Kardex;
+use App\Modules\Nucleo\Support\AccionSupervisor;
 use App\Modules\Nucleo\Support\MetodoEfectivo;
 use App\Modules\Tpv\Dtos\AbrirCajaDto;
 use App\Modules\Tpv\Dtos\AnularVentaDto;
@@ -25,11 +26,13 @@ use App\Modules\Tpv\Exceptions\VentaYaAnuladaException;
 use App\Modules\Tpv\Models\CajaSesion;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
+use Tests\Support\AutorizaOperaciones;
 use Tests\Support\PreparaArq04b;
 use Tests\TestCase;
 
 class ActionsTpvInventarioTest extends TestCase
 {
+    use AutorizaOperaciones;
     use PreparaArq04b;
     use RefreshDatabase;
 
@@ -74,7 +77,7 @@ class ActionsTpvInventarioTest extends TestCase
     {
         $d = $this->negocio04b();
         $venta = app(RegistrarVenta::class)->ejecutar(new CrearVentaDto($d['cliente']->id, [new LineaVentaDto($d['variante']->id, 1)], [new PagoDto($d['metodo']->id, 100)], null, 0, null, null), $d['usuario']);
-        $resultado = app(AnularVenta::class)->ejecutar(new AnularVentaDto('Revisión 04b'), $venta, $d['usuario']);
+        $resultado = app(AnularVenta::class)->ejecutar(new AnularVentaDto('Revisión 04b'), $venta, $d['usuario'], self::conSupervisor($d['usuario'], AccionSupervisor::AnularVenta, [], $venta->ulid));
 
         $this->assertSame('anulada', $resultado->estado);
         $this->assertSame(10, $d['stock']->fresh()->stock_actual);

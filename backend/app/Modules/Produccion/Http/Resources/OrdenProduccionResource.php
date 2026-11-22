@@ -15,8 +15,6 @@ class OrdenProduccionResource extends JsonResource
         return [
             // DAT-08: el identificador público es el ulid; el id interno no sale de la API.
             'id' => (string) $this->resource->getAttribute('ulid'),
-            // D-3, transitorio: número visible de la orden (= id interno); lo reemplaza el folio de DAT-07.
-            'numero' => (int) $this->getKey(),
             /** @var string|null */
             'folio' => $this->resource->getAttribute('folio'),
             'receta' => $this->whenLoaded('receta', fn () => ['id' => $this->receta->id, 'nombre' => $this->receta->nombre]),

@@ -38,7 +38,7 @@ describe('ApartadoDetalleComponent', () => {
   function apartadoBase(overrides: Partial<Apartado> = {}): Apartado {
     return {
       id: ulidDePrueba(7),
-      numero: 7,
+      folio: 'A-1-7',
       fecha_creacion: '2026-07-01T10:00:00.000000Z',
       cliente: { id: ulidDePrueba(9), nombre: 'Maria Lopez' },
       total: '600.00',

@@ -1,5 +1,3 @@
-import { provideHttpClient } from '@angular/common/http';
-import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { ToastService } from '@nianva/ui-shared';
@@ -14,11 +12,10 @@ import { DevolucionFormComponent } from './pages/devolucion-form/devolucion-form
 
 /**
  * DAT-08 / DAT-07: la devolución busca la venta por su folio. El backend responde el ulid y la
- * pantalla carga la venta con él; nunca pide /ventas/<folio>. `VentaService.buscarPorNumero` (D-7)
- * sigue en libs/domain hasta A5 y conserva sus casos.
+ * pantalla carga la venta con él; nunca pide /ventas/<folio>.
  */
 describe('Devolución: búsqueda de la venta por folio (DAT-07)', () => {
-  const venta = { id: ulidDePrueba(42), numero: 42, folio: 'V-1-42', es_venta_sombra: false, total: '100.00', cliente: null, detalles: [] };
+  const venta = { id: ulidDePrueba(42), folio: 'V-1-42', es_venta_sombra: false, total: '100.00', cliente: null, detalles: [] };
   const buscador = { buscar: () => of([]), obtener: () => of({ id: 1, nombre: 'Entidad' }), hijosDe: () => of([]) };
 
   async function crear(ventaService: Partial<Record<'buscarPorFolio' | 'obtener', unknown>>) {
@@ -65,26 +62,5 @@ describe('Devolución: búsqueda de la venta por folio (DAT-07)', () => {
     expect(obtener).not.toHaveBeenCalled();
     expect(fixture.componentInstance['ventaOrigen']()).toBeNull();
     expect(toast.error).toHaveBeenCalledWith('No se encontró la venta o no tienes permiso para verla.');
-  });
-});
-
-describe('VentaService.buscarPorNumero (D-7)', () => {
-  it('pide /ventas con filtro_numero y devuelve el ulid de la primera fila, o null', () => {
-    TestBed.configureTestingModule({ providers: [provideHttpClient(), provideHttpClientTesting()] });
-    const servicio = TestBed.inject(VentaService);
-    const http = TestBed.inject(HttpTestingController);
-
-    let encontrado: string | null | undefined;
-    servicio.buscarPorNumero(42).subscribe((ulid) => (encontrado = ulid));
-    const peticion = http.expectOne((r) => r.url.endsWith('/ventas'));
-    expect(peticion.request.params.get('filtro_numero')).toBe('42');
-    peticion.flush({ data: [{ id: ulidDePrueba(42), numero: 42 }], meta: { total: 1, permisos: { anular: false } } });
-    expect(encontrado).toBe(ulidDePrueba(42));
-
-    let vacio: string | null | undefined;
-    servicio.buscarPorNumero(7).subscribe((ulid) => (vacio = ulid));
-    http.expectOne((r) => r.url.endsWith('/ventas')).flush({ data: [], meta: { total: 0, permisos: { anular: false } } });
-    expect(vacio).toBeNull();
-    http.verify();
   });
 });

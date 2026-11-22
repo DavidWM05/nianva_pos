@@ -75,7 +75,7 @@ class UlidApiRestoTest extends TestCase
         $this->assertSame('en_proceso', $orden->refresh()->estado);
         $this->getJson('/api/v1/ordenes-produccion')
             ->assertJsonPath('data.0.id', $orden->ulid)
-            ->assertJsonPath('data.0.numero', $orden->getKey());
+            ->assertJsonMissingPath('data.0.numero');
     }
 
     public function test_el_abono_de_una_cuenta_responde_por_ulid_sin_ids_internos(): void
@@ -116,21 +116,21 @@ class UlidApiRestoTest extends TestCase
     {
         $cuenta = $this->crearCuentaCobrar();
         $this->getJson("/api/v1/cuentas-cobrar/{$cuenta->ulid}")
-            ->assertJsonPath('data.numero', $cuenta->getKey())
+            ->assertJsonMissingPath('data.numero')
             ->assertJsonPath('data.cliente.id', $this->cliente->ulid)
             ->assertJsonPath('data.venta_id', $cuenta->venta()->firstOrFail()->ulid);
 
         $plan = $this->crearPlan($this->crearVenta());
         $cuota = $plan->cuotas()->orderBy('numero_cuota')->firstOrFail();
         $this->getJson("/api/v1/planes-pago-cliente/{$plan->ulid}")
-            ->assertJsonPath('data.numero', $plan->getKey())
+            ->assertJsonMissingPath('data.numero')
             ->assertJsonPath('data.cuotas.0.id', $cuota->ulid);
 
         $pagar = CuentaPagar::factory()->create(['tenant_id' => $this->tenant->id, 'compra_id' => $this->compra->id]);
         $this->getJson('/api/v1/cuentas-pagar')
             ->assertOk()
             ->assertJsonPath('data.0.id', $pagar->ulid)
-            ->assertJsonPath('data.0.numero', $pagar->getKey());
+            ->assertJsonMissingPath('data.0.numero');
     }
 
     public function test_las_entradas_de_cliente_y_cuota_exigen_el_ulid(): void

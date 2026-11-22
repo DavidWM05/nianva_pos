@@ -19,7 +19,7 @@ describe('CajaComponent', () => {
 
   const sesionAbierta: CajaSesion = {
     id: ulidDePrueba(1),
-    numero: 1,
+    folio: 'C-1-1',
     sucursal_id: 1,
     usuario_id: 1,
     monto_apertura: '500.00',

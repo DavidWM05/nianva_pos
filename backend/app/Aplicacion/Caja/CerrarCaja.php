@@ -6,6 +6,7 @@ namespace App\Aplicacion\Caja;
 
 use App\Aplicacion\Folios\Folios;
 use App\Aplicacion\Supervisor\Supervisor;
+use App\Modules\Configuracion\Models\ConfiguracionTenant;
 use App\Modules\CuentasCobrar\Models\AbonoCuenta;
 use App\Modules\CuentasPagar\Models\AbonoPagar;
 use App\Modules\Gastos\Services\GastoService;
@@ -48,8 +49,11 @@ class CerrarCaja
                 ->sum('monto'), 2);
             $totalPagosCxp = round((float) AbonoPagar::where('caja_sesion_id', $cajaSesionId)->sum('monto'), 2);
 
-            $sesion = $this->cajaService->cerrarCajaConSesion($cajaSesion, $conteos, Folios::asignar((int) $cajaSesion->sucursal()->firstOrFail()->getAttribute('tenant_id'), (int) $cajaSesion->getAttribute('sucursal_id'), 'C'), $autorizacion?->usuario->id);
-            if (Dinero::desde(ltrim((string) $sesion->getAttribute('diferencia'), '-'))->comparar(Dinero::desde((string) config('supervisor.umbral_descuadre'))) > 0) {
+            $tenantId = (int) $cajaSesion->sucursal()->firstOrFail()->getAttribute('tenant_id');
+            $sesion = $this->cajaService->cerrarCajaConSesion($cajaSesion, $conteos, Folios::asignar($tenantId, (int) $cajaSesion->getAttribute('sucursal_id'), 'C'), $autorizacion?->usuario->id);
+            $configuracion = ConfiguracionTenant::query()->where('tenant_id', $tenantId)->first();
+            $umbral = $configuracion->umbral_descuadre_supervisor ?? ConfiguracionTenant::UMBRAL_DESCUADRE_SUPERVISOR_DEFAULT;
+            if (Dinero::desde(ltrim((string) $sesion->getAttribute('diferencia'), '-'))->comparar(Dinero::desde($umbral)) > 0) {
                 Supervisor::consumir($autorizacion, AccionSupervisor::CerrarCaja, (string) $sesion->getAttribute('ulid'), (int) $sesion->getAttribute('sucursal_id'));
             }
 

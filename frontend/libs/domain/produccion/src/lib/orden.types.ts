@@ -10,8 +10,6 @@ export interface OrdenProduccion {
   folio?: string | null;
   /** DAT-08: ulid de la orden. */
   id: string;
-  /** D-3, transitorio: número visible (= id interno); lo reemplaza el folio de DAT-07. */
-  numero: number;
   cantidad_programada: string;
   cantidad_producida: string | null;
   estado: EstadoOrdenProduccion;

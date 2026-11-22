@@ -33,6 +33,17 @@ class IdempotenciaVentaTest extends TestCase
         $this->assertDatabaseCount('ventas', 2);
     }
 
+    public function test_una_llave_ausente_no_registra_la_venta(): void
+    {
+        $this->prepararNegocio(['ventas.crear']);
+        $this->actingAs($this->usuario);
+
+        $this->sinLlave()->postJson('/api/v1/ventas', $this->payloadVenta())
+            ->assertUnprocessable()
+            ->assertJsonPath('error_code', 'idempotencia_clave_invalida');
+        $this->assertDatabaseCount('ventas', 1);
+    }
+
     public function test_una_llave_invalida_no_registra_la_venta(): void
     {
         $this->prepararNegocio(['ventas.crear']);

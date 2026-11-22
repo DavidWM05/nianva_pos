@@ -126,11 +126,11 @@ class RegistrarDevolucion
                     }
                 }
             }
-            if ($esReembolso && $monetarios !== []) {
-                Supervisor::consumir($autorizacion, AccionSupervisor::Reembolsar, (string) $ventaOrigen->getAttribute('ulid'), $sucursalId);
-            }
             if ($monetarios !== [] && $caja === null) {
                 throw new CajaSesionNoAbiertaException($sucursalId);
+            }
+            if ($esReembolso && $monetarios !== []) {
+                Supervisor::consumir($autorizacion, AccionSupervisor::Reembolsar, (string) $ventaOrigen->getAttribute('ulid'), $sucursalId);
             }
             if ($caja !== null && $monetarios !== []) {
                 $devolucion->update(['caja_sesion_id' => $caja->id]);

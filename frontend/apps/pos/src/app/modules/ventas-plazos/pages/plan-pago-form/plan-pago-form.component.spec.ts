@@ -19,7 +19,7 @@ describe('PlanPagoFormComponent', () => {
 
   const planCreado: PlanPago = {
     id: ulidDePrueba(7),
-    numero: 7,
+    folio: 'V-1-7',
     venta_id: ulidDePrueba(3),
     concepto: 'Venta #3 - Pago a plazos',
     monto_total: '550.00',

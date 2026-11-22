@@ -16,15 +16,18 @@ use App\Modules\Nucleo\Models\Sucursal;
 use App\Modules\Nucleo\Models\Tenant;
 use App\Modules\Nucleo\Models\Usuario;
 use App\Modules\Nucleo\Services\TenantContext;
+use App\Modules\Nucleo\Support\AccionSupervisor;
 use App\Modules\Precios\Models\ReglaPrecio;
 use App\Modules\Tpv\Models\Venta;
 use App\Modules\Tpv\Services\CajaService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\Support\AutorizaOperaciones;
 use Tests\Support\Bloqueos04e;
 use Tests\TestCase;
 
 class VentaControllerTest extends TestCase
 {
+    use AutorizaOperaciones;
     use RefreshDatabase;
 
     /**
@@ -248,7 +251,8 @@ class VentaControllerTest extends TestCase
         $this->patchJson("/api/v1/ventas/{$creada['id']}/anular", [])
             ->assertStatus(422);
 
-        $respuesta = $this->patchJson("/api/v1/ventas/{$creada['id']}/anular", ['motivo' => 'Cliente se arrepintio']);
+        $datosSupervisor1 = ['motivo' => 'Cliente se arrepintio'];
+        $respuesta = $this->patchJson("/api/v1/ventas/{$creada['id']}/anular", $datosSupervisor1, ['X-Autorizacion-Supervisor' => self::conSupervisor($ctx['usuario'], AccionSupervisor::AnularVenta, $datosSupervisor1, $creada['id'])->token]);
 
         $respuesta->assertOk()
             ->assertJsonPath('data.estado', 'anulada')

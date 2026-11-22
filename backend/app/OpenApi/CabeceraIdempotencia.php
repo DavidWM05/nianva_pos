@@ -22,7 +22,8 @@ final class CabeceraIdempotencia implements OperationTransformer
 
         $cabecera = Parameter::make('Idempotency-Key', 'header')
             ->setSchema(Schema::fromType(new StringType))
-            ->description('ULID opcional. Repetir la misma operación conserva la respuesta durante 24 horas. Una carga diferente con la misma llave devuelve 409.');
+            ->required(true)
+            ->description('ULID obligatorio. Repetir la misma operación conserva la respuesta durante 24 horas. Una carga diferente con la misma llave devuelve 409.');
 
         $operation->addParameters([$cabecera]);
     }

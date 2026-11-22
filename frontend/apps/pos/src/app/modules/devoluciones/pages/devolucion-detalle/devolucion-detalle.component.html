@@ -53,7 +53,7 @@
             }
             @if (devolucionActual.venta_sombra_id) {
               <dt>Venta sombra generada</dt>
-              <dd><a [routerLink]="['/tpv/ventas', devolucionActual.venta_sombra_id]">Venta #{{ devolucionActual.venta_sombra_numero }}</a></dd>
+              <dd><a [routerLink]="['/tpv/ventas', devolucionActual.venta_sombra_id]">Venta {{ devolucionActual.venta_sombra_folio ?? 'sin folio' }}</a></dd>
             }
           </dl>
 

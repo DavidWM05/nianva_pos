@@ -3,14 +3,17 @@
 namespace Tests\Feature\Seguridad;
 
 use App\Modules\Inventario\Models\Compra;
+use App\Modules\Nucleo\Support\AccionSupervisor;
 use App\Modules\Tpv\Models\Venta;
 use App\Modules\Tpv\Models\VentaDetalle;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\Support\AutorizaOperaciones;
 use Tests\Support\PreparaNegocio;
 use Tests\TestCase;
 
 class ManipulacionDePreciosTest extends TestCase
 {
+    use AutorizaOperaciones;
     use PreparaNegocio;
     use RefreshDatabase;
 
@@ -101,7 +104,7 @@ class ManipulacionDePreciosTest extends TestCase
         $venta = $this->crearVenta();
         $this->actingAs($this->usuario);
 
-        $respuesta = $this->postJson('/api/v1/devoluciones', [
+        $datosSupervisor1 = [
             'venta_id' => $venta->ulid,
             'tipo' => 'devolucion',
             'items_devueltos' => [[
@@ -117,7 +120,8 @@ class ManipulacionDePreciosTest extends TestCase
             'subtotal' => 1,
             'total' => 1,
             'costo' => 1,
-        ]);
+        ];
+        $respuesta = $this->postJson('/api/v1/devoluciones', $datosSupervisor1, ['X-Autorizacion-Supervisor' => self::conSupervisor($this->usuario, AccionSupervisor::Reembolsar, $datosSupervisor1, $venta->ulid)->token]);
 
         $respuesta->assertCreated();
         $this->assertDatabaseHas('devolucion_items', [

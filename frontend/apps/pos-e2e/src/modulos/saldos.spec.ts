@@ -119,7 +119,7 @@ test('saldos: notas de crédito permiten filtrar cliente y recorrer el detalle d
   page,
 }) => {
   await iniciarSesion(page, 'vendedor@abarrotes.test');
-  prepararSaldos50h();
+  const datos = prepararSaldos50h();
   const errores = vigilarErrores(page);
   await abrirPantalla(page, '/notas-credito');
   const selector = page.locator('nucleo-entidad-selector');
@@ -138,7 +138,7 @@ test('saldos: notas de crédito permiten filtrar cliente y recorrer el detalle d
   await expect(
     page.getByText('Esta nota de crédito no se ha usado todavía.'),
   ).toBeVisible();
-  await expect(page.getByRole('link', { name: /Devolución #/ })).toBeVisible();
+  await expect(page.getByRole('link', { name: 'Devolución ' + datos.devolucionFolio })).toBeVisible();
   sinErrores(errores, 'notas-credito');
 });
 

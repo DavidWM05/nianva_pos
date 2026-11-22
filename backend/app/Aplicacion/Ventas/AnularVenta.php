@@ -34,7 +34,9 @@ final class AnularVenta
                 }
             }
             $venta = Venta::query()->whereKey($venta->id)->lockForUpdate()->firstOrFail();
-            Supervisor::consumir($autorizacion, AccionSupervisor::AnularVenta, (string) $venta->getAttribute('ulid'), (int) $venta->getAttribute('sucursal_id'));
+            if ($autorizacion?->token !== null || $venta->getAttribute('estado') !== 'anulada') {
+                Supervisor::consumir($autorizacion, AccionSupervisor::AnularVenta, (string) $venta->getAttribute('ulid'), (int) $venta->getAttribute('sucursal_id'));
+            }
             $variantes = $venta->detalles->pluck('variante_id')->unique()->sort()->values()->all();
             $stocks = [];
             foreach ($variantes as $varianteId) {

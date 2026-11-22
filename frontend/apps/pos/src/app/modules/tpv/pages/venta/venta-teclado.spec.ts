@@ -23,7 +23,7 @@ describe('VentaComponent (teclado y foco)', () => {
   const cajaAbierta: CajaActual = {
     sesion: {
       id: ulidDePrueba(1),
-      numero: 1,
+      folio: 'C-1-1',
       sucursal_id: 1,
       usuario_id: 1,
       monto_apertura: '500.00',
@@ -82,7 +82,7 @@ describe('VentaComponent (teclado y foco)', () => {
     fixture.debugElement.query(By.directive(LineasProductoComponent)).componentInstance as LineasProductoComponent;
 
   async function registrarVentaDeEjemplo(): Promise<void> {
-    ventaService.registrar.mockReturnValue(of({ id: ulidDePrueba(7), numero: 7, folio: 'V-1-7', total: 200 }));
+    ventaService.registrar.mockReturnValue(of({ id: ulidDePrueba(7), folio: 'V-1-7', total: 200 }));
     fixture.componentInstance.onLineasCambio({ items: [{ variante_id: 5, cantidad: 2 }], subtotal: 200 });
     fixture.detectChanges();
     const lineasPago = fixture.debugElement.query(By.directive(LineasPagoComponent)).componentInstance as LineasPagoComponent;

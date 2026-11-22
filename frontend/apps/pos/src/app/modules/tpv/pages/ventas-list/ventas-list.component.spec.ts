@@ -18,7 +18,7 @@ describe('VentasListComponent', () => {
   const ventas: Venta[] = [
     {
       id: ulidDePrueba(1),
-      numero: 1,
+      folio: 'V-1-1',
       fecha: '2026-07-22T10:00:00.000000Z',
       cliente: { id: ulidDePrueba(9), nombre: 'Publico General' },
       total: '330.00',

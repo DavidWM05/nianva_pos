@@ -88,7 +88,7 @@ class DevolucionController extends Controller
 
         return response()->json([
             'data' => new DevolucionResource($devolucion),
-            'nota_credito' => $nota ? ['id' => (string) $nota->getAttribute('ulid'), 'numero' => (int) $nota->getKey(), 'monto_original' => DecimalApi::dinero($nota->monto_original)] : null,
+            'nota_credito' => $nota ? ['id' => (string) $nota->getAttribute('ulid'), 'folio' => (string) $devolucion->getAttribute('folio'), 'monto_original' => DecimalApi::dinero($nota->monto_original)] : null,
         ], 201);
     }
 }

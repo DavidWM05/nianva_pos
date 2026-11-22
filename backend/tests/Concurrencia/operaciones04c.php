@@ -20,10 +20,14 @@ use App\Modules\Devoluciones\Dtos\ItemDevueltoDto;
 use App\Modules\Devoluciones\Dtos\PagoDevolucionDto;
 use App\Modules\Gastos\Dtos\CrearGastoDto;
 use App\Modules\Nucleo\Exceptions\ExcepcionNegocio;
+use App\Modules\Nucleo\Support\AccionSupervisor;
+use App\Modules\Tpv\Models\Venta;
 use Illuminate\Database\Events\QueryExecuted;
 use Illuminate\Support\Facades\DB;
+use Tests\Support\AutorizaOperaciones;
 
 $op = $argv[1];
+$venta = $op === 'reembolso' ? Venta::findOrFail($datos['venta']) : null;
 $apartado = isset($datos['apartado']) ? Apartado::findOrFail($datos['apartado']) : null;
 $tabla = match ($op) {
     'apartado_crear' => 'inventario_stock',
@@ -40,13 +44,17 @@ DB::listen(static function (QueryExecuted $consulta) use ($tabla, &$observado, $
 });
 
 try {
+    $fixture = new class
+    {
+        use AutorizaOperaciones;
+    };
     $resultado = match ($op) {
         'apartado_crear' => app(CrearApartado::class)->ejecutar(new CrearApartadoDto($datos['cliente'], [new LineaApartadoDto($datos['variante'], 1)], null, null), $usuario),
         'apartado_abonar' => app(RegistrarAbonoApartado::class)->ejecutar(new RegistrarAbonoApartadoDto(50, [new PagoApartadoDto($datos['metodo'], 50)], null), $apartado, $usuario),
         'apartado_liquidar' => app(LiquidarApartado::class)->ejecutar(new LiquidarApartadoDto, $apartado, $usuario),
-        'apartado_cancelar' => app(CancelarApartado::class)->ejecutar(new CancelarApartadoDto('Concurrencia 04c'), $apartado, $usuario)->apartado,
+        'apartado_cancelar' => app(CancelarApartado::class)->ejecutar(new CancelarApartadoDto('Concurrencia 04c'), $apartado, $usuario, $fixture::conSupervisor($usuario, AccionSupervisor::CancelarApartado, [], $apartado->ulid))->apartado,
         'gasto' => app(RegistrarGasto::class)->ejecutar(new CrearGastoDto('Concurrencia', 10), $usuario),
-        'reembolso' => app(RegistrarDevolucion::class)->ejecutar(new CrearDevolucionDto($datos['venta'], 'devolucion', [new ItemDevueltoDto($datos['variante'], 1, false)], [], [new PagoDevolucionDto($datos['metodo'], 100)], null, 'efectivo'), $usuario)['devolucion'],
+        'reembolso' => app(RegistrarDevolucion::class)->ejecutar(new CrearDevolucionDto($datos['venta'], 'devolucion', [new ItemDevueltoDto($datos['variante'], 1, false)], [], [new PagoDevolucionDto($datos['metodo'], 100)], null, 'efectivo'), $usuario, $fixture::conSupervisor($usuario, AccionSupervisor::Reembolsar, [], $venta->ulid))['devolucion'],
     };
     $emitir(['resultado' => $op, 'id' => $resultado->id]);
 } catch (ExcepcionNegocio $error) {

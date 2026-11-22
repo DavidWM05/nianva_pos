@@ -16,6 +16,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 /**
  * @property bool $cupon_combinable_con_promociones
  * @property string $tasa_iva_default
+ * @property string|null $margen_descuento_supervisor
+ * @property string|null $umbral_descuadre_supervisor
  * @property string $moneda
  * @property string $zona_horaria
  * @property string $perfil_giro clave de app/Modules/Configuracion/PerfilesGiro (ARQ-07)
@@ -24,7 +26,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
     'tenant_id', 'moneda', 'zona_horaria', 'mensaje_ticket', 'logo_url', 'mostrar_rfc',
     'mostrar_telefono', 'mostrar_correo', 'backup_auto', 'backup_frecuencia', 'backup_ultimo',
     'codigo_barras_automatico', 'modulos_activos', 'tasa_iva_default', 'cupon_combinable_con_promociones',
-    'perfil_giro',
+    'perfil_giro', 'margen_descuento_supervisor', 'umbral_descuadre_supervisor',
 ])]
 class ConfiguracionTenant extends Model
 {
@@ -32,6 +34,10 @@ class ConfiguracionTenant extends Model
 
     /** @use HasFactory<ConfiguracionTenantFactory> */
     use HasFactory;
+
+    public const MARGEN_DESCUENTO_SUPERVISOR_DEFAULT = '50.00';
+
+    public const UMBRAL_DESCUADRE_SUPERVISOR_DEFAULT = '100.00';
 
     public $timestamps = false;
 
@@ -49,6 +55,8 @@ class ConfiguracionTenant extends Model
             'backup_ultimo' => 'datetime',
             'codigo_barras_automatico' => 'boolean',
             'modulos_activos' => 'array',
+            'margen_descuento_supervisor' => 'decimal:2',
+            'umbral_descuadre_supervisor' => 'decimal:2',
         ];
     }
 

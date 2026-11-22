@@ -105,8 +105,8 @@ class RutasConUlidTest extends TestCase
             if (($propiedades['id']['type'] ?? null) !== 'string') {
                 $infracciones[] = "{$esquema}.id publica ".json_encode($propiedades['id'] ?? null).'; debe ser el ulid (string).';
             }
-            if (isset($propiedades['numero']) && ($propiedades['numero']['type'] ?? null) !== 'integer') {
-                $infracciones[] = "{$esquema}.numero (transitorio D-3) debe ser entero.";
+            if (array_key_exists('numero', $propiedades)) {
+                $infracciones[] = "{$esquema}.numero es un campo transitorio retirado en A5.";
             }
         }
 

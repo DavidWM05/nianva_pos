@@ -23,6 +23,8 @@ final readonly class ConfiguracionTenantDto
         private array $presentes,
         public ?string $tasaIvaDefault = null,
         public ?bool $cuponCombinableConPromociones = null,
+        public ?string $margenDescuentoSupervisor = null,
+        public ?string $umbralDescuadreSupervisor = null,
     ) {}
 
     /**
@@ -77,6 +79,13 @@ final readonly class ConfiguracionTenantDto
 
         if (in_array('cupon_combinable_con_promociones', $this->presentes, true)) {
             $datos['cupon_combinable_con_promociones'] = $this->cuponCombinableConPromociones;
+        }
+
+        if (in_array('margen_descuento_supervisor', $this->presentes, true)) {
+            $datos['margen_descuento_supervisor'] = $this->margenDescuentoSupervisor;
+        }
+        if (in_array('umbral_descuadre_supervisor', $this->presentes, true)) {
+            $datos['umbral_descuadre_supervisor'] = $this->umbralDescuadreSupervisor;
         }
 
         return $datos;

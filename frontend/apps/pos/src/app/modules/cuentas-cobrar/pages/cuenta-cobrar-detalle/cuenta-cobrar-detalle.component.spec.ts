@@ -34,7 +34,7 @@ describe('CuentaCobrarDetalleComponent', () => {
   function cuentaCon(overrides: Partial<CuentaCobrar>): CuentaCobrar {
     return {
       id: ulidDePrueba(5),
-      numero: 5,
+      folio: 'V-1-5',
       venta_id: ulidDePrueba(42),
       cliente: { id: ulidDePrueba(9), nombre: 'Juan Pérez' },
       monto_total: '500.00',

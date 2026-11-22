@@ -25,16 +25,19 @@ use App\Modules\Devoluciones\Dtos\ItemDevueltoDto;
 use App\Modules\Devoluciones\Dtos\PagoDevolucionDto;
 use App\Modules\Gastos\Dtos\CrearGastoDto;
 use App\Modules\Inventario\Models\Kardex;
+use App\Modules\Nucleo\Support\AccionSupervisor;
 use App\Modules\Nucleo\Support\MetodoEfectivo;
 use App\Modules\Tpv\Dtos\CrearVentaDto;
 use App\Modules\Tpv\Dtos\LineaVentaDto;
 use App\Modules\Tpv\Dtos\PagoDto;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\Support\AutorizaOperaciones;
 use Tests\Support\PreparaArq04b;
 use Tests\TestCase;
 
 class ActionsApartadosGastosTest extends TestCase
 {
+    use AutorizaOperaciones;
     use PreparaArq04b;
     use RefreshDatabase;
 
@@ -79,13 +82,13 @@ class ActionsApartadosGastosTest extends TestCase
         $d = $this->negocio04b();
         $apartado = app(CrearApartado::class)->ejecutar(new CrearApartadoDto($d['cliente']->id, [new LineaApartadoDto($d['variante']->id, 1)], null, null), $d['usuario']);
         app(RegistrarAbonoApartado::class)->ejecutar(new RegistrarAbonoApartadoDto(40, [new PagoApartadoDto($d['metodo']->id, 40)], null), $apartado, $d['usuario']);
-        $resultado = app(CancelarApartado::class)->ejecutar(new CancelarApartadoDto('Cancelación 04c'), $apartado, $d['usuario']);
+        $resultado = app(CancelarApartado::class)->ejecutar(new CancelarApartadoDto('Cancelación 04c'), $apartado, $d['usuario'], self::conSupervisor($d['usuario'], AccionSupervisor::CancelarApartado, [], $apartado->ulid));
 
         $this->assertSame(40.0, $resultado->montoAbonadoPendiente);
         $this->assertSame(10, $d['stock']->fresh()->stock_actual);
         $this->assertSame(2, Kardex::count());
         $this->expectException(ApartadoEstadoInvalidoException::class);
-        app(CancelarApartado::class)->ejecutar(new CancelarApartadoDto('Repetida'), $apartado, $d['usuario']);
+        app(CancelarApartado::class)->ejecutar(new CancelarApartadoDto('Repetida'), $apartado, $d['usuario'], self::conSupervisor($d['usuario'], AccionSupervisor::CancelarApartado, [], $apartado->ulid));
     }
 
     public function test_gasto_se_asigna_a_la_caja_activa_y_el_cierre_lo_descuenta(): void
@@ -103,7 +106,7 @@ class ActionsApartadosGastosTest extends TestCase
     {
         $d = $this->negocio04b();
         $venta = app(RegistrarVenta::class)->ejecutar(new CrearVentaDto($d['cliente']->id, [new LineaVentaDto($d['variante']->id, 2)], [new PagoDto($d['metodo']->id, 200)], null, 0, null, null), $d['usuario']);
-        $resultado = app(RegistrarDevolucion::class)->ejecutar(new CrearDevolucionDto($venta->id, 'devolucion', [new ItemDevueltoDto($d['variante']->id, 1, false)], [], [new PagoDevolucionDto($d['metodo']->id, 100)], null, 'efectivo'), $d['usuario']);
+        $resultado = app(RegistrarDevolucion::class)->ejecutar(new CrearDevolucionDto($venta->id, 'devolucion', [new ItemDevueltoDto($d['variante']->id, 1, false)], [], [new PagoDevolucionDto($d['metodo']->id, 100)], null, 'efectivo'), $d['usuario'], self::conSupervisor($d['usuario'], AccionSupervisor::Reembolsar, [], $venta->ulid));
 
         $this->assertSame('-100.00', $resultado['devolucion']->diferencia);
         $this->assertSame(100.0, (float) $resultado['devolucion']->pagos->sum('monto'));
