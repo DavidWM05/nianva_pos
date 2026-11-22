@@ -32,6 +32,9 @@ const env = {
   SANCTUM_STATEFUL_DOMAINS: '127.0.0.1:' + frontendPort + ',127.0.0.1:' + backendPort,
   CORS_ALLOWED_ORIGINS: 'http://127.0.0.1:' + frontendPort,
   CACHE_STORE: 'array',
+  // Los limitadores de intentos (throttle:login, PIN, supervisor) siguen en `array`, como antes: la
+  // suite inicia sesion con el mismo usuario muchas veces por minuto. Los limites los prueba PHPUnit.
+  CACHE_LIMITER: 'array',
   QUEUE_CONNECTION: 'sync',
 };
 
