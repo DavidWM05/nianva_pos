@@ -3,7 +3,7 @@
   <ui-page [estado]="cargando() ? 'cargando' : error() ? 'error' : 'listo'" forma="detalle" (reintentar)="cargar(apartado()?.id ?? '')">
   @if (apartado(); as apartadoActual) {
     <div>
-      <h2>Apartado #{{ apartadoActual.numero }} — {{ apartadoActual.cliente?.nombre ?? '—' }}</h2>
+      <h2>Apartado {{ apartadoActual.folio ?? 'sin folio' }} — {{ apartadoActual.cliente?.nombre ?? '—' }}</h2>
       <ui-badge entidad="apartado" [estado]="apartadoActual.estado" />
     </div>
 
@@ -52,7 +52,7 @@
           @if (!apartadoActual.abonos || apartadoActual.abonos.length === 0) {
             <p>Todavía no hay abonos registrados.</p>
           } @else {
-            <ui-tabla [columnas]="columnasAbonos" [filas]="filasAbonos()" [meta]="metaAbonos()" (cambio)="paginaAbonos.set($event)" />
+            <ui-tabla [columnas]="columnasAbonos" [filas]="filasAbonos()" [meta]="metaAbonos()" (cambio)="paginaAbonos.set($event)" (accion)="imprimirAbono($event.fila)" />
           }
 
           @if (apartadoActual.estado === 'activo' && permisos().abonar) {
@@ -91,7 +91,7 @@
 
 <ui-modal titulo="Apartado cancelado" [visible]="resultadoCancelacion() !== null" (visibleChange)="cerrarResultadoCancelacion()">
   @if (resultadoCancelacion(); as resultado) {
-    <p>El apartado #{{ resultado.apartado.numero }} fue cancelado.</p>
+    <p>El apartado {{ resultado.apartado.folio ?? 'sin folio' }} fue cancelado.</p>
     @if (resultado.tieneAbonosPendientes) {
       <p>
         Este apartado tenía {{ resultado.montoAbonadoPendiente | dinero }} ya abonados. Ese monto no se reembolsó

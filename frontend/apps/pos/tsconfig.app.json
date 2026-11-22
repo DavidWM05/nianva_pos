@@ -59,13 +59,10 @@
       "path": "../../libs/ui/actions"
     },
     {
-      "path": "../../libs/ui/overlays"
+      "path": "../../libs/domain/tpv"
     },
     {
       "path": "../../libs/domain/apartados"
-    },
-    {
-      "path": "../../libs/domain/tpv"
     },
     {
       "path": "../../libs/ui/data"
@@ -75,6 +72,9 @@
     },
     {
       "path": "../../libs/api-contrato"
+    },
+    {
+      "path": "../../libs/ui/print"
     },
     {
       "path": "../../libs/domain/payroll"
@@ -89,13 +89,16 @@
       "path": "../../libs/domain/auditoria"
     },
     {
-      "path": "../../libs/ui/forms"
-    },
-    {
       "path": "../../libs/ui/feedback"
     },
     {
       "path": "../../libs/ui/format"
+    },
+    {
+      "path": "../../libs/ui/overlays"
+    },
+    {
+      "path": "../../libs/ui/forms"
     },
     {
       "path": "../../libs/domain/sesion"

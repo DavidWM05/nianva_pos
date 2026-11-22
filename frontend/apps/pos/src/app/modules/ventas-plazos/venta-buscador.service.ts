@@ -27,6 +27,6 @@ export class VentaBuscadorService extends BuscadorEntidad<EntidadBuscable<string
 
   private aBuscable(venta: Venta): EntidadBuscable<string> {
     // DAT-08: el id es el ulid; la etiqueta muestra el número transitorio (D-3).
-    return { id: venta.id, nombre: `Venta #${venta.numero} — ${venta.cliente?.nombre ?? 'Sin cliente'} — $${venta.total}` };
+    return { id: venta.id, nombre: `Venta ${venta.folio ?? 'sin folio'} — ${venta.cliente?.nombre ?? 'Sin cliente'} — $${venta.total}` };
   }
 }

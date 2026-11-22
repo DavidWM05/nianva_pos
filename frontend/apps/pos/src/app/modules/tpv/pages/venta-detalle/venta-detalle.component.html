@@ -5,7 +5,7 @@
     <ui-skeleton forma="bloque" alto="16rem" etiqueta="Cargando venta" />
   } @else if (venta(); as ventaActual) {
     <div class="venta-detalle__encabezado">
-      <h2>Venta #{{ ventaActual.numero }}</h2>
+      <h2>Venta {{ ventaActual.folio ?? 'sin folio' }}</h2>
       <ui-badge entidad="venta" [estado]="ventaActual.estado" />
     </div>
 
@@ -26,6 +26,15 @@
             <dt>Pago</dt>
             <dd>{{ etiquetaMetodosPago(ventaActual) }}</dd>
           </dl>
+
+          @if (impresion.disponible) {
+            <div>
+              <button matButton="outlined" type="button" [disabled]="impresion.imprimiendo()" (click)="imprimir(ventaActual, 'ticket')">
+                <i class="pi pi-print" aria-hidden="true"></i> Imprimir ticket
+              </button>
+              <button matButton type="button" [disabled]="impresion.imprimiendo()" (click)="imprimir(ventaActual, 'carta')">Imprimir en carta</button>
+            </div>
+          }
 
           @if (ventaActual.estado === 'completada') {
             <div>

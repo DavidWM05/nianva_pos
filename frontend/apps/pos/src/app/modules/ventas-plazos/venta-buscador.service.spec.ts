@@ -10,6 +10,7 @@ describe('VentaBuscadorService', () => {
   const ventaCompletada: Venta = {
     id: ulidDePrueba(3),
     numero: 3,
+    folio: 'V-1-3',
     fecha: '2026-07-01',
     cliente: { id: ulidDePrueba(9), nombre: 'Juan Pérez' },
     total: '500.00',
@@ -42,7 +43,7 @@ describe('VentaBuscadorService', () => {
     const resultado = await servicio.buscar('Juan').toPromise();
 
     expect(listar).toHaveBeenCalledWith(expect.objectContaining({ first: 0 }), 'Juan');
-    expect(resultado).toEqual([{ id: ulidDePrueba(3), nombre: 'Venta #3 — Juan Pérez — $500.00' }]);
+    expect(resultado).toEqual([{ id: ulidDePrueba(3), nombre: 'Venta V-1-3 — Juan Pérez — $500.00' }]);
   });
 
   it('obtener() adapta la venta al contrato EntidadBuscable', async () => {
@@ -51,6 +52,6 @@ describe('VentaBuscadorService', () => {
 
     const resultado = await servicio.obtener(ulidDePrueba(3)).toPromise();
 
-    expect(resultado).toEqual({ id: ulidDePrueba(3), nombre: 'Venta #3 — Juan Pérez — $500.00' });
+    expect(resultado).toEqual({ id: ulidDePrueba(3), nombre: 'Venta V-1-3 — Juan Pérez — $500.00' });
   });
 });

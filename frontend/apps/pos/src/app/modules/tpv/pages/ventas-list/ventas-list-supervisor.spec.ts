@@ -15,7 +15,7 @@ import { VentasListComponent } from './ventas-list.component';
 // Idempotency-Key (API-07) y, con el token, se reintenta el mismo motivo con la misma llave.
 
 describe('VentasListComponent (anulacion con supervisor)', () => {
-  const venta = { id: ulidDePrueba(1), numero: 12, estado: 'completada' } as Venta;
+  const venta = { id: ulidDePrueba(1), numero: 12, folio: 'V-1-12', estado: 'completada' } as Venta;
 
   it('pide ventas.anular sobre la venta con el motivo exacto y reintenta con la misma llave y el token', async () => {
     const anular = vi
@@ -41,7 +41,7 @@ describe('VentasListComponent (anulacion con supervisor)', () => {
     peticion?.resolver('token-1');
 
     expect(peticion?.solicitud).toMatchObject({ accion: 'ventas.anular', recurso: venta.id, datos: { motivo: 'Cliente se arrepintió' } });
-    expect(peticion?.solicitud.descripcion).toBe('Anular la venta #12');
+    expect(peticion?.solicitud.descripcion).toBe('Anular la venta V-1-12');
     const [primera, segunda] = anular.mock.calls;
     expect(primera[2]).toMatch(/^[0-9A-HJKMNP-TV-Z]{26}$/);
     expect(primera[3]).toBeUndefined();

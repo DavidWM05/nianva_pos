@@ -10,4 +10,5 @@ export const CATALOGO_NAVEGACION = [
   { clave: 'catalogo-forms', ruta: 'forms', nombre: 'Formularios', icono: 'pi pi-pencil' },
   { clave: 'catalogo-overlays', ruta: 'overlays', nombre: 'Overlays', icono: 'pi pi-window-maximize' },
   { clave: 'catalogo-report', ruta: 'report', nombre: 'Reportes', icono: 'pi pi-chart-line' },
+  { clave: 'catalogo-print', ruta: 'print', nombre: 'Impresos', icono: 'pi pi-print' },
 ];

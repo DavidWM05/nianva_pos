@@ -160,7 +160,7 @@ test('saldos: crear un plan, pagar una cuota y comprobar el estado guardado', as
     .getByRole('combobox')
     .fill('Cliente saldos E2E');
   await page
-    .getByRole('option', { name: new RegExp('Venta #' + datos.venta + ' ') })
+    .getByRole('option', { name: new RegExp('Venta ' + datos.ventaFolio + ' ') })
     .click();
   await capturarPantalla50h(page, 'ventas-plazos-nuevo');
   await page

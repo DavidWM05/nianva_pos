@@ -1,7 +1,7 @@
 <ui-page-header clave="notas-credito" />
 <ui-page [estado]="estado()" forma="detalle" (reintentar)="reintentar()">
   @if (notaCredito(); as nota) {
-    <h2>Nota de crédito #{{ nota.numero }}</h2>
+    <h2>Nota de crédito · devolución {{ nota.folio ?? 'sin folio' }}</h2>
     <ui-badge entidad="notaCredito" [estado]="nota.estado" />
 
     <nucleo-record-tabs [tabs]="tabs">

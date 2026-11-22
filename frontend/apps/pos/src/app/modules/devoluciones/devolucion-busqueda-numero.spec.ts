@@ -13,15 +13,15 @@ import { ulidDePrueba } from '../../testing/ulid-de-prueba';
 import { DevolucionFormComponent } from './pages/devolucion-form/devolucion-form.component';
 
 /**
- * DAT-08 / D-7: la devolución busca la venta por su `numero` (transitorio hasta el folio de
- * DAT-07). El backend responde el ulid y la pantalla carga la venta con él; nunca pide
- * /ventas/<numero>.
+ * DAT-08 / DAT-07: la devolución busca la venta por su folio. El backend responde el ulid y la
+ * pantalla carga la venta con él; nunca pide /ventas/<folio>. `VentaService.buscarPorNumero` (D-7)
+ * sigue en libs/domain hasta A5 y conserva sus casos.
  */
-describe('Devolución: búsqueda de la venta por número (D-7)', () => {
-  const venta = { id: ulidDePrueba(42), numero: 42, es_venta_sombra: false, total: '100.00', cliente: null, detalles: [] };
+describe('Devolución: búsqueda de la venta por folio (DAT-07)', () => {
+  const venta = { id: ulidDePrueba(42), numero: 42, folio: 'V-1-42', es_venta_sombra: false, total: '100.00', cliente: null, detalles: [] };
   const buscador = { buscar: () => of([]), obtener: () => of({ id: 1, nombre: 'Entidad' }), hijosDe: () => of([]) };
 
-  async function crear(ventaService: Partial<Record<'buscarPorNumero' | 'obtener', unknown>>) {
+  async function crear(ventaService: Partial<Record<'buscarPorFolio' | 'obtener', unknown>>) {
     const toast = { success: vi.fn(), error: vi.fn() };
     await TestBed.configureTestingModule({
       imports: [DevolucionFormComponent],
@@ -41,25 +41,25 @@ describe('Devolución: búsqueda de la venta por número (D-7)', () => {
     return { fixture, toast };
   }
 
-  it('resuelve el número a su ulid y carga la venta con ese ulid', async () => {
-    const buscarPorNumero = vi.fn().mockReturnValue(of(ulidDePrueba(42)));
+  it('resuelve el folio a su ulid y carga la venta con ese ulid', async () => {
+    const buscarPorFolio = vi.fn().mockReturnValue(of(ulidDePrueba(42)));
     const obtener = vi.fn().mockReturnValue(of(venta));
-    const { fixture } = await crear({ buscarPorNumero, obtener });
+    const { fixture } = await crear({ buscarPorFolio, obtener });
 
-    fixture.componentInstance['ventaIdBusqueda'].set(42);
+    fixture.componentInstance['folioBusqueda'].set('V-1-42');
     fixture.componentInstance.buscarVenta();
 
-    expect(buscarPorNumero).toHaveBeenCalledWith(42);
+    expect(buscarPorFolio).toHaveBeenCalledWith('V-1-42');
     expect(obtener).toHaveBeenCalledWith(ulidDePrueba(42));
     expect(fixture.componentInstance['ventaOrigen']()).toEqual(venta);
   });
 
-  it('si el número no existe avisa y no carga ninguna venta', async () => {
-    const buscarPorNumero = vi.fn().mockReturnValue(of(null));
+  it('si el folio no existe avisa y no carga ninguna venta', async () => {
+    const buscarPorFolio = vi.fn().mockReturnValue(of(null));
     const obtener = vi.fn();
-    const { fixture, toast } = await crear({ buscarPorNumero, obtener });
+    const { fixture, toast } = await crear({ buscarPorFolio, obtener });
 
-    fixture.componentInstance['ventaIdBusqueda'].set(999);
+    fixture.componentInstance['folioBusqueda'].set('V-9-999');
     fixture.componentInstance.buscarVenta();
 
     expect(obtener).not.toHaveBeenCalled();

@@ -42,6 +42,10 @@ export const appRoutes: Routes = [
     loadComponent: () => import('./paginas/overlays.page').then((m) => m.OverlaysPage),
   },
   {
+    path: 'print',
+    loadComponent: () => import('./paginas/print.page').then((m) => m.PrintPage),
+  },
+  {
     path: 'report',
     loadComponent: () => import('./paginas/report.page').then((m) => m.ReportPage),
   },

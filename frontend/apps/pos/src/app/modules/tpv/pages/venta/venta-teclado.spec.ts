@@ -82,7 +82,7 @@ describe('VentaComponent (teclado y foco)', () => {
     fixture.debugElement.query(By.directive(LineasProductoComponent)).componentInstance as LineasProductoComponent;
 
   async function registrarVentaDeEjemplo(): Promise<void> {
-    ventaService.registrar.mockReturnValue(of({ id: ulidDePrueba(7), numero: 7, total: 200 }));
+    ventaService.registrar.mockReturnValue(of({ id: ulidDePrueba(7), numero: 7, folio: 'V-1-7', total: 200 }));
     fixture.componentInstance.onLineasCambio({ items: [{ variante_id: 5, cantidad: 2 }], subtotal: 200 });
     fixture.detectChanges();
     const lineasPago = fixture.debugElement.query(By.directive(LineasPagoComponent)).componentInstance as LineasPagoComponent;
@@ -114,7 +114,7 @@ describe('VentaComponent (teclado y foco)', () => {
     await registrarVentaDeEjemplo();
 
     const encabezado = raiz().querySelector('h2');
-    expect(encabezado?.textContent?.trim()).toBe('Venta #7 registrada');
+    expect(encabezado?.textContent?.trim()).toBe('Venta V-1-7 registrada');
     expect(document.activeElement).toBe(encabezado);
   });
 

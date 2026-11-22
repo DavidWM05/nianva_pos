@@ -50,6 +50,7 @@
       "@nianva/ui-layout": ["./libs/ui/layout/src/index.ts"],
       "@nianva/ui-overlays": ["./libs/ui/overlays/src/index.ts"],
       "@nianva/ui-report": ["./libs/ui/report/src/index.ts"],
+      "@nianva/ui-print": ["./libs/ui/print/src/index.ts"],
       "@nianva/ui-shared": ["./libs/ui-shared/src/index.ts"],
       "@nianva/generadores": ["./tools/generadores"]
     }

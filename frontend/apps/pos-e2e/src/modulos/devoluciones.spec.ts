@@ -22,14 +22,14 @@ test('devoluciones: buscar venta y registrar un reembolso con pago mixto', async
   await pagarMixto50f(page, '20');
   const ventaCreada = page.waitForResponse(r => r.request().method() === 'POST' && new URL(r.url()).pathname === '/api/v1/ventas');
   await page.getByRole('button', { name: /Registrar venta$/ }).click();
-  const venta: { data: { id: string; numero: number } } = await (await ventaCreada).json();
+  const venta: { data: { id: string; folio: string } } = await (await ventaCreada).json();
   await abrirPantalla(page, '/devoluciones');
   await page
     .getByRole('button', { name: /Nueva devolución \/ cambio$/ })
     .click();
   await page
-    .getByLabel('Número de venta', { exact: true })
-    .fill(String(venta.data.numero));
+    .getByLabel('Folio de la venta', { exact: true })
+    .fill(venta.data.folio);
   await capturarPantalla50f(page, 'devoluciones-nueva-buscar');
   await page.getByRole('button', { name: /Buscar$/ }).click();
   const tabla = page.locator('nucleo-devolucion-form .campos-linea');

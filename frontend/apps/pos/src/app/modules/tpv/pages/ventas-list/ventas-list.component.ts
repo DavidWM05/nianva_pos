@@ -200,7 +200,7 @@ export class VentasListComponent {
     this.supervisor
       .ejecutar(
         this.intentoAnulacion,
-        { accion: 'ventas.anular', recurso: venta.id, datos: { motivo }, descripcion: `Anular la venta #${venta.numero}` },
+        { accion: 'ventas.anular', recurso: venta.id, datos: { motivo }, descripcion: `Anular la venta ${venta.folio ?? 'sin folio'}` },
         (llave, token) => this.ventaService.anular(venta.id, motivo, llave, token),
       )
       // Si el cajero cancela el dialogo del supervisor no hay respuesta: se libera el boton igual.
