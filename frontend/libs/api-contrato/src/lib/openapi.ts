@@ -223,6 +223,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/supervisores": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["autorizacionSupervisor.disponibles"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/autorizaciones": {
         parameters: {
             query?: never;
@@ -3947,6 +3963,11 @@ export interface components {
             /** Format: date-time */
             updated_at: string;
         };
+        /** SupervisorDisponibleResource */
+        SupervisorDisponibleResource: {
+            id: number;
+            nombre: string;
+        };
         /** TerminalResource */
         TerminalResource: {
             id: number;
@@ -4245,6 +4266,7 @@ export type ReglaPrecioResource = components['schemas']['ReglaPrecioResource'];
 export type RolResource = components['schemas']['RolResource'];
 export type SesionResource = components['schemas']['SesionResource'];
 export type Sucursal = components['schemas']['Sucursal'];
+export type SupervisorDisponibleResource = components['schemas']['SupervisorDisponibleResource'];
 export type TerminalResource = components['schemas']['TerminalResource'];
 export type TransformacionResource = components['schemas']['TransformacionResource'];
 export type UnidadMedidaResource = components['schemas']['UnidadMedidaResource'];
@@ -4790,6 +4812,33 @@ export interface operations {
                             total: number;
                             tablas: string[];
                         };
+                    };
+                };
+            };
+            401: components["responses"]["AuthenticationException"];
+            422: components["responses"]["ValidationException"];
+        };
+    };
+    "autorizacionSupervisor.disponibles": {
+        parameters: {
+            query: {
+                accion: components["schemas"]["AccionSupervisor"];
+                recurso?: string | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Array of `SupervisorDisponibleResource` */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["SupervisorDisponibleResource"][];
                     };
                 };
             };

@@ -86,6 +86,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/sesion/bloquear', [PinSesionController::class, 'bloquear']);
         Route::post('/sesion/desbloquear', [PinSesionController::class, 'desbloquear'])->name('sesion.desbloquear');
         Route::put('/sesion/terminal', [SesionController::class, 'elegirTerminal']);
+        Route::get('/supervisores', [AutorizacionSupervisorController::class, 'disponibles'])->middleware('permiso:caja.ver');
         Route::post('/autorizaciones', [AutorizacionSupervisorController::class, 'store'])->middleware('permiso:caja.ver');
 
         Route::middleware('permiso:terminales.administrar')->group(function () {

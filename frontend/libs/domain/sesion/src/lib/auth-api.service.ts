@@ -68,6 +68,16 @@ export class AuthApiService {
     return this.http.post<void>(urlApi('/sesion/desbloquear'), cuerpo, { context: this.contextoErrorEnPantalla });
   }
 
+  listarSupervisores(
+    accion: CuerpoDe<'/autorizaciones', 'post'>['accion'],
+    recurso?: string,
+  ): Observable<RespuestaDe<'/supervisores', 'get'>['data']> {
+    return this.http.get<RespuestaDe<'/supervisores', 'get'>>(urlApi('/supervisores'), {
+      params: recurso === undefined ? { accion } : { accion, recurso },
+      context: this.contextoErrorEnPantalla,
+    }).pipe(map((respuesta) => respuesta.data));
+  }
+
   solicitarAutorizacionSupervisor(cuerpo: CuerpoDe<'/autorizaciones', 'post'>): Observable<RespuestaDe<'/autorizaciones', 'post'>['data']> {
     return this.http.post<RespuestaDe<'/autorizaciones', 'post'>>(urlApi('/autorizaciones'), cuerpo, { context: this.contextoErrorEnPantalla })
       .pipe(map((respuesta) => respuesta.data));

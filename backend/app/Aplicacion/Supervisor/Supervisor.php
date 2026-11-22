@@ -7,6 +7,7 @@ namespace App\Aplicacion\Supervisor;
 use App\Modules\Apartados\Models\Apartado;
 use App\Modules\Auditoria\Models\Auditoria;
 use App\Modules\Nucleo\Dtos\AutorizarSupervisorDto;
+use App\Modules\Nucleo\Dtos\ListarSupervisoresDto;
 use App\Modules\Nucleo\Dtos\OperacionSupervisorDto;
 use App\Modules\Nucleo\Exceptions\SupervisorIntentosAgotadosException;
 use App\Modules\Nucleo\Exceptions\SupervisorInvalidoException;
@@ -15,6 +16,8 @@ use App\Modules\Nucleo\Models\Usuario;
 use App\Modules\Nucleo\Support\AccionSupervisor;
 use App\Modules\Tpv\Models\CajaSesion;
 use App\Modules\Tpv\Models\Venta;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -23,12 +26,41 @@ use LogicException;
 
 final class Supervisor
 {
+    /** @return Collection<int, Usuario> */
+    public function disponibles(Usuario $usuario, ListarSupervisoresDto $dto): Collection
+    {
+        $tenantId = $usuario->getAttribute('tenant_id');
+        abort_if($tenantId === null, 403);
+        $sucursalId = $this->sucursalDeOperacion($usuario, $dto->accion, $dto->recurso);
+        abort_if($sucursalId === 0, 403);
+        abort_unless((int) $usuario->getAttribute('sucursal_id') === $sucursalId || $usuario->tienePermiso('sucursales.todas'), 404);
+
+        return $this->elegibles((int) $tenantId, $sucursalId, $dto->accion)
+            ->orderBy('nombre')
+            ->orderBy('apellido')
+            ->orderBy('id')
+            ->get();
+    }
+
+    /** @return Builder<Usuario> */
+    private function elegibles(int $tenantId, int $sucursalId, AccionSupervisor $accion): Builder
+    {
+        return Usuario::query()
+            ->where('tenant_id', $tenantId)
+            ->where('activo', true)
+            ->whereNotNull('pin_caja_hash')
+            ->whereHas('roles.permisos', fn (Builder $query) => $query->where('nombre', 'supervisor.autorizar'))
+            ->whereHas('roles.permisos', fn (Builder $query) => $query->where('nombre', $accion->permiso()))
+            ->where(fn (Builder $query) => $query->where('sucursal_id', $sucursalId)
+                ->orWhereHas('roles.permisos', fn (Builder $permisos) => $permisos->where('nombre', 'sucursales.todas')));
+    }
+
     /** @return array{token: string, vence_en: string} */
     public function emitir(Usuario $usuario, AutorizarSupervisorDto $dto, ?string $sesionHash): array
     {
         $tenantId = $usuario->getAttribute('tenant_id');
         abort_if($tenantId === null, 403);
-        $sucursalId = $this->sucursalDeOperacion($usuario, $dto);
+        $sucursalId = $this->sucursalDeOperacion($usuario, $dto->accion, $dto->recurso);
         abort_if($sucursalId === 0, 403);
         $llave = 'seg05:intentos:'.$usuario->id;
 
@@ -38,14 +70,10 @@ final class Supervisor
                 throw new SupervisorIntentosAgotadosException;
             }
 
-            $supervisor = Usuario::query()->where('tenant_id', $tenantId)->where('activo', true)->find($dto->supervisorId);
+            $supervisor = $this->elegibles((int) $tenantId, $sucursalId, $dto->accion)->find($dto->supervisorId);
             $pinHash = $supervisor?->getAttribute('pin_caja_hash');
 
-            if ($supervisor === null || ! is_string($pinHash)
-                || ! $supervisor->tienePermiso('supervisor.autorizar')
-                || ! $supervisor->tienePermiso($dto->accion->permiso())
-                || ($supervisor->getAttribute('sucursal_id') !== $sucursalId && ! $supervisor->tienePermiso('sucursales.todas'))
-                || ! Hash::check($dto->pin, $pinHash)) {
+            if ($supervisor === null || ! is_string($pinHash) || ! Hash::check($dto->pin, $pinHash)) {
                 RateLimiter::hit($llave, 600);
                 $this->auditar($usuario, $dto->accion, 'rechazada');
                 throw new SupervisorInvalidoException;
@@ -109,17 +137,17 @@ final class Supervisor
         $tabla->update(['consumida_en' => now()]);
     }
 
-    private function sucursalDeOperacion(Usuario $usuario, AutorizarSupervisorDto $dto): int
+    private function sucursalDeOperacion(Usuario $usuario, AccionSupervisor $accion, ?string $recurso): int
     {
-        $consulta = match ($dto->accion) {
+        $consulta = match ($accion) {
             AccionSupervisor::AnularVenta, AccionSupervisor::Reembolsar => Venta::query(),
             AccionSupervisor::CancelarApartado => Apartado::query(),
             AccionSupervisor::CerrarCaja => CajaSesion::query(),
             AccionSupervisor::DescuentoVenta => null,
         };
-        $documento = $consulta?->where('ulid', $dto->recurso)->firstOrFail();
+        $documento = $consulta?->where('ulid', $recurso)->firstOrFail();
 
-        return (int) ($dto->accion === AccionSupervisor::Reembolsar
+        return (int) ($accion === AccionSupervisor::Reembolsar
             ? $usuario->getAttribute('sucursal_id')
             : ($documento?->getAttribute('sucursal_id') ?? $usuario->getAttribute('sucursal_id')));
     }
