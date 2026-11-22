@@ -19,6 +19,7 @@ import { EntidadBuscable, EntidadSelectorComponent } from '@nianva/ui-shared';
 import { MatButton, MatIconButton } from '@angular/material/button';
 import { CampoComponent } from '@nianva/ui-forms';
 import { aCentavos, CantidadPipe, DineroPipe } from '@nianva/ui-format';
+import { DatosComponent, PantallaService, TarjetaComponent, TarjetasComponent } from '@nianva/ui-layout';
 
 import {
   BUSCADOR_PRODUCTO,
@@ -78,6 +79,9 @@ export interface LineasProductoCambio {
     CampoComponent,
     CantidadPipe,
     DineroPipe,
+    DatosComponent,
+    TarjetasComponent,
+    TarjetaComponent,
   ],
   templateUrl: './lineas-producto.component.html',
   styleUrl: './lineas-producto.component.scss',
@@ -95,6 +99,8 @@ export class LineasProductoComponent implements OnChanges {
     if (this.lineas().length > 0) this.recotizar();
   }
   private readonly ventaService = inject(VentaService);
+  /** UI-04: en pantalla angosta el carrito es una lista de tarjetas en lugar de la tabla. */
+  protected readonly pantalla = inject(PantallaService);
 
   protected readonly buscadorProducto = inject(BUSCADOR_PRODUCTO);
   protected readonly buscadorVarianteDeProducto = inject(
@@ -184,6 +190,10 @@ export class LineasProductoComponent implements OnChanges {
 
     this.onProductoSeleccionado(null);
     this.cantidadNueva.set(1);
+    // UI-17: la pantalla deja de mostrar el producto ya agregado y el foco vuelve a la busqueda,
+    // listo para el siguiente producto o el escaner.
+    this.selectorProductoRef.limpiar();
+    this.selectorProductoRef.focus();
     this.recotizar();
   }
 
@@ -203,6 +213,14 @@ export class LineasProductoComponent implements OnChanges {
   cancelarLineaEnCurso(): void {
     this.onProductoSeleccionado(null);
     this.cantidadNueva.set(1);
+    // Sin esto el selector seguia mostrando el producto y la variante descartados, con "Agregar
+    // línea" deshabilitado y sin explicacion.
+    this.selectorProductoRef.limpiar();
+  }
+
+  /** Un descuento de cero (el backend lo manda como "0.00") se muestra como guion. */
+  protected tieneDescuento(descuento: string | number | undefined): boolean {
+    return descuento !== undefined && Number(descuento) !== 0;
   }
 
   quitarLinea(indice: number): void {

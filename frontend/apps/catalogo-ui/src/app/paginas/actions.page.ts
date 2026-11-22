@@ -1,12 +1,18 @@
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { MatButton } from '@angular/material/button';
-import { BotonCrearComponent, BotonExportarComponent, RowActionsComponent } from '@nianva/ui-actions';
+import {
+  AtajoTeclado,
+  AtajosTecladoComponent,
+  BotonCrearComponent,
+  BotonExportarComponent,
+  RowActionsComponent,
+} from '@nianva/ui-actions';
 import { PageHeaderComponent, SectionComponent } from '@nianva/ui-layout';
 
 @Component({
   selector: 'cat-actions-page',
   standalone: true,
-  imports: [BotonCrearComponent, BotonExportarComponent, MatButton, PageHeaderComponent, RowActionsComponent, SectionComponent],
+  imports: [AtajosTecladoComponent, BotonCrearComponent, BotonExportarComponent, MatButton, PageHeaderComponent, RowActionsComponent, SectionComponent],
   template: `
     <ui-page-header clave="catalogo-actions" subtitulo="Acciones de página y de fila" />
 
@@ -30,12 +36,22 @@ import { PageHeaderComponent, SectionComponent } from '@nianva/ui-layout';
         <p>Última acción: {{ ultima() }}</p>
       }
     </ui-section>
+
+    <ui-section titulo="Atajos de teclado">
+      <ui-atajos-teclado [atajos]="atajos" />
+    </ui-section>
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ActionsPage {
   protected readonly exportando = signal(false);
   protected readonly ultima = signal('');
+  // Una tecla, dos teclas para la misma acción y una acción larga que debe partirse a 375 px.
+  protected readonly atajos: AtajoTeclado[] = [
+    { teclas: ['F2'], accion: 'Buscar producto' },
+    { teclas: ['F4', 'F9'], accion: 'Cobrar' },
+    { teclas: ['Esc'], accion: 'Cancelar la línea en curso sin perder el carrito' },
+  ];
   protected readonly basicas = [
     { tipo: 'ver' as const },
     { tipo: 'editar' as const },

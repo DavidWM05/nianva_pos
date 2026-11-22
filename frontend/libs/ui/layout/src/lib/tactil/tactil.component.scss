@@ -1,0 +1,12 @@
+// Con la raiz de 14 px, 3.25rem son 45.5 px: por encima de los 44 px de WCAG 2.5.5.
+.ui-tactil {
+  --ui-alto-tactil: calc(var(--nv-spacing-12) + var(--nv-spacing-1));
+  --mat-button-filled-container-height: var(--ui-alto-tactil);
+  --mat-button-outlined-container-height: var(--ui-alto-tactil);
+  --mat-button-text-container-height: var(--ui-alto-tactil);
+  --mat-icon-button-state-layer-size: var(--ui-alto-tactil);
+
+  :is(input, select, textarea):not(.mat-mdc-input-element, [type='checkbox'], [type='radio']) {
+    min-height: var(--ui-alto-tactil);
+  }
+}

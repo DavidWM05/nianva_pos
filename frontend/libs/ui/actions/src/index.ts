@@ -1,3 +1,4 @@
 export * from './lib/btn-crear.component';
 export * from './lib/btn-exportar.component';
 export * from './lib/row-actions.component';
+export * from './lib/atajos-teclado.component';

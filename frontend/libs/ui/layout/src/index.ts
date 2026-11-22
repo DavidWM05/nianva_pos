@@ -8,3 +8,5 @@ export * from './lib/form-actions/form-actions.component';
 export * from './lib/shell/pantalla.service';
 export * from './lib/shell/shell.component';
 export * from './lib/migas/migas.component';
+export * from './lib/tarjeta/tarjeta.component';
+export * from './lib/tactil/tactil.component';

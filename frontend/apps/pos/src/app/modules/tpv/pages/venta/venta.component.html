@@ -1,4 +1,4 @@
-<div class="venta">
+<div class="venta" uiTactil>
   @if (cargandoCaja()) {
     <ui-skeleton forma="bloque" alto="16rem" etiqueta="Verificando estado de caja" />
   } @else if (!cajaAbierta()) {
@@ -9,9 +9,12 @@
     </div>
   } @else if (ventaRegistrada(); as venta) {
     <div class="venta__confirmacion">
-      <h2>Venta #{{ venta.numero }} registrada</h2>
+      <h2 #confirmacion tabindex="-1">Venta #{{ venta.numero }} registrada</h2>
       <p>Total: {{ venta.total | dinero }}</p>
-      <button matButton="filled" type="button" (click)="nuevaVenta()"><i class="pi pi-plus" aria-hidden="true"></i> Nueva venta</button>
+      <ui-form-actions>
+        <a matButton="outlined" [routerLink]="['/tpv/ventas', venta.id]"><i class="pi pi-eye" aria-hidden="true"></i> Ver venta</a>
+        <button matButton="filled" type="button" (click)="nuevaVenta()"><i class="pi pi-plus" aria-hidden="true"></i> Nueva venta</button>
+      </ui-form-actions>
     </div>
   } @else {
     <h2>Nueva venta</h2>
@@ -123,14 +126,13 @@
       <nucleo-lineas-pago [montoObjetivo]="montoObjetivoPago()" (cambio)="onPagosCambio($event)" />
     </section>
 
-    @if (mensajeBloqueo(); as motivo) {
-      <p class="venta__bloqueo-mensaje">{{ motivo }}</p>
-    }
+    <!-- UI-17: la region existe siempre para que el lector de pantalla anuncie cada cambio. -->
+    <p class="venta__bloqueo-mensaje" role="status">{{ mensajeBloqueo() }}</p>
 
     <div>
       <ui-btn-enviar etiqueta="Registrar venta" [enviando]="registrando()" [deshabilitado]="!puedeRegistrar()" (click)="registrarVenta()" />
     </div>
 
-    <p class="venta__atajos">F2 Buscar producto · F4 / F9 Cobrar · ESC Cancelar línea</p>
+    <ui-atajos-teclado [atajos]="atajos" />
   }
 </div>

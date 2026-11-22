@@ -2,7 +2,7 @@
   <section class="lineas-producto__seccion">
     <h3>Agregar producto</h3>
     @if (presentacionesHabilitadas) {
-      <ui-campo #campoCodigo etiqueta="Código de barras"><input #codigo [id]="campoCodigo.controlId()" type="text" autocomplete="off" (keydown.enter)="$event.preventDefault(); escanearCodigo(codigo.value); codigo.value=''" /></ui-campo>
+      <ui-campo #campoCodigo etiqueta="Código de barras"><input #codigo ngModel [id]="campoCodigo.controlId()" type="text" autocomplete="off" (keydown.enter)="$event.preventDefault(); escanearCodigo(codigo.value); codigo.value=''" /></ui-campo>
     }
     <nucleo-entidad-selector
       [buscador]="buscadorProducto"
@@ -59,6 +59,40 @@
     <h3>Líneas</h3>
     @if (lineas().length === 0) {
       <p>Todavía no hay líneas.</p>
+    } @else if (pantalla.angosta()) {
+      <!-- UI-04: en pantalla angosta, una tarjeta por línea con sus datos etiquetados. -->
+      <ul uiTarjetas aria-label="Líneas del carrito">
+        @for (linea of lineas(); track $index) {
+          <li uiTarjeta>
+            <h4 class="ui-tarjeta__titulo">Línea {{ $index + 1 }}: {{ linea.etiqueta }}</h4>
+            <dl uiDatos>
+              <dt>Precio unitario</dt>
+              <dd>@if (linea.precio_unitario === undefined) { … } @else { {{ linea.precio_unitario | dinero }} }</dd>
+              <dt>Descuento</dt>
+              <dd>@if (tieneDescuento(linea.descuento_aplicado)) { -{{ linea.descuento_aplicado! | dinero }} } @else { — }</dd>
+              <dt>Subtotal</dt>
+              <dd>@if (linea.subtotal === undefined) { … } @else { {{ linea.subtotal | dinero }} }</dd>
+            </dl>
+            <div class="ui-tarjeta__pie">
+              <label>
+                Cantidad
+                <input
+                  type="number"
+                  min="1"
+                  [max]="linea.stockDisponible ?? null"
+                  class="lineas-producto__input-cantidad"
+                  [attr.aria-label]="'Cantidad de ' + linea.etiqueta"
+                  [ngModel]="linea.cantidad"
+                  (ngModelChange)="cambiarCantidad($index, $event)"
+                />
+              </label>
+              <button matIconButton type="button" [attr.aria-label]="'Quitar ' + linea.etiqueta" (click)="quitarLinea($index)">
+                <i class="pi pi-trash" aria-hidden="true"></i>
+              </button>
+            </div>
+          </li>
+        }
+      </ul>
     } @else {
       <table class="lineas-producto__tabla">
         <thead>
@@ -90,8 +124,8 @@
                 @if (linea.precio_unitario === undefined) { … } @else { {{ linea.precio_unitario | dinero }} }
               </td>
               <td>
-                @if (linea.descuento_aplicado) {
-                  -{{ linea.descuento_aplicado | dinero }}
+                @if (tieneDescuento(linea.descuento_aplicado)) {
+                  -{{ linea.descuento_aplicado! | dinero }}
                 } @else {
                   —
                 }
@@ -100,7 +134,7 @@
                 @if (linea.subtotal === undefined) { … } @else { {{ linea.subtotal | dinero }} }
               </td>
               <td>
-                <button matIconButton type="button" aria-label="Quitar" (click)="quitarLinea($index)">
+                <button matIconButton type="button" [attr.aria-label]="'Quitar ' + linea.etiqueta" (click)="quitarLinea($index)">
                   <i class="pi pi-trash" aria-hidden="true"></i>
                 </button>
               </td>
