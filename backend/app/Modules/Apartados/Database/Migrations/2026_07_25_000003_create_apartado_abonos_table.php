@@ -16,6 +16,8 @@ return new class extends Migration
             $table->foreignId('caja_sesion_id')->nullable()->constrained('caja_sesiones')->restrictOnDelete();
             $table->foreignId('apartado_id')->constrained('apartados')->cascadeOnDelete();
             $table->decimal('monto', 12, 2);
+            $table->decimal('saldo_anterior', 12, 2);
+            $table->decimal('saldo_nuevo', 12, 2);
             $table->dateTime('fecha')->useCurrent();
             $table->foreignId('usuario_id')->constrained('usuarios')->restrictOnDelete();
             $table->text('notas')->nullable();

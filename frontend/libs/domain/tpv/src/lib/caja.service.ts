@@ -38,4 +38,9 @@ export class CajaService {
       .patch<RespuestaDe<'/caja/{cajaSesion}/cerrar', 'patch'>>(urlApi(`/caja/${id}/cerrar`), cuerpo, opcionesOperacionSupervisada(llaveIdempotencia, tokenSupervisor))
       .pipe(map((r) => ({ sesion: r.data, desglose: r.desglose })));
   }
+
+  impreso(cajaSesion: string): Observable<RespuestaDe<'/caja/{cajaSesion}/impreso', 'get'>['data']> {
+    return this.http.get<RespuestaDe<'/caja/{cajaSesion}/impreso', 'get'>>(urlApi(`/caja/${cajaSesion}/impreso`))
+      .pipe(map((respuesta) => respuesta.data));
+  }
 }

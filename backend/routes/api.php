@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use App\Aplicacion\Idempotencia\Idempotencia;
 use App\Modules\Apartados\Http\Controllers\ApartadoController;
+use App\Modules\Apartados\Http\Controllers\ImpresoAbonoController;
 use App\Modules\Auditoria\Http\Controllers\AuditoriaController;
 use App\Modules\Configuracion\Http\Controllers\ConfiguracionController;
 use App\Modules\Configuracion\Http\Controllers\PerfilGiroController;
@@ -52,6 +53,7 @@ use App\Modules\Prestamos\Http\Controllers\PrestamoController;
 use App\Modules\Produccion\Http\Controllers\ProduccionController;
 use App\Modules\Tpv\Http\Controllers\CajaController;
 use App\Modules\Tpv\Http\Controllers\CodigoVentaController;
+use App\Modules\Tpv\Http\Controllers\ImpresosTpvController;
 use App\Modules\Tpv\Http\Controllers\VentaController;
 use App\Modules\UnidadesMedida\Http\Controllers\UnidadMedidaController;
 use App\Modules\VentasPlazos\Http\Controllers\PlanPagoController;
@@ -275,6 +277,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::patch('/metodos-pago/{metodoPago}/desactivar', [MetodoPagoController::class, 'desactivar'])
             ->middleware('permiso:metodos_pago.eliminar');
 
+        Route::get('/caja/{cajaSesion}/impreso', [ImpresosTpvController::class, 'corte'])->middleware('permiso:caja.ver');
         Route::get('/caja/actual', [CajaController::class, 'actual'])->middleware('permiso:caja.ver');
         Route::post('/caja/abrir', [CajaController::class, 'abrir'])->middleware('permiso:caja.abrir')->middleware(Idempotencia::class);
         Route::patch('/caja/{cajaSesion}/cerrar', [CajaController::class, 'cerrar'])->middleware('permiso:caja.cerrar')->middleware(Idempotencia::class);
@@ -284,6 +287,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/ventas/codigo', CodigoVentaController::class)->middleware('permiso:ventas.crear');
         Route::post('/ventas/cotizar', [VentaController::class, 'cotizar'])->middleware(['permiso:ventas.crear', SeleccionarListaPrecio::class]);
         Route::get('/ventas/reporte', [VentaController::class, 'reporte'])->middleware('permiso:reportes.ver');
+        Route::get('/ventas/{venta}/impreso', [ImpresosTpvController::class, 'venta'])->middleware('permiso:ventas.ver');
         Route::get('/ventas/{venta}', [VentaController::class, 'show'])->middleware('permiso:ventas.ver');
         Route::patch('/ventas/{venta}/anular', [VentaController::class, 'anular'])->middleware('permiso:ventas.anular')->middleware(Idempotencia::class);
 
@@ -295,6 +299,7 @@ Route::middleware('auth:sanctum')->group(function () {
         // que un vendedor pueda cerrar un apartado sin ser admin.
         Route::get('/apartados', [ApartadoController::class, 'index'])->middleware('permiso:apartados.ver');
         Route::post('/apartados', [ApartadoController::class, 'store'])->middleware(['permiso:apartados.crear', SeleccionarListaPrecio::class])->middleware(Idempotencia::class);
+        Route::get('/apartados/{apartado}/abonos/{abono}/impreso', ImpresoAbonoController::class)->scopeBindings()->middleware('permiso:apartados.ver');
         Route::get('/apartados/{apartado}', [ApartadoController::class, 'show'])->middleware('permiso:apartados.ver');
         Route::post('/apartados/{apartado}/abonos', [ApartadoController::class, 'registrarAbono'])
             ->middleware('permiso:apartados.abonar')->middleware(Idempotencia::class);

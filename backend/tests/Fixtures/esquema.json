@@ -404,6 +404,18 @@
                 "default": null
             },
             {
+                "nombre": "saldo_anterior",
+                "tipo": "numeric",
+                "nullable": false,
+                "default": null
+            },
+            {
+                "nombre": "saldo_nuevo",
+                "tipo": "numeric",
+                "nullable": false,
+                "default": null
+            },
+            {
                 "nombre": "ulid",
                 "tipo": "varchar",
                 "nullable": false,
@@ -1813,6 +1825,12 @@
                 "default": null
             },
             {
+                "nombre": "usuario_cierre_id",
+                "tipo": "integer",
+                "nullable": true,
+                "default": null
+            },
+            {
                 "nombre": "usuario_id",
                 "tipo": "integer",
                 "nullable": false,
@@ -1855,6 +1873,18 @@
                 ],
                 "on_update": "no action",
                 "on_delete": "restrict"
+            },
+            {
+                "nombre": null,
+                "columnas": [
+                    "usuario_cierre_id"
+                ],
+                "tabla_foranea": "usuarios",
+                "columnas_foraneas": [
+                    "id"
+                ],
+                "on_update": "no action",
+                "on_delete": "set null"
             },
             {
                 "nombre": null,

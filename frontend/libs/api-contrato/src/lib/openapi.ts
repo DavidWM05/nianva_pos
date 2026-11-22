@@ -1072,6 +1072,54 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/apartados/{apartado}/abonos/{abono}/impreso": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["apartados.impresoAbono"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/caja/{cajaSesion}/impreso": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["impresosTpv.corte"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/ventas/{venta}/impreso": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["impresosTpv.venta"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/inicio/resumen": {
         parameters: {
             query?: never;
@@ -3405,6 +3453,76 @@ export interface components {
             /** @enum {string} */
             tipo: "entero" | "fraccionario";
         };
+        /** ImpresoAbonoResource */
+        ImpresoAbonoResource: {
+            encabezado: {
+                empresa: string;
+                rfc: string | null;
+                telefono: string | null;
+                logo_url: string | null;
+                sucursal: string;
+                folio: string | null;
+                fecha: string | null;
+                usuario: string | null;
+            };
+            lineas: Record<string, never>[];
+            totales: {
+                abono: string;
+                saldo_anterior: string;
+                saldo_nuevo: string;
+            };
+            pagos: components["schemas"]["PagoImpresoResource"][];
+            pie: {
+                mensaje_ticket: string | null;
+            };
+        };
+        /** ImpresoCorteResource */
+        ImpresoCorteResource: {
+            encabezado: {
+                empresa: string;
+                rfc: string | null;
+                telefono: string | null;
+                logo_url: string | null;
+                sucursal: string;
+                folio: string | null;
+                fecha: string | null;
+                usuario: string | null;
+            };
+            lineas: components["schemas"]["CajaCierreMetodoResource"][];
+            totales: {
+                total_teorico: string | null;
+                monto_contado: string | null;
+                diferencia: string | null;
+            };
+            pagos: Record<string, never>[];
+            pie: {
+                mensaje_ticket: string | null;
+            };
+        };
+        /** ImpresoVentaResource */
+        ImpresoVentaResource: {
+            encabezado: {
+                empresa: string;
+                rfc: string | null;
+                telefono: string | null;
+                logo_url: string | null;
+                sucursal: string;
+                folio: string | null;
+                fecha: string | null;
+                usuario: string | null;
+            };
+            lineas: components["schemas"]["VentaLineaResource"][];
+            totales: {
+                total: string;
+                descuento_cupon: string;
+                descuento_manual: string;
+                abono_previo: string;
+            };
+            pagos: components["schemas"]["PagoImpresoResource"][];
+            pie: {
+                mensaje_ticket: string | null;
+            };
+        };
         /** InsumoResource */
         InsumoResource: {
             id: number;
@@ -3599,6 +3717,12 @@ export interface components {
             /** @description DAT-08: la cuota llega por su ulid publicado; toDto() la traduce al id. */
             cuota_id: string;
             monto?: number | null;
+        };
+        /** PagoImpresoResource */
+        PagoImpresoResource: {
+            metodo_pago_id: number;
+            nombre: string | null;
+            monto: string;
         };
         /** PedidoItemResource */
         PedidoItemResource: {
@@ -4230,6 +4354,9 @@ export type GuardarReglaPrecioRequest = components['schemas']['GuardarReglaPreci
 export type GuardarRolRequest = components['schemas']['GuardarRolRequest'];
 export type GuardarTerminalRequest = components['schemas']['GuardarTerminalRequest'];
 export type GuardarUnidadMedidaRequest = components['schemas']['GuardarUnidadMedidaRequest'];
+export type ImpresoAbonoResource = components['schemas']['ImpresoAbonoResource'];
+export type ImpresoCorteResource = components['schemas']['ImpresoCorteResource'];
+export type ImpresoVentaResource = components['schemas']['ImpresoVentaResource'];
 export type InsumoResource = components['schemas']['InsumoResource'];
 export type InsumoStock = components['schemas']['InsumoStock'];
 export type LicenciaLocalResource = components['schemas']['LicenciaLocalResource'];
@@ -4243,6 +4370,7 @@ export type NominaResource = components['schemas']['NominaResource'];
 export type NotaCreditoResource = components['schemas']['NotaCreditoResource'];
 export type OrdenProduccionResource = components['schemas']['OrdenProduccionResource'];
 export type PagarCuotaRequest = components['schemas']['PagarCuotaRequest'];
+export type PagoImpresoResource = components['schemas']['PagoImpresoResource'];
 export type PedidoItemResource = components['schemas']['PedidoItemResource'];
 export type PedidoResource = components['schemas']['PedidoResource'];
 export type PerfilGiroResource = components['schemas']['PerfilGiroResource'];
@@ -6947,6 +7075,89 @@ export interface operations {
                     "application/json": {
                         /** @constant */
                         message: "Gift Card cancelada correctamente.";
+                    };
+                };
+            };
+            401: components["responses"]["AuthenticationException"];
+            404: components["responses"]["ModelNotFoundException"];
+        };
+    };
+    "apartados.impresoAbono": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The apartado ulid */
+                apartado: string;
+                /** @description The abono ulid */
+                abono: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description `ImpresoAbonoResource` */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["ImpresoAbonoResource"];
+                    };
+                };
+            };
+            401: components["responses"]["AuthenticationException"];
+            404: components["responses"]["ModelNotFoundException"];
+        };
+    };
+    "impresosTpv.corte": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The caja sesion ulid */
+                cajaSesion: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description `ImpresoCorteResource` */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["ImpresoCorteResource"];
+                    };
+                };
+            };
+            401: components["responses"]["AuthenticationException"];
+            404: components["responses"]["ModelNotFoundException"];
+        };
+    };
+    "impresosTpv.venta": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The venta ulid */
+                venta: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description `ImpresoVentaResource` */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["ImpresoVentaResource"];
                     };
                 };
             };

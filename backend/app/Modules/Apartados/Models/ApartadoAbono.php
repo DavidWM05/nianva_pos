@@ -6,6 +6,7 @@ namespace App\Modules\Apartados\Models;
 
 use App\Modules\Apartados\Database\Factories\ApartadoAbonoFactory;
 use App\Modules\Nucleo\Models\Concerns\BelongsToTenantViaRelacion;
+use App\Modules\Nucleo\Models\Concerns\RutaPorUlid;
 use App\Modules\Nucleo\Models\Concerns\TieneUlid;
 use App\Modules\Nucleo\Models\Usuario;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
@@ -18,7 +19,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * Sin tenant_id propio: el aislamiento se resuelve via BelongsToTenantViaRelacion
  * consultando apartado.tenant_id (ver tenantRelacion()).
  */
-#[Fillable(['apartado_id', 'caja_sesion_id', 'monto', 'usuario_id', 'notas'])]
+#[Fillable(['apartado_id', 'caja_sesion_id', 'monto', 'saldo_anterior', 'saldo_nuevo', 'usuario_id', 'notas'])]
 class ApartadoAbono extends Model
 {
     use BelongsToTenantViaRelacion;
@@ -26,6 +27,7 @@ class ApartadoAbono extends Model
     /** @use HasFactory<ApartadoAbonoFactory> */
     use HasFactory;
 
+    use RutaPorUlid;
     use TieneUlid;
 
     const CREATED_AT = 'fecha';
@@ -38,6 +40,8 @@ class ApartadoAbono extends Model
     {
         return [
             'monto' => 'decimal:2',
+            'saldo_anterior' => 'decimal:2',
+            'saldo_nuevo' => 'decimal:2',
             'fecha' => 'datetime',
         ];
     }

@@ -22,7 +22,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * consultando sucursal.tenant_id (ver tenantRelacion()).
  */
 #[Fillable(['folio',
-    'sucursal_id', 'usuario_id', 'monto_apertura', 'saldo_teorico', 'monto_cierre',
+    'sucursal_id', 'usuario_id', 'usuario_cierre_id', 'monto_apertura', 'saldo_teorico', 'monto_cierre',
     'total_ventas_sistema', 'total_teorico', 'diferencia', 'fecha_apertura', 'fecha_cierre', 'estado',
 ])]
 class CajaSesion extends Model
@@ -80,6 +80,12 @@ class CajaSesion extends Model
     public function usuario(): BelongsTo
     {
         return $this->belongsTo(Usuario::class);
+    }
+
+    /** @return BelongsTo<Usuario, $this> */
+    public function usuarioCierre(): BelongsTo
+    {
+        return $this->belongsTo(Usuario::class, 'usuario_cierre_id');
     }
 
     public function ventas(): HasMany
