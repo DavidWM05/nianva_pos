@@ -8,6 +8,9 @@ import { DatosComponent, PageHeaderComponent } from '@nianva/ui-layout';
 import { AuditLogViewerComponent, RecordTabConfig, RecordTabsComponent } from '@nianva/ui-shared';
 
 import { Venta, VentaDetalle, VentaService } from '@nianva/domain-tpv';
+import { FormatoImpreso } from '@nianva/ui-print';
+import { ImprimirDocumentoService } from '../../../../core/impresos/imprimir-documento.service';
+import { PreferenciaTicketService } from '../../../../core/impresos/preferencia-ticket.service';
 
 /**
  * Vista de registro de Venta -- General (resumen + cliente + pago, ver el
@@ -41,6 +44,9 @@ import { Venta, VentaDetalle, VentaService } from '@nianva/domain-tpv';
 export class VentaDetalleComponent implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly ventaService = inject(VentaService);
+  private readonly preferenciaTicket = inject(PreferenciaTicketService);
+  /** UI-12: reimpresión del ticket o la versión carta, desde la foto de la venta. */
+  protected readonly impresion = inject(ImprimirDocumentoService);
 
   protected readonly tabs: RecordTabConfig[] = [
     { label: 'General', icon: 'pi pi-receipt' },
@@ -100,5 +106,11 @@ export class VentaDetalleComponent implements OnInit {
     if (!venta.metodos_pago || venta.metodos_pago.length === 0) return '—';
 
     return venta.metodos_pago.map((p) => p.nombre ?? 'Método eliminado').join(' + ');
+  }
+
+  /** Ticket con el ancho de esta terminal, o la versión carta. */
+  protected imprimir(venta: Venta, formato: FormatoImpreso | 'ticket'): void {
+    const destino = formato === 'ticket' ? this.preferenciaTicket.ancho() : formato;
+    this.impresion.imprimir({ tipo: 'venta', venta: venta.id }, destino).subscribe({ error: () => undefined });
   }
 }

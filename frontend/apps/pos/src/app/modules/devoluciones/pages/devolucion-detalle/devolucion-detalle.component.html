@@ -4,8 +4,8 @@
   @if (devolucion(); as devolucionActual) {
     <div>
       <h2>
-        {{ devolucionActual.tipo === 'cambio' ? 'Cambio' : 'Devolución' }} #{{ devolucionActual.numero }} — Venta #{{
-          devolucionActual.venta?.numero
+        {{ devolucionActual.tipo === 'cambio' ? 'Cambio' : 'Devolución' }} {{ devolucionActual.folio ?? 'sin folio' }} — Venta {{
+          devolucionActual.venta?.folio ?? 'sin folio'
         }}
       </h2>
     </div>

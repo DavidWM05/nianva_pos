@@ -14,13 +14,14 @@ import { ulidDePrueba } from '../../../../testing/ulid-de-prueba';
 
 describe('DevolucionFormComponent', () => {
   let fixture: ComponentFixture<DevolucionFormComponent>;
-  let ventaService: { obtener: ReturnType<typeof vi.fn>; buscarPorNumero: ReturnType<typeof vi.fn>; cotizar: ReturnType<typeof vi.fn> };
+  let ventaService: { obtener: ReturnType<typeof vi.fn>; buscarPorFolio: ReturnType<typeof vi.fn>; cotizar: ReturnType<typeof vi.fn> };
   let devolucionService: { registrar: ReturnType<typeof vi.fn> };
   let toastService: { success: ReturnType<typeof vi.fn>; error: ReturnType<typeof vi.fn> };
 
   const ventaOrigen: Venta = {
     id: ulidDePrueba(55),
     numero: 55,
+    folio: 'V-1-55',
     fecha: '2026-07-01T10:00:00.000000Z',
     cliente: { id: ulidDePrueba(9), nombre: 'Publico General' },
     total: '300.00',
@@ -56,7 +57,7 @@ describe('DevolucionFormComponent', () => {
   async function crearComponente(ventaIdQueryParam: string | null = ulidDePrueba(55)): Promise<void> {
     ventaService = {
       obtener: vi.fn().mockReturnValue(of(ventaOrigen)),
-      buscarPorNumero: vi.fn().mockReturnValue(of(ulidDePrueba(55))),
+      buscarPorFolio: vi.fn().mockReturnValue(of(ulidDePrueba(55))),
       cotizar: vi.fn().mockReturnValue(of({ items: [], subtotal: 0 })),
     };
     devolucionService = { registrar: vi.fn() };

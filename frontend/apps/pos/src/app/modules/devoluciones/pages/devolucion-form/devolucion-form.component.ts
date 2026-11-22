@@ -52,11 +52,11 @@ function cantidadDevuelta(control: AbstractControl<number>): ValidationErrors | 
 
 /**
  * Creacion de devolucion/cambio. Dos formas de entrar (ver el reporte,
- * punto 1): buscando la venta origen por su numero a mano (D-7, transitorio
- * hasta el folio de DAT-07), o navegando aqui con `?venta_id=` (el ulid)
+ * punto 1): buscando la venta origen por su folio (DAT-07, `filtro_folio`),
+ * o navegando aqui con `?venta_id=` (el ulid)
  * desde el boton "Devolver" en el detalle de una venta (ver
  * VentasListComponent en TPV) -- ambas terminan en el mismo estado: la
- * busqueda por numero resuelve el ulid y las dos cargan la venta con
+ * busqueda por folio resuelve el ulid y las dos cargan la venta con
  * cargarVenta().
  *
  * Reutiliza LineasProductoComponent (items nuevos de un cambio) y
@@ -84,8 +84,8 @@ export class DevolucionFormComponent implements OnInit {
   /** API-07 y SEG-05: la llave y, si se reembolsa dinero, el token de la devolucion en curso. */
   private readonly intentoDevolucion = new IntentoOperacion();
 
-  /** D-7, transitorio: el campo de búsqueda es el `numero` de la venta (lo reemplaza el folio de DAT-07). */
-  protected readonly ventaIdBusqueda = signal<number | null>(null);
+  /** DAT-07: el campo de búsqueda es el folio de la venta (por ejemplo, V-1-23). */
+  protected readonly folioBusqueda = signal('');
   protected readonly ventaOrigen = signal<Venta | null>(null);
   protected readonly cargandoVenta = signal(false);
 
@@ -142,11 +142,11 @@ export class DevolucionFormComponent implements OnInit {
   }
 
   buscarVenta(): void {
-    const numero = this.ventaIdBusqueda();
-    if (numero === null) return;
+    const folio = this.folioBusqueda().trim();
+    if (!folio) return;
 
     this.cargandoVenta.set(true);
-    this.ventaService.buscarPorNumero(numero).subscribe({
+    this.ventaService.buscarPorFolio(folio).subscribe({
       next: (ulid) => {
         if (ulid === null) {
           this.cargandoVenta.set(false);
@@ -170,8 +170,8 @@ export class DevolucionFormComponent implements OnInit {
     this.ventaService.obtener(ulid).subscribe({
       next: (venta) => {
         this.ventaOrigen.set(venta);
-        // El campo de búsqueda refleja el número de la venta cargada (también la que llegó por ?venta_id=).
-        this.ventaIdBusqueda.set(venta.numero);
+        // El campo de búsqueda refleja el folio de la venta cargada (también la que llegó por ?venta_id=).
+        this.folioBusqueda.set(venta.folio ?? '');
         this.lineasDevueltas.set(
           (venta.detalles ?? []).map((detalle) => ({
             variante_id: detalle.variante_id,
@@ -208,7 +208,7 @@ export class DevolucionFormComponent implements OnInit {
 
   cambiarVenta(): void {
     this.ventaOrigen.set(null);
-    this.ventaIdBusqueda.set(null);
+    this.folioBusqueda.set('');
     this.reiniciarLineas();
   }
 
@@ -280,7 +280,7 @@ export class DevolucionFormComponent implements OnInit {
     this.supervisor
       .ejecutar(
         this.intentoDevolucion,
-        { accion: 'devoluciones.reembolsar', recurso: venta.id, datos: { ...payload }, descripcion: `Reembolsar dinero de la venta #${venta.numero}` },
+        { accion: 'devoluciones.reembolsar', recurso: venta.id, datos: { ...payload }, descripcion: `Reembolsar dinero de la venta ${venta.folio ?? 'sin folio'}` },
         (llave, token) => this.devolucionService.registrar(payload, llave, token),
       )
       // Si se cancela el dialogo del supervisor no hay respuesta: se libera el boton igual.

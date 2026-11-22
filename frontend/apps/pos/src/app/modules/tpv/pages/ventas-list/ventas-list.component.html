@@ -28,7 +28,7 @@
 </div>
 
 <ui-modal titulo="Anular venta" [visible]="ventaEnAnulacion() !== null" (visibleChange)="cerrarAnulacion()">
-  <p>¿Anular la venta #{{ ventaEnAnulacion()?.numero }}? Esta acción no se puede deshacer.</p>
+  <p>¿Anular la venta {{ ventaEnAnulacion()?.folio ?? 'sin folio' }}? Esta acción no se puede deshacer.</p>
   <ui-campo #motivo etiqueta="Motivo">
     <textarea
       [id]="motivo.controlId()"

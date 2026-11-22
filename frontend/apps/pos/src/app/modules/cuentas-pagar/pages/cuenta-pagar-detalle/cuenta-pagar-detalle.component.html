@@ -1,7 +1,7 @@
 <ui-page-header clave="cuentas-pagar" />
 <ui-page [estado]="estado()" forma="detalle" (reintentar)="reintentar()">
   @if (cuenta(); as c) {
-    <h2>Cuenta por pagar #{{ c.numero }}</h2>
+    <h2>Cuenta por pagar · compra {{ c.folio ?? 'sin folio' }}</h2>
     <ui-badge entidad="cuentaPagar" [estado]="c.estado" />
 
     <nucleo-record-tabs [tabs]="tabs">

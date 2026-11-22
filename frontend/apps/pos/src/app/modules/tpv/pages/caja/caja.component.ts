@@ -12,6 +12,8 @@ import { ToastService, esErrorNegocio, mensajeError } from '@nianva/ui-shared';
 
 import { CajaActual, CajaConteo, CajaDesglose, CajaService, CajaSesion, Gasto, GastoService } from '@nianva/domain-tpv';
 import { finalize } from 'rxjs';
+import { ImprimirDocumentoService } from '../../../../core/impresos/imprimir-documento.service';
+import { PreferenciaTicketService } from '../../../../core/impresos/preferencia-ticket.service';
 import { IntentoOperacion } from '../../../../core/operaciones/intento-operacion';
 import { AutorizacionSupervisorService } from '../../../../core/supervisor/autorizacion-supervisor.service';
 
@@ -56,6 +58,9 @@ export class CajaComponent implements OnInit {
   private readonly gastoService = inject(GastoService);
   private readonly toast = inject(ToastService);
   private readonly supervisor = inject(AutorizacionSupervisorService);
+  private readonly preferenciaTicket = inject(PreferenciaTicketService);
+  /** UI-12: el corte de la caja recién cerrada, desde su foto. */
+  protected readonly impresion = inject(ImprimirDocumentoService);
   // API-07: una llave por operacion; se conserva si el envio falla y se renueva al confirmar.
   private readonly intentoApertura = new IntentoOperacion();
   private readonly intentoCierre = new IntentoOperacion();
@@ -190,6 +195,10 @@ export class CajaComponent implements OnInit {
           }
         },
       });
+  }
+
+  imprimirCorte(cerrada: CajaSesion): void {
+    this.impresion.imprimir({ tipo: 'corte', caja: cerrada.id }, this.preferenciaTicket.ancho()).subscribe({ error: () => undefined });
   }
 
   cerrarResumenDeCierre(): void {

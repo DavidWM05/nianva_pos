@@ -46,6 +46,11 @@
         }
 
         <div>
+          @if (impresion.disponible) {
+            <button matButton="outlined" type="button" [disabled]="impresion.imprimiendo()" (click)="imprimirCorte(cerrada)">
+              <i class="pi pi-print" aria-hidden="true"></i> Imprimir corte
+            </button>
+          }
           <button matButton="filled" type="button" (click)="cerrarResumenDeCierre()">Continuar</button>
         </div>
       </div>

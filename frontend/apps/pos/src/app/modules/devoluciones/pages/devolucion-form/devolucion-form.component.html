@@ -8,20 +8,21 @@
 
   @if (!ventaOrigen()) {
     <ui-section titulo="Venta origen">
-      <ui-campo #campo1 etiqueta="Número de venta">
+      <ui-campo #campo1 etiqueta="Folio de la venta" ayuda="Por ejemplo, V-1-23.">
         <input
-          type="number"
+          type="text"
           [id]="campo1.controlId()"
-          [ngModel]="ventaIdBusqueda()"
-          (ngModelChange)="ventaIdBusqueda.set($event)"
+          [ngModel]="folioBusqueda()"
+          (ngModelChange)="folioBusqueda.set($event)"
+          (keydown.enter)="buscarVenta()"
         />
-        <button matButton="filled" type="button" [disabled]="(ventaIdBusqueda() === null) || (cargandoVenta())" [attr.aria-busy]="cargandoVenta()" (click)="buscarVenta()">@if (indicadorcargandoVenta()) { <mat-spinner diameter="18" /> } Buscar</button>
+        <button matButton="filled" type="button" [disabled]="!folioBusqueda().trim() || cargandoVenta()" [attr.aria-busy]="cargandoVenta()" (click)="buscarVenta()">@if (indicadorcargandoVenta()) { <mat-spinner diameter="18" /> } Buscar</button>
       </ui-campo>
     </ui-section>
   } @else {
     <ui-section titulo="Venta origen">
       <p>
-        Venta #{{ ventaOrigen()!.numero }} — {{ ventaOrigen()!.cliente?.nombre ?? '—' }} — Total: {{ ventaOrigen()!.total | dinero }}
+        Venta {{ ventaOrigen()!.folio ?? 'sin folio' }} — {{ ventaOrigen()!.cliente?.nombre ?? '—' }} — Total: {{ ventaOrigen()!.total | dinero }}
         <button matButton="text" type="button" (click)="cambiarVenta()">Cambiar venta</button>
       </p>
 

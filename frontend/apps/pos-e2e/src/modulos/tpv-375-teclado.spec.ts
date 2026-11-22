@@ -115,14 +115,14 @@ test('tpv a 375 px: venta completa con nombre largo y montos de cinco cifras, si
   await registrar.click();
   const respuesta = await ventaCreada;
   expect(respuesta.status()).toBe(201);
-  const venta: { data: { id: string; numero: number } } = await respuesta.json();
-  await expect(page.getByRole('heading', { name: `Venta #${venta.data.numero} registrada`, exact: true })).toBeVisible();
+  const venta: { data: { id: string; folio: string } } = await respuesta.json();
+  await expect(page.getByRole('heading', { name: `Venta ${venta.data.folio} registrada`, exact: true })).toBeVisible();
   await sinDesborde(page, 'confirmación');
   await esTactil(page.getByRole('button', { name: /Nueva venta$/ }), 'Nueva venta');
 
   await page.getByRole('link', { name: /Ver venta$/ }).click();
   await expect(page).toHaveURL(new RegExp(`/tpv/ventas/${venta.data.id}$`));
-  await expect(page.getByRole('heading', { name: `Venta #${venta.data.numero}`, exact: true })).toBeVisible();
+  await expect(page.getByRole('heading', { name: `Venta ${venta.data.folio}`, exact: true })).toBeVisible();
   await page.waitForLoadState('networkidle');
   await sinDesborde(page, 'detalle de la venta');
 
@@ -211,7 +211,7 @@ test('tpv solo con teclado: buscar, variante, cantidad, cobrar con F4 y foco res
   );
   await page.keyboard.press('F4');
   expect((await ventaCreada).status()).toBe(201);
-  const confirmacion = page.getByRole('heading', { name: /^Venta #\d+ registrada$/ });
+  const confirmacion = page.getByRole('heading', { name: /^Venta V-\d+-\d+ registrada$/ });
   await expect(confirmacion).toBeFocused();
 
   // "Nueva venta" con Enter regresa a la captura con el foco en la búsqueda.
@@ -264,7 +264,7 @@ for (const tema of ['claro', 'oscuro'] as const) {
     await enDosAnchos();
 
     await page.getByRole('button', { name: /Registrar venta$/ }).click();
-    await expect(page.getByRole('heading', { name: /^Venta #\d+ registrada$/ })).toBeVisible();
+    await expect(page.getByRole('heading', { name: /^Venta V-\d+-\d+ registrada$/ })).toBeVisible();
     await enDosAnchos();
   });
 }

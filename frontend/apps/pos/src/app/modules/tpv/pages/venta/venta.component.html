@@ -9,10 +9,15 @@
     </div>
   } @else if (ventaRegistrada(); as venta) {
     <div class="venta__confirmacion">
-      <h2 #confirmacion tabindex="-1">Venta #{{ venta.numero }} registrada</h2>
+      <h2 #confirmacion tabindex="-1">Venta {{ venta.folio ?? 'sin folio' }} registrada</h2>
       <p>Total: {{ venta.total | dinero }}</p>
       <ui-form-actions>
         <a matButton="outlined" [routerLink]="['/tpv/ventas', venta.id]"><i class="pi pi-eye" aria-hidden="true"></i> Ver venta</a>
+        @if (impresion.disponible) {
+          <button matButton="outlined" type="button" [disabled]="impresion.imprimiendo()" (click)="imprimirTicket(venta)">
+            <i class="pi pi-print" aria-hidden="true"></i> Imprimir ticket
+          </button>
+        }
         <button matButton="filled" type="button" (click)="nuevaVenta()"><i class="pi pi-plus" aria-hidden="true"></i> Nueva venta</button>
       </ui-form-actions>
     </div>

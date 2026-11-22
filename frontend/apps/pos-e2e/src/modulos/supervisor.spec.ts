@@ -78,7 +78,7 @@ test('venta con descuento fuera de margen: pide supervisor, un PIN incorrecto no
   expect(venta.request().headers()['x-autorizacion-supervisor']).toBeTruthy();
   const cuerpo = (await venta.json()) as { data: { descuento_manual: string } };
   expect(cuerpo.data.descuento_manual).toBe('60.00');
-  await expect(page.getByRole('heading', { name: /^Venta #\S+ registrada$/ })).toBeVisible();
+  await expect(page.getByRole('heading', { name: /^Venta V-\d+-\d+ registrada$/ })).toBeVisible();
 });
 
 test('anular una venta pide supervisor y queda anulada', async ({ page }) => {

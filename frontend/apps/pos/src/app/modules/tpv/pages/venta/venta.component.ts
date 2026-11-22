@@ -37,6 +37,8 @@ import {
 
 import { finalize } from 'rxjs';
 import { BUSCADOR_CLIENTE } from '../../../../core/buscadores-entidad.tokens';
+import { ImprimirDocumentoService } from '../../../../core/impresos/imprimir-documento.service';
+import { PreferenciaTicketService } from '../../../../core/impresos/preferencia-ticket.service';
 import { IntentoOperacion } from '../../../../core/operaciones/intento-operacion';
 import { AutorizacionSupervisorService } from '../../../../core/supervisor/autorizacion-supervisor.service';
 import { NotaCredito, NotaCreditoService } from '@nianva/domain-notas-credito';
@@ -97,6 +99,9 @@ export class VentaComponent implements OnInit {
   private readonly notaCreditoService = inject(NotaCreditoService);
   private readonly toast = inject(ToastService);
   private readonly supervisor = inject(AutorizacionSupervisorService);
+  private readonly preferenciaTicket = inject(PreferenciaTicketService);
+  /** UI-12: el ticket de la venta recién registrada, con el ancho de papel de esta terminal. */
+  protected readonly impresion = inject(ImprimirDocumentoService);
   /**
    * API-07 y SEG-05: llave y token de la venta en curso. Si el carrito, el pago o el descuento
    * cambian, el cuerpo es otro: llave nueva y el token del supervisor se descarta.
@@ -423,6 +428,11 @@ export class VentaComponent implements OnInit {
           this.toast.error(mensajeError(error, 'No se pudo registrar la venta.'));
         },
       });
+  }
+
+  /** Imprime el ticket desde la foto de la venta: no la registra ni la cobra otra vez. */
+  imprimirTicket(venta: Venta): void {
+    this.impresion.imprimir({ tipo: 'venta', venta: venta.id }, this.preferenciaTicket.ancho()).subscribe({ error: () => undefined });
   }
 
   nuevaVenta(): void {

@@ -27,6 +27,7 @@ describe('VentaDetalleComponent', () => {
   const venta: Venta = {
     id: ulidDePrueba(42),
     numero: 42,
+    folio: 'V-1-42',
     fecha: '2026-07-01T10:00:00Z',
     cliente: { id: ulidDePrueba(1), nombre: 'Ana Pérez' },
     total: '150.00',
@@ -77,7 +78,7 @@ describe('VentaDetalleComponent', () => {
   it('renderiza las 3 pestañas, el cliente y el total', () => {
     const texto = (fixture.nativeElement as HTMLElement).textContent ?? '';
 
-    expect(texto).toContain('Venta #42');
+    expect(texto).toContain('Venta V-1-42');
     expect(texto).toContain('Ana Pérez');
     expect(texto).toContain('General');
     expect(texto).toContain('Líneas');

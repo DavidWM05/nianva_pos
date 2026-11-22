@@ -15,6 +15,8 @@ import { AuditLogViewerComponent, RecordTabConfig, RecordTabsComponent, ToastSer
 import { LineasPagoCambio, LineasPagoComponent } from '../../../tpv/lineas-pago/lineas-pago.component';
 import { AbonoPagoPayload, Apartado, ApartadoDetallePermisos, ApartadoService, ResultadoCancelacion } from '@nianva/domain-apartados';
 import { finalize } from 'rxjs';
+import { ImprimirDocumentoService } from '../../../../core/impresos/imprimir-documento.service';
+import { PreferenciaTicketService } from '../../../../core/impresos/preferencia-ticket.service';
 import { IntentoOperacion } from '../../../../core/operaciones/intento-operacion';
 import { AutorizacionSupervisorService } from '../../../../core/supervisor/autorizacion-supervisor.service';
 
@@ -44,6 +46,9 @@ export class ApartadoDetalleComponent implements OnInit {
   private readonly apartadoService = inject(ApartadoService);
   private readonly toast = inject(ToastService);
   private readonly supervisor = inject(AutorizacionSupervisorService);
+  private readonly preferenciaTicket = inject(PreferenciaTicketService);
+  /** UI-12: el comprobante de cada abono, desde su foto. */
+  private readonly impresion = inject(ImprimirDocumentoService);
   // API-07: una llave por operacion; se conserva si el envio falla y se renueva al confirmar.
   private readonly intentoAbono = new IntentoOperacion();
   private readonly intentoLiquidacion = new IntentoOperacion();
@@ -177,7 +182,7 @@ export class ApartadoDetalleComponent implements OnInit {
     this.supervisor
       .ejecutar(
         this.intentoCancelacion,
-        { accion: 'apartados.cancelar', recurso: apartado.id, datos: { motivo }, descripcion: `Cancelar el apartado #${apartado.numero}` },
+        { accion: 'apartados.cancelar', recurso: apartado.id, datos: { motivo }, descripcion: `Cancelar el apartado ${apartado.folio ?? 'sin folio'}` },
         (llave, token) => this.apartadoService.cancelar(apartado.id, motivo, llave, token),
       )
       // Si se cancela el dialogo del supervisor no hay respuesta: se libera el boton igual.
@@ -210,7 +215,15 @@ export class ApartadoDetalleComponent implements OnInit {
   protected readonly todosAbonos = computed(() => (this.apartado()?.abonos ?? []).map(a => ({ ...a, metodosTexto: this.etiquetaMetodosPago(a.pagos) })));
   protected readonly filasAbonos = computed(() => this.todosAbonos().slice((this.paginaAbonos().page - 1) * this.paginaAbonos().rows, this.paginaAbonos().page * this.paginaAbonos().rows));
   protected readonly metaAbonos = computed<MetaListado>(() => ({ total: this.todosAbonos().length, page: this.paginaAbonos().page, rows: this.paginaAbonos().rows, filtros_aplicados: {}, permisos: {} }));
-  protected readonly columnasAbonos: ColumnaListado<ReturnType<typeof this.todosAbonos>[number]>[] = [ { tipo: 'fechaHora', campo: 'fecha', encabezado: 'Fecha' }, { tipo: 'dinero', campo: 'monto', encabezado: 'Monto' }, { tipo: 'texto', campo: 'metodosTexto', encabezado: 'Pago' } ];
+  protected readonly columnasAbonos: ColumnaListado<ReturnType<typeof this.todosAbonos>[number]>[] = [ { tipo: 'fechaHora', campo: 'fecha', encabezado: 'Fecha' }, { tipo: 'dinero', campo: 'monto', encabezado: 'Monto' }, { tipo: 'texto', campo: 'metodosTexto', encabezado: 'Pago' }, ...(this.impresion.disponible ? [{ tipo: 'acciones' as const, encabezado: 'Comprobante', acciones: () => [{ tipo: 'imprimir' as const }] }] : []) ];
+
+  /** El comprobante del abono elegido, con el ancho de ticket de esta terminal. */
+  protected imprimirAbono(abono: { id: string }): void {
+    const apartado = this.apartado();
+    if (!apartado) return;
+
+    this.impresion.imprimir({ tipo: 'abono', apartado: apartado.id, abono: abono.id }, this.preferenciaTicket.ancho()).subscribe({ error: () => undefined });
+  }
 
   protected readonly indicadorliquidando = conUmbral(this.liquidando);
 

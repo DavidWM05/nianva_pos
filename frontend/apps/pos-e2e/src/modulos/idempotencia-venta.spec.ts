@@ -70,7 +70,7 @@ test('venta: si la respuesta se pierde, el reintento lleva la misma llave y no d
   const reintento = page.waitForResponse((r) => r.request().method() === 'POST' && new URL(r.url()).pathname === '/api/v1/ventas');
   await page.getByRole('button', { name: /Registrar venta$/ }).click();
   expect((await reintento).status()).toBe(201);
-  await expect(page.getByRole('heading', { name: /^Venta #\S+ registrada$/ })).toBeVisible();
+  await expect(page.getByRole('heading', { name: /^Venta V-\d+-\d+ registrada$/ })).toBeVisible();
 
   expect(llaves[0]).toMatch(ULID);
   expect(llaves[1]).toBe(llaves[0]);

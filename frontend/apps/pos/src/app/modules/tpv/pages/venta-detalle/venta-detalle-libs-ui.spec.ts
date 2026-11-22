@@ -15,6 +15,7 @@ describe('VentaDetalleComponent con libs/ui', () => {
   const venta: Venta = {
     id: ulidDePrueba(42),
     numero: 42,
+    folio: 'V-1-42',
     fecha: '2026-07-01T10:00:00Z',
     cliente: { id: ulidDePrueba(1), nombre: 'Ana' },
     total: '1500.00',
@@ -62,7 +63,7 @@ describe('VentaDetalleComponent con libs/ui', () => {
 
     expect(raiz.querySelectorAll('h1')).toHaveLength(1);
     expect(raiz.querySelector('ui-page-header h1')?.textContent?.trim()).toBe('Ventas');
-    expect([...raiz.querySelectorAll('h2')].map((h) => h.textContent?.trim())).toContain('Venta #42');
+    expect([...raiz.querySelectorAll('h2')].map((h) => h.textContent?.trim())).toContain('Venta V-1-42');
   });
 
   it('una venta anulada pinta ui-badge en tono peligro; una completada no pinta badge', async () => {

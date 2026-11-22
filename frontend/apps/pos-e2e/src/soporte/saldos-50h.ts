@@ -7,6 +7,8 @@ export function prepararSaldos50h(lectura = false): {
   pagar: number;
   nota: number;
   venta: number;
+  /** Folio de la venta (DAT-07): la factory no lo asigna, se le pone uno unico. */
+  ventaFolio: string;
 } {
   const backend = path.resolve(__dirname, '../../../../../backend');
   const codigo = String.raw`
@@ -18,6 +20,7 @@ $t = $usuario->tenant_id;
 $lectura = getenv('SALDOS_LECTURA_50H') === '1';
 $cliente = App\Modules\Crm\Models\Cliente::factory()->create(['tenant_id' => $t, 'nombre' => $lectura ? 'Cliente saldos lectura 50h' : 'Cliente saldos E2E']);
 $venta = App\Modules\Tpv\Models\Venta::factory()->create(['tenant_id' => $t, 'cliente_id' => $cliente->id, 'sucursal_id' => $usuario->sucursal_id, 'usuario_id' => $usuario->id, 'total' => 100]);
+$venta->forceFill(['folio' => 'V-E2E-'.$venta->id])->save();
 $cobrar = App\Modules\CuentasCobrar\Models\CuentaCobrar::factory()->create(['venta_id' => $venta->id, 'fecha_vencimiento' => '2020-01-01']);
 $proveedor = App\Modules\Inventario\Models\Proveedor::factory()->create(['tenant_id' => $t, 'razon_social' => $lectura ? 'Proveedor saldos lectura 50h' : 'Proveedor saldos E2E']);
 $compra = App\Modules\Inventario\Models\Compra::factory()->create(['tenant_id' => $t, 'proveedor_id' => $proveedor->id, 'sucursal_id' => $usuario->sucursal_id, 'usuario_id' => $usuario->id, 'total' => 100]);
@@ -30,7 +33,7 @@ if ($lectura) {
     App\Modules\VentasPlazos\Models\PlanPagoClienteCuota::factory()->create(['plan_pago_cliente_id' => $plan->id]);
     App\Modules\Crm\Models\Cliente::factory()->create(['tenant_id' => $t, 'nombre' => 'Cliente sin notas lectura 50h']);
 }
-echo json_encode(['cobrar' => $cobrar->id, 'pagar' => $pagar->id, 'nota' => $nota->id, 'venta' => $venta->id]);
+echo json_encode(['cobrar' => $cobrar->id, 'pagar' => $pagar->id, 'nota' => $nota->id, 'venta' => $venta->id, 'ventaFolio' => $venta->folio]);
 `;
   return JSON.parse(
     execFileSync('php', ['-r', codigo], {
