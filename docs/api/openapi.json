@@ -1266,6 +1266,63 @@
                 }
             }
         },
+        "/supervisores": {
+            "get": {
+                "operationId": "autorizacionSupervisor.disponibles",
+                "tags": [
+                    "AutorizacionSupervisor"
+                ],
+                "parameters": [
+                    {
+                        "name": "accion",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/components/schemas/AccionSupervisor"
+                        }
+                    },
+                    {
+                        "name": "recurso",
+                        "in": "query",
+                        "schema": {
+                            "type": [
+                                "string",
+                                "null"
+                            ]
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Array of `SupervisorDisponibleResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/SupervisorDisponibleResource"
+                                            }
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    }
+                }
+            }
+        },
         "/autorizaciones": {
             "post": {
                 "operationId": "autorizacionSupervisor.store",
@@ -18740,6 +18797,22 @@
                     "updated_at"
                 ],
                 "title": "Sucursal"
+            },
+            "SupervisorDisponibleResource": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer"
+                    },
+                    "nombre": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "id",
+                    "nombre"
+                ],
+                "title": "SupervisorDisponibleResource"
             },
             "TerminalResource": {
                 "type": "object",
