@@ -2,6 +2,8 @@
 
 namespace Tests\Feature\Permisos;
 
+use App\Modules\Apartados\Models\Apartado;
+use App\Modules\Apartados\Models\ApartadoAbono;
 use App\Modules\CuentasCobrar\Models\CuentaCobrar;
 use App\Modules\CuentasPagar\Models\CuentaPagar;
 use App\Modules\Inventario\Models\Compra;
@@ -131,10 +133,14 @@ class MatrizPermisosTest extends TestCase
             }
 
             $uri = '/'.$route->uri();
+            $apartado = null;
 
             foreach ($route->parameterNames() as $nombre) {
                 if ($bindings->has($nombre)) {
-                    $modelo = $this->crearModeloParaBinding($bindings->get($nombre));
+                    $modelo = $this->crearModeloParaBinding($bindings->get($nombre), $apartado);
+                    if ($modelo instanceof Apartado) {
+                        $apartado = $modelo;
+                    }
                     $uri = str_replace('{'.$nombre.'}', (string) $modelo->getRouteKey(), $uri);
 
                     continue;
@@ -149,8 +155,15 @@ class MatrizPermisosTest extends TestCase
         return $rutas;
     }
 
-    private function crearModeloParaBinding(string $clase): UrlRoutable
+    private function crearModeloParaBinding(string $clase, ?Apartado $apartado = null): UrlRoutable
     {
+        if ($clase === ApartadoAbono::class) {
+            return ApartadoAbono::factory()->create([
+                'apartado_id' => ($apartado ?? Apartado::factory()->create(['tenant_id' => $this->tenant->id, 'sucursal_id' => $this->sucursal->id]))->id,
+                'usuario_id' => $this->usuario->id,
+            ]);
+        }
+
         if ($clase === CajaSesion::class) {
             return CajaSesion::factory()->create([
                 'sucursal_id' => $this->sucursal->id,
