@@ -32,7 +32,7 @@ class RutasDeModulosOpcionalesTest extends TestCase
     /** @var list<string> */
     private const BASE = [
         'Nucleo', 'Configuracion', 'Auditoria', 'Inventario', 'Crm',
-        'Precios', 'Tpv', 'Apartados', 'Devoluciones', 'Gastos',
+        'Precios', 'Tpv', 'Apartados', 'Devoluciones', 'Gastos', 'Metricas',
     ];
 
     public function test_toda_ruta_de_un_modulo_opcional_lleva_su_modulo(): void

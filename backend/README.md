@@ -123,6 +123,7 @@ Inventario         Crm
    Apartados   Devoluciones    (Apartados -> Crm+Inventario+Precios+Tpv)
                                (Devoluciones -> Inventario+Tpv)
       Gastos                   (Gastos -> Tpv, solo Model/Exception)
+      Metricas                 (base; en S1 solo usa Nucleo y Configuracion)
 
    Cotizaciones                (Cotizaciones -> Precios + Tpv)
    Delivery                    (Delivery -> Tpv)
