@@ -1,8 +1,10 @@
+import { provideHttpClient } from '@angular/common/http';
 import { TestBed } from '@angular/core/testing';
 import { of } from 'rxjs';
 import { describe, expect, it, vi } from 'vitest';
 
 import { CuentaCobrarService, ReporteCuentasCobrar } from '@nianva/domain-cuentas-cobrar';
+import { proveedoresDePantalla } from '../../../../testing/proveedores-pantalla';
 import { ReporteCuentasCobrarComponent } from './reporte-cuentas-cobrar.component';
 import { ulidDePrueba } from '../../../../testing/ulid-de-prueba';
 
@@ -18,7 +20,7 @@ describe('ReporteCuentasCobrarComponent formato por pipe', () => {
 
     await TestBed.configureTestingModule({
       imports: [ReporteCuentasCobrarComponent],
-      providers: [{ provide: CuentaCobrarService, useValue: { reporte: vi.fn().mockReturnValue(of(reporte)) } }],
+      providers: [...proveedoresDePantalla(), provideHttpClient(), { provide: CuentaCobrarService, useValue: { reportePaginado: vi.fn().mockReturnValue(of({ data: { ...reporte, detalle: [] }, meta: { page: 1, rows: 25, total: 0, filtros_aplicados: {}, permisos: { exportar: false } } })) } }],
     }).compileComponents();
 
     const fixture = TestBed.createComponent(ReporteCuentasCobrarComponent);

@@ -27,6 +27,8 @@ interface RangoFecha {
 export class ReportFiltrosComponent {
   readonly sucursales = input<readonly SucursalReporte[]>([]);
   readonly puedeElegirSucursal = input(false);
+  readonly aplicarConBoton = input(false);
+  readonly textoSucursal = input<string | null>(null);
   readonly sucursalUsuario = input<SucursalReporte | null>(null);
 
   readonly cambio = output<CambioReporte>();
@@ -46,7 +48,7 @@ export class ReportFiltrosComponent {
   // SEG-02: sin sucursales.todas la sucursal es la del usuario. Si no se informa, no se
   // adivina con la primera de la lista: se manda null y el backend usa la del usuario
   // (SucursalOperacion::paraFiltro).
-  protected readonly sucursalTexto = computed(() => this.sucursalUsuario()?.nombre ?? 'Tu sucursal');
+  protected readonly sucursalTexto = computed(() => this.textoSucursal() ?? this.sucursalUsuario()?.nombre ?? 'Tu sucursal');
   protected readonly sucursalEfectiva = computed(() => {
     if (this.puedeElegirSucursal()) {
       return this.sucursalId();
@@ -57,21 +59,33 @@ export class ReportFiltrosComponent {
 
   constructor() {
     this.fechas.valueChanges.subscribe(({ start, end }) => {
-      this.alCambiarFechas({ start: start ?? null, end: end ?? null });
+      this.alCambiarFechas({ start: start ?? null, end: end ?? null }, false);
     });
   }
 
-  protected alCambiarFechas(valor: Date | Date[] | RangoFecha | null): void {
+  protected alCambiarFechas(valor: Date | Date[] | RangoFecha | null, sincronizar = true): void {
     const rango = this.aRango(valor);
 
     this.rango.set(rango);
-    this.fechas.setValue({ start: rango?.[0] ?? null, end: rango?.[1] ?? null }, { emitEvent: false });
-    this.emitir();
+    if (sincronizar) {
+      this.fechas.setValue({ start: rango?.[0] ?? null, end: rango?.[1] ?? null }, { emitEvent: false });
+    }
+    if (!this.aplicarConBoton() && this.fechas.valid) {
+      this.emitir();
+    }
   }
 
   protected alCambiarSucursal(valor: unknown): void {
     this.sucursalId.set(typeof valor === 'number' ? valor : null);
-    this.emitir();
+    if (!this.aplicarConBoton()) {
+      this.emitir();
+    }
+  }
+
+  protected aplicarFiltros(): void {
+    if (this.fechas.valid) {
+      this.emitir();
+    }
   }
 
   protected limpiarFiltros(): void {
@@ -105,11 +119,11 @@ export class ReportFiltrosComponent {
   }
 
   private emitir(): void {
-    const rango = this.rango();
+    const { start, end } = this.fechas.getRawValue();
 
     this.cambio.emit({
-      desde: fechaComoIso(rango?.[0]),
-      hasta: fechaComoIso(rango?.[1]),
+      desde: fechaComoIso(start),
+      hasta: fechaComoIso(end),
       sucursalId: this.sucursalEfectiva(),
     });
   }

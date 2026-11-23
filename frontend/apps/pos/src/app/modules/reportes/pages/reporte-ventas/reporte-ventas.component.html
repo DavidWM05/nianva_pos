@@ -1,114 +1,51 @@
-<div class="reporte-ventas">
-  <h1>Reporte de Ventas</h1>
-
-  <div class="reporte-ventas__filtros">
-    <ui-campo #desde etiqueta="Desde">
-      <input type="date" [id]="desde.controlId()" [ngModel]="fechaDesde()" (ngModelChange)="fechaDesde.set($event)" />
-    </ui-campo>
-    <ui-campo #hasta etiqueta="Hasta">
-      <input type="date" [id]="hasta.controlId()" [ngModel]="fechaHasta()" (ngModelChange)="fechaHasta.set($event)" />
-    </ui-campo>
-    <ui-campo etiqueta="Sucursal">
-      <ui-select-filtro [opciones]="opcionesSucursal()" [ngModel]="sucursalId()" (ngModelChange)="sucursalId.set($event)" />
-    </ui-campo>
-    <button matButton="filled" type="button" (click)="filtrar()"><i class="pi pi-filter" aria-hidden="true"></i> Filtrar</button>
-    <button matButton type="button" (click)="limpiarFiltros()">Limpiar</button>
+<ui-report
+  clave="reporte-ventas"
+  [estado]="consulta.estado()"
+  [mensajeError]="consulta.error() ?? 'No se pudo cargar el reporte.'"
+  [puedeExportar]="consulta.puedeExportar()"
+  [exportando]="consulta.exportando()"
+  (exportar)="consulta.exportar()"
+  (reintentar)="consulta.cargar()"
+>
+  <ui-report-filtros
+    filtros
+    [aplicarConBoton]="true"
+    [sucursales]="sucursales()"
+    [puedeElegirSucursal]="puedeElegirSucursal()"
+    [sucursalUsuario]="sucursalUsuario()"
+    [textoSucursal]="puedeConsolidar() ? 'Todas las sucursales' : null"
+    (cambio)="filtrar($event)"
+  />
+  <ui-kpi kpis etiqueta="Total vendido" [valor]="datos()?.totales?.vendido ?? null" formato="dinero" />
+  <ui-kpi kpis etiqueta="Número de ventas" [valor]="datos()?.totales?.tickets ?? null" formato="cantidad" />
+  <ui-kpi kpis etiqueta="Ticket promedio" [valor]="datos()?.totales?.ticket_promedio ?? null" formato="dinero" />
+  <ui-kpi kpis etiqueta="Ventas netas comerciales" [valor]="datos()?.totales?.ventas_netas_comerciales ?? null" formato="dinero" />
+  <ui-grafica-serie grafica titulo="Ventas por día" [puntos]="puntos()" />
+  <div resumen>
+    @if (datos(); as r) {
+      <ui-section titulo="Por sucursal">
+        <ui-tabla [columnas]="columnasSucursal" [filas]="r.por_sucursal" [mostrarPaginador]="false" mensajeVacio="No hay ventas en el periodo seleccionado." />
+      </ui-section>
+      <ui-section titulo="Por método de pago">
+        <ui-tabla [columnas]="columnasPago" [filas]="r.por_metodo_pago" [mostrarPaginador]="false" mensajeVacio="No hay pagos en el periodo seleccionado." />
+      </ui-section>
+      <ui-section titulo="Productos más vendidos">
+        <ui-tabla [columnas]="columnasProductos" [filas]="r.top_productos" [mostrarPaginador]="false" mensajeVacio="No hay productos vendidos en el periodo seleccionado." />
+      </ui-section>
+    }
   </div>
-
-  @if (cargando()) {
-    <ui-skeleton forma="bloque" alto="20rem" etiqueta="Cargando reporte" />
-  } @else if (reporte(); as r) {
-    <div class="reporte-ventas__tiles">
-      <div class="reporte-ventas__tile">
-        <h2>Total vendido</h2>
-        <p class="reporte-ventas__tile-valor">{{ r.total_ventas | dinero }}</p>
-      </div>
-      <div class="reporte-ventas__tile">
-        <h2>Número de ventas</h2>
-        <p class="reporte-ventas__tile-valor">{{ r.numero_ventas }}</p>
-      </div>
-      <div class="reporte-ventas__tile">
-        <h2>Ticket promedio</h2>
-        <p class="reporte-ventas__tile-valor">{{ r.ticket_promedio | dinero }}</p>
-      </div>
-    </div>
-
-    <section class="reporte-ventas__seccion">
-      <h2>Por sucursal</h2>
-      @if (r.por_sucursal.length > 0) {
-        <table class="reporte-ventas__tabla">
-          <thead>
-            <tr>
-              <th>Sucursal</th>
-              <th>Total</th>
-              <th>Ventas</th>
-            </tr>
-          </thead>
-          <tbody>
-            @for (fila of r.por_sucursal; track fila.sucursal_id) {
-              <tr>
-                <td>{{ fila.sucursal_nombre ?? ('Sucursal #' + fila.sucursal_id) }}</td>
-                <td>{{ fila.total | dinero }}</td>
-                <td>{{ fila.numero_ventas }}</td>
-              </tr>
-            }
-          </tbody>
-        </table>
-      } @else {
-        <p class="reporte-ventas__aviso">No hay ventas en el periodo seleccionado.</p>
-      }
-    </section>
-
-    <section class="reporte-ventas__seccion">
-      <h2>Por método de pago</h2>
-      @if (r.por_metodo_pago.length > 0) {
-        <table class="reporte-ventas__tabla">
-          <thead>
-            <tr>
-              <th>Método de pago</th>
-              <th>Total</th>
-            </tr>
-          </thead>
-          <tbody>
-            @for (fila of r.por_metodo_pago; track fila.metodo_pago_id) {
-              <tr>
-                <td>{{ fila.metodo_pago_nombre ?? ('Método #' + fila.metodo_pago_id) }}</td>
-                <td>{{ fila.total | dinero }}</td>
-              </tr>
-            }
-          </tbody>
-        </table>
-      } @else {
-        <p class="reporte-ventas__aviso">No hay pagos en el periodo seleccionado.</p>
-      }
-    </section>
-
-    <section class="reporte-ventas__seccion">
-      <h2>Productos más vendidos</h2>
-      @if (r.top_productos.length > 0) {
-        <table class="reporte-ventas__tabla">
-          <thead>
-            <tr>
-              <th>Producto</th>
-              <th>Variante</th>
-              <th>Cantidad</th>
-              <th>Total</th>
-            </tr>
-          </thead>
-          <tbody>
-            @for (fila of r.top_productos; track fila.variante_id) {
-              <tr>
-                <td>{{ fila.producto_nombre ?? ('Producto #' + fila.variante_id) }}</td>
-                <td>{{ fila.nombre ?? '—' }}</td>
-                <td>{{ fila.cantidad_vendida | cantidad }}</td>
-                <td>{{ fila.total_vendido | dinero }}</td>
-              </tr>
-            }
-          </tbody>
-        </table>
-      } @else {
-        <p class="reporte-ventas__aviso">No hay productos vendidos en el periodo seleccionado.</p>
-      }
-    </section>
-  }
-</div>
+  <div detalle>
+    @if (consulta.respuesta(); as reporte) {
+      <ui-section titulo="Operaciones del periodo">
+        <ui-tabla
+          [columnas]="columnas"
+          [filas]="reporte.data.detalle"
+          [meta]="reporte.meta"
+          [cargando]="consulta.cargando()"
+          [totales]="{ importe_comercial: reporte.data.totales.ventas_netas_comerciales }"
+          (cambio)="consulta.paginar($event)"
+        />
+      </ui-section>
+    }
+  </div>
+</ui-report>

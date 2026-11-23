@@ -49,6 +49,7 @@ export class TablaComponent<T extends object> {
   readonly filas = input.required<T[]>();
   readonly meta = input<MetaListado | null>(null);
   readonly cargando = input(false);
+  readonly mostrarPaginador = input(true);
   readonly mensajeVacio = input('No hay resultados.');
   readonly filaInactiva = input<((fila: T) => boolean) | undefined>(undefined);
   readonly totales = input<Partial<Record<keyof T, number | string>> | null>(null);

@@ -1,13 +1,15 @@
+import { provideHttpClient } from '@angular/common/http';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { of } from 'rxjs';
 import { describe, expect, it, vi } from 'vitest';
 
 import { CrmAvanzadoService, ReporteCrm } from '@nianva/domain-crm';
+import { proveedoresDePantalla } from '../../../../testing/proveedores-pantalla';
 import { ReporteCrmComponent } from './reporte-crm.component';
 
 describe('ReporteCrmComponent', () => {
   let fixture: ComponentFixture<ReporteCrmComponent>;
-  let crmAvanzadoService: { reporte: ReturnType<typeof vi.fn> };
+  let crmAvanzadoService: { reportePaginado: ReturnType<typeof vi.fn> };
 
   const reporte: ReporteCrm = {
     clientes_por_segmento: { nuevo: 12, frecuente: 30, vip: 8, inactivo: 15 },
@@ -17,11 +19,11 @@ describe('ReporteCrmComponent', () => {
   };
 
   async function crearComponente(): Promise<void> {
-    crmAvanzadoService = { reporte: vi.fn().mockReturnValue(of(reporte)) };
+    crmAvanzadoService = { reportePaginado: vi.fn().mockReturnValue(of({ data: { ...reporte, detalle: reporte.campanas_recientes }, meta: { page: 1, rows: 25, total: reporte.campanas_recientes.length, filtros_aplicados: {}, permisos: { exportar: false } } })) };
 
     await TestBed.configureTestingModule({
       imports: [ReporteCrmComponent],
-      providers: [{ provide: CrmAvanzadoService, useValue: crmAvanzadoService }],
+      providers: [...proveedoresDePantalla(), provideHttpClient(), { provide: CrmAvanzadoService, useValue: crmAvanzadoService }],
     }).compileComponents();
 
     fixture = TestBed.createComponent(ReporteCrmComponent);
@@ -31,7 +33,7 @@ describe('ReporteCrmComponent', () => {
   it('carga el reporte al iniciar y muestra segmentos, interacciones, loyalty y campañas', async () => {
     await crearComponente();
 
-    expect(crmAvanzadoService.reporte).toHaveBeenCalledTimes(1);
+    expect(crmAvanzadoService.reportePaginado).toHaveBeenCalledTimes(1);
     const texto = (fixture.nativeElement as HTMLElement).textContent ?? '';
     expect(texto).toContain('12');
     expect(texto).toContain('Llamada');
@@ -41,12 +43,12 @@ describe('ReporteCrmComponent', () => {
 
   it('sin interacciones ni campañas muestra los avisos correspondientes', async () => {
     crmAvanzadoService = {
-      reporte: vi.fn().mockReturnValue(of({ ...reporte, interacciones_por_tipo: {}, campanas_recientes: [] })),
+      reportePaginado: vi.fn().mockReturnValue(of({ data: { ...reporte, interacciones_por_tipo: {}, campanas_recientes: [], detalle: [] }, meta: { page: 1, rows: 25, total: 0, filtros_aplicados: {}, permisos: { exportar: false } } })),
     };
 
     await TestBed.configureTestingModule({
       imports: [ReporteCrmComponent],
-      providers: [{ provide: CrmAvanzadoService, useValue: crmAvanzadoService }],
+      providers: [...proveedoresDePantalla(), provideHttpClient(), { provide: CrmAvanzadoService, useValue: crmAvanzadoService }],
     }).compileComponents();
 
     fixture = TestBed.createComponent(ReporteCrmComponent);

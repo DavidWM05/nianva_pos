@@ -1,13 +1,15 @@
+import { provideHttpClient } from '@angular/common/http';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { of } from 'rxjs';
 import { describe, expect, it, vi } from 'vitest';
 
 import { CuentaPagarService, ReporteCuentasPagar } from '@nianva/domain-cuentas-pagar';
+import { proveedoresDePantalla } from '../../../../testing/proveedores-pantalla';
 import { ReporteCuentasPagarComponent } from './reporte-cuentas-pagar.component';
 
 describe('ReporteCuentasPagarComponent', () => {
   let fixture: ComponentFixture<ReporteCuentasPagarComponent>;
-  let cuentaPagarService: { reporte: ReturnType<typeof vi.fn> };
+  let cuentaPagarService: { reportePaginado: ReturnType<typeof vi.fn> };
 
   const reporte: ReporteCuentasPagar = {
     total_pendiente: '8000.00',
@@ -17,11 +19,11 @@ describe('ReporteCuentasPagarComponent', () => {
   };
 
   async function crearComponente(): Promise<void> {
-    cuentaPagarService = { reporte: vi.fn().mockReturnValue(of(reporte)) };
+    cuentaPagarService = { reportePaginado: vi.fn().mockReturnValue(of({ data: { ...reporte, detalle: [] }, meta: { page: 1, rows: 25, total: 0, filtros_aplicados: {}, permisos: { exportar: false } } })) };
 
     await TestBed.configureTestingModule({
       imports: [ReporteCuentasPagarComponent],
-      providers: [{ provide: CuentaPagarService, useValue: cuentaPagarService }],
+      providers: [...proveedoresDePantalla(), provideHttpClient(), { provide: CuentaPagarService, useValue: cuentaPagarService }],
     }).compileComponents();
 
     fixture = TestBed.createComponent(ReporteCuentasPagarComponent);
@@ -31,7 +33,7 @@ describe('ReporteCuentasPagarComponent', () => {
   it('carga el reporte al iniciar y muestra los totales y el top de proveedores', async () => {
     await crearComponente();
 
-    expect(cuentaPagarService.reporte).toHaveBeenCalledTimes(1);
+    expect(cuentaPagarService.reportePaginado).toHaveBeenCalledTimes(1);
     const texto = (fixture.nativeElement as HTMLElement).textContent ?? '';
     expect(texto).toContain('$8,000.00');
     expect(texto).toContain('$3,000.00');
@@ -39,11 +41,11 @@ describe('ReporteCuentasPagarComponent', () => {
   });
 
   it('sin proveedores con saldo pendiente muestra el aviso', async () => {
-    cuentaPagarService = { reporte: vi.fn().mockReturnValue(of({ ...reporte, por_proveedor: [] })) };
+    cuentaPagarService = { reportePaginado: vi.fn().mockReturnValue(of({ data: { ...reporte, por_proveedor: [], detalle: [] }, meta: { page: 1, rows: 25, total: 0, filtros_aplicados: {}, permisos: { exportar: false } } })) };
 
     await TestBed.configureTestingModule({
       imports: [ReporteCuentasPagarComponent],
-      providers: [{ provide: CuentaPagarService, useValue: cuentaPagarService }],
+      providers: [...proveedoresDePantalla(), provideHttpClient(), { provide: CuentaPagarService, useValue: cuentaPagarService }],
     }).compileComponents();
 
     fixture = TestBed.createComponent(ReporteCuentasPagarComponent);

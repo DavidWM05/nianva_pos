@@ -1,10 +1,11 @@
+import { provideHttpClient } from '@angular/common/http';
 import { TestBed } from '@angular/core/testing';
-import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { of } from 'rxjs';
 import { describe, expect, it, vi } from 'vitest';
 
 import { SucursalService } from '@nianva/domain-administracion';
 import { ReporteVentas, VentaService } from '@nianva/domain-tpv';
+import { proveedoresDePantalla } from '../../../../testing/proveedores-pantalla';
 import { ReporteVentasComponent } from './reporte-ventas.component';
 
 // UI-05: importes con el pipe dinero y cantidades con cantidad (formato regional es-MX del spec).
@@ -22,8 +23,8 @@ describe('ReporteVentasComponent formato por pipe', () => {
     await TestBed.configureTestingModule({
       imports: [ReporteVentasComponent],
       providers: [
-        provideAnimationsAsync(),
-        { provide: VentaService, useValue: { reporte: vi.fn().mockReturnValue(of(reporte)) } },
+        ...proveedoresDePantalla(), provideHttpClient(),
+        { provide: VentaService, useValue: { reportePaginado: vi.fn().mockReturnValue(of({ data: { ...reporte, detalle: [], por_dia: [], totales: { vendido: reporte.total_ventas, tickets: reporte.numero_ventas, ticket_promedio: reporte.ticket_promedio, ventas_netas_comerciales: reporte.total_ventas } }, meta: { page: 1, rows: 25, total: 0, filtros_aplicados: {}, permisos: { exportar: false } } })) } },
         { provide: SucursalService, useValue: { listar: vi.fn().mockReturnValue(of([])) } },
       ],
     }).compileComponents();

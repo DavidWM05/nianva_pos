@@ -1,8 +1,10 @@
+import { provideHttpClient } from '@angular/common/http';
 import { TestBed } from '@angular/core/testing';
 import { of } from 'rxjs';
 import { describe, expect, it, vi } from 'vitest';
 
 import { CrmAvanzadoService, ReporteCrm } from '@nianva/domain-crm';
+import { proveedoresDePantalla } from '../../../../testing/proveedores-pantalla';
 import { ReporteCrmComponent } from './reporte-crm.component';
 
 // UI-05: puntos con el pipe cantidad y la fecha de envio con fechaHora (es-MX, America/Mexico_City).
@@ -17,7 +19,7 @@ describe('ReporteCrmComponent formato por pipe', () => {
 
     await TestBed.configureTestingModule({
       imports: [ReporteCrmComponent],
-      providers: [{ provide: CrmAvanzadoService, useValue: { reporte: vi.fn().mockReturnValue(of(reporte)) } }],
+      providers: [...proveedoresDePantalla(), provideHttpClient(), { provide: CrmAvanzadoService, useValue: { reportePaginado: vi.fn().mockReturnValue(of({ data: { ...reporte, detalle: reporte.campanas_recientes }, meta: { page: 1, rows: 25, total: reporte.campanas_recientes.length, filtros_aplicados: {}, permisos: { exportar: false } } })) } }],
     }).compileComponents();
 
     const fixture = TestBed.createComponent(ReporteCrmComponent);

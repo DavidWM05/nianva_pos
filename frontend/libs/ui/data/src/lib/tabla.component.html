@@ -133,14 +133,16 @@
     }
   </div>
 
-  <mat-paginator
-    [pageIndex]="paginaActual()"
-    [pageSize]="rowsActuales()"
-    [length]="meta()?.total ?? 0"
-    [pageSizeOptions]="[25, 50, 100]"
-    [showFirstLastButtons]="true"
-    (page)="onPagina($event)"
-  />
+  @if (mostrarPaginador()) {
+    <mat-paginator
+      [pageIndex]="paginaActual()"
+      [pageSize]="rowsActuales()"
+      [length]="meta()?.total ?? 0"
+      [pageSizeOptions]="[25, 50, 100]"
+      [showFirstLastButtons]="true"
+      (page)="onPagina($event)"
+    />
+  }
 } @else {
   <!-- UI-04: si las columnas no caben, la tabla se desplaza dentro de su contenedor; la pagina no. -->
   <div class="ui-tabla__desplazable">
@@ -237,12 +239,14 @@
     </table>
   </div>
 
-  <mat-paginator
-    [pageIndex]="paginaActual()"
-    [pageSize]="rowsActuales()"
-    [length]="meta()?.total ?? 0"
-    [pageSizeOptions]="[25, 50, 100]"
-    [showFirstLastButtons]="true"
-    (page)="onPagina($event)"
-  />
+  @if (mostrarPaginador()) {
+    <mat-paginator
+      [pageIndex]="paginaActual()"
+      [pageSize]="rowsActuales()"
+      [length]="meta()?.total ?? 0"
+      [pageSizeOptions]="[25, 50, 100]"
+      [showFirstLastButtons]="true"
+      (page)="onPagina($event)"
+    />
+  }
 }

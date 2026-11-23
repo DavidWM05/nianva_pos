@@ -1,14 +1,16 @@
+import { provideHttpClient } from '@angular/common/http';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { of } from 'rxjs';
 import { describe, expect, it, vi } from 'vitest';
 
 import { CuentaCobrarService, ReporteCuentasCobrar } from '@nianva/domain-cuentas-cobrar';
+import { proveedoresDePantalla } from '../../../../testing/proveedores-pantalla';
 import { ReporteCuentasCobrarComponent } from './reporte-cuentas-cobrar.component';
 import { ulidDePrueba } from '../../../../testing/ulid-de-prueba';
 
 describe('ReporteCuentasCobrarComponent', () => {
   let fixture: ComponentFixture<ReporteCuentasCobrarComponent>;
-  let cuentaCobrarService: { reporte: ReturnType<typeof vi.fn> };
+  let cuentaCobrarService: { reportePaginado: ReturnType<typeof vi.fn> };
 
   const reporte: ReporteCuentasCobrar = {
     total_pendiente: '5000.00',
@@ -18,11 +20,11 @@ describe('ReporteCuentasCobrarComponent', () => {
   };
 
   async function crearComponente(): Promise<void> {
-    cuentaCobrarService = { reporte: vi.fn().mockReturnValue(of(reporte)) };
+    cuentaCobrarService = { reportePaginado: vi.fn().mockReturnValue(of({ data: { ...reporte, detalle: [] }, meta: { page: 1, rows: 25, total: 0, filtros_aplicados: {}, permisos: { exportar: false } } })) };
 
     await TestBed.configureTestingModule({
       imports: [ReporteCuentasCobrarComponent],
-      providers: [{ provide: CuentaCobrarService, useValue: cuentaCobrarService }],
+      providers: [...proveedoresDePantalla(), provideHttpClient(), { provide: CuentaCobrarService, useValue: cuentaCobrarService }],
     }).compileComponents();
 
     fixture = TestBed.createComponent(ReporteCuentasCobrarComponent);
@@ -32,7 +34,7 @@ describe('ReporteCuentasCobrarComponent', () => {
   it('carga el reporte al iniciar y muestra los totales y el top de clientes', async () => {
     await crearComponente();
 
-    expect(cuentaCobrarService.reporte).toHaveBeenCalledTimes(1);
+    expect(cuentaCobrarService.reportePaginado).toHaveBeenCalledTimes(1);
     const texto = (fixture.nativeElement as HTMLElement).textContent ?? '';
     expect(texto).toContain('$5,000.00');
     expect(texto).toContain('$1,000.00');
@@ -40,11 +42,11 @@ describe('ReporteCuentasCobrarComponent', () => {
   });
 
   it('sin clientes con saldo pendiente muestra el aviso', async () => {
-    cuentaCobrarService = { reporte: vi.fn().mockReturnValue(of({ ...reporte, por_cliente: [] })) };
+    cuentaCobrarService = { reportePaginado: vi.fn().mockReturnValue(of({ data: { ...reporte, por_cliente: [], detalle: [] }, meta: { page: 1, rows: 25, total: 0, filtros_aplicados: {}, permisos: { exportar: false } } })) };
 
     await TestBed.configureTestingModule({
       imports: [ReporteCuentasCobrarComponent],
-      providers: [{ provide: CuentaCobrarService, useValue: cuentaCobrarService }],
+      providers: [...proveedoresDePantalla(), provideHttpClient(), { provide: CuentaCobrarService, useValue: cuentaCobrarService }],
     }).compileComponents();
 
     fixture = TestBed.createComponent(ReporteCuentasCobrarComponent);

@@ -1,68 +1,36 @@
-<div class="reporte-cxc">
-  <h1>Reporte de Cuentas por cobrar</h1>
-
-  @if (cargando()) {
-    <ui-skeleton forma="bloque" alto="20rem" etiqueta="Cargando reporte" />
-  } @else if (reporte(); as r) {
-    <div class="reporte-cxc__tiles">
-      <div class="reporte-cxc__tile">
-        <h2>Saldo pendiente</h2>
-        <p class="reporte-cxc__tile-valor">{{ r.total_pendiente | dinero }}</p>
-      </div>
-      <div class="reporte-cxc__tile">
-        <h2>Saldo vencido</h2>
-        <p class="reporte-cxc__tile-valor reporte-cxc__tile-valor--vencido">{{ r.total_vencido | dinero }}</p>
-      </div>
-    </div>
-
-    <section class="reporte-cxc__seccion">
-      <h2>Antigüedad de saldos</h2>
-      <table class="reporte-cxc__tabla">
-        <thead>
-          <tr>
-            <th>Al día</th>
-            <th>1-30 días</th>
-            <th>31-60 días</th>
-            <th>61-90 días</th>
-            <th>90+ días</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>{{ r.por_antiguedad.al_dia | dinero }}</td>
-            <td>{{ r.por_antiguedad.vencido_1_30 | dinero }}</td>
-            <td>{{ r.por_antiguedad.vencido_31_60 | dinero }}</td>
-            <td>{{ r.por_antiguedad.vencido_61_90 | dinero }}</td>
-            <td>{{ r.por_antiguedad.vencido_90_mas | dinero }}</td>
-          </tr>
-        </tbody>
-      </table>
-    </section>
-
-    <section class="reporte-cxc__seccion">
-      <h2>Clientes con mayor saldo pendiente</h2>
-      @if (r.por_cliente.length > 0) {
-        <table class="reporte-cxc__tabla">
-          <thead>
-            <tr>
-              <th>Cliente</th>
-              <th>Saldo pendiente</th>
-              <th>Cuentas</th>
-            </tr>
-          </thead>
-          <tbody>
-            @for (fila of r.por_cliente; track fila.cliente_id) {
-              <tr>
-                <td>{{ fila.cliente_nombre ?? ('Cliente #' + fila.cliente_id) }}</td>
-                <td>{{ fila.saldo_pendiente | dinero }}</td>
-                <td>{{ fila.cuentas_pendientes }}</td>
-              </tr>
-            }
-          </tbody>
-        </table>
-      } @else {
-        <p class="reporte-cxc__aviso">No hay cuentas por cobrar pendientes.</p>
-      }
-    </section>
-  }
-</div>
+<ui-report
+  clave="reporte-cuentas-cobrar"
+  [estado]="consulta.estado()"
+  [mensajeError]="consulta.error() ?? 'No se pudo cargar el reporte.'"
+  [puedeExportar]="consulta.puedeExportar()"
+  [exportando]="consulta.exportando()"
+  (exportar)="consulta.exportar()"
+  (reintentar)="consulta.cargar()"
+>
+  <ui-kpi kpis etiqueta="Saldo pendiente" [valor]="datos()?.total_pendiente ?? null" formato="dinero" />
+  <ui-kpi kpis etiqueta="Saldo vencido" [valor]="datos()?.total_vencido ?? null" formato="dinero" />
+  <div resumen>
+    @if (datos(); as r) {
+      <ui-section titulo="Antigüedad de saldos">
+        <ui-tabla [columnas]="columnasAntiguedad" [filas]="[r.por_antiguedad]" [mostrarPaginador]="false" />
+      </ui-section>
+      <ui-section titulo="Clientes con mayor saldo pendiente">
+        <ui-tabla [columnas]="columnasRanking" [filas]="r.por_cliente" [mostrarPaginador]="false" mensajeVacio="No hay cuentas por cobrar pendientes." />
+      </ui-section>
+    }
+  </div>
+  <div detalle>
+    @if (consulta.respuesta(); as reporte) {
+      <ui-section titulo="Detalle de cuentas por cobrar">
+        <ui-tabla
+          [columnas]="columnas"
+          [filas]="reporte.data.detalle"
+          [meta]="reporte.meta"
+          [cargando]="consulta.cargando()"
+          [totales]="{ saldo_pendiente: reporte.data.total_pendiente }"
+          (cambio)="consulta.paginar($event)"
+        />
+      </ui-section>
+    }
+  </div>
+</ui-report>

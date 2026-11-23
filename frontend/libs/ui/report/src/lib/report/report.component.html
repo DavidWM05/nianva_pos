@@ -19,6 +19,8 @@
     </section>
   }
 
+  <ng-content select="[resumen]" />
+
   <section class="ui-report__detalle">
     @if (estado() === 'vacio') {
       <ui-empty [mensaje]="mensajeVacio()" />
