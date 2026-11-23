@@ -55,7 +55,6 @@
     "apps/pos/src/app/modules/inventario/pages/departamentos-list/departamentos-list.component.scss": 0,
     "apps/pos/src/app/modules/notas-credito/pages/nota-credito-detalle/nota-credito-detalle.component.scss": 0,
     "apps/pos/src/app/modules/notas-credito/pages/notas-credito-list/notas-credito-list.component.scss": 0,
-    "apps/pos/src/app/modules/nucleo/pages/inicio/inicio.component.scss": 0,
     "apps/pos/src/app/modules/payroll/pages/empleado-detalle/empleado-detalle.component.scss": 29,
     "apps/pos/src/app/modules/payroll/pages/empleados-list/empleados-list.component.scss": 22,
     "apps/pos/src/app/modules/payroll/pages/nomina-detalle/nomina-detalle.component.scss": 53,

@@ -1,12 +1,15 @@
-import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal } from '@angular/core';
+import { EmptyComponent, TablaComponent, type ColumnaListado } from '@nianva/ui-data';
 import { MatButton } from '@angular/material/button';
 import { RouterLink } from '@angular/router';
 import { KpiComponent, SkeletonComponent } from '@nianva/ui-feedback';
-import { DineroPipe, FechaPipe } from '@nianva/ui-format';
-import { PageHeaderComponent, SectionComponent } from '@nianva/ui-layout';
+import { CantidadPipe, DineroPipe, FechaPipe } from '@nianva/ui-format';
+import { DatosComponent, PageComponent, PageHeaderComponent, SectionComponent, TarjetaComponent, TarjetasComponent } from '@nianva/ui-layout';
 
 import { CajaActual, CajaService } from '@nianva/domain-tpv';
-import { ApartadoPorVencer, InicioResumen, InicioService } from '@nianva/domain-nucleo';
+import { ApartadoPorVencer, InicioResumenMetricas, InicioService, type VarianteRankingInicio } from '@nianva/domain-nucleo';
+import { GraficaSerieComponent } from '@nianva/ui-report';
+import { mensajeError } from '@nianva/ui-shared';
 
 /**
  * Reemplaza el placeholder de "Núcleo" (ver el reporte de Fase C, punto
@@ -24,9 +27,12 @@ import { ApartadoPorVencer, InicioResumen, InicioService } from '@nianva/domain-
 @Component({
   selector: 'nucleo-inicio',
   standalone: true,
-  imports: [DineroPipe, FechaPipe, KpiComponent, MatButton, PageHeaderComponent, RouterLink, SectionComponent, SkeletonComponent],
+  imports: [
+    CantidadPipe, DatosComponent, DineroPipe, EmptyComponent, FechaPipe, GraficaSerieComponent,
+    KpiComponent, MatButton, PageComponent, PageHeaderComponent, RouterLink, SectionComponent,
+    SkeletonComponent, TablaComponent, TarjetaComponent, TarjetasComponent,
+  ],
   templateUrl: './inicio.component.html',
-  styleUrl: './inicio.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class InicioComponent implements OnInit {
@@ -34,19 +40,23 @@ export class InicioComponent implements OnInit {
   private readonly cajaService = inject(CajaService);
 
   protected readonly cargandoResumen = signal(true);
-  protected readonly resumen = signal<InicioResumen | null>(null);
+  protected readonly resumen = signal<InicioResumenMetricas | null>(null);
+  protected readonly errorResumen = signal<string | null>(null);
+  protected readonly estadoResumen = computed(() => this.cargandoResumen() ? 'cargando' : this.errorResumen() ? 'error' : 'listo');
+  protected readonly serie = computed(() => this.resumen()?.ventas_ultimos_siete_dias?.map(
+    ({ fecha, vendido }) => ({ fecha, importe: vendido }),
+  ) ?? []);
+  protected readonly columnasRanking: ColumnaListado<VarianteRankingInicio>[] = [
+    { tipo: 'principal', campo: 'producto_nombre', encabezado: 'Producto' },
+    { tipo: 'texto', campo: 'variante_id', encabezado: 'Variante' },
+    { tipo: 'cantidad', campo: 'cantidad_base', encabezado: 'Cantidad base' },
+  ];
 
   protected readonly cargandoCaja = signal(true);
   protected readonly caja = signal<CajaActual | null>(null);
 
   ngOnInit(): void {
-    this.inicioService.resumen().subscribe({
-      next: (resumen) => {
-        this.resumen.set(resumen);
-        this.cargandoResumen.set(false);
-      },
-      error: () => this.cargandoResumen.set(false),
-    });
+    this.cargarResumen();
 
     this.cajaService.actual().subscribe({
       next: (caja) => {
@@ -54,6 +64,21 @@ export class InicioComponent implements OnInit {
         this.cargandoCaja.set(false);
       },
       error: () => this.cargandoCaja.set(false),
+    });
+  }
+
+  protected cargarResumen(): void {
+    this.cargandoResumen.set(true);
+    this.errorResumen.set(null);
+    this.inicioService.resumen().subscribe({
+      next: (resumen) => {
+        this.resumen.set(resumen);
+        this.cargandoResumen.set(false);
+      },
+      error: (error: unknown) => {
+        this.errorResumen.set(mensajeError(error, 'No se pudo cargar el resumen.'));
+        this.cargandoResumen.set(false);
+      },
     });
   }
 

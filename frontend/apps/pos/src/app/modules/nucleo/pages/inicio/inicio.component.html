@@ -1,17 +1,43 @@
-<ui-page-header clave="nucleo" subtitulo="Resumen del día" />
+<ui-page-header clave="nucleo" subtitulo="Resumen del negocio" />
 
-<ui-section titulo="Ventas">
-  <ui-kpi
-    etiqueta="Ventas de hoy"
-    [valor]="resumen()?.ventas_hoy?.cantidad ?? 0"
-    formato="cantidad"
-    unidad="venta"
-    [cargando]="cargandoResumen()"
-  />
-  @if (resumen(); as resumenActual) {
-    <p>Total vendido: {{ resumenActual.ventas_hoy.total | dinero }}</p>
+<ui-page [estado]="estadoResumen()" forma="detalle" [mensajeError]="errorResumen() ?? ''" (reintentar)="cargarResumen()">
+  @if (resumen(); as datos) {
+    <ui-section titulo="Resumen del día">
+      <ul uiTarjetas disposicion="resumen" role="list">
+        <li uiTarjeta><ui-kpi etiqueta="Ventas de hoy" [valor]="datos.ventas_hoy.total" formato="dinero" /></li>
+        <li uiTarjeta>
+          <ui-kpi etiqueta="Tickets de hoy" [valor]="(datos.ventas_hoy.cantidad | cantidad) + (datos.ventas_hoy.cantidad === 1 ? ' venta' : ' ventas')" />
+        </li>
+        <li uiTarjeta><ui-kpi etiqueta="Gastos de hoy" [valor]="datos.gastos_hoy" formato="dinero" /></li>
+        <li uiTarjeta><ui-kpi etiqueta="Ingresos del mes" [valor]="datos.ventas_netas_comerciales_mes" formato="dinero" /></li>
+        <li uiTarjeta><ui-kpi etiqueta="Catálogo activo" [valor]="datos.productos_activos" formato="cantidad" /></li>
+        <li uiTarjeta><ui-kpi etiqueta="Stock bajo" [valor]="datos.alertas_stock_bajo" formato="cantidad" /></li>
+      </ul>
+    </ui-section>
+
+    <ui-section titulo="Rendimiento de ventas">
+      <ul uiTarjetas disposicion="paneles" role="list">
+        <li uiTarjeta>
+          <ui-grafica-serie titulo="Ventas de los últimos 7 días" [puntos]="serie()" />
+        </li>
+        <li uiTarjeta>
+          <ui-section titulo="Productos más vendidos por variante">
+            @for (grupo of datos.ranking_variantes; track grupo.unidad.id) {
+              <h3 class="ui-tarjeta__titulo">{{ grupo.unidad.nombre ?? 'Unidad ' + grupo.unidad.id }}</h3>
+              <ui-tabla
+                [columnas]="columnasRanking"
+                [filas]="grupo.variantes"
+                [mostrarPaginador]="false"
+              />
+            } @empty {
+              <ui-empty mensaje="Aún no hay productos vendidos." />
+            }
+          </ui-section>
+        </li>
+      </ul>
+    </ui-section>
   }
-</ui-section>
+</ui-page>
 
 <ui-section titulo="Caja">
   <ui-kpi
@@ -36,19 +62,20 @@
     <ui-skeleton forma="texto" [lineas]="3" />
   } @else if (resumen(); as resumenActual) {
     @if (resumenActual.apartados_por_vencer.length === 0) {
-      <p>No hay apartados próximos a vencer.</p>
+      <ui-empty mensaje="No hay apartados próximos a vencer." />
     } @else {
-      <ul class="inicio__lista-apartados">
+      <ul uiTarjetas role="list">
         @for (apartado of resumenActual.apartados_por_vencer; track apartado.id) {
-          <li>
-            <a [routerLink]="['/apartados', apartado.id]">
-              <span>{{ apartado.cliente_nombre ?? '—' }}</span>
-              <span>{{ apartado.fecha_vencimiento | fecha }}</span>
-              <span [class.inicio__apartado--vencido]="diasParaVencer(apartado) < 0">
-                {{ diasParaVencer(apartado) < 0 ? 'Vencido' : diasParaVencer(apartado) + ' día(s)' }}
-              </span>
-              <span>{{ apartado.total_abonado | dinero }} / {{ apartado.total | dinero }}</span>
-            </a>
+          <li uiTarjeta>
+            <a [routerLink]="['/apartados', apartado.id]">{{ apartado.cliente_nombre ?? '—' }}</a>
+            <dl uiDatos>
+              <dt>Vencimiento</dt>
+              <dd>{{ apartado.fecha_vencimiento | fecha }}</dd>
+              <dt>Plazo</dt>
+              <dd>{{ diasParaVencer(apartado) < 0 ? 'Vencido' : diasParaVencer(apartado) + ' día(s)' }}</dd>
+              <dt>Abonado</dt>
+              <dd>{{ apartado.total_abonado | dinero }} / {{ apartado.total | dinero }}</dd>
+            </dl>
           </li>
         }
       </ul>

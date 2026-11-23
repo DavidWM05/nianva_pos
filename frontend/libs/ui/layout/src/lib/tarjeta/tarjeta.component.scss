@@ -38,3 +38,11 @@
     font-size: var(--nv-font-size-sm);
   }
 }
+
+.ui-tarjetas--resumen {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, calc(var(--nv-spacing-16) * 2)), 1fr));
+}
+
+.ui-tarjetas--paneles {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, calc(var(--nv-spacing-16) * 5)), 1fr));
+}

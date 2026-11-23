@@ -149,7 +149,7 @@ Conflicto que se resuelve aquí: C6. En las Fases 3 a 5, los Services pasan a re
 | ARQ-09 | Una sola capa de métricas | Pendiente | — | — |
 | SEG-08 | Descarga de exportaciones autorizada y fuera del docroot | Hecho | S3. CSV privado con permiso de lectura y reportes.exportar. ExportacionReportesTest cubre 401, 403, 404 directo y limpieza. | F6-8 |
 | DAT-06 | Reportes en la zona del tenant | Pendiente | — | — |
-| UI-10b | Inicio con KPIs del negocio | Pendiente | Tablero de Inicio con `ui-kpi` y cifras de la capa de métricas (ARQ-09): ventas, tickets y gastos del día, ingresos del mes, catálogo activo, stock bajo, ventas de los últimos 7 días y productos más vendidos. Referencia: el Inicio de Nianva POS Ropa (decisión del responsable, 2026-11-14) | — |
+| UI-10b | Inicio con KPIs del negocio | Hecho | P3 usa seis tarjetas, la serie de siete días y el ranking por variante y unidad de ARQ-09. Conserva caja y apartados por vencer. Jerarquía basada en la referencia de Nianva POS Ropa (decisión del responsable, 2026-11-14). | P3 |
 | UI-10 | Plantilla de reporte | Hecho | P1 aporta ui-reporte, plantilla y serie compartida. P2 aplica ui-report y ui-tabla en los cuatro reportes, con métricas declaradas, paginación, totales y CSV protegido. La serie de ventas por día usa la gráfica compartida. | P1, P2 |
 
 ## Revisión visual y optimización de UX/UI (al terminar la Fase 6)
