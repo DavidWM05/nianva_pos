@@ -5,8 +5,8 @@
     <span class="ui-report-filtros__etiqueta" [id]="idEtiquetaPeriodo">Periodo</span>
     <mat-form-field class="ui-report-filtros__fecha" appearance="outline" subscriptSizing="dynamic">
       <mat-date-range-input [formGroup]="fechas" [rangePicker]="picker" separator="–">
-        <input matStartDate placeholder="YYYY-MM-DD" aria-label="Desde" />
-        <input matEndDate placeholder="YYYY-MM-DD" aria-label="Hasta" />
+        <input matStartDate formControlName="start" placeholder="YYYY-MM-DD" aria-label="Desde" />
+        <input matEndDate formControlName="end" placeholder="YYYY-MM-DD" aria-label="Hasta" />
       </mat-date-range-input>
       <mat-datepicker-toggle matIconSuffix [for]="picker" aria-label="Elegir periodo" />
       <mat-date-range-picker #picker />
@@ -28,6 +28,12 @@
   </div>
 
   <ng-content />
+
+  @if (aplicarConBoton()) {
+    <button matButton="filled" type="button" [disabled]="fechas.invalid" (click)="aplicarFiltros()">
+      Filtrar
+    </button>
+  }
 
   <button matButton="text" type="button" (click)="limpiarFiltros()">
     <i class="pi pi-filter-slash ui-report-filtros__icono-limpiar" matButtonIcon aria-hidden="true"></i>

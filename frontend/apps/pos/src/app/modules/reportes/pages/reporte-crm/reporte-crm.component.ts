@@ -1,44 +1,65 @@
-import { KeyValuePipe } from '@angular/common';
-import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
-import { SkeletonComponent } from '@nianva/ui-feedback';
-import { CantidadPipe, FechaHoraPipe } from '@nianva/ui-format';
+import { ChangeDetectionStrategy, Component, OnInit, computed, inject } from '@angular/core';
+import type { RespuestaDe } from '@nianva/api-contrato';
+import { CrmAvanzadoService } from '@nianva/domain-crm';
+import { TablaComponent, type ColumnaListado } from '@nianva/ui-data';
+import { KpiComponent } from '@nianva/ui-feedback';
+import { SectionComponent } from '@nianva/ui-layout';
+import { ReportComponent } from '@nianva/ui-report';
 
-import { CrmAvanzadoService, ReporteCrm } from '@nianva/domain-crm';
+import { ConsultaReporte } from '../../consulta-reporte';
+import { metricasReportes } from '../../metricas-reportes';
 
-const ETIQUETAS_TIPO_INTERACCION: Record<string, string> = {
+type Datos = RespuestaDe<'/crm/reporte', 'get'>['data'];
+interface Interaccion {
+  tipo: string;
+  total: number;
+}
+
+/**
+ * Versión anterior a UI-10.
+ * Reporte de solo lectura, sin paginar (ver CrmAvanzadoService.reporte()).
+ */
+@Component({
+  selector: 'nucleo-reporte-crm',
+  standalone: true,
+  imports: [KpiComponent, ReportComponent, SectionComponent, TablaComponent],
+  templateUrl: './reporte-crm.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+})
+export class ReporteCrmComponent implements OnInit {
+  static readonly metricas = metricasReportes.crm;
+
+  private readonly servicio = inject(CrmAvanzadoService);
+  protected readonly consulta = new ConsultaReporte(
+    ({ page, rows }) => this.servicio.reportePaginado(page, rows),
+    '/crm/reporte/exportar',
+  );
+  protected readonly datos = computed(() => this.consulta.respuesta()?.data);
+  protected readonly interacciones = computed(() =>
+    Object.entries(this.datos()?.interacciones_por_tipo ?? {}).map(([tipo, total]) => ({
+      tipo: ETIQUETAS_INTERACCION[tipo] ?? tipo, total,
+    })),
+  );
+  protected readonly columnas: ColumnaListado<Datos['detalle'][number]>[] = [
+    { tipo: 'principal', campo: 'asunto', encabezado: 'Asunto' },
+    { tipo: 'texto', campo: 'segmento', encabezado: 'Segmento' },
+    { tipo: 'cantidad', campo: 'destinatarios', encabezado: 'Destinatarios' },
+    { tipo: 'fechaHora', campo: 'enviado_en', encabezado: 'Enviada' },
+  ];
+  protected readonly columnasInteracciones: ColumnaListado<Interaccion>[] = [
+    { tipo: 'principal', campo: 'tipo', encabezado: 'Tipo' },
+    { tipo: 'cantidad', campo: 'total', encabezado: 'Total' },
+  ];
+
+  ngOnInit(): void {
+    this.consulta.cargar();
+  }
+}
+
+const ETIQUETAS_INTERACCION: Record<string, string> = {
   llamada: 'Llamada',
   email: 'Email',
   whatsapp: 'WhatsApp',
   nota: 'Nota',
   visita: 'Visita',
 };
-
-/** Reporte de solo lectura, sin paginar (ver CrmAvanzadoService.reporte()). */
-@Component({
-  selector: 'nucleo-reporte-crm',
-  standalone: true,
-  imports: [KeyValuePipe, SkeletonComponent, CantidadPipe, FechaHoraPipe],
-  templateUrl: './reporte-crm.component.html',
-  styleUrl: './reporte-crm.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
-})
-export class ReporteCrmComponent implements OnInit {
-  private readonly crmAvanzadoService = inject(CrmAvanzadoService);
-
-  protected readonly cargando = signal(true);
-  protected readonly reporte = signal<ReporteCrm | null>(null);
-
-  ngOnInit(): void {
-    this.crmAvanzadoService.reporte().subscribe({
-      next: (reporte) => {
-        this.reporte.set(reporte);
-        this.cargando.set(false);
-      },
-      error: () => this.cargando.set(false),
-    });
-  }
-
-  protected etiquetaTipo(tipo: string): string {
-    return ETIQUETAS_TIPO_INTERACCION[tipo] ?? tipo;
-  }
-}

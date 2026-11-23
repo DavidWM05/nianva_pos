@@ -1,8 +1,10 @@
+import { provideHttpClient } from '@angular/common/http';
 import { TestBed } from '@angular/core/testing';
 import { of } from 'rxjs';
 import { describe, expect, it, vi } from 'vitest';
 
 import { CuentaPagarService, ReporteCuentasPagar } from '@nianva/domain-cuentas-pagar';
+import { proveedoresDePantalla } from '../../../../testing/proveedores-pantalla';
 import { ReporteCuentasPagarComponent } from './reporte-cuentas-pagar.component';
 
 // UI-05: todos los saldos con el pipe dinero (formato regional es-MX del spec).
@@ -17,7 +19,7 @@ describe('ReporteCuentasPagarComponent formato por pipe', () => {
 
     await TestBed.configureTestingModule({
       imports: [ReporteCuentasPagarComponent],
-      providers: [{ provide: CuentaPagarService, useValue: { reporte: vi.fn().mockReturnValue(of(reporte)) } }],
+      providers: [...proveedoresDePantalla(), provideHttpClient(), { provide: CuentaPagarService, useValue: { reportePaginado: vi.fn().mockReturnValue(of({ data: { ...reporte, detalle: [] }, meta: { page: 1, rows: 25, total: 0, filtros_aplicados: {}, permisos: { exportar: false } } })) } }],
     }).compileComponents();
 
     const fixture = TestBed.createComponent(ReporteCuentasPagarComponent);
