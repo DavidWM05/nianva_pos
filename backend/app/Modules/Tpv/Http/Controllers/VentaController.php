@@ -185,8 +185,8 @@ class VentaController extends Controller
 
     public function reporte(ConsultarMetricasSucursalRequest $request, ObtenerReporteVentas $obtenerReporteVentas): JsonResponse
     {
-        $resultado = $obtenerReporteVentas->ejecutar($request->toDto());
         $usuario = $request->user();
+        $resultado = $obtenerReporteVentas->ejecutar($request->toDto(), $usuario instanceof Usuario && $usuario->tienePermiso('reportes.costos'));
         $resultado['meta']['permisos']['exportar'] = $usuario instanceof Usuario && $usuario->tienePermiso('reportes.exportar');
 
         return response()->json($resultado);
@@ -198,8 +198,12 @@ class VentaController extends Controller
     public function exportar(ConsultarMetricasSucursalRequest $request, ObtenerReporteVentas $reporte, ExportarReporteCsv $exportar): BinaryFileResponse
     {
         $consulta = $request->toDto();
-        $resultado = $reporte->ejecutar(new ConsultaMetricasSucursalDto($consulta->sucursalId, $consulta->desde, $consulta->hasta, 1, ExportarReporteCsv::LIMITE));
+        $usuario = $request->user();
+        $resultado = $reporte->ejecutar(
+            new ConsultaMetricasSucursalDto($consulta->sucursalId, $consulta->desde, $consulta->hasta, 1, ExportarReporteCsv::LIMITE),
+            $usuario instanceof Usuario && $usuario->tienePermiso('reportes.costos'),
+        );
 
-        return $exportar->ejecutar('ventas', $resultado, ['tipo', 'folio', 'fecha', 'importe_comercial'], ['importe_comercial'], ['totales']);
+        return $exportar->ejecutar('ventas', $resultado, ['tipo', 'folio', 'fecha', 'importe_comercial'], ['importe_comercial'], ['totales', 'rentabilidad']);
     }
 }
