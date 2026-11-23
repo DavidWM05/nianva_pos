@@ -287,6 +287,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/ventas/codigo', CodigoVentaController::class)->middleware('permiso:ventas.crear');
         Route::post('/ventas/cotizar', [VentaController::class, 'cotizar'])->middleware(['permiso:ventas.crear', SeleccionarListaPrecio::class]);
         Route::get('/ventas/reporte', [VentaController::class, 'reporte'])->middleware('permiso:reportes.ver');
+        Route::get('/ventas/reporte/exportar', [VentaController::class, 'exportar'])->middleware(['permiso:reportes.ver', 'permiso:reportes.exportar']);
         Route::get('/ventas/{venta}/impreso', [ImpresosTpvController::class, 'venta'])->middleware('permiso:ventas.ver');
         Route::get('/ventas/{venta}', [VentaController::class, 'show'])->middleware('permiso:ventas.ver');
         Route::patch('/ventas/{venta}/anular', [VentaController::class, 'anular'])->middleware('permiso:ventas.anular')->middleware(Idempotencia::class);
@@ -356,6 +357,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::middleware('modulo:cxc')->group(function () {
             Route::get('/cuentas-cobrar', [CuentaCobrarController::class, 'index'])->middleware('permiso:cuentas_cobrar.ver');
             Route::get('/cuentas-cobrar/reporte', [CuentaCobrarController::class, 'reporte'])->middleware('permiso:reportes_cuentas_cobrar.ver');
+            Route::get('/cuentas-cobrar/reporte/exportar', [CuentaCobrarController::class, 'exportar'])->middleware(['permiso:reportes_cuentas_cobrar.ver', 'permiso:reportes.exportar']);
             Route::get('/cuentas-cobrar/{cuentaCobrar}', [CuentaCobrarController::class, 'show'])->middleware('permiso:cuentas_cobrar.ver');
             Route::post('/cuentas-cobrar/{cuentaCobrar}/abonos', [CuentaCobrarController::class, 'registrarAbono'])->middleware('permiso:cuentas_cobrar.registrar_abono')->middleware(Idempotencia::class);
             Route::post('/cuentas-cobrar/{cuentaCobrar}/anular', [CuentaCobrarController::class, 'anular'])->middleware('permiso:cuentas_cobrar.anular')->middleware(Idempotencia::class);
@@ -365,6 +367,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::middleware('modulo:cxp')->group(function () {
             Route::get('/cuentas-pagar', [CuentaPagarController::class, 'index'])->middleware('permiso:cuentas_pagar.ver');
             Route::get('/cuentas-pagar/reporte', [CuentaPagarController::class, 'reporte'])->middleware('permiso:reportes_cuentas_pagar.ver');
+            Route::get('/cuentas-pagar/reporte/exportar', [CuentaPagarController::class, 'exportar'])->middleware(['permiso:reportes_cuentas_pagar.ver', 'permiso:reportes.exportar']);
             Route::get('/cuentas-pagar/{cuentaPagar}', [CuentaPagarController::class, 'show'])->middleware('permiso:cuentas_pagar.ver');
             Route::post('/cuentas-pagar/{cuentaPagar}/pagos', [CuentaPagarController::class, 'registrarPago'])->middleware('permiso:cuentas_pagar.registrar_pago')->middleware(Idempotencia::class);
             Route::post('/cuentas-pagar/{cuentaPagar}/anular', [CuentaPagarController::class, 'anular'])->middleware('permiso:cuentas_pagar.anular')->middleware(Idempotencia::class);
@@ -378,6 +381,7 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::post('/clientes/{cliente}/loyalty/ajustar', [CrmAvanzadoController::class, 'ajustarPuntos'])->middleware('permiso:loyalty.ajustar');
             Route::post('/crm/campanas/enviar', [CrmAvanzadoController::class, 'enviarCampana'])->middleware('permiso:crm_campanas.enviar');
             Route::get('/crm/reporte', [CrmAvanzadoController::class, 'reporte'])->middleware('permiso:reportes_crm.ver');
+            Route::get('/crm/reporte/exportar', [CrmAvanzadoController::class, 'exportar'])->middleware(['permiso:reportes_crm.ver', 'permiso:reportes.exportar']);
         });
 
         // Delivery / Pedidos

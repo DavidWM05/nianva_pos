@@ -633,6 +633,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/crm/reporte/exportar": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["crmAvanzado.exportar"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/cuentas-cobrar": {
         parameters: {
             query?: never;
@@ -657,6 +673,22 @@ export interface paths {
             cookie?: never;
         };
         get: operations["cuentaCobrar.reporte"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/cuentas-cobrar/reporte/exportar": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["cuentaCobrar.exportar"];
         put?: never;
         post?: never;
         delete?: never;
@@ -741,6 +773,22 @@ export interface paths {
             cookie?: never;
         };
         get: operations["cuentaPagar.reporte"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/cuentas-pagar/reporte/exportar": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["cuentaPagar.exportar"];
         put?: never;
         post?: never;
         delete?: never;
@@ -2419,6 +2467,22 @@ export interface paths {
             cookie?: never;
         };
         get: operations["venta.reporte"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/ventas/reporte/exportar": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["venta.exportar"];
         put?: never;
         post?: never;
         delete?: never;
@@ -6018,6 +6082,64 @@ export interface operations {
             422: components["responses"]["ValidationException"];
         };
     };
+    "crmAvanzado.exportar": {
+        parameters: {
+            query?: {
+                page?: number;
+                rows?: number;
+                limite?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Archivo CSV del reporte */
+            200: {
+                headers: {
+                    /** @example attachment; filename=.csv */
+                    "Content-Disposition": string;
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/csv; charset=UTF-8": string;
+                };
+            };
+            401: components["responses"]["AuthenticationException"];
+            /** @description Falta el permiso de lectura o reportes.exportar */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message: string;
+                        error_code: string;
+                    };
+                };
+            };
+            /** @description Filtros inválidos o más de 10 000 filas */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message: string;
+                        /** @constant */
+                        error_code: "reporte_exportacion_limite";
+                        limite: number;
+                    } | {
+                        message: string;
+                        errors: {
+                            [key: string]: string[];
+                        };
+                    };
+                };
+            };
+        };
+    };
     "cuentaCobrar.index": {
         parameters: {
             query?: {
@@ -6108,6 +6230,64 @@ export interface operations {
             };
             401: components["responses"]["AuthenticationException"];
             422: components["responses"]["ValidationException"];
+        };
+    };
+    "cuentaCobrar.exportar": {
+        parameters: {
+            query?: {
+                page?: number;
+                rows?: number;
+                limite?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Archivo CSV del reporte */
+            200: {
+                headers: {
+                    /** @example attachment; filename=.csv */
+                    "Content-Disposition": string;
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/csv; charset=UTF-8": string;
+                };
+            };
+            401: components["responses"]["AuthenticationException"];
+            /** @description Falta el permiso de lectura o reportes.exportar */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message: string;
+                        error_code: string;
+                    };
+                };
+            };
+            /** @description Filtros inválidos o más de 10 000 filas */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message: string;
+                        /** @constant */
+                        error_code: "reporte_exportacion_limite";
+                        limite: number;
+                    } | {
+                        message: string;
+                        errors: {
+                            [key: string]: string[];
+                        };
+                    };
+                };
+            };
         };
     };
     "cuentaCobrar.show": {
@@ -6301,6 +6481,64 @@ export interface operations {
             };
             401: components["responses"]["AuthenticationException"];
             422: components["responses"]["ValidationException"];
+        };
+    };
+    "cuentaPagar.exportar": {
+        parameters: {
+            query?: {
+                page?: number;
+                rows?: number;
+                limite?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Archivo CSV del reporte */
+            200: {
+                headers: {
+                    /** @example attachment; filename=.csv */
+                    "Content-Disposition": string;
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/csv; charset=UTF-8": string;
+                };
+            };
+            401: components["responses"]["AuthenticationException"];
+            /** @description Falta el permiso de lectura o reportes.exportar */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message: string;
+                        error_code: string;
+                    };
+                };
+            };
+            /** @description Filtros inválidos o más de 10 000 filas */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message: string;
+                        /** @constant */
+                        error_code: "reporte_exportacion_limite";
+                        limite: number;
+                    } | {
+                        message: string;
+                        errors: {
+                            [key: string]: string[];
+                        };
+                    };
+                };
+            };
         };
     };
     "cuentaPagar.show": {
@@ -10695,6 +10933,66 @@ export interface operations {
             };
             401: components["responses"]["AuthenticationException"];
             422: components["responses"]["ValidationException"];
+        };
+    };
+    "venta.exportar": {
+        parameters: {
+            query?: {
+                sucursal_id?: number;
+                fecha_desde?: string;
+                fecha_hasta?: string;
+                page?: number;
+                rows?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Archivo CSV del reporte */
+            200: {
+                headers: {
+                    /** @example attachment; filename=.csv */
+                    "Content-Disposition": string;
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/csv; charset=UTF-8": string;
+                };
+            };
+            401: components["responses"]["AuthenticationException"];
+            /** @description Falta el permiso de lectura o reportes.exportar */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message: string;
+                        error_code: string;
+                    };
+                };
+            };
+            /** @description Filtros inválidos o más de 10 000 filas */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message: string;
+                        /** @constant */
+                        error_code: "reporte_exportacion_limite";
+                        limite: number;
+                    } | {
+                        message: string;
+                        errors: {
+                            [key: string]: string[];
+                        };
+                    };
+                };
+            };
         };
     };
     "venta.show": {

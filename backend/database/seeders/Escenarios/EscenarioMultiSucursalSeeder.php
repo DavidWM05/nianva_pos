@@ -30,10 +30,10 @@ class EscenarioMultiSucursalSeeder extends EscenarioSeederBase
             $gerenteRol = $this->rolTenant($tenant, 'gerente', [
                 'sucursales.ver',
                 'sucursales.todas',
-                'reportes.ver',
+                'reportes.ver', 'reportes.exportar',
             ]);
             $gerente = $this->crearUsuario($tenant, $sucursales[0], 'gerente@multi.test', 'Gerente Multi', $gerenteRol);
-            $reportesRol = $this->rolTenant($tenant, 'reportes', ['reportes.ver']);
+            $reportesRol = $this->rolTenant($tenant, 'reportes', ['reportes.ver', 'reportes.exportar']);
 
             $vendedores = [];
 

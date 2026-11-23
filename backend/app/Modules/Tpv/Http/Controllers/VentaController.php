@@ -4,13 +4,16 @@ declare(strict_types=1);
 
 namespace App\Modules\Tpv\Http\Controllers;
 
+use App\Aplicacion\Reportes\ExportarReporteCsv;
 use App\Aplicacion\Ventas\AnularVenta;
 use App\Aplicacion\Ventas\ObtenerReporteVentas;
 use App\Aplicacion\Ventas\RegistrarVenta;
 use App\Http\Controllers\Controller;
 use App\Modules\Crm\Models\Cliente;
+use App\Modules\Nucleo\Dtos\ConsultaMetricasSucursalDto;
 use App\Modules\Nucleo\Http\Requests\ConsultarMetricasSucursalRequest;
 use App\Modules\Nucleo\Http\Support\OperacionSupervisorHttp;
+use App\Modules\Nucleo\Models\Usuario;
 use App\Modules\Nucleo\Services\TenantContext;
 use App\Modules\Nucleo\Support\DecimalApi;
 use App\Modules\Precios\Support\ContextoPrecio;
@@ -24,8 +27,10 @@ use App\Modules\Tpv\Models\Venta;
 use App\Modules\Tpv\Services\VentaService;
 use Carbon\CarbonImmutable;
 use Dedoc\Scramble\Attributes\HeaderParameter;
+use Dedoc\Scramble\Attributes\Response;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 /**
  * Vive en Tpv (no en Crm) a proposito: Tpv ya depende de Crm (Venta
@@ -180,6 +185,21 @@ class VentaController extends Controller
 
     public function reporte(ConsultarMetricasSucursalRequest $request, ObtenerReporteVentas $obtenerReporteVentas): JsonResponse
     {
-        return response()->json($obtenerReporteVentas->ejecutar($request->toDto()));
+        $resultado = $obtenerReporteVentas->ejecutar($request->toDto());
+        $usuario = $request->user();
+        $resultado['meta']['permisos']['exportar'] = $usuario instanceof Usuario && $usuario->tienePermiso('reportes.exportar');
+
+        return response()->json($resultado);
+    }
+
+    #[Response(description: 'Archivo CSV del reporte', mediaType: 'text/csv; charset=UTF-8', format: 'binary')]
+    #[Response(status: 403, description: 'Falta el permiso de lectura o reportes.exportar', type: 'array{message: string, error_code: string}')]
+    #[Response(status: 422, description: 'Filtros inválidos o más de 10 000 filas', type: "array{message: string, error_code: 'reporte_exportacion_limite', limite: int}|array{message: string, errors: array<string, list<string>>}")]
+    public function exportar(ConsultarMetricasSucursalRequest $request, ObtenerReporteVentas $reporte, ExportarReporteCsv $exportar): BinaryFileResponse
+    {
+        $consulta = $request->toDto();
+        $resultado = $reporte->ejecutar(new ConsultaMetricasSucursalDto($consulta->sucursalId, $consulta->desde, $consulta->hasta, 1, ExportarReporteCsv::LIMITE));
+
+        return $exportar->ejecutar('ventas', $resultado, ['tipo', 'folio', 'fecha', 'importe_comercial'], ['importe_comercial'], ['totales']);
     }
 }
