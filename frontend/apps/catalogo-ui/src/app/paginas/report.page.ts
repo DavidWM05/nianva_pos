@@ -1,8 +1,9 @@
-import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { ColumnaListado, MetaListado, TablaComponent } from '@nianva/ui-data';
 import { KpiComponent } from '@nianva/ui-feedback';
 import { PageHeaderComponent, SectionComponent } from '@nianva/ui-layout';
-import { ReportComponent, ReportFiltrosComponent } from '@nianva/ui-report';
+import { GraficaSerieComponent, ReportComponent, ReportFiltrosComponent } from '@nianva/ui-report';
 
 interface FilaReporte {
   concepto: string;
@@ -14,7 +15,7 @@ interface FilaReporte {
 @Component({
   selector: 'cat-report-page',
   standalone: true,
-  imports: [KpiComponent, PageHeaderComponent, ReportComponent, ReportFiltrosComponent, SectionComponent, TablaComponent],
+  imports: [GraficaSerieComponent, KpiComponent, PageHeaderComponent, ReportComponent, ReportFiltrosComponent, SectionComponent, TablaComponent],
   template: `
     <ui-page-header clave="catalogo-report" subtitulo="Plantilla completa, sin gráfica y estados" />
 
@@ -38,7 +39,11 @@ interface FilaReporte {
           <ui-kpi etiqueta="Margen" [valor]="14" formato="porcentaje" [variacion]="-2" />
         </div>
         <div grafica>
-          <p>Espacio reservado para la gráfica de la Fase 6.</p>
+          @if (demoSerie) {
+            <ui-grafica-serie titulo="Ventas por día" [puntos]="serie" />
+          } @else {
+            <p>Espacio reservado para la gráfica de la Fase 6.</p>
+          }
         </div>
         <ui-tabla
           detalle
@@ -58,6 +63,12 @@ interface FilaReporte {
       </ui-report>
     </ui-section>
 
+    @if (demoSerie) {
+      <ui-section titulo="Reporte vacío">
+        <ui-report clave="catalogo-report" estado="vacio" [puedeExportar]="false" />
+      </ui-section>
+    }
+
     <ui-section titulo="Reporte cargando">
       <ui-report clave="catalogo-report" estado="cargando" />
     </ui-section>
@@ -70,6 +81,12 @@ interface FilaReporte {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ReportPage {
+  protected readonly demoSerie = inject(ActivatedRoute).snapshot.data['serie'] === true;
+  protected readonly serie = [
+    { fecha: '2026-11-18', importe: '800.00' },
+    { fecha: '2026-11-19', importe: '0.00' },
+    { fecha: '2026-11-20', importe: '1250.50' },
+  ];
   protected readonly exportando = signal(false);
   protected readonly reintentos = signal(0);
   protected readonly sucursales = [

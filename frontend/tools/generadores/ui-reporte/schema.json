@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/schema",
+  "$id": "ui-reporte",
+  "title": "Pantalla de reporte (UI-10)",
+  "type": "object",
+  "properties": {
+    "nombre": {
+      "type": "string",
+      "description": "Nombre del reporte en kebab-case."
+    },
+    "modulo": {
+      "type": "string",
+      "description": "Carpeta del módulo de POS."
+    },
+    "clave": {
+      "type": "string",
+      "description": "Clave de navegación."
+    },
+    "endpoint": {
+      "type": "string",
+      "description": "Ruta GET del contrato, con barra inicial."
+    }
+  },
+  "required": [
+    "nombre",
+    "modulo",
+    "clave",
+    "endpoint"
+  ]
+}

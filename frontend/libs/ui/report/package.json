@@ -7,7 +7,9 @@
     "@angular/material": "22.2.5",
     "@angular/platform-browser": "^22.0.0",
     "@nianva/ui-actions": "*",
+    "@nianva/ui-data": "*",
     "@nianva/ui-feedback": "*",
+    "@nianva/ui-format": "*",
     "@nianva/ui-forms": "*",
     "@nianva/ui-layout": "*",
     "vitest": "^4.0.8"

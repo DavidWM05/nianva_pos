@@ -1,0 +1,71 @@
+:host {
+  display: block;
+  min-inline-size: 0;
+}
+
+.ui-grafica-serie {
+  display: grid;
+  gap: var(--nv-spacing-3);
+  margin: 0;
+  color: var(--nv-texto);
+
+  figcaption {
+    font-weight: var(--nv-font-weight-medium);
+  }
+
+  ul {
+    display: grid;
+    gap: var(--nv-spacing-2);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  li {
+    display: grid;
+    grid-template-columns: max-content minmax(0, 1fr) max-content;
+    gap: var(--nv-spacing-2);
+    align-items: center;
+    font-size: var(--nv-font-size-sm);
+  }
+}
+
+.ui-grafica-serie__guia {
+  display: block;
+  background: var(--nv-primario-suave);
+  border-radius: var(--nv-radius-lg);
+}
+
+.ui-grafica-serie__barra {
+  --ui-grafica-serie-valor: var(--nv-primario);
+
+  display: block;
+  inline-size: 100%;
+  block-size: var(--nv-spacing-2);
+  border-radius: inherit;
+  background: var(--nv-primario-suave);
+
+  &--negativa {
+    --ui-grafica-serie-valor: var(--nv-peligro);
+  }
+
+  &::-webkit-meter-bar {
+    border: 0;
+    border-radius: inherit;
+    background: var(--nv-primario-suave);
+  }
+
+  &::-webkit-meter-optimum-value {
+    border-radius: inherit;
+    background: var(--ui-grafica-serie-valor);
+  }
+
+  &::-moz-meter-bar {
+    border-radius: inherit;
+    background: var(--ui-grafica-serie-valor);
+  }
+}
+
+.ui-grafica-serie__importe {
+  font-weight: var(--nv-font-weight-medium);
+}

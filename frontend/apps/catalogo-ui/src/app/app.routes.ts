@@ -49,5 +49,10 @@ export const appRoutes: Routes = [
     path: 'report',
     loadComponent: () => import('./paginas/report.page').then((m) => m.ReportPage),
   },
+  {
+    path: 'report/serie',
+    data: { serie: true },
+    loadComponent: () => import('./paginas/report.page').then((m) => m.ReportPage),
+  },
   { path: '**', redirectTo: '' },
 ];

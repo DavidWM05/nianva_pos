@@ -49,3 +49,8 @@ rango de fechas se emite como `YYYY-MM-DD` sin desplazamiento de zona.
 se proyecta `[grafica]`, no queda contenedor vacío. El botón Exportar usa
 `ui-btn-exportar`; los estados de carga y error los resuelve `ui-page` con
 skeleton de listado y “Reintentar”.
+
+En Fase 6, el índice del catálogo enlaza a /report/serie para ver ui-grafica-serie
+y el estado vacio. La serie recibe cada fecha civil y su importe ya calculado.
+Los reportes que permiten descargar usan puedeExportar para habilitar el botón
+según meta.permisos.exportar.

@@ -1,0 +1,20 @@
+<figure class="ui-grafica-serie" [attr.aria-label]="titulo()">
+  <figcaption>{{ titulo() }}</figcaption>
+  <ul role="list">
+    @for (barra of barras(); track barra.fecha) {
+      <li>
+        <time [attr.datetime]="barra.fecha">{{ barra.fecha | fecha }}</time>
+        <span class="ui-grafica-serie__guia" aria-hidden="true">
+          <meter
+            class="ui-grafica-serie__barra"
+            [class.ui-grafica-serie__barra--negativa]="barra.negativo"
+            max="100" [value]="barra.ancho"
+          ></meter>
+        </span>
+        <span class="ui-grafica-serie__importe">{{ barra.importe | dinero }}</span>
+      </li>
+    } @empty {
+      <li>Sin datos para graficar.</li>
+    }
+  </ul>
+</figure>
