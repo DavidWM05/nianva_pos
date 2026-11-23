@@ -1,0 +1,30 @@
+<ui-page-header clave="terminales" [subtitulo]="registro()?.nombre ?? 'Nueva terminal'" />
+<ui-page [estado]="estado()" forma="formulario" (reintentar)="cargar()">
+  <nucleo-record-tabs [tabs]="tabs">
+    <ng-template>
+      <ui-section [titulo]="id === null ? 'Nueva terminal' : 'Datos de la terminal'">
+        <form (submit)="$event.preventDefault(); guardar()">
+          <ui-campo #campoNombre etiqueta="Nombre" [requerido]="true">
+            <input [id]="campoNombre.controlId()" [formControl]="nombre" [attr.maxlength]="maxNombre" />
+          </ui-campo>
+          @if (permiteElegirSucursal()) {
+            <nucleo-entidad-selector
+              label="Sucursal"
+              [buscador]="buscadorSucursal"
+              [valorInicial]="sucursalId()"
+              (seleccionado)="sucursalId.set($event)"
+            />
+          } @else {
+            <p>Sucursal: {{ nombreSucursal() }}</p>
+          }
+          <ui-form-actions>
+            <ui-btn-enviar etiqueta="Guardar terminal" [enviando]="enviando()" [deshabilitado]="eliminando() || sucursalId() === null" />
+            @if (registro() && id !== null) {
+              <button matButton type="button" [disabled]="enviando() || eliminando()" (click)="eliminar()">Eliminar terminal</button>
+            }
+          </ui-form-actions>
+        </form>
+      </ui-section>
+    </ng-template>
+  </nucleo-record-tabs>
+</ui-page>

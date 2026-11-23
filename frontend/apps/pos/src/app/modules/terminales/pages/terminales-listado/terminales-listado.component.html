@@ -1,0 +1,28 @@
+<ui-page-header clave="terminales">
+  <ui-btn-crear acciones objeto="terminal" genero="f" [ruta]="['nuevo']" />
+</ui-page-header>
+
+<ui-page [estado]="fallo() ? 'error' : 'listo'" forma="listado" (reintentar)="cargar()">
+  <ui-filter-bar [meta]="meta()" [hayFiltros]="hayFiltros()" (limpiar)="limpiar()">
+    <ui-campo #campoBuscar etiqueta="Buscar">
+      <input
+        #buscador
+        [id]="campoBuscar.controlId()"
+        type="search"
+        placeholder="Buscar"
+        [value]="busqueda()"
+        (keyup.enter)="buscar(buscador.value)"
+      />
+    </ui-campo>
+  </ui-filter-bar>
+
+  <ui-tabla
+    [columnas]="columnas"
+    [filas]="filas()"
+    [meta]="meta()"
+    [cargando]="cargando()"
+    mensajeVacio="No hay terminales que coincidan con la búsqueda."
+    (cambio)="alCambiar($event)"
+    (accion)="ejecutar($event)"
+  />
+</ui-page>
