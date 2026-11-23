@@ -103,6 +103,8 @@ class VentaService
             throw new VentaTotalNegativoException($subtotalItems, $descuentoManual, $descuentoCupon);
         }
 
+        $lineas = $this->aplicarDescuentoManual($lineas, Dinero::desde((string) $descuentoManual));
+
         // abono_previo (ej. abonos de un apartado ya liquidados) reduce
         // el monto que esta venta necesita cobrar en pagos nuevos; nunca
         // negativo -- un apartado sobre-abonado no exige un pago
@@ -292,10 +294,31 @@ class VentaService
                 'descuento_aplicado' => $foto['descuento'],
                 'unidad_medida_id' => $unidades[$indice],
                 'subtotal' => $linea->total,
+                'importe_efectivo' => $linea->importeConCupon(),
             ];
         }
 
         return [$lineas, $cotizacion->subtotal, $cotizacion->cupon->descuento ?? 0.0];
+    }
+
+    /**
+     * @param  list<array<string, mixed>>  $lineas
+     * @return list<array<string, mixed>>
+     */
+    private function aplicarDescuentoManual(array $lineas, Dinero $descuento): array
+    {
+        $importes = array_map(static fn (array $linea): Dinero => Dinero::desde((string) ($linea['importe_efectivo'] ?? $linea['subtotal'])), $lineas);
+        $reparto = $descuento->repartir($importes);
+
+        foreach ($lineas as $indice => &$linea) {
+            $importe = $importes[$indice]->restar($reparto[$indice]);
+            $linea['importe_efectivo'] = $importe->aCadena();
+            if ($reparto[$indice]->aCadena() !== '0.00' && ! $linea['exento']) {
+                $linea['impuesto'] = $importe->impuestoIncluido((string) $linea['tasa_impuesto'])->aCadena();
+            }
+        }
+
+        return $lineas;
     }
 
     /**
@@ -325,6 +348,7 @@ class VentaService
             'unidad_medida_id' => $linea['unidad_medida_id'],
             'factor' => $linea['factor'],
             'subtotal' => $linea['subtotal'],
+            'importe_efectivo' => $linea['importe_efectivo'],
         ]);
 
         /** @var list<array{regla_precio_id: int, regla_nombre: string, descuento: float|string}> $reglas */

@@ -27,7 +27,13 @@ final readonly class LineaPrecio
         public ?string $presentacionNombre = null,
         public string $factor = '1.000',
         private ?string $listaNombre = null,
+        private ?string $importeConCupon = null,
     ) {}
+
+    public function importeConCupon(): string
+    {
+        return $this->importeConCupon ?? (string) $this->total;
+    }
 
     /** Nombre de la lista aplicada, para la foto; privado para no cambiar la forma pública del cálculo. */
     public function listaNombre(): ?string

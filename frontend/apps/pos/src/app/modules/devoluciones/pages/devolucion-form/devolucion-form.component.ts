@@ -32,7 +32,7 @@ interface LineaDevuelta {
   cantidad: number;
   vaAMerma: boolean;
   precioUnitario: string;
-  subtotalPresentacion?: string;
+  importeEfectivo?: string;
 }
 
 /** Limites de cada linea devuelta del contrato de POST /devoluciones (UI-11b). */
@@ -103,7 +103,7 @@ export class DevolucionFormComponent implements OnInit {
   protected readonly registrando = signal(false);
 
   protected readonly montoDevolucionEstimado = computed(() =>
-    aCentavos(sumarDinero(...this.lineasDevueltas().filter(l => l.cantidad > 0).map(l => l.subtotalPresentacion !== undefined ? proporcionarDinero(l.subtotalPresentacion, l.cantidad, l.cantidadMaxima) : multiplicarDinero(l.precioUnitario, l.cantidad)))) / 100,
+    aCentavos(sumarDinero(...this.lineasDevueltas().filter(l => l.cantidad > 0).map(l => l.importeEfectivo !== undefined ? proporcionarDinero(l.importeEfectivo, l.cantidad, l.cantidadMaxima) : multiplicarDinero(l.precioUnitario, l.cantidad)))) / 100,
   );
 
   /** Estimacion solo para feedback en vivo -- la diferencia real la calcula el backend al registrar. */
@@ -182,7 +182,7 @@ export class DevolucionFormComponent implements OnInit {
             cantidad: 0,
             vaAMerma: false,
             precioUnitario: detalle.precio_unitario,
-            ...(detalle.presentacion_nombre ? { subtotalPresentacion: detalle.subtotal } : {}),
+            importeEfectivo: detalle.importe_efectivo ?? (detalle.presentacion_nombre ? detalle.subtotal : undefined),
           })),
         );
         this.gruposLineas.clear({ emitEvent: false });

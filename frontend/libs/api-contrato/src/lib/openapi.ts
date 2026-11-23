@@ -3546,6 +3546,7 @@ export interface components {
             precio_unitario: string;
             descuento_aplicado: string;
             subtotal: string;
+            importe_efectivo: string;
             /** @description DAT-03: la foto de la línea, nunca el catálogo actual. */
             lista_precio_nombre: string | null;
             regla_nombre: string | null;
@@ -4219,6 +4220,7 @@ export interface components {
             precio_unitario: string;
             descuento_aplicado: string;
             subtotal: string;
+            importe_efectivo: string;
             /** @description DAT-03: la foto de la línea, nunca el catálogo actual. */
             lista_precio_nombre: string | null;
             regla_nombre: string | null;

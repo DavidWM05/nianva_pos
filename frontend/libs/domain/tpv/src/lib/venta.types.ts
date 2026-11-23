@@ -33,6 +33,7 @@ export interface VentaDetalle {
   cantidad: NonNullable<VentaResource['detalles']>[number]['cantidad'];
   precio_unitario: string;
   descuento_aplicado: string;
+  importe_efectivo?: string;
   subtotal: string;
 }
 

@@ -129,9 +129,10 @@ final class PricingService
             $reparto = $descuentoCupon->repartir($pesos);
             foreach ($lineas as $indice => $linea) {
                 [$tasa, $exento] = $tasas[$indice];
-                $impuesto = $exento ? Dinero::desde(0) : Dinero::desde((string) $linea->total)->restar($reparto[$indice])->impuestoIncluido($tasa);
+                $importeConCupon = Dinero::desde((string) $linea->total)->restar($reparto[$indice]);
+                $impuesto = $exento ? Dinero::desde(0) : $importeConCupon->impuestoIncluido($tasa);
                 $impuestos = $impuestos->sumar($impuesto);
-                $lineas[$indice] = new LineaPrecio($linea->varianteId, $linea->cantidad, $linea->precioBase, $linea->listaAplicada, $linea->reglas, $linea->descuento, (float) $impuesto->aCadena(), $linea->total, $tasa, $exento, $linea->presentacionId, $linea->presentacionNombre, $linea->factor, $linea->listaNombre());
+                $lineas[$indice] = new LineaPrecio($linea->varianteId, $linea->cantidad, $linea->precioBase, $linea->listaAplicada, $linea->reglas, $linea->descuento, (float) $impuesto->aCadena(), $linea->total, $tasa, $exento, $linea->presentacionId, $linea->presentacionNombre, $linea->factor, $linea->listaNombre(), $importeConCupon->aCadena());
             }
         }
 

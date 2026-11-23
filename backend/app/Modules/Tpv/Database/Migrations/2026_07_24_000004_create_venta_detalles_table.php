@@ -29,6 +29,7 @@ return new class extends Migration
             $table->decimal('tasa_impuesto', 7, 4);
             $table->boolean('exento');
             $table->decimal('impuesto', 12, 2);
+            $table->decimal('importe_efectivo', 12, 2);
             $table->foreignId('unidad_medida_id')->constrained('unidades_medida')->restrictOnDelete();
             $table->decimal('factor', 14, 3);
             $table->decimal('subtotal', 12, 2);
