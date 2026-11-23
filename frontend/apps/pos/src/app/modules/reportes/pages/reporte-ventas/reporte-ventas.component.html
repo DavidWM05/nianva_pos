@@ -23,6 +23,9 @@
   <ui-grafica-serie grafica titulo="Ventas por día" [puntos]="puntos()" />
   <div resumen>
     @if (datos(); as r) {
+      @if (r.rentabilidad; as rentabilidad) {
+        <nucleo-rentabilidad [datos]="rentabilidad" titulo="Rentabilidad del periodo" [detallada]="true" />
+      }
       <ui-section titulo="Por sucursal">
         <ui-tabla [columnas]="columnasSucursal" [filas]="r.por_sucursal" [mostrarPaginador]="false" mensajeVacio="No hay ventas en el periodo seleccionado." />
       </ui-section>

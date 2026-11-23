@@ -10,6 +10,7 @@ import { SectionComponent } from '@nianva/ui-layout';
 import { GraficaSerieComponent, ReportComponent, ReportFiltrosComponent, type CambioReporte } from '@nianva/ui-report';
 import { mensajeError } from '@nianva/ui-shared';
 
+import { RentabilidadComponent } from '../../../../core/rentabilidad/rentabilidad.component';
 import { ConsultaReporte } from '../../consulta-reporte';
 import { metricasReportes } from '../../metricas-reportes';
 
@@ -19,7 +20,7 @@ type Datos = RespuestaDe<'/ventas/reporte', 'get'>['data'];
 @Component({
   selector: 'nucleo-reporte-ventas',
   standalone: true,
-  imports: [GraficaSerieComponent, KpiComponent, ReportComponent, ReportFiltrosComponent, SectionComponent, TablaComponent],
+  imports: [GraficaSerieComponent, KpiComponent, RentabilidadComponent, ReportComponent, ReportFiltrosComponent, SectionComponent, TablaComponent],
   templateUrl: './reporte-ventas.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

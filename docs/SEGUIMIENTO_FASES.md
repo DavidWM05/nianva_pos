@@ -146,9 +146,9 @@ Conflicto que se resuelve aquí: C6. En las Fases 3 a 5, los Services pasan a re
 
 | Regla | Qué pide | Estado | Dónde se verifica | Encargo |
 |---|---|---|---|---|
-| ARQ-09 | Una sola capa de métricas | Pendiente | — | — |
+| ARQ-09 | Una sola capa de métricas | Hecho | `Metricas` comparte el cálculo de Ventas, Inicio y CSV. Las Actions orquestan y las pantallas presentan los datos publicados. Se verifica en `Arquitectura/ConsultasDeReportesTest`, `Metricas/RentabilidadComercialTest` y `inicio-metricas.spec.ts`. | S4/P4 |
 | SEG-08 | Descarga de exportaciones autorizada y fuera del docroot | Hecho | S3. CSV privado con permiso de lectura y reportes.exportar. ExportacionReportesTest cubre 401, 403, 404 directo y limpieza. | F6-8 |
-| DAT-06 | Reportes en la zona del tenant | Pendiente | — | — |
+| DAT-06 | Reportes en la zona del tenant | Hecho | Periodos y plazos de apartados calculados con el corte civil del servidor. Se verifica en `CalendarioMetricasTest`, `AlcanceReporteVentasTest`, `CarteraAntiguedadTest`, `RentabilidadComercialTest` e `inicio-metricas.spec.ts`. CRM conserva `now()->subMonth()` como excepción de F6-7. | S4/P4 |
 | UI-10b | Inicio con KPIs del negocio | Hecho | P3 usa seis tarjetas, la serie de siete días y el ranking por variante y unidad de ARQ-09. Conserva caja y apartados por vencer. Jerarquía basada en la referencia de Nianva POS Ropa (decisión del responsable, 2026-11-14). | P3 |
 | UI-10 | Plantilla de reporte | Hecho | P1 aporta ui-reporte, plantilla y serie compartida. P2 aplica ui-report y ui-tabla en los cuatro reportes, con métricas declaradas, paginación, totales y CSV protegido. La serie de ventas por día usa la gráfica compartida. | P1, P2 |
 
