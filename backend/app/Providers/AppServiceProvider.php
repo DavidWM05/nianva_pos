@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use App\OpenApi\CabeceraIdempotencia;
 use App\OpenApi\ReglaDecimal;
+use App\OpenApi\RentabilidadOpcional;
 use Dedoc\Scramble\Scramble;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Database\Eloquent\Model;
@@ -40,7 +41,7 @@ class AppServiceProvider extends ServiceProvider
         Model::preventAccessingMissingAttributes(! app()->isProduction());
 
         // UI-11b: la regla `decimal:min,max` sale en el contrato como `multipleOf`.
-        Scramble::configure()->withRuleTransformers(ReglaDecimal::class)->withOperationTransformers(CabeceraIdempotencia::class);
+        Scramble::configure()->withRuleTransformers(ReglaDecimal::class)->withOperationTransformers([CabeceraIdempotencia::class, RentabilidadOpcional::class]);
     }
 
     /**

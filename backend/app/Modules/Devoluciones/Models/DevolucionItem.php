@@ -33,6 +33,10 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property bool $exento
  * @property string $impuesto
  * @property int $unidad_medida_id
+ * @property 'devuelto'|'nuevo' $tipo
+ * @property bool $va_a_merma
+ * @property string $cantidad
+ * @property string $subtotal
  * @property string $factor
  */
 #[Fillable(['devolucion_id', 'variante_id', 'tipo', 'cantidad', 'precio_unitario', 'descuento', 'lista_precio_id', 'lista_precio_nombre', 'regla_precio_id', 'regla_nombre', 'costo_unitario', 'tasa_impuesto', 'exento', 'impuesto', 'unidad_medida_id', 'factor', 'subtotal', 'va_a_merma'])]
