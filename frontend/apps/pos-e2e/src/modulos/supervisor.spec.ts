@@ -1,12 +1,13 @@
 import { expect, test, type Page } from '@playwright/test';
 
 import { asegurarCajaAbierta } from '../soporte/api';
+import { codigoTotp, secretoDosFactor } from '../soporte/backend';
 import { agregarAgua50f } from '../soporte/flujo-50f';
 import { abrirPantalla, sinViolacionesSerias } from '../soporte/humo';
-import { iniciarSesion } from '../soporte/sesion';
+import { iniciarSesion, PASSWORD } from '../soporte/sesion';
 import { PIN_SUPERVISORA, autorizarComoSupervisora, dialogoSupervisor, prepararSupervisora } from '../soporte/supervisor';
 
-// Fase 4, B2 (SEG-05, F4-7): con SUPERVISOR_EXIGIR, el servidor responde supervisor_requerido y la
+// Fase 4, B2 (SEG-05, F4-7): el servidor responde supervisor_requerido y la
 // pantalla pide la autorizacion: se elige al supervisor (GET /supervisores), se escribe su PIN y
 // la operacion se reintenta con la misma Idempotency-Key y el token. Montos claramente arriba de
 // los umbrales que llegan con A5 (descuento de 60 MXN contra 50).
@@ -126,3 +127,61 @@ for (const tema of ['claro', 'oscuro'] as const) {
     await expect(dialogo(page)).toHaveCount(0);
   });
 }
+
+test('B4a: el umbral que guarda el admin se aplica en las ventas', async ({ page, browser, baseURL }) => {
+  test.setTimeout(180000);
+  const contextoAdmin = await browser.newContext({ baseURL });
+  const admin = await contextoAdmin.newPage();
+  const correo = 'admin@abarrotes.test';
+  try {
+    await admin.goto('/login');
+    await admin.locator('#correo').fill(correo);
+    await admin.locator('#password').fill(PASSWORD);
+    await admin.getByRole('button', { name: 'Iniciar sesión' }).click();
+    await expect(admin).toHaveURL(/\/two-factor\/verify/);
+    await admin.locator('form input').first().click();
+    await admin.keyboard.type(codigoTotp(secretoDosFactor(correo)));
+    await admin.getByRole('button', { name: 'Verificar' }).click();
+    await expect(admin.locator('nucleo-pos-layout')).toBeVisible();
+    await abrirPantalla(admin, '/configuracion');
+    const umbral = admin.getByRole('textbox', { name: 'Descuento manual que pide supervisor' });
+    const guardar = admin.getByRole('button', { name: 'Guardar configuración' }).first();
+
+    async function guardarUmbral(importe: string): Promise<void> {
+      const respuesta = admin.waitForResponse((r) => r.request().method() === 'PUT' && new URL(r.url()).pathname === '/api/v1/configuracion');
+      await umbral.focus();
+      await umbral.fill(importe);
+      await guardar.click();
+      const guardado = await respuesta;
+      expect(guardado.status()).toBe(200);
+      const cuerpo = await guardado.json() as { data: { margen_descuento_supervisor: string } };
+      expect(cuerpo.data.margen_descuento_supervisor).toBe(Number(importe).toFixed(2));
+      await expect(guardar).toBeEnabled();
+    }
+
+    const original = (await umbral.inputValue()).replace(/[^0-9.]/g, '');
+    try {
+      await guardarUmbral('65.00');
+      await abrirVenta(page);
+      await capturarVenta(page, 5, 60);
+      const registrar = page.getByRole('button', { name: /Registrar venta$/ });
+      const venta = () => page.waitForResponse((r) => r.request().method() === 'POST' && new URL(r.url()).pathname === '/api/v1/ventas');
+      const debajo = venta();
+      await registrar.click();
+      expect((await debajo).status()).toBe(201);
+      await expect(dialogo(page)).toHaveCount(0);
+
+      await abrirPantalla(page, '/tpv/venta');
+      await capturarVenta(page, 5, 70);
+      const encima = venta();
+      await registrar.click();
+      expect((await encima).status()).toBe(403);
+      await expect(dialogo(page)).toBeVisible();
+      await dialogo(page).getByRole('button', { name: 'Cancelar' }).click();
+    } finally {
+      await guardarUmbral(original);
+    }
+  } finally {
+    await contextoAdmin.close();
+  }
+});

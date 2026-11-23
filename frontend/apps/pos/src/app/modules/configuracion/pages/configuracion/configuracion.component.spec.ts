@@ -2,7 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { proveedoresDePantalla } from '../../../../testing/proveedores-pantalla';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { ToastService } from '@nianva/ui-shared';
-import { of, throwError } from 'rxjs';
+import { Subject, of, throwError } from 'rxjs';
 import { describe, expect, it, vi } from 'vitest';
 
 // jsdom no implementa ResizeObserver -- lo usa PrimeNG's TabList detras de
@@ -180,4 +180,25 @@ describe('ConfiguracionComponent', () => {
     const texto = (fixture.nativeElement as HTMLElement).textContent ?? '';
     expect(texto).toContain('todavía no tiene una licencia activada');
   });
+
+  it('muestra la sección, bloquea el envío pendiente y comunica el error de la API', async () => {
+    await crearComponente('ok');
+    const respuesta = new Subject<ConfiguracionTenant>();
+    configuracionService.actualizar.mockReturnValue(respuesta);
+    const pagina: HTMLElement = fixture.nativeElement;
+    expect(pagina.textContent).toContain('Autorización de supervisor');
+    const boton = [...pagina.querySelectorAll('button')].find((item) => item.textContent?.includes('Guardar configuración'));
+
+    boton?.click();
+    fixture.detectChanges();
+    expect(boton?.disabled).toBe(true);
+    expect(boton?.getAttribute('aria-busy')).toBe('true');
+    expect(configuracionService.actualizar).toHaveBeenCalledTimes(1);
+
+    respuesta.error({ status: 422, error: { message: 'Revisa los umbrales.' } });
+    fixture.detectChanges();
+    expect(boton?.disabled).toBe(false);
+    expect(toastService.error).toHaveBeenCalledWith('Revisa los umbrales.');
+  });
+
 });

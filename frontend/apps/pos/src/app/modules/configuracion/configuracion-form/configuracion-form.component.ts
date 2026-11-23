@@ -1,4 +1,4 @@
-import { tasaANumero } from '@nianva/ui-format';
+import { DineroPipe, tasaANumero } from '@nianva/ui-format';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -7,8 +7,11 @@ import {
   OnChanges,
   Output,
   ViewChild,
+  input,
 } from '@angular/core';
-import { Validators } from '@angular/forms';
+import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
+import { CampoComponent, InputDineroComponent } from '@nianva/ui-forms';
+import { SectionComponent } from '@nianva/ui-layout';
 import { limitesDe } from '@nianva/api-contrato';
 import { DynamicFormComponent, DynamicFormField } from '@nianva/ui-shared';
 
@@ -39,13 +42,18 @@ const OPCIONES_BACKUP_FRECUENCIA: { label: string; value: FrecuenciaBackup }[] =
 @Component({
   selector: 'nucleo-configuracion-form',
   standalone: true,
-  imports: [DynamicFormComponent],
+  imports: [CampoComponent, DineroPipe, DynamicFormComponent, InputDineroComponent, ReactiveFormsModule, SectionComponent],
   templateUrl: './configuracion-form.component.html',
   styleUrl: './configuracion-form.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ConfiguracionFormComponent implements OnChanges {
   @Input({ required: true }) valorInicial!: ConfiguracionTenant;
+
+  readonly enviando = input(false);
+
+  protected readonly descuento = this.controlUmbral(LIMITES.margen_descuento_supervisor);
+  protected readonly descuadre = this.controlUmbral(LIMITES.umbral_descuadre_supervisor);
 
   @Output() guardar = new EventEmitter<ConfiguracionTenantFormPayload>();
 
@@ -54,6 +62,8 @@ export class ConfiguracionFormComponent implements OnChanges {
   protected fields: DynamicFormField[] = [];
 
   ngOnChanges(): void {
+    this.descuento.reset(Number(this.valorInicial.margen_descuento_supervisor ?? 50));
+    this.descuadre.reset(Number(this.valorInicial.umbral_descuadre_supervisor ?? 100));
     this.fields = [
       {
         name: 'cupon_combinable_con_promociones',
@@ -138,7 +148,14 @@ export class ConfiguracionFormComponent implements OnChanges {
   }
 
   onSubmit(value: Record<string, unknown>): void {
+    const { descuento, descuadre } = this;
+    if (descuento.invalid || descuadre.invalid || this.enviando()) {
+      return;
+    }
+
     this.guardar.emit({
+      ...(descuento.dirty && descuento.value !== null ? { margen_descuento_supervisor: descuento.value } : {}),
+      ...(descuadre.dirty && descuadre.value !== null ? { umbral_descuadre_supervisor: descuadre.value } : {}),
       cupon_combinable_con_promociones: Boolean(
         value['cupon_combinable_con_promociones'],
       ),
@@ -153,6 +170,15 @@ export class ConfiguracionFormComponent implements OnChanges {
       backup_frecuencia: value['backup_frecuencia'] as FrecuenciaBackup,
       codigo_barras_automatico: Boolean(value['codigo_barras_automatico']),
     });
+  }
+
+  private controlUmbral(limites: { minimum: number; maximum: number; decimales: number }): FormControl<number | null> {
+    return new FormControl<number | null>(null, [
+      Validators.required,
+      Validators.min(limites.minimum),
+      Validators.max(limites.maximum),
+      Validators.pattern(new RegExp(`^[0-9]+(?:[.][0-9]{1,${limites.decimales}})?$`)),
+    ]);
   }
 
   setServerErrors(errors: Record<string, string | string[]>): void {
