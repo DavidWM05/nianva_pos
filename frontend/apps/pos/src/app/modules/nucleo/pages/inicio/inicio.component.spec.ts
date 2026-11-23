@@ -15,7 +15,7 @@ describe('InicioComponent', () => {
   const resumen: InicioResumen = {
     ventas_hoy: { cantidad: 3, total: '450.50' },
     apartados_por_vencer: [
-      { id: ulidDePrueba(1), folio: 'A-1-1', cliente_nombre: 'Ana Pérez', fecha_vencimiento: '2026-07-25', total: '200.00', total_abonado: '50.00' },
+      { id: ulidDePrueba(1), folio: 'A-1-1', cliente_nombre: 'Ana Pérez', fecha_vencimiento: '2026-07-25', dias_para_vencer: 2, total: '200.00', total_abonado: '50.00' },
     ],
   };
 

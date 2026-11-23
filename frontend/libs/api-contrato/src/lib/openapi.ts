@@ -7496,9 +7496,19 @@ export interface operations {
                                 folio: string | null;
                                 cliente_nombre: string | null;
                                 fecha_vencimiento: string;
+                                dias_para_vencer: number;
                                 total: string;
                                 total_abonado: string;
                             }[];
+                            rentabilidad_mes?: {
+                                ingreso_sin_iva: string;
+                                costo_neto_ventas: string;
+                                utilidad_bruta: string;
+                                margen_porcentaje: string | null;
+                                merma: string;
+                                resultado_despues_merma: string;
+                                lineas_sin_costo: number;
+                            } | null;
                         };
                     };
                 };
@@ -10918,6 +10928,15 @@ export interface operations {
                                 fecha: string;
                                 importe_comercial: string;
                             }[];
+                            rentabilidad?: {
+                                ingreso_sin_iva: string;
+                                costo_neto_ventas: string;
+                                utilidad_bruta: string;
+                                margen_porcentaje: string | null;
+                                merma: string;
+                                resultado_despues_merma: string;
+                                lineas_sin_costo: number;
+                            };
                         };
                         meta: {
                             page: number;

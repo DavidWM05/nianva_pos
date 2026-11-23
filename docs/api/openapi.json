@@ -6692,6 +6692,9 @@
                                                             "fecha_vencimiento": {
                                                                 "type": "string"
                                                             },
+                                                            "dias_para_vencer": {
+                                                                "type": "integer"
+                                                            },
                                                             "total": {
                                                                 "type": "string",
                                                                 "pattern": "^-?[0-9]+\\.[0-9]{2}$"
@@ -6706,10 +6709,59 @@
                                                             "folio",
                                                             "cliente_nombre",
                                                             "fecha_vencimiento",
+                                                            "dias_para_vencer",
                                                             "total",
                                                             "total_abonado"
                                                         ]
                                                     }
+                                                },
+                                                "rentabilidad_mes": {
+                                                    "type": [
+                                                        "object",
+                                                        "null"
+                                                    ],
+                                                    "properties": {
+                                                        "ingreso_sin_iva": {
+                                                            "type": "string",
+                                                            "pattern": "^-?[0-9]+\\.[0-9]{2}$"
+                                                        },
+                                                        "costo_neto_ventas": {
+                                                            "type": "string",
+                                                            "pattern": "^-?[0-9]+\\.[0-9]{2}$"
+                                                        },
+                                                        "utilidad_bruta": {
+                                                            "type": "string",
+                                                            "pattern": "^-?[0-9]+\\.[0-9]{2}$"
+                                                        },
+                                                        "margen_porcentaje": {
+                                                            "type": [
+                                                                "string",
+                                                                "null"
+                                                            ],
+                                                            "pattern": "^-?[0-9]+\\.[0-9]{2}$"
+                                                        },
+                                                        "merma": {
+                                                            "type": "string",
+                                                            "pattern": "^-?[0-9]+\\.[0-9]{2}$"
+                                                        },
+                                                        "resultado_despues_merma": {
+                                                            "type": "string",
+                                                            "pattern": "^-?[0-9]+\\.[0-9]{2}$"
+                                                        },
+                                                        "lineas_sin_costo": {
+                                                            "type": "integer",
+                                                            "minimum": 0
+                                                        }
+                                                    },
+                                                    "required": [
+                                                        "ingreso_sin_iva",
+                                                        "costo_neto_ventas",
+                                                        "utilidad_bruta",
+                                                        "margen_porcentaje",
+                                                        "merma",
+                                                        "resultado_despues_merma",
+                                                        "lineas_sin_costo"
+                                                    ]
                                                 }
                                             },
                                             "required": [
@@ -13576,6 +13628,51 @@
                                                             "importe_comercial"
                                                         ]
                                                     }
+                                                },
+                                                "rentabilidad": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "ingreso_sin_iva": {
+                                                            "type": "string",
+                                                            "pattern": "^-?[0-9]+\\.[0-9]{2}$"
+                                                        },
+                                                        "costo_neto_ventas": {
+                                                            "type": "string",
+                                                            "pattern": "^-?[0-9]+\\.[0-9]{2}$"
+                                                        },
+                                                        "utilidad_bruta": {
+                                                            "type": "string",
+                                                            "pattern": "^-?[0-9]+\\.[0-9]{2}$"
+                                                        },
+                                                        "margen_porcentaje": {
+                                                            "type": [
+                                                                "string",
+                                                                "null"
+                                                            ],
+                                                            "pattern": "^-?[0-9]+\\.[0-9]{2}$"
+                                                        },
+                                                        "merma": {
+                                                            "type": "string",
+                                                            "pattern": "^-?[0-9]+\\.[0-9]{2}$"
+                                                        },
+                                                        "resultado_despues_merma": {
+                                                            "type": "string",
+                                                            "pattern": "^-?[0-9]+\\.[0-9]{2}$"
+                                                        },
+                                                        "lineas_sin_costo": {
+                                                            "type": "integer",
+                                                            "minimum": 0
+                                                        }
+                                                    },
+                                                    "required": [
+                                                        "ingreso_sin_iva",
+                                                        "costo_neto_ventas",
+                                                        "utilidad_bruta",
+                                                        "margen_porcentaje",
+                                                        "merma",
+                                                        "resultado_despues_merma",
+                                                        "lineas_sin_costo"
+                                                    ]
                                                 }
                                             },
                                             "required": [

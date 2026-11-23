@@ -51,7 +51,7 @@ class NucleoRolesPermisosSeeder extends Seeder
         'reglas_precio' => ['ver', 'crear', 'editar', 'eliminar'],
         'cupones' => ['ver', 'crear', 'editar', 'eliminar'],
         'configuracion' => ['ver', 'editar'],
-        'reportes' => ['ver', 'exportar'],
+        'reportes' => ['ver', 'exportar', 'costos'],
         'auditoria' => ['ver'],
         // Modulos nuevos
         'cotizaciones' => ['ver', 'crear', 'editar', 'eliminar', 'convertir', 'precio_manual'],

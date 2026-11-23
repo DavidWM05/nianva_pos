@@ -15,6 +15,7 @@ function resumen(cantidad: number): InicioResumenMetricas {
     ventas_hoy: { cantidad, total: '1250.50' },
     gastos_hoy: '32.10',
     ventas_netas_comerciales_mes: '3040.60',
+    rentabilidad_mes: null,
     productos_activos: 14,
     alertas_stock_bajo: 3,
     ventas_ultimos_siete_dias: Array.from({ length: 7 }, (_, indice) => ({

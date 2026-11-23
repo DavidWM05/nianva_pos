@@ -128,7 +128,7 @@ final class VentasComerciales
     }
 
     /** @return Builder<Devolucion> */
-    private function devoluciones(ContextoMetricas $contexto): Builder
+    public function devoluciones(ContextoMetricas $contexto): Builder
     {
         return Devolucion::query()->withoutGlobalScope(SucursalScope::class)
             ->where('tenant_id', $contexto->tenantId)

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Aplicacion\Ventas;
 
 use App\Modules\Metricas\Services\CrearContextoMetricas;
+use App\Modules\Metricas\Services\RentabilidadComercial;
 use App\Modules\Metricas\Services\VentasComerciales;
 use App\Modules\Nucleo\Dtos\ConsultaMetricasSucursalDto;
 use App\Modules\Nucleo\Support\DecimalApi;
@@ -17,10 +18,11 @@ final readonly class ObtenerReporteVentas
         private CrearContextoMetricas $contextos,
         private VentasComerciales $ventas,
         private PresentarRankingVariantes $ranking,
+        private RentabilidadComercial $rentabilidad,
     ) {}
 
     /** @return array{data: array<string, mixed>, meta: array{page: int, rows: int, total: int, filtros_aplicados: array{sucursal_id: ?int}, permisos: array{exportar: bool}}} */
-    public function ejecutar(ConsultaMetricasSucursalDto $consulta): array
+    public function ejecutar(ConsultaMetricasSucursalDto $consulta, bool $puedeVerCostos = false): array
     {
         try {
             $contexto = $this->contextos->paraReporte($consulta->sucursalId, $consulta->desde, $consulta->hasta);
@@ -48,6 +50,10 @@ final readonly class ObtenerReporteVentas
             /** @var list<array{tipo: 'venta'|'devolucion'|'cambio', folio: string|null, fecha: string, importe_comercial: string}> */
             'detalle' => $detalle['filas'],
         ];
+
+        if ($puedeVerCostos) {
+            $data['rentabilidad'] = $this->rentabilidad->totales($contexto, $totales->neto());
+        }
 
         return [
             'data' => $data,
