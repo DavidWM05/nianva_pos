@@ -26,10 +26,12 @@ import {
   BUSCADOR_PRESENTACION,
   BUSCADOR_RECETA,
   BUSCADOR_UNIDAD_MEDIDA,
+  BUSCADOR_SUCURSAL,
   BUSCADOR_USUARIO,
   BUSCADOR_VARIANTE_DE_PRODUCTO,
   BUSCADOR_VENTA,
 } from './core/buscadores-entidad.tokens';
+import { SucursalBuscadorService } from './modules/administracion/sucursal-buscador.service';
 import { UsuarioBuscadorService } from './modules/administracion/usuario-buscador.service';
 import { ClienteBuscadorService } from './modules/crm/cliente-buscador.service';
 import { CategoriaBuscadorService } from './modules/inventario/categoria-buscador.service';
@@ -68,6 +70,7 @@ export const appConfig: ApplicationConfig = {
     { provide: BUSCADOR_CATEGORIA, useExisting: CategoriaBuscadorService },
     { provide: BUSCADOR_LISTA_PRECIO, useExisting: ListaPrecioBuscadorService },
     { provide: BUSCADOR_CLIENTE, useExisting: ClienteBuscadorService },
+    { provide: BUSCADOR_SUCURSAL, useExisting: SucursalBuscadorService },
     { provide: BUSCADOR_USUARIO, useExisting: UsuarioBuscadorService },
     { provide: BUSCADOR_UNIDAD_MEDIDA, useExisting: UnidadMedidaBuscadorService },
     { provide: BUSCADOR_INSUMO, useExisting: InsumoBuscadorService },

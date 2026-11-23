@@ -873,6 +873,26 @@ export const appRoutes: Route[] = [
           ),
       },
       {
+        path: 'terminales',
+        data: { breadcrumb: 'Terminales' },
+        children: [
+          {
+            path: '',
+            loadComponent: () => import('./modules/terminales/pages/terminales-listado/terminales-listado.component').then((m) => m.TerminalesListadoComponent),
+          },
+          {
+            path: 'nuevo',
+            data: { breadcrumb: 'Nueva terminal' },
+            loadComponent: () => import('./modules/terminales/pages/terminal-registro/terminal-registro.component').then((m) => m.TerminalRegistroComponent),
+          },
+          {
+            path: ':id',
+            data: { breadcrumb: 'Terminal' },
+            loadComponent: () => import('./modules/terminales/pages/terminal-registro/terminal-registro.component').then((m) => m.TerminalRegistroComponent),
+          },
+        ],
+      },
+      {
         path: 'configuracion',
         data: { breadcrumb: 'Configuración' },
         loadComponent: () =>

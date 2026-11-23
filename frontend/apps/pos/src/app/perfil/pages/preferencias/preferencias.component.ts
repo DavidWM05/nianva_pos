@@ -8,6 +8,7 @@ import { AuthStateService } from '../../../auth/auth-state.service';
 import { TwoFactorCodeInputComponent } from '../../../auth/two-factor-code-input/two-factor-code-input.component';
 import { CambiarPasswordFormComponent, CambiarPasswordFormValue } from '../../cambiar-password-form/cambiar-password-form.component';
 import { DispositivosConfiablesListComponent } from '../../dispositivos-confiables-list/dispositivos-confiables-list.component';
+import { TerminalDeSesionComponent } from '../../../modules/terminales/terminal-de-sesion/terminal-de-sesion.component';
 import { AnchoTicketComponent } from '../../ancho-ticket/ancho-ticket.component';
 import { PinCajaFormComponent } from '../../pin-caja-form/pin-caja-form.component';
 import { DispositivoConfiable, SeguridadService } from '@nianva/domain-perfil';
@@ -27,6 +28,7 @@ import { DispositivoConfiable, SeguridadService } from '@nianva/domain-perfil';
   standalone: true,
   imports: [
     AnchoTicketComponent,
+    TerminalDeSesionComponent,
     MatButton,
     PageHeaderComponent,
     DispositivosConfiablesListComponent,
