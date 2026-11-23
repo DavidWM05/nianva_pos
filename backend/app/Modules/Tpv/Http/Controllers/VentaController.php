@@ -5,15 +5,14 @@ declare(strict_types=1);
 namespace App\Modules\Tpv\Http\Controllers;
 
 use App\Aplicacion\Ventas\AnularVenta;
+use App\Aplicacion\Ventas\ObtenerReporteVentas;
 use App\Aplicacion\Ventas\RegistrarVenta;
 use App\Http\Controllers\Controller;
 use App\Modules\Crm\Models\Cliente;
-use App\Modules\Inventario\Models\ProductoVariante;
+use App\Modules\Nucleo\Http\Requests\ConsultarMetricasSucursalRequest;
 use App\Modules\Nucleo\Http\Support\OperacionSupervisorHttp;
-use App\Modules\Nucleo\Models\Sucursal;
 use App\Modules\Nucleo\Services\TenantContext;
 use App\Modules\Nucleo\Support\DecimalApi;
-use App\Modules\Nucleo\Support\SucursalOperacion;
 use App\Modules\Precios\Support\ContextoPrecio;
 use App\Modules\Tpv\Dtos\LineaVentaDto;
 use App\Modules\Tpv\Http\Requests\AnularVentaRequest;
@@ -22,11 +21,10 @@ use App\Modules\Tpv\Http\Requests\CrearVentaRequest;
 use App\Modules\Tpv\Http\Resources\CotizacionVentaLineaResource;
 use App\Modules\Tpv\Http\Resources\VentaResource;
 use App\Modules\Tpv\Models\Venta;
-use App\Modules\Tpv\Models\VentaDetalle;
-use App\Modules\Tpv\Models\VentaPago;
 use App\Modules\Tpv\Services\VentaService;
 use Carbon\CarbonImmutable;
 use Dedoc\Scramble\Attributes\HeaderParameter;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 /**
@@ -180,92 +178,8 @@ class VentaController extends Controller
         return response()->json(['data' => ['items' => $itemsCotizados, 'subtotal' => DecimalApi::dinero($subtotal)]]);
     }
 
-    public function reporte(Request $request)
+    public function reporte(ConsultarMetricasSucursalRequest $request, ObtenerReporteVentas $obtenerReporteVentas): JsonResponse
     {
-        $tenantId = app(TenantContext::class)->id();
-
-        $fechaDesde = $request->query('fecha_desde', now()->startOfMonth()->toDateString());
-        $fechaHasta = $request->query('fecha_hasta', now()->toDateString());
-        $usuario = $request->user();
-
-        if ($usuario === null) {
-            abort(401);
-        }
-
-        $sucursalSolicitada = $request->query('sucursal_id');
-        $sucursalId = SucursalOperacion::paraFiltro(
-            $usuario,
-            $sucursalSolicitada !== null ? (int) $sucursalSolicitada : null,
-        );
-
-        $base = Venta::where('tenant_id', $tenantId)
-            ->where('estado', 'completada')
-            ->where('es_venta_sombra', false)
-            ->whereDate('fecha', '>=', $fechaDesde)
-            ->whereDate('fecha', '<=', $fechaHasta);
-
-        if ($sucursalId) {
-            $base->where('sucursal_id', $sucursalId);
-        }
-
-        $totalVentas = round((float) (clone $base)->sum('total'), 2);
-        $numeroVentas = (clone $base)->count();
-        $ticketPromedio = $numeroVentas > 0 ? round($totalVentas / $numeroVentas, 2) : 0.0;
-
-        // Por sucursal
-        $sucursales = Sucursal::sinTenant()->where('tenant_id', $tenantId)->pluck('nombre', 'id');
-
-        $porSucursal = (clone $base)
-            ->selectRaw('sucursal_id, sum(total) as total, count(*) as numero_ventas')
-            ->groupBy('sucursal_id')
-            ->get()
-            ->map(function ($r) use ($sucursales) {
-                return [
-                    'sucursal_id' => $r->sucursal_id,
-                    'sucursal_nombre' => $sucursales[$r->sucursal_id] ?? null,
-                    'total' => DecimalApi::dinero($r->total),
-                    'numero_ventas' => (int) $r->numero_ventas,
-                ];
-            });
-
-        // IDs de las ventas del período para cruzar contra pagos/detalles
-        $ventaIds = (clone $base)->pluck('id');
-
-        // Por método de pago
-        $porMetodoPago = VentaPago::whereIn('venta_id', $ventaIds)
-            ->selectRaw('metodo_pago_id, sum(monto) as total')
-            ->groupBy('metodo_pago_id')
-            ->with('metodoPago:id,nombre')
-            ->get()
-            ->map(fn ($r) => [
-                'metodo_pago_id' => $r->metodo_pago_id,
-                'metodo_pago_nombre' => $r->metodoPago?->nombre,
-                'total' => DecimalApi::dinero($r->total),
-            ]);
-
-        // Top 10 productos por cantidad vendida
-        $topProductos = VentaDetalle::whereIn('venta_id', $ventaIds)
-            ->selectRaw('variante_id, sum(cantidad) as cantidad_vendida, sum(subtotal) as total_vendido')
-            ->groupBy('variante_id')
-            ->orderByDesc('cantidad_vendida')
-            ->limit(10)
-            ->with(['variante.producto', 'variante.valoresAtributo.valor.atributo'])
-            ->get()
-            ->map(fn ($r) => [
-                'variante_id' => $r->variante_id,
-                'producto_nombre' => $r->variante?->producto?->nombre,
-                'nombre' => $r->variante instanceof ProductoVariante ? $r->variante->nombreDeAtributos() : null,
-                'cantidad_vendida' => DecimalApi::cantidad($r->cantidad_vendida),
-                'total_vendido' => DecimalApi::dinero($r->total_vendido),
-            ]);
-
-        return response()->json(['data' => [
-            'total_ventas' => DecimalApi::dinero($totalVentas),
-            'numero_ventas' => $numeroVentas,
-            'ticket_promedio' => DecimalApi::dinero($ticketPromedio),
-            'por_sucursal' => $porSucursal,
-            'por_metodo_pago' => $porMetodoPago,
-            'top_productos' => $topProductos,
-        ]]);
+        return response()->json($obtenerReporteVentas->ejecutar($request->toDto()));
     }
 }

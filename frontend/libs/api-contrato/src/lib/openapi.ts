@@ -5950,7 +5950,11 @@ export interface operations {
     };
     "crmAvanzado.reporte": {
         parameters: {
-            query?: never;
+            query?: {
+                page?: number;
+                rows?: number;
+                limite?: number;
+            };
             header?: never;
             path?: never;
             cookie?: never;
@@ -5987,11 +5991,31 @@ export interface operations {
                                 destinatarios: number;
                                 enviado_en: string;
                             }[];
+                            detalle: {
+                                id: number;
+                                asunto: string;
+                                /** @enum {string|null} */
+                                segmento: "todos" | "nuevo" | "frecuente" | "vip" | "inactivo" | null;
+                                destinatarios: number;
+                                enviado_en: string;
+                            }[];
+                        };
+                        meta: {
+                            page: number;
+                            rows: number;
+                            total: number;
+                            filtros_aplicados: {
+                                [key: string]: string;
+                            };
+                            permisos: {
+                                exportar: boolean;
+                            };
                         };
                     };
                 };
             };
             401: components["responses"]["AuthenticationException"];
+            422: components["responses"]["ValidationException"];
         };
     };
     "cuentaCobrar.index": {
@@ -6026,7 +6050,11 @@ export interface operations {
     };
     "cuentaCobrar.reporte": {
         parameters: {
-            query?: never;
+            query?: {
+                page?: number;
+                rows?: number;
+                limite?: number;
+            };
             header?: never;
             path?: never;
             cookie?: never;
@@ -6040,6 +6068,7 @@ export interface operations {
                 content: {
                     "application/json": {
                         data: {
+                            fecha_corte: string;
                             total_pendiente: string;
                             total_vencido: string;
                             por_antiguedad: {
@@ -6056,11 +6085,29 @@ export interface operations {
                                 saldo_pendiente: string;
                                 cuentas_pendientes: number;
                             }[];
+                            detalle: {
+                                id: string;
+                                cliente_nombre: string | null;
+                                fecha_vencimiento: string | null;
+                                saldo_pendiente: string;
+                            }[];
+                        };
+                        meta: {
+                            page: number;
+                            rows: number;
+                            total: number;
+                            filtros_aplicados: {
+                                [key: string]: string;
+                            };
+                            permisos: {
+                                exportar: boolean;
+                            };
                         };
                     };
                 };
             };
             401: components["responses"]["AuthenticationException"];
+            422: components["responses"]["ValidationException"];
         };
     };
     "cuentaCobrar.show": {
@@ -6197,7 +6244,11 @@ export interface operations {
     };
     "cuentaPagar.reporte": {
         parameters: {
-            query?: never;
+            query?: {
+                page?: number;
+                rows?: number;
+                limite?: number;
+            };
             header?: never;
             path?: never;
             cookie?: never;
@@ -6211,6 +6262,7 @@ export interface operations {
                 content: {
                     "application/json": {
                         data: {
+                            fecha_corte: string;
                             total_pendiente: string;
                             total_vencido: string;
                             por_antiguedad: {
@@ -6226,11 +6278,29 @@ export interface operations {
                                 saldo_pendiente: string;
                                 cuentas_pendientes: number;
                             }[];
+                            detalle: {
+                                id: string;
+                                proveedor_nombre: string | null;
+                                fecha_vencimiento: string | null;
+                                saldo_pendiente: string;
+                            }[];
+                        };
+                        meta: {
+                            page: number;
+                            rows: number;
+                            total: number;
+                            filtros_aplicados: {
+                                [key: string]: string;
+                            };
+                            permisos: {
+                                exportar: boolean;
+                            };
                         };
                     };
                 };
             };
             401: components["responses"]["AuthenticationException"];
+            422: components["responses"]["ValidationException"];
         };
     };
     "cuentaPagar.show": {
@@ -7142,7 +7212,9 @@ export interface operations {
     };
     "inicio.resumen": {
         parameters: {
-            query?: never;
+            query?: {
+                sucursal_id?: number;
+            };
             header?: never;
             path?: never;
             cookie?: never;
@@ -7156,15 +7228,33 @@ export interface operations {
                 content: {
                     "application/json": {
                         data: {
+                            fecha_corte: string;
+                            zona_horaria: string;
+                            sucursal_id: number | null;
                             ventas_hoy: {
                                 cantidad: number;
                                 total: string;
                             };
+                            gastos_hoy: string;
+                            ventas_netas_comerciales_mes: string;
+                            productos_activos: number;
+                            alertas_stock_bajo: number;
+                            ventas_ultimos_siete_dias: {
+                                fecha: string;
+                                vendido: string;
+                                ventas_netas_comerciales: string;
+                            }[];
+                            ranking_variantes: {
+                                unidad: {
+                                    id: number;
+                                    nombre: string | null;
+                                };
+                                variantes: string;
+                            }[];
                             apartados_por_vencer: {
                                 id: string;
-                                folio: unknown;
+                                folio: string | null;
                                 cliente_nombre: string | null;
-                                /** Format: date-time */
                                 fecha_vencimiento: string;
                                 total: string;
                                 total_abonado: string;
@@ -7174,6 +7264,7 @@ export interface operations {
                 };
             };
             401: components["responses"]["AuthenticationException"];
+            422: components["responses"]["ValidationException"];
         };
     };
     "kardex.porVariante": {
@@ -10513,9 +10604,11 @@ export interface operations {
     "venta.reporte": {
         parameters: {
             query?: {
+                sucursal_id?: number;
                 fecha_desde?: string;
                 fecha_hasta?: string;
-                sucursal_id?: string;
+                page?: number;
+                rows?: number;
             };
             header?: never;
             path?: never;
@@ -10541,21 +10634,67 @@ export interface operations {
                             }[];
                             por_metodo_pago: {
                                 metodo_pago_id: number;
-                                metodo_pago_nombre: string;
+                                metodo_pago_nombre: string | null;
                                 total: string;
                             }[];
                             top_productos: {
                                 variante_id: number;
-                                producto_nombre: string;
+                                producto_nombre: string | null;
                                 nombre: string | null;
                                 cantidad_vendida: string;
                                 total_vendido: string;
                             }[];
+                            periodo: {
+                                desde: string;
+                                hasta: string;
+                                zona_horaria: string;
+                            };
+                            sucursal_id: number | null;
+                            totales: {
+                                vendido: string;
+                                tickets: number;
+                                ticket_promedio: string;
+                                mercancia_devuelta_simple: string;
+                                mercancia_recibida_en_cambios: string;
+                                mercancia_entregada_en_cambios: string;
+                                ventas_netas_comerciales: string;
+                            };
+                            por_dia: {
+                                fecha: string;
+                                vendido: string;
+                                ventas_netas_comerciales: string;
+                            }[];
+                            ranking_variantes: {
+                                unidad: {
+                                    id: number;
+                                    nombre: string | null;
+                                };
+                                variantes: string;
+                            }[];
+                            detalle: {
+                                /** @enum {string} */
+                                tipo: "venta" | "devolucion" | "cambio";
+                                folio: string | null;
+                                fecha: string;
+                                importe_comercial: string;
+                            }[];
+                        };
+                        meta: {
+                            page: number;
+                            rows: number;
+                            total: number;
+                            filtros_aplicados: {
+                                sucursal_id: number | null;
+                            };
+                            permisos: {
+                                exportar: boolean;
+                            };
                         };
                     };
                 };
             };
             401: components["responses"]["AuthenticationException"];
+            422: components["responses"]["ValidationException"];
         };
     };
     "venta.show": {

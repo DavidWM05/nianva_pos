@@ -221,7 +221,7 @@ class EscenariosSeederTest extends TestCase
 
         $gerente = Usuario::where('correo', 'gerente@multi.test')->firstOrFail();
         $vendedor = Usuario::where('correo', 'vendedor1@multi.test')->firstOrFail();
-        $hoy = now()->toDateString();
+        $hoy = now(ConfiguracionTenant::actual()->zona_horaria)->toDateString();
 
         $this->actingAs($gerente)
             ->getJson('/api/v1/ventas/reporte?fecha_desde='.$hoy.'&fecha_hasta='.$hoy)

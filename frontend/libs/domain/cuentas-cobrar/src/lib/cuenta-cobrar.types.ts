@@ -12,7 +12,9 @@ export type AbonoCuenta = AbonoCuentaResource;
 export type RegistrarAbonoPayload = CuerpoDe<'/cuentas-cobrar/{cuentaCobrar}/abonos', 'post'>;
 
 /** CuentaCobrarController::reporte() -- solo cuentas con estado='pendiente', siempre "hoy". */
-export type ReporteCuentasCobrar = RespuestaDe<'/cuentas-cobrar/reporte', 'get'>['data'];
+export type ReporteCuentasCobrar = Pick<RespuestaDe<'/cuentas-cobrar/reporte', 'get'>['data'],
+  'total_pendiente' | 'total_vencido' | 'por_antiguedad' | 'por_cliente'
+>;
 
 export type ReporteAntiguedad = ReporteCuentasCobrar['por_antiguedad'];
 

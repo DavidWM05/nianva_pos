@@ -23,6 +23,7 @@ class DependenciasEntreModulosTest extends TestCase
         'Apartados' => ['Crm', 'Inventario', 'Precios', 'Tpv'],
         'Devoluciones' => ['Inventario', 'Tpv'],
         'Gastos' => ['Tpv'],
+        'Metricas' => ['Tpv', 'Devoluciones', 'Inventario', 'Apartados', 'Gastos'],
     ];
 
     /**

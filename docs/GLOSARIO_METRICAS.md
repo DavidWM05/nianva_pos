@@ -2,7 +2,7 @@
 
 ## Alcance y calendario
 
-Ventas e Inicio parten de la sucursal propia. La selección de otra sucursal exige `sucursales.todas` y que la sucursal pertenezca al tenant. La consolidación entre sucursales debe ser explícita y autorizada. Cartera y CRM se consultan a nivel tenant con sus permisos actuales. La cartera vencida es una foto del saldo al corte actual.
+Ventas e Inicio usan el alcance de `SucursalOperacion::paraFiltro`. Sin `sucursales.todas`, se usa la sucursal propia incluso si se solicita otra. Con el permiso, omitir la selección consolida el tenant y elegir una sucursal válida del tenant limita la consulta a ella. Cartera y CRM se consultan a nivel tenant con sus permisos actuales. La cartera vencida es una foto del saldo al corte actual.
 
 Las fechas de filtro son días civiles del tenant en su zona IANA. Se incluye todo el último día local usando un intervalo UTC semiabierto: desde la medianoche inicial hasta la medianoche siguiente al último día. Los instantes publicados usan ISO 8601 con zona. Las fechas de vencimiento se publican como fechas civiles, sin convertirlas en instantes UTC.
 

@@ -4,12 +4,15 @@ namespace App\Modules\CuentasPagar\Http\Controllers;
 
 use App\Aplicacion\CuentasPagar\AnularCuenta;
 use App\Aplicacion\CuentasPagar\RegistrarPago;
+use App\Aplicacion\Reportes\ObtenerReporteCuentasPagar;
 use App\Http\Controllers\Controller;
 use App\Modules\CuentasPagar\Http\Requests\RegistrarPagoRequest;
 use App\Modules\CuentasPagar\Http\Resources\AbonoPagarResource;
 use App\Modules\CuentasPagar\Http\Resources\CuentaPagarResource;
 use App\Modules\CuentasPagar\Models\CuentaPagar;
+use App\Modules\Nucleo\Http\Requests\ConsultarReporteTenantRequest;
 use App\Modules\Nucleo\Support\DecimalApi;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class CuentaPagarController extends Controller
@@ -100,62 +103,9 @@ class CuentaPagarController extends Controller
         return response()->json(['message' => 'Cuenta por pagar anulada correctamente.']);
     }
 
-    public function reporte(Request $request)
+    public function reporte(ConsultarReporteTenantRequest $request, ObtenerReporteCuentasPagar $reporte): JsonResponse
     {
-        $limite = max(1, min(50, (int) $request->query('limite', 10)));
-        $hoy = now()->toDateString();
-
-        $base = CuentaPagar::where('estado', 'pendiente');
-
-        $totalPendiente = round((float) (clone $base)->sum('saldo_pendiente'), 2);
-        $totalVencido = round((float) (clone $base)->where('fecha_vencimiento', '<', $hoy)->sum('saldo_pendiente'), 2);
-
-        $porAntiguedad = [
-            'al_dia' => '0.00',
-            'vencido_1_30' => '0.00',
-            'vencido_31_60' => '0.00',
-            'vencido_61_90' => '0.00',
-            'vencido_90_mas' => '0.00',
-        ];
-
-        foreach ((clone $base)->where('saldo_pendiente', '>', 0)->get() as $cuenta) {
-            $dias = $cuenta->fecha_vencimiento ? max(0, $cuenta->fecha_vencimiento->diffInDays(now(), false)) : -1;
-            $saldo = (float) $cuenta->saldo_pendiente;
-
-            if ($dias <= 0) {
-                $porAntiguedad['al_dia'] = DecimalApi::dinero(round((float) $porAntiguedad['al_dia'] + $saldo, 2));
-            } elseif ($dias <= 30) {
-                $porAntiguedad['vencido_1_30'] = DecimalApi::dinero(round((float) $porAntiguedad['vencido_1_30'] + $saldo, 2));
-            } elseif ($dias <= 60) {
-                $porAntiguedad['vencido_31_60'] = DecimalApi::dinero(round((float) $porAntiguedad['vencido_31_60'] + $saldo, 2));
-            } elseif ($dias <= 90) {
-                $porAntiguedad['vencido_61_90'] = DecimalApi::dinero(round((float) $porAntiguedad['vencido_61_90'] + $saldo, 2));
-            } else {
-                $porAntiguedad['vencido_90_mas'] = DecimalApi::dinero(round((float) $porAntiguedad['vencido_90_mas'] + $saldo, 2));
-            }
-        }
-
-        // proveedor_nombre sin `?->`: con el operador nullsafe Scramble lo documentaba como string (ARQ-12b).
-        $porProveedor = (clone $base)
-            ->selectRaw('proveedor_id, sum(saldo_pendiente) as saldo_pendiente, count(*) as cuentas_pendientes')
-            ->with('proveedor:id,razon_social')
-            ->groupBy('proveedor_id')
-            ->orderByDesc('saldo_pendiente')
-            ->limit($limite)
-            ->get()
-            ->map(fn ($r) => [
-                'proveedor_id' => $r->proveedor_id,
-                'proveedor_nombre' => $r->proveedor === null ? null : $r->proveedor->razon_social,
-                'saldo_pendiente' => DecimalApi::dinero($r->saldo_pendiente),
-                'cuentas_pendientes' => (int) $r->cuentas_pendientes,
-            ]);
-
-        return response()->json(['data' => [
-            'total_pendiente' => DecimalApi::dinero($totalPendiente),
-            'total_vencido' => DecimalApi::dinero($totalVencido),
-            'por_antiguedad' => $porAntiguedad,
-            'por_proveedor' => $porProveedor,
-        ]]);
+        return response()->json($reporte->ejecutar($request->toDto()));
     }
 
     /**

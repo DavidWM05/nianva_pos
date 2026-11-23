@@ -36,6 +36,18 @@ final readonly class CrearContextoMetricas
         return $this->crear($this->tenantDelUsuario($usuario), null, $desde, $hasta);
     }
 
+    /** El alcance llega resuelto por SucursalOperacion::paraFiltro en el Request. */
+    public function paraReporte(?int $sucursalId, ?string $desde = null, ?string $hasta = null): ContextoMetricas
+    {
+        $tenantId = $this->tenant->id() ?? throw new AuthorizationException('No hay un tenant autorizado para consultar métricas.');
+        $zona = new DateTimeZone(ConfiguracionTenant::actual()->zona_horaria ?? 'America/Mexico_City');
+        $corte = $this->calendario->fechaLocal($zona);
+        $ultimo = $hasta ?? $corte;
+        $primero = $desde ?? substr($ultimo, 0, 7).'-01';
+
+        return new ContextoMetricas($tenantId, $sucursalId, $zona, PeriodoMetricas::entre($primero, $ultimo, $zona), $corte);
+    }
+
     private function tenantDelUsuario(Usuario $usuario): int
     {
         $tenantId = $this->tenant->id();

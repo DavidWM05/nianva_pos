@@ -9,6 +9,7 @@ use App\Modules\Inventario\Models\Producto;
 use App\Modules\Inventario\Models\ProductoVariante;
 use App\Modules\Inventario\Models\Proveedor;
 use App\Modules\Inventario\Services\InventarioService;
+use App\Modules\Metricas\Services\CrearContextoMetricas;
 use App\Modules\Nucleo\Models\MetodoPago;
 use App\Modules\Nucleo\Models\Permiso;
 use App\Modules\Nucleo\Models\Rol;
@@ -18,6 +19,7 @@ use App\Modules\Nucleo\Models\Usuario;
 use App\Modules\Nucleo\Services\TenantContext;
 use App\Modules\Tpv\Services\CajaService;
 use App\Modules\Tpv\Services\VentaService;
+use DateTimeImmutable;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\Support\Bloqueos04c;
 use Tests\Support\Bloqueos04e;
@@ -122,7 +124,8 @@ class VentaReporteTest extends TestCase
 
         $this->actingAs($this->usuario);
 
-        $ayer = now()->subDay()->toDateString();
+        $corte = app(CrearContextoMetricas::class)->paraReporte($this->sucursal->id)->fechaCorte;
+        $ayer = (new DateTimeImmutable($corte))->modify('-1 day')->format('Y-m-d');
         $response = $this->getJson("/api/v1/ventas/reporte?fecha_desde={$ayer}&fecha_hasta={$ayer}");
 
         $response->assertOk();

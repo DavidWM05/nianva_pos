@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import type { CuerpoDe, RespuestaDe } from '@nianva/api-contrato';
 import { urlApi } from '@nianva/core-http';
@@ -63,8 +63,14 @@ export class CrmAvanzadoService {
   }
 
   reporte(): Observable<ReporteCrm> {
-    return this.http
-      .get<RespuestaDe<'/crm/reporte', 'get'>>(urlApi(`/crm/reporte`))
-      .pipe(map((r) => r.data));
+    return this.reportePaginado().pipe(map((r) => r.data));
+  }
+
+  reportePaginado(page?: number, rows?: number): Observable<RespuestaDe<'/crm/reporte', 'get'>> {
+    let params = new HttpParams();
+    if (page !== undefined) params = params.set('page', page);
+    if (rows !== undefined) params = params.set('rows', rows);
+
+    return this.http.get<RespuestaDe<'/crm/reporte', 'get'>>(urlApi('/crm/reporte'), { params });
   }
 }

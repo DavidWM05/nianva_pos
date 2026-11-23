@@ -49,11 +49,17 @@ class CrmAvanzadoService
             ->latest('fecha')
             ->first();
 
+        return $this->segmentoPorActividad($ventas, $ultimaVenta === null ? null : (string) $ultimaVenta->getRawOriginal('fecha'), now()->subMonth()->toDateTimeString());
+    }
+
+    /** @return 'nuevo'|'inactivo'|'vip'|'frecuente' */
+    public function segmentoPorActividad(int $ventas, ?string $ultimaCompletada, string $limite): string
+    {
         if ($ventas === 0) {
             return 'nuevo';
         }
 
-        if ($ultimaVenta && $ultimaVenta->fecha < now()->subMonth()) {
+        if ($ultimaCompletada !== null && $ultimaCompletada < $limite) {
             return 'inactivo';
         }
 

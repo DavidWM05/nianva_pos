@@ -107,13 +107,18 @@ export class CuentaPagarService {
 
   /** limite: top-N proveedores por saldo pendiente en `por_proveedor` (backend acepta 1-50, default 10). */
   reporte(limite = 10): Observable<ReporteCuentasPagar> {
-    const params = new HttpParams().set('limite', limite);
+    return this.reportePaginado(limite).pipe(map((r) => r.data));
+  }
+
+  reportePaginado(limite = 10, page?: number, rows?: number): Observable<RespuestaDe<'/cuentas-pagar/reporte', 'get'>> {
+    let params = new HttpParams().set('limite', limite);
+    if (page !== undefined) params = params.set('page', page);
+    if (rows !== undefined) params = params.set('rows', rows);
 
     return this.http
       .get<RespuestaDe<'/cuentas-pagar/reporte', 'get'>>(
         urlApi(`/cuentas-pagar/reporte`),
         { params },
-      )
-      .pipe(map((r) => r.data));
+      );
   }
 }
