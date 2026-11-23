@@ -81,8 +81,12 @@ export class VentaService {
       .pipe(map(({ data }): VentaCotizacion => data));
   }
 
-  /** Sin filtros: backend usa el mes actual (dia 1 a hoy) y todas las sucursales del tenant. */
+  /** Sin filtros: mes local actual y alcance de sucursal autorizado por la API. */
   reporte(filtros: ReporteVentasFiltros = {}): Observable<ReporteVentas> {
+    return this.reportePaginado(filtros).pipe(map((r) => r.data));
+  }
+
+  reportePaginado(filtros: ReporteVentasFiltros = {}, page?: number, rows?: number): Observable<RespuestaDe<'/ventas/reporte', 'get'>> {
     let params = new HttpParams();
 
     if (filtros.fechaDesde) {
@@ -95,9 +99,11 @@ export class VentaService {
       params = params.set('sucursal_id', filtros.sucursalId);
     }
 
+    if (page !== undefined) params = params.set('page', page);
+    if (rows !== undefined) params = params.set('rows', rows);
+
     return this.http
-      .get<RespuestaDe<'/ventas/reporte', 'get'>>(urlApi(`/ventas/reporte`), { params })
-      .pipe(map((r) => r.data));
+      .get<RespuestaDe<'/ventas/reporte', 'get'>>(urlApi(`/ventas/reporte`), { params });
   }
 
   impreso(venta: string): Observable<RespuestaDe<'/ventas/{venta}/impreso', 'get'>['data']> {

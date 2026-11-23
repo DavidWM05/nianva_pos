@@ -28,9 +28,8 @@ Dependencias permitidas entre módulos base, y solo estas:
   `AuditObserver`) y las reglas publicadas en `<Modulo>\Support\Reglas*` se usan desde
   cualquier módulo.
 
-- `Metricas` es base de solo lectura. En S1 usa los transversales `Nucleo` y `Configuracion`.
-  Las aristas a `Tpv`, `Devoluciones`, `Inventario`, `Apartados` y `Gastos` se incorporan
-  al grafo en S2.
+- `Metricas` → `Tpv` + `Devoluciones` + `Inventario` + `Apartados` + `Gastos`. Solo lectura
+  con Models y Eloquent, además de los transversales `Nucleo` y `Configuracion`.
 
 Las extensiones pueden depender de los módulos base, nunca entre sí, y ningún módulo base
 depende de ellas. `Arquitectura/DependenciasEntreModulosTest` lo verifica y no tiene

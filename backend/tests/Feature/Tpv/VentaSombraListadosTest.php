@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Tpv;
 
+use App\Modules\Metricas\Services\CrearContextoMetricas;
 use App\Modules\Nucleo\Support\DecimalApi;
 use App\Modules\Tpv\Models\Venta;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -25,7 +26,8 @@ class VentaSombraListadosTest extends TestCase
             'es_venta_sombra' => true, 'total' => '900.00']);
         $this->actingAs($this->usuario);
         $this->getJson('/api/v1/ventas')->assertOk()->assertJsonFragment(['id' => $sombra->ulid, 'es_venta_sombra' => true]);
-        $this->getJson('/api/v1/ventas/reporte?fecha_desde='.now()->toDateString().'&fecha_hasta='.now()->toDateString())
+        $hoy = app(CrearContextoMetricas::class)->paraReporte($this->sucursal->id)->fechaCorte;
+        $this->getJson('/api/v1/ventas/reporte?fecha_desde='.$hoy.'&fecha_hasta='.$hoy)
             ->assertOk()->assertJsonPath('data.numero_ventas', 1)
             ->assertJsonPath('data.total_ventas', DecimalApi::dinero($venta->total));
         $this->assertNull($sombra->fresh()->cajaSesion);

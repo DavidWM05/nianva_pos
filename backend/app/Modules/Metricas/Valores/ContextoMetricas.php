@@ -15,4 +15,15 @@ final readonly class ContextoMetricas
         public PeriodoMetricas $periodo,
         public string $fechaCorte,
     ) {}
+
+    public function enPeriodo(string $desde, string $hasta): self
+    {
+        return new self(
+            $this->tenantId,
+            $this->sucursalId,
+            $this->zona,
+            PeriodoMetricas::entre($desde, $hasta, $this->zona),
+            $this->fechaCorte,
+        );
+    }
 }

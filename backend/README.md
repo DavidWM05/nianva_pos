@@ -123,7 +123,7 @@ Inventario         Crm
    Apartados   Devoluciones    (Apartados -> Crm+Inventario+Precios+Tpv)
                                (Devoluciones -> Inventario+Tpv)
       Gastos                   (Gastos -> Tpv, solo Model/Exception)
-      Metricas                 (base; en S1 solo usa Nucleo y Configuracion)
+      Metricas                 (Metricas -> Tpv + Devoluciones + Inventario + Apartados + Gastos; solo lectura)
 
    Cotizaciones                (Cotizaciones -> Precios + Tpv)
    Delivery                    (Delivery -> Tpv)
@@ -150,7 +150,9 @@ llama y devuelve el Resource. Ni los controladores ni los `Services` orquestan e
 | `Ventas/RegistrarVenta` | `VentaController::store()` | Tpv, Precios, GiftCards, NotasCredito |
 | `Devoluciones/RegistrarDevolucion` | `DevolucionController::store()` | Devoluciones, NotasCredito |
 | `Caja/CerrarCaja` | `CajaController::cerrar()` | Tpv, Gastos, CxC, GiftCards, CxP |
-| `Inicio/ObtenerResumenInicio` | `InicioController::resumen()` | Núcleo, Tpv, Apartados |
+| `Inicio/ObtenerResumenInicio` | `InicioController::resumen()` | Núcleo, Métricas |
+| `Ventas/ObtenerReporteVentas` | `VentaController::reporte()` | Núcleo, Métricas |
+| `Ventas/PresentarRankingVariantes` | Actions de Ventas e Inicio | Métricas y UnidadesMedida |
 
 ## Catálogo de `error_code`
 
