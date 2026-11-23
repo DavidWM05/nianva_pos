@@ -4,16 +4,21 @@ namespace App\Modules\CuentasCobrar\Http\Controllers;
 
 use App\Aplicacion\CuentasCobrar\AnularCuenta;
 use App\Aplicacion\CuentasCobrar\RegistrarAbono;
+use App\Aplicacion\Reportes\ExportarReporteCsv;
 use App\Aplicacion\Reportes\ObtenerReporteCuentasCobrar;
 use App\Http\Controllers\Controller;
 use App\Modules\CuentasCobrar\Http\Requests\RegistrarAbonoRequest;
 use App\Modules\CuentasCobrar\Http\Resources\AbonoCuentaResource;
 use App\Modules\CuentasCobrar\Http\Resources\CuentaCobrarResource;
 use App\Modules\CuentasCobrar\Models\CuentaCobrar;
+use App\Modules\Nucleo\Dtos\ConsultarReporteTenantDto;
 use App\Modules\Nucleo\Http\Requests\ConsultarReporteTenantRequest;
+use App\Modules\Nucleo\Models\Usuario;
 use App\Modules\Nucleo\Support\DecimalApi;
+use Dedoc\Scramble\Attributes\Response;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 /**
  * CRUD de cuentas por cobrar.
@@ -117,7 +122,22 @@ class CuentaCobrarController extends Controller
 
     public function reporte(ConsultarReporteTenantRequest $request, ObtenerReporteCuentasCobrar $reporte): JsonResponse
     {
-        return response()->json($reporte->ejecutar($request->toDto()));
+        $resultado = $reporte->ejecutar($request->toDto());
+        $usuario = $request->user();
+        $resultado['meta']['permisos']['exportar'] = $usuario instanceof Usuario && $usuario->tienePermiso('reportes.exportar');
+
+        return response()->json($resultado);
+    }
+
+    #[Response(description: 'Archivo CSV del reporte', mediaType: 'text/csv; charset=UTF-8', format: 'binary')]
+    #[Response(status: 403, description: 'Falta el permiso de lectura o reportes.exportar', type: 'array{message: string, error_code: string}')]
+    #[Response(status: 422, description: 'Filtros inválidos o más de 10 000 filas', type: "array{message: string, error_code: 'reporte_exportacion_limite', limite: int}|array{message: string, errors: array<string, list<string>>}")]
+    public function exportar(ConsultarReporteTenantRequest $request, ObtenerReporteCuentasCobrar $reporte, ExportarReporteCsv $exportar): BinaryFileResponse
+    {
+        $consulta = $request->toDto();
+        $resultado = $reporte->ejecutar(new ConsultarReporteTenantDto(1, ExportarReporteCsv::LIMITE, $consulta->limite));
+
+        return $exportar->ejecutar('cuentas-cobrar', $resultado, ['id', 'cliente_nombre', 'fecha_vencimiento', 'saldo_pendiente'], ['id', 'saldo_pendiente'], ['total_pendiente', 'total_vencido', 'por_antiguedad']);
     }
 
     /**

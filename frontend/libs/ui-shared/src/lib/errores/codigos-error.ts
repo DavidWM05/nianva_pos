@@ -73,6 +73,7 @@ export const CODIGOS_ERROR = [
   'puntos_insuficientes',
   'puntos_no_generados',
   'recarga_pago_no_cuadra',
+  'reporte_exportacion_limite',
   'servicio_no_disponible',
   'sesion_bloqueada',
   'sesion_expirada',

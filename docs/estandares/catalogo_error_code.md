@@ -76,6 +76,7 @@ Generado con `php artisan errores:catalogo` desde las excepciones de negocio y e
 | `puntos_insuficientes` | 422 | `App\Modules\CrmAvanzado\Exceptions\PuntosInsuficientesException` | CrmAvanzado | — |
 | `puntos_no_generados` | 422 | `App\Modules\CrmAvanzado\Exceptions\PuntosNoGeneradosException` | CrmAvanzado | — |
 | `recarga_pago_no_cuadra` | 422 | `App\Modules\GiftCards\Exceptions\RecargaPagoNoCuadraException` | GiftCards | monto, suma_pagos |
+| `reporte_exportacion_limite` | 422 | `App\Modules\Metricas\Exceptions\LimiteExportacionReporteException` | Metricas | limite |
 | `servicio_no_disponible` | 503 | `App\Modules\Nucleo\Support\MapaErroresHttp` | Nucleo | - |
 | `sesion_bloqueada` | 423 | `App\Modules\Nucleo\Exceptions\SesionBloqueadaException` | Nucleo | — |
 | `sesion_expirada` | 419 | `App\Modules\Nucleo\Support\MapaErroresHttp` | Nucleo | - |
