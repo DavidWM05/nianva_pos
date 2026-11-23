@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, ViewEncapsulation } from '@angular/core';
+import { ChangeDetectionStrategy, Component, ViewEncapsulation, input } from '@angular/core';
 
 /**
  * Lista de tarjetas: la forma de una tabla editable en pantalla angosta (UI-04), por ejemplo el
@@ -21,9 +21,15 @@ import { ChangeDetectionStrategy, Component, ViewEncapsulation } from '@angular/
   // Sin encapsulacion: titulo, pie y etiquetas son contenido proyectado.
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  host: { class: 'ui-tarjetas' },
+  host: {
+    class: 'ui-tarjetas',
+    '[class.ui-tarjetas--resumen]': "disposicion() === 'resumen'",
+    '[class.ui-tarjetas--paneles]': "disposicion() === 'paneles'",
+  },
 })
-export class TarjetasComponent {}
+export class TarjetasComponent {
+  readonly disposicion = input<'lista' | 'resumen' | 'paneles'>('lista');
+}
 
 /** Una tarjeta de la lista: borde, relleno, titulo (`ui-tarjeta__titulo`) y pie (`ui-tarjeta__pie`). */
 @Component({

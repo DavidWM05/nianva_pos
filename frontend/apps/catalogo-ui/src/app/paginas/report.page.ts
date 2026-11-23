@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/cor
 import { ActivatedRoute } from '@angular/router';
 import { ColumnaListado, MetaListado, TablaComponent } from '@nianva/ui-data';
 import { KpiComponent } from '@nianva/ui-feedback';
-import { PageHeaderComponent, SectionComponent } from '@nianva/ui-layout';
+import { PageHeaderComponent, SectionComponent, TarjetaComponent, TarjetasComponent } from '@nianva/ui-layout';
 import { GraficaSerieComponent, ReportComponent, ReportFiltrosComponent } from '@nianva/ui-report';
 
 interface FilaReporte {
@@ -15,7 +15,7 @@ interface FilaReporte {
 @Component({
   selector: 'cat-report-page',
   standalone: true,
-  imports: [GraficaSerieComponent, KpiComponent, PageHeaderComponent, ReportComponent, ReportFiltrosComponent, SectionComponent, TablaComponent],
+  imports: [GraficaSerieComponent, KpiComponent, PageHeaderComponent, ReportComponent, ReportFiltrosComponent, SectionComponent, TablaComponent, TarjetaComponent, TarjetasComponent],
   template: `
     <ui-page-header clave="catalogo-report" subtitulo="Plantilla completa, sin gráfica y estados" />
 
@@ -64,6 +64,14 @@ interface FilaReporte {
     </ui-section>
 
     @if (demoSerie) {
+      <ui-section titulo="Distribución de tarjetas">
+        <ul uiTarjetas disposicion="resumen" role="list">
+          <li uiTarjeta><ui-kpi etiqueta="Ventas de hoy" formato="dinero" valor="1250.50" /></li>
+          <li uiTarjeta><ui-kpi etiqueta="Tickets de hoy" valor="5 ventas" /></li>
+          <li uiTarjeta><ui-kpi etiqueta="Gastos de hoy" formato="dinero" valor="32.10" /></li>
+        </ul>
+      </ui-section>
+
       <ui-section titulo="Reporte vacío">
         <ui-report clave="catalogo-report" estado="vacio" [puedeExportar]="false" />
       </ui-section>
