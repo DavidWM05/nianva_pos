@@ -10440,6 +10440,12 @@
                 "default": null
             },
             {
+                "nombre": "importe_efectivo",
+                "tipo": "numeric",
+                "nullable": false,
+                "default": null
+            },
+            {
                 "nombre": "impuesto",
                 "tipo": "numeric",
                 "nullable": false,

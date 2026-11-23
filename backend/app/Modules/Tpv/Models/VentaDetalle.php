@@ -33,7 +33,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property int $unidad_medida_id
  * @property string $factor
  */
-#[Fillable(['presentacion_id', 'presentacion_nombre', 'venta_id', 'variante_id', 'cantidad', 'precio_unitario', 'descuento_aplicado', 'lista_precio_id', 'lista_precio_nombre', 'regla_precio_id', 'regla_nombre', 'costo_unitario', 'tasa_impuesto', 'exento', 'impuesto', 'unidad_medida_id', 'factor', 'subtotal'])]
+#[Fillable(['presentacion_id', 'presentacion_nombre', 'venta_id', 'variante_id', 'cantidad', 'precio_unitario', 'descuento_aplicado', 'lista_precio_id', 'lista_precio_nombre', 'regla_precio_id', 'regla_nombre', 'costo_unitario', 'tasa_impuesto', 'exento', 'impuesto', 'unidad_medida_id', 'factor', 'subtotal', 'importe_efectivo'])]
 class VentaDetalle extends Model
 {
     use BelongsToTenantViaRelacion;
@@ -60,6 +60,7 @@ class VentaDetalle extends Model
             'impuesto' => 'decimal:2',
             'factor' => 'decimal:3',
             'subtotal' => 'decimal:2',
+            'importe_efectivo' => 'decimal:2',
         ];
     }
 

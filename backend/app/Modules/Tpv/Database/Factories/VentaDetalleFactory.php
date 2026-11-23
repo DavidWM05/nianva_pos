@@ -37,6 +37,7 @@ class VentaDetalleFactory extends Factory
             'unidad_medida_id' => fn (array $a) => UnidadDeVariante::idPara(ProductoVariante::query()->withoutGlobalScopes()->whereKey($a['variante_id'])->firstOrFail()),
             'factor' => '1.000',
             'subtotal' => 100,
+            'importe_efectivo' => fn (array $a) => $a['subtotal'],
         ];
     }
 }

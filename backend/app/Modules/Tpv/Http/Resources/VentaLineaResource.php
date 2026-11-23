@@ -25,7 +25,7 @@ class VentaLineaResource extends JsonResource
 
         // DAT-08: la línea se publica por su ulid; la devolución la recibe en venta_detalle_id.
         return ['id' => (string) $detalle->getAttribute('ulid'), 'variante_id' => (int) $detalle->getAttribute('variante_id'), 'variante' => $variante instanceof ProductoVariante ? $this->datosVariante($variante) : null,
-            'cantidad' => DecimalApi::cantidad($detalle->getAttribute('cantidad')), 'precio_unitario' => DecimalApi::dinero($detalle->getAttribute('precio_unitario')), 'descuento_aplicado' => DecimalApi::dinero($detalle->getAttribute('descuento_aplicado')), 'subtotal' => DecimalApi::dinero($detalle->getAttribute('subtotal')),
+            'cantidad' => DecimalApi::cantidad($detalle->getAttribute('cantidad')), 'precio_unitario' => DecimalApi::dinero($detalle->getAttribute('precio_unitario')), 'descuento_aplicado' => DecimalApi::dinero($detalle->getAttribute('descuento_aplicado')), 'subtotal' => DecimalApi::dinero($detalle->getAttribute('subtotal')), 'importe_efectivo' => DecimalApi::dinero($detalle->getAttribute('importe_efectivo')),
             // DAT-03: la foto de la línea, nunca el catálogo actual.
             'lista_precio_nombre' => $detalle->getAttribute('lista_precio_nombre') === null ? null : (string) $detalle->getAttribute('lista_precio_nombre'),
             'regla_nombre' => $detalle->getAttribute('regla_nombre') === null ? null : (string) $detalle->getAttribute('regla_nombre'),

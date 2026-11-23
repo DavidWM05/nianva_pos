@@ -183,7 +183,7 @@ class DevolucionService
             // DAT-03: la linea nueva de un cambio copia la foto de la venta sombra, que si salio de
             // PricingService en el momento.
             foreach (VentaDetalle::query()->with('reglas')->where('venta_id', $ventaSombra->id)->get() as $detalle) {
-                $this->crearItem($devolucion, 'nuevo', $detalle, $detalle->getAttribute('cantidad'), (string) $detalle->getAttribute('subtotal'), false);
+                $this->crearItem($devolucion, 'nuevo', $detalle, $detalle->getAttribute('cantidad'), (string) $detalle->getAttribute('importe_efectivo'), false);
             }
         }
 
@@ -249,9 +249,8 @@ class DevolucionService
             }
 
             $precioUnitario = (float) $detalleOriginal->getAttribute('precio_unitario');
-            $subtotal = $detalleOriginal->getAttribute('presentacion_nombre') !== null
-                ? (float) Dinero::desde((string) $detalleOriginal->getAttribute('subtotal'))->proporcion(Cantidad::milesimas($item['cantidad']), Cantidad::milesimas($detalleOriginal->getAttribute('cantidad')))->aCadena()
-                : round($precioUnitario * $item['cantidad'], 2);
+            $subtotal = (float) Dinero::desde((string) $detalleOriginal->getAttribute('importe_efectivo'))
+                ->proporcion(Cantidad::milesimas($item['cantidad']), Cantidad::milesimas($detalleOriginal->getAttribute('cantidad')))->aCadena();
 
             $lineas[] = [
                 'detalle' => $detalleOriginal,
