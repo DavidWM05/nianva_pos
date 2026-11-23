@@ -94,4 +94,38 @@ describe('ConfiguracionFormComponent', () => {
 
     expect(emitido).toBeUndefined();
   });
+
+  it('formatea los umbrales y guarda ambos importes editados', () => {
+    const inputs: NodeListOf<HTMLInputElement> = fixture.nativeElement.querySelectorAll('ui-input-dinero input');
+    expect(inputs[0].value).toContain('50.00');
+    expect(inputs[1].value).toContain('100.00');
+    let emitido: unknown;
+    fixture.componentInstance.guardar.subscribe((valor) => (emitido = valor));
+
+    inputs.forEach((entrada, indice) => {
+      entrada.value = indice === 0 ? '75.25' : '0';
+      entrada.dispatchEvent(new Event('input'));
+    });
+    dynamicForm.onSubmit();
+
+    expect(emitido).toMatchObject({ margen_descuento_supervisor: 75.25, umbral_descuadre_supervisor: 0 });
+  });
+
+  it('rechaza un umbral negativo y permite como máximo dos decimales', () => {
+    const entrada: HTMLInputElement = fixture.nativeElement.querySelector('ui-input-dinero input');
+    let emitido: unknown;
+    fixture.componentInstance.guardar.subscribe((valor) => (emitido = valor));
+
+    entrada.value = '-1';
+    entrada.dispatchEvent(new Event('input'));
+    dynamicForm.onSubmit();
+    expect(emitido).toBeUndefined();
+
+    entrada.value = '2.345';
+    entrada.dispatchEvent(new Event('input'));
+    dynamicForm.onSubmit();
+    expect(entrada.value).toBe('2.34');
+    expect(emitido).toMatchObject({ margen_descuento_supervisor: 2.34 });
+  });
+
 });

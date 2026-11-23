@@ -1,6 +1,6 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { ChangeDetectionStrategy, Component, OnInit, ViewChild, computed, inject, signal } from '@angular/core';
-import { RecordTabConfig, RecordTabsComponent, ToastService } from '@nianva/ui-shared';
+import { RecordTabConfig, RecordTabsComponent, ToastService, mensajeError } from '@nianva/ui-shared';
 import { DatosComponent, EstadoPagina, PageComponent, PageHeaderComponent, SectionComponent } from '@nianva/ui-layout';
 import { AlertComponent, BadgeComponent, SkeletonComponent, estadoVisual } from '@nianva/ui-feedback';
 import { FechaHoraPipe, FechaPipe } from '@nianva/ui-format';
@@ -102,6 +102,9 @@ export class ConfiguracionComponent implements OnInit {
   }
 
   onGuardar(payload: ConfiguracionTenantFormPayload): void {
+    if (this.guardando()) {
+      return;
+    }
     this.guardando.set(true);
 
     this.configuracionService.actualizar(payload).subscribe({
@@ -115,9 +118,8 @@ export class ConfiguracionComponent implements OnInit {
 
         if (error.status === 422 && error.error?.errors) {
           this.formulario?.setServerErrors(error.error.errors);
-        } else {
-          this.toast.error('No se pudo guardar la configuración.');
         }
+        this.toast.error(mensajeError(error, 'No se pudo guardar la configuración.'));
       },
     });
   }

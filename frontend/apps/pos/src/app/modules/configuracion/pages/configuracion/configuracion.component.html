@@ -6,7 +6,7 @@
       <div class="configuracion__tab">
         @if (visible() && configuracion(); as configuracionActual) {
           <ui-section titulo="Datos de la empresa">
-            <nucleo-configuracion-form [valorInicial]="configuracionActual" (guardar)="onGuardar($event)" />
+            <nucleo-configuracion-form [valorInicial]="configuracionActual" [enviando]="guardando()" (guardar)="onGuardar($event)" />
           </ui-section>
         }
 

@@ -1,1 +1,10 @@
-<nucleo-dynamic-form [fields]="fields" submitLabel="Guardar configuración" (formSubmit)="onSubmit($event)" />
+<nucleo-dynamic-form [fields]="fields" [enviando]="enviando()" submitLabel="Guardar configuración" (formSubmit)="onSubmit($event)">
+  <ui-section titulo="Autorización de supervisor">
+    <ui-campo etiqueta="Descuento manual que pide supervisor" [ayuda]="'Vigente: ' + ((valorInicial.margen_descuento_supervisor ?? 50) | dinero) + ' MXN'" [requerido]="true">
+      <ui-input-dinero [formControl]="descuento" [permitirNegativo]="true" />
+    </ui-campo>
+    <ui-campo etiqueta="Descuadre de caja que pide supervisor" [ayuda]="'Importe absoluto vigente: ' + ((valorInicial.umbral_descuadre_supervisor ?? 100) | dinero) + ' MXN'" [requerido]="true">
+      <ui-input-dinero [formControl]="descuadre" [permitirNegativo]="true" />
+    </ui-campo>
+  </ui-section>
+</nucleo-dynamic-form>

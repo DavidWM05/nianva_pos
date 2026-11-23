@@ -19,3 +19,16 @@ test('configuracion: abre, guarda empresa y muestra la licencia', async ({ page 
   // 404 = tenant sin licencia registrada; la pantalla oculta la seccion (50c).
   sinErrores(errores, '/configuracion', ['GET /api/v1/licencia-local -> 404']);
 });
+
+for (const tema of ['claro', 'oscuro'] as const) {
+  test(`B4a: axe en Configuración en tema ${tema} a 1280 y 390 px`, async ({ page }) => {
+    await page.addInitScript((valor) => localStorage.setItem('nv-tema', valor), tema);
+    await iniciarSesion(page, 'vendedor@abarrotes.test');
+    await abrirPantalla(page, '/configuracion');
+    await expect(page.getByRole('heading', { name: 'Autorización de supervisor' })).toBeVisible();
+    for (const width of [1280, 390]) {
+      await page.setViewportSize({ width, height: 900 });
+      await sinViolacionesSerias(page);
+    }
+  });
+}
