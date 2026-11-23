@@ -20,6 +20,7 @@ import { PageHeaderComponent, SectionComponent } from '@nianva/ui-layout';
         <li><a routerLink="/forms">Formularios</a></li>
         <li><a routerLink="/overlays">Overlays</a></li>
         <li><a routerLink="/report">Reportes</a></li>
+        <li><a routerLink="/report/serie">Gráfica y estados de reporte</a></li>
       </ul>
       <p>Usa el botón del encabezado para cambiar el tema o abre una ruta con <code>?tema=oscuro</code>.</p>
     </ui-section>

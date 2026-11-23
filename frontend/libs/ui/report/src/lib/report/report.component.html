@@ -1,8 +1,10 @@
 <ui-page-header [clave]="clave()">
-  <ui-btn-exportar acciones [exportando]="exportando()" (exportar)="exportar.emit()" />
+  @if (puedeExportar()) {
+    <ui-btn-exportar acciones [exportando]="exportando()" (exportar)="exportar.emit()" />
+  }
 </ui-page-header>
 
-<ui-page [estado]="estado()" forma="listado" (reintentar)="reintentar.emit()">
+<ui-page [estado]="estadoPagina()" forma="listado" [mensajeError]="mensajeError()" (reintentar)="reintentar.emit()">
   <section class="ui-report__filtros">
     <ng-content select="[filtros]" />
   </section>
@@ -18,6 +20,10 @@
   }
 
   <section class="ui-report__detalle">
-    <ng-content select="[detalle]" />
+    @if (estado() === 'vacio') {
+      <ui-empty [mensaje]="mensajeVacio()" />
+    } @else {
+      <ng-content select="[detalle]" />
+    }
   </section>
 </ui-page>

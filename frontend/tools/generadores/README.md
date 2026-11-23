@@ -37,3 +37,11 @@ Al terminar imprime lo que falta a mano: la ruta en `app.routes.ts`, la entrada 
 
 Los tests (`ui-listado/index.test.mjs`) corren en CI en el paso "Probar generadores" y pasan
 la plantilla generada por las reglas de lint propias.
+
+## Pantalla de reporte (UI-10)
+
+    pnpm nx g @nianva/generadores:ui-reporte --nombre=reporte-demo --modulo=reportes --clave=reportes-demo --endpoint=/ventas/reporte
+
+El generador crea la pantalla tipada y su plantilla paginada. Completa las
+columnas y las métricas declaradas, y sigue los pasos impresos para la ruta y
+la navegación.

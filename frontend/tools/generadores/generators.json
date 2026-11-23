@@ -1,5 +1,10 @@
 {
   "generators": {
+    "ui-reporte": {
+      "factory": "./ui-reporte/index.cjs",
+      "schema": "./ui-reporte/schema.json",
+      "description": "Pantalla de reporte con ui-report y métricas tipadas (UI-10)"
+    },
     "ui-listado": {
       "factory": "./ui-listado/index.cjs",
       "schema": "./ui-listado/schema.json",

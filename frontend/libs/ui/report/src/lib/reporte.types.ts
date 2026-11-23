@@ -9,7 +9,7 @@ export interface SucursalReporte {
   nombre: string;
 }
 
-export type EstadoReporte = 'cargando' | 'error' | 'listo';
+export type EstadoReporte = 'cargando' | 'error' | 'listo' | 'vacio';
 
 export function fechaComoIso(fecha: Date | null | undefined): string | null {
   if (! (fecha instanceof Date) || Number.isNaN(fecha.getTime())) {
