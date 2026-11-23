@@ -1,0 +1,21 @@
+<p>Terminal actual: {{ actual()?.nombre ?? 'Sin terminal' }}</p>
+@if (puedeElegir()) {
+  @if (cargando()) {
+    <ui-skeleton forma="bloque" etiqueta="Cargando terminales" />
+  } @else if (fallo(); as error) {
+    <p role="alert">{{ error }}</p>
+    <button matButton type="button" (click)="reintentar()">Reintentar</button>
+  } @else {
+    <form (submit)="$event.preventDefault(); guardar()">
+      <ui-campo #campoTerminal etiqueta="Elegir terminal">
+        <select [id]="campoTerminal.controlId()" [formControl]="terminalId">
+          <option [ngValue]="null" disabled>Elige una terminal</option>
+          @for (terminal of terminales(); track terminal.id) {
+            <option [ngValue]="terminal.id">{{ terminal.nombre }}</option>
+          }
+        </select>
+      </ui-campo>
+      <ui-btn-enviar etiqueta="Cambiar terminal" [enviando]="enviando()" [deshabilitado]="seleccion() === null || seleccion() === actual()?.id" />
+    </form>
+  }
+}

@@ -149,6 +149,7 @@ export const NUCLEO_NAV_GROUPS: NucleoNavGroup[] = [
       // Ruta 'configuracion': la pantalla en si ahora tiene tabs Empresa/
       // Licencia (RecordTabsComponent) -- ver ConfiguracionComponent.
       { key: 'empresa', label: 'Empresa', path: 'configuracion', icon: 'pi pi-briefcase', permiso: 'configuracion.editar' },
+      { key: 'terminales', label: 'Terminales', path: 'terminales', icon: 'pi pi-desktop', permiso: 'terminales.administrar' },
       { key: 'metodos-pago', label: 'Métodos de pago', path: 'metodos-pago', icon: 'pi pi-wallet', permiso: 'metodos_pago.ver' },
       { key: 'auditoria', label: 'Auditoría', path: 'auditoria', icon: 'pi pi-history', permiso: 'auditoria.ver' },
       // Personal (cualquier usuario autenticado, sin permiso especial) --

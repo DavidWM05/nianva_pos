@@ -53,3 +53,5 @@ export const BUSCADOR_LISTA_PRECIO = new InjectionToken<BuscadorEntidad>('BUSCAD
 
 export interface PresentacionBuscable extends EntidadBuscable { factor: string; }
 export const BUSCADOR_PRESENTACION = new InjectionToken<BuscadorDeHijos<PresentacionBuscable>>('BUSCADOR_PRESENTACION');
+
+export const BUSCADOR_SUCURSAL = new InjectionToken<BuscadorEntidad>('BUSCADOR_SUCURSAL');
