@@ -60,6 +60,52 @@ describe('Métricas de Inicio', () => {
     expect(vista.textContent).toContain('14.75');
   });
 
+  it('muestra la rentabilidad del mes que recibe el usuario con reportes.costos', () => {
+    TestBed.configureTestingModule({
+      imports: [InicioComponent],
+      providers: [
+        ...proveedoresDePantalla(),
+        {
+          provide: InicioService,
+          useValue: {
+            resumen: () => of({
+              ...resumen(5),
+              rentabilidad_mes: {
+                ingreso_sin_iva: '100.00',
+                costo_neto_ventas: '60.00',
+                utilidad_bruta: '40.00',
+                margen_porcentaje: '40.00',
+                merma: '12.00',
+                resultado_despues_merma: '28.00',
+                lineas_sin_costo: 2,
+              },
+              apartados_por_vencer: [{
+                id: '01J0000000000000000000000A',
+                folio: 'A-1-1',
+                cliente_nombre: 'Público general',
+                fecha_vencimiento: '2026-11-23',
+                dias_para_vencer: 0,
+                total: '100.00',
+                total_abonado: '0.00',
+              }],
+            }),
+          },
+        },
+        { provide: CajaService, useValue: { actual: () => of({ sesion: null, resumen: null }) } },
+      ],
+    });
+
+    const fixture = TestBed.createComponent(InicioComponent);
+    fixture.detectChanges();
+    const vista = fixture.nativeElement as HTMLElement;
+    const texto = vista.querySelector('nucleo-rentabilidad')?.textContent?.replace(/\s+/g, ' ');
+    expect(texto).toContain('Utilidad bruta a costo registrado $40.00');
+    expect(texto).toContain('Margen sobre ingreso sin IVA 40%');
+    expect(texto).toContain('Merma de devoluciones y cambios $12.00');
+    expect(texto).toContain('2 líneas sin costo');
+    expect(vista.textContent).toContain('Vence hoy');
+  });
+
   it.each([[1, '1 venta'], [0, '0 ventas']])('muestra la unidad correcta con %i tickets', (cantidad, texto) => {
     const ticket = render(cantidad).querySelectorAll('ui-kpi')[1];
     expect(ticket.textContent?.replace(/\s+/g, ' ').trim()).toBe('Tickets de hoy ' + texto);

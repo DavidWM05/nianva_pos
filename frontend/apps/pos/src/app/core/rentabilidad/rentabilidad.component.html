@@ -1,0 +1,26 @@
+<ui-section [titulo]="titulo()">
+  @let cifras = datos();
+  <ul uiTarjetas disposicion="resumen" role="list">
+    @if (detallada()) {
+      <li uiTarjeta><ui-kpi etiqueta="Ingreso sin IVA" [valor]="cifras.ingreso_sin_iva" formato="dinero" /></li>
+      <li uiTarjeta><ui-kpi etiqueta="Costo neto de ventas" [valor]="cifras.costo_neto_ventas" formato="dinero" /></li>
+    }
+    <li uiTarjeta><ui-kpi etiqueta="Utilidad bruta a costo registrado" [valor]="cifras.utilidad_bruta" formato="dinero" /></li>
+    <li uiTarjeta>
+      <ui-kpi
+        etiqueta="Margen sobre ingreso sin IVA"
+        [valor]="cifras.margen_porcentaje ?? 'No aplica'"
+        [formato]="cifras.margen_porcentaje === null ? 'texto' : 'porcentaje'"
+      />
+    </li>
+    <li uiTarjeta><ui-kpi etiqueta="Merma de devoluciones y cambios" [valor]="cifras.merma" formato="dinero" /></li>
+    @if (detallada()) {
+      <li uiTarjeta><ui-kpi etiqueta="Resultado después de merma" [valor]="cifras.resultado_despues_merma" formato="dinero" /></li>
+    }
+  </ul>
+  @if (cifras.lineas_sin_costo > 0) {
+    <ui-alert tono="advertencia">
+      {{ cifras.lineas_sin_costo | cantidad }} {{ cifras.lineas_sin_costo === 1 ? 'línea sin costo' : 'líneas sin costo' }}
+    </ui-alert>
+  }
+</ui-section>

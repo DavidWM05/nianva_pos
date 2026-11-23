@@ -1,7 +1,7 @@
 import type { RespuestaDe } from '@nianva/api-contrato';
 
 export const metricasReportes = {
-  ventas: ['totales', 'por_dia', 'por_sucursal', 'por_metodo_pago', 'top_productos', 'detalle'],
+  ventas: ['totales', 'rentabilidad', 'por_dia', 'por_sucursal', 'por_metodo_pago', 'top_productos', 'detalle'],
   'cuentas-cobrar': ['total_pendiente', 'total_vencido', 'por_antiguedad', 'por_cliente', 'detalle'],
   'cuentas-pagar': ['total_pendiente', 'total_vencido', 'por_antiguedad', 'por_proveedor', 'detalle'],
   crm: ['clientes_por_segmento', 'interacciones_por_tipo', 'loyalty', 'detalle'],

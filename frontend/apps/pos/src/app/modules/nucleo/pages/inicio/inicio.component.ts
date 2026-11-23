@@ -7,9 +7,11 @@ import { CantidadPipe, DineroPipe, FechaPipe } from '@nianva/ui-format';
 import { DatosComponent, PageComponent, PageHeaderComponent, SectionComponent, TarjetaComponent, TarjetasComponent } from '@nianva/ui-layout';
 
 import { CajaActual, CajaService } from '@nianva/domain-tpv';
-import { ApartadoPorVencer, InicioResumenMetricas, InicioService, type VarianteRankingInicio } from '@nianva/domain-nucleo';
+import { InicioResumenMetricas, InicioService, type VarianteRankingInicio } from '@nianva/domain-nucleo';
 import { GraficaSerieComponent } from '@nianva/ui-report';
 import { mensajeError } from '@nianva/ui-shared';
+
+import { RentabilidadComponent } from '../../../../core/rentabilidad/rentabilidad.component';
 
 /**
  * Reemplaza el placeholder de "Núcleo" (ver el reporte de Fase C, punto
@@ -29,7 +31,7 @@ import { mensajeError } from '@nianva/ui-shared';
   standalone: true,
   imports: [
     CantidadPipe, DatosComponent, DineroPipe, EmptyComponent, FechaPipe, GraficaSerieComponent,
-    KpiComponent, MatButton, PageComponent, PageHeaderComponent, RouterLink, SectionComponent,
+    KpiComponent, MatButton, PageComponent, PageHeaderComponent, RentabilidadComponent, RouterLink, SectionComponent,
     SkeletonComponent, TablaComponent, TarjetaComponent, TarjetasComponent,
   ],
   templateUrl: './inicio.component.html',
@@ -82,10 +84,4 @@ export class InicioComponent implements OnInit {
     });
   }
 
-  protected diasParaVencer(apartado: ApartadoPorVencer): number {
-    const hoy = new Date();
-    hoy.setHours(0, 0, 0, 0);
-    const vencimiento = new Date(apartado.fecha_vencimiento);
-    return Math.round((vencimiento.getTime() - hoy.getTime()) / (1000 * 60 * 60 * 24));
-  }
 }

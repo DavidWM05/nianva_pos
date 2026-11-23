@@ -15,6 +15,10 @@
       </ul>
     </ui-section>
 
+    @if (datos.rentabilidad_mes; as rentabilidad) {
+      <nucleo-rentabilidad [datos]="rentabilidad" titulo="Rentabilidad del mes" />
+    }
+
     <ui-section titulo="Rendimiento de ventas">
       <ul uiTarjetas disposicion="paneles" role="list">
         <li uiTarjeta>
@@ -72,7 +76,15 @@
               <dt>Vencimiento</dt>
               <dd>{{ apartado.fecha_vencimiento | fecha }}</dd>
               <dt>Plazo</dt>
-              <dd>{{ diasParaVencer(apartado) < 0 ? 'Vencido' : diasParaVencer(apartado) + ' día(s)' }}</dd>
+              <dd>
+                @switch (apartado.dias_para_vencer) {
+                  @case (0) { Vence hoy }
+                  @case (1) { 1 día }
+                  @default {
+                    {{ apartado.dias_para_vencer < 0 ? 'Vencido' : (apartado.dias_para_vencer | cantidad) + ' días' }}
+                  }
+                }
+              </dd>
               <dt>Abonado</dt>
               <dd>{{ apartado.total_abonado | dinero }} / {{ apartado.total | dinero }}</dd>
             </dl>
