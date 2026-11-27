@@ -21,6 +21,7 @@ export interface NucleoModuleNavItem {
   permiso?: string;
   /** Slug de `modulo:` (ModuloActivo) si la pantalla es de un modulo que se puede apagar. */
   modulo?: string;
+  concesion?: string;
 }
 
 export interface NucleoNavGroup {
@@ -60,13 +61,13 @@ export const NUCLEO_NAV_GROUPS: NucleoNavGroup[] = [
     key: 'catalogo',
     label: 'Catálogo',
     items: [
-      { key: 'inventario', label: 'Productos', path: 'inventario/productos', icon: 'pi pi-box', permiso: 'inventario.ver' },
-      { key: 'categorias', label: 'Categorías', path: 'inventario/categorias', icon: 'pi pi-sitemap', permiso: 'inventario.ver' },
-      { key: 'departamentos', label: 'Departamentos', path: 'inventario/departamentos', icon: 'pi pi-building', permiso: 'inventario.ver' },
-      { key: 'atributos', label: 'Atributos de variante', path: 'inventario/atributos', icon: 'pi pi-tags', permiso: 'inventario.ver' },
-      { key: 'unidades-medida', label: 'Unidades de medida', path: 'unidades-medida', icon: 'pi pi-arrows-h', permiso: 'inventario.ver' },
-      { key: 'precios', label: 'Precios y promociones', path: 'precios', icon: 'pi pi-tags', permiso: 'reglas_precio.ver' },
-      { key: 'crm', label: 'Clientes', path: 'crm/clientes', icon: 'pi pi-users', permiso: 'clientes.ver' },
+      { key: 'inventario', concesion: 'catalogo', label: 'Productos', path: 'inventario/productos', icon: 'pi pi-box', permiso: 'inventario.ver' },
+      { key: 'categorias', concesion: 'catalogo', label: 'Categorías', path: 'inventario/categorias', icon: 'pi pi-sitemap', permiso: 'inventario.ver' },
+      { key: 'departamentos', concesion: 'catalogo', label: 'Departamentos', path: 'inventario/departamentos', icon: 'pi pi-building', permiso: 'inventario.ver' },
+      { key: 'atributos', concesion: 'catalogo', label: 'Atributos de variante', path: 'inventario/atributos', icon: 'pi pi-tags', permiso: 'inventario.ver' },
+      { key: 'unidades-medida', concesion: 'catalogo', label: 'Unidades de medida', path: 'unidades-medida', icon: 'pi pi-arrows-h', permiso: 'inventario.ver' },
+      { key: 'precios', concesion: 'cupones_promociones_mayoreo', label: 'Precios y promociones', path: 'precios', icon: 'pi pi-tags', permiso: 'reglas_precio.ver' },
+      { key: 'crm', concesion: 'clientes', label: 'Clientes', path: 'crm/clientes', icon: 'pi pi-users', permiso: 'clientes.ver' },
       {
         // Sin lista propia (ver el docblock de CampanaService) -- el link va directo al alta.
         key: 'crm-campanas',
@@ -90,19 +91,19 @@ export const NUCLEO_NAV_GROUPS: NucleoNavGroup[] = [
     key: 'transacciones',
     label: 'Transacciones',
     items: [
-      { key: 'tpv-venta', label: 'Venta', path: 'tpv/venta', icon: 'pi pi-shopping-cart', permiso: 'ventas.crear' },
-      { key: 'tpv-caja', label: 'Caja', path: 'tpv/caja', rutaExacta: true, icon: 'pi pi-wallet', permiso: 'caja.ver' },
-      { key: 'tpv-caja-remota', label: 'Cierre remoto de caja', path: 'tpv/caja/remotas', icon: 'pi pi-lock', permiso: 'caja.cerrar_remota' },
-      { key: 'tpv-caja-consolidado', label: 'Consolidado de caja', path: 'tpv/caja/consolidado', icon: 'pi pi-file', permiso: 'caja.cerrar_remota' },
-      { key: 'tpv-ventas', label: 'Ventas', path: 'tpv/ventas', icon: 'pi pi-receipt', permiso: 'ventas.ver' },
+      { key: 'tpv-venta', concesion: 'tpv', label: 'Venta', path: 'tpv/venta', icon: 'pi pi-shopping-cart', permiso: 'ventas.crear' },
+      { key: 'tpv-caja', concesion: 'caja', label: 'Caja', path: 'tpv/caja', rutaExacta: true, icon: 'pi pi-wallet', permiso: 'caja.ver' },
+      { key: 'tpv-caja-remota', concesion: 'multicaja', label: 'Cierre remoto de caja', path: 'tpv/caja/remotas', icon: 'pi pi-lock', permiso: 'caja.cerrar_remota' },
+      { key: 'tpv-caja-consolidado', concesion: 'multicaja', label: 'Consolidado de caja', path: 'tpv/caja/consolidado', icon: 'pi pi-file', permiso: 'caja.cerrar_remota' },
+      { key: 'tpv-ventas', concesion: 'tpv', label: 'Ventas', path: 'tpv/ventas', icon: 'pi pi-receipt', permiso: 'ventas.ver' },
       { key: 'cotizaciones', label: 'Cotizaciones', path: 'cotizaciones', icon: 'pi pi-file-edit', permiso: 'cotizaciones.ver', modulo: 'cotizaciones' },
       { key: 'cuentas-cobrar', label: 'Cuentas por cobrar', path: 'cuentas-cobrar', icon: 'pi pi-wallet', permiso: 'cuentas_cobrar.ver', modulo: 'cxc' },
       { key: 'cuentas-pagar', label: 'Cuentas por pagar', path: 'cuentas-pagar', icon: 'pi pi-arrow-up-right', permiso: 'cuentas_pagar.ver', modulo: 'cxp' },
       { key: 'prestamos', label: 'Préstamos', path: 'prestamos', icon: 'pi pi-percentage', permiso: 'prestamos.ver', modulo: 'prestamos' },
       { key: 'ventas-plazos', label: 'Ventas a plazos', path: 'ventas-plazos', icon: 'pi pi-calendar', permiso: 'ventas_plazos.ver', modulo: 'ventas_plazos' },
       { key: 'pedidos', label: 'Pedidos', path: 'pedidos', icon: 'pi pi-truck', permiso: 'pedidos.ver', modulo: 'delivery' },
-      { key: 'apartados', label: 'Apartados', path: 'apartados', icon: 'pi pi-calendar-clock', permiso: 'apartados.ver' },
-      { key: 'devoluciones', label: 'Devoluciones', path: 'devoluciones', icon: 'pi pi-replay', permiso: 'devoluciones.ver' },
+      { key: 'apartados', concesion: 'apartados', label: 'Apartados', path: 'apartados', icon: 'pi pi-calendar-clock', permiso: 'apartados.ver' },
+      { key: 'devoluciones', concesion: 'devoluciones', label: 'Devoluciones', path: 'devoluciones', icon: 'pi pi-replay', permiso: 'devoluciones.ver' },
       { key: 'notas-credito', label: 'Notas de crédito', path: 'notas-credito', icon: 'pi pi-ticket', permiso: 'notas_credito.ver', modulo: 'notas_credito' },
       { key: 'gift-cards', label: 'Gift cards', path: 'gift-cards', icon: 'pi pi-credit-card', permiso: 'gift_cards.ver', modulo: 'gift_cards' },
       // Sin "Gastos": se registran dentro de Caja, y dos entradas no llevan a la
@@ -136,7 +137,7 @@ export const NUCLEO_NAV_GROUPS: NucleoNavGroup[] = [
       { key: 'reporte-cuentas-cobrar', label: 'Antigüedad de CxC', path: 'reportes/cuentas-cobrar', icon: 'pi pi-chart-line', permiso: 'reportes_cuentas_cobrar.ver', modulo: 'cxc' },
       { key: 'reporte-cuentas-pagar', label: 'Antigüedad de CxP', path: 'reportes/cuentas-pagar', icon: 'pi pi-chart-line', permiso: 'reportes_cuentas_pagar.ver', modulo: 'cxp' },
       { key: 'reporte-crm', label: 'CRM', path: 'reportes/crm', icon: 'pi pi-chart-line', permiso: 'reportes_crm.ver', modulo: 'crm_avanzado' },
-      { key: 'reporte-ventas', label: 'Ventas por periodo', path: 'reportes/ventas', icon: 'pi pi-chart-bar', permiso: 'reportes.ver' },
+      { key: 'reporte-ventas', concesion: 'reportes', label: 'Ventas por periodo', path: 'reportes/ventas', icon: 'pi pi-chart-bar', permiso: 'reportes.ver' },
     ],
   },
   {
@@ -147,14 +148,14 @@ export const NUCLEO_NAV_GROUPS: NucleoNavGroup[] = [
     key: 'configuracion',
     label: 'Configuración',
     items: [
-      { key: 'usuarios', label: 'Usuarios', path: 'usuarios', icon: 'pi pi-user', permiso: 'usuarios.ver' },
-      { key: 'roles', label: 'Roles', path: 'roles', icon: 'pi pi-key', permiso: 'roles.ver' },
+      { key: 'usuarios', concesion: 'administracion', label: 'Usuarios', path: 'usuarios', icon: 'pi pi-user', permiso: 'usuarios.ver' },
+      { key: 'roles', concesion: 'administracion', label: 'Roles', path: 'roles', icon: 'pi pi-key', permiso: 'roles.ver' },
       // Ruta 'configuracion': la pantalla en si ahora tiene tabs Empresa/
       // Licencia (RecordTabsComponent) -- ver ConfiguracionComponent.
       { key: 'empresa', label: 'Empresa', path: 'configuracion', icon: 'pi pi-briefcase', permiso: 'configuracion.editar' },
       { key: 'terminales', label: 'Terminales', path: 'terminales', icon: 'pi pi-desktop', permiso: 'terminales.administrar' },
       { key: 'metodos-pago', label: 'Métodos de pago', path: 'metodos-pago', icon: 'pi pi-wallet', permiso: 'metodos_pago.ver' },
-      { key: 'auditoria', label: 'Auditoría', path: 'auditoria', icon: 'pi pi-history', permiso: 'auditoria.ver' },
+      { key: 'auditoria', concesion: 'administracion', label: 'Auditoría', path: 'auditoria', icon: 'pi pi-history', permiso: 'auditoria.ver' },
       // Personal (cualquier usuario autenticado, sin permiso especial) --
       // el separador la distingue visualmente del resto del grupo, que es
       // administracion del tenant.

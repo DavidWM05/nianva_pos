@@ -1,0 +1,34 @@
+{
+  "plan_codigo": "total_pruebas",
+  "features": [
+    "tpv",
+    "catalogo",
+    "caja",
+    "inventario",
+    "compras_proveedores",
+    "devoluciones",
+    "reportes",
+    "administracion",
+    "multicaja",
+    "clientes",
+    "apartados",
+    "cupones_promociones_mayoreo",
+    "credito_clientes",
+    "cotizaciones",
+    "notas_credito",
+    "gift_cards",
+    "reportes_csv",
+    "cxp",
+    "ventas_plazos",
+    "produccion",
+    "multisucursal",
+    "crm_avanzado",
+    "delivery",
+    "payroll",
+    "prestamos"
+  ],
+  "cuotas": {
+    "terminales": 100,
+    "sucursales": 100
+  }
+}

@@ -1,7 +1,7 @@
 import { execFileSync, spawn } from 'node:child_process';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { mkdirSync, rmSync, writeFileSync } from 'node:fs';
+import { mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 
 const backendRoot = resolve(dirname(fileURLToPath(import.meta.url)), '../../../backend');
 // Siempre su propia SQLite, nunca DB_DATABASE del entorno: este script corre migrate:fresh, y
@@ -25,6 +25,8 @@ const env = {
   SESSION_DOMAIN: '127.0.0.1',
   SESSION_SAME_SITE: 'lax',
   APP_ENV: 'local',
+  POS_ENTORNO_INSTALADO: 'propio',
+  POS_CONCESION_INSTALACION: readFileSync(new URL('./concesion-instalacion.json', import.meta.url), 'utf8'),
   APP_DEBUG: 'false',
   APP_KEY: process.env.APP_KEY ?? `base64:${Buffer.alloc(32, 7).toString('base64')}`,
   APP_URL: 'http://127.0.0.1:' + backendPort,

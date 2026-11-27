@@ -129,6 +129,9 @@ export class VentaComponent implements OnInit {
   protected readonly cajaAbierta = signal<CajaSesion | null>(null);
 
   private readonly sesionActual = inject(SesionActualService);
+  protected readonly clientesConcedidos = computed(() => this.featureDisponible('clientes'));
+  protected readonly ofertasConcedidas = computed(() => this.featureDisponible('cupones_promociones_mayoreo'));
+  protected readonly giftCardsConcedidas = computed(() => this.moduloDisponible('gift_cards'));
   protected readonly puedeElegirLista = computed(
     () =>
       this.sesionActual.sesion()?.permisos.includes('precios.elegir_lista') ??
@@ -243,7 +246,7 @@ export class VentaComponent implements OnInit {
   protected readonly puedeRegistrar = computed(
     () =>
       this.pagoCuadra() &&
-      this.clienteId() !== null &&
+      (!this.clientesConcedidos() || this.clienteId() !== null) &&
       this.itemsActuales().length > 0 &&
       this.descuentoValido(),
   );
@@ -251,7 +254,7 @@ export class VentaComponent implements OnInit {
   protected readonly mensajeBloqueo = computed<string | null>(() => {
     if (this.itemsActuales().length === 0)
       return 'Agrega al menos un producto al carrito.';
-    if (this.clienteId() === null)
+    if (this.clientesConcedidos() && this.clienteId() === null)
       return 'Selecciona un cliente para continuar.';
     if (!this.descuentoValido())
       return 'El descuento debe estar entre $0 y el subtotal.';
@@ -259,6 +262,16 @@ export class VentaComponent implements OnInit {
 
     return null;
   });
+
+  private featureDisponible(feature: string): boolean {
+    const plan = this.sesionActual.sesion()?.plan;
+    return plan === undefined || plan?.features.includes(feature) === true;
+  }
+
+  private moduloDisponible(modulo: string): boolean {
+    const sesion = this.sesionActual.sesion();
+    return sesion?.plan === undefined || sesion.modulos_activos.includes(modulo);
+  }
 
   ngOnInit(): void {
     this.cajaService.actual().subscribe({
@@ -275,6 +288,7 @@ export class VentaComponent implements OnInit {
     // nombre (BuscadorEntidad no expone un metodo dedicado "cliente por
     // defecto") -- si por lo que sea no aparece, el campo queda vacio y
     // el usuario debe elegir un cliente a mano.
+    if (!this.clientesConcedidos()) return;
     this.buscadorCliente.buscar('Publico General').subscribe((resultados) => {
       const publicoGeneral =
         resultados.find((r) => r.nombre === 'Publico General') ?? resultados[0];
@@ -290,7 +304,7 @@ export class VentaComponent implements OnInit {
     this.notaCreditoSeleccionadaId.set(null);
     this.notasCreditoDisponibles.set([]);
 
-    if (clienteId === null) return;
+    if (clienteId === null || !this.moduloDisponible('notas_credito')) return;
 
     this.notaCreditoService.activasPorCliente(clienteId).subscribe({
       next: (notas) => this.notasCreditoDisponibles.set(notas),
@@ -389,12 +403,12 @@ export class VentaComponent implements OnInit {
 
   registrarVenta(): void {
     const clienteId = this.clienteId();
-    if (!this.puedeRegistrar() || clienteId === null) return;
+    if (!this.puedeRegistrar()) return;
 
     this.registrando.set(true);
 
     const payload: VentaFormPayload = {
-      cliente_id: clienteId,
+      ...(clienteId === null ? {} : { cliente_id: clienteId }),
       ...(this.listaPrecioId() !== null
         ? { lista_precio_id: this.listaPrecioId() }
         : {}),

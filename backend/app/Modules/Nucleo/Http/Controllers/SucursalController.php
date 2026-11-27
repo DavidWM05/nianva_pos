@@ -2,8 +2,10 @@
 
 namespace App\Modules\Nucleo\Http\Controllers;
 
+use App\Aplicacion\Planes\CuotasPlan;
 use App\Http\Controllers\Controller;
 use App\Modules\Nucleo\Models\Sucursal;
+use App\Modules\Nucleo\Services\TenantContext;
 
 /**
  * Catalogo de apoyo simple a proposito (ver CategoriaController antes de
@@ -15,10 +17,13 @@ use App\Modules\Nucleo\Models\Sucursal;
  */
 class SucursalController extends Controller
 {
-    public function index()
+    public function index(TenantContext $tenant, CuotasPlan $cuotas)
     {
+        $tenantId = $tenant->id();
+
         return response()->json([
             'data' => Sucursal::where('activo', true)->orderBy('nombre')->get(['id', 'nombre']),
+            'meta' => ['limite' => $tenantId === null ? null : $cuotas->estado($tenantId)['sucursales']],
         ]);
     }
 }

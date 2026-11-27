@@ -11,13 +11,14 @@ use Illuminate\Http\Resources\Json\JsonResource;
 /** @property Terminal $resource */
 final class TerminalResource extends JsonResource
 {
-    /** @return array{id: int, sucursal_id: int, nombre: string} */
+    /** @return array{id: int, sucursal_id: int, nombre: string, activo?: bool} */
     public function toArray(Request $request): array
     {
         return [
             'id' => $this->resource->id,
             'sucursal_id' => $this->resource->sucursal_id,
             'nombre' => $this->resource->nombre,
+            'activo' => $this->resource->activo,
         ];
     }
 }

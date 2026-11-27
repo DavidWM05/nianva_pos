@@ -24,16 +24,18 @@
   } @else {
     <h2>Nueva venta</h2>
 
-    <section class="venta__seccion">
-      <h3>Cliente</h3>
-      <nucleo-entidad-selector
-        [buscador]="buscadorCliente"
-        label="Cliente"
-        placeholder="Buscar cliente por nombre..."
-        [valorInicial]="clienteId()"
-        (seleccionado)="onClienteSeleccionado($event)"
-      />
-    </section>
+    @if (clientesConcedidos()) {
+      <section class="venta__seccion">
+        <h3>Cliente</h3>
+        <nucleo-entidad-selector
+          [buscador]="buscadorCliente"
+          label="Cliente"
+          placeholder="Buscar cliente por nombre..."
+          [valorInicial]="clienteId()"
+          (seleccionado)="onClienteSeleccionado($event)"
+        />
+      </section>
+    }
 
     <section class="venta__seccion">
       @if (puedeElegirLista()) {
@@ -42,29 +44,31 @@
       <nucleo-lineas-producto [presentacionesHabilitadas]="true" [clienteId]="clienteId()" [listaPrecioId]="listaPrecioId()" (cambio)="onLineasCambio($event)" />
     </section>
 
-    <section class="venta__seccion">
-      <h3>Cupón</h3>
-      @if (cuponAplicado(); as cupon) {
-        <p>
-          Cupón <strong>{{ cupon.cupon.codigo }}</strong> aplicado: -{{ cupon.descuento | dinero }}
-          <button matButton type="button" (click)="quitarCupon()">Quitar</button>
-        </p>
-      } @else {
-        <div class="venta__cupon">
-          <ui-campo #campoCupon etiqueta="Código de cupón">
-            <input
-              type="text"
-              [id]="campoCupon.controlId()"
-              placeholder="Código de cupón"
-              [maxlength]="limitesCupon.codigo.maxLength"
-              [ngModel]="cuponCodigo()"
-              (ngModelChange)="cuponCodigo.set($event)"
-            />
-          </ui-campo>
-          <ui-btn-enviar etiqueta="Aplicar" [enviando]="validandoCupon()" [deshabilitado]="!cuponCodigo().trim()" (click)="aplicarCupon()" />
-        </div>
-      }
-    </section>
+    @if (ofertasConcedidas()) {
+      <section class="venta__seccion">
+        <h3>Cupón</h3>
+        @if (cuponAplicado(); as cupon) {
+          <p>
+            Cupón <strong>{{ cupon.cupon.codigo }}</strong> aplicado: -{{ cupon.descuento | dinero }}
+            <button matButton type="button" (click)="quitarCupon()">Quitar</button>
+          </p>
+        } @else {
+          <div class="venta__cupon">
+            <ui-campo #campoCupon etiqueta="Código de cupón">
+              <input
+                type="text"
+                [id]="campoCupon.controlId()"
+                placeholder="Código de cupón"
+                [maxlength]="limitesCupon.codigo.maxLength"
+                [ngModel]="cuponCodigo()"
+                (ngModelChange)="cuponCodigo.set($event)"
+              />
+            </ui-campo>
+            <ui-btn-enviar etiqueta="Aplicar" [enviando]="validandoCupon()" [deshabilitado]="!cuponCodigo().trim()" (click)="aplicarCupon()" />
+          </div>
+        }
+      </section>
+    }
 
     <section class="venta__seccion venta__totales">
       <p>Subtotal: {{ subtotal() | dinero }}</p>
@@ -78,40 +82,42 @@
       <p class="venta__total">Total: {{ total() | dinero }}</p>
     </section>
 
-    <section class="venta__seccion">
-      <h3>Gift Card (opcional)</h3>
-      <div class="venta__gift-card">
-        <ui-campo #giftCard etiqueta="Código de la gift card">
-          <input
-            type="text"
-            [id]="giftCard.controlId()"
-            placeholder="Código de la gift card"
-            [maxlength]="limitesVenta.gift_card_codigo.maxLength"
-            [ngModel]="giftCardCodigo()"
-            (ngModelChange)="giftCardCodigo.set($event)"
-          />
-        </ui-campo>
-        @if (giftCardCodigo().trim()) {
-          <ui-campo #giftCardMonto etiqueta="Monto que esperas cubrir">
+    @if (giftCardsConcedidas()) {
+      <section class="venta__seccion">
+        <h3>Gift Card (opcional)</h3>
+        <div class="venta__gift-card">
+          <ui-campo #giftCard etiqueta="Código de la gift card">
             <input
-              type="number"
-              [id]="giftCardMonto.controlId()"
-              min="0.01"
-              step="0.01"
-              placeholder="Monto que esperas cubrir"
-              [ngModel]="giftCardMontoEstimado()"
-              (ngModelChange)="giftCardMontoEstimado.set($event)"
+              type="text"
+              [id]="giftCard.controlId()"
+              placeholder="Código de la gift card"
+              [maxlength]="limitesVenta.gift_card_codigo.maxLength"
+              [ngModel]="giftCardCodigo()"
+              (ngModelChange)="giftCardCodigo.set($event)"
             />
           </ui-campo>
+          @if (giftCardCodigo().trim()) {
+            <ui-campo #giftCardMonto etiqueta="Monto que esperas cubrir">
+              <input
+                type="number"
+                [id]="giftCardMonto.controlId()"
+                min="0.01"
+                step="0.01"
+                placeholder="Monto que esperas cubrir"
+                [ngModel]="giftCardMontoEstimado()"
+                (ngModelChange)="giftCardMontoEstimado.set($event)"
+              />
+            </ui-campo>
+          }
+        </div>
+        @if (giftCardCodigo().trim()) {
+          <p class="venta__ayuda">
+            El monto real depende del saldo de la gift card (no se puede consultar antes de cobrar) -- si no coincide con lo
+            estimado, ajusta el resto del pago abajo.
+          </p>
         }
-      </div>
-      @if (giftCardCodigo().trim()) {
-        <p class="venta__ayuda">
-          El monto real depende del saldo de la gift card (no se puede consultar antes de cobrar) -- si no coincide con lo
-          estimado, ajusta el resto del pago abajo.
-        </p>
-      }
-    </section>
+      </section>
+    }
 
     @if (notasCreditoDisponibles().length > 0) {
       <section class="venta__seccion">

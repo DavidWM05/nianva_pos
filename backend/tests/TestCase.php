@@ -2,12 +2,21 @@
 
 namespace Tests;
 
+use App\Modules\Nucleo\Services\FuenteConcesion;
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
 use Illuminate\Support\Str;
+use Tests\Support\FuenteConcesionTotal;
 
 abstract class TestCase extends BaseTestCase
 {
     private bool $omitirLlave = false;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+        config(['planes.entorno' => 'propio']);
+        $this->app->bind(FuenteConcesion::class, FuenteConcesionTotal::class);
+    }
 
     protected function seleccionarTerminalParaPrueba(int $terminalId): void
     {

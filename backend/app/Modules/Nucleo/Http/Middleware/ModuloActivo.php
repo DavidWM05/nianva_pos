@@ -4,25 +4,17 @@ namespace App\Modules\Nucleo\Http\Middleware;
 
 use App\Modules\Configuracion\Models\ConfiguracionTenant;
 use App\Modules\Nucleo\Exceptions\ModuloNoActivoException;
+use App\Modules\Nucleo\Services\Planes;
 use App\Modules\Nucleo\Services\TenantContext;
 use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
- * Verifica que el slug del módulo esté en configuracion_tenant.modulos_activos.
+ * Exige la feature del módulo y después aplica las preferencias del tenant.
+ * Una preferencia null hereda los módulos concedidos. Una lista vacía los apaga.
  *
- * Uso: Route::middleware('modulo:cxc')->group(...)
- *
- * Si el tenant no tiene configurada la lista o el módulo no está incluido,
- * lanza ModuloNoActivoException, que responde 403 con error_code
- * 'modulo_no_activo'.
- * Superadmin bypass: si no hay tenant activo (TenantContext sin resolver),
- * el middleware permite el paso sin verificar.
- *
- * Cuando no existe fila en configuracion_tenant para el tenant (tenant nuevo
- * sin configurar), se usan los MODULOS_DEFAULT como fallback para que ningún
- * módulo quede bloqueado por defecto.
+ * Uso: Route::middleware('modulo:cxc')->group(...).
  */
 class ModuloActivo
 {
@@ -38,9 +30,8 @@ class ModuloActivo
 
     public function handle(Request $request, Closure $next, string $moduloSlug): Response
     {
-        if (! app(TenantContext::class)->get()) {
-            return $next($request);
-        }
+        $tenantId = app(TenantContext::class)->id() ?? abort(403);
+        app(Planes::class)->exigir($tenantId, Planes::MODULOS[$moduloSlug]);
 
         if (! in_array($moduloSlug, self::activos(), true)) {
             throw new ModuloNoActivoException($moduloSlug);
@@ -50,9 +41,9 @@ class ModuloActivo
     }
 
     /**
-     * Modulos activos del tenant del contexto, con las mismas reglas que handle(): sin
-     * tenant (superadmin) o sin fila de configuracion, todos los de MODULOS_DEFAULT. Lo usa
-     * tambien GET /sesion (API-09), para que el menu y el middleware no difieran.
+     * Módulos efectivos del tenant para el middleware y GET /sesion (API-09).
+     * La sesión central conserva la lista de navegación histórica sin acceso
+     * a las rutas de módulo, que requieren un tenant.
      *
      * @return list<string>
      */
@@ -62,6 +53,9 @@ class ModuloActivo
             return self::MODULOS_DEFAULT;
         }
 
-        return array_values(ConfiguracionTenant::actual()?->modulos_activos ?? self::MODULOS_DEFAULT);
+        $plan = app(Planes::class)->deTenant(app(TenantContext::class)->id() ?? abort(403));
+        $modulos = ConfiguracionTenant::actual()?->modulos_activos ?? self::MODULOS_DEFAULT;
+
+        return array_values(array_filter($modulos, fn (string $modulo): bool => isset(Planes::MODULOS[$modulo]) && $plan->incluye(Planes::MODULOS[$modulo])));
     }
 }

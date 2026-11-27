@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace App\Aplicacion\Sesion;
 
+use App\Aplicacion\Planes\CuotasPlan;
 use App\Modules\Configuracion\Models\ConfiguracionTenant;
 use App\Modules\Nucleo\Dtos\SesionDto;
 use App\Modules\Nucleo\Http\Middleware\ModuloActivo;
 use App\Modules\Nucleo\Models\Usuario;
+use App\Modules\Nucleo\Services\Planes;
 use Illuminate\Contracts\Session\Session;
 
 /**
@@ -26,7 +28,11 @@ class ObtenerSesion
 
     private const ZONA_HORARIA_POR_DEFECTO = 'America/Mexico_City';
 
-    public function __construct(private readonly TerminalDeSesion $terminalDeSesion) {}
+    public function __construct(
+        private readonly TerminalDeSesion $terminalDeSesion,
+        private readonly Planes $planes,
+        private readonly CuotasPlan $cuotas,
+    ) {}
 
     public function ejecutar(Usuario $usuario, ?Session $sesion = null): SesionDto
     {
@@ -35,12 +41,16 @@ class ObtenerSesion
         $sucursal = $usuario->sucursal;
         $terminal = $this->terminalDeSesion->actual($usuario, $sesion);
 
+        $tenantId = $usuario->tenant?->id;
+
         return new SesionDto(
             usuario: $usuario,
             terminal: $terminal === null ? null : ['id' => $terminal->id, 'nombre' => $terminal->nombre, 'sucursal_id' => $terminal->sucursal_id],
             sucursal: $sucursal === null ? null : ['id' => $sucursal->id, 'nombre' => $sucursal->nombre],
             permisos: $usuario->nombresPermisos(),
             modulosActivos: ModuloActivo::activos(),
+            plan: $tenantId === null ? null : $this->planes->deTenant($tenantId)->paraSesion(),
+            limites: $tenantId === null ? null : $this->cuotas->estado($tenantId),
             regional: [
                 'locale' => 'es-'.strtoupper($usuario->tenant->pais ?? 'MX'),
                 'moneda' => $configuracion->moneda ?? self::MONEDA_POR_DEFECTO,

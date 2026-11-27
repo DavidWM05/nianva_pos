@@ -16,6 +16,8 @@ use App\Modules\Nucleo\Http\Middleware\RequiereDosFactorReciente;
 use App\Modules\Nucleo\Http\Middleware\ResolveTenant;
 use App\Modules\Nucleo\Models\Tenant;
 use App\Modules\Nucleo\Observers\TenantObserver;
+use App\Modules\Nucleo\Services\FuenteConcesion;
+use App\Modules\Nucleo\Services\FuenteConcesionLocal;
 use App\Modules\Nucleo\Services\TenantContext;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Routing\Router;
@@ -33,6 +35,7 @@ class NucleoServiceProvider extends ServiceProvider
     public function register(): void
     {
         $this->app->singleton(TenantContext::class);
+        $this->app->bind(FuenteConcesion::class, FuenteConcesionLocal::class);
     }
 
     public function boot(Router $router): void

@@ -25,13 +25,19 @@ export class SesionActualService {
     this.sesionSignal.set(null);
   }
 
+  concedida(feature: string): boolean {
+    const plan = this.sesionSignal()?.plan;
+    return plan === undefined || plan?.features.includes(feature) === true;
+  }
+
   /** Si una entrada del menu se muestra: tiene su permiso (si pide uno) y su modulo esta activo (si es de uno). */
-  visible(permiso?: string, modulo?: string): boolean {
+  visible(permiso?: string, modulo?: string, feature?: string): boolean {
     if (this.sesionSignal() === null) {
       return true;
     }
 
     return (permiso === undefined || this.permisos().has(permiso))
-      && (modulo === undefined || this.modulos().has(modulo));
+      && (modulo === undefined || this.modulos().has(modulo))
+      && (feature === undefined || this.concedida(feature));
   }
 }

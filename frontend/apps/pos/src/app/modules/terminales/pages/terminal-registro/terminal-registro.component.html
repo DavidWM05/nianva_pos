@@ -3,6 +3,12 @@
   <nucleo-record-tabs [tabs]="tabs">
     <ng-template>
       <ui-section [titulo]="id === null ? 'Nueva terminal' : 'Datos de la terminal'">
+        @if (limite(); as cuota) {
+          <p>Terminales habilitadas: {{ cuota.uso }} de {{ cuota.maximo }}</p>
+        }
+        @if (cuotaLlena()) {
+          <p role="status">Límite de terminales alcanzado.</p>
+        }
         <form (submit)="$event.preventDefault(); guardar()">
           <ui-campo #campoNombre etiqueta="Nombre" [requerido]="true">
             <input [id]="campoNombre.controlId()" [formControl]="nombre" [attr.maxlength]="maxNombre" />
@@ -17,8 +23,11 @@
           } @else {
             <p>Sucursal: {{ nombreSucursal() }}</p>
           }
+          @if (registro()) {
+            <label><input type="checkbox" [formControl]="activo" /> Terminal habilitada</label>
+          }
           <ui-form-actions>
-            <ui-btn-enviar etiqueta="Guardar terminal" [enviando]="enviando()" [deshabilitado]="eliminando() || sucursalId() === null" />
+            <ui-btn-enviar etiqueta="Guardar terminal" [enviando]="enviando()" [deshabilitado]="cuotaLlena() || eliminando() || sucursalId() === null" />
             @if (registro() && id !== null) {
               <button matButton type="button" [disabled]="enviando() || eliminando()" (click)="eliminar()">Eliminar terminal</button>
             }

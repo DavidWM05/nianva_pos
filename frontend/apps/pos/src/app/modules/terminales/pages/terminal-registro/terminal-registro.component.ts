@@ -39,6 +39,12 @@ export class TerminalRegistroComponent {
   protected readonly eliminando = signal(false);
   protected readonly tabs: RecordTabConfig[] = [{ label: 'General', icon: 'pi pi-desktop' }];
   protected readonly maxNombre = limitesDe('/terminales', 'post').nombre.maxLength;
+  protected readonly limite = computed(() => this.sesion.sesion()?.limites?.terminales);
+  protected readonly cuotaLlena = computed(() => {
+    const limite = this.limite();
+    return this.id === null && limite !== undefined && limite.uso >= limite.maximo;
+  });
+  protected readonly activo = new FormControl(true, { nonNullable: true });
   protected readonly nombre = new FormControl('', { nonNullable: true, validators: [Validators.required, Validators.pattern(/\S/), Validators.maxLength(this.maxNombre)] });
   protected readonly sucursalId = linkedSignal(() => this.registro()?.sucursal_id ?? this.sesion.sesion()?.sucursal?.id ?? null);
   protected readonly nombreSucursal = computed(() => {
@@ -73,11 +79,11 @@ export class TerminalRegistroComponent {
     const sucursalId = this.permiteElegirSucursal()
       ? this.sucursalId()
       : this.registro()?.sucursal_id ?? this.sesion.sesion()?.sucursal?.id ?? null;
-    if (this.nombre.invalid || sucursalId === null || this.enviando() || this.eliminando()) {
+    if (this.cuotaLlena() || this.nombre.invalid || sucursalId === null || this.enviando() || this.eliminando()) {
       return;
     }
 
-    const cuerpo = { nombre: this.nombre.value.trim(), sucursal_id: sucursalId };
+    const cuerpo = { nombre: this.nombre.value.trim(), sucursal_id: sucursalId, ...(this.activo.dirty ? { activo: this.activo.value } : {}) };
     const solicitud = this.id === null ? this.servicio.crear(cuerpo) : this.servicio.actualizar(Number(this.id), cuerpo);
     this.enviando.set(true);
     solicitud.pipe(finalize(() => this.enviando.set(false))).subscribe({
@@ -114,5 +120,6 @@ export class TerminalRegistroComponent {
   private establecer(terminal: Terminal): void {
     this.registro.set(terminal);
     this.nombre.reset(terminal.nombre);
+    this.activo.reset(terminal.activo ?? true);
   }
 }

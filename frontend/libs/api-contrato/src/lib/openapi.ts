@@ -3156,7 +3156,7 @@ export interface components {
         /** CrearVentaRequest */
         CrearVentaRequest: {
             lista_precio_id?: number | null;
-            cliente_id: string;
+            cliente_id?: string | null;
             items: {
                 presentacion_id?: number | null;
                 variante_id: number;
@@ -3574,6 +3574,7 @@ export interface components {
         };
         /** GuardarTerminalRequest */
         GuardarTerminalRequest: {
+            activo?: boolean;
             nombre: string;
             sucursal_id: number;
         };
@@ -4212,6 +4213,21 @@ export interface components {
                 nombre: string;
                 sucursal_id: number;
             } | null;
+            plan: {
+                codigo: string;
+                nombre: string;
+                features: string[];
+            } | null;
+            limites: {
+                terminales: {
+                    maximo: number;
+                    uso: number;
+                };
+                sucursales: {
+                    maximo: number;
+                    uso: number;
+                };
+            } | null;
             permisos: string[];
             modulos_activos: string[];
             regional: {
@@ -4244,6 +4260,7 @@ export interface components {
             id: number;
             sucursal_id: number;
             nombre: string;
+            activo: boolean;
         };
         /** TransformacionResource */
         TransformacionResource: {
@@ -10324,6 +10341,12 @@ export interface operations {
                 content: {
                     "application/json": {
                         data: components["schemas"]["Sucursal"][];
+                        meta: {
+                            limite: {
+                                maximo: string | number;
+                                uso: number;
+                            } | null;
+                        };
                     };
                 };
             };

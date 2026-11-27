@@ -2,11 +2,16 @@
 
 declare(strict_types=1);
 
+use App\Aplicacion\Planes\CatalogoTerminales;
 use App\Aplicacion\Ventas\RegistrarVenta;
 use App\Modules\Inventario\Exceptions\StockInsuficienteException;
+use App\Modules\Nucleo\Dtos\GuardarTerminalDto;
+use App\Modules\Nucleo\Exceptions\LimitePlanExcedidoException;
 use App\Modules\Nucleo\Models\Tenant;
 use App\Modules\Nucleo\Models\Terminal;
 use App\Modules\Nucleo\Models\Usuario;
+use App\Modules\Nucleo\Services\FuenteConcesion;
+use App\Modules\Nucleo\Services\FuenteConcesionLocal;
 use App\Modules\Nucleo\Services\TenantContext;
 use App\Modules\Tpv\Dtos\CrearVentaDto;
 use App\Modules\Tpv\Dtos\LineaVentaDto;
@@ -14,10 +19,13 @@ use App\Modules\Tpv\Dtos\PagoDto;
 use Illuminate\Contracts\Console\Kernel;
 use Illuminate\Database\Events\QueryExecuted;
 use Illuminate\Support\Facades\DB;
+use Tests\Support\FuenteConcesionTotal;
 
 require __DIR__.'/../../vendor/autoload.php';
 $app = require __DIR__.'/../../bootstrap/app.php';
 $app->make(Kernel::class)->bootstrap();
+config(['planes.entorno' => 'propio']);
+$app->bind(FuenteConcesion::class, FuenteConcesionTotal::class);
 
 if (DB::connection()->getDriverName() !== 'mysql') {
     throw new RuntimeException('Las operaciones de concurrencia requieren MySQL real.');
@@ -45,6 +53,21 @@ DB::listen(static function (QueryExecuted $evento) use ($emitir): void {
 app(TenantContext::class)->set(Tenant::findOrFail($datos['tenant']));
 $usuario = Usuario::findOrFail($datos['usuario']);
 $emitir(['conexion' => (int) DB::selectOne('SELECT CONNECTION_ID() AS id')->id]);
+
+if (($argv[1] ?? '') === 'alta_terminal') {
+    config(['planes.entorno' => 'escritorio', 'planes.instalacion' => null, 'planes.concesiones' => []]);
+    $app->bind(FuenteConcesion::class, FuenteConcesionLocal::class);
+    try {
+        app(CatalogoTerminales::class)->crear(
+            $datos['tenant'],
+            new GuardarTerminalDto('Terminal '.$datos['terminal'], $datos['sucursal']),
+        );
+        $emitir(['resultado' => 'creada']);
+    } catch (LimitePlanExcedidoException $excepcion) {
+        $emitir(['resultado' => $excepcion->errorCode()]);
+    }
+    exit;
+}
 
 if (($argv[1] ?? '') === 'compra_promedio') {
     require __DIR__.'/operacionCostoPromedio.php';

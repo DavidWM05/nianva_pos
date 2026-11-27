@@ -15,6 +15,7 @@ use App\Modules\CuentasCobrar\Models\CuentaCobrar;
 use App\Modules\Nucleo\Dtos\ConsultarReporteTenantDto;
 use App\Modules\Nucleo\Http\Requests\ConsultarReporteTenantRequest;
 use App\Modules\Nucleo\Models\Usuario;
+use App\Modules\Nucleo\Services\Planes;
 use App\Modules\Nucleo\Support\DecimalApi;
 use Dedoc\Scramble\Attributes\Response;
 use Illuminate\Http\JsonResponse;
@@ -125,7 +126,8 @@ class CuentaCobrarController extends Controller
     {
         $resultado = $reporte->ejecutar($request->toDto());
         $usuario = $request->user();
-        $resultado['meta']['permisos']['exportar'] = $usuario instanceof Usuario && $usuario->tienePermiso('reportes.exportar');
+        $resultado['meta']['permisos']['exportar'] = $usuario instanceof Usuario && $usuario->tienePermiso('reportes.exportar')
+            && app(Planes::class)->deTenant((int) $usuario->getAttribute('tenant_id'))->incluye('reportes_csv');
 
         return response()->json($resultado);
     }

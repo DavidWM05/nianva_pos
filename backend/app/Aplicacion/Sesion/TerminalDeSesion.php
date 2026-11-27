@@ -28,7 +28,7 @@ final class TerminalDeSesion
     /** @return Collection<int, Terminal> */
     public function disponibles(Usuario $usuario): Collection
     {
-        return Terminal::query()
+        return Terminal::query()->where('activo', true)
             ->where('tenant_id', $usuario->getAttribute('tenant_id'))
             ->where('sucursal_id', $usuario->getAttribute('sucursal_id'))
             ->orderBy('nombre')->get();
@@ -36,7 +36,7 @@ final class TerminalDeSesion
 
     private function buscar(Usuario $usuario, int $terminalId): ?Terminal
     {
-        return Terminal::query()
+        return Terminal::query()->where('activo', true)
             ->where('tenant_id', $usuario->getAttribute('tenant_id'))
             ->where('sucursal_id', $usuario->getAttribute('sucursal_id'))
             ->find($terminalId);

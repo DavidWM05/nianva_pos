@@ -118,28 +118,28 @@ Route::middleware('auth:sanctum')->group(function () {
 
         // Inicio (Fase C, punto 4): resumen de ventas del dia + apartados
         // por vencer. reportes.ver, sembrado sin usarse hasta ahora.
-        Route::get('/inicio/resumen', [InicioController::class, 'resumen'])->middleware('permiso:reportes.ver');
+        Route::get('/inicio/resumen', [InicioController::class, 'resumen'])->middleware('permiso:reportes.ver')->middleware('feature:reportes');
 
         // Administracion (Fase C): Usuarios/Roles/Permisos.
-        Route::get('/usuarios', [UsuarioController::class, 'index'])->middleware('permiso:usuarios.ver');
-        Route::post('/usuarios', [UsuarioController::class, 'store'])->middleware('permiso:usuarios.crear');
-        Route::get('/usuarios/{usuario}', [UsuarioController::class, 'show'])->middleware('permiso:usuarios.ver');
-        Route::put('/usuarios/{usuario}', [UsuarioController::class, 'update'])->middleware('permiso:usuarios.editar');
+        Route::get('/usuarios', [UsuarioController::class, 'index'])->middleware('permiso:usuarios.ver')->middleware('feature:administracion');
+        Route::post('/usuarios', [UsuarioController::class, 'store'])->middleware('permiso:usuarios.crear')->middleware('feature:administracion');
+        Route::get('/usuarios/{usuario}', [UsuarioController::class, 'show'])->middleware('permiso:usuarios.ver')->middleware('feature:administracion');
+        Route::put('/usuarios/{usuario}', [UsuarioController::class, 'update'])->middleware('permiso:usuarios.editar')->middleware('feature:administracion');
         Route::patch('/usuarios/{usuario}/desactivar', [UsuarioController::class, 'desactivar'])
-            ->middleware('permiso:usuarios.eliminar');
+            ->middleware('permiso:usuarios.eliminar')->middleware('feature:administracion');
         // Reemplaza el autoservicio que existia en TwoFactorController::disable()
         // (eliminado) -- desactivar el 2FA de OTRO usuario ya no es
         // autoservicio, solo administracion. dos-factor.reciente aqui exige
         // el TOTP de quien ejecuta la accion (el admin), no del usuario
         // objetivo -- ver UsuarioController::desactivarDosFactor().
         Route::post('/usuarios/{usuario}/desactivar-2fa', [UsuarioController::class, 'desactivarDosFactor'])
-            ->middleware(['permiso:usuarios.editar', 'dos-factor.reciente']);
+            ->middleware(['permiso:usuarios.editar', 'dos-factor.reciente'])->middleware('feature:administracion');
 
-        Route::get('/roles', [RolController::class, 'index'])->middleware('permiso:roles.ver');
-        Route::post('/roles', [RolController::class, 'store'])->middleware('permiso:roles.crear');
-        Route::get('/roles/{rol}', [RolController::class, 'show'])->middleware('permiso:roles.ver');
-        Route::put('/roles/{rol}', [RolController::class, 'update'])->middleware('permiso:roles.editar');
-        Route::delete('/roles/{rol}', [RolController::class, 'destroy'])->middleware('permiso:roles.eliminar');
+        Route::get('/roles', [RolController::class, 'index'])->middleware('permiso:roles.ver')->middleware('feature:administracion,central');
+        Route::post('/roles', [RolController::class, 'store'])->middleware('permiso:roles.crear')->middleware('feature:administracion,central');
+        Route::get('/roles/{rol}', [RolController::class, 'show'])->middleware('permiso:roles.ver')->middleware('feature:administracion,central');
+        Route::put('/roles/{rol}', [RolController::class, 'update'])->middleware('permiso:roles.editar')->middleware('feature:administracion,central');
+        Route::delete('/roles/{rol}', [RolController::class, 'destroy'])->middleware('permiso:roles.eliminar')->middleware('feature:administracion,central');
 
         // Catalogo de permisos (para el checklist del formulario de Rol) --
         // mismo permiso que ver roles, no uno propio de "administrar permisos"
@@ -153,89 +153,89 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/sucursales', [SucursalController::class, 'index'])->middleware('permiso:usuarios.ver');
 
         // CRM: primer modulo de negocio real conectado al shell.
-        Route::get('/clientes', [ClienteController::class, 'index'])->middleware('permiso:clientes.ver');
-        Route::post('/clientes', [ClienteController::class, 'store'])->middleware('permiso:clientes.crear');
-        Route::get('/clientes/{cliente}', [ClienteController::class, 'show'])->middleware('permiso:clientes.ver');
-        Route::put('/clientes/{cliente}', [ClienteController::class, 'update'])->middleware('permiso:clientes.editar');
+        Route::get('/clientes', [ClienteController::class, 'index'])->middleware('permiso:clientes.ver')->middleware('feature:clientes');
+        Route::post('/clientes', [ClienteController::class, 'store'])->middleware('permiso:clientes.crear')->middleware('feature:clientes');
+        Route::get('/clientes/{cliente}', [ClienteController::class, 'show'])->middleware('permiso:clientes.ver')->middleware('feature:clientes');
+        Route::put('/clientes/{cliente}', [ClienteController::class, 'update'])->middleware('permiso:clientes.editar')->middleware('feature:clientes');
         Route::patch('/clientes/{cliente}/desactivar', [ClienteController::class, 'desactivar'])
-            ->middleware('permiso:clientes.eliminar');
+            ->middleware('permiso:clientes.eliminar')->middleware('feature:clientes');
         // Vive en el controlador de Tpv (no Crm) para no invertir la
         // dependencia Tpv->Crm ya establecida -- ver VentaController.
         Route::get('/clientes/{cliente}/ventas', [VentaController::class, 'porCliente'])
-            ->middleware('permiso:clientes.ver');
+            ->middleware('permiso:clientes.ver')->middleware('feature:clientes');
 
         // Mismo permiso dedicado que el navegador global (ver AuditoriaController).
-        Route::get('/auditoria', [AuditoriaController::class, 'index'])->middleware('permiso:auditoria.ver');
+        Route::get('/auditoria', [AuditoriaController::class, 'index'])->middleware('permiso:auditoria.ver')->middleware('feature:administracion');
         // Navegador global (Fase C, punto 5) -- SI exige permiso dedicado
         // (ver AuditoriaController::global()). Ruta estatica ANTES de que
         // exista cualquier /auditoria/{id} (no existe hoy, pero mantiene
         // la convencion del resto de rutas nuevas).
-        Route::get('/auditoria/global', [AuditoriaController::class, 'global'])->middleware('permiso:auditoria.ver');
+        Route::get('/auditoria/global', [AuditoriaController::class, 'global'])->middleware('permiso:auditoria.ver')->middleware('feature:administracion');
 
         // Inventario: segundo modulo de negocio real. Categorias/departamentos
         // comparten el namespace de permisos inventario.* (ver CategoriaController).
-        Route::get('/categorias', [CategoriaController::class, 'index'])->middleware('permiso:inventario.ver');
-        Route::get('/categorias/{categoria}', [CategoriaController::class, 'show'])->middleware('permiso:inventario.ver');
-        Route::post('/categorias', [CategoriaController::class, 'store'])->middleware('permiso:inventario.crear');
+        Route::get('/categorias', [CategoriaController::class, 'index'])->middleware('permiso:inventario.ver')->middleware('feature:catalogo');
+        Route::get('/categorias/{categoria}', [CategoriaController::class, 'show'])->middleware('permiso:inventario.ver')->middleware('feature:catalogo');
+        Route::post('/categorias', [CategoriaController::class, 'store'])->middleware('permiso:inventario.crear')->middleware('feature:catalogo');
         Route::put('/categorias/{categoria}', [CategoriaController::class, 'update'])
-            ->middleware('permiso:inventario.editar');
+            ->middleware('permiso:inventario.editar')->middleware('feature:catalogo');
         Route::patch('/categorias/{categoria}/desactivar', [CategoriaController::class, 'desactivar'])
-            ->middleware('permiso:inventario.eliminar');
+            ->middleware('permiso:inventario.eliminar')->middleware('feature:catalogo');
 
         // ARQ-07: atributos genericos de variante y sus valores (sub-recurso).
-        Route::get('/atributos', [AtributoController::class, 'index'])->middleware('permiso:inventario.ver');
-        Route::get('/atributos/{atributo}', [AtributoController::class, 'show'])->middleware('permiso:inventario.ver');
-        Route::post('/atributos', [AtributoController::class, 'store'])->middleware('permiso:inventario.crear');
-        Route::put('/atributos/{atributo}', [AtributoController::class, 'update'])->middleware('permiso:inventario.editar');
-        Route::delete('/atributos/{atributo}', [AtributoController::class, 'destroy'])->middleware('permiso:inventario.eliminar');
-        Route::post('/atributos/{atributo}/valores', [AtributoValorController::class, 'store'])->middleware('permiso:inventario.editar');
+        Route::get('/atributos', [AtributoController::class, 'index'])->middleware('permiso:inventario.ver')->middleware('feature:catalogo');
+        Route::get('/atributos/{atributo}', [AtributoController::class, 'show'])->middleware('permiso:inventario.ver')->middleware('feature:catalogo');
+        Route::post('/atributos', [AtributoController::class, 'store'])->middleware('permiso:inventario.crear')->middleware('feature:catalogo');
+        Route::put('/atributos/{atributo}', [AtributoController::class, 'update'])->middleware('permiso:inventario.editar')->middleware('feature:catalogo');
+        Route::delete('/atributos/{atributo}', [AtributoController::class, 'destroy'])->middleware('permiso:inventario.eliminar')->middleware('feature:catalogo');
+        Route::post('/atributos/{atributo}/valores', [AtributoValorController::class, 'store'])->middleware('permiso:inventario.editar')->middleware('feature:catalogo');
         Route::put('/atributo-valores/{valor}', [AtributoValorController::class, 'update'])->middleware('permiso:inventario.editar');
         Route::delete('/atributo-valores/{valor}', [AtributoValorController::class, 'destroy'])->middleware('permiso:inventario.editar');
 
-        Route::get('/departamentos', [DepartamentoController::class, 'index'])->middleware('permiso:inventario.ver');
+        Route::get('/departamentos', [DepartamentoController::class, 'index'])->middleware('permiso:inventario.ver')->middleware('feature:catalogo');
         Route::get('/departamentos/{departamento}', [DepartamentoController::class, 'show'])
-            ->middleware('permiso:inventario.ver');
-        Route::post('/departamentos', [DepartamentoController::class, 'store'])->middleware('permiso:inventario.crear');
+            ->middleware('permiso:inventario.ver')->middleware('feature:catalogo');
+        Route::post('/departamentos', [DepartamentoController::class, 'store'])->middleware('permiso:inventario.crear')->middleware('feature:catalogo');
         Route::put('/departamentos/{departamento}', [DepartamentoController::class, 'update'])
-            ->middleware('permiso:inventario.editar');
+            ->middleware('permiso:inventario.editar')->middleware('feature:catalogo');
         Route::patch('/departamentos/{departamento}/desactivar', [DepartamentoController::class, 'desactivar'])
-            ->middleware('permiso:inventario.eliminar');
+            ->middleware('permiso:inventario.eliminar')->middleware('feature:catalogo');
 
-        Route::get('/productos', [ProductoController::class, 'index'])->middleware('permiso:inventario.ver');
-        Route::post('/productos', [ProductoController::class, 'store'])->middleware('permiso:inventario.crear');
-        Route::get('/productos/{producto}', [ProductoController::class, 'show'])->middleware('permiso:inventario.ver');
-        Route::put('/productos/{producto}', [ProductoController::class, 'update'])->middleware('permiso:inventario.editar');
+        Route::get('/productos', [ProductoController::class, 'index'])->middleware('permiso:inventario.ver')->middleware('feature:catalogo');
+        Route::post('/productos', [ProductoController::class, 'store'])->middleware('permiso:inventario.crear')->middleware('feature:catalogo');
+        Route::get('/productos/{producto}', [ProductoController::class, 'show'])->middleware('permiso:inventario.ver')->middleware('feature:catalogo');
+        Route::put('/productos/{producto}', [ProductoController::class, 'update'])->middleware('permiso:inventario.editar')->middleware('feature:catalogo');
         Route::patch('/productos/{producto}/desactivar', [ProductoController::class, 'desactivar'])
-            ->middleware('permiso:inventario.eliminar');
+            ->middleware('permiso:inventario.eliminar')->middleware('feature:catalogo');
 
-        Route::get('/producto-variantes/{variante}/presentaciones', [PresentacionController::class, 'listar'])->middleware('permiso:inventario.ver');
-        Route::post('/producto-variantes/{variante}/presentaciones', [PresentacionController::class, 'store'])->middleware('permiso:inventario.editar');
-        Route::put('/producto-variantes/{variante}/presentaciones/{presentacion}', [PresentacionController::class, 'update'])->middleware('permiso:inventario.editar');
-        Route::delete('/producto-variantes/{variante}/presentaciones/{presentacion}', [PresentacionController::class, 'destroy'])->middleware('permiso:inventario.editar');
+        Route::get('/producto-variantes/{variante}/presentaciones', [PresentacionController::class, 'listar'])->middleware('permiso:inventario.ver')->middleware('feature:inventario');
+        Route::post('/producto-variantes/{variante}/presentaciones', [PresentacionController::class, 'store'])->middleware('permiso:inventario.editar')->middleware('feature:inventario');
+        Route::put('/producto-variantes/{variante}/presentaciones/{presentacion}', [PresentacionController::class, 'update'])->middleware('permiso:inventario.editar')->middleware('feature:inventario');
+        Route::delete('/producto-variantes/{variante}/presentaciones/{presentacion}', [PresentacionController::class, 'destroy'])->middleware('permiso:inventario.editar')->middleware('feature:inventario');
 
         Route::post('/productos/{producto}/variantes', [ProductoVarianteController::class, 'store'])
-            ->middleware('permiso:inventario.crear');
+            ->middleware('permiso:inventario.crear')->middleware('feature:catalogo');
         Route::put('/producto-variantes/{variante}', [ProductoVarianteController::class, 'update'])
-            ->middleware('permiso:inventario.editar');
+            ->middleware('permiso:inventario.editar')->middleware('feature:inventario');
         Route::patch('/producto-variantes/{variante}/desactivar', [ProductoVarianteController::class, 'desactivar'])
-            ->middleware('permiso:inventario.eliminar');
+            ->middleware('permiso:inventario.eliminar')->middleware('feature:inventario');
 
         Route::get('/producto-variantes/{variante}/kardex', [KardexController::class, 'porVariante'])
-            ->middleware('permiso:inventario.ver');
+            ->middleware('permiso:inventario.ver')->middleware('feature:inventario');
 
         // Proveedores: catalogo de apoyo (necesario para registrar compras,
         // ver mas abajo) -- mismo permiso que el resto de catalogos de
         // Inventario, no uno dedicado.
-        Route::get('/proveedores', [ProveedorController::class, 'index'])->middleware('permiso:inventario.ver');
-        Route::post('/proveedores', [ProveedorController::class, 'store'])->middleware('permiso:inventario.crear');
+        Route::get('/proveedores', [ProveedorController::class, 'index'])->middleware('permiso:inventario.ver')->middleware('feature:compras_proveedores');
+        Route::post('/proveedores', [ProveedorController::class, 'store'])->middleware('permiso:inventario.crear')->middleware('feature:compras_proveedores');
         Route::patch('/proveedores/{proveedor}/desactivar', [ProveedorController::class, 'desactivar'])
-            ->middleware('permiso:inventario.eliminar');
+            ->middleware('permiso:inventario.eliminar')->middleware('feature:compras_proveedores');
 
         // Unica puerta HTTP hacia InventarioService::registrarCompra() --
         // antes no existia (ver el reporte del bug "no puedo ingresar
         // stock"). compras.ver/crear ya estaban en el catalogo de permisos
         // sembrado, sin usarse hasta ahora.
-        Route::post('/compras', [CompraController::class, 'store'])->middleware('permiso:compras.crear')->middleware(Idempotencia::class);
+        Route::post('/compras', [CompraController::class, 'store'])->middleware('permiso:compras.crear')->middleware(Idempotencia::class)->middleware('feature:compras_proveedores');
 
         // Precios y Promociones: tercer modulo real.
         Route::get('/precios/listas', [ListaPrecioController::class, 'index'])->middleware('permiso:listas_precio.ver');
@@ -250,23 +250,23 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/precios/listas/{lista}/clientes', [ListaPrecioController::class, 'asignarCliente'])->middleware('permiso:listas_precio.editar');
         Route::delete('/precios/listas/{lista}/clientes/{asignacion}', [ListaPrecioController::class, 'quitarCliente'])->middleware('permiso:listas_precio.editar');
 
-        Route::get('/reglas-precio', [ReglaPrecioController::class, 'index'])->middleware('permiso:reglas_precio.ver');
-        Route::get('/reglas-precio/{regla}', [ReglaPrecioController::class, 'show'])->middleware('permiso:reglas_precio.ver');
-        Route::post('/reglas-precio', [ReglaPrecioController::class, 'store'])->middleware('permiso:reglas_precio.crear');
+        Route::get('/reglas-precio', [ReglaPrecioController::class, 'index'])->middleware('permiso:reglas_precio.ver')->middleware('feature:cupones_promociones_mayoreo');
+        Route::get('/reglas-precio/{regla}', [ReglaPrecioController::class, 'show'])->middleware('permiso:reglas_precio.ver')->middleware('feature:cupones_promociones_mayoreo');
+        Route::post('/reglas-precio', [ReglaPrecioController::class, 'store'])->middleware('permiso:reglas_precio.crear')->middleware('feature:cupones_promociones_mayoreo');
         Route::put('/reglas-precio/{regla}', [ReglaPrecioController::class, 'update'])
-            ->middleware('permiso:reglas_precio.editar');
+            ->middleware('permiso:reglas_precio.editar')->middleware('feature:cupones_promociones_mayoreo');
         Route::patch('/reglas-precio/{regla}/desactivar', [ReglaPrecioController::class, 'desactivar'])
-            ->middleware('permiso:reglas_precio.eliminar');
+            ->middleware('permiso:reglas_precio.eliminar')->middleware('feature:cupones_promociones_mayoreo');
 
-        Route::get('/cupones', [CuponController::class, 'index'])->middleware('permiso:cupones.ver');
-        Route::get('/cupones/{cupon}', [CuponController::class, 'show'])->middleware('permiso:cupones.ver');
-        Route::post('/cupones', [CuponController::class, 'store'])->middleware('permiso:cupones.crear');
-        Route::put('/cupones/{cupon}', [CuponController::class, 'update'])->middleware('permiso:cupones.editar');
+        Route::get('/cupones', [CuponController::class, 'index'])->middleware('permiso:cupones.ver')->middleware('feature:cupones_promociones_mayoreo');
+        Route::get('/cupones/{cupon}', [CuponController::class, 'show'])->middleware('permiso:cupones.ver')->middleware('feature:cupones_promociones_mayoreo');
+        Route::post('/cupones', [CuponController::class, 'store'])->middleware('permiso:cupones.crear')->middleware('feature:cupones_promociones_mayoreo');
+        Route::put('/cupones/{cupon}', [CuponController::class, 'update'])->middleware('permiso:cupones.editar')->middleware('feature:cupones_promociones_mayoreo');
         Route::patch('/cupones/{cupon}/desactivar', [CuponController::class, 'desactivar'])
-            ->middleware('permiso:cupones.eliminar');
+            ->middleware('permiso:cupones.eliminar')->middleware('feature:cupones_promociones_mayoreo');
         // Parte del flujo de venta (TPV), no de la administracion del
         // catalogo de cupones -- ver el comentario en CuponController::validar().
-        Route::post('/cupones/validar', [CuponController::class, 'validar'])->middleware('permiso:ventas.crear');
+        Route::post('/cupones/validar', [CuponController::class, 'validar'])->middleware('permiso:ventas.crear')->middleware('feature:cupones_promociones_mayoreo');
 
         // TPV: cuarto modulo real, el que junta Crm+Inventario+Precios en
         // un flujo de captura (ver VentaController/CajaController).
@@ -280,23 +280,23 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::patch('/metodos-pago/{metodoPago}/desactivar', [MetodoPagoController::class, 'desactivar'])
             ->middleware('permiso:metodos_pago.eliminar');
 
-        Route::get('/caja/{cajaSesion}/impreso', [ImpresosTpvController::class, 'corte'])->middleware('permiso:caja.ver');
-        Route::get('/caja/actual', [CajaController::class, 'actual'])->middleware('permiso:caja.ver');
-        Route::get('/caja/remotas', CajasRemotasController::class)->middleware('permiso:caja.cerrar_remota');
-        Route::get('/caja/consolidado', [ConsolidadoCajaController::class, 'show'])->middleware('permiso:caja.cerrar_remota');
-        Route::post('/caja/consolidado', [ConsolidadoCajaController::class, 'store'])->middleware('permiso:caja.cerrar_remota')->middleware(Idempotencia::class);
-        Route::post('/caja/abrir', [CajaController::class, 'abrir'])->middleware('permiso:caja.abrir')->middleware(Idempotencia::class);
-        Route::patch('/caja/{cajaSesion}/cerrar', [CajaController::class, 'cerrar'])->middleware('permiso:caja.cerrar')->middleware(Idempotencia::class);
+        Route::get('/caja/{cajaSesion}/impreso', [ImpresosTpvController::class, 'corte'])->middleware('permiso:caja.ver')->middleware('feature:caja');
+        Route::get('/caja/actual', [CajaController::class, 'actual'])->middleware('permiso:caja.ver')->middleware('feature:caja');
+        Route::get('/caja/remotas', CajasRemotasController::class)->middleware('permiso:caja.cerrar_remota')->middleware('feature:multicaja');
+        Route::get('/caja/consolidado', [ConsolidadoCajaController::class, 'show'])->middleware('permiso:caja.cerrar_remota')->middleware('feature:multicaja');
+        Route::post('/caja/consolidado', [ConsolidadoCajaController::class, 'store'])->middleware('permiso:caja.cerrar_remota')->middleware(Idempotencia::class)->middleware('feature:multicaja');
+        Route::post('/caja/abrir', [CajaController::class, 'abrir'])->middleware('permiso:caja.abrir')->middleware(Idempotencia::class)->middleware('feature:caja');
+        Route::patch('/caja/{cajaSesion}/cerrar', [CajaController::class, 'cerrar'])->middleware('permiso:caja.cerrar')->middleware(Idempotencia::class)->middleware('feature:caja');
 
-        Route::get('/ventas', [VentaController::class, 'index'])->middleware('permiso:ventas.ver');
-        Route::post('/ventas', [VentaController::class, 'store'])->middleware(['permiso:ventas.crear', SeleccionarListaPrecio::class])->middleware(Idempotencia::class);
-        Route::get('/ventas/codigo', CodigoVentaController::class)->middleware('permiso:ventas.crear');
-        Route::post('/ventas/cotizar', [VentaController::class, 'cotizar'])->middleware(['permiso:ventas.crear', SeleccionarListaPrecio::class]);
-        Route::get('/ventas/reporte', [VentaController::class, 'reporte'])->middleware('permiso:reportes.ver');
-        Route::get('/ventas/reporte/exportar', [VentaController::class, 'exportar'])->middleware(['permiso:reportes.ver', 'permiso:reportes.exportar']);
-        Route::get('/ventas/{venta}/impreso', [ImpresosTpvController::class, 'venta'])->middleware('permiso:ventas.ver');
-        Route::get('/ventas/{venta}', [VentaController::class, 'show'])->middleware('permiso:ventas.ver');
-        Route::patch('/ventas/{venta}/anular', [VentaController::class, 'anular'])->middleware('permiso:ventas.anular')->middleware(Idempotencia::class);
+        Route::get('/ventas', [VentaController::class, 'index'])->middleware('permiso:ventas.ver')->middleware('feature:tpv');
+        Route::post('/ventas', [VentaController::class, 'store'])->middleware(['permiso:ventas.crear', SeleccionarListaPrecio::class])->middleware(Idempotencia::class)->middleware('feature:tpv');
+        Route::get('/ventas/codigo', CodigoVentaController::class)->middleware('permiso:ventas.crear')->middleware('feature:tpv');
+        Route::post('/ventas/cotizar', [VentaController::class, 'cotizar'])->middleware(['permiso:ventas.crear', SeleccionarListaPrecio::class])->middleware('feature:tpv');
+        Route::get('/ventas/reporte', [VentaController::class, 'reporte'])->middleware('permiso:reportes.ver')->middleware('feature:reportes');
+        Route::get('/ventas/reporte/exportar', [VentaController::class, 'exportar'])->middleware(['permiso:reportes.ver', 'permiso:reportes.exportar'])->middleware('feature:reportes,reportes_csv');
+        Route::get('/ventas/{venta}/impreso', [ImpresosTpvController::class, 'venta'])->middleware('permiso:ventas.ver')->middleware('feature:tpv');
+        Route::get('/ventas/{venta}', [VentaController::class, 'show'])->middleware('permiso:ventas.ver')->middleware('feature:tpv');
+        Route::patch('/ventas/{venta}/anular', [VentaController::class, 'anular'])->middleware('permiso:ventas.anular')->middleware(Idempotencia::class)->middleware('feature:tpv');
 
         // Apartados: quinto modulo real, reutiliza el mismo carrito/cotizacion
         // de TPV (ver ApartadoService, que depende de VentaService/InventarioService).
@@ -304,31 +304,31 @@ Route::middleware('auth:sanctum')->group(function () {
         // apartados.liquidar dedicado en el catalogo sembrado -- liquidar es,
         // en esencia, cobrar el saldo final, el mismo gesto que abonar) para
         // que un vendedor pueda cerrar un apartado sin ser admin.
-        Route::get('/apartados', [ApartadoController::class, 'index'])->middleware('permiso:apartados.ver');
-        Route::post('/apartados', [ApartadoController::class, 'store'])->middleware(['permiso:apartados.crear', SeleccionarListaPrecio::class])->middleware(Idempotencia::class);
-        Route::get('/apartados/{apartado}/abonos/{abono}/impreso', ImpresoAbonoController::class)->scopeBindings()->middleware('permiso:apartados.ver');
-        Route::get('/apartados/{apartado}', [ApartadoController::class, 'show'])->middleware('permiso:apartados.ver');
+        Route::get('/apartados', [ApartadoController::class, 'index'])->middleware('permiso:apartados.ver')->middleware('feature:apartados');
+        Route::post('/apartados', [ApartadoController::class, 'store'])->middleware(['permiso:apartados.crear', SeleccionarListaPrecio::class])->middleware(Idempotencia::class)->middleware('feature:apartados');
+        Route::get('/apartados/{apartado}/abonos/{abono}/impreso', ImpresoAbonoController::class)->scopeBindings()->middleware('permiso:apartados.ver')->middleware('feature:apartados');
+        Route::get('/apartados/{apartado}', [ApartadoController::class, 'show'])->middleware('permiso:apartados.ver')->middleware('feature:apartados');
         Route::post('/apartados/{apartado}/abonos', [ApartadoController::class, 'registrarAbono'])
-            ->middleware('permiso:apartados.abonar')->middleware(Idempotencia::class);
+            ->middleware('permiso:apartados.abonar')->middleware(Idempotencia::class)->middleware('feature:apartados');
         Route::patch('/apartados/{apartado}/liquidar', [ApartadoController::class, 'liquidar'])
-            ->middleware('permiso:apartados.abonar')->middleware(Idempotencia::class);
+            ->middleware('permiso:apartados.abonar')->middleware(Idempotencia::class)->middleware('feature:apartados');
         Route::patch('/apartados/{apartado}/cancelar', [ApartadoController::class, 'cancelar'])
-            ->middleware('permiso:apartados.cancelar')->middleware(Idempotencia::class);
+            ->middleware('permiso:apartados.cancelar')->middleware(Idempotencia::class)->middleware('feature:apartados');
 
         // Devoluciones: sexto modulo real. Reutiliza VentaService (venta
         // sombra de un cambio) e InventarioService (ver DevolucionService) --
         // sin permiso propio de "cambio" vs "devolucion", el catalogo
         // sembrado solo tiene devoluciones.ver/crear para ambos casos.
-        Route::get('/devoluciones', [DevolucionController::class, 'index'])->middleware('permiso:devoluciones.ver');
-        Route::post('/devoluciones', [DevolucionController::class, 'store'])->middleware('permiso:devoluciones.crear')->middleware(Idempotencia::class);
+        Route::get('/devoluciones', [DevolucionController::class, 'index'])->middleware('permiso:devoluciones.ver')->middleware('feature:devoluciones');
+        Route::post('/devoluciones', [DevolucionController::class, 'store'])->middleware('permiso:devoluciones.crear')->middleware(Idempotencia::class)->middleware('feature:devoluciones');
         Route::get('/devoluciones/{devolucion}', [DevolucionController::class, 'show'])
-            ->middleware('permiso:devoluciones.ver');
+            ->middleware('permiso:devoluciones.ver')->middleware('feature:devoluciones');
 
         // Gastos: septimo modulo real. Sin pantalla propia -- vive dentro
         // de la vista de caja de TPV (ver el reporte). index() siempre
         // exige caja_sesion_id (no pagina un historial general).
-        Route::get('/gastos', [GastoController::class, 'index'])->middleware('permiso:gastos.ver');
-        Route::post('/gastos', [GastoController::class, 'store'])->middleware('permiso:gastos.crear')->middleware(Idempotencia::class);
+        Route::get('/gastos', [GastoController::class, 'index'])->middleware('permiso:gastos.ver')->middleware('feature:caja');
+        Route::post('/gastos', [GastoController::class, 'store'])->middleware('permiso:gastos.crear')->middleware(Idempotencia::class)->middleware('feature:caja');
 
         // Configuracion (moneda, ticket, logo, backup): octavo modulo real.
         // Un solo permiso (configuracion.editar) gatea tanto ver como
@@ -344,10 +344,10 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/configuracion/publica', [ConfiguracionController::class, 'publica']);
 
         // Unidades de Medida: catalogo de Inventario.
-        Route::get('/unidades-medida', [UnidadMedidaController::class, 'index'])->middleware('permiso:inventario.ver');
-        Route::post('/unidades-medida', [UnidadMedidaController::class, 'store'])->middleware('permiso:inventario.crear');
-        Route::put('/unidades-medida/{id}', [UnidadMedidaController::class, 'update'])->middleware('permiso:inventario.editar');
-        Route::delete('/unidades-medida/{id}', [UnidadMedidaController::class, 'destroy'])->middleware('permiso:inventario.eliminar');
+        Route::get('/unidades-medida', [UnidadMedidaController::class, 'index'])->middleware('permiso:inventario.ver')->middleware('feature:catalogo');
+        Route::post('/unidades-medida', [UnidadMedidaController::class, 'store'])->middleware('permiso:inventario.crear')->middleware('feature:catalogo');
+        Route::put('/unidades-medida/{id}', [UnidadMedidaController::class, 'update'])->middleware('permiso:inventario.editar')->middleware('feature:catalogo');
+        Route::delete('/unidades-medida/{id}', [UnidadMedidaController::class, 'destroy'])->middleware('permiso:inventario.eliminar')->middleware('feature:catalogo');
 
         // Cotizaciones / Presupuestos
         Route::middleware('modulo:cotizaciones')->group(function () {
@@ -363,7 +363,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::middleware('modulo:cxc')->group(function () {
             Route::get('/cuentas-cobrar', [CuentaCobrarController::class, 'index'])->middleware('permiso:cuentas_cobrar.ver');
             Route::get('/cuentas-cobrar/reporte', [CuentaCobrarController::class, 'reporte'])->middleware('permiso:reportes_cuentas_cobrar.ver');
-            Route::get('/cuentas-cobrar/reporte/exportar', [CuentaCobrarController::class, 'exportar'])->middleware(['permiso:reportes_cuentas_cobrar.ver', 'permiso:reportes.exportar']);
+            Route::get('/cuentas-cobrar/reporte/exportar', [CuentaCobrarController::class, 'exportar'])->middleware(['permiso:reportes_cuentas_cobrar.ver', 'permiso:reportes.exportar'])->middleware('feature:reportes,reportes_csv');
             Route::get('/cuentas-cobrar/{cuentaCobrar}', [CuentaCobrarController::class, 'show'])->middleware('permiso:cuentas_cobrar.ver');
             Route::post('/cuentas-cobrar/{cuentaCobrar}/abonos', [CuentaCobrarController::class, 'registrarAbono'])->middleware('permiso:cuentas_cobrar.registrar_abono')->middleware(Idempotencia::class);
             Route::post('/cuentas-cobrar/{cuentaCobrar}/anular', [CuentaCobrarController::class, 'anular'])->middleware('permiso:cuentas_cobrar.anular')->middleware(Idempotencia::class);
@@ -373,7 +373,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::middleware('modulo:cxp')->group(function () {
             Route::get('/cuentas-pagar', [CuentaPagarController::class, 'index'])->middleware('permiso:cuentas_pagar.ver');
             Route::get('/cuentas-pagar/reporte', [CuentaPagarController::class, 'reporte'])->middleware('permiso:reportes_cuentas_pagar.ver');
-            Route::get('/cuentas-pagar/reporte/exportar', [CuentaPagarController::class, 'exportar'])->middleware(['permiso:reportes_cuentas_pagar.ver', 'permiso:reportes.exportar']);
+            Route::get('/cuentas-pagar/reporte/exportar', [CuentaPagarController::class, 'exportar'])->middleware(['permiso:reportes_cuentas_pagar.ver', 'permiso:reportes.exportar'])->middleware('feature:reportes,reportes_csv');
             Route::get('/cuentas-pagar/{cuentaPagar}', [CuentaPagarController::class, 'show'])->middleware('permiso:cuentas_pagar.ver');
             Route::post('/cuentas-pagar/{cuentaPagar}/pagos', [CuentaPagarController::class, 'registrarPago'])->middleware('permiso:cuentas_pagar.registrar_pago')->middleware(Idempotencia::class);
             Route::post('/cuentas-pagar/{cuentaPagar}/anular', [CuentaPagarController::class, 'anular'])->middleware('permiso:cuentas_pagar.anular')->middleware(Idempotencia::class);
@@ -387,7 +387,7 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::post('/clientes/{cliente}/loyalty/ajustar', [CrmAvanzadoController::class, 'ajustarPuntos'])->middleware('permiso:loyalty.ajustar');
             Route::post('/crm/campanas/enviar', [CrmAvanzadoController::class, 'enviarCampana'])->middleware('permiso:crm_campanas.enviar');
             Route::get('/crm/reporte', [CrmAvanzadoController::class, 'reporte'])->middleware('permiso:reportes_crm.ver');
-            Route::get('/crm/reporte/exportar', [CrmAvanzadoController::class, 'exportar'])->middleware(['permiso:reportes_crm.ver', 'permiso:reportes.exportar']);
+            Route::get('/crm/reporte/exportar', [CrmAvanzadoController::class, 'exportar'])->middleware(['permiso:reportes_crm.ver', 'permiso:reportes.exportar'])->middleware('feature:reportes,reportes_csv');
         });
 
         // Delivery / Pedidos
@@ -434,7 +434,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::middleware('modulo:ventas_plazos')->group(function () {
             Route::get('/planes-pago-cliente', [PlanPagoController::class, 'index'])->middleware('permiso:ventas_plazos.ver');
             Route::get('/planes-pago-cliente/{plan}', [PlanPagoController::class, 'show'])->middleware('permiso:ventas_plazos.ver');
-            Route::post('/ventas/{venta}/plan-pago', [PlanPagoController::class, 'crearPlan'])->middleware('permiso:ventas_plazos.crear')->middleware(Idempotencia::class);
+            Route::post('/ventas/{venta}/plan-pago', [PlanPagoController::class, 'crearPlan'])->middleware('permiso:ventas_plazos.crear')->middleware(Idempotencia::class)->middleware('feature:tpv');
             Route::post('/planes-pago-cliente/{plan}/pagar-cuota', [PlanPagoController::class, 'pagarCuota'])->middleware('permiso:ventas_plazos.crear')->middleware(Idempotencia::class);
         });
 

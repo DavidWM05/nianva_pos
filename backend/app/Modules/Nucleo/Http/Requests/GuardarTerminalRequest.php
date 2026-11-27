@@ -15,6 +15,7 @@ final class GuardarTerminalRequest extends SolicitudNegocio
     public function rules(): array
     {
         return [
+            'activo' => ['sometimes', 'boolean'],
             'nombre' => ['required', 'string', 'max:100'],
             'sucursal_id' => ['required', 'integer', ReglasTenant::existe('sucursales', $this->tenantId())],
         ];
@@ -28,6 +29,7 @@ final class GuardarTerminalRequest extends SolicitudNegocio
         return new GuardarTerminalDto(
             (string) $this->validated('nombre'),
             SucursalOperacion::paraEscritura($usuario, (int) $this->validated('sucursal_id')),
+            $this->has('activo') ? $this->boolean('activo') : null,
         );
     }
 }

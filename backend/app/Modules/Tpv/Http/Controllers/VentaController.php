@@ -15,6 +15,7 @@ use App\Modules\Nucleo\Dtos\ConsultaMetricasSucursalDto;
 use App\Modules\Nucleo\Http\Requests\ConsultarMetricasSucursalRequest;
 use App\Modules\Nucleo\Http\Support\OperacionSupervisorHttp;
 use App\Modules\Nucleo\Models\Usuario;
+use App\Modules\Nucleo\Services\Planes;
 use App\Modules\Nucleo\Services\TenantContext;
 use App\Modules\Nucleo\Support\DecimalApi;
 use App\Modules\Precios\Support\ContextoPrecio;
@@ -188,7 +189,8 @@ class VentaController extends Controller
     {
         $usuario = $request->user();
         $resultado = $obtenerReporteVentas->ejecutar($request->toDto(), $usuario instanceof Usuario && $usuario->tienePermiso('reportes.costos'));
-        $resultado['meta']['permisos']['exportar'] = $usuario instanceof Usuario && $usuario->tienePermiso('reportes.exportar');
+        $resultado['meta']['permisos']['exportar'] = $usuario instanceof Usuario && $usuario->tienePermiso('reportes.exportar')
+            && app(Planes::class)->deTenant((int) $usuario->getAttribute('tenant_id'))->incluye('reportes_csv');
 
         return response()->json($resultado);
     }

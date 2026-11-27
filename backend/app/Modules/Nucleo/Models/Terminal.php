@@ -17,8 +17,9 @@ use Illuminate\Support\Facades\Auth;
  * @property int $tenant_id
  * @property int $sucursal_id
  * @property string $nombre
+ * @property bool $activo
  */
-#[Fillable(['tenant_id', 'sucursal_id', 'nombre'])]
+#[Fillable(['tenant_id', 'sucursal_id', 'nombre', 'activo'])]
 final class Terminal extends Model
 {
     use BelongsToSucursal, BelongsToTenant;
@@ -27,6 +28,13 @@ final class Terminal extends Model
     use HasFactory;
 
     protected $table = 'terminales';
+
+    protected $attributes = ['activo' => true];
+
+    protected function casts(): array
+    {
+        return ['activo' => 'boolean'];
+    }
 
     public function resolveRouteBinding($value, $field = null): ?self
     {

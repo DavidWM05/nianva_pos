@@ -122,8 +122,8 @@ export interface ReporteVentasFiltros {
 
 export interface VentaFormPayload {
   lista_precio_id?: number | null;
-  /** DAT-08: ulid del cliente. */
-  cliente_id: string;
+  /** DAT-08: ulid del cliente. En Básico el servidor asigna Público General. */
+  cliente_id?: string;
   items: VentaItemPayload[];
   pagos: VentaPagoPayload[];
   cupon_codigo?: string | null;
