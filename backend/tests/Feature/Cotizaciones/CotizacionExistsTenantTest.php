@@ -16,6 +16,7 @@ class CotizacionExistsTenantTest extends TestCase
     {
         parent::setUp();
         $this->prepararNegocio(['cotizaciones.crear', 'cotizaciones.editar', 'cotizaciones.convertir']);
+        $this->seleccionarTerminalDeCaja();
     }
 
     public function test_store_rechaza_cliente_de_otro_tenant(): void

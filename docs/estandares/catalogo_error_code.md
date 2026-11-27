@@ -7,11 +7,13 @@ Generado con `php artisan errores:catalogo` desde las excepciones de negocio y e
 | `abono_excede_saldo` | 422 | `App\Modules\CuentasCobrar\Exceptions\AbonoExcedeSaldoException` | CuentasCobrar | saldo_pendiente, monto_abono |
 | `abono_pago_no_cuadra` | 422 | `App\Modules\Apartados\Exceptions\AbonoPagoNoCuadraException` | Apartados | monto, suma_pagos |
 | `ajuste_puntos_invalido` | 422 | `App\Modules\CrmAvanzado\Exceptions\AjustePuntosInvalidoException` | CrmAvanzado | — |
+| `anulacion_requiere_devolucion` | 422 | `App\Modules\Tpv\Exceptions\AnulacionRequiereDevolucionException` | Tpv | caja_sesion_id |
 | `apartado_estado_invalido` | 422 | `App\Modules\Apartados\Exceptions\ApartadoEstadoInvalidoException` | Apartados | apartado_id, estado_actual, accion |
 | `apartado_saldo_insuficiente` | 422 | `App\Modules\Apartados\Exceptions\ApartadoSaldoInsuficienteException` | Apartados | apartado_id, total, total_abonado |
 | `atributo_en_uso` | 422 | `App\Modules\Inventario\Exceptions\AtributoEnUsoException` | Inventario | tipo, id |
+| `caja_consolidacion_no_disponible` | 422 | `App\Modules\Tpv\Exceptions\ConsolidacionCajaNoDisponibleException` | Tpv | fecha_operativa, motivo |
 | `caja_no_abierta` | 422 | `App\Modules\Tpv\Exceptions\CajaSesionNoAbiertaException` | Tpv | sucursal_id |
-| `caja_ya_abierta` | 422 | `App\Modules\Tpv\Exceptions\CajaYaAbiertaException` | Tpv | sucursal_id |
+| `caja_ya_abierta` | 422 | `App\Modules\Tpv\Exceptions\CajaYaAbiertaException` | Tpv | sucursal_id, terminal_id |
 | `caja_ya_cerrada` | 422 | `App\Modules\Tpv\Exceptions\CajaYaCerradaException` | Tpv | caja_sesion_id |
 | `cliente_sistema` | 403 | `App\Modules\Crm\Exceptions\ClienteSistemaException` | Crm | cliente_id |
 | `conflicto` | 409 | `App\Modules\Nucleo\Support\MapaErroresHttp` | Nucleo | - |
@@ -91,7 +93,8 @@ Generado con `php artisan errores:catalogo` desde las excepciones de negocio y e
 | `sucursal_requerida` | 422 | `App\Modules\Nucleo\Exceptions\SucursalRequeridaException` | Nucleo | — |
 | `supervisor_intentos_agotados` | 429 | `App\Modules\Nucleo\Exceptions\SupervisorIntentosAgotadosException` | Nucleo | — |
 | `supervisor_invalido` | 403 | `App\Modules\Nucleo\Exceptions\SupervisorInvalidoException` | Nucleo | — |
-| `supervisor_requerido` | 403 | `App\Modules\Nucleo\Exceptions\SupervisorRequeridoException` | Nucleo | — |
+| `supervisor_requerido` | 403 | `App\Modules\Nucleo\Exceptions\SupervisorRequeridoException` | Nucleo | consolidado_id |
+| `terminal_requerida` | 422 | `App\Modules\Tpv\Exceptions\TerminalRequeridaException` | Tpv | — |
 | `tiempo_agotado` | 504 | `App\Modules\Nucleo\Support\MapaErroresHttp` | Nucleo | - |
 | `tiene_movimientos` | 422 | `App\Modules\Nucleo\Exceptions\TieneMovimientosException` | Nucleo | entidad, id |
 | `tipo_contenido_no_soportado` | 415 | `App\Modules\Nucleo\Support\MapaErroresHttp` | Nucleo | - |

@@ -100,7 +100,7 @@ class Actions04dConcurrentesTest extends TestCase
         try {
             $bloqueador->beginTransaction();
             $bloqueador->table($tabla)->where('id', $id)->lockForUpdate()->first();
-            $datos = ['tenant' => $d['tenant']->id, 'sucursal' => $d['sucursal']->id, 'usuario' => $d['usuario']->id, 'cliente' => $d['cliente']->id, 'metodo' => $d['metodo']->id, 'variante' => $d['variante']->id];
+            $datos = ['tenant' => $d['tenant']->id, 'sucursal' => $d['sucursal']->id, 'usuario' => $d['usuario']->id, 'cliente' => $d['cliente']->id, 'metodo' => $d['metodo']->id, 'variante' => $d['variante']->id, 'terminal' => $d['terminal']->id];
             foreach (['venta', 'cxc', 'cxp', 'gift', 'nota', 'plan', 'cuota'] as $modelo) {
                 if (isset($d[$modelo])) {
                     $datos[$modelo] = $d[$modelo]->id;
@@ -111,9 +111,10 @@ class Actions04dConcurrentesTest extends TestCase
                 // Dos sucursales pueden operar la misma deuda/tarjeta; sus cajas no deben ocultar la carrera.
                 $sucursal = Sucursal::factory()->create(['tenant_id' => $d['tenant']->id]);
                 $usuario = Usuario::factory()->create(['tenant_id' => $d['tenant']->id, 'sucursal_id' => $sucursal->id]);
-                CajaSesion::factory()->create(['sucursal_id' => $sucursal->id, 'usuario_id' => $usuario->id, 'estado' => 'abierta']);
+                $caja = CajaSesion::factory()->create(['sucursal_id' => $sucursal->id, 'usuario_id' => $usuario->id, 'estado' => 'abierta']);
                 $actores[1]['sucursal'] = $sucursal->id;
                 $actores[1]['usuario'] = $usuario->id;
+                $actores[1]['terminal'] = $caja->terminal_id;
             }
             foreach ($actores as $actor) {
                 $hijos[] = ProcesosConcurrentes::iniciar($op, $actor);

@@ -37,6 +37,7 @@ class PresentacionesApiTest extends TestCase
         }
         $d['usuario']->roles()->attach($rol);
         $this->actingAs($d['usuario']);
+        $this->seleccionarTerminalParaPrueba($d['terminal']->id);
 
         return $d;
     }
@@ -92,7 +93,8 @@ class PresentacionesApiTest extends TestCase
         $id = $this->venta($d, $p);
         $p->update(['factor' => '9.000']);
         $datosSupervisor1 = ['venta_id' => $id, 'tipo' => 'devolucion', 'items_devueltos' => [['variante_id' => $d['variante']->id, 'cantidad' => 1]], 'pagos' => [['metodo_pago_id' => $d['metodo']->id, 'monto' => 50]]];
-        $this->postJson('/api/v1/devoluciones', $datosSupervisor1, ['X-Autorizacion-Supervisor' => self::conSupervisor($d['usuario'], AccionSupervisor::Reembolsar, $datosSupervisor1, $id)->token])->assertCreated();
+        $this->seleccionarTerminalParaPrueba($d['terminal']->id);
+        $this->postJson('/api/v1/devoluciones', $datosSupervisor1, ['X-Autorizacion-Supervisor' => self::conSupervisor($d['usuario'], AccionSupervisor::Reembolsar, $datosSupervisor1, $id, sesionHash: hash('sha256', session()->getId()))->token])->assertCreated();
         $this->assertSame(14, $d['stock']->refresh()->stock_actual);
     }
 
@@ -123,7 +125,8 @@ class PresentacionesApiTest extends TestCase
         $this->assertNotNull($origen);
         $this->assertSame(13, $d['stock']->refresh()->stock_actual);
         $datosSupervisor1 = ['venta_id' => $venta->json('data.id'), 'tipo' => 'devolucion', 'items_devueltos' => [['variante_id' => $d['variante']->id, 'venta_detalle_id' => $origen['id'], 'cantidad' => 1]], 'pagos' => [['metodo_pago_id' => $d['metodo']->id, 'monto' => $importe]]];
-        $this->postJson('/api/v1/devoluciones', $datosSupervisor1, ['X-Autorizacion-Supervisor' => self::conSupervisor($d['usuario'], AccionSupervisor::Reembolsar, $datosSupervisor1, $venta->json('data.id'))->token])->assertCreated();
+        $this->seleccionarTerminalParaPrueba($d['terminal']->id);
+        $this->postJson('/api/v1/devoluciones', $datosSupervisor1, ['X-Autorizacion-Supervisor' => self::conSupervisor($d['usuario'], AccionSupervisor::Reembolsar, $datosSupervisor1, $venta->json('data.id'), sesionHash: hash('sha256', session()->getId()))->token])->assertCreated();
         $this->assertSame($stockFinal, $d['stock']->refresh()->stock_actual);
     }
 
@@ -167,7 +170,8 @@ class PresentacionesApiTest extends TestCase
         $p = Presentacion::factory()->create(['tenant_id' => $d['tenant']->id, 'variante_id' => $d['variante']->id, 'factor' => '0.500', 'precio_venta' => null]);
         $venta = $this->postJson('/api/v1/ventas', ['cliente_id' => $d['cliente']->ulid, 'items' => [['variante_id' => $d['variante']->id, 'presentacion_id' => $p->id, 'cantidad' => 3]], 'pagos' => [['metodo_pago_id' => $d['metodo']->id, 'monto' => 1.52]]])->assertCreated();
         $datosSupervisor1 = ['venta_id' => $venta->json('data.id'), 'tipo' => 'devolucion', 'items_devueltos' => [['variante_id' => $d['variante']->id, 'cantidad' => 3]], 'pagos' => [['metodo_pago_id' => $d['metodo']->id, 'monto' => 1.52]]];
-        $this->postJson('/api/v1/devoluciones', $datosSupervisor1, ['X-Autorizacion-Supervisor' => self::conSupervisor($d['usuario'], AccionSupervisor::Reembolsar, $datosSupervisor1, $venta->json('data.id'))->token])->assertCreated()->assertJsonPath('data.monto_devolucion', '1.52');
+        $this->seleccionarTerminalParaPrueba($d['terminal']->id);
+        $this->postJson('/api/v1/devoluciones', $datosSupervisor1, ['X-Autorizacion-Supervisor' => self::conSupervisor($d['usuario'], AccionSupervisor::Reembolsar, $datosSupervisor1, $venta->json('data.id'), sesionHash: hash('sha256', session()->getId()))->token])->assertCreated()->assertJsonPath('data.monto_devolucion', '1.52');
         $this->assertSame(20, $d['stock']->refresh()->stock_actual);
     }
 

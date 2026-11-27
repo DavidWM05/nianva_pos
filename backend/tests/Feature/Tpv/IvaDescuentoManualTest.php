@@ -21,6 +21,7 @@ final class IvaDescuentoManualTest extends TestCase
     public function test_el_iva_guardado_y_el_impreso_reflejan_el_descuento_manual(): void
     {
         $this->prepararNegocio(['ventas.crear', 'ventas.ver']);
+        $this->seleccionarTerminalDeCaja();
         $this->producto->update(['precio_venta' => 116, 'tasa_iva' => 16]);
 
         $ulid = $this->actingAs($this->usuario)->postJson('/api/v1/ventas', $this->payloadVenta([
@@ -43,6 +44,7 @@ final class IvaDescuentoManualTest extends TestCase
     public function test_reparte_un_centavo_en_orden_estable_y_devuelve_la_foto_efectiva(): void
     {
         $this->prepararNegocio(['ventas.crear', 'ventas.ver', 'devoluciones.crear']);
+        $this->seleccionarTerminalDeCaja();
         $this->producto->update(['precio_venta' => 23.2, 'tasa_iva' => 16]);
 
         $ulid = $this->actingAs($this->usuario)->postJson('/api/v1/ventas', $this->payloadVenta([
@@ -63,7 +65,8 @@ final class IvaDescuentoManualTest extends TestCase
             'items_devueltos' => [['variante_id' => $this->variante->id, 'cantidad' => 1, 'va_a_merma' => false]],
             'pagos' => [['metodo_pago_id' => $this->metodoPago->id, 'monto' => '23.19']],
         ];
-        $token = self::conSupervisor($this->usuario, AccionSupervisor::Reembolsar, $datos, $ulid)->token;
+        $this->seleccionarTerminalParaPrueba((int) $this->caja->getAttribute('terminal_id'));
+        $token = self::conSupervisor($this->usuario, AccionSupervisor::Reembolsar, $datos, $ulid, sesionHash: hash('sha256', session()->getId()))->token;
         $this->postJson('/api/v1/devoluciones', $datos, ['X-Autorizacion-Supervisor' => $token])->assertCreated();
 
         $devuelto = DevolucionItem::query()->sole();

@@ -92,7 +92,8 @@ class VentaControllerTest extends TestCase
             'tenant_id' => $ctx['tenant']->id, 'nombre' => '10% variante A', 'tipo' => 'porcentaje',
             'porcentaje' => 10, 'aplica_a' => 'variante', 'variante_id' => $ctx['varianteA']->id,
         ]);
-        app(CajaService::class)->abrirCajaConSucursal(Bloqueos04e::sucursal($ctx['sucursal']->id), $ctx['usuario']->id, 500);
+        $cajaOperativa = app(CajaService::class)->abrirCajaConSucursal(Bloqueos04e::sucursal($ctx['sucursal']->id), $ctx['usuario']->id, 500, Bloqueos04e::terminal($ctx['sucursal']->id), now()->setTimezone('America/Mexico_City')->toDateString(), now());
+        $this->seleccionarTerminalParaPrueba((int) $cajaOperativa->terminal_id);
 
         $this->actingAs($ctx['usuario']);
 
@@ -133,7 +134,8 @@ class VentaControllerTest extends TestCase
     public function test_store_con_pago_que_no_cuadra_devuelve_422_con_error_code_pago_no_cuadra(): void
     {
         $ctx = $this->prepararTenantConCatalogo();
-        app(CajaService::class)->abrirCajaConSucursal(Bloqueos04e::sucursal($ctx['sucursal']->id), $ctx['usuario']->id, 500);
+        $cajaOperativa = app(CajaService::class)->abrirCajaConSucursal(Bloqueos04e::sucursal($ctx['sucursal']->id), $ctx['usuario']->id, 500, Bloqueos04e::terminal($ctx['sucursal']->id), now()->setTimezone('America/Mexico_City')->toDateString(), now());
+        $this->seleccionarTerminalParaPrueba((int) $cajaOperativa->terminal_id);
         $this->actingAs($ctx['usuario']);
 
         $respuesta = $this->postJson('/api/v1/ventas', [
@@ -149,7 +151,8 @@ class VentaControllerTest extends TestCase
     public function test_store_con_stock_insuficiente_devuelve_422_con_error_code_stock_insuficiente(): void
     {
         $ctx = $this->prepararTenantConCatalogo();
-        app(CajaService::class)->abrirCajaConSucursal(Bloqueos04e::sucursal($ctx['sucursal']->id), $ctx['usuario']->id, 500);
+        $cajaOperativa = app(CajaService::class)->abrirCajaConSucursal(Bloqueos04e::sucursal($ctx['sucursal']->id), $ctx['usuario']->id, 500, Bloqueos04e::terminal($ctx['sucursal']->id), now()->setTimezone('America/Mexico_City')->toDateString(), now());
+        $this->seleccionarTerminalParaPrueba((int) $cajaOperativa->terminal_id);
         $this->actingAs($ctx['usuario']);
 
         $respuesta = $this->postJson('/api/v1/ventas', [
@@ -164,7 +167,8 @@ class VentaControllerTest extends TestCase
     public function test_store_con_cupon_codigo_invalido_devuelve_422_con_error_code_cupon_invalido(): void
     {
         $ctx = $this->prepararTenantConCatalogo();
-        app(CajaService::class)->abrirCajaConSucursal(Bloqueos04e::sucursal($ctx['sucursal']->id), $ctx['usuario']->id, 500);
+        $cajaOperativa = app(CajaService::class)->abrirCajaConSucursal(Bloqueos04e::sucursal($ctx['sucursal']->id), $ctx['usuario']->id, 500, Bloqueos04e::terminal($ctx['sucursal']->id), now()->setTimezone('America/Mexico_City')->toDateString(), now());
+        $this->seleccionarTerminalParaPrueba((int) $cajaOperativa->terminal_id);
         $this->actingAs($ctx['usuario']);
 
         $respuesta = $this->postJson('/api/v1/ventas', [
@@ -181,7 +185,8 @@ class VentaControllerTest extends TestCase
     public function test_store_sin_permiso_ventas_crear_devuelve_403(): void
     {
         $ctx = $this->prepararTenantConCatalogo([]);
-        app(CajaService::class)->abrirCajaConSucursal(Bloqueos04e::sucursal($ctx['sucursal']->id), $ctx['usuario']->id, 500);
+        $cajaOperativa = app(CajaService::class)->abrirCajaConSucursal(Bloqueos04e::sucursal($ctx['sucursal']->id), $ctx['usuario']->id, 500, Bloqueos04e::terminal($ctx['sucursal']->id), now()->setTimezone('America/Mexico_City')->toDateString(), now());
+        $this->seleccionarTerminalParaPrueba((int) $cajaOperativa->terminal_id);
         $this->actingAs($ctx['usuario']);
 
         $respuesta = $this->postJson('/api/v1/ventas', [
@@ -196,7 +201,8 @@ class VentaControllerTest extends TestCase
     public function test_index_lista_paginado_con_resumen_de_metodos_de_pago_y_oculta_anular_sin_permiso(): void
     {
         $ctx = $this->prepararTenantConCatalogo(['ventas.ver', 'ventas.crear']);
-        app(CajaService::class)->abrirCajaConSucursal(Bloqueos04e::sucursal($ctx['sucursal']->id), $ctx['usuario']->id, 500);
+        $cajaOperativa = app(CajaService::class)->abrirCajaConSucursal(Bloqueos04e::sucursal($ctx['sucursal']->id), $ctx['usuario']->id, 500, Bloqueos04e::terminal($ctx['sucursal']->id), now()->setTimezone('America/Mexico_City')->toDateString(), now());
+        $this->seleccionarTerminalParaPrueba((int) $cajaOperativa->terminal_id);
         $this->actingAs($ctx['usuario']);
 
         $this->postJson('/api/v1/ventas', [
@@ -220,7 +226,8 @@ class VentaControllerTest extends TestCase
     public function test_show_incluye_detalles_y_metodos_de_pago(): void
     {
         $ctx = $this->prepararTenantConCatalogo();
-        app(CajaService::class)->abrirCajaConSucursal(Bloqueos04e::sucursal($ctx['sucursal']->id), $ctx['usuario']->id, 500);
+        $cajaOperativa = app(CajaService::class)->abrirCajaConSucursal(Bloqueos04e::sucursal($ctx['sucursal']->id), $ctx['usuario']->id, 500, Bloqueos04e::terminal($ctx['sucursal']->id), now()->setTimezone('America/Mexico_City')->toDateString(), now());
+        $this->seleccionarTerminalParaPrueba((int) $cajaOperativa->terminal_id);
         $this->actingAs($ctx['usuario']);
 
         $creada = $this->postJson('/api/v1/ventas', [
@@ -239,7 +246,8 @@ class VentaControllerTest extends TestCase
     public function test_anular_marca_estado_y_exige_motivo(): void
     {
         $ctx = $this->prepararTenantConCatalogo();
-        app(CajaService::class)->abrirCajaConSucursal(Bloqueos04e::sucursal($ctx['sucursal']->id), $ctx['usuario']->id, 500);
+        $cajaOperativa = app(CajaService::class)->abrirCajaConSucursal(Bloqueos04e::sucursal($ctx['sucursal']->id), $ctx['usuario']->id, 500, Bloqueos04e::terminal($ctx['sucursal']->id), now()->setTimezone('America/Mexico_City')->toDateString(), now());
+        $this->seleccionarTerminalParaPrueba((int) $cajaOperativa->terminal_id);
         $this->actingAs($ctx['usuario']);
 
         $creada = $this->postJson('/api/v1/ventas', [
@@ -252,7 +260,7 @@ class VentaControllerTest extends TestCase
             ->assertStatus(422);
 
         $datosSupervisor1 = ['motivo' => 'Cliente se arrepintio'];
-        $respuesta = $this->patchJson("/api/v1/ventas/{$creada['id']}/anular", $datosSupervisor1, ['X-Autorizacion-Supervisor' => self::conSupervisor($ctx['usuario'], AccionSupervisor::AnularVenta, $datosSupervisor1, $creada['id'])->token]);
+        $respuesta = $this->patchJson("/api/v1/ventas/{$creada['id']}/anular", $datosSupervisor1, ['X-Autorizacion-Supervisor' => self::conSupervisor($ctx['usuario'], AccionSupervisor::AnularVenta, $datosSupervisor1, $creada['id'], sesionHash: hash('sha256', session()->getId()))->token]);
 
         $respuesta->assertOk()
             ->assertJsonPath('data.estado', 'anulada')
@@ -262,7 +270,8 @@ class VentaControllerTest extends TestCase
     public function test_anular_sin_permiso_devuelve_403(): void
     {
         $ctx = $this->prepararTenantConCatalogo(['ventas.ver', 'ventas.crear']);
-        app(CajaService::class)->abrirCajaConSucursal(Bloqueos04e::sucursal($ctx['sucursal']->id), $ctx['usuario']->id, 500);
+        $cajaOperativa = app(CajaService::class)->abrirCajaConSucursal(Bloqueos04e::sucursal($ctx['sucursal']->id), $ctx['usuario']->id, 500, Bloqueos04e::terminal($ctx['sucursal']->id), now()->setTimezone('America/Mexico_City')->toDateString(), now());
+        $this->seleccionarTerminalParaPrueba((int) $cajaOperativa->terminal_id);
         $this->actingAs($ctx['usuario']);
 
         $creada = $this->postJson('/api/v1/ventas', [

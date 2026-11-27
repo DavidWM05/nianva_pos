@@ -63,7 +63,7 @@ class Actions04bConcurrentesTest extends TestCase
     public function test_anulaciones_simultaneas_restituyen_la_unidad_una_sola_vez(): void
     {
         $d = $this->negocio04b();
-        $d['venta'] = app(RegistrarVenta::class)->ejecutar(new CrearVentaDto($d['cliente']->id, [new LineaVentaDto($d['variante']->id, 1)], [new PagoDto($d['metodo']->id, 100)], null, 0, null, null), $d['usuario']);
+        $d['venta'] = app(RegistrarVenta::class)->ejecutar(new CrearVentaDto($d['cliente']->id, [new LineaVentaDto($d['variante']->id, 1)], [new PagoDto($d['metodo']->id, 100)], null, 0, null, null), $d['usuario'], terminal: $d['terminal']);
         $this->competir($d, 'ventas', $d['venta']->id, 'anular', ['anular', 'venta_ya_anulada']);
         $this->assertSame(10, $d['stock']->fresh()->stock_actual);
         $this->assertSame('anulada', $d['venta']->fresh()->estado);
@@ -80,8 +80,8 @@ class Actions04bConcurrentesTest extends TestCase
             $bloqueador->table($tabla)->where('id', $id)->lockForUpdate()->first();
             $datos = [
                 'tenant' => $d['tenant']->id, 'sucursal' => $d['sucursal']->id,
-                'usuario' => $d['usuario']->id, 'variante' => $d['variante']->id,
-                'proveedor' => $d['proveedor']->id, 'caja' => $d['caja']->id,
+                'usuario' => $d['usuario']->id, 'variante' => $d['variante']->id, 'terminal' => $d['terminal']->id,
+                'proveedor' => $d['proveedor']->id, 'caja' => $d['caja']->id, 'terminal' => $d['terminal']->id,
             ];
             if (isset($d['venta'])) {
                 $datos['venta'] = $d['venta']->id;

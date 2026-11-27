@@ -56,8 +56,8 @@ class ActionsApartadosGastosTest extends TestCase
         $d = $this->negocio04b();
         $apartado = app(CrearApartado::class)->ejecutar(new CrearApartadoDto($d['cliente']->id, [new LineaApartadoDto($d['variante']->id, 1)], null, null), $d['usuario']);
         $dto = new RegistrarAbonoApartadoDto(50, [new PagoApartadoDto($d['metodo']->id, 50)], null);
-        app(RegistrarAbonoApartado::class)->ejecutar($dto, $apartado, $d['usuario']);
-        app(RegistrarAbonoApartado::class)->ejecutar($dto, $apartado, $d['usuario']);
+        app(RegistrarAbonoApartado::class)->ejecutar($dto, $apartado, $d['usuario'], terminal: $d['terminal']);
+        app(RegistrarAbonoApartado::class)->ejecutar($dto, $apartado, $d['usuario'], terminal: $d['terminal']);
 
         $this->assertSame('100.00', $apartado->fresh()->total_abonado);
         $this->assertSame(2, ApartadoAbono::count());
@@ -68,8 +68,8 @@ class ActionsApartadosGastosTest extends TestCase
     {
         $d = $this->negocio04b();
         $apartado = app(CrearApartado::class)->ejecutar(new CrearApartadoDto($d['cliente']->id, [new LineaApartadoDto($d['variante']->id, 1)], null, null), $d['usuario']);
-        app(RegistrarAbonoApartado::class)->ejecutar(new RegistrarAbonoApartadoDto(100, [new PagoApartadoDto($d['metodo']->id, 100)], null), $apartado, $d['usuario']);
-        $resultado = app(LiquidarApartado::class)->ejecutar(new LiquidarApartadoDto, $apartado, $d['usuario']);
+        app(RegistrarAbonoApartado::class)->ejecutar(new RegistrarAbonoApartadoDto(100, [new PagoApartadoDto($d['metodo']->id, 100)], null), $apartado, $d['usuario'], terminal: $d['terminal']);
+        $resultado = app(LiquidarApartado::class)->ejecutar(new LiquidarApartadoDto, $apartado, $d['usuario'], $d['terminal']);
 
         $this->assertSame('completado', $resultado->estado);
         $this->assertSame('100.00', $resultado->venta->abono_previo);
@@ -81,7 +81,7 @@ class ActionsApartadosGastosTest extends TestCase
     {
         $d = $this->negocio04b();
         $apartado = app(CrearApartado::class)->ejecutar(new CrearApartadoDto($d['cliente']->id, [new LineaApartadoDto($d['variante']->id, 1)], null, null), $d['usuario']);
-        app(RegistrarAbonoApartado::class)->ejecutar(new RegistrarAbonoApartadoDto(40, [new PagoApartadoDto($d['metodo']->id, 40)], null), $apartado, $d['usuario']);
+        app(RegistrarAbonoApartado::class)->ejecutar(new RegistrarAbonoApartadoDto(40, [new PagoApartadoDto($d['metodo']->id, 40)], null), $apartado, $d['usuario'], terminal: $d['terminal']);
         $resultado = app(CancelarApartado::class)->ejecutar(new CancelarApartadoDto('Cancelación 04c'), $apartado, $d['usuario'], self::conSupervisor($d['usuario'], AccionSupervisor::CancelarApartado, [], $apartado->ulid));
 
         $this->assertSame(40.0, $resultado->montoAbonadoPendiente);
@@ -94,7 +94,7 @@ class ActionsApartadosGastosTest extends TestCase
     public function test_gasto_se_asigna_a_la_caja_activa_y_el_cierre_lo_descuenta(): void
     {
         $d = $this->negocio04b();
-        $gasto = app(RegistrarGasto::class)->ejecutar(new CrearGastoDto('Luz', 30), $d['usuario']);
+        $gasto = app(RegistrarGasto::class)->ejecutar(new CrearGastoDto('Luz', 30), $d['usuario'], $d['terminal']);
         $cierre = app(CerrarCaja::class)->ejecutar($d['caja'], [['metodo_pago_id' => MetodoEfectivo::id(), 'monto' => 20]]);
 
         $this->assertSame($d['caja']->id, $gasto->caja_sesion_id);
@@ -105,8 +105,8 @@ class ActionsApartadosGastosTest extends TestCase
     public function test_reembolso_devuelve_la_unidad_y_conserva_los_pagos_del_documento(): void
     {
         $d = $this->negocio04b();
-        $venta = app(RegistrarVenta::class)->ejecutar(new CrearVentaDto($d['cliente']->id, [new LineaVentaDto($d['variante']->id, 2)], [new PagoDto($d['metodo']->id, 200)], null, 0, null, null), $d['usuario']);
-        $resultado = app(RegistrarDevolucion::class)->ejecutar(new CrearDevolucionDto($venta->id, 'devolucion', [new ItemDevueltoDto($d['variante']->id, 1, false)], [], [new PagoDevolucionDto($d['metodo']->id, 100)], null, 'efectivo'), $d['usuario'], self::conSupervisor($d['usuario'], AccionSupervisor::Reembolsar, [], $venta->ulid));
+        $venta = app(RegistrarVenta::class)->ejecutar(new CrearVentaDto($d['cliente']->id, [new LineaVentaDto($d['variante']->id, 2)], [new PagoDto($d['metodo']->id, 200)], null, 0, null, null), $d['usuario'], terminal: $d['terminal']);
+        $resultado = app(RegistrarDevolucion::class)->ejecutar(new CrearDevolucionDto($venta->id, 'devolucion', [new ItemDevueltoDto($d['variante']->id, 1, false)], [], [new PagoDevolucionDto($d['metodo']->id, 100)], null, 'efectivo'), $d['usuario'], self::conSupervisor($d['usuario'], AccionSupervisor::Reembolsar, [], $venta->ulid), $d['terminal']);
 
         $this->assertSame('-100.00', $resultado['devolucion']->diferencia);
         $this->assertSame(100.0, (float) $resultado['devolucion']->pagos->sum('monto'));

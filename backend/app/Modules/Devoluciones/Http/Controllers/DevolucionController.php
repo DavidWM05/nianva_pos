@@ -3,6 +3,7 @@
 namespace App\Modules\Devoluciones\Http\Controllers;
 
 use App\Aplicacion\Devoluciones\RegistrarDevolucion;
+use App\Aplicacion\Sesion\TerminalDeSesion;
 use App\Http\Controllers\Controller;
 use App\Modules\Devoluciones\Http\Requests\CrearDevolucionRequest;
 use App\Modules\Devoluciones\Http\Resources\DevolucionResource;
@@ -71,7 +72,7 @@ class DevolucionController extends Controller
      * Orquestacion: App\Aplicacion\Devoluciones\RegistrarDevolucion.
      */
     #[HeaderParameter(OperacionSupervisorHttp::CABECERA, description: 'Token opaco de supervisor para la operación autorizada.', type: 'string')]
-    public function store(CrearDevolucionRequest $request, RegistrarDevolucion $registrarDevolucion)
+    public function store(CrearDevolucionRequest $request, RegistrarDevolucion $registrarDevolucion, TerminalDeSesion $terminalDeSesion)
     {
         $usuario = $request->user();
 
@@ -79,7 +80,8 @@ class DevolucionController extends Controller
             abort(401);
         }
 
-        $resultado = $registrarDevolucion->ejecutar($request->toDto(), $usuario, OperacionSupervisorHttp::de($request));
+        $terminal = $terminalDeSesion->actual($usuario, $request->hasSession() ? $request->session() : null);
+        $resultado = $registrarDevolucion->ejecutar($request->toDto(), $usuario, OperacionSupervisorHttp::de($request), $terminal);
 
         $devolucion = $resultado['devolucion'];
         $nota = $resultado['nota_credito'];

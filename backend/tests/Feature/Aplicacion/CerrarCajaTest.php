@@ -14,6 +14,7 @@ use App\Modules\Gastos\Dtos\CrearGastoDto;
 use App\Modules\Gastos\Services\GastoService;
 use App\Modules\GiftCards\Dtos\RecargarGiftCardDto;
 use App\Modules\GiftCards\Models\GiftCard;
+use App\Modules\Nucleo\Models\Terminal;
 use App\Modules\Nucleo\Support\MetodoEfectivo;
 use App\Modules\Tpv\Dtos\PagoDto;
 use App\Modules\Tpv\Models\CajaSesion;
@@ -37,7 +38,7 @@ class CerrarCajaTest extends TestCase
     {
         $venta = $this->crearVenta();
 
-        app(RegistrarGasto::class)->ejecutar(new CrearGastoDto('Luz', 80), $this->usuario);
+        app(RegistrarGasto::class)->ejecutar(new CrearGastoDto('Luz', 80), $this->usuario, Terminal::sinTenant()->findOrFail($this->caja->terminal_id));
 
         $cuentaCobrar = CuentaCobrar::create([
             'tenant_id' => $this->tenant->id,
@@ -48,7 +49,7 @@ class CerrarCajaTest extends TestCase
             'estado' => 'pendiente',
         ]);
 
-        app(RegistrarAbono::class)->ejecutar(new RegistrarAbonoDto(30, $this->metodoPago->id, null), $cuentaCobrar->id, $this->usuario);
+        app(RegistrarAbono::class)->ejecutar(new RegistrarAbonoDto(30, $this->metodoPago->id, null), $cuentaCobrar->id, $this->usuario, terminal: Terminal::sinTenant()->findOrFail($this->caja->terminal_id));
 
         $giftCard = GiftCard::create([
             'tenant_id' => $this->tenant->id,
@@ -58,7 +59,7 @@ class CerrarCajaTest extends TestCase
             'estado' => 'activa',
         ]);
 
-        app(RecargarGiftCard::class)->ejecutar(new RecargarGiftCardDto(20, [new PagoDto($this->metodoPago->id, 20)]), $giftCard->id, $this->usuario);
+        app(RecargarGiftCard::class)->ejecutar(new RecargarGiftCardDto(20, [new PagoDto($this->metodoPago->id, 20)]), $giftCard->id, $this->usuario, Terminal::sinTenant()->findOrFail($this->caja->terminal_id));
 
         $cuentaPagar = CuentaPagar::create([
             'tenant_id' => $this->tenant->id,
@@ -69,8 +70,9 @@ class CerrarCajaTest extends TestCase
             'estado' => 'pendiente',
         ]);
 
-        app(RegistrarPago::class)->ejecutar(new RegistrarPagoDto(10, $this->metodoPago->id, null), $cuentaPagar->id, $this->usuario);
+        app(RegistrarPago::class)->ejecutar(new RegistrarPagoDto(10, $this->metodoPago->id, null), $cuentaPagar->id, $this->usuario, Terminal::sinTenant()->findOrFail($this->caja->terminal_id));
 
+        $this->seleccionarTerminalDeCaja();
         $this->actingAs($this->usuario);
 
         // 500 apertura + 100 ventas + 30 CxC + 20 GC - 10 CxP - 80 gastos = 560.
@@ -94,6 +96,7 @@ class CerrarCajaTest extends TestCase
                 ->andThrow(new \RuntimeException('Fallo simulado al calcular gastos.'));
         });
 
+        $this->seleccionarTerminalDeCaja();
         $this->actingAs($this->usuario);
 
         $this->patchJson("/api/v1/caja/{$this->caja->ulid}/cerrar", ['conteos' => [['metodo_pago_id' => MetodoEfectivo::id(), 'monto' => 500]]])

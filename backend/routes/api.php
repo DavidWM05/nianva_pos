@@ -52,7 +52,9 @@ use App\Modules\Precios\Http\Middleware\SeleccionarListaPrecio;
 use App\Modules\Prestamos\Http\Controllers\PrestamoController;
 use App\Modules\Produccion\Http\Controllers\ProduccionController;
 use App\Modules\Tpv\Http\Controllers\CajaController;
+use App\Modules\Tpv\Http\Controllers\CajasRemotasController;
 use App\Modules\Tpv\Http\Controllers\CodigoVentaController;
+use App\Modules\Tpv\Http\Controllers\ConsolidadoCajaController;
 use App\Modules\Tpv\Http\Controllers\ImpresosTpvController;
 use App\Modules\Tpv\Http\Controllers\VentaController;
 use App\Modules\UnidadesMedida\Http\Controllers\UnidadMedidaController;
@@ -87,6 +89,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put('/sesion/pin', [PinSesionController::class, 'guardar']);
         Route::post('/sesion/bloquear', [PinSesionController::class, 'bloquear']);
         Route::post('/sesion/desbloquear', [PinSesionController::class, 'desbloquear'])->name('sesion.desbloquear');
+        Route::get('/sesion/terminales', [SesionController::class, 'terminales'])->middleware('permiso:caja.ver');
         Route::put('/sesion/terminal', [SesionController::class, 'elegirTerminal']);
         Route::get('/supervisores', [AutorizacionSupervisorController::class, 'disponibles'])->middleware('permiso:caja.ver');
         Route::post('/autorizaciones', [AutorizacionSupervisorController::class, 'store'])->middleware('permiso:caja.ver');
@@ -279,6 +282,9 @@ Route::middleware('auth:sanctum')->group(function () {
 
         Route::get('/caja/{cajaSesion}/impreso', [ImpresosTpvController::class, 'corte'])->middleware('permiso:caja.ver');
         Route::get('/caja/actual', [CajaController::class, 'actual'])->middleware('permiso:caja.ver');
+        Route::get('/caja/remotas', CajasRemotasController::class)->middleware('permiso:caja.cerrar_remota');
+        Route::get('/caja/consolidado', [ConsolidadoCajaController::class, 'show'])->middleware('permiso:caja.cerrar_remota');
+        Route::post('/caja/consolidado', [ConsolidadoCajaController::class, 'store'])->middleware('permiso:caja.cerrar_remota')->middleware(Idempotencia::class);
         Route::post('/caja/abrir', [CajaController::class, 'abrir'])->middleware('permiso:caja.abrir')->middleware(Idempotencia::class);
         Route::patch('/caja/{cajaSesion}/cerrar', [CajaController::class, 'cerrar'])->middleware('permiso:caja.cerrar')->middleware(Idempotencia::class);
 

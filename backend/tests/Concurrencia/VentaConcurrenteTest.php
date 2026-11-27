@@ -39,12 +39,12 @@ class VentaConcurrenteTest extends TestCase
             $producto = Producto::factory()->create(['tenant_id' => $tenant->id, 'precio_venta' => 100]);
             $variante = ProductoVariante::factory()->create(['producto_id' => $producto->id]);
             $stock = InventarioStock::factory()->create(['sucursal_id' => $sucursal->id, 'variante_id' => $variante->id, 'stock_actual' => 1]);
-            CajaSesion::factory()->create(['sucursal_id' => $sucursal->id, 'usuario_id' => $usuario->id]);
+            $caja = CajaSesion::factory()->create(['sucursal_id' => $sucursal->id, 'usuario_id' => $usuario->id]);
             config(['database.connections.bloqueador' => config('database.connections.'.DB::getDefaultConnection())]);
             $bloqueador = DB::connection('bloqueador');
             $bloqueador->beginTransaction();
             $bloqueador->table('inventario_stock')->where('id', $stock->id)->lockForUpdate()->first();
-            $datos = ['tenant' => $tenant->id, 'usuario' => $usuario->id, 'cliente' => $cliente->id, 'metodo' => $metodo->id, 'variante' => $variante->id];
+            $datos = ['tenant' => $tenant->id, 'usuario' => $usuario->id, 'cliente' => $cliente->id, 'metodo' => $metodo->id, 'variante' => $variante->id, 'terminal' => $caja->terminal_id];
             for ($i = 0; $i < 2; $i++) {
                 $hijos[] = ProcesosConcurrentes::iniciar('venta', $datos);
             }

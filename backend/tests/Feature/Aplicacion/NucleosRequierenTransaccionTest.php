@@ -7,6 +7,7 @@ namespace Tests\Feature\Aplicacion;
 use App\Modules\Inventario\Models\InventarioStock;
 use App\Modules\Inventario\Services\InventarioService;
 use App\Modules\Nucleo\Models\Sucursal;
+use App\Modules\Nucleo\Models\Terminal;
 use App\Modules\Nucleo\Models\Usuario;
 use App\Modules\Tpv\Models\CajaSesion;
 use App\Modules\Tpv\Models\Venta;
@@ -45,7 +46,7 @@ class NucleosRequierenTransaccionTest extends TestCase
     public function test_apertura_rechaza_escribir_sin_transaccion(): void
     {
         $this->expectException(LogicException::class);
-        app(CajaService::class)->abrirCajaConSucursal(new Sucursal, 1, 50);
+        app(CajaService::class)->abrirCajaConSucursal(new Sucursal, 1, 50, new Terminal, now()->setTimezone('America/Mexico_City')->toDateString(), now());
     }
 
     public function test_cierre_rechaza_escribir_sin_transaccion(): void

@@ -5,6 +5,7 @@ declare(strict_types=1);
 use App\Aplicacion\Ventas\RegistrarVenta;
 use App\Modules\Inventario\Exceptions\StockInsuficienteException;
 use App\Modules\Nucleo\Models\Tenant;
+use App\Modules\Nucleo\Models\Terminal;
 use App\Modules\Nucleo\Models\Usuario;
 use App\Modules\Nucleo\Services\TenantContext;
 use App\Modules\Tpv\Dtos\CrearVentaDto;
@@ -79,7 +80,7 @@ try {
         descuentoManual: 0.0,
         giftCardCodigo: null,
         notaCreditoId: null,
-    ), $usuario);
+    ), $usuario, terminal: Terminal::sinTenant()->findOrFail($datos['terminal']));
     $emitir(['resultado' => 'venta', 'venta_id' => $venta->id]);
 } catch (StockInsuficienteException $excepcion) {
     $emitir(['resultado' => $excepcion->errorCode()]);

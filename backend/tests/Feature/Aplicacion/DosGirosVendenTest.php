@@ -45,7 +45,8 @@ class DosGirosVendenTest extends TestCase
             $rol->permisos()->attach(Permiso::firstOrCreate(['nombre' => $nombre], ['modulo' => $modulo, 'accion' => $accion])->id);
         }
         $usuario->roles()->attach($rol->id);
-        $this->actingAs($usuario);
+        session()->invalidate();
+        $this->withHeader('Referer', '')->actingAs($usuario);
 
         $this->putJson('/api/v1/configuracion/perfil-giro', ['perfil' => $perfil])->assertOk();
 
@@ -72,7 +73,8 @@ class DosGirosVendenTest extends TestCase
         $datos = ['tenant_id' => $ctx['tenant']->id, 'proveedor_id' => $proveedor->id, 'sucursal_id' => $ctx['sucursal']->id, 'usuario_id' => $ctx['usuario']->id];
         $items = [['variante_id' => $varianteId, 'cantidad' => 5, 'precio_compra' => 40]];
         app(InventarioService::class)->registrarCompraConStocks($datos, $items, Bloqueos04e::stocks($ctx['sucursal']->id, [$varianteId]));
-        app(CajaService::class)->abrirCajaConSucursal(Bloqueos04e::sucursal($ctx['sucursal']->id), $ctx['usuario']->id, 500);
+        $cajaOperativa = app(CajaService::class)->abrirCajaConSucursal(Bloqueos04e::sucursal($ctx['sucursal']->id), $ctx['usuario']->id, 500, Bloqueos04e::terminal($ctx['sucursal']->id), now()->setTimezone('America/Mexico_City')->toDateString(), now());
+        $this->seleccionarTerminalParaPrueba((int) $cajaOperativa->terminal_id);
         $efectivo = MetodoPago::factory()->create(['tenant_id' => $ctx['tenant']->id, 'tipo' => 'efectivo']);
         $cliente = Cliente::query()->where('nombre', 'Publico General')->firstOrFail();
 

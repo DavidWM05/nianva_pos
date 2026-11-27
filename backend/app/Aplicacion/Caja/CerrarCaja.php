@@ -6,6 +6,7 @@ namespace App\Aplicacion\Caja;
 
 use App\Aplicacion\Folios\Folios;
 use App\Aplicacion\Supervisor\Supervisor;
+use App\Modules\Auditoria\Models\Auditoria;
 use App\Modules\Configuracion\Models\ConfiguracionTenant;
 use App\Modules\CuentasCobrar\Models\AbonoCuenta;
 use App\Modules\CuentasPagar\Models\AbonoPagar;
@@ -36,11 +37,15 @@ class CerrarCaja
      * @param  list<array{metodo_pago_id:int,monto:int|float|string}>  $conteos
      * @return array{sesion: CajaSesion, desglose: array<string, float>}
      */
-    public function ejecutar(CajaSesion $cajaSesion, array $conteos, ?OperacionSupervisorDto $autorizacion = null): array
+    public function ejecutar(CajaSesion $cajaSesion, array $conteos, ?OperacionSupervisorDto $autorizacion = null, bool $remota = false): array
     {
-        return DB::transaction(function () use ($cajaSesion, $conteos, $autorizacion) {
+        return DB::transaction(function () use ($cajaSesion, $conteos, $autorizacion, $remota) {
             $cajaSesion = CajaSesion::query()->whereKey($cajaSesion->id)->lockForUpdate()->firstOrFail();
             $cajaSesionId = $cajaSesion->id;
+            $supervisorRemoto = null;
+            if ($remota) {
+                $supervisorRemoto = Supervisor::consumir($autorizacion, AccionSupervisor::CerrarCajaRemota, (string) $cajaSesion->getAttribute('ulid'), (int) $cajaSesion->getAttribute('sucursal_id'));
+            }
 
             $totalGastos = $this->gastoService->totalGastos($cajaSesionId);
             $totalAbonosCxc = round((float) AbonoCuenta::where('caja_sesion_id', $cajaSesionId)->sum('monto'), 2);
@@ -53,8 +58,19 @@ class CerrarCaja
             $sesion = $this->cajaService->cerrarCajaConSesion($cajaSesion, $conteos, Folios::asignar($tenantId, (int) $cajaSesion->getAttribute('sucursal_id'), 'C'), $autorizacion?->usuario->id);
             $configuracion = ConfiguracionTenant::query()->where('tenant_id', $tenantId)->first();
             $umbral = $configuracion->umbral_descuadre_supervisor ?? ConfiguracionTenant::UMBRAL_DESCUADRE_SUPERVISOR_DEFAULT;
-            if (Dinero::desde(ltrim((string) $sesion->getAttribute('diferencia'), '-'))->comparar(Dinero::desde($umbral)) > 0) {
+            if (! $remota && Dinero::desde(ltrim((string) $sesion->getAttribute('diferencia'), '-'))->comparar(Dinero::desde($umbral)) > 0) {
                 Supervisor::consumir($autorizacion, AccionSupervisor::CerrarCaja, (string) $sesion->getAttribute('ulid'), (int) $sesion->getAttribute('sucursal_id'));
+            }
+
+            if ($remota && $autorizacion !== null) {
+                Auditoria::query()->create([
+                    'tenant_id' => $tenantId,
+                    'tabla_afectada' => 'caja_sesiones',
+                    'registro_id' => $cajaSesionId,
+                    'accion' => 'update',
+                    'usuario_id' => $autorizacion->usuario->id,
+                    'cambios' => ['accion' => AccionSupervisor::CerrarCajaRemota->value, 'terminal_id' => $sesion->getAttribute('terminal_id'), 'supervisor_id' => $supervisorRemoto],
+                ]);
             }
 
             return [

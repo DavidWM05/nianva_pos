@@ -2,6 +2,7 @@ import { capturarPantalla50f } from '../soporte/capturas-50f';
 import { revisarAuditoria50f } from '../soporte/flujo-50f';
 import { expect, test } from '@playwright/test';
 import { abrirPantalla, sinErrores, vigilarErrores } from '../soporte/humo';
+import { asegurarCajaAbierta } from '../soporte/api';
 import { iniciarSesion } from '../soporte/sesion';
 import { autorizarComoSupervisora, prepararSupervisora, rechazosQuePidenSupervisor } from '../soporte/supervisor';
 
@@ -17,6 +18,7 @@ test('apartados: crear, buscar y registrar un abono con pago mixto', async ({
 }) => {
   test.setTimeout(180000);
   await iniciarSesion(page, 'vendedor@abarrotes.test');
+  await asegurarCajaAbierta(page);
   const errores = vigilarErrores(page);
   await abrirPantalla(page, '/apartados');
   await capturarPantalla50f(page, 'apartados-lista');

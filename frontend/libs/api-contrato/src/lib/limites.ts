@@ -335,6 +335,13 @@ export const LIMITES = {
       }
     }
   },
+  "/caja/consolidado": {
+    "post": {
+      "fecha_operativa": {
+        "requerido": true
+      }
+    }
+  },
   "/cotizaciones": {
     "post": {
       "lista_precio_id": {

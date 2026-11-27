@@ -362,11 +362,11 @@
                             }
                         }
                     },
-                    "404": {
-                        "$ref": "#/components/responses/ModelNotFoundException"
-                    },
                     "401": {
                         "$ref": "#/components/responses/AuthenticationException"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
                     }
                 }
             }
@@ -1482,6 +1482,14 @@
                 ],
                 "parameters": [
                     {
+                        "name": "X-Autorizacion-Supervisor",
+                        "in": "header",
+                        "description": "Autorizaci\u00f3n para abrir despu\u00e9s de consolidar la fecha operativa.",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
                         "name": "Idempotency-Key",
                         "in": "header",
                         "required": true,
@@ -1639,6 +1647,40 @@
                     },
                     "422": {
                         "$ref": "#/components/responses/ValidationException"
+                    }
+                }
+            }
+        },
+        "/caja/remotas": {
+            "get": {
+                "operationId": "tpv.cajasRemotas",
+                "tags": [
+                    "CajasRemotas"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Array of `CajaRemotaResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/CajaRemotaResource"
+                                            }
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
                     }
                 }
             }
@@ -2520,6 +2562,104 @@
                     },
                     "404": {
                         "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    }
+                }
+            }
+        },
+        "/caja/consolidado": {
+            "get": {
+                "operationId": "consolidadoCaja.show",
+                "tags": [
+                    "ConsolidadoCaja"
+                ],
+                "parameters": [
+                    {
+                        "name": "fecha_operativa",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "date"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "`ConsolidadoCajaResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/ConsolidadoCajaResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    }
+                }
+            },
+            "post": {
+                "operationId": "consolidadoCaja.store",
+                "tags": [
+                    "ConsolidadoCaja"
+                ],
+                "parameters": [
+                    {
+                        "name": "Idempotency-Key",
+                        "in": "header",
+                        "required": true,
+                        "description": "ULID obligatorio. Repetir la misma operaci\u00f3n conserva la respuesta durante 24 horas. Una carga diferente con la misma llave devuelve 409.",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/FechaConsolidadoCajaRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "`ConsolidadoCajaResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/ConsolidadoCajaResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
                     },
                     "401": {
                         "$ref": "#/components/responses/AuthenticationException"
@@ -11808,6 +11948,40 @@
                 }
             }
         },
+        "/sesion/terminales": {
+            "get": {
+                "operationId": "sesion.terminales",
+                "tags": [
+                    "Sesion"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Array of `TerminalResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/TerminalResource"
+                                            }
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
         "/sesion/terminal": {
             "put": {
                 "operationId": "sesion.elegirTerminal",
@@ -14136,6 +14310,8 @@
                     "ventas.descuento",
                     "apartados.cancelar",
                     "caja.cerrar",
+                    "caja.cerrar_remota",
+                    "caja.abrir_tardia",
                     "devoluciones.reembolsar"
                 ],
                 "title": "AccionSupervisor"
@@ -14812,6 +14988,33 @@
                 ],
                 "title": "CajaCierreMetodoResource"
             },
+            "CajaRemotaResource": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "terminal": {
+                        "type": "string"
+                    },
+                    "fecha_operativa": {
+                        "type": "string"
+                    },
+                    "metodos": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/MetodoCajaRemotaResource"
+                        }
+                    }
+                },
+                "required": [
+                    "id",
+                    "terminal",
+                    "fecha_operativa",
+                    "metodos"
+                ],
+                "title": "CajaRemotaResource"
+            },
             "CajaSaldoResource": {
                 "type": "object",
                 "properties": {
@@ -15316,6 +15519,91 @@
                 ],
                 "title": "ConfirmTwoFactorRequest"
             },
+            "ConsolidadoCajaResource": {
+                "type": "object",
+                "properties": {
+                    "encabezado": {
+                        "type": "object",
+                        "properties": {
+                            "empresa": {
+                                "type": "string"
+                            },
+                            "rfc": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ]
+                            },
+                            "telefono": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ]
+                            },
+                            "sucursal": {
+                                "type": "string"
+                            },
+                            "folio": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ]
+                            },
+                            "fecha": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ]
+                            },
+                            "usuario": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ]
+                            }
+                        },
+                        "required": [
+                            "empresa",
+                            "rfc",
+                            "telefono",
+                            "sucursal",
+                            "folio",
+                            "fecha",
+                            "usuario"
+                        ]
+                    },
+                    "fecha_operativa": {
+                        "type": "string"
+                    },
+                    "documentos": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/DocumentoConsolidadoCajaResource"
+                        }
+                    },
+                    "total_teorico": {
+                        "type": "string",
+                        "pattern": "^-?[0-9]+\\.[0-9]{2}$"
+                    },
+                    "total_contado": {
+                        "type": "string",
+                        "pattern": "^-?[0-9]+\\.[0-9]{2}$"
+                    },
+                    "diferencia": {
+                        "type": "string",
+                        "pattern": "^-?[0-9]+\\.[0-9]{2}$"
+                    }
+                },
+                "required": [
+                    "encabezado",
+                    "fecha_operativa",
+                    "documentos",
+                    "total_teorico",
+                    "total_contado",
+                    "diferencia"
+                ],
+                "title": "ConsolidadoCajaResource"
+            },
             "ConvertirCotizacionRequest": {
                 "type": "object",
                 "properties": {
@@ -15327,6 +15615,41 @@
                     "metodo_pago_id"
                 ],
                 "title": "ConvertirCotizacionRequest"
+            },
+            "CorteConsolidadoCajaResource": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "folio": {
+                        "type": "string"
+                    },
+                    "terminal": {
+                        "type": "string"
+                    },
+                    "monto_contado": {
+                        "type": "string",
+                        "pattern": "^-?[0-9]+\\.[0-9]{2}$"
+                    },
+                    "total_teorico": {
+                        "type": "string",
+                        "pattern": "^-?[0-9]+\\.[0-9]{2}$"
+                    },
+                    "diferencia": {
+                        "type": "string",
+                        "pattern": "^-?[0-9]+\\.[0-9]{2}$"
+                    }
+                },
+                "required": [
+                    "id",
+                    "folio",
+                    "terminal",
+                    "monto_contado",
+                    "total_teorico",
+                    "diferencia"
+                ],
+                "title": "CorteConsolidadoCajaResource"
             },
             "CotizacionDetalleResource": {
                 "type": "object",
@@ -17191,6 +17514,58 @@
                 ],
                 "title": "DevolucionResource"
             },
+            "DocumentoConsolidadoCajaResource": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "original_id": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "supervisor_apertura": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "fecha_cierre": {
+                        "type": "string"
+                    },
+                    "total_contado": {
+                        "type": "string",
+                        "pattern": "^-?[0-9]+\\.[0-9]{2}$"
+                    },
+                    "total_teorico": {
+                        "type": "string",
+                        "pattern": "^-?[0-9]+\\.[0-9]{2}$"
+                    },
+                    "diferencia": {
+                        "type": "string",
+                        "pattern": "^-?[0-9]+\\.[0-9]{2}$"
+                    },
+                    "cortes": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/CorteConsolidadoCajaResource"
+                        }
+                    }
+                },
+                "required": [
+                    "id",
+                    "original_id",
+                    "supervisor_apertura",
+                    "fecha_cierre",
+                    "total_contado",
+                    "total_teorico",
+                    "diferencia",
+                    "cortes"
+                ],
+                "title": "DocumentoConsolidadoCajaResource"
+            },
             "ElegirTerminalRequest": {
                 "type": "object",
                 "properties": {
@@ -17338,6 +17713,19 @@
                     "mensaje"
                 ],
                 "title": "EnviarCampanaRequest"
+            },
+            "FechaConsolidadoCajaRequest": {
+                "type": "object",
+                "properties": {
+                    "fecha_operativa": {
+                        "type": "string",
+                        "format": "date"
+                    }
+                },
+                "required": [
+                    "fecha_operativa"
+                ],
+                "title": "FechaConsolidadoCajaRequest"
             },
             "GastoResource": {
                 "type": "object",
@@ -18846,6 +19234,22 @@
                     "created_at"
                 ],
                 "title": "LoyaltyTransaccion"
+            },
+            "MetodoCajaRemotaResource": {
+                "type": "object",
+                "properties": {
+                    "metodo_pago_id": {
+                        "type": "integer"
+                    },
+                    "nombre": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "metodo_pago_id",
+                    "nombre"
+                ],
+                "title": "MetodoCajaRemotaResource"
             },
             "MetodoPagoResource": {
                 "type": "object",

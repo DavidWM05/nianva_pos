@@ -8,6 +8,7 @@ use App\Modules\Nucleo\Models\Permiso;
 use App\Modules\Nucleo\Models\Rol;
 use App\Modules\Nucleo\Models\Sucursal;
 use App\Modules\Nucleo\Models\Tenant;
+use App\Modules\Nucleo\Models\Terminal;
 use App\Modules\Nucleo\Models\Usuario;
 use App\Modules\Nucleo\Services\TenantContext;
 use App\Modules\Tpv\Models\CajaSesion;
@@ -63,6 +64,8 @@ class InicioControllerTest extends TestCase
         ['tenant' => $tenant, 'sucursal' => $sucursal, 'usuario' => $usuario, 'cliente' => $cliente] = $this->crearUsuarioConPermisos(['reportes.ver']);
 
         $cajaSesion = CajaSesion::create([
+            'fecha_operativa' => now()->setTimezone('America/Mexico_City')->toDateString(),
+            'terminal_id' => Terminal::factory()->create(['sucursal_id' => $sucursal->id])->id,
             'sucursal_id' => $sucursal->id, 'usuario_id' => $usuario->id,
             'monto_apertura' => 0, 'fecha_apertura' => now(),
         ]);

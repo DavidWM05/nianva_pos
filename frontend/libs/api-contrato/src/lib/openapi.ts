@@ -304,6 +304,22 @@ export interface paths {
         patch: operations["caja.cerrar"];
         trace?: never;
     };
+    "/caja/remotas": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["tpv.cajasRemotas"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/categorias": {
         parameters: {
             query?: never;
@@ -495,6 +511,22 @@ export interface paths {
         get: operations["configuracionSeguridad.show"];
         put: operations["configuracionSeguridad.update"];
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/caja/consolidado": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["consolidadoCaja.show"];
+        put?: never;
+        post: operations["consolidadoCaja.store"];
         delete?: never;
         options?: never;
         head?: never;
@@ -2189,6 +2221,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/sesion/terminales": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["sesion.terminales"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/sesion/terminal": {
         parameters: {
             query?: never;
@@ -2553,7 +2601,7 @@ export interface components {
          * AccionSupervisor
          * @enum {string}
          */
-        AccionSupervisor: "ventas.anular" | "ventas.descuento" | "apartados.cancelar" | "caja.cerrar" | "devoluciones.reembolsar";
+        AccionSupervisor: "ventas.anular" | "ventas.descuento" | "apartados.cancelar" | "caja.cerrar" | "caja.cerrar_remota" | "caja.abrir_tardia" | "devoluciones.reembolsar";
         /** ActualizarConfiguracionRequest */
         ActualizarConfiguracionRequest: {
             cupon_combinable_con_promociones?: boolean;
@@ -2715,6 +2763,13 @@ export interface components {
             monto_contado: string;
             diferencia: string;
         };
+        /** CajaRemotaResource */
+        CajaRemotaResource: {
+            id: string;
+            terminal: string;
+            fecha_operativa: string;
+            metodos: components["schemas"]["MetodoCajaRemotaResource"][];
+        };
         /** CajaSaldoResource */
         CajaSaldoResource: {
             metodo_pago_id: number;
@@ -2840,9 +2895,35 @@ export interface components {
         ConfirmTwoFactorRequest: {
             code: string;
         };
+        /** ConsolidadoCajaResource */
+        ConsolidadoCajaResource: {
+            encabezado: {
+                empresa: string;
+                rfc: string | null;
+                telefono: string | null;
+                sucursal: string;
+                folio: string | null;
+                fecha: string | null;
+                usuario: string | null;
+            };
+            fecha_operativa: string;
+            documentos: components["schemas"]["DocumentoConsolidadoCajaResource"][];
+            total_teorico: string;
+            total_contado: string;
+            diferencia: string;
+        };
         /** ConvertirCotizacionRequest */
         ConvertirCotizacionRequest: {
             metodo_pago_id: number;
+        };
+        /** CorteConsolidadoCajaResource */
+        CorteConsolidadoCajaResource: {
+            id: string;
+            folio: string;
+            terminal: string;
+            monto_contado: string;
+            total_teorico: string;
+            diferencia: string;
         };
         /** CotizacionDetalleResource */
         CotizacionDetalleResource: {
@@ -3269,6 +3350,17 @@ export interface components {
                 monto: string;
             }[];
         };
+        /** DocumentoConsolidadoCajaResource */
+        DocumentoConsolidadoCajaResource: {
+            id: string;
+            original_id: string | null;
+            supervisor_apertura: string | null;
+            fecha_cierre: string;
+            total_contado: string;
+            total_teorico: string;
+            diferencia: string;
+            cortes: components["schemas"]["CorteConsolidadoCajaResource"][];
+        };
         /** ElegirTerminalRequest */
         ElegirTerminalRequest: {
             terminal_id: number;
@@ -3304,6 +3396,11 @@ export interface components {
             cliente_ids?: string[] | null;
             asunto: string;
             mensaje: string;
+        };
+        /** FechaConsolidadoCajaRequest */
+        FechaConsolidadoCajaRequest: {
+            /** Format: date */
+            fecha_operativa: string;
         };
         /** GastoResource */
         GastoResource: {
@@ -3659,6 +3756,11 @@ export interface components {
             expira_en: string | null;
             /** Format: date-time */
             created_at: string;
+        };
+        /** MetodoCajaRemotaResource */
+        MetodoCajaRemotaResource: {
+            metodo_pago_id: number;
+            nombre: string;
         };
         /** MetodoPagoResource */
         MetodoPagoResource: {
@@ -4327,6 +4429,7 @@ export type AtributoResource = components['schemas']['AtributoResource'];
 export type AutorizacionSupervisorResource = components['schemas']['AutorizacionSupervisorResource'];
 export type AutorizarSupervisorRequest = components['schemas']['AutorizarSupervisorRequest'];
 export type CajaCierreMetodoResource = components['schemas']['CajaCierreMetodoResource'];
+export type CajaRemotaResource = components['schemas']['CajaRemotaResource'];
 export type CajaSaldoResource = components['schemas']['CajaSaldoResource'];
 export type CajaSesionResource = components['schemas']['CajaSesionResource'];
 export type CambiarEstadoOrdenRequest = components['schemas']['CambiarEstadoOrdenRequest'];
@@ -4341,7 +4444,9 @@ export type CodigoVentaResource = components['schemas']['CodigoVentaResource'];
 export type ConfiguracionSeguridadResource = components['schemas']['ConfiguracionSeguridadResource'];
 export type ConfiguracionTenantResource = components['schemas']['ConfiguracionTenantResource'];
 export type ConfirmTwoFactorRequest = components['schemas']['ConfirmTwoFactorRequest'];
+export type ConsolidadoCajaResource = components['schemas']['ConsolidadoCajaResource'];
 export type ConvertirCotizacionRequest = components['schemas']['ConvertirCotizacionRequest'];
+export type CorteConsolidadoCajaResource = components['schemas']['CorteConsolidadoCajaResource'];
 export type CotizacionDetalleResource = components['schemas']['CotizacionDetalleResource'];
 export type CotizacionResource = components['schemas']['CotizacionResource'];
 export type CotizacionVentaLineaResource = components['schemas']['CotizacionVentaLineaResource'];
@@ -4371,10 +4476,12 @@ export type Departamento = components['schemas']['Departamento'];
 export type DepartamentoResource = components['schemas']['DepartamentoResource'];
 export type DesbloquearSesionRequest = components['schemas']['DesbloquearSesionRequest'];
 export type DevolucionResource = components['schemas']['DevolucionResource'];
+export type DocumentoConsolidadoCajaResource = components['schemas']['DocumentoConsolidadoCajaResource'];
 export type ElegirTerminalRequest = components['schemas']['ElegirTerminalRequest'];
 export type EmitirGiftCardRequest = components['schemas']['EmitirGiftCardRequest'];
 export type EmpleadoResource = components['schemas']['EmpleadoResource'];
 export type EnviarCampanaRequest = components['schemas']['EnviarCampanaRequest'];
+export type FechaConsolidadoCajaRequest = components['schemas']['FechaConsolidadoCajaRequest'];
 export type GastoResource = components['schemas']['GastoResource'];
 export type GenerarNominaRequest = components['schemas']['GenerarNominaRequest'];
 export type GiftCardResource = components['schemas']['GiftCardResource'];
@@ -4406,6 +4513,7 @@ export type ListaPrecioClienteResource = components['schemas']['ListaPrecioClien
 export type ListaPrecioItemResource = components['schemas']['ListaPrecioItemResource'];
 export type ListaPrecioResource = components['schemas']['ListaPrecioResource'];
 export type LoyaltyTransaccion = components['schemas']['LoyaltyTransaccion'];
+export type MetodoCajaRemotaResource = components['schemas']['MetodoCajaRemotaResource'];
 export type MetodoPagoResource = components['schemas']['MetodoPagoResource'];
 export type NominaDetalleResource = components['schemas']['NominaDetalleResource'];
 export type NominaResource = components['schemas']['NominaResource'];
@@ -5084,6 +5192,8 @@ export interface operations {
         parameters: {
             query?: never;
             header: {
+                /** @description Autorización para abrir después de consolidar la fecha operativa. */
+                "X-Autorizacion-Supervisor"?: string;
                 /** @description ULID obligatorio. Repetir la misma operación conserva la respuesta durante 24 horas. Una carga diferente con la misma llave devuelve 409. */
                 "Idempotency-Key": string;
             };
@@ -5151,6 +5261,29 @@ export interface operations {
             401: components["responses"]["AuthenticationException"];
             404: components["responses"]["ModelNotFoundException"];
             422: components["responses"]["ValidationException"];
+        };
+    };
+    "tpv.cajasRemotas": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Array of `CajaRemotaResource` */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["CajaRemotaResource"][];
+                    };
+                };
+            };
+            401: components["responses"]["AuthenticationException"];
         };
     };
     "categoria.index": {
@@ -5646,6 +5779,63 @@ export interface operations {
             };
             401: components["responses"]["AuthenticationException"];
             404: components["responses"]["ModelNotFoundException"];
+            422: components["responses"]["ValidationException"];
+        };
+    };
+    "consolidadoCaja.show": {
+        parameters: {
+            query: {
+                fecha_operativa: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description `ConsolidadoCajaResource` */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["ConsolidadoCajaResource"];
+                    };
+                };
+            };
+            401: components["responses"]["AuthenticationException"];
+            422: components["responses"]["ValidationException"];
+        };
+    };
+    "consolidadoCaja.store": {
+        parameters: {
+            query?: never;
+            header: {
+                /** @description ULID obligatorio. Repetir la misma operación conserva la respuesta durante 24 horas. Una carga diferente con la misma llave devuelve 409. */
+                "Idempotency-Key": string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["FechaConsolidadoCajaRequest"];
+            };
+        };
+        responses: {
+            /** @description `ConsolidadoCajaResource` */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["ConsolidadoCajaResource"];
+                    };
+                };
+            };
+            401: components["responses"]["AuthenticationException"];
             422: components["responses"]["ValidationException"];
         };
     };
@@ -10050,6 +10240,29 @@ export interface operations {
                 content: {
                     "application/json": {
                         data: components["schemas"]["SesionResource"];
+                    };
+                };
+            };
+            401: components["responses"]["AuthenticationException"];
+        };
+    };
+    "sesion.terminales": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Array of `TerminalResource` */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["TerminalResource"][];
                     };
                 };
             };

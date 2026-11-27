@@ -85,7 +85,7 @@ class VentaReporteTest extends TestCase
         $inventarioService->registrarCompraConStocks($datos04e3, $items04e3, Bloqueos04e::stocks((int) $datos04e3['sucursal_id'], array_column($items04e3, 'variante_id')));
 
         $cajaService = app(CajaService::class);
-        $cajaService->abrirCajaConSucursal(Bloqueos04e::sucursal($this->sucursal->id), $this->usuario->id, 500);
+        $cajaService->abrirCajaConSucursal(Bloqueos04e::sucursal($this->sucursal->id), $this->usuario->id, 500, Bloqueos04e::terminal($this->sucursal->id), now()->setTimezone('America/Mexico_City')->toDateString(), now());
         $this->ventaService = app(VentaService::class);
     }
 

@@ -73,7 +73,7 @@ class CuentasPagarServiceTest extends TestCase
         $items04e2 = [['variante_id' => $variante->id, 'cantidad' => 10, 'precio_compra' => 50]];
         $this->compra = $this->inventarioService->registrarCompraConStocks($datos04e2, $items04e2, Bloqueos04e::stocks((int) $datos04e2['sucursal_id'], array_column($items04e2, 'variante_id')));
 
-        $this->cajaService->abrirCajaConSucursal(Bloqueos04e::sucursal($this->sucursal->id), $this->usuario->id, 5000);
+        $this->cajaService->abrirCajaConSucursal(Bloqueos04e::sucursal($this->sucursal->id), $this->usuario->id, 5000, Bloqueos04e::terminal($this->sucursal->id), now()->setTimezone('America/Mexico_City')->toDateString(), now());
     }
 
     private $compra;

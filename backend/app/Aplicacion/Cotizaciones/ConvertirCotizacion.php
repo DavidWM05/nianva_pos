@@ -4,15 +4,15 @@ declare(strict_types=1);
 
 namespace App\Aplicacion\Cotizaciones;
 
+use App\Aplicacion\Caja\CajaDeTerminal;
 use App\Aplicacion\Folios\Folios;
 use App\Aplicacion\Inventario\RegistrarMovimiento;
 use App\Modules\Cotizaciones\Dtos\ConvertirCotizacionDto;
 use App\Modules\Cotizaciones\Models\Cotizacion;
 use App\Modules\Cotizaciones\Services\CotizacionService;
 use App\Modules\Inventario\Dtos\MovimientoInventarioDto;
+use App\Modules\Nucleo\Models\Terminal;
 use App\Modules\Nucleo\Models\Usuario;
-use App\Modules\Nucleo\Scopes\TenantScopeViaRelacion;
-use App\Modules\Tpv\Models\CajaSesion;
 use App\Modules\Tpv\Models\Venta;
 use Illuminate\Support\Facades\DB;
 
@@ -20,11 +20,14 @@ final class ConvertirCotizacion
 {
     public function __construct(private readonly CotizacionService $service, private readonly RegistrarMovimiento $movimiento) {}
 
-    public function ejecutar(ConvertirCotizacionDto $dto, int $id, Usuario $usuario): Venta
+    public function ejecutar(ConvertirCotizacionDto $dto, int $id, Usuario $usuario, ?Terminal $terminal = null): Venta
     {
-        $operacion = function () use ($dto, $id, $usuario) {
-            $caja = CajaSesion::query()->withoutGlobalScope(TenantScopeViaRelacion::class)->where('sucursal_id', Cotizacion::query()->select('sucursal_id')->whereKey($id))->where('estado', 'abierta')->latest('id')->lockForUpdate()->first();
+        $operacion = function () use ($dto, $id, $usuario, $terminal) {
+            $caja = CajaDeTerminal::bloquearAbierta($usuario, $terminal);
             $cotizacion = Cotizacion::query()->whereKey($id)->lockForUpdate()->firstOrFail();
+            if ((int) $cotizacion->getAttribute('sucursal_id') !== (int) $usuario->getAttribute('sucursal_id')) {
+                $caja = null;
+            }
             $cotizacion->load('detalles');
             $variantes = array_values(array_unique($cotizacion->detalles->pluck('variante_id')->map(static fn ($id): int => (int) $id)->all()));
             sort($variantes);

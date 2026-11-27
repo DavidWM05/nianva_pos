@@ -20,6 +20,7 @@ class IdempotenciaVentaTest extends TestCase
     public function test_repetir_una_venta_devuelve_la_respuesta_original_y_rechaza_otra_carga(): void
     {
         $this->prepararNegocio(['ventas.crear']);
+        $this->seleccionarTerminalDeCaja();
         $this->actingAs($this->usuario);
         $cabecera = ['Idempotency-Key' => (string) Str::ulid()];
         $carga = $this->payloadVenta();
@@ -36,6 +37,7 @@ class IdempotenciaVentaTest extends TestCase
     public function test_una_llave_ausente_no_registra_la_venta(): void
     {
         $this->prepararNegocio(['ventas.crear']);
+        $this->seleccionarTerminalDeCaja();
         $this->actingAs($this->usuario);
 
         $this->sinLlave()->postJson('/api/v1/ventas', $this->payloadVenta())
@@ -47,6 +49,7 @@ class IdempotenciaVentaTest extends TestCase
     public function test_una_llave_invalida_no_registra_la_venta(): void
     {
         $this->prepararNegocio(['ventas.crear']);
+        $this->seleccionarTerminalDeCaja();
         $this->actingAs($this->usuario);
         $this->postJson('/api/v1/ventas', $this->payloadVenta(), ['Idempotency-Key' => 'invalida'])
             ->assertUnprocessable()
@@ -57,6 +60,7 @@ class IdempotenciaVentaTest extends TestCase
     public function test_una_validacion_fallida_permite_reutilizar_la_llave_y_la_respuesta_expira(): void
     {
         $this->prepararNegocio(['ventas.crear']);
+        $this->seleccionarTerminalDeCaja();
         $this->actingAs($this->usuario);
         $cabecera = ['Idempotency-Key' => (string) Str::ulid()];
         $carga = $this->payloadVenta();
@@ -66,6 +70,9 @@ class IdempotenciaVentaTest extends TestCase
         $original = $this->postJson('/api/v1/ventas', $carga, $cabecera)->assertCreated();
 
         $this->travel(24)->hours();
+        session()->invalidate();
+        $this->seleccionarTerminalDeCaja();
+        $this->actingAs($this->usuario);
         $nueva = $this->postJson('/api/v1/ventas', $carga, $cabecera)->assertCreated();
         $this->assertNotSame($original->json('data.id'), $nueva->json('data.id'));
         $this->assertDatabaseCount('ventas', 3);

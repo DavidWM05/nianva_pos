@@ -34,6 +34,7 @@ class UlidApiRestoTest extends TestCase
             'ventas_plazos.ver', 'ventas_plazos.crear', 'produccion.completar', 'ventas.crear',
             'apartados.crear', 'cotizaciones.crear', 'gift_cards.ver', 'produccion.ver',
         ]);
+        $this->seleccionarTerminalDeCaja();
         $this->actingAs($this->usuario);
     }
 

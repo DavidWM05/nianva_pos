@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Aplicacion\Devoluciones;
 
+use App\Aplicacion\Caja\CajaDeTerminal;
 use App\Aplicacion\Folios\Folios;
 use App\Aplicacion\Inventario\RegistrarMovimiento;
 use App\Aplicacion\Supervisor\Supervisor;
@@ -17,12 +18,11 @@ use App\Modules\Inventario\Dtos\MovimientoInventarioDto;
 use App\Modules\NotasCredito\Models\NotaCredito;
 use App\Modules\NotasCredito\Services\NotaCreditoService;
 use App\Modules\Nucleo\Dtos\OperacionSupervisorDto;
+use App\Modules\Nucleo\Models\Terminal;
 use App\Modules\Nucleo\Models\Usuario;
-use App\Modules\Nucleo\Scopes\TenantScopeViaRelacion;
 use App\Modules\Nucleo\Support\AccionSupervisor;
 use App\Modules\Nucleo\Support\Dinero;
 use App\Modules\Tpv\Exceptions\CajaSesionNoAbiertaException;
-use App\Modules\Tpv\Models\CajaSesion;
 use App\Modules\Tpv\Models\Venta;
 use App\Modules\Tpv\Services\LibroCaja;
 use Illuminate\Support\Facades\DB;
@@ -45,7 +45,7 @@ class RegistrarDevolucion
      *
      * @return array{devolucion: Devolucion, nota_credito: ?NotaCredito}
      */
-    public function ejecutar(CrearDevolucionDto $dto, Usuario $usuario, ?OperacionSupervisorDto $autorizacion = null): array
+    public function ejecutar(CrearDevolucionDto $dto, Usuario $usuario, ?OperacionSupervisorDto $autorizacion = null, ?Terminal $terminal = null): array
     {
         $ventaId = $dto->ventaId;
         $tipo = $dto->tipo;
@@ -86,9 +86,10 @@ class RegistrarDevolucion
             $usuario,
             $dto,
             $autorizacion,
+            $terminal,
         ) {
             $sucursalId = (int) $usuario->getAttribute('sucursal_id');
-            $caja = CajaSesion::query()->withoutGlobalScope(TenantScopeViaRelacion::class)->where('sucursal_id', $sucursalId)->where('estado', 'abierta')->latest('id')->lockForUpdate()->first();
+            $caja = CajaDeTerminal::bloquearAbierta($usuario, $terminal);
             $ventaOrigen = Venta::query()->whereKey($ventaId)->lockForUpdate()->firstOrFail();
             $variantes = array_values(array_unique(array_merge(
                 array_column(array_filter($itemsDevueltos, static fn (array $item): bool => ! $item['va_a_merma']), 'variante_id'),

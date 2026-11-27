@@ -4,16 +4,16 @@ declare(strict_types=1);
 
 namespace App\Aplicacion\Apartados;
 
+use App\Aplicacion\Caja\CajaDeTerminal;
 use App\Modules\Apartados\Dtos\PagoApartadoDto;
 use App\Modules\Apartados\Dtos\RegistrarAbonoApartadoDto;
 use App\Modules\Apartados\Models\Apartado;
 use App\Modules\Apartados\Models\ApartadoAbono;
 use App\Modules\Apartados\Services\ApartadoService;
+use App\Modules\Nucleo\Models\Terminal;
 use App\Modules\Nucleo\Models\Usuario;
-use App\Modules\Nucleo\Scopes\TenantScopeViaRelacion;
 use App\Modules\Nucleo\Support\Dinero;
 use App\Modules\Tpv\Exceptions\CajaSesionNoAbiertaException;
-use App\Modules\Tpv\Models\CajaSesion;
 use App\Modules\Tpv\Services\LibroCaja;
 use Illuminate\Support\Facades\DB;
 
@@ -22,10 +22,10 @@ final class RegistrarAbonoApartado
     public function __construct(private readonly ApartadoService $service, private readonly LibroCaja $libro) {}
 
     /** Reutiliza una transacción exterior si existe. */
-    public function ejecutar(RegistrarAbonoApartadoDto $dto, Apartado $apartado, Usuario $usuario): ApartadoAbono
+    public function ejecutar(RegistrarAbonoApartadoDto $dto, Apartado $apartado, Usuario $usuario, ?Terminal $terminal = null): ApartadoAbono
     {
-        $operacion = function () use ($dto, $apartado, $usuario): ApartadoAbono {
-            $caja = CajaSesion::query()->withoutGlobalScope(TenantScopeViaRelacion::class)->where('sucursal_id', (int) $usuario->getAttribute('sucursal_id'))->where('estado', 'abierta')->latest('id')->lockForUpdate()->first();
+        $operacion = function () use ($dto, $apartado, $usuario, $terminal): ApartadoAbono {
+            $caja = CajaDeTerminal::bloquearAbierta($usuario, $terminal);
             $monetarios = array_values(array_filter($dto->pagos, fn (PagoApartadoDto $pago): bool => $pago->monto > 0 && $this->libro->esMonetario($pago->metodoPagoId)));
             if ($monetarios !== [] && $caja === null) {
                 throw new CajaSesionNoAbiertaException((int) $usuario->getAttribute('sucursal_id'));

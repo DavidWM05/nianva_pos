@@ -162,7 +162,7 @@ class CotizacionServiceTest extends TestCase
             ],
         );
 
-        $this->cajaService->abrirCajaConSucursal(Bloqueos04e::sucursal($ctx['sucursal']->id), $ctx['usuario']->id, 500);
+        $this->cajaService->abrirCajaConSucursal(Bloqueos04e::sucursal($ctx['sucursal']->id), $ctx['usuario']->id, 500, Bloqueos04e::terminal($ctx['sucursal']->id), now()->setTimezone('America/Mexico_City')->toDateString(), now());
 
         $caja04e6 = Bloqueos04c::caja((int) $cotizacion->getAttribute('sucursal_id'));
         $cotizacion04e6 = Bloqueos04d::modelo($cotizacion);

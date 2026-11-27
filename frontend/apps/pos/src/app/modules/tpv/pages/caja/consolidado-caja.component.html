@@ -1,0 +1,50 @@
+<h2>Consolidado de caja</h2>
+<div>
+  <a matButton routerLink="/tpv/caja">Volver a caja</a>
+  <label for="fecha-operativa">Fecha operativa</label>
+  <input id="fecha-operativa" type="date" required [value]="fecha()" [disabled]="ocupado()"
+    (input)="fecha.set(entradaFecha.value); resumen.set(null); error.set('')" #entradaFecha>
+  <button matButton type="button" [disabled]="!fecha() || ocupado()" (click)="cargar(false)">Consultar</button>
+  <button matButton="filled" type="button" [disabled]="!fecha() || ocupado()" (click)="cargar(true)">Consolidar</button>
+  @if (ocupado()) { <ui-skeleton forma="bloque" alto="8rem" etiqueta="Cargando consolidado" /> }
+  @if (error()) { <p role="alert">{{ error() }}</p> }
+</div>
+
+@if (resumen(); as dia) {
+  @if (dia.documentos.length === 0) {
+    <p>La fecha {{ dia.fecha_operativa }} aún no tiene un consolidado.</p>
+  } @else {
+    <section aria-labelledby="total-caja-dia">
+      <p>{{ dia.encabezado.sucursal }}</p>
+      <h3 id="total-caja-dia">Total del día · {{ dia.fecha_operativa }}</h3>
+      <dl uiDatos>
+        <dt>Teórico</dt><dd>{{ dia.total_teorico | dinero }}</dd>
+        <dt>Contado</dt><dd>{{ dia.total_contado | dinero }}</dd>
+        <dt>Diferencia</dt><dd>{{ dia.diferencia | dinero }}</dd>
+      </dl>
+      <button matButton type="button" (click)="imprimir()">Imprimir comprobante</button>
+    </section>
+
+    @for (documento of dia.documentos; track documento.id) {
+      <section>
+        <h3>{{ documento.original_id ? 'Consolidado complementario' : 'Consolidado original' }}</h3>
+        <dl uiDatos>
+          @if (documento.supervisor_apertura) {
+            <dt>Supervisor de apertura</dt><dd>{{ documento.supervisor_apertura }}</dd>
+          }
+          <dt>Teórico</dt><dd>{{ documento.total_teorico | dinero }}</dd>
+          <dt>Contado</dt><dd>{{ documento.total_contado | dinero }}</dd>
+          <dt>Diferencia</dt><dd>{{ documento.diferencia | dinero }}</dd>
+        </dl>
+        @for (corte of documento.cortes; track corte.id) {
+          <h4>{{ corte.terminal }} · Corte {{ corte.folio }}</h4>
+          <dl uiDatos>
+            <dt>Teórico</dt><dd>{{ corte.total_teorico | dinero }}</dd>
+            <dt>Contado</dt><dd>{{ corte.monto_contado | dinero }}</dd>
+            <dt>Diferencia</dt><dd>{{ corte.diferencia | dinero }}</dd>
+          </dl>
+        }
+      </section>
+    }
+  }
+}

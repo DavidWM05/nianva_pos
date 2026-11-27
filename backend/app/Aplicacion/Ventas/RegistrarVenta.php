@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Aplicacion\Ventas;
 
+use App\Aplicacion\Caja\CajaDeTerminal;
 use App\Aplicacion\Folios\Folios;
 use App\Aplicacion\Inventario\RegistrarMovimiento;
 use App\Aplicacion\Supervisor\Supervisor;
@@ -15,8 +16,8 @@ use App\Modules\NotasCredito\Models\NotaCredito;
 use App\Modules\NotasCredito\Services\NotaCreditoService;
 use App\Modules\Nucleo\Dtos\OperacionSupervisorDto;
 use App\Modules\Nucleo\Models\MetodoPago;
+use App\Modules\Nucleo\Models\Terminal;
 use App\Modules\Nucleo\Models\Usuario;
-use App\Modules\Nucleo\Scopes\TenantScopeViaRelacion;
 use App\Modules\Nucleo\Support\AccionSupervisor;
 use App\Modules\Nucleo\Support\Dinero;
 use App\Modules\Precios\Exceptions\CuponInvalidoException;
@@ -29,7 +30,6 @@ use App\Modules\Tpv\Dtos\CrearVentaDto;
 use App\Modules\Tpv\Dtos\LineaVentaDto;
 use App\Modules\Tpv\Dtos\PagoDto;
 use App\Modules\Tpv\Exceptions\VentaTotalNegativoException;
-use App\Modules\Tpv\Models\CajaSesion;
 use App\Modules\Tpv\Models\Venta;
 use App\Modules\Tpv\Services\VentaService;
 use Carbon\CarbonImmutable;
@@ -50,7 +50,7 @@ class RegistrarVenta
     ) {}
 
     /** Cuando la llama otra Action, el savepoint participa de su transacción y de su rollback. */
-    public function ejecutar(CrearVentaDto $dto, Usuario $usuario, ?OperacionSupervisorDto $autorizacion = null): Venta
+    public function ejecutar(CrearVentaDto $dto, Usuario $usuario, ?OperacionSupervisorDto $autorizacion = null, ?Terminal $terminal = null): Venta
     {
         $clienteId = $dto->clienteId;
         $items = array_map(
@@ -117,8 +117,9 @@ class RegistrarVenta
             $subtotal,
             $dto,
             $autorizacion,
+            $terminal,
         ) {
-            $caja = CajaSesion::query()->withoutGlobalScope(TenantScopeViaRelacion::class)->where('sucursal_id', (int) $usuario->getAttribute('sucursal_id'))->where('estado', 'abierta')->latest('id')->lockForUpdate()->first();
+            $caja = CajaDeTerminal::bloquearAbierta($usuario, $terminal);
             $notaCredito = null;
             $totalEstimado = round($subtotal - $descuentoManual - $descuentoCupon, 2);
             if ($caja !== null && $totalEstimado < 0) {

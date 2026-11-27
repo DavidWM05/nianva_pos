@@ -6,6 +6,7 @@ use App\Aplicacion\CuentasPagar\AnularCuenta;
 use App\Aplicacion\CuentasPagar\RegistrarPago;
 use App\Aplicacion\Reportes\ExportarReporteCsv;
 use App\Aplicacion\Reportes\ObtenerReporteCuentasPagar;
+use App\Aplicacion\Sesion\TerminalDeSesion;
 use App\Http\Controllers\Controller;
 use App\Modules\CuentasPagar\Http\Requests\RegistrarPagoRequest;
 use App\Modules\CuentasPagar\Http\Resources\AbonoPagarResource;
@@ -71,7 +72,7 @@ class CuentaPagarController extends Controller
      * DAT-08: la ruta resuelve la cuenta por ulid (binding); la Action sigue recibiendo el id
      * interno y bloqueando por él.
      */
-    public function registrarPago(RegistrarPagoRequest $request, CuentaPagar $cuentaPagar, RegistrarPago $action)
+    public function registrarPago(RegistrarPagoRequest $request, CuentaPagar $cuentaPagar, RegistrarPago $action, TerminalDeSesion $terminalDeSesion)
     {
         $id = (int) $cuentaPagar->getKey();
         $usuario = $request->user();
@@ -82,7 +83,7 @@ class CuentaPagarController extends Controller
 
         $dto = $request->toDto();
 
-        $abono = $action->ejecutar($dto, $id, $usuario);
+        $abono = $action->ejecutar($dto, $id, $usuario, $terminalDeSesion->actual($usuario, $request->hasSession() ? $request->session() : null));
 
         $cuenta = CuentaPagar::with('proveedor')->findOrFail($id);
 

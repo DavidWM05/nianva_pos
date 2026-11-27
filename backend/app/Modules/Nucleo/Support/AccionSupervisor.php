@@ -10,6 +10,8 @@ enum AccionSupervisor: string
     case DescuentoVenta = 'ventas.descuento';
     case CancelarApartado = 'apartados.cancelar';
     case CerrarCaja = 'caja.cerrar';
+    case CerrarCajaRemota = 'caja.cerrar_remota';
+    case AbrirCajaTardia = 'caja.abrir_tardia';
     case Reembolsar = 'devoluciones.reembolsar';
 
     public function permiso(): string
@@ -17,6 +19,7 @@ enum AccionSupervisor: string
         return match ($this) {
             self::DescuentoVenta => 'ventas.autorizar_descuento',
             self::Reembolsar => 'devoluciones.crear',
+            self::AbrirCajaTardia => 'caja.abrir',
             default => $this->value,
         };
     }

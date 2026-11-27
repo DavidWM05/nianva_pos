@@ -7,6 +7,7 @@ use App\Modules\Nucleo\Models\Permiso;
 use App\Modules\Nucleo\Models\Rol;
 use App\Modules\Nucleo\Models\Sucursal;
 use App\Modules\Nucleo\Models\Tenant;
+use App\Modules\Nucleo\Models\Terminal;
 use App\Modules\Nucleo\Models\Usuario;
 use App\Modules\Tpv\Models\CajaSesion;
 use App\Modules\Tpv\Models\Venta;
@@ -143,6 +144,8 @@ class ClienteTest extends TestCase
         ['tenant' => $tenant, 'usuario' => $usuario] = $this->crearUsuarioConPermisos(['clientes.ver']);
         $sucursal = Sucursal::where('tenant_id', $tenant->id)->firstOrFail();
         $cajaSesion = CajaSesion::create([
+            'fecha_operativa' => now()->setTimezone('America/Mexico_City')->toDateString(),
+            'terminal_id' => Terminal::factory()->create(['sucursal_id' => $sucursal->id])->id,
             'sucursal_id' => $sucursal->id,
             'usuario_id' => $usuario->id,
             'monto_apertura' => 0,

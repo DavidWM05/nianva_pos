@@ -81,9 +81,10 @@ class OperacionesSensiblesTest extends TestCase
             ])->assertOk();
         $this->assertGreaterThan(0, $this->auditoria('productos', $producto->id));
 
+        $this->seleccionarTerminalDeCaja();
         $datosSupervisor3 = ['conteos' => [['metodo_pago_id' => MetodoEfectivo::id(), 'monto' => 0]]];
         $this->actingAs($this->usuario)
-            ->patchJson("/api/v1/caja/{$this->caja->ulid}/cerrar", $datosSupervisor3, ['X-Autorizacion-Supervisor' => self::conSupervisor($this->usuario, AccionSupervisor::CerrarCaja, $datosSupervisor3, $this->caja->ulid)->token])
+            ->patchJson("/api/v1/caja/{$this->caja->ulid}/cerrar", $datosSupervisor3, ['X-Autorizacion-Supervisor' => self::conSupervisor($this->usuario, AccionSupervisor::CerrarCaja, $datosSupervisor3, $this->caja->ulid, sesionHash: hash('sha256', session()->getId()))->token])
             ->assertOk();
         $this->assertGreaterThan(0, $this->auditoria('caja_sesiones', $this->caja->id));
 

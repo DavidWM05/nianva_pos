@@ -377,6 +377,16 @@ export const appRoutes: Route[] = [
             loadComponent: () => import('./modules/tpv/pages/caja/caja.component').then((m) => m.CajaComponent),
           },
           {
+            path: 'caja/remotas',
+            data: { breadcrumb: 'Cierre remoto de caja' },
+            loadComponent: () => import('./modules/tpv/pages/caja/cajas-remotas.component').then((m) => m.CajasRemotasComponent),
+          },
+          {
+            path: 'caja/consolidado',
+            data: { breadcrumb: 'Consolidado de caja' },
+            loadComponent: () => import('./modules/tpv/pages/caja/consolidado-caja.component').then((m) => m.ConsolidadoCajaComponent),
+          },
+          {
             path: 'ventas',
             data: { breadcrumb: 'Ventas' },
             loadComponent: () =>

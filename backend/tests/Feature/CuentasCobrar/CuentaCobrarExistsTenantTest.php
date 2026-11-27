@@ -15,6 +15,7 @@ class CuentaCobrarExistsTenantTest extends TestCase
     {
         parent::setUp();
         $this->prepararNegocio(['cuentas_cobrar.registrar_abono']);
+        $this->seleccionarTerminalDeCaja();
     }
 
     public function test_abono_rechaza_metodo_pago_de_otro_tenant(): void

@@ -94,7 +94,7 @@ class Actions04eConcurrentesTest extends TestCase
         try {
             $bloqueador->beginTransaction();
             $bloqueador->table($tabla)->where('id', $id)->lockForUpdate()->first();
-            $datos = ['tenant' => $d['tenant']->id, 'sucursal' => $d['sucursal']->id, 'usuario' => $d['usuario']->id, 'cliente' => $d['cliente']->id, 'metodo' => $d['metodo']->id, 'variante' => $d['variante']->id];
+            $datos = ['tenant' => $d['tenant']->id, 'sucursal' => $d['sucursal']->id, 'usuario' => $d['usuario']->id, 'cliente' => $d['cliente']->id, 'metodo' => $d['metodo']->id, 'variante' => $d['variante']->id, 'terminal' => $d['terminal']->id];
             foreach (['cotizacion', 'orden', 'destino', 'insumo'] as $modelo) {
                 if (isset($d[$modelo])) {
                     $datos[$modelo] = $d[$modelo]->id;

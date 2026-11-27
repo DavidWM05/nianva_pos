@@ -52,6 +52,29 @@ function enBackend(codigo: string): string {
 
 const usuario = (correo: string) => `Usuario::sinTenant()->where('correo', ${JSON.stringify(correo)})->firstOrFail()`;
 
+/** Crea la terminal predeterminada si la sucursal del usuario no tiene ninguna. */
+export function crearTerminalDeCaja(correo: string): number {
+  return Number(enBackend(String.raw`
+    $usuario = ${usuario(correo)};
+    echo App\Modules\Nucleo\Models\Terminal::sinTenant()->firstOrCreate([
+        'tenant_id' => $usuario->tenant_id,
+        'sucursal_id' => $usuario->sucursal_id,
+        'nombre' => 'Caja principal',
+    ])->id;
+  `));
+}
+
+/** Retira el método creado por el spec para que los cortes posteriores usen su propio escenario. */
+export function limpiarMetodoPago(correo: string, nombre: string): void {
+  enBackend(String.raw`
+    $usuario = ${usuario(correo)};
+    App\Modules\Nucleo\Models\MetodoPago::sinTenant()
+        ->where('tenant_id', $usuario->tenant_id)
+        ->where('nombre', ${JSON.stringify(nombre)})
+        ->delete();
+  `);
+}
+
 /** Secreto TOTP (base32) de un usuario con 2FA confirmado. */
 export function secretoDosFactor(correo: string): string {
   return enBackend(`echo ${usuario(correo)}->two_factor_secret;`);
@@ -103,6 +126,30 @@ export function crearSupervisor(base: string, correo: string, nombre: string, pi
   crearUsuarioComo(base, correo);
   enBackend(`${usuario(correo)}->forceFill(['nombre' => ${JSON.stringify(nombre)}, 'apellido' => null])->save();`);
   conPinDeCaja(correo, pin);
+}
+
+/** Prepara una sucursal aislada con existencias del escenario de abarrotes. */
+export function prepararSucursalMulticaja(correo: string, terminales: readonly string[]): void {
+  enBackend(String.raw`
+    $base = Usuario::sinTenant()->where('correo', 'vendedor@abarrotes.test')->firstOrFail();
+    $sucursal = App\Modules\Nucleo\Models\Sucursal::factory()->create(['tenant_id' => $base->tenant_id, 'nombre' => 'Sucursal Multicaja']);
+    $operador = Usuario::factory()->create([
+        'tenant_id' => $base->tenant_id, 'sucursal_id' => $sucursal->id,
+        'correo' => ${JSON.stringify(correo)}, 'password' => ${JSON.stringify(PASSWORD)},
+    ]);
+    $operador->roles()->sync($base->roles()->pluck('roles.id'));
+    foreach (json_decode(${JSON.stringify(JSON.stringify(terminales))}, true, flags: JSON_THROW_ON_ERROR) as $nombre) {
+        App\Modules\Nucleo\Models\Terminal::factory()->create(['sucursal_id' => $sucursal->id, 'nombre' => $nombre]);
+    }
+    $variantes = App\Modules\Inventario\Models\ProductoVariante::sinTenant()
+        ->whereHas('producto', fn ($query) => $query->withoutGlobalScopes()->where('tenant_id', $base->tenant_id)->where('nombre', 'Agua 1L'))
+        ->pluck('id');
+    foreach ($variantes as $variante) {
+        App\Modules\Inventario\Models\InventarioStock::factory()->create([
+            'sucursal_id' => $sucursal->id, 'variante_id' => $variante, 'stock_actual' => 10,
+        ]);
+    }
+  `);
 }
 
 /** Codigo TOTP de 6 digitos (RFC 6238, SHA-1, 30 s), como el de una app de autenticacion. */

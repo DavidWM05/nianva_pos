@@ -7,10 +7,12 @@ namespace App\Modules\Tpv\Http\Controllers;
 use App\Aplicacion\Caja\AbrirCaja;
 use App\Aplicacion\Caja\CerrarCaja;
 use App\Aplicacion\Caja\ObtenerCajaActual;
+use App\Aplicacion\Sesion\TerminalDeSesion;
 use App\Http\Controllers\Controller;
 use App\Modules\Nucleo\Http\Support\OperacionSupervisorHttp;
 use App\Modules\Nucleo\Models\Usuario;
 use App\Modules\Nucleo\Support\DecimalApi;
+use App\Modules\Tpv\Exceptions\TerminalRequeridaException;
 use App\Modules\Tpv\Http\Requests\AbrirCajaRequest;
 use App\Modules\Tpv\Http\Requests\CerrarCajaRequest;
 use App\Modules\Tpv\Http\Resources\CajaSaldoResource;
@@ -32,7 +34,7 @@ use Illuminate\Http\Request;
  */
 class CajaController extends Controller
 {
-    public function actual(Request $request, ObtenerCajaActual $obtenerCajaActual)
+    public function actual(Request $request, ObtenerCajaActual $obtenerCajaActual, TerminalDeSesion $terminalDeSesion)
     {
         $usuario = $request->user();
 
@@ -40,7 +42,8 @@ class CajaController extends Controller
             abort(401);
         }
 
-        $resultado = $obtenerCajaActual->ejecutar($usuario);
+        $terminal = $terminalDeSesion->actual($usuario, $request->hasSession() ? $request->session() : null);
+        $resultado = $obtenerCajaActual->ejecutar($usuario, $terminal);
 
         return response()->json([
             'data' => $resultado['sesion'] ? new CajaSesionResource($resultado['sesion']) : null,
@@ -57,15 +60,21 @@ class CajaController extends Controller
         ]);
     }
 
-    public function abrir(AbrirCajaRequest $request, AbrirCaja $abrirCaja)
+    #[HeaderParameter(OperacionSupervisorHttp::CABECERA, description: 'Autorización para abrir después de consolidar la fecha operativa.', type: 'string')]
+    public function abrir(AbrirCajaRequest $request, AbrirCaja $abrirCaja, TerminalDeSesion $terminalDeSesion)
     {
         $usuario = $request->user();
 
-        if ($usuario === null) {
+        if (! $usuario instanceof Usuario) {
             abort(401);
         }
 
-        $sesion = $abrirCaja->ejecutar($request->toDto(), $usuario);
+        $terminal = $terminalDeSesion->actual($usuario, $request->hasSession() ? $request->session() : null);
+        if ($terminal === null) {
+            throw new TerminalRequeridaException;
+        }
+
+        $sesion = $abrirCaja->ejecutar($request->toDto(), $usuario, $terminal, OperacionSupervisorHttp::de($request));
 
         return (new CajaSesionResource($sesion))->response()->setStatusCode(201);
     }
@@ -74,11 +83,16 @@ class CajaController extends Controller
      * Orquestacion: App\Aplicacion\Caja\CerrarCaja.
      */
     #[HeaderParameter(OperacionSupervisorHttp::CABECERA, description: 'Token opaco de supervisor para la operación autorizada.', type: 'string')]
-    public function cerrar(CerrarCajaRequest $request, CajaSesion $cajaSesion, CerrarCaja $cerrarCaja)
+    public function cerrar(CerrarCajaRequest $request, CajaSesion $cajaSesion, CerrarCaja $cerrarCaja, TerminalDeSesion $terminalDeSesion)
     {
         $dto = $request->toDto();
 
-        $resultado = $cerrarCaja->ejecutar($cajaSesion, $dto->conteos, OperacionSupervisorHttp::de($request));
+        $operacion = OperacionSupervisorHttp::de($request);
+        abort_unless((int) $cajaSesion->getAttribute('sucursal_id') === (int) $operacion->usuario->getAttribute('sucursal_id'), 404);
+        $terminal = $terminalDeSesion->actual($operacion->usuario, $request->hasSession() ? $request->session() : null);
+        $remota = $terminal?->id !== (int) $cajaSesion->getAttribute('terminal_id');
+
+        $resultado = $cerrarCaja->ejecutar($cajaSesion, $dto->conteos, $operacion, $remota);
 
         return response()->json([
             'data' => new CajaSesionResource($resultado['sesion']),

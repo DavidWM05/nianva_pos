@@ -3,15 +3,17 @@ import { compararDinero, restarDinero, DineroPipe, FechaHoraPipe } from '@nianva
 import { HttpErrorResponse } from '@angular/common/http';
 import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { RouterLink } from '@angular/router';
+import { SesionActualService } from '@nianva/domain-sesion';
 import { MatButton } from '@angular/material/button';
 import { SkeletonComponent } from '@nianva/ui-feedback';
 import { BtnEnviarComponent, CampoComponent } from '@nianva/ui-forms';
 import { DatosComponent, FormActionsComponent } from '@nianva/ui-layout';
 import { ModalComponent } from '@nianva/ui-overlays';
-import { ToastService, esErrorNegocio, mensajeError } from '@nianva/ui-shared';
+import { ToastService, esErrorNegocio, leerErrorNegocio, mensajeError } from '@nianva/ui-shared';
 
 import { CajaActual, CajaConteo, CajaDesglose, CajaService, CajaSesion, Gasto, GastoService } from '@nianva/domain-tpv';
-import { finalize } from 'rxjs';
+import { EMPTY, catchError, finalize, switchMap, throwError } from 'rxjs';
 import { ImprimirDocumentoService } from '../../../../core/impresos/imprimir-documento.service';
 import { PreferenciaTicketService } from '../../../../core/impresos/preferencia-ticket.service';
 import { IntentoOperacion } from '../../../../core/operaciones/intento-operacion';
@@ -38,6 +40,7 @@ import { AutorizacionSupervisorService } from '../../../../core/supervisor/autor
   standalone: true,
   imports: [
     FormsModule,
+    RouterLink,
     MatButton,
     SkeletonComponent,
     BtnEnviarComponent,
@@ -54,6 +57,14 @@ import { AutorizacionSupervisorService } from '../../../../core/supervisor/autor
 })
 export class CajaComponent implements OnInit {
   protected readonly compararDinero = compararDinero;
+  protected readonly puedeConsolidar = computed(() =>
+    this.sesion.sesion()?.permisos.includes('caja.cerrar_remota') ?? false,
+  );
+  private readonly sesion = inject(SesionActualService);
+  protected readonly sinTerminal = computed(() => {
+    const sesion = this.sesion.sesion();
+    return sesion !== null && sesion.terminal === null;
+  });
   private readonly cajaService = inject(CajaService);
   private readonly gastoService = inject(GastoService);
   private readonly toast = inject(ToastService);
@@ -143,15 +154,32 @@ export class CajaComponent implements OnInit {
 
     this.abriendo.set(true);
 
-    this.intentoApertura.ejecutar({ monto_apertura: monto }, (llave) => this.cajaService.abrir(monto, llave)).subscribe({
+    const datos = { monto_apertura: monto };
+    this.intentoApertura.ejecutar(datos, llave => {
+      const autorizado = this.intentoApertura.token;
+      const peticion = autorizado ? this.cajaService.abrir(monto, llave, autorizado) : this.cajaService.abrir(monto, llave);
+      return peticion.pipe(catchError((error: unknown) => {
+        const negocio = leerErrorNegocio(error);
+        const recurso = negocio?.contexto['consolidado_id'];
+        if (negocio?.codigo !== 'supervisor_requerido' || typeof recurso !== 'string') {
+          return throwError(() => error);
+        }
+
+        return this.supervisor.pedir({
+          accion: 'caja.abrir_tardia', recurso, datos, descripcion: 'Abrir caja en una fecha ya consolidada',
+        }).pipe(switchMap(token => {
+          if (!token) return EMPTY;
+          this.intentoApertura.autorizar(token);
+          return this.cajaService.abrir(monto, llave, token);
+        }));
+      }));
+    }).pipe(finalize(() => this.abriendo.set(false))).subscribe({
       next: () => {
-        this.abriendo.set(false);
         this.montoApertura.set(null);
         this.toast.success('Caja abierta.');
         this.cargarEstado();
       },
       error: (error: HttpErrorResponse) => {
-        this.abriendo.set(false);
         this.toast.error(mensajeError(error, 'No se pudo abrir la caja.'));
       },
     });

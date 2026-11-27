@@ -26,6 +26,7 @@ class ManipulacionDePreciosTest extends TestCase
             'devoluciones.crear',
             'compras.crear',
         ]);
+        $this->seleccionarTerminalDeCaja();
     }
 
     public function test_venta_ignora_precio_subtotal_total_y_costo_del_cliente(): void
@@ -121,7 +122,8 @@ class ManipulacionDePreciosTest extends TestCase
             'total' => 1,
             'costo' => 1,
         ];
-        $respuesta = $this->postJson('/api/v1/devoluciones', $datosSupervisor1, ['X-Autorizacion-Supervisor' => self::conSupervisor($this->usuario, AccionSupervisor::Reembolsar, $datosSupervisor1, $venta->ulid)->token]);
+        $this->seleccionarTerminalParaPrueba((int) $this->caja->getAttribute('terminal_id'));
+        $respuesta = $this->postJson('/api/v1/devoluciones', $datosSupervisor1, ['X-Autorizacion-Supervisor' => self::conSupervisor($this->usuario, AccionSupervisor::Reembolsar, $datosSupervisor1, $venta->ulid, sesionHash: hash('sha256', session()->getId()))->token]);
 
         $respuesta->assertCreated();
         $this->assertDatabaseHas('devolucion_items', [

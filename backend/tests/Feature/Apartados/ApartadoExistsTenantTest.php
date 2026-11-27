@@ -15,6 +15,7 @@ class ApartadoExistsTenantTest extends TestCase
     {
         parent::setUp();
         $this->prepararNegocio(['apartados.abonar']);
+        $this->seleccionarTerminalDeCaja();
     }
 
     public function test_abono_rechaza_metodo_pago_de_otro_tenant(): void

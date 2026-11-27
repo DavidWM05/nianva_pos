@@ -12,6 +12,7 @@ use App\Modules\Cotizaciones\Dtos\ConvertirCotizacionDto;
 use App\Modules\Cotizaciones\Dtos\CrearCotizacionDto;
 use App\Modules\Cotizaciones\Dtos\LineaCotizacionDto;
 use App\Modules\Nucleo\Exceptions\ExcepcionNegocio;
+use App\Modules\Nucleo\Models\Terminal;
 use App\Modules\Produccion\Dtos\CambiarEstadoOrdenDto;
 use App\Modules\Produccion\Dtos\CrearTransformacionDto;
 use App\Modules\Produccion\Dtos\InsumoStockDto;
@@ -28,7 +29,7 @@ DB::listen(static function (QueryExecuted $consulta) use (&$observados, $emitir)
 });
 try {
     match ($op) {
-        'cotizacion_convertir' => app(ConvertirCotizacion::class)->ejecutar(new ConvertirCotizacionDto($datos['metodo']), $datos['cotizacion'], $usuario),
+        'cotizacion_convertir' => app(ConvertirCotizacion::class)->ejecutar(new ConvertirCotizacionDto($datos['metodo']), $datos['cotizacion'], $usuario, Terminal::sinTenant()->findOrFail($datos['terminal'])),
         'cotizacion_crear' => app(CrearCotizacion::class)->ejecutar(new CrearCotizacionDto($datos['cliente'], $datos['sucursal'], 15, 0, null, null, [new LineaCotizacionDto($datos['variante'], 1, 100, 0)]), $usuario),
         'produccion_completar' => app(CambiarEstadoOrden::class)->ejecutar(new CambiarEstadoOrdenDto('completada', 1), $datos['orden']),
         'produccion_insumos' => app(CompletarOrden::class)->ejecutar($datos['orden'], 1),

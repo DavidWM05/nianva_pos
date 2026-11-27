@@ -80,6 +80,7 @@ class DevolucionExistsTenantTest extends TestCase
             'items_devueltos' => [['variante_id' => $this->variante->id, 'cantidad' => 1]],
             'pagos' => [['metodo_pago_id' => $this->metodoPagoGlobal->id, 'monto' => 100]],
         ];
-        $this->postJson('/api/v1/devoluciones', $datosSupervisor1, ['X-Autorizacion-Supervisor' => self::conSupervisor($this->usuario, AccionSupervisor::Reembolsar, $datosSupervisor1, $venta->ulid)->token])->assertCreated();
+        $this->seleccionarTerminalDeCaja();
+        $this->postJson('/api/v1/devoluciones', $datosSupervisor1, ['X-Autorizacion-Supervisor' => self::conSupervisor($this->usuario, AccionSupervisor::Reembolsar, $datosSupervisor1, $venta->ulid, sesionHash: hash('sha256', session()->getId()))->token])->assertCreated();
     }
 }

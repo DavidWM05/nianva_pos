@@ -40,6 +40,7 @@ use App\Modules\Produccion\Models\OrdenProduccion;
 use App\Modules\Produccion\Models\Receta;
 use App\Modules\Produccion\Models\TransformacionProducto;
 use App\Modules\Tpv\Models\CajaCierreMetodo;
+use App\Modules\Tpv\Models\CajaConsolidado;
 use App\Modules\Tpv\Models\CajaSesion;
 use App\Modules\Tpv\Models\CajaSesionSaldo;
 use App\Modules\Tpv\Models\Venta;
@@ -165,6 +166,7 @@ return [
         PlanPagoCliente::class,
         Venta::class,
         CajaSesion::class,
+        CajaConsolidado::class,
         CajaSesionSaldo::class,
         CajaCierreMetodo::class,
         Cotizacion::class,

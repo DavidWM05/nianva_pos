@@ -22,6 +22,7 @@ final class ImpresosTest extends TestCase
     public function test_imprime_venta_sombra_con_folio_y_precios_guardados_sin_permiso_de_configuracion(): void
     {
         $this->prepararNegocio(['ventas.ver']);
+        $this->seleccionarTerminalDeCaja();
         $venta = $this->crearVenta();
         $venta->update(['folio' => 'V-1-7', 'es_venta_sombra' => true]);
         $linea = $venta->detalles()->firstOrFail();
@@ -39,6 +40,7 @@ final class ImpresosTest extends TestCase
     public function test_corte_y_abono_muestran_las_cifras_guardadas(): void
     {
         $this->prepararNegocio(['caja.ver', 'apartados.ver', 'apartados.abonar']);
+        $this->seleccionarTerminalDeCaja();
         $this->actingAs($this->usuario);
         $apartado = $this->crearApartado();
         $apartado->update(['folio' => 'A-1-4', 'total' => '100.00', 'total_abonado' => '0.00']);
@@ -68,8 +70,10 @@ final class ImpresosTest extends TestCase
     public function test_el_corte_identifica_al_usuario_que_cerro_la_caja(): void
     {
         $this->prepararNegocio(['caja.ver', 'caja.cerrar']);
+        $this->seleccionarTerminalDeCaja();
         $otroCajero = Usuario::factory()->create(['tenant_id' => $this->tenant->id, 'sucursal_id' => $this->sucursal->id]);
         $this->caja->update(['usuario_id' => $otroCajero->id]);
+        $this->seleccionarTerminalDeCaja();
         $this->actingAs($this->usuario)
             ->patchJson("/api/v1/caja/{$this->caja->ulid}/cerrar", [
                 'conteos' => [['metodo_pago_id' => MetodoEfectivo::id(), 'monto' => 500]],

@@ -16,6 +16,9 @@ return new class extends Migration
             $table->unique(['sucursal_id', 'folio']);
             $table->char('ulid', 26)->unique();
             $table->foreignId('sucursal_id')->constrained('sucursales')->restrictOnDelete();
+            $table->foreignId('terminal_id')->constrained('terminales')->restrictOnDelete();
+            $table->foreignId('caja_consolidado_id')->nullable()->constrained('caja_consolidados')->restrictOnDelete();
+            $table->foreignId('supervisor_apertura_id')->nullable()->constrained('usuarios')->restrictOnDelete();
             $table->foreignId('usuario_id')->constrained('usuarios')->restrictOnDelete();
             $table->foreignId('usuario_cierre_id')->nullable()->constrained('usuarios')->nullOnDelete();
             $table->decimal('monto_apertura', 12, 2);
@@ -26,8 +29,12 @@ return new class extends Migration
             $table->decimal('total_ventas_sistema', 12, 2)->nullable();
             $table->decimal('diferencia', 12, 2)->nullable();
             $table->dateTime('fecha_apertura')->useCurrent();
+            $table->date('fecha_operativa');
+            $table->index(['sucursal_id', 'fecha_operativa', 'estado']);
             $table->dateTime('fecha_cierre')->nullable();
             $table->enum('estado', ['abierta', 'cerrada'])->default('abierta');
+            $table->unsignedBigInteger('terminal_abierta_id')->nullable()
+                ->virtualAs("CASE WHEN estado = 'abierta' THEN terminal_id ELSE NULL END")->unique();
         });
     }
 

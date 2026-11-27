@@ -71,6 +71,7 @@ test('tpv: abrir caja, cobrar con pago mixto, ver el detalle y el listado, cerra
   test.setTimeout(240000);
   usuarioConPermisosExtra('vendedor@abarrotes.test', USUARIO, 'Reportes e2e', ['reportes.ver']);
   await iniciarSesion(page, USUARIO);
+  await asegurarCajaAbierta(page);
   const errores = vigilarErrores(page);
 
   // El escenario deja la caja abierta: se cierra primero para probar la apertura.

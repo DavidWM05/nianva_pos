@@ -74,6 +74,7 @@ test('tpv a 375 px: venta completa con nombre largo y montos de cinco cifras, si
   prepararProductoLargoB1(PRODUCTO_LARGO, '12345.50', 50);
   await page.setViewportSize({ width: 375, height: 812 });
   await iniciarSesion(page, VENDEDOR);
+  await asegurarCajaAbierta(page);
   const errores = vigilarErrores(page);
 
   await abrirPantalla(page, '/tpv/venta');
@@ -131,6 +132,7 @@ test('tpv a 375 px: venta completa con nombre largo y montos de cinco cifras, si
 
 test('tpv con teclado: cada etiqueta apunta a su control y el bloqueo se anuncia', async ({ page }) => {
   await iniciarSesion(page, VENDEDOR);
+  await asegurarCajaAbierta(page);
   await abrirPantalla(page, '/tpv/venta');
 
   await expect(page.getByLabel('Cliente', { exact: true })).toHaveAttribute('placeholder', 'Buscar cliente por nombre...');
@@ -147,6 +149,7 @@ test('tpv con teclado: cada etiqueta apunta a su control y el bloqueo se anuncia
 test('tpv solo con teclado: buscar, variante, cantidad, cobrar con F4 y foco restaurado', async ({ page }) => {
   test.setTimeout(120000);
   await iniciarSesion(page, VENDEDOR);
+  await asegurarCajaAbierta(page);
   const errores = vigilarErrores(page);
   await abrirPantalla(page, '/tpv/venta');
   await expect(page.getByRole('heading', { name: 'Nueva venta', exact: true })).toBeVisible();
@@ -228,6 +231,7 @@ for (const tema of ['claro', 'oscuro'] as const) {
     test.setTimeout(150000);
     await page.addInitScript((valor) => localStorage.setItem('nv-tema', valor), tema);
     await iniciarSesion(page, VENDEDOR);
+    await asegurarCajaAbierta(page);
     await abrirPantalla(page, '/tpv/venta');
     await expect(page.getByRole('heading', { name: 'Nueva venta', exact: true })).toBeVisible();
     expect(await page.evaluate(() => document.documentElement.classList.contains('nv-tema-oscuro'))).toBe(tema === 'oscuro');

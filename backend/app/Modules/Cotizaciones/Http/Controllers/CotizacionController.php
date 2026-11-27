@@ -6,6 +6,7 @@ use App\Aplicacion\Cotizaciones\ActualizarCotizacion;
 use App\Aplicacion\Cotizaciones\AnularCotizacion;
 use App\Aplicacion\Cotizaciones\ConvertirCotizacion;
 use App\Aplicacion\Cotizaciones\CrearCotizacion;
+use App\Aplicacion\Sesion\TerminalDeSesion;
 use App\Http\Controllers\Controller;
 use App\Modules\Cotizaciones\Http\Requests\ActualizarCotizacionRequest;
 use App\Modules\Cotizaciones\Http\Requests\ConvertirCotizacionRequest;
@@ -125,7 +126,7 @@ class CotizacionController extends Controller
         return response()->json(['message' => 'Cotización anulada correctamente.']);
     }
 
-    public function convertir(ConvertirCotizacionRequest $request, Cotizacion $cotizacion, ConvertirCotizacion $action)
+    public function convertir(ConvertirCotizacionRequest $request, Cotizacion $cotizacion, ConvertirCotizacion $action, TerminalDeSesion $terminalDeSesion)
     {
         $usuario = $request->user();
 
@@ -133,7 +134,7 @@ class CotizacionController extends Controller
             abort(401);
         }
 
-        $venta = $action->ejecutar($request->toDto(), (int) $cotizacion->getKey(), $usuario);
+        $venta = $action->ejecutar($request->toDto(), (int) $cotizacion->getKey(), $usuario, $terminalDeSesion->actual($usuario, $request->hasSession() ? $request->session() : null));
 
         return response()->json([
             'message' => 'Cotización convertida a venta correctamente.',

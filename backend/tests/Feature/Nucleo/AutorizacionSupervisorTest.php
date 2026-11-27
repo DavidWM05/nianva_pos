@@ -61,6 +61,7 @@ class AutorizacionSupervisorTest extends TestCase
     public function test_el_descuento_superior_al_margen_requiere_token_y_un_fallo_revierte_su_consumo(): void
     {
         $supervisor = $this->prepararSupervisor(['caja.ver', 'ventas.crear']);
+        $this->seleccionarTerminalDeCaja();
         ConfiguracionTenant::actual()->update(['margen_descuento_supervisor' => '5.00']);
         $datos = $this->payloadVenta(['descuento_manual' => 10]);
         $this->postJson('/api/v1/ventas', $datos)->assertForbidden()->assertJsonPath('error_code', 'supervisor_requerido');
@@ -86,6 +87,12 @@ class AutorizacionSupervisorTest extends TestCase
         $token = $this->emitirPara($supervisor, 'apartados.cancelar', $apartado->ulid, $datos);
         $this->patchJson($ruta, $datos, ['X-Autorizacion-Supervisor' => $token])->assertOk();
 
+        config(['sanctum.stateful' => ['localhost:4200']]);
+        $this->withHeader('Referer', 'http://localhost:4200/')
+            ->withSession(['auth.terminal_id' => (int) $this->caja->getAttribute('terminal_id')])
+            ->withCredentials()
+            ->withCookie(session()->getName(), session()->getId());
+
         ConfiguracionTenant::actual()->update(['umbral_descuadre_supervisor' => '5.00']);
         $datos = ['conteos' => [['metodo_pago_id' => MetodoEfectivo::id(), 'monto' => 10]]];
         $ruta = "/api/v1/caja/{$this->caja->ulid}/cerrar";
@@ -99,6 +106,7 @@ class AutorizacionSupervisorTest extends TestCase
     public function test_el_reembolso_en_dinero_exige_token_y_respeta_su_vencimiento(): void
     {
         $supervisor = $this->prepararSupervisor(['caja.ver', 'devoluciones.crear']);
+        $this->seleccionarTerminalDeCaja();
         $venta = $this->crearVenta();
         $datos = [
             'venta_id' => $venta->ulid,

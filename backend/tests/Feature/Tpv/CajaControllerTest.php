@@ -45,6 +45,12 @@ class CajaControllerTest extends TestCase
         ]);
 
         app(TenantContext::class)->set($tenant);
+        $terminal = Bloqueos04e::terminal($sucursal->id);
+        config(['sanctum.stateful' => ['localhost:4200']]);
+        $this->withHeader('Referer', 'http://localhost:4200/')
+            ->withSession(['auth.terminal_id' => $terminal->id])
+            ->withCredentials()
+            ->withCookie(session()->getName(), session()->getId());
 
         if ($permisos !== []) {
             $rol = Rol::create(['tenant_id' => null, 'nombre' => 'rol-de-prueba-'.uniqid(), 'es_sistema' => false]);
@@ -84,7 +90,7 @@ class CajaControllerTest extends TestCase
     public function test_actual_incluye_el_resumen_en_vivo_de_ventas_de_la_sesion(): void
     {
         ['tenant' => $tenant, 'sucursal' => $sucursal, 'usuario' => $usuario] = $this->crearUsuarioConPermisos(['caja.ver', 'caja.abrir', 'ventas.crear']);
-        $sesion = app(CajaService::class)->abrirCajaConSucursal(Bloqueos04e::sucursal($sucursal->id), $usuario->id, 500);
+        $sesion = app(CajaService::class)->abrirCajaConSucursal(Bloqueos04e::sucursal($sucursal->id), $usuario->id, 500, Bloqueos04e::terminal($sucursal->id), now()->setTimezone('America/Mexico_City')->toDateString(), now());
 
         $efectivo = MetodoPago::create(['tenant_id' => $tenant->id, 'nombre' => 'Efectivo', 'tipo' => 'efectivo']);
         $categoria = Categoria::create(['tenant_id' => $tenant->id, 'nombre' => 'Ropa']);
@@ -112,7 +118,7 @@ class CajaControllerTest extends TestCase
     public function test_abrir_con_caja_ya_abierta_devuelve_422_con_error_code_caja_ya_abierta(): void
     {
         ['sucursal' => $sucursal, 'usuario' => $usuario] = $this->crearUsuarioConPermisos(['caja.abrir']);
-        app(CajaService::class)->abrirCajaConSucursal(Bloqueos04e::sucursal($sucursal->id), $usuario->id, 500);
+        app(CajaService::class)->abrirCajaConSucursal(Bloqueos04e::sucursal($sucursal->id), $usuario->id, 500, Bloqueos04e::terminal($sucursal->id), now()->setTimezone('America/Mexico_City')->toDateString(), now());
         $this->actingAs($usuario);
 
         $this->postJson('/api/v1/caja/abrir', ['monto_apertura' => 300])
@@ -131,7 +137,7 @@ class CajaControllerTest extends TestCase
     public function test_cerrar_calcula_diferencia_y_marca_cerrada(): void
     {
         ['sucursal' => $sucursal, 'usuario' => $usuario] = $this->crearUsuarioConPermisos(['caja.abrir', 'caja.cerrar']);
-        $sesion = app(CajaService::class)->abrirCajaConSucursal(Bloqueos04e::sucursal($sucursal->id), $usuario->id, 500);
+        $sesion = app(CajaService::class)->abrirCajaConSucursal(Bloqueos04e::sucursal($sucursal->id), $usuario->id, 500, Bloqueos04e::terminal($sucursal->id), now()->setTimezone('America/Mexico_City')->toDateString(), now());
         $this->actingAs($usuario);
 
         $respuesta = $this->patchJson("/api/v1/caja/{$sesion->ulid}/cerrar", ['conteos' => [['metodo_pago_id' => MetodoEfectivo::id(), 'monto' => 480]]]);
@@ -144,7 +150,7 @@ class CajaControllerTest extends TestCase
     public function test_actual_incluye_total_gastos_en_el_resumen_en_vivo(): void
     {
         ['sucursal' => $sucursal, 'usuario' => $usuario] = $this->crearUsuarioConPermisos(['caja.ver', 'caja.abrir']);
-        $sesion = app(CajaService::class)->abrirCajaConSucursal(Bloqueos04e::sucursal($sucursal->id), $usuario->id, 500);
+        $sesion = app(CajaService::class)->abrirCajaConSucursal(Bloqueos04e::sucursal($sucursal->id), $usuario->id, 500, Bloqueos04e::terminal($sucursal->id), now()->setTimezone('America/Mexico_City')->toDateString(), now());
         app(GastoService::class)->registrarGastoConCaja(Bloqueos04c::caja($sucursal->id), $sucursal->id, $usuario->id, 'Luz', 80);
 
         $this->actingAs($usuario);
@@ -160,8 +166,8 @@ class CajaControllerTest extends TestCase
     public function test_cerrar_descuenta_los_gastos_reales_calculados_por_el_backend(): void
     {
         ['sucursal' => $sucursal, 'usuario' => $usuario] = $this->crearUsuarioConPermisos(['caja.abrir', 'caja.cerrar']);
-        $sesion = app(CajaService::class)->abrirCajaConSucursal(Bloqueos04e::sucursal($sucursal->id), $usuario->id, 500);
-        app(RegistrarGasto::class)->ejecutar(new CrearGastoDto('Luz', 80), $usuario);
+        $sesion = app(CajaService::class)->abrirCajaConSucursal(Bloqueos04e::sucursal($sucursal->id), $usuario->id, 500, Bloqueos04e::terminal($sucursal->id), now()->setTimezone('America/Mexico_City')->toDateString(), now());
+        app(RegistrarGasto::class)->ejecutar(new CrearGastoDto('Luz', 80), $usuario, Bloqueos04e::terminal($sucursal->id));
         $this->actingAs($usuario);
 
         // total_teorico = apertura(500) + ventas(0) - gastos(80) = 420.

@@ -25,6 +25,7 @@ class A5ContratoEstrictoTest extends TestCase
     public function test_una_mutacion_monetaria_sin_llave_no_registra_una_venta(): void
     {
         $this->prepararNegocio(['ventas.crear']);
+        $this->seleccionarTerminalDeCaja();
         $this->actingAs($this->usuario);
 
         $this->sinLlave()->postJson('/api/v1/ventas', $this->payloadVenta())
@@ -35,12 +36,13 @@ class A5ContratoEstrictoTest extends TestCase
         $this->assertDatabaseCount('solicitudes_idempotentes', 0);
     }
 
-    public function test_las_22_mutaciones_sin_llave_rechazan_antes_de_persistir(): void
+    public function test_las_mutaciones_idempotentes_sin_llave_rechazan_antes_de_persistir(): void
     {
         $rutas = collect(Route::getRoutes())->filter(
             fn ($ruta) => in_array(Idempotencia::class, $ruta->gatherMiddleware(), true),
         );
-        $this->assertCount(22, $rutas);
+        $this->assertCount(23, $rutas);
+        $this->assertTrue($rutas->contains(fn ($ruta) => $ruta->uri() === 'api/v1/caja/consolidado' && in_array('POST', $ruta->methods(), true)));
         $permisos = $rutas->flatMap(fn ($ruta) => $ruta->gatherMiddleware())
             ->filter(fn ($middleware) => is_string($middleware) && str_starts_with($middleware, 'permiso:'))
             ->map(fn (string $middleware) => substr($middleware, strlen('permiso:')))
@@ -49,7 +51,7 @@ class A5ContratoEstrictoTest extends TestCase
             ->all();
         $this->prepararNegocio($permisos);
         $this->actingAs($this->usuario);
-        // El objetivo es atravesar la ruta y sus permisos sin preparar 22 documentos de origen.
+        // El objetivo es atravesar la ruta y sus permisos sin preparar los documentos de origen.
         $this->withoutMiddleware(SubstituteBindings::class);
         $tablas = array_column(Schema::getTables(), 'name');
         $conteos = fn (): array => array_combine($tablas, array_map(fn (string $tabla) => DB::table($tabla)->count(), $tablas));
@@ -69,6 +71,7 @@ class A5ContratoEstrictoTest extends TestCase
     public function test_un_reintento_confirmado_en_a4_oculta_los_numeros_sin_repetir_la_venta(): void
     {
         $this->prepararNegocio(['ventas.crear']);
+        $this->seleccionarTerminalDeCaja();
         $this->actingAs($this->usuario);
         $llave = (string) Str::ulid();
         $cabecera = ['Idempotency-Key' => $llave];
@@ -88,6 +91,7 @@ class A5ContratoEstrictoTest extends TestCase
     public function test_el_reintento_de_una_nota_de_a4_publica_el_folio_de_la_devolucion(): void
     {
         $this->prepararNegocio(['devoluciones.crear']);
+        $this->seleccionarTerminalDeCaja();
         $this->actingAs($this->usuario);
         $venta = $this->crearVenta();
         $llave = (string) Str::ulid();
@@ -116,6 +120,7 @@ class A5ContratoEstrictoTest extends TestCase
     public function test_los_umbrales_por_tenant_tienen_valores_de_lectura_y_se_pueden_editar(): void
     {
         $this->prepararNegocio(['configuracion.editar']);
+        $this->seleccionarTerminalDeCaja();
         $this->actingAs($this->usuario);
         $this->assertDatabaseHas('configuracion_tenant', [
             'tenant_id' => $this->tenant->id,
@@ -156,6 +161,7 @@ class A5ContratoEstrictoTest extends TestCase
     public function test_el_uso_de_nota_publica_el_folio_guardado_de_su_venta(): void
     {
         $this->prepararNegocio(['notas_credito.ver']);
+        $this->seleccionarTerminalDeCaja();
         $this->actingAs($this->usuario);
         $venta = $this->crearVenta();
         $venta->update(['folio' => 'V-1-70']);
@@ -171,6 +177,7 @@ class A5ContratoEstrictoTest extends TestCase
     public function test_una_anulacion_sin_token_requiere_supervisor_con_una_llave_valida(): void
     {
         $this->prepararNegocio(['ventas.anular']);
+        $this->seleccionarTerminalDeCaja();
         $this->actingAs($this->usuario);
         $venta = $this->crearVenta();
 

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\Tpv\Services;
 
 use App\Modules\Nucleo\Models\Sucursal;
+use App\Modules\Nucleo\Models\Terminal;
 use App\Modules\Nucleo\Scopes\TenantScopeViaRelacion;
 use App\Modules\Nucleo\Support\Dinero;
 use App\Modules\Tpv\Exceptions\CajaYaAbiertaException;
@@ -15,31 +16,35 @@ use App\Modules\Tpv\Models\CajaSesion;
 use App\Modules\Tpv\Models\CajaSesionSaldo;
 use App\Modules\Tpv\Models\Venta;
 use App\Modules\Tpv\Models\VentaPago;
+use DateTimeInterface;
 use Illuminate\Support\Facades\DB;
 
 class CajaService
 {
     public function __construct(private readonly LibroCaja $libroCaja) {}
 
-    public function abrirCajaConSucursal(Sucursal $sucursal, int $usuarioId, float $montoApertura): CajaSesion
+    public function abrirCajaConSucursal(Sucursal $sucursal, int $usuarioId, float $montoApertura, Terminal $terminal, string $fechaOperativa, DateTimeInterface $fechaApertura, ?int $supervisorAperturaId = null): CajaSesion
     {
         $this->exigirTransaccion();
         $yaAbierta = CajaSesion::sinTenant()
-            ->where('sucursal_id', $sucursal->id)
+            ->where('terminal_id', $terminal->id)
             ->where('estado', 'abierta')
             ->exists();
 
         if ($yaAbierta) {
-            throw new CajaYaAbiertaException($sucursal->id);
+            throw new CajaYaAbiertaException($sucursal->id, $terminal->id);
         }
 
         $caja = CajaSesion::query()->withoutGlobalScope(TenantScopeViaRelacion::class)->create([
             'sucursal_id' => $sucursal->id,
+            'terminal_id' => $terminal->id,
+            'supervisor_apertura_id' => $supervisorAperturaId,
             'usuario_id' => $usuarioId,
             'monto_apertura' => $montoApertura,
             'saldo_teorico' => $montoApertura,
             'estado' => 'abierta',
-            'fecha_apertura' => now(),
+            'fecha_apertura' => $fechaApertura,
+            'fecha_operativa' => $fechaOperativa,
         ]);
         // DAT-05: el primer renglón del libro de caja es la apertura.
         $this->libroCaja->saldoInicial($caja, $usuarioId);

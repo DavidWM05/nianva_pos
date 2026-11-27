@@ -22,7 +22,9 @@ export class TerminalDeSesionComponent {
   private readonly toast = inject(ToastService);
 
   protected readonly actual = computed(() => this.sesionActual.sesion()?.terminal ?? null);
-  protected readonly puedeElegir = computed(() => this.sesionActual.sesion()?.permisos.includes('terminales.administrar') ?? false);
+  private readonly puedeAdministrar = computed(() => this.sesionActual.visible('terminales.administrar'));
+  protected readonly puedeElegir = computed(() => this.sesionActual.sesion() !== null
+    && (this.puedeAdministrar() || this.sesionActual.visible('caja.ver')));
   protected readonly sucursal = computed(() => this.puedeElegir() ? this.sesionActual.sesion()?.sucursal?.id ?? null : null);
   protected readonly terminales = signal<Terminal[]>([]);
   protected readonly terminalId = new FormControl<number | null>(null);
@@ -43,7 +45,9 @@ export class TerminalDeSesionComponent {
         return;
       }
       this.cargando.set(true);
-      const consulta = this.injector.get(TerminalListadoService).listarDeSucursal(sucursal).pipe(finalize(() => this.cargando.set(false))).subscribe({
+      const listado = this.injector.get(TerminalListadoService);
+      const terminales = this.puedeAdministrar() ? listado.listarDeSucursal(sucursal) : listado.listarDeSesion();
+      const consulta = terminales.pipe(finalize(() => this.cargando.set(false))).subscribe({
         next: (terminales) => this.terminales.set(terminales),
         error: (error: unknown) => this.fallo.set(mensajeError(error, 'No se pudieron cargar las terminales.')),
       });

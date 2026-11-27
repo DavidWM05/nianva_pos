@@ -23,14 +23,14 @@ class CuadreCajaConcurrenteTest extends TestCase
         $this->assertSame('mysql', DB::connection()->getDriverName());
         $d = $this->negocio04b(cajaAbierta: false);
         $d['metodo']->update(['tipo' => 'efectivo']);
-        $caja = app(AbrirCaja::class)->ejecutar(new AbrirCajaDto(50), $d['usuario']);
+        $caja = app(AbrirCaja::class)->ejecutar(new AbrirCajaDto(50), $d['usuario'], $d['terminal']);
         config(['database.connections.cuadre_bloqueador' => config('database.connections.'.DB::getDefaultConnection())]);
         $bloqueador = DB::connection('cuadre_bloqueador');
         $hijos = [];
         try {
             $bloqueador->beginTransaction();
             $bloqueador->table('caja_sesiones')->where('id', $caja->id)->lockForUpdate()->first();
-            $datos = ['tenant' => $d['tenant']->id, 'usuario' => $d['usuario']->id, 'cliente' => $d['cliente']->id, 'metodo' => $d['metodo']->id, 'variante' => $d['variante']->id];
+            $datos = ['tenant' => $d['tenant']->id, 'usuario' => $d['usuario']->id, 'cliente' => $d['cliente']->id, 'metodo' => $d['metodo']->id, 'variante' => $d['variante']->id, 'terminal' => $d['terminal']->id];
             for ($i = 0; $i < 2; $i++) {
                 $hijos[] = ProcesosConcurrentes::iniciar('venta', $datos);
             }

@@ -9,8 +9,10 @@ use App\Aplicacion\Sesion\TerminalDeSesion;
 use App\Http\Controllers\Controller;
 use App\Modules\Nucleo\Http\Requests\ElegirTerminalRequest;
 use App\Modules\Nucleo\Http\Resources\SesionResource;
+use App\Modules\Nucleo\Http\Resources\TerminalResource;
 use App\Modules\Nucleo\Models\Usuario;
 use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
@@ -26,6 +28,14 @@ class SesionController extends Controller
         $usuario = $request->user();
 
         return new SesionResource($obtenerSesion->ejecutar($usuario, $request->hasSession() ? $request->session() : null));
+    }
+
+    public function terminales(Request $request, TerminalDeSesion $terminales): AnonymousResourceCollection
+    {
+        $usuario = $request->user();
+        abort_unless($usuario instanceof Usuario, 401);
+
+        return TerminalResource::collection($terminales->disponibles($usuario));
     }
 
     public function elegirTerminal(ElegirTerminalRequest $request, TerminalDeSesion $terminal): Response
