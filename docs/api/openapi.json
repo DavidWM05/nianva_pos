@@ -19116,6 +19116,32 @@
                         ],
                         "format": "date-time"
                     },
+                    "ultimo_contacto": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "format": "date-time"
+                    },
+                    "soporte_hasta": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "modo_operativo": {
+                        "type": "string",
+                        "enum": [
+                            "operativa",
+                            "solo_lectura"
+                        ]
+                    },
+                    "motivo": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
                     "dias_desde_ultima_validacion": {
                         "type": [
                             "integer",
@@ -19123,8 +19149,7 @@
                         ]
                     },
                     "en_periodo_gracia": {
-                        "type": "boolean",
-                        "description": "Heuristica, no un campo propio: no hay un timestamp separado\nde \"ultimo intento\" vs \"ultima validacion exitosa\" en\nlicencia_local, asi que esto solo puede inferirse comparando\nultima_validacion contra el intervalo de revalidacion\nesperado (>=1 dia sin contacto exitoso, con el estado\ntodavia \"en funcionamiento\")."
+                        "type": "boolean"
                     }
                 },
                 "required": [
@@ -19132,6 +19157,10 @@
                     "tipo",
                     "fecha_expiracion",
                     "ultima_validacion",
+                    "ultimo_contacto",
+                    "soporte_hasta",
+                    "modo_operativo",
+                    "motivo",
                     "dias_desde_ultima_validacion",
                     "en_periodo_gracia"
                 ],

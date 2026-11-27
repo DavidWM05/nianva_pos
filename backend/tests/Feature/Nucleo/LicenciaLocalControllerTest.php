@@ -7,11 +7,12 @@ use App\Modules\Nucleo\Models\Sucursal;
 use App\Modules\Nucleo\Models\Tenant;
 use App\Modules\Nucleo\Models\Usuario;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\Support\FirmaLicenciaPos;
 use Tests\TestCase;
 
 class LicenciaLocalControllerTest extends TestCase
 {
-    use RefreshDatabase;
+    use FirmaLicenciaPos, RefreshDatabase;
 
     private function crearUsuario(): array
     {
@@ -27,6 +28,7 @@ class LicenciaLocalControllerTest extends TestCase
 
     public function test_expone_el_estado_de_la_licencia_del_tenant_del_usuario_autenticado(): void
     {
+        $this->prepararFirmaLicencia();
         ['tenant' => $tenant, 'usuario' => $usuario] = $this->crearUsuario();
         LicenciaLocal::create([
             'tenant_id' => $tenant->id,
@@ -49,13 +51,14 @@ class LicenciaLocalControllerTest extends TestCase
 
     public function test_marca_en_periodo_de_gracia_cuando_la_ultima_validacion_tiene_mas_de_un_dia(): void
     {
+        $this->prepararFirmaLicencia();
         ['tenant' => $tenant, 'usuario' => $usuario] = $this->crearUsuario();
         LicenciaLocal::create([
             'tenant_id' => $tenant->id,
-            'tipo' => 'saas',
+            'tipo' => 'anual',
             'fecha_inicio' => now()->subMonth()->toDateString(),
             'estado' => 'activa',
-            'token_firmado' => 'jwt',
+            'token_firmado' => $this->tokenPos(['tipo' => 'anual', 'fecha_expiracion' => now()->addMonth()->toDateString()]),
             'ultima_validacion' => now()->subDays(3),
         ]);
 

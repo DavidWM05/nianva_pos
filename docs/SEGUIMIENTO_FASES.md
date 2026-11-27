@@ -167,9 +167,11 @@ Incluye los ajustes anotados al cerrar la Fase 2 («Agua 1L ()», menú lateral 
 | DAT-06 / SEG-12 | Caja por terminal y consolidado de sucursal | Hecho | `backend/tests/Feature/Caja/MulticajaTest.php` y `frontend/apps/pos-e2e/src/modulos/multicaja.spec.ts`. Cubren fecha operativa, apertura tardía y cierre remoto con PIN, auditoría y total del original y sus complementarios. Chromium con backend real, en claro y oscuro a 1280 y 390 px. | M |
 | ARQ-06 | Features y límites por plan | En curso | S1 agrega catálogo instalado, concesión por tenant, middleware de features, preferencias de módulos y cuotas transaccionales. Contrato para L1 en `docs/estandares/features_planes.md`. La fuente firmada corresponde a S2. | S1 |
 | API-09 | Perfil y límites del plan en la sesión | En curso | S1 publica plan, features y consumo por recurso en `GET /sesion`. `perfil_giro` conserva su entrega posterior. | S1 |
-| SEG-09 | Licencia | Pendiente | — | — |
+| SEG-09 | Licencia | En curso | S2 verifica RS256 e identidad, conserva la concesión firmada y aplica gracia y solo lectura. La llave pública oficial y el ID de producto corresponden al responsable antes de entregar a un cliente. | S2 |
 
 ## Fase 8: respaldos
+
+El respaldo de datos excluye el archivo de identidad de instalación de S2. Fase 8 configura su ubicación persistente y deja deshabilitada la concesión local de desarrollo en instalaciones comerciales.
 
 | Regla | Qué pide | Estado | Dónde se verifica | Encargo |
 |---|---|---|---|---|

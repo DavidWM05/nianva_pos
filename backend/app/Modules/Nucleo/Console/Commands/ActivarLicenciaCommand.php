@@ -16,7 +16,7 @@ use Illuminate\Console\Command;
  */
 class ActivarLicenciaCommand extends Command
 {
-    protected $signature = 'licencia:activar {tenant_id : ID del tenant a activar}';
+    protected $signature = 'licencia:activar {tenant_id : ID del tenant a activar} {--codigo= : Código de activación del emisor}';
 
     protected $description = 'Activa (o reactiva) la licencia de un tenant contra el servidor central de licencias.';
 
@@ -31,7 +31,8 @@ class ActivarLicenciaCommand extends Command
         }
 
         try {
-            $licencia = $licenciaClienteService->activar($tenant);
+            $codigo = $this->option('codigo') ?? $this->secret('Código de activación');
+            $licencia = $licenciaClienteService->activar($tenant, (string) $codigo);
         } catch (LicenciaActivacionFallidaException $e) {
             $this->error("No se pudo activar la licencia del tenant {$tenant->id}: {$e->getMessage()}");
 

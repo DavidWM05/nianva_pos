@@ -3,241 +3,188 @@
 namespace App\Modules\Nucleo\Services;
 
 use App\Modules\Nucleo\Exceptions\LicenciaActivacionFallidaException;
-use App\Modules\Nucleo\Models\InstalacionNucleo;
 use App\Modules\Nucleo\Models\LicenciaLocal;
 use App\Modules\Nucleo\Models\Tenant;
 use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Http\Client\Response;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Log;
+use Psr\Clock\ClockInterface;
 
 /**
- * Unico punto de contacto con el servidor central de licencias (proyecto
- * aparte, repo Servidor_Licencias). Contrato verificado directamente contra
- * su codigo real -- LicenciaValidacionController::validar() +
- * LicenciaValidacionService::respuesta() -- no contra memoria de "como
- * deberia ser":
+ * Envía POST /api/validar-licencia con producto_slug, codigo_activacion,
+ * identificador_instancia y token_actual (nulo si no hay un JWT local válido).
+ * El emisor responde activa con un JWT, o vencida, revocada e instancia_distinta
+ * sin token. Un 404 indica que el código no corresponde a una licencia del producto.
  *
- * Request (POST {servidor_url}/api/validar-licencia): producto_slug
- * (string), tenant_id_producto (int), identificador_instancia (string),
- * token_actual (string, nullable -- OJO: no "token_firmado", ese es el
- * nombre de la columna LOCAL en licencia_local, distinto del campo que
- * viaja por HTTP).
- *
- * Response 200: {producto_slug, tenant_id_producto, tipo, estado, token,
- * fecha_expiracion}. `token` (no "token_firmado") es siempre null para
- * tipo=saas (ese tipo se valida por consulta directa a BD, nunca firma
- * JWT) y un JWT para pago_unico/anual/demo. No incluye `plan_id` -- el
- * servidor central no lo expone en esta respuesta.
- *
- * Response 404: producto_slug+tenant_id_producto no tiene ninguna licencia
- * registrada -- DISTINTO de "revocada" (esa se responde 200 con estado
- * explicito). 404 nunca es "temporalmente inalcanzable", es "esta
- * instalacion nunca fue activada aqui".
- *
- * Response 422: instalacion_unica del plan violada (otra instancia ya
- * activa) -- errors.identificador_instancia.
- *
- * Dos entradas a esta clase, con manejo de fallo deliberadamente distinto:
- *
- * - activar(): primera activacion de un tenant (o reactivacion manual). No
- *   hay un estado previo del cual caer hacia atras, asi que cualquier fallo
- *   (red o rechazo explicito del servidor) es un error duro -- ver
- *   LicenciaActivacionFallidaException.
- * - revalidar(): para un tenant que YA tiene licencia_local. Si el servidor
- *   no responde (red caida/timeout), NO marca la licencia como invalida de
- *   inmediato -- aplica el periodo de gracia configurable
- *   (licencias.periodo_gracia_dias) contado desde ultima_validacion. Si el
- *   servidor SI responde (aunque sea con estado=revocada/vencida), eso se
- *   refleja de inmediato, sin gracia -- la gracia es solo para "no sabemos
- *   que esta pasando", nunca para contradecir una respuesta real del
- *   servidor.
+ * activar() exige una respuesta activa y un JWT válido. Cualquier fallo devuelve
+ * un error y conserva la licencia local anterior.
+ * revalidar() conserva la última confirmación si no hay contacto o la respuesta
+ * no confirma vigencia. En anual y demo, la gracia se mide desde esa confirmación
+ * o el vencimiento, lo que ocurra primero. Un vencimiento explícito se registra
+ * y respeta ese plazo. Revocada e instancia_distinta bloquean de inmediato.
+ * Un JWT inválido en una respuesta activa se rechaza por integridad.
+ * Una perpetua nunca vence por falta de contacto.
  */
 class LicenciaClienteService
 {
-    private const ESTADOS_VALIDOS = ['activa', 'vencida', 'revocada', 'prueba'];
+    public function __construct(
+        private readonly IdentidadLicencia $identidad,
+        private readonly TokenLicenciaPos $tokens,
+        private readonly EstadoLicenciaPos $estado,
+        private readonly ClockInterface $reloj,
+    ) {}
 
-    public function activar(Tenant $tenant): LicenciaLocal
+    public function activar(Tenant $tenant, string $codigo): LicenciaLocal
     {
-        $licenciaLocal = LicenciaLocal::query()->where('tenant_id', $tenant->id)->first();
-
-        $respuesta = $this->llamarServidor($tenant, $licenciaLocal);
-
-        if ($respuesta === null) {
-            throw new LicenciaActivacionFallidaException(
-                'No se pudo contactar al servidor de licencias. Verifica LICENCIAS_SERVIDOR_URL y la conexion de red.',
-            );
+        $codigo = trim($codigo);
+        if ($codigo === '' || strlen($codigo) > 40) {
+            throw new LicenciaActivacionFallidaException('Ingresa un código de activación válido.');
         }
 
-        if ($respuesta->status() === 404) {
-            throw new LicenciaActivacionFallidaException(
-                'El servidor de licencias no tiene ninguna licencia registrada para este producto_slug + tenant_id_producto.',
-            );
-        }
+        return $this->conBloqueo($tenant->id, function () use ($tenant, $codigo): LicenciaLocal {
+            $licencia = $this->estado->licencia($tenant->id) ?? new LicenciaLocal(['tenant_id' => $tenant->id]);
+            $instancia = $this->identidad->identificador();
+            $momento = $this->reloj->now();
+            $token = $licencia->getAttribute('codigo_activacion') === $codigo && $this->estado->verificar($licencia) !== null
+                ? $licencia->getAttribute('token_firmado') : null;
+            $respuesta = $this->contactar($codigo, $instancia, $token);
+            if ($respuesta === null) {
+                throw new LicenciaActivacionFallidaException('No se pudo contactar al servidor de licencias.');
+            }
 
-        $datos = $this->parsearRespuesta($respuesta);
+            if ($respuesta->status() === 404) {
+                throw new LicenciaActivacionFallidaException('El servidor no tiene ninguna licencia registrada para ese producto y código de activación.');
+            }
 
-        if ($datos === null) {
-            throw new LicenciaActivacionFallidaException(
-                'El servidor de licencias respondio, pero con un cuerpo invalido o un estado no reconocido.',
-            );
-        }
+            $firmado = $this->tokenDeRespuesta($respuesta, $instancia);
+            if ($firmado === null) {
+                throw new LicenciaActivacionFallidaException(match ($respuesta->json('estado')) {
+                    'instancia_distinta' => 'La licencia está vinculada a otra instalación.',
+                    'revocada' => 'El emisor revocó la licencia.',
+                    'vencida' => 'El emisor confirmó que la licencia venció.',
+                    default => 'El emisor no devolvió un token POS válido para esta instalación.',
+                });
+            }
 
-        if ($licenciaLocal === null) {
-            $licenciaLocal = new LicenciaLocal(['tenant_id' => $tenant->id]);
-        }
+            $licencia->setAttribute('codigo_activacion', $codigo);
+            $licencia->setAttribute('ultimo_contacto', $momento);
+            $this->confirmar($licencia, $firmado, $momento);
 
-        $this->aplicarDatos($licenciaLocal, $datos);
-
-        return $licenciaLocal;
+            return $licencia;
+        });
     }
 
-    /**
-     * @param  LicenciaLocal  $licenciaLocal  Debe existir ya -- ver el
-     *                                        docblock de la clase.
-     */
-    public function revalidar(LicenciaLocal $licenciaLocal): LicenciaLocal
+    public function revalidar(LicenciaLocal $licencia): LicenciaLocal
     {
-        $tenant = $licenciaLocal->tenant ?? Tenant::query()->find($licenciaLocal->tenant_id);
+        return $this->conBloqueo((int) $licencia->getAttribute('tenant_id'), function () use ($licencia): LicenciaLocal {
+            $actual = $this->estado->licencia((int) $licencia->getAttribute('tenant_id')) ?? $licencia;
+            $codigo = $actual->getAttribute('codigo_activacion');
+            if ($codigo === null) {
+                return $actual;
+            }
 
-        $respuesta = $tenant !== null ? $this->llamarServidor($tenant, $licenciaLocal) : null;
-        $datos = $respuesta !== null ? $this->parsearRespuesta($respuesta) : null;
+            $instancia = $this->identidad->identificador();
+            $momento = $this->reloj->now();
+            $actual->setAttribute('ultimo_contacto', $momento);
+            $anterior = $this->estado->verificar($actual);
+            $respuesta = $this->contactar($codigo, $instancia, $anterior === null ? null : $actual->getAttribute('token_firmado'));
 
-        if ($datos !== null) {
-            $this->aplicarDatos($licenciaLocal, $datos);
+            if ($respuesta?->ok() && $respuesta->json('producto_slug', 'nianva-pos') === 'nianva-pos') {
+                switch ($respuesta->json('estado')) {
+                    case 'revocada':
+                        $actual->setAttribute('estado', 'revocada');
+                        $actual->setAttribute('ultima_validacion', $momento);
+                        break;
+                    case 'instancia_distinta':
+                        $actual->setAttribute('rechazo_remoto', 'instancia_distinta');
+                        break;
+                    case 'vencida':
+                        if ($anterior !== null && $anterior['tipo'] !== 'pago_unico') {
+                            $actual->setAttribute('estado', 'vencida');
+                        }
+                        break;
+                    case 'activa':
+                        $token = $this->tokenDeRespuesta($respuesta, $instancia);
+                        if ($token === null) {
+                            $actual->setAttribute('rechazo_remoto', 'token_invalido');
+                            break;
+                        }
+                        $this->confirmar($actual, $token, $momento);
 
-            return $licenciaLocal;
-        }
+                        return $actual;
+                }
+            }
 
-        $this->aplicarPeriodoDeGracia($licenciaLocal);
+            if ($anterior !== null && $anterior['tipo'] !== 'pago_unico'
+                && $actual->getAttribute('estado') !== 'revocada'
+                && $this->estado->agotada($actual, $anterior['fecha_expiracion'])) {
+                $actual->setAttribute('estado', 'vencida');
+            }
+            $actual->save();
 
-        return $licenciaLocal;
+            return $actual;
+        });
     }
 
-    private function llamarServidor(Tenant $tenant, ?LicenciaLocal $licenciaLocal): ?Response
+    /** @param \Closure(): LicenciaLocal $operacion */
+    private function conBloqueo(int $tenantId, \Closure $operacion): LicenciaLocal
     {
-        $servidorUrl = config('licencias.servidor_url');
+        $timeout = (int) config('licencias.timeout_segundos', 10);
 
-        if (empty($servidorUrl)) {
-            Log::warning('LicenciaClienteService: LICENCIAS_SERVIDOR_URL no esta configurado.');
+        return Cache::lock('licencia-pos:'.$tenantId, max(30, $timeout + 15))->block(5, $operacion);
+    }
 
+    private function contactar(string $codigo, string $instancia, ?string $token): ?Response
+    {
+        $url = config('licencias.servidor_url');
+        if (! is_string($url) || $url === '') {
             return null;
         }
-
-        $payload = [
-            'producto_slug' => config('licencias.producto_slug'),
-            'tenant_id_producto' => $tenant->id,
-            'identificador_instancia' => InstalacionNucleo::identificador(),
-            // El servidor espera "token_actual" -- ver el docblock de la
-            // clase. licencia_local.token_firmado es solo el nombre de la
-            // columna local.
-            'token_actual' => $licenciaLocal?->token_firmado,
-        ];
 
         try {
-            return Http::timeout((int) config('licencias.timeout_segundos', 10))
-                ->post(rtrim($servidorUrl, '/').'/api/validar-licencia', $payload);
-        } catch (ConnectionException $e) {
-            Log::warning('LicenciaClienteService: no se pudo contactar al servidor de licencias.', [
-                'tenant_id' => $tenant->id,
-                'error' => $e->getMessage(),
-            ]);
-
+            return Http::acceptJson()->withoutRedirecting()
+                ->timeout((int) config('licencias.timeout_segundos', 10))
+                ->post(rtrim($url, '/').'/api/validar-licencia', [
+                    'producto_slug' => 'nianva-pos',
+                    'codigo_activacion' => $codigo,
+                    'identificador_instancia' => $instancia,
+                    'token_actual' => $token,
+                ]);
+        } catch (ConnectionException) {
             return null;
         }
     }
 
-    /**
-     * Solo se considera una respuesta "autoritativa" (nunca gracia, aplica
-     * de inmediato) cuando el servidor devolvio 200 con un `estado`
-     * reconocido. Cualquier otra cosa -- 404 (no registrada), 422
-     * (instalacion_unica violada), 429 (rate limit), 5xx, cuerpo sin
-     * `estado`, o un valor de `estado` fuera del enum de licencia_local --
-     * se trata igual que "no hubo contacto exitoso", nunca como un rechazo
-     * implicito. El 404 SI se distingue aparte en activar() (ver arriba)
-     * para dar un mensaje mas claro que "no se pudo contactar".
-     *
-     * @return array{estado: string, tipo: ?string, token: ?string, fecha_expiracion: ?string}|null
-     */
-    private function parsearRespuesta(Response $respuesta): ?array
+    /** @return array{token: string, tipo: string, fecha_expiracion: ?string, soporte_hasta: ?string}|null */
+    private function tokenDeRespuesta(Response $respuesta, string $instancia): ?array
     {
-        if ($respuesta->failed()) {
+        $token = $respuesta->json('token');
+        if (! $respuesta->ok() || $respuesta->json('estado') !== 'activa'
+            || $respuesta->json('producto_slug', 'nianva-pos') !== 'nianva-pos' || ! is_string($token)) {
             return null;
         }
 
-        $cuerpo = $respuesta->json();
-        $estado = $cuerpo['estado'] ?? null;
-
-        if (! is_string($estado) || ! in_array($estado, self::ESTADOS_VALIDOS, true)) {
+        $datos = $this->tokens->verificar($token, $instancia);
+        if ($datos === null || $respuesta->json('tipo', $datos['tipo']) !== $datos['tipo']) {
             return null;
         }
 
-        return [
-            'estado' => $estado,
-            'tipo' => $cuerpo['tipo'] ?? null,
-            // Nombre del campo en la respuesta del servidor: "token", no
-            // "token_firmado" -- ver el docblock de la clase.
-            'token' => $cuerpo['token'] ?? null,
-            'fecha_expiracion' => $cuerpo['fecha_expiracion'] ?? null,
-        ];
+        return ['token' => $token, 'tipo' => $datos['tipo'], 'fecha_expiracion' => $datos['fecha_expiracion'], 'soporte_hasta' => $datos['soporte_hasta']];
     }
 
-    /**
-     * @param  array{estado: string, tipo: ?string, token: ?string, fecha_expiracion: ?string}  $datos
-     */
-    private function aplicarDatos(LicenciaLocal $licenciaLocal, array $datos): void
+    /** @param array{token: string, tipo: string, fecha_expiracion: ?string, soporte_hasta: ?string} $datos */
+    private function confirmar(LicenciaLocal $licencia, array $datos, \DateTimeImmutable $momento): void
     {
-        $licenciaLocal->estado = $datos['estado'];
-        $licenciaLocal->ultima_validacion = now();
-
-        // token viene null siempre para tipo=saas (se valida por consulta
-        // directa, el servidor central nunca firma JWT para ese tipo) --
-        // no se sobreescribe token_firmado local con null en ese caso.
-        if ($datos['token'] !== null) {
-            $licenciaLocal->token_firmado = $datos['token'];
-        }
-
-        if ($datos['tipo'] !== null) {
-            $licenciaLocal->tipo = $datos['tipo'];
-        }
-
-        if ($datos['fecha_expiracion'] !== null) {
-            $licenciaLocal->fecha_expiracion = $datos['fecha_expiracion'];
-        }
-
-        if ($licenciaLocal->fecha_inicio === null) {
-            $licenciaLocal->fecha_inicio = now()->toDateString();
-        }
-
-        $licenciaLocal->save();
-    }
-
-    /**
-     * NUNCA toca ultima_validacion (es, por definicion, la fecha del ultimo
-     * contacto EXITOSO -- tocarla aqui invalidaria la cuenta del periodo de
-     * gracia) ni token_firmado (se conserva el ultimo token conocido). Solo
-     * decide si el `estado` sigue siendo el que ya tenia (dentro de la
-     * gracia) o pasa a 'vencida' (gracia agotada).
-     */
-    private function aplicarPeriodoDeGracia(LicenciaLocal $licenciaLocal): void
-    {
-        // Nunca hubo un contacto exitoso -- no hay "ultimo estado
-        // conocido" del cual sostenerse. No se agrega logica especial
-        // aqui: si esto ocurre es porque el registro se creo por fuera
-        // de activar() (fuera de flujo normal), lo dejamos como esta.
-        if ($licenciaLocal->ultima_validacion === null) {
-            return;
-        }
-
-        $diasSinContacto = (int) $licenciaLocal->ultima_validacion->diffInDays(now());
-        $periodoGraciaDias = (int) config('licencias.periodo_gracia_dias', 7);
-
-        if ($diasSinContacto > $periodoGraciaDias) {
-            $licenciaLocal->estado = 'vencida';
-            $licenciaLocal->save();
-        }
-
-        // Dentro del periodo de gracia: no se toca nada, el estado actual
-        // (activa/prueba/etc.) se mantiene tal cual.
+        $licencia->forceFill([
+            'estado' => 'activa',
+            'rechazo_remoto' => null,
+            'tipo' => $datos['tipo'],
+            'token_firmado' => $datos['token'],
+            'fecha_expiracion' => $datos['fecha_expiracion'],
+            'soporte_hasta' => $datos['soporte_hasta'],
+            'ultima_validacion' => $momento,
+            'fecha_inicio' => $licencia->getAttribute('fecha_inicio') ?? $momento->format('Y-m-d'),
+        ])->save();
     }
 }

@@ -1,40 +1,23 @@
 <?php
 
+// El emisor de licencias vive en otro repositorio. Este cliente usa el slug fijo nianva-pos.
 return [
-    /*
-    |--------------------------------------------------------------------------
-    | Cliente del servidor central de licencias
-    |--------------------------------------------------------------------------
-    |
-    | El servidor de licencias es un proyecto aparte (no vive en este repo).
-    | Este archivo solo configura CÓMO esta instalación de Núcleo le habla.
-    | producto_slug/servidor_url nunca se hardcodean -- cada instalación de
-    | cada producto vertical (POS Ropa, Angara Dental, etc.) trae su propio
-    | .env con su propio slug y, potencialmente, su propio servidor.
-    */
-
-    'producto_slug' => env('LICENCIAS_PRODUCTO_SLUG'),
-
+    // URL base del emisor que valida los códigos del POS.
     'servidor_url' => env('LICENCIAS_SERVIDOR_URL'),
-
-    /*
-    | Segundos de espera antes de dar por caída la conexión al servidor de
-    | licencias -- ver LicenciaClienteService::llamarServidor().
-    */
+    // Tiempo máximo de espera por solicitud al emisor.
     'timeout_segundos' => (int) env('LICENCIAS_TIMEOUT_SEGUNDOS', 10),
-
-    /*
-    | Días desde la última validación EXITOSA durante los cuales el sistema
-    | sigue funcionando con el último estado conocido si el servidor no
-    | responde -- ver LicenciaClienteService::revalidar(). Nunca aplica si el
-    | servidor SÍ respondió (aunque la respuesta sea "revocada"/"vencida":
-    | eso se refleja de inmediato, sin gracia).
-    */
-    'periodo_gracia_dias' => (int) env('LICENCIAS_PERIODO_GRACIA_DIAS', 7),
-
-    /*
-    | Expresión cron para el job programado de revalidación (ver
-    | routes/console.php). Default: todos los días a las 3:00 AM.
-    */
+    // Cron del comando programado en routes/console.php. Por defecto, a las 03:00 diariamente.
     'revalidacion_cron' => env('LICENCIAS_REVALIDACION_CRON', '0 3 * * *'),
+    // Habilita la concesión local para desarrollo y e2e cuando falta una licencia.
+    'permitir_concesion_local' => (bool) env('LICENCIAS_PERMITIR_CONCESION_LOCAL', false),
+    // Archivo privado con el UUID persistente de esta instalación.
+    'archivo_instancia' => env('LICENCIAS_ARCHIVO_INSTANCIA', storage_path('app/private/identidad-licencia')),
+    // El responsable fija aquí el ID oficial de nianva-pos al darlo de alta en producción.
+    // Va en código para que el entorno no pueda cambiar qué producto acepta el verificador.
+    'producto_id' => null,
+    // PEM públicos versionados por kid para verificar y rotar la firma.
+    // Se distribuyen con el código para que el entorno no pueda sustituir la raíz de confianza.
+    'llaves' => collect(glob(resource_path('licencias/*.pem')) ?: [])
+        ->mapWithKeys(fn (string $ruta): array => [pathinfo($ruta, PATHINFO_FILENAME) => $ruta])
+        ->all(),
 ];

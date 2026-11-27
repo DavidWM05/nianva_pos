@@ -17,6 +17,7 @@ const backendRoot = path.resolve(__dirname, '../../../../../backend');
 const entorno = {
   ...process.env,
   APP_ENV: 'local',
+  LICENCIAS_PERMITIR_CONCESION_LOCAL: 'true',
   POS_ENTORNO_INSTALADO: 'propio',
   POS_CONCESION_INSTALACION: JSON.stringify(concesion),
   APP_KEY: `base64:${Buffer.alloc(32, 7).toString('base64')}`,

@@ -50,6 +50,7 @@ export const CODIGOS_ERROR = [
   'idempotencia_clave_invalida',
   'idempotencia_conflicto',
   'libro_inmutable',
+  'licencia_solo_lectura',
   'limite_plan_excedido',
   'lista_precio_no_disponible',
   'metodo_efectivo_no_existe',

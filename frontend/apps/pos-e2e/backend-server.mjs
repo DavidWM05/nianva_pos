@@ -25,6 +25,7 @@ const env = {
   SESSION_DOMAIN: '127.0.0.1',
   SESSION_SAME_SITE: 'lax',
   APP_ENV: 'local',
+  LICENCIAS_PERMITIR_CONCESION_LOCAL: 'true',
   POS_ENTORNO_INSTALADO: 'propio',
   POS_CONCESION_INSTALACION: readFileSync(new URL('./concesion-instalacion.json', import.meta.url), 'utf8'),
   APP_DEBUG: 'false',

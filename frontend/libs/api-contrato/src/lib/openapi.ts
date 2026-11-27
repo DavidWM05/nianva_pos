@@ -3713,15 +3713,13 @@ export interface components {
             fecha_expiracion: string | null;
             /** Format: date-time */
             ultima_validacion: string | null;
+            /** Format: date-time */
+            ultimo_contacto: string | null;
+            soporte_hasta: string | null;
+            /** @enum {string} */
+            modo_operativo: "operativa" | "solo_lectura";
+            motivo: string | null;
             dias_desde_ultima_validacion: number | null;
-            /**
-             * @description Heuristica, no un campo propio: no hay un timestamp separado
-             *     de "ultimo intento" vs "ultima validacion exitosa" en
-             *     licencia_local, asi que esto solo puede inferirse comparando
-             *     ultima_validacion contra el intervalo de revalidacion
-             *     esperado (>=1 dia sin contacto exitoso, con el estado
-             *     todavia "en funcionamiento").
-             */
             en_periodo_gracia: boolean;
         };
         /** ListaPrecioClienteResource */

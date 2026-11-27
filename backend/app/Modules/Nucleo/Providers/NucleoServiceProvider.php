@@ -17,13 +17,17 @@ use App\Modules\Nucleo\Http\Middleware\ResolveTenant;
 use App\Modules\Nucleo\Models\Tenant;
 use App\Modules\Nucleo\Observers\TenantObserver;
 use App\Modules\Nucleo\Services\FuenteConcesion;
-use App\Modules\Nucleo\Services\FuenteConcesionLocal;
+use App\Modules\Nucleo\Services\FuenteConcesionLicencia;
+use App\Modules\Nucleo\Services\IdentidadLicencia;
+use App\Modules\Nucleo\Services\RelojLicencia;
 use App\Modules\Nucleo\Services\TenantContext;
+use App\Modules\Nucleo\Services\TokenLicenciaPos;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Routing\Router;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
+use Psr\Clock\ClockInterface;
 
 /**
  * Punto de entrada del modulo Nucleo. Concentra todo lo que este modulo
@@ -35,7 +39,10 @@ class NucleoServiceProvider extends ServiceProvider
     public function register(): void
     {
         $this->app->singleton(TenantContext::class);
-        $this->app->bind(FuenteConcesion::class, FuenteConcesionLocal::class);
+        $this->app->singleton(IdentidadLicencia::class);
+        $this->app->scoped(TokenLicenciaPos::class);
+        $this->app->bind(FuenteConcesion::class, FuenteConcesionLicencia::class);
+        $this->app->bind(ClockInterface::class, RelojLicencia::class);
     }
 
     public function boot(Router $router): void
