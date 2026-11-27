@@ -53,6 +53,7 @@ Generado con `php artisan errores:catalogo` desde las excepciones de negocio y e
 | `idempotencia_clave_invalida` | 422 | `App\Modules\Nucleo\Exceptions\ClaveIdempotenciaInvalidaException` | Nucleo | — |
 | `idempotencia_conflicto` | 409 | `App\Modules\Nucleo\Exceptions\ConflictoIdempotenciaException` | Nucleo | — |
 | `libro_inmutable` | 409 | `App\Modules\Nucleo\Exceptions\LibroInmutableException` | Nucleo | libro, operacion |
+| `licencia_solo_lectura` | 403 | `App\Modules\Nucleo\Exceptions\LicenciaSoloLecturaException` | Nucleo | motivo |
 | `limite_plan_excedido` | 422 | `App\Modules\Nucleo\Exceptions\LimitePlanExcedidoException` | Nucleo | recurso, operacion, limite, uso |
 | `lista_precio_no_disponible` | 422 | `App\Modules\Precios\Exceptions\ListaPrecioNoDisponibleException` | Precios | lista_precio_id |
 | `metodo_efectivo_no_existe` | 422 | `App\Modules\Nucleo\Exceptions\MetodoEfectivoNoExisteException` | Nucleo | — |

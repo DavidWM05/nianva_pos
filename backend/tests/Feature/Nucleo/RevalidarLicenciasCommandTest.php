@@ -6,18 +6,19 @@ use App\Modules\Nucleo\Models\LicenciaLocal;
 use App\Modules\Nucleo\Models\Tenant;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Http;
+use Tests\Support\FirmaLicenciaPos;
 use Tests\TestCase;
 
 class RevalidarLicenciasCommandTest extends TestCase
 {
-    use RefreshDatabase;
+    use FirmaLicenciaPos, RefreshDatabase;
 
     protected function setUp(): void
     {
         parent::setUp();
+        $this->prepararFirmaLicencia();
 
         config([
-            'licencias.producto_slug' => 'nucleo-pos-ropa',
             'licencias.servidor_url' => 'https://licencias.test',
         ]);
     }
@@ -28,10 +29,11 @@ class RevalidarLicenciasCommandTest extends TestCase
 
         return LicenciaLocal::create([
             'tenant_id' => $tenant->id,
-            'tipo' => 'saas',
+            'tipo' => 'pago_unico',
+            'codigo_activacion' => 'CODIGO-POS-'.$tenant->id,
             'fecha_inicio' => now()->subMonth()->toDateString(),
             'estado' => 'activa',
-            'token_firmado' => 'jwt-anterior',
+            'token_firmado' => $this->tokenPos(),
             'ultima_validacion' => now()->subDay(),
         ]);
     }
@@ -42,7 +44,7 @@ class RevalidarLicenciasCommandTest extends TestCase
         $licenciaB = $this->crearLicencia('Tenant B');
 
         Http::fake([
-            'https://licencias.test/api/validar-licencia' => Http::response(['estado' => 'activa'], 200),
+            'https://licencias.test/api/validar-licencia' => Http::response(['estado' => 'activa', 'token' => $this->tokenPos()], 200),
         ]);
 
         $this->artisan('licencia:revalidar')->assertExitCode(0);
@@ -57,7 +59,7 @@ class RevalidarLicenciasCommandTest extends TestCase
         Tenant::create(['nombre' => 'Tenant sin licencia', 'pais' => 'MX', 'activo' => true]);
 
         Http::fake([
-            'https://licencias.test/api/validar-licencia' => Http::response(['estado' => 'activa'], 200),
+            'https://licencias.test/api/validar-licencia' => Http::response(['estado' => 'activa', 'token' => $this->tokenPos()], 200),
         ]);
 
         $this->artisan('licencia:revalidar')->assertExitCode(0);

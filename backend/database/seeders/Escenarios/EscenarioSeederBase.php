@@ -53,11 +53,12 @@ abstract class EscenarioSeederBase extends Seeder
     {
         $concesiones = config('planes.concesiones');
         $entorno = config('planes.entorno');
+        $permitirLocal = config('licencias.permitir_concesion_local');
 
         try {
             return DB::transaction(fn () => parent::__invoke($parameters));
         } finally {
-            config(['planes.concesiones' => $concesiones, 'planes.entorno' => $entorno]);
+            config(['planes.concesiones' => $concesiones, 'planes.entorno' => $entorno, 'licencias.permitir_concesion_local' => $permitirLocal]);
         }
     }
 
@@ -90,6 +91,7 @@ abstract class EscenarioSeederBase extends Seeder
         // La concesión solo cubre este tenant durante la siembra.
         config([
             'planes.entorno' => 'propio',
+            'licencias.permitir_concesion_local' => true,
             'planes.concesiones.'.$tenant->id => [
                 'plan_codigo' => 'demostracion',
                 'features' => [...Planes::BASICO, ...Planes::AVANZADO, ...Planes::PRO, ...Planes::CONGELADAS],

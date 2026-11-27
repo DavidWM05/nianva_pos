@@ -12,7 +12,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 #[Fillable([
     'tenant_id', 'tipo', 'plan_id', 'fecha_inicio', 'fecha_expiracion',
-    'estado', 'token_firmado', 'ultima_validacion',
+    'estado', 'token_firmado', 'ultima_validacion', 'codigo_activacion', 'ultimo_contacto', 'soporte_hasta', 'rechazo_remoto',
 ])]
 class LicenciaLocal extends Model
 {
@@ -23,12 +23,17 @@ class LicenciaLocal extends Model
 
     protected $table = 'licencia_local';
 
+    protected $hidden = ['codigo_activacion', 'token_firmado'];
+
     protected function casts(): array
     {
         return [
             'fecha_inicio' => 'date',
             'fecha_expiracion' => 'date',
             'ultima_validacion' => 'datetime',
+            'ultimo_contacto' => 'datetime',
+            'soporte_hasta' => 'date',
+            'codigo_activacion' => 'encrypted',
         ];
     }
 

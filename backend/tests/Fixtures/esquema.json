@@ -6133,6 +6133,12 @@
     "licencia_local": {
         "columnas": [
             {
+                "nombre": "codigo_activacion",
+                "tipo": "text",
+                "nullable": true,
+                "default": null
+            },
+            {
                 "nombre": "created_at",
                 "tipo": "datetime",
                 "nullable": false,
@@ -6169,6 +6175,18 @@
                 "default": null
             },
             {
+                "nombre": "rechazo_remoto",
+                "tipo": "varchar",
+                "nullable": true,
+                "default": null
+            },
+            {
+                "nombre": "soporte_hasta",
+                "tipo": "date",
+                "nullable": true,
+                "default": null
+            },
+            {
                 "nombre": "tenant_id",
                 "tipo": "integer",
                 "nullable": false,
@@ -6188,6 +6206,12 @@
             },
             {
                 "nombre": "ultima_validacion",
+                "tipo": "datetime",
+                "nullable": true,
+                "default": null
+            },
+            {
+                "nombre": "ultimo_contacto",
                 "tipo": "datetime",
                 "nullable": true,
                 "default": null

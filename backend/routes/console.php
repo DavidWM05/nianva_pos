@@ -15,7 +15,7 @@ Artisan::command('inspire', function () {
 // tumbaba el POS en vivo de cada cliente) se evita corriendo esto en
 // background, con el periodo de gracia de LicenciaClienteService como red
 // de seguridad si el servidor no responde.
-Schedule::command('licencia:revalidar')->cron(config('licencias.revalidacion_cron', '0 3 * * *'));
+Schedule::command('licencia:revalidar')->cron(config('licencias.revalidacion_cron', '0 3 * * *'))->withoutOverlapping();
 
 Schedule::call(static fn (): int => DB::table('solicitudes_idempotentes')->where('vence_en', '<=', now())->delete())
     ->name('idempotencia:depurar')
