@@ -23,7 +23,7 @@ class PerfilGiroController extends Controller
     public function catalogo(): AnonymousResourceCollection
     {
         return PerfilGiroResource::collection(PerfilesGiro::todos())->additional([
-            'meta' => ['actual' => ConfiguracionTenant::actual()->perfil_giro ?? PerfilesGiro::PREDETERMINADO],
+            'meta' => ['actual' => ConfiguracionTenant::actual()?->perfil_giro],
         ]);
     }
 

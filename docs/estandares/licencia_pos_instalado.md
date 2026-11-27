@@ -10,7 +10,7 @@ El responsable de producto agrega el ID de `nianva-pos` en `config/licencias.php
 
 ## Pantalla de licencia en P2
 
-`GET /api/v1/licencia-local`, `GET /api/v1/sesion` y los controles de PIN siguen accesibles en solo lectura. La activación y la revalidación se ejecutan por CLI en S2. Si P2 ofrece esa recuperación desde la pantalla, sus futuras rutas deberán quedar fuera de `licencia.operativa`. La selección de terminal por `PUT /api/v1/sesion/terminal` sigue bajo el bloqueo. P2 debe permitir llegar a la pantalla de licencia sin pasar por esa selección.
+`GET /api/v1/licencia-local`, `GET /api/v1/sesion` y los controles de PIN siguen accesibles en solo lectura. La activación y la revalidación se ejecutan por CLI en S2. Si P2 ofrece esa recuperación desde la pantalla, sus futuras rutas deberán quedar fuera de `licencia.operativa`. Desde S3, consultar y elegir terminal forman parte de la sesión en solo lectura. P2 puede abrir la pantalla de licencia aunque aún no se haya elegido terminal.
 
 ## PRO-01
 

@@ -84,17 +84,17 @@ Route::middleware('auth:sanctum')->group(function () {
     // del rol todavia no este configurado.
     Route::post('/password/change', [PasswordResetController::class, 'cambiar'])->middleware('dos-factor.reciente');
 
-    // El PIN y el bloqueo son controles de sesion disponibles tambien en solo lectura.
+    // El PIN, el bloqueo y la selección de terminal siguen disponibles en solo lectura.
     Route::middleware('two-factor.confirmed')->group(function () {
         Route::put('/sesion/pin', [PinSesionController::class, 'guardar']);
         Route::post('/sesion/bloquear', [PinSesionController::class, 'bloquear']);
         Route::post('/sesion/desbloquear', [PinSesionController::class, 'desbloquear'])->name('sesion.desbloquear');
+        Route::get('/sesion/terminales', [SesionController::class, 'terminales'])->middleware('permiso:caja.ver');
+        Route::put('/sesion/terminal', [SesionController::class, 'elegirTerminal']);
     });
 
     // Rutas de modulos reales (Inventario, TPV, etc.): las escrituras requieren licencia operativa.
     Route::middleware(['two-factor.confirmed', 'licencia.operativa'])->group(function () {
-        Route::get('/sesion/terminales', [SesionController::class, 'terminales'])->middleware('permiso:caja.ver');
-        Route::put('/sesion/terminal', [SesionController::class, 'elegirTerminal']);
         Route::get('/supervisores', [AutorizacionSupervisorController::class, 'disponibles'])->middleware('permiso:caja.ver');
         Route::post('/autorizaciones', [AutorizacionSupervisorController::class, 'store'])->middleware('permiso:caja.ver');
 

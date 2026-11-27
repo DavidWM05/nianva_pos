@@ -2824,8 +2824,8 @@
             {
                 "nombre": "perfil_giro",
                 "tipo": "varchar",
-                "nullable": false,
-                "default": "'generico'"
+                "nullable": true,
+                "default": null
             },
             {
                 "nombre": "tasa_iva_default",

@@ -37,6 +37,11 @@ class LicenciaLocal extends Model
         ];
     }
 
+    public function tieneCredencial(): bool
+    {
+        return $this->getAttribute('codigo_activacion') !== null || $this->getAttribute('token_firmado') !== null;
+    }
+
     public function tenant(): BelongsTo
     {
         return $this->belongsTo(Tenant::class);

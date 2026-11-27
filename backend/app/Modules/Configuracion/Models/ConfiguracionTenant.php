@@ -20,7 +20,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property string|null $umbral_descuadre_supervisor
  * @property string $moneda
  * @property string $zona_horaria
- * @property string $perfil_giro clave de app/Modules/Configuracion/PerfilesGiro (ARQ-07)
+ * @property string|null $perfil_giro clave de app/Modules/Configuracion/PerfilesGiro (ARQ-07)
  */
 #[Fillable([
     'tenant_id', 'moneda', 'zona_horaria', 'mensaje_ticket', 'logo_url', 'mostrar_rfc',

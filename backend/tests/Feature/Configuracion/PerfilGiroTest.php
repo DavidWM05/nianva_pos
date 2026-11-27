@@ -56,7 +56,7 @@ class PerfilGiroTest extends TestCase
             ->assertOk()
             ->assertJsonCount(4, 'data')
             ->assertJsonPath('data.0.clave', 'generico')
-            ->assertJsonPath('meta.actual', 'generico');
+            ->assertJsonPath('meta.actual', null);
     }
 
     public function test_aplicar_ropa_calzado_siembra_atributos_categorias_y_unidad(): void

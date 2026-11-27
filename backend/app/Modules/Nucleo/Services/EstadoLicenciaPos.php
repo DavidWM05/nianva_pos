@@ -31,6 +31,7 @@ final class EstadoLicenciaPos
             : null;
     }
 
+    /** @return 'revocada'|'instancia_distinta'|'token_invalido'|'gracia_agotada'|null */
     public function motivo(?LicenciaLocal $licencia): ?string
     {
         if ($licencia === null) {
@@ -42,13 +43,12 @@ final class EstadoLicenciaPos
         }
 
         if ($licencia->getAttribute('rechazo_remoto') !== null) {
-            return $licencia->getAttribute('rechazo_remoto');
+            return $licencia->getAttribute('rechazo_remoto') === 'instancia_distinta' ? 'instancia_distinta' : 'token_invalido';
         }
 
         $datos = $this->verificar($licencia);
         if ($datos === null) {
-            return $licencia->getAttribute('codigo_activacion') === null && $licencia->getAttribute('token_firmado') === null
-                ? null : 'token_invalido';
+            return $licencia->tieneCredencial() ? 'token_invalido' : null;
         }
 
         if ($datos['tipo'] === 'pago_unico') {
@@ -58,18 +58,45 @@ final class EstadoLicenciaPos
         return $this->agotada($licencia, $datos['fecha_expiracion']) ? 'gracia_agotada' : null;
     }
 
+    /** @return array{estado: 'sin_licencia'|'activa'|'prueba'|'vencida'|'revocada', modo_operativo: 'operativa'|'solo_lectura', motivo: 'revocada'|'instancia_distinta'|'token_invalido'|'gracia_agotada'|null, gracia_hasta: string|null, soporte_hasta: string|null} */
+    public function paraSesion(int $tenantId): array
+    {
+        $licencia = $this->licencia($tenantId);
+        $motivo = $this->motivo($licencia);
+        $estado = match (true) {
+            $licencia === null || ! $licencia->tieneCredencial() => 'sin_licencia',
+            $motivo === 'revocada' => 'revocada',
+            $motivo === 'gracia_agotada', $licencia->getAttribute('estado') === 'vencida' => 'vencida',
+            $licencia->getAttribute('estado') === 'prueba' => 'prueba',
+            default => 'activa',
+        };
+
+        return [
+            'estado' => $estado,
+            'modo_operativo' => $motivo === null ? 'operativa' : 'solo_lectura',
+            'motivo' => $motivo,
+            'gracia_hasta' => $licencia === null ? null : $this->graciaHasta($licencia)?->utc()->format('Y-m-d\TH:i:s\Z'),
+            'soporte_hasta' => $licencia === null ? null : ($this->verificar($licencia)['soporte_hasta'] ?? null),
+        ];
+    }
+
     public function agotada(LicenciaLocal $licencia, ?string $fecha): bool
     {
         $inicio = $this->inicioGracia($licencia, $fecha);
 
-        return $inicio === null || $this->reloj->now() >= $inicio->addDays(7);
+        return $inicio === null || $this->reloj->now() >= $this->finGracia($inicio);
     }
 
     public function enGracia(LicenciaLocal $licencia): bool
     {
+        return $this->graciaHasta($licencia) !== null;
+    }
+
+    private function graciaHasta(LicenciaLocal $licencia): ?CarbonImmutable
+    {
         $datos = $this->verificar($licencia);
         if ($datos === null || $datos['tipo'] === 'pago_unico' || $this->motivo($licencia) !== null) {
-            return false;
+            return null;
         }
 
         $inicio = $this->inicioGracia($licencia, $datos['fecha_expiracion']);
@@ -78,12 +105,17 @@ final class EstadoLicenciaPos
 
         return $inicio !== null && ($licencia->getAttribute('estado') === 'vencida'
             || ($vence !== null && $this->reloj->now() >= CarbonImmutable::parse($vence, 'UTC')->startOfDay())
-            || $this->reloj->now() >= $inicio->addDay());
+            || $this->reloj->now() >= $inicio->addDay()) ? $this->finGracia($inicio) : null;
+    }
+
+    private function finGracia(CarbonImmutable $inicio): CarbonImmutable
+    {
+        return $inicio->utc()->addDays(7);
     }
 
     private function inicioGracia(LicenciaLocal $licencia, ?string $fecha): ?CarbonImmutable
     {
-        $confirmacion = $licencia->getAttribute('ultima_validacion')?->toImmutable();
+        $confirmacion = $licencia->getAttribute('ultima_validacion')?->toImmutable()->utc();
         if ($confirmacion === null || $fecha === null) {
             return $confirmacion;
         }

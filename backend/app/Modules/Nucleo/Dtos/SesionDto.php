@@ -17,6 +17,8 @@ final readonly class SesionDto
      * @param  array{id: int, nombre: string, sucursal_id: int}|null  $terminal
      * @param  array{codigo: string, nombre: string, features: list<string>}|null  $plan
      * @param  array{terminales: array{maximo: int, uso: int}, sucursales: array{maximo: int, uso: int}}|null  $limites
+     * @param  array{estado: 'sin_licencia'|'activa'|'prueba'|'vencida'|'revocada', modo_operativo: 'operativa'|'solo_lectura', motivo: 'revocada'|'instancia_distinta'|'token_invalido'|'gracia_agotada'|null, gracia_hasta: string|null, soporte_hasta: string|null}|null  $licencia
+     * @param  array{clave: string, nombre: string}|null  $perfilGiro
      * @param  list<string>  $permisos
      * @param  list<string>  $modulosActivos
      * @param  array{locale: string, moneda: string, zona_horaria: string}  $regional
@@ -30,5 +32,7 @@ final readonly class SesionDto
         public ?array $terminal = null,
         public ?array $plan = null,
         public ?array $limites = null,
+        public ?array $licencia = null,
+        public ?array $perfilGiro = null,
     ) {}
 }

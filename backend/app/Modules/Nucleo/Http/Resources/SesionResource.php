@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\Nucleo\Http\Resources;
 
 use App\Modules\Nucleo\Dtos\SesionDto;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -27,7 +28,8 @@ class SesionResource extends JsonResource
      *     permisos: list<string>,
      *     modulos_activos: list<string>,
      *     regional: array{locale: string, moneda: string, zona_horaria: string},
-     *     perfil_giro: null
+     *     licencia: array{estado: 'sin_licencia'|'activa'|'prueba'|'vencida'|'revocada', modo_operativo: 'operativa'|'solo_lectura', motivo: 'revocada'|'instancia_distinta'|'token_invalido'|'gracia_agotada'|null, gracia_hasta: string|null, soporte_hasta: string|null}|null,
+     *     perfil_giro: array{clave: string, nombre: string}|null
      * }
      */
     public function toArray(Request $request): array
@@ -43,7 +45,13 @@ class SesionResource extends JsonResource
             'permisos' => $sesion->permisos,
             'modulos_activos' => $sesion->modulosActivos,
             'regional' => $sesion->regional,
-            'perfil_giro' => null,
+            'licencia' => $sesion->licencia,
+            'perfil_giro' => $sesion->perfilGiro,
         ];
+    }
+
+    public function withResponse(Request $request, JsonResponse $response): void
+    {
+        $response->headers->set('Cache-Control', 'no-store, private');
     }
 }

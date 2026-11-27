@@ -25,7 +25,7 @@ return new class extends Migration
             $table->boolean('backup_auto')->default(false);
             $table->enum('backup_frecuencia', ['diario', 'semanal', 'mensual'])->default('semanal');
             $table->dateTime('backup_ultimo')->nullable();
-            $table->string('perfil_giro', 40)->default('generico')->comment('ARQ-07: clave del perfil de giro');
+            $table->string('perfil_giro', 40)->nullable()->comment('ARQ-07: clave del perfil elegido por el tenant');
         });
     }
 
