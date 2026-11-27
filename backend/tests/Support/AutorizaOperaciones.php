@@ -23,6 +23,7 @@ trait AutorizaOperaciones
         array $cuerpo,
         ?string $recurso = null,
         ?int $sucursalId = null,
+        ?string $sesionHash = null,
     ): OperacionSupervisorDto {
         $token = bin2hex(random_bytes(32));
         $huella = HuellaSupervisor::de($cuerpo);
@@ -35,9 +36,10 @@ trait AutorizaOperaciones
             'accion' => $accion->value,
             'recurso' => $recurso === null ? null : strtolower($recurso),
             'huella' => $huella,
+            'sesion_hash' => $sesionHash,
             'vence_en' => now()->addMinutes(2),
         ]);
 
-        return new OperacionSupervisorDto($solicitante, $token, $huella, null);
+        return new OperacionSupervisorDto($solicitante, $token, $huella, $sesionHash);
     }
 }

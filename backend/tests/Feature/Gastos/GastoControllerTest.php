@@ -49,7 +49,8 @@ class GastoControllerTest extends TestCase
     public function test_store_registra_un_gasto_de_la_sesion_abierta(): void
     {
         ['sucursal' => $sucursal, 'usuario' => $usuario] = $this->crearUsuarioConPermisos(['caja.abrir', 'gastos.crear']);
-        app(CajaService::class)->abrirCajaConSucursal(Bloqueos04e::sucursal($sucursal->id), $usuario->id, 500);
+        $sesion = app(CajaService::class)->abrirCajaConSucursal(Bloqueos04e::sucursal($sucursal->id), $usuario->id, 500, Bloqueos04e::terminal($sucursal->id), now()->setTimezone('America/Mexico_City')->toDateString(), now());
+        $this->seleccionarTerminalParaPrueba((int) $sesion->terminal_id);
         $this->actingAs($usuario);
 
         $this->postJson('/api/v1/gastos', ['descripcion' => 'Luz', 'monto' => 80])
@@ -71,7 +72,8 @@ class GastoControllerTest extends TestCase
     public function test_store_sin_permiso_devuelve_403(): void
     {
         ['sucursal' => $sucursal, 'usuario' => $usuario] = $this->crearUsuarioConPermisos(['caja.abrir']);
-        app(CajaService::class)->abrirCajaConSucursal(Bloqueos04e::sucursal($sucursal->id), $usuario->id, 500);
+        $sesion = app(CajaService::class)->abrirCajaConSucursal(Bloqueos04e::sucursal($sucursal->id), $usuario->id, 500, Bloqueos04e::terminal($sucursal->id), now()->setTimezone('America/Mexico_City')->toDateString(), now());
+        $this->seleccionarTerminalParaPrueba((int) $sesion->terminal_id);
         $this->actingAs($usuario);
 
         $this->postJson('/api/v1/gastos', ['descripcion' => 'Luz', 'monto' => 80])->assertForbidden();
@@ -80,8 +82,9 @@ class GastoControllerTest extends TestCase
     public function test_index_lista_los_gastos_de_la_sesion_indicada(): void
     {
         ['sucursal' => $sucursal, 'usuario' => $usuario] = $this->crearUsuarioConPermisos(['caja.abrir', 'gastos.ver', 'gastos.crear']);
-        $sesion = app(CajaService::class)->abrirCajaConSucursal(Bloqueos04e::sucursal($sucursal->id), $usuario->id, 500);
+        $sesion = app(CajaService::class)->abrirCajaConSucursal(Bloqueos04e::sucursal($sucursal->id), $usuario->id, 500, Bloqueos04e::terminal($sucursal->id), now()->setTimezone('America/Mexico_City')->toDateString(), now());
         $this->actingAs($usuario);
+        $this->seleccionarTerminalParaPrueba((int) $sesion->terminal_id);
 
         $this->postJson('/api/v1/gastos', ['descripcion' => 'Luz', 'monto' => 80])->assertCreated();
         $this->postJson('/api/v1/gastos', ['descripcion' => 'Agua', 'monto' => 40])->assertCreated();
@@ -94,7 +97,7 @@ class GastoControllerTest extends TestCase
     public function test_index_sin_permiso_devuelve_403(): void
     {
         ['sucursal' => $sucursal, 'usuario' => $usuario] = $this->crearUsuarioConPermisos(['caja.abrir']);
-        $sesion = app(CajaService::class)->abrirCajaConSucursal(Bloqueos04e::sucursal($sucursal->id), $usuario->id, 500);
+        $sesion = app(CajaService::class)->abrirCajaConSucursal(Bloqueos04e::sucursal($sucursal->id), $usuario->id, 500, Bloqueos04e::terminal($sucursal->id), now()->setTimezone('America/Mexico_City')->toDateString(), now());
         $this->actingAs($usuario);
 
         $this->getJson("/api/v1/gastos?caja_sesion_id={$sesion->ulid}")->assertForbidden();

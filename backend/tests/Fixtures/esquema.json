@@ -1528,6 +1528,164 @@
             }
         ]
     },
+    "caja_consolidados": {
+        "columnas": [
+            {
+                "nombre": "diferencia",
+                "tipo": "numeric",
+                "nullable": false,
+                "default": null
+            },
+            {
+                "nombre": "fecha_cierre",
+                "tipo": "datetime",
+                "nullable": false,
+                "default": null
+            },
+            {
+                "nombre": "fecha_operativa",
+                "tipo": "date",
+                "nullable": false,
+                "default": null
+            },
+            {
+                "nombre": "fecha_original",
+                "tipo": "date",
+                "nullable": true,
+                "default": null
+            },
+            {
+                "nombre": "id",
+                "tipo": "integer",
+                "nullable": false,
+                "default": null
+            },
+            {
+                "nombre": "original_id",
+                "tipo": "integer",
+                "nullable": true,
+                "default": null
+            },
+            {
+                "nombre": "sucursal_id",
+                "tipo": "integer",
+                "nullable": false,
+                "default": null
+            },
+            {
+                "nombre": "supervisor_apertura_id",
+                "tipo": "integer",
+                "nullable": true,
+                "default": null
+            },
+            {
+                "nombre": "total_contado",
+                "tipo": "numeric",
+                "nullable": false,
+                "default": null
+            },
+            {
+                "nombre": "total_teorico",
+                "tipo": "numeric",
+                "nullable": false,
+                "default": null
+            },
+            {
+                "nombre": "ulid",
+                "tipo": "varchar",
+                "nullable": false,
+                "default": null
+            },
+            {
+                "nombre": "usuario_id",
+                "tipo": "integer",
+                "nullable": false,
+                "default": null
+            }
+        ],
+        "indices": [
+            {
+                "nombre": "caja_consolidados_sucursal_id_fecha_operativa_index",
+                "columnas": [
+                    "sucursal_id",
+                    "fecha_operativa"
+                ],
+                "unico": false
+            },
+            {
+                "nombre": "caja_consolidados_sucursal_id_fecha_original_unique",
+                "columnas": [
+                    "sucursal_id",
+                    "fecha_original"
+                ],
+                "unico": true
+            },
+            {
+                "nombre": "caja_consolidados_ulid_unique",
+                "columnas": [
+                    "ulid"
+                ],
+                "unico": true
+            },
+            {
+                "nombre": "primary",
+                "columnas": [
+                    "id"
+                ],
+                "unico": true
+            }
+        ],
+        "llaves_foraneas": [
+            {
+                "nombre": null,
+                "columnas": [
+                    "original_id"
+                ],
+                "tabla_foranea": "caja_consolidados",
+                "columnas_foraneas": [
+                    "id"
+                ],
+                "on_update": "no action",
+                "on_delete": "restrict"
+            },
+            {
+                "nombre": null,
+                "columnas": [
+                    "sucursal_id"
+                ],
+                "tabla_foranea": "sucursales",
+                "columnas_foraneas": [
+                    "id"
+                ],
+                "on_update": "no action",
+                "on_delete": "restrict"
+            },
+            {
+                "nombre": null,
+                "columnas": [
+                    "supervisor_apertura_id"
+                ],
+                "tabla_foranea": "usuarios",
+                "columnas_foraneas": [
+                    "id"
+                ],
+                "on_update": "no action",
+                "on_delete": "restrict"
+            },
+            {
+                "nombre": null,
+                "columnas": [
+                    "usuario_id"
+                ],
+                "tabla_foranea": "usuarios",
+                "columnas_foraneas": [
+                    "id"
+                ],
+                "on_update": "no action",
+                "on_delete": "restrict"
+            }
+        ]
+    },
     "caja_movimientos": {
         "columnas": [
             {
@@ -1747,6 +1905,12 @@
     "caja_sesiones": {
         "columnas": [
             {
+                "nombre": "caja_consolidado_id",
+                "tipo": "integer",
+                "nullable": true,
+                "default": null
+            },
+            {
                 "nombre": "diferencia",
                 "tipo": "numeric",
                 "nullable": true,
@@ -1768,6 +1932,12 @@
                 "nombre": "fecha_cierre",
                 "tipo": "datetime",
                 "nullable": true,
+                "default": null
+            },
+            {
+                "nombre": "fecha_operativa",
+                "tipo": "date",
+                "nullable": false,
                 "default": null
             },
             {
@@ -1807,6 +1977,24 @@
                 "default": null
             },
             {
+                "nombre": "supervisor_apertura_id",
+                "tipo": "integer",
+                "nullable": true,
+                "default": null
+            },
+            {
+                "nombre": "terminal_abierta_id",
+                "tipo": "integer",
+                "nullable": true,
+                "default": null
+            },
+            {
+                "nombre": "terminal_id",
+                "tipo": "integer",
+                "nullable": false,
+                "default": null
+            },
+            {
                 "nombre": "total_teorico",
                 "tipo": "numeric",
                 "nullable": true,
@@ -1839,10 +2027,26 @@
         ],
         "indices": [
             {
+                "nombre": "caja_sesiones_sucursal_id_fecha_operativa_estado_index",
+                "columnas": [
+                    "sucursal_id",
+                    "fecha_operativa",
+                    "estado"
+                ],
+                "unico": false
+            },
+            {
                 "nombre": "caja_sesiones_sucursal_id_folio_unique",
                 "columnas": [
                     "sucursal_id",
                     "folio"
+                ],
+                "unico": true
+            },
+            {
+                "nombre": "caja_sesiones_terminal_abierta_id_unique",
+                "columnas": [
+                    "terminal_abierta_id"
                 ],
                 "unico": true
             },
@@ -1865,9 +2069,45 @@
             {
                 "nombre": null,
                 "columnas": [
+                    "caja_consolidado_id"
+                ],
+                "tabla_foranea": "caja_consolidados",
+                "columnas_foraneas": [
+                    "id"
+                ],
+                "on_update": "no action",
+                "on_delete": "restrict"
+            },
+            {
+                "nombre": null,
+                "columnas": [
                     "sucursal_id"
                 ],
                 "tabla_foranea": "sucursales",
+                "columnas_foraneas": [
+                    "id"
+                ],
+                "on_update": "no action",
+                "on_delete": "restrict"
+            },
+            {
+                "nombre": null,
+                "columnas": [
+                    "supervisor_apertura_id"
+                ],
+                "tabla_foranea": "usuarios",
+                "columnas_foraneas": [
+                    "id"
+                ],
+                "on_update": "no action",
+                "on_delete": "restrict"
+            },
+            {
+                "nombre": null,
+                "columnas": [
+                    "terminal_id"
+                ],
+                "tabla_foranea": "terminales",
                 "columnas_foraneas": [
                     "id"
                 ],

@@ -36,6 +36,7 @@ class CantidadesFlujoTest extends TestCase
     {
         parent::setUp();
         $this->prepararNegocio(['ventas.crear', 'compras.crear', 'apartados.crear', 'apartados.abonar', 'apartados.cancelar', 'devoluciones.crear']);
+        $this->seleccionarTerminalDeCaja();
         $this->variante->update(['es_granel' => true]);
         $this->actingAs($this->usuario);
     }
@@ -78,7 +79,7 @@ class CantidadesFlujoTest extends TestCase
             'items' => [['variante_id' => $this->variante->id, 'cantidad' => 0.5]],
         ])->assertCreated()->json('data.id');
         $datosSupervisor1 = ['motivo' => 'Prueba de fracción'];
-        $this->patchJson('/api/v1/apartados/'.$id.'/cancelar', $datosSupervisor1, ['X-Autorizacion-Supervisor' => self::conSupervisor($this->usuario, AccionSupervisor::CancelarApartado, $datosSupervisor1, $id)->token])->assertOk();
+        $this->patchJson('/api/v1/apartados/'.$id.'/cancelar', $datosSupervisor1, ['X-Autorizacion-Supervisor' => self::conSupervisor($this->usuario, AccionSupervisor::CancelarApartado, $datosSupervisor1, $id, sesionHash: hash('sha256', session()->getId()))->token])->assertOk();
         $this->assertSame(50, InventarioStock::where('variante_id', $this->variante->id)->value('stock_actual'));
     }
 
@@ -89,7 +90,8 @@ class CantidadesFlujoTest extends TestCase
             'items_devueltos' => [['variante_id' => $this->variante->id, 'cantidad' => 0.5]],
             'pagos' => [['metodo_pago_id' => $this->metodoPago->id, 'monto' => 50]],
         ];
-        $this->postJson('/api/v1/devoluciones', $datosSupervisor1, ['X-Autorizacion-Supervisor' => self::conSupervisor($this->usuario, AccionSupervisor::Reembolsar, $datosSupervisor1, $venta->ulid)->token])->assertCreated()->assertJsonPath('data.items.0.cantidad', '0.500');
+        $this->seleccionarTerminalParaPrueba((int) $this->caja->getAttribute('terminal_id'));
+        $this->postJson('/api/v1/devoluciones', $datosSupervisor1, ['X-Autorizacion-Supervisor' => self::conSupervisor($this->usuario, AccionSupervisor::Reembolsar, $datosSupervisor1, $venta->ulid, sesionHash: hash('sha256', session()->getId()))->token])->assertCreated()->assertJsonPath('data.items.0.cantidad', '0.500');
         $this->assertSame(49.5, InventarioStock::where('variante_id', $this->variante->id)->value('stock_actual'));
     }
 

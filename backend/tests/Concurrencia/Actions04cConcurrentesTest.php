@@ -53,7 +53,7 @@ class Actions04cConcurrentesTest extends TestCase
     public function test_reembolsos_simultaneos_de_dos_unidades_conservan_stock_y_pagos(): void
     {
         $d = $this->negocio04b();
-        $d['venta'] = app(RegistrarVenta::class)->ejecutar(new CrearVentaDto($d['cliente']->id, [new LineaVentaDto($d['variante']->id, 2)], [new PagoDto($d['metodo']->id, 200)], null, 0, null, null), $d['usuario']);
+        $d['venta'] = app(RegistrarVenta::class)->ejecutar(new CrearVentaDto($d['cliente']->id, [new LineaVentaDto($d['variante']->id, 2)], [new PagoDto($d['metodo']->id, 200)], null, 0, null, null), $d['usuario'], terminal: $d['terminal']);
         $this->competir($d, 'ventas', $d['venta']->id, 'reembolso', ['reembolso', 'reembolso']);
 
         $this->assertSame(10, $d['stock']->fresh()->stock_actual);
@@ -72,7 +72,7 @@ class Actions04cConcurrentesTest extends TestCase
     public function test_liquidaciones_simultaneas_generan_una_sola_venta(): void
     {
         $d = $this->conReserva();
-        app(RegistrarAbonoApartado::class)->ejecutar(new RegistrarAbonoApartadoDto(100, [new PagoApartadoDto($d['metodo']->id, 100)], null), $d['apartado'], $d['usuario']);
+        app(RegistrarAbonoApartado::class)->ejecutar(new RegistrarAbonoApartadoDto(100, [new PagoApartadoDto($d['metodo']->id, 100)], null), $d['apartado'], $d['usuario'], terminal: $d['terminal']);
         $this->competir($d, 'apartados', $d['apartado']->id, 'apartado_liquidar', ['apartado_liquidar', 'apartado_estado_invalido']);
         $this->assertSame('completado', $d['apartado']->fresh()->estado);
         $this->assertSame(9, $d['stock']->fresh()->stock_actual);
@@ -111,7 +111,7 @@ class Actions04cConcurrentesTest extends TestCase
         try {
             $bloqueador->beginTransaction();
             $bloqueador->table($tabla)->where('id', $id)->lockForUpdate()->first();
-            $datos = ['tenant' => $d['tenant']->id, 'sucursal' => $d['sucursal']->id, 'usuario' => $d['usuario']->id, 'cliente' => $d['cliente']->id, 'metodo' => $d['metodo']->id, 'variante' => $d['variante']->id];
+            $datos = ['tenant' => $d['tenant']->id, 'sucursal' => $d['sucursal']->id, 'usuario' => $d['usuario']->id, 'cliente' => $d['cliente']->id, 'metodo' => $d['metodo']->id, 'variante' => $d['variante']->id, 'terminal' => $d['terminal']->id];
             foreach (['apartado', 'venta'] as $modelo) {
                 if (isset($d[$modelo])) {
                     $datos[$modelo] = $d[$modelo]->id;

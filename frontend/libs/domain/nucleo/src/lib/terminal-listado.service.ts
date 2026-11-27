@@ -19,6 +19,11 @@ export class TerminalListadoService {
       .pipe(map((respuesta) => ({ ...respuesta, meta: { ...respuesta.meta, rows: Number(respuesta.meta.rows) } })));
   }
 
+  listarDeSesion(): Observable<Terminal[]> {
+    return this.http.get<RespuestaDe<'/sesion/terminales', 'get'>>(urlApi('/sesion/terminales'), { context: this.contexto })
+      .pipe(map(respuesta => respuesta.data));
+  }
+
   listarDeSucursal(sucursalId: number): Observable<Terminal[]> {
     const listar = (page: number) => this.listar({ page, rows: 100 });
     return listar(1).pipe(

@@ -12,6 +12,7 @@ use App\Modules\Inventario\Models\Proveedor;
 use App\Modules\Nucleo\Models\MetodoPago;
 use App\Modules\Nucleo\Models\Sucursal;
 use App\Modules\Nucleo\Models\Tenant;
+use App\Modules\Nucleo\Models\Terminal;
 use App\Modules\Nucleo\Models\Usuario;
 use App\Modules\Nucleo\Services\TenantContext;
 use App\Modules\Tpv\Models\CajaSesion;
@@ -30,8 +31,9 @@ trait PreparaArq04b
         $producto = Producto::factory()->create(['tenant_id' => $tenant->id, 'precio_venta' => 100]);
         $variante = ProductoVariante::factory()->create(['producto_id' => $producto->id]);
         $stock = InventarioStock::factory()->create(['sucursal_id' => $sucursal->id, 'variante_id' => $variante->id, 'stock_actual' => $stockInicial]);
-        $caja = CajaSesion::factory()->create(['sucursal_id' => $sucursal->id, 'usuario_id' => $usuario->id, 'monto_apertura' => 50, 'estado' => $cajaAbierta ? 'abierta' : 'cerrada']);
+        $terminal = Terminal::factory()->create(['sucursal_id' => $sucursal->id]);
+        $caja = CajaSesion::factory()->create(['terminal_id' => $terminal->id, 'sucursal_id' => $sucursal->id, 'usuario_id' => $usuario->id, 'monto_apertura' => 50, 'estado' => $cajaAbierta ? 'abierta' : 'cerrada']);
 
-        return compact('tenant', 'sucursal', 'usuario', 'cliente', 'metodo', 'proveedor', 'producto', 'variante', 'stock', 'caja');
+        return compact('tenant', 'sucursal', 'usuario', 'cliente', 'metodo', 'proveedor', 'producto', 'variante', 'stock', 'caja', 'terminal');
     }
 }

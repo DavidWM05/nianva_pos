@@ -8,6 +8,7 @@ use App\Aplicacion\Apartados\CancelarApartado;
 use App\Aplicacion\Apartados\CrearApartado;
 use App\Aplicacion\Apartados\LiquidarApartado;
 use App\Aplicacion\Apartados\RegistrarAbonoApartado;
+use App\Aplicacion\Sesion\TerminalDeSesion;
 use App\Http\Controllers\Controller;
 use App\Modules\Apartados\Dtos\LiquidarApartadoDto;
 use App\Modules\Apartados\Http\Requests\CancelarApartadoRequest;
@@ -93,7 +94,7 @@ class ApartadoController extends Controller
         return (new ApartadoResource($apartado))->response()->setStatusCode(201);
     }
 
-    public function registrarAbono(RegistrarAbonoRequest $request, Apartado $apartado, RegistrarAbonoApartado $registrarAbonoApartado)
+    public function registrarAbono(RegistrarAbonoRequest $request, Apartado $apartado, RegistrarAbonoApartado $registrarAbonoApartado, TerminalDeSesion $terminalDeSesion)
     {
         $usuario = $request->user();
 
@@ -101,15 +102,18 @@ class ApartadoController extends Controller
             abort(401);
         }
 
-        $registrarAbonoApartado->ejecutar($request->toDto(), $apartado, $usuario);
+        $registrarAbonoApartado->ejecutar($request->toDto(), $apartado, $usuario, $terminalDeSesion->actual($usuario, $request->hasSession() ? $request->session() : null));
 
         return new ApartadoResource($apartado->fresh(['cliente', 'detalles.variante.producto', 'detalles.variante.valoresAtributo.valor.atributo', 'abonos.pagos.metodoPago']));
     }
 
-    public function liquidar(Request $request, Apartado $apartado, LiquidarApartado $liquidarApartado)
+    public function liquidar(Request $request, Apartado $apartado, LiquidarApartado $liquidarApartado, TerminalDeSesion $terminalDeSesion)
     {
         // No hay payload que validar: se conserva el Request y el contrato de esta ruta.
-        $liquidarApartado->ejecutar(new LiquidarApartadoDto, $apartado, $request->user());
+        $usuario = $request->user();
+        abort_if($usuario === null, 401);
+        $terminal = $terminalDeSesion->actual($usuario, $request->hasSession() ? $request->session() : null);
+        $liquidarApartado->ejecutar(new LiquidarApartadoDto, $apartado, $usuario, $terminal);
 
         return new ApartadoResource($apartado->fresh(['cliente', 'detalles.variante.producto', 'detalles.variante.valoresAtributo.valor.atributo', 'abonos.pagos.metodoPago']));
     }

@@ -51,6 +51,7 @@ class FotoPorLineaTest extends TestCase
     {
         parent::setUp();
         $this->prepararNegocio(['ventas.ver', 'apartados.crear', 'apartados.abonar', 'apartados.ver', 'devoluciones.crear', 'devoluciones.ver', 'cotizaciones.ver']);
+        $this->seleccionarTerminalDeCaja();
     }
 
     public function test_las_columnas_de_foto_son_not_null_y_sin_default(): void
@@ -134,7 +135,8 @@ class FotoPorLineaTest extends TestCase
             'items_devueltos' => [['variante_id' => $this->variante->id, 'cantidad' => 1, 'va_a_merma' => false]],
             'pagos' => [['metodo_pago_id' => $this->metodoPago->id, 'monto' => 100]],
         ];
-        $this->actingAs($this->usuario)->postJson('/api/v1/devoluciones', $datosSupervisor1, ['X-Autorizacion-Supervisor' => self::conSupervisor($this->usuario, AccionSupervisor::Reembolsar, $datosSupervisor1, $venta->ulid)->token])->assertCreated();
+        $this->seleccionarTerminalParaPrueba((int) $this->caja->getAttribute('terminal_id'));
+        $this->actingAs($this->usuario)->postJson('/api/v1/devoluciones', $datosSupervisor1, ['X-Autorizacion-Supervisor' => self::conSupervisor($this->usuario, AccionSupervisor::Reembolsar, $datosSupervisor1, $venta->ulid, sesionHash: hash('sha256', session()->getId()))->token])->assertCreated();
 
         $devuelto = $this->foto(DevolucionItem::query()->where('tipo', 'devuelto')->firstOrFail());
         $original = $this->foto(VentaDetalle::query()->where('venta_id', $venta->id)->firstOrFail());

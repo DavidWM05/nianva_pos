@@ -94,7 +94,7 @@ class DevolucionServiceTest extends TestCase
 
         $cliente = Cliente::where('tenant_id', $tenant->id)->where('nombre', 'Publico General')->firstOrFail();
 
-        $this->cajaService->abrirCajaConSucursal(Bloqueos04e::sucursal($sucursal->id), $usuario->id, 0);
+        $this->cajaService->abrirCajaConSucursal(Bloqueos04e::sucursal($sucursal->id), $usuario->id, 0, Bloqueos04e::terminal($sucursal->id), now()->setTimezone('America/Mexico_City')->toDateString(), now());
 
         // Venta origen: E x2 (120 c/u) + F x1 (60) = 300.
         $datos04e3 = ['tenant_id' => $tenant->id, 'sucursal_id' => $sucursal->id, 'usuario_id' => $usuario->id, 'cliente_id' => $cliente->id];

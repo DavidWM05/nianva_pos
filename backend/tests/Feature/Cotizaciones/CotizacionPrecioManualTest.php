@@ -22,6 +22,7 @@ class CotizacionPrecioManualTest extends TestCase
             'cotizaciones.editar',
             'cotizaciones.convertir',
         ]);
+        $this->seleccionarTerminalDeCaja();
     }
 
     private function payload(array $item = []): array

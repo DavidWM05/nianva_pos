@@ -109,7 +109,7 @@ class VentaServiceTest extends TestCase
             'porcentaje' => 10, 'aplica_a' => 'variante', 'variante_id' => $ctx['varianteA']->id,
         ]);
 
-        $this->cajaService->abrirCajaConSucursal(Bloqueos04e::sucursal($ctx['sucursal']->id), $ctx['usuario']->id, 500);
+        $this->cajaService->abrirCajaConSucursal(Bloqueos04e::sucursal($ctx['sucursal']->id), $ctx['usuario']->id, 500, Bloqueos04e::terminal($ctx['sucursal']->id), now()->setTimezone('America/Mexico_City')->toDateString(), now());
 
         $datos04e14 = ['tenant_id' => $ctx['tenant']->id, 'sucursal_id' => $ctx['sucursal']->id, 'usuario_id' => $ctx['usuario']->id, 'cliente_id' => $ctx['cliente']->id];
         $items04e14 = [
@@ -143,7 +143,7 @@ class VentaServiceTest extends TestCase
     public function test_stock_insuficiente_revierte_toda_la_venta_incluyendo_lineas_previas(): void
     {
         $ctx = $this->prepararTenantConCatalogo();
-        $this->cajaService->abrirCajaConSucursal(Bloqueos04e::sucursal($ctx['sucursal']->id), $ctx['usuario']->id, 500);
+        $this->cajaService->abrirCajaConSucursal(Bloqueos04e::sucursal($ctx['sucursal']->id), $ctx['usuario']->id, 500, Bloqueos04e::terminal($ctx['sucursal']->id), now()->setTimezone('America/Mexico_City')->toDateString(), now());
 
         $stockAantes = InventarioStock::sinTenant()->where('variante_id', $ctx['varianteA']->id)->first()->stock_actual;
         $stockBantes = InventarioStock::sinTenant()->where('variante_id', $ctx['varianteB']->id)->first()->stock_actual;
@@ -174,7 +174,7 @@ class VentaServiceTest extends TestCase
     public function test_pagos_que_no_cuadran_son_rechazados_sin_tocar_inventario(): void
     {
         $ctx = $this->prepararTenantConCatalogo();
-        $this->cajaService->abrirCajaConSucursal(Bloqueos04e::sucursal($ctx['sucursal']->id), $ctx['usuario']->id, 500);
+        $this->cajaService->abrirCajaConSucursal(Bloqueos04e::sucursal($ctx['sucursal']->id), $ctx['usuario']->id, 500, Bloqueos04e::terminal($ctx['sucursal']->id), now()->setTimezone('America/Mexico_City')->toDateString(), now());
 
         $stockAantes = InventarioStock::sinTenant()->where('variante_id', $ctx['varianteA']->id)->first()->stock_actual;
 
@@ -196,7 +196,7 @@ class VentaServiceTest extends TestCase
     public function test_anular_venta_revierte_stock_marca_estado_y_no_borra_nada(): void
     {
         $ctx = $this->prepararTenantConCatalogo();
-        $this->cajaService->abrirCajaConSucursal(Bloqueos04e::sucursal($ctx['sucursal']->id), $ctx['usuario']->id, 500);
+        $this->cajaService->abrirCajaConSucursal(Bloqueos04e::sucursal($ctx['sucursal']->id), $ctx['usuario']->id, 500, Bloqueos04e::terminal($ctx['sucursal']->id), now()->setTimezone('America/Mexico_City')->toDateString(), now());
 
         $datos04e11 = ['tenant_id' => $ctx['tenant']->id, 'sucursal_id' => $ctx['sucursal']->id, 'usuario_id' => $ctx['usuario']->id, 'cliente_id' => $ctx['cliente']->id];
         $items04e11 = [
@@ -231,7 +231,7 @@ class VentaServiceTest extends TestCase
     public function test_cerrar_caja_excluye_venta_anulada_y_aplica_formula_apertura_mas_ventas_menos_gastos(): void
     {
         $ctx = $this->prepararTenantConCatalogo();
-        $caja = $this->cajaService->abrirCajaConSucursal(Bloqueos04e::sucursal($ctx['sucursal']->id), $ctx['usuario']->id, 500);
+        $caja = $this->cajaService->abrirCajaConSucursal(Bloqueos04e::sucursal($ctx['sucursal']->id), $ctx['usuario']->id, 500, Bloqueos04e::terminal($ctx['sucursal']->id), now()->setTimezone('America/Mexico_City')->toDateString(), now());
 
         $datos04e10 = ['tenant_id' => $ctx['tenant']->id, 'sucursal_id' => $ctx['sucursal']->id, 'usuario_id' => $ctx['usuario']->id, 'cliente_id' => $ctx['cliente']->id];
         $items04e10 = [
@@ -262,7 +262,7 @@ class VentaServiceTest extends TestCase
     public function test_aislamiento_tenant_en_caja_venta_pagos_y_detalles(): void
     {
         $ctx1 = $this->prepararTenantConCatalogo();
-        $caja1 = $this->cajaService->abrirCajaConSucursal(Bloqueos04e::sucursal($ctx1['sucursal']->id), $ctx1['usuario']->id, 500);
+        $caja1 = $this->cajaService->abrirCajaConSucursal(Bloqueos04e::sucursal($ctx1['sucursal']->id), $ctx1['usuario']->id, 500, Bloqueos04e::terminal($ctx1['sucursal']->id), now()->setTimezone('America/Mexico_City')->toDateString(), now());
         $datos04e8 = ['tenant_id' => $ctx1['tenant']->id, 'sucursal_id' => $ctx1['sucursal']->id, 'usuario_id' => $ctx1['usuario']->id, 'cliente_id' => $ctx1['cliente']->id];
         $items04e8 = [['variante_id' => $ctx1['varianteA']->id, 'cantidad' => 1]];
         $caja04e8 = Bloqueos04c::caja((int) $datos04e8['sucursal_id']);

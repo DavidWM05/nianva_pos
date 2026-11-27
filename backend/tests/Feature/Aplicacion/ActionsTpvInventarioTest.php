@@ -39,7 +39,7 @@ class ActionsTpvInventarioTest extends TestCase
     public function test_abrir_caja_crea_una_sesion_con_el_fondo_y_la_sucursal_del_usuario(): void
     {
         $d = $this->negocio04b(cajaAbierta: false);
-        $caja = app(AbrirCaja::class)->ejecutar(new AbrirCajaDto(125), $d['usuario']);
+        $caja = app(AbrirCaja::class)->ejecutar(new AbrirCajaDto(125), $d['usuario'], $d['terminal']);
 
         $this->assertSame('abierta', $caja->estado);
         $this->assertSame('125.00', $caja->monto_apertura);
@@ -76,7 +76,7 @@ class ActionsTpvInventarioTest extends TestCase
     public function test_anular_venta_restituye_stock_una_vez_aunque_se_reutilice_el_modelo_viejo(): void
     {
         $d = $this->negocio04b();
-        $venta = app(RegistrarVenta::class)->ejecutar(new CrearVentaDto($d['cliente']->id, [new LineaVentaDto($d['variante']->id, 1)], [new PagoDto($d['metodo']->id, 100)], null, 0, null, null), $d['usuario']);
+        $venta = app(RegistrarVenta::class)->ejecutar(new CrearVentaDto($d['cliente']->id, [new LineaVentaDto($d['variante']->id, 1)], [new PagoDto($d['metodo']->id, 100)], null, 0, null, null), $d['usuario'], terminal: $d['terminal']);
         $resultado = app(AnularVenta::class)->ejecutar(new AnularVentaDto('Revisión 04b'), $venta, $d['usuario'], self::conSupervisor($d['usuario'], AccionSupervisor::AnularVenta, [], $venta->ulid));
 
         $this->assertSame('anulada', $resultado->estado);

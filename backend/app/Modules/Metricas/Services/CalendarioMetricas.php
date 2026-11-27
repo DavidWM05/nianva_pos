@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Modules\Metricas\Services;
 
 use App\Modules\Metricas\Valores\PeriodoMetricas;
+use DateTimeImmutable;
+use DateTimeInterface;
 use DateTimeZone;
 use Psr\Clock\ClockInterface;
 use Symfony\Component\Clock\NativeClock;
@@ -13,9 +15,9 @@ final readonly class CalendarioMetricas
 {
     public function __construct(private ClockInterface $reloj = new NativeClock('UTC')) {}
 
-    public function fechaLocal(DateTimeZone $zona): string
+    public function fechaLocal(DateTimeZone $zona, ?DateTimeInterface $instante = null): string
     {
-        return $this->reloj->now()->setTimezone($zona)->format('Y-m-d');
+        return DateTimeImmutable::createFromInterface($instante ?? $this->reloj->now())->setTimezone($zona)->format('Y-m-d');
     }
 
     public function mesActual(DateTimeZone $zona): PeriodoMetricas

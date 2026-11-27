@@ -33,6 +33,7 @@ class UlidEnTransaccionalesTest extends TestCase
      * @var list<string>
      */
     private const CON_ULID = [
+        'caja_consolidados',
         // Documentos
         'ventas', 'caja_sesiones', 'apartados', 'devoluciones', 'cotizaciones', 'compras',
         'cuentas_cobrar', 'cuentas_pagar', 'notas_credito', 'planes_pago_cliente', 'gastos',

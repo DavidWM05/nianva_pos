@@ -13,6 +13,7 @@ export interface NucleoModuleNavItem {
    * grupo ni darle su propio encabezado.
    */
   separadorAntes?: boolean;
+  rutaExacta?: boolean;
   /**
    * Permiso del endpoint con el que carga la pantalla (el `permiso:` de su GET). Sin el,
    * el menu oculta la entrada (API-09); la pantalla respondería 403 de todos modos.
@@ -90,7 +91,9 @@ export const NUCLEO_NAV_GROUPS: NucleoNavGroup[] = [
     label: 'Transacciones',
     items: [
       { key: 'tpv-venta', label: 'Venta', path: 'tpv/venta', icon: 'pi pi-shopping-cart', permiso: 'ventas.crear' },
-      { key: 'tpv-caja', label: 'Caja', path: 'tpv/caja', icon: 'pi pi-wallet', permiso: 'caja.ver' },
+      { key: 'tpv-caja', label: 'Caja', path: 'tpv/caja', rutaExacta: true, icon: 'pi pi-wallet', permiso: 'caja.ver' },
+      { key: 'tpv-caja-remota', label: 'Cierre remoto de caja', path: 'tpv/caja/remotas', icon: 'pi pi-lock', permiso: 'caja.cerrar_remota' },
+      { key: 'tpv-caja-consolidado', label: 'Consolidado de caja', path: 'tpv/caja/consolidado', icon: 'pi pi-file', permiso: 'caja.cerrar_remota' },
       { key: 'tpv-ventas', label: 'Ventas', path: 'tpv/ventas', icon: 'pi pi-receipt', permiso: 'ventas.ver' },
       { key: 'cotizaciones', label: 'Cotizaciones', path: 'cotizaciones', icon: 'pi pi-file-edit', permiso: 'cotizaciones.ver', modulo: 'cotizaciones' },
       { key: 'cuentas-cobrar', label: 'Cuentas por cobrar', path: 'cuentas-cobrar', icon: 'pi pi-wallet', permiso: 'cuentas_cobrar.ver', modulo: 'cxc' },

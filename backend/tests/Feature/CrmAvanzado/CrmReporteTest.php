@@ -90,7 +90,7 @@ class CrmReporteTest extends TestCase
         $items04e2 = [['variante_id' => $this->variante->id, 'cantidad' => 100, 'precio_compra' => 10]];
         app(InventarioService::class)->registrarCompraConStocks($datos04e2, $items04e2, Bloqueos04e::stocks((int) $datos04e2['sucursal_id'], array_column($items04e2, 'variante_id')));
 
-        app(CajaService::class)->abrirCajaConSucursal(Bloqueos04e::sucursal($this->sucursal->id), $this->usuario->id, 5000);
+        app(CajaService::class)->abrirCajaConSucursal(Bloqueos04e::sucursal($this->sucursal->id), $this->usuario->id, 5000, Bloqueos04e::terminal($this->sucursal->id), now()->setTimezone('America/Mexico_City')->toDateString(), now());
         $this->ventaService = app(VentaService::class);
 
         // 5 ventas completadas para clienteVip -> calcularSegmento() = 'vip' (>=5 ventas).

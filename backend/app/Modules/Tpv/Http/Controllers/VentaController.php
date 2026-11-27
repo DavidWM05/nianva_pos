@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\Tpv\Http\Controllers;
 
 use App\Aplicacion\Reportes\ExportarReporteCsv;
+use App\Aplicacion\Sesion\TerminalDeSesion;
 use App\Aplicacion\Ventas\AnularVenta;
 use App\Aplicacion\Ventas\ObtenerReporteVentas;
 use App\Aplicacion\Ventas\RegistrarVenta;
@@ -119,7 +120,7 @@ class VentaController extends Controller
      * Orquestacion: App\Aplicacion\Ventas\RegistrarVenta.
      */
     #[HeaderParameter(OperacionSupervisorHttp::CABECERA, description: 'Token opaco de supervisor para la operación autorizada.', type: 'string')]
-    public function store(CrearVentaRequest $request, RegistrarVenta $registrarVenta)
+    public function store(CrearVentaRequest $request, RegistrarVenta $registrarVenta, TerminalDeSesion $terminalDeSesion)
     {
         $usuario = $request->user();
 
@@ -127,7 +128,7 @@ class VentaController extends Controller
             abort(401);
         }
 
-        $venta = $registrarVenta->ejecutar($request->toDto(), $usuario, OperacionSupervisorHttp::de($request));
+        $venta = $registrarVenta->ejecutar($request->toDto(), $usuario, OperacionSupervisorHttp::de($request), $terminalDeSesion->actual($usuario, $request->hasSession() ? $request->session() : null));
 
         $venta->load(['cliente', 'pagos.metodoPago', 'detalles.variante.producto', 'detalles.variante.valoresAtributo.valor.atributo']);
 

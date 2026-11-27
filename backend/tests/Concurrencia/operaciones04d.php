@@ -14,6 +14,7 @@ use App\Modules\GiftCards\Dtos\CargarGiftCardDto;
 use App\Modules\GiftCards\Dtos\RecargarGiftCardDto;
 use App\Modules\NotasCredito\Dtos\AplicarNotaCreditoDto;
 use App\Modules\Nucleo\Exceptions\ExcepcionNegocio;
+use App\Modules\Nucleo\Models\Terminal;
 use App\Modules\Tpv\Dtos\PagoDto;
 use App\Modules\VentasPlazos\Dtos\PagarCuotaDto;
 use Illuminate\Database\Events\QueryExecuted;
@@ -40,10 +41,10 @@ DB::listen(static function (QueryExecuted $consulta) use ($tabla, &$observado, $
 });
 try {
     match ($op) {
-        'cxc_abonar', 'l04' => app(RegistrarAbono::class)->ejecutar(new RegistrarAbonoDto($op === 'l04' ? 75 : 25, $datos['metodo'], null), $datos['cxc'], $usuario),
-        'cxp_pagar' => app(RegistrarPago::class)->ejecutar(new RegistrarPagoDto(75, $datos['metodo'], null), $datos['cxp'], $usuario),
+        'cxc_abonar', 'l04' => app(RegistrarAbono::class)->ejecutar(new RegistrarAbonoDto($op === 'l04' ? 75 : 25, $datos['metodo'], null), $datos['cxc'], $usuario, terminal: Terminal::sinTenant()->findOrFail($datos['terminal'])),
+        'cxp_pagar' => app(RegistrarPago::class)->ejecutar(new RegistrarPagoDto(75, $datos['metodo'], null), $datos['cxp'], $usuario, Terminal::sinTenant()->findOrFail($datos['terminal'])),
         'gift_cargar' => app(CargarGiftCard::class)->ejecutar(new CargarGiftCardDto($datos['gift'], 75)),
-        'gift_recargar' => app(RecargarGiftCard::class)->ejecutar(new RecargarGiftCardDto(30, [new PagoDto($datos['metodo'], 30)]), $datos['gift'], $usuario),
+        'gift_recargar' => app(RecargarGiftCard::class)->ejecutar(new RecargarGiftCardDto(30, [new PagoDto($datos['metodo'], 30)]), $datos['gift'], $usuario, Terminal::sinTenant()->findOrFail($datos['terminal'])),
         'nota_aplicar' => app(AplicarNotaCredito::class)->ejecutar(new AplicarNotaCreditoDto($datos['nota'], $datos['venta'], 75)),
         'cuota_pagar' => app(PagarCuota::class)->ejecutar(new PagarCuotaDto($datos['cuota'], 100, ['monto']), $datos['plan']),
     };

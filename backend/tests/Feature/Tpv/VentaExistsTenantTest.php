@@ -15,6 +15,7 @@ class VentaExistsTenantTest extends TestCase
     {
         parent::setUp();
         $this->prepararNegocio(['ventas.crear']);
+        $this->seleccionarTerminalDeCaja();
     }
 
     public function test_venta_rechaza_metodo_pago_de_otro_tenant(): void

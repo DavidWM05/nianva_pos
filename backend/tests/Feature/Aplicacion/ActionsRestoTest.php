@@ -59,7 +59,7 @@ class ActionsRestoTest extends TestCase
     {
         $d = $this->negocio04e();
         $d['cotizacion']->update(['total' => 1]);
-        $venta = app(ConvertirCotizacion::class)->ejecutar(new ConvertirCotizacionDto($d['metodo']->id), $d['cotizacion']->id, $d['usuario']);
+        $venta = app(ConvertirCotizacion::class)->ejecutar(new ConvertirCotizacionDto($d['metodo']->id), $d['cotizacion']->id, $d['usuario'], $d['terminal']);
         $this->assertSame(100.0, (float) $venta->total);
         $this->assertSame(9, $d['stock']->fresh()->stock_actual);
         $this->assertSame($venta->id, $d['cotizacion']->fresh()->venta_id);
@@ -70,7 +70,7 @@ class ActionsRestoTest extends TestCase
         $d = $this->negocio04e();
         $d['stock']->update(['stock_actual' => 0]);
         try {
-            DB::transaction(fn () => app(ConvertirCotizacion::class)->ejecutar(new ConvertirCotizacionDto($d['metodo']->id), $d['cotizacion']->id, $d['usuario']));
+            DB::transaction(fn () => app(ConvertirCotizacion::class)->ejecutar(new ConvertirCotizacionDto($d['metodo']->id), $d['cotizacion']->id, $d['usuario'], $d['terminal']));
             $this->fail('Se esperaba stock insuficiente.');
         } catch (StockInsuficienteException) {
             $this->assertSame('pendiente', $d['cotizacion']->fresh()->estado);

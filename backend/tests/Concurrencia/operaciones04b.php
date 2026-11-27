@@ -11,6 +11,7 @@ use App\Modules\Inventario\Dtos\CompraDto;
 use App\Modules\Inventario\Dtos\LineaCompraDto;
 use App\Modules\Inventario\Dtos\MovimientoInventarioDto;
 use App\Modules\Nucleo\Exceptions\ExcepcionNegocio;
+use App\Modules\Nucleo\Models\Terminal;
 use App\Modules\Nucleo\Support\AccionSupervisor;
 use App\Modules\Nucleo\Support\MetodoEfectivo;
 use App\Modules\Tpv\Dtos\AbrirCajaDto;
@@ -46,7 +47,7 @@ try {
         use AutorizaOperaciones;
     };
     $resultado = match ($operacion) {
-        'abrir' => app(AbrirCaja::class)->ejecutar(new AbrirCajaDto(50), $usuario),
+        'abrir' => app(AbrirCaja::class)->ejecutar(new AbrirCajaDto(50), $usuario, Terminal::query()->findOrFail($datos['terminal'])),
         'cerrar' => app(CerrarCaja::class)->ejecutar($caja, [['metodo_pago_id' => MetodoEfectivo::id(), 'monto' => 50]])['sesion'],
         'anular' => app(AnularVenta::class)->ejecutar(new AnularVentaDto('Concurrencia 04b'), $venta, $usuario, $fixture::conSupervisor($usuario, AccionSupervisor::AnularVenta, [], $venta->ulid)),
         'movimiento' => app(RegistrarMovimiento::class)->ejecutar(new MovimientoInventarioDto($datos['variante'], $datos['sucursal'], 'salida', 1, 'ajuste', $usuario->id)),

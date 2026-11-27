@@ -9,6 +9,15 @@ abstract class TestCase extends BaseTestCase
 {
     private bool $omitirLlave = false;
 
+    protected function seleccionarTerminalParaPrueba(int $terminalId): void
+    {
+        config(['sanctum.stateful' => ['localhost:4200']]);
+        $this->withHeader('Referer', 'http://localhost:4200/')
+            ->withSession(['auth.terminal_id' => $terminalId])
+            ->withCredentials()
+            ->withCookie(session()->getName(), session()->getId());
+    }
+
     protected function sinLlave(): static
     {
         $this->omitirLlave = true;

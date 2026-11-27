@@ -1,6 +1,6 @@
 import { expect, test, type Locator, type Page } from '@playwright/test';
 
-import { crearCliente, crearProducto } from './soporte/api';
+import { asegurarCajaAbierta, crearCliente, crearProducto } from './soporte/api';
 import { iniciarSesion } from './soporte/sesion';
 
 declare global {
@@ -50,6 +50,7 @@ test('el nombre con HTML se muestra literal y no ejecuta XSS en las pantallas de
 // libreria que dibuja el autocompletado.
 test('la sugerencia del buscador de la venta muestra el nombre literal y no ejecuta XSS', async ({ page }) => {
   await iniciarSesion(page, 'vendedor@abarrotes.test');
+  await asegurarCajaAbierta(page);
   await crearProducto(page, NOMBRE_XSS);
 
   await page.goto('/tpv/venta');

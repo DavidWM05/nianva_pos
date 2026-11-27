@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Aplicacion\Caja;
 
 use App\Modules\Gastos\Services\GastoService;
+use App\Modules\Nucleo\Models\Terminal;
 use App\Modules\Nucleo\Models\Usuario;
 use App\Modules\Tpv\Models\CajaSesion;
 use App\Modules\Tpv\Services\CajaService;
@@ -27,11 +28,12 @@ class ObtenerCajaActual
      *     permisos: array{abrir: bool, cerrar: bool, gastos_ver: bool, gastos_crear: bool}
      * }
      */
-    public function ejecutar(Usuario $usuario): array
+    public function ejecutar(Usuario $usuario, ?Terminal $terminal): array
     {
-        $sesion = CajaSesion::where('sucursal_id', $usuario->getAttribute('sucursal_id'))
+        $sesion = $terminal === null ? null : CajaSesion::query()
+            ->where('sucursal_id', $usuario->getAttribute('sucursal_id'))
+            ->where('terminal_id', $terminal->id)
             ->where('estado', 'abierta')
-            ->latest('id')
             ->first();
         $sesion?->load('saldos.metodoPago');
 

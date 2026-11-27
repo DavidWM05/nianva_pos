@@ -16,10 +16,12 @@ class ValidacionesNegocioTest extends TestCase
     {
         parent::setUp();
         $this->prepararNegocio(['caja.cerrar', 'ventas.crear', 'ventas.anular']);
+        $this->seleccionarTerminalDeCaja();
     }
 
     public function test_cerrar_dos_veces_la_caja_devuelve_422_con_error_code(): void
     {
+        $this->seleccionarTerminalDeCaja();
         $this->actingAs($this->usuario);
 
         $this->patchJson("/api/v1/caja/{$this->caja->ulid}/cerrar", ['conteos' => [['metodo_pago_id' => MetodoEfectivo::id(), 'monto' => 500]]])->assertOk();

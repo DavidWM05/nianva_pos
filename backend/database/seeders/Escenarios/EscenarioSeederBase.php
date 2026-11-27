@@ -22,6 +22,7 @@ use App\Modules\Nucleo\Models\Permiso;
 use App\Modules\Nucleo\Models\Rol;
 use App\Modules\Nucleo\Models\Sucursal;
 use App\Modules\Nucleo\Models\Tenant;
+use App\Modules\Nucleo\Models\Terminal;
 use App\Modules\Nucleo\Models\Usuario;
 use App\Modules\Nucleo\Services\TwoFactorService;
 use App\Modules\Tpv\Dtos\AbrirCajaDto;
@@ -259,9 +260,18 @@ abstract class EscenarioSeederBase extends Seeder
         return app(RegistrarCompra::class)->ejecutar($dto, $usuario);
     }
 
+    private function terminalPrincipal(int $tenantId, int $sucursalId): Terminal
+    {
+        return Terminal::sinTenant()->firstOrCreate([
+            'tenant_id' => $tenantId,
+            'sucursal_id' => $sucursalId,
+            'nombre' => 'Caja principal',
+        ]);
+    }
+
     protected function abrirCaja(Sucursal $sucursal, Usuario $usuario): CajaSesion
     {
-        return app(AbrirCaja::class)->ejecutar(new AbrirCajaDto(500), $usuario);
+        return app(AbrirCaja::class)->ejecutar(new AbrirCajaDto(500), $usuario, $this->terminalPrincipal($sucursal->tenant_id, $sucursal->id));
     }
 
     /**
@@ -303,7 +313,7 @@ abstract class EscenarioSeederBase extends Seeder
             notaCreditoId: null,
         );
 
-        return app(RegistrarVenta::class)->ejecutar($dto, $usuario);
+        return app(RegistrarVenta::class)->ejecutar($dto, $usuario, terminal: $this->terminalPrincipal($tenant->id, $usuario->sucursal_id));
     }
 
     /**

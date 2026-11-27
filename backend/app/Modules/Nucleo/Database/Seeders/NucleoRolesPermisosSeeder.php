@@ -42,7 +42,7 @@ class NucleoRolesPermisosSeeder extends Seeder
         'compras' => ['ver', 'crear'],
         'clientes' => ['ver', 'crear', 'editar', 'eliminar'],
         'ventas' => ['ver', 'crear', 'anular', 'autorizar_descuento'],
-        'caja' => ['ver', 'abrir', 'cerrar'],
+        'caja' => ['ver', 'abrir', 'cerrar', 'cerrar_remota'],
         'apartados' => ['ver', 'crear', 'abonar', 'cancelar'],
         'devoluciones' => ['ver', 'crear'],
         'gastos' => ['ver', 'crear'],

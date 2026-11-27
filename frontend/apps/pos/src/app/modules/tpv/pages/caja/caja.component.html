@@ -1,5 +1,9 @@
 <div class="caja">
   <h2>Caja</h2>
+  @if (puedeConsolidar()) {
+    <a matButton routerLink="/tpv/caja/remotas">Cierre remoto</a>
+    <a matButton routerLink="/tpv/caja/consolidado">Consolidado de caja</a>
+  }
 
   @if (cargando()) {
     <ui-skeleton forma="bloque" alto="12rem" etiqueta="Cargando estado de caja" />
@@ -128,10 +132,16 @@
           </div>
         }
       </div>
+    } @else if (sinTerminal()) {
+      <div class="caja__panel">
+        <h3>Selecciona una terminal</h3>
+        <p>Elige la terminal de trabajo para abrir o consultar su caja.</p>
+        <a matButton routerLink="/perfil/preferencias">Elegir terminal</a>
+      </div>
     } @else {
       <div class="caja__panel">
         <h3>No hay caja abierta</h3>
-        <p>Debes abrir la caja antes de poder registrar ventas en esta sucursal.</p>
+        <p>Debes abrir la caja antes de poder registrar ventas en esta terminal.</p>
 
         @if (estadoActual.permisos.abrir) {
           <div class="caja__form">

@@ -195,9 +195,7 @@ class VentaService
             );
         }
 
-        // DAT-04: la anulación revierte en el libro de caja cada pago de la venta, en la caja de la
-        // venta si sigue abierta. Si ya cerró, la Action entrega la caja abierta del usuario;
-        // el corte y el saldo de la caja cerrada permanecen intactos.
+        // DAT-04: la anulación revierte cada pago en la caja original mientras siga abierta.
         if (! (bool) $venta->getAttribute('es_venta_sombra')) {
             foreach (VentaPago::query()->where('venta_id', $venta->id)->get() as $pago) {
                 if (! $this->libroCaja->esMonetario((int) $pago->getAttribute('metodo_pago_id')) || Dinero::desde((string) $pago->getAttribute('monto'))->aCadena() === '0.00') {

@@ -6,6 +6,7 @@ use App\Aplicacion\CuentasCobrar\AnularCuenta;
 use App\Aplicacion\CuentasCobrar\RegistrarAbono;
 use App\Aplicacion\Reportes\ExportarReporteCsv;
 use App\Aplicacion\Reportes\ObtenerReporteCuentasCobrar;
+use App\Aplicacion\Sesion\TerminalDeSesion;
 use App\Http\Controllers\Controller;
 use App\Modules\CuentasCobrar\Http\Requests\RegistrarAbonoRequest;
 use App\Modules\CuentasCobrar\Http\Resources\AbonoCuentaResource;
@@ -83,7 +84,7 @@ class CuentaCobrarController extends Controller
      * DAT-08: la ruta resuelve la cuenta por ulid (binding); la Action sigue recibiendo el id
      * interno y bloqueando por él.
      */
-    public function registrarAbono(RegistrarAbonoRequest $request, CuentaCobrar $cuentaCobrar, RegistrarAbono $action)
+    public function registrarAbono(RegistrarAbonoRequest $request, CuentaCobrar $cuentaCobrar, RegistrarAbono $action, TerminalDeSesion $terminalDeSesion)
     {
         $id = (int) $cuentaCobrar->getKey();
         $usuario = $request->user();
@@ -94,7 +95,7 @@ class CuentaCobrarController extends Controller
 
         $dto = $request->toDto();
 
-        $abono = $action->ejecutar($dto, $id, $usuario);
+        $abono = $action->ejecutar($dto, $id, $usuario, $terminalDeSesion->actual($usuario, $request->hasSession() ? $request->session() : null));
 
         $cuenta = CuentaCobrar::with('cliente')->findOrFail($id);
 

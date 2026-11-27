@@ -1,6 +1,8 @@
 import type { Page } from '@playwright/test';
 import { generarLlaveIdempotencia } from '../../../../libs/core/http/src/lib/idempotencia';
 
+import { crearTerminalDeCaja } from './backend';
+
 const API = 'http://127.0.0.1:' + (process.env['POS_E2E_BACKEND_PORT'] ?? '8100') + '/api/v1';
 
 interface RespuestaApi<T> {
@@ -47,11 +49,31 @@ export function crearCliente(page: Page, nombre: string): Promise<{ id: number }
   return crear(page, '/clientes', { nombre });
 }
 
-/**
- * 50n-a: deja abierta la caja de la sucursal, como la siembra el escenario. El e2e de tpv la
- * cierra y la vuelve a abrir; si falla a la mitad, los specs que venden despues no dependen de el.
- */
+async function elegirTerminalDeCaja(page: Page): Promise<void> {
+  const opciones = { headers: { Accept: 'application/json', Referer: page.url() } };
+  const sesion = await page.request.get(`${API}/sesion`, opciones);
+  if (!sesion.ok()) throw new Error(`No se pudo consultar la sesión: ${sesion.status()}`);
+
+  const { data } = await sesion.json();
+  if (data.terminal !== null) return;
+
+  const disponibles = await page.request.get(`${API}/sesion/terminales`, opciones);
+  if (!disponibles.ok()) throw new Error(`No se pudieron consultar las terminales: ${disponibles.status()}`);
+
+  const { data: terminales } = await disponibles.json() as { data: { id: number; nombre: string }[] };
+  const terminal = terminales.find(({ nombre }) => nombre === 'Caja principal') ?? terminales[0];
+  const terminalId = terminal?.id ?? crearTerminalDeCaja(data.usuario.correo);
+  const token = (await page.context().cookies(API)).find(({ name }) => name === 'XSRF-TOKEN');
+  const seleccion = await page.request.put(`${API}/sesion/terminal`, {
+    data: { terminal_id: terminalId },
+    headers: { ...opciones.headers, 'X-XSRF-TOKEN': decodeURIComponent(token?.value ?? '') },
+  });
+  if (!seleccion.ok()) throw new Error(`No se pudo elegir la terminal: ${seleccion.status()}`);
+}
+
+/** Deja abierta la caja de la terminal de la sesión para los flujos que mueven dinero. */
 export async function asegurarCajaAbierta(page: Page): Promise<void> {
+  await elegirTerminalDeCaja(page);
   const resultado = await page.evaluate(async ({ api, llave }) => {
     const coincidencia = document.cookie.match(/(?:^|;\s*)XSRF-TOKEN=([^;]+)/);
     const token = coincidencia ? decodeURIComponent(coincidencia[1]) : '';
@@ -59,7 +81,7 @@ export async function asegurarCajaAbierta(page: Page): Promise<void> {
     const actual = await fetch(`${api}/caja/actual`, { credentials: 'include', headers: cabeceras });
     const cuerpo = await actual.json();
 
-    if (cuerpo.data !== null) {
+    if (!actual.ok || cuerpo.data !== null) {
       return actual.status;
     }
 

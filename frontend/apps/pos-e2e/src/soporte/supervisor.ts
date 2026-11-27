@@ -23,7 +23,7 @@ export const dialogoSupervisor = (page: Page): Locator => page.getByRole('dialog
  * Elige a la supervisora, escribe `pin` con el teclado, lo envia con Enter y devuelve el estado de
  * POST /autorizaciones.
  */
-export async function autorizarComoSupervisora(page: Page, pin = PIN_SUPERVISORA): Promise<number> {
+export async function autorizarComoSupervisora(page: Page, pin = PIN_SUPERVISORA, nombre = NOMBRE_SUPERVISORA): Promise<number> {
   const dialogo = dialogoSupervisor(page);
   await expect(dialogo).toBeVisible({ timeout: 20000 });
   // Con un solo elegible, el dialogo lo deja elegido y pasa el foco al PIN al terminar de cargar
@@ -31,11 +31,11 @@ export async function autorizarComoSupervisora(page: Page, pin = PIN_SUPERVISORA
   // varios elegibles: el dialogo no mueve el foco y se elige a mano.
   const supervisor = dialogo.getByRole('combobox', { name: 'Supervisor' });
   const elegida = await expect(supervisor)
-    .toContainText(NOMBRE_SUPERVISORA, { timeout: 3000 })
+    .toContainText(nombre, { timeout: 3000 })
     .then(() => true, () => false);
   if (!elegida) {
     await supervisor.click();
-    await page.getByRole('option', { name: NOMBRE_SUPERVISORA, exact: true }).click();
+    await page.getByRole('option', { name: nombre, exact: true }).click();
   }
   await dialogo.getByRole('textbox', { name: 'PIN del supervisor' }).focus();
   for (const digito of pin) {

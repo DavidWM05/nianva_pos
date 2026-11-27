@@ -14,6 +14,7 @@ use App\Modules\Nucleo\Exceptions\SupervisorInvalidoException;
 use App\Modules\Nucleo\Exceptions\SupervisorRequeridoException;
 use App\Modules\Nucleo\Models\Usuario;
 use App\Modules\Nucleo\Support\AccionSupervisor;
+use App\Modules\Tpv\Models\CajaConsolidado;
 use App\Modules\Tpv\Models\CajaSesion;
 use App\Modules\Tpv\Models\Venta;
 use Illuminate\Database\Eloquent\Builder;
@@ -101,7 +102,7 @@ final class Supervisor
         });
     }
 
-    public static function consumir(?OperacionSupervisorDto $operacion, AccionSupervisor $accion, ?string $recurso = null, ?int $sucursalId = null): void
+    public static function consumir(?OperacionSupervisorDto $operacion, AccionSupervisor $accion, ?string $recurso = null, ?int $sucursalId = null): int
     {
         if ($operacion?->token === null) {
             throw new SupervisorRequeridoException;
@@ -131,6 +132,8 @@ final class Supervisor
         }
 
         $tabla->update(['consumida_en' => now()]);
+
+        return (int) $fila->supervisor_id;
     }
 
     private function sucursalDeOperacion(Usuario $usuario, AccionSupervisor $accion, ?string $recurso): int
@@ -138,7 +141,8 @@ final class Supervisor
         $consulta = match ($accion) {
             AccionSupervisor::AnularVenta, AccionSupervisor::Reembolsar => Venta::query(),
             AccionSupervisor::CancelarApartado => Apartado::query(),
-            AccionSupervisor::CerrarCaja => CajaSesion::query(),
+            AccionSupervisor::CerrarCaja, AccionSupervisor::CerrarCajaRemota => CajaSesion::query(),
+            AccionSupervisor::AbrirCajaTardia => CajaConsolidado::query()->whereNull('original_id'),
             AccionSupervisor::DescuentoVenta => null,
         };
         $documento = $consulta?->where('ulid', $recurso)->firstOrFail();

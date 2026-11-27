@@ -12,6 +12,7 @@ use App\Modules\Inventario\Models\ProductoVariante;
 use App\Modules\Nucleo\Models\MetodoPago;
 use App\Modules\Nucleo\Models\Sucursal;
 use App\Modules\Nucleo\Models\Tenant;
+use App\Modules\Nucleo\Models\Terminal;
 use App\Modules\Nucleo\Models\Usuario;
 use App\Modules\Nucleo\Services\TenantContext;
 use App\Modules\Tpv\Dtos\CrearVentaDto;
@@ -42,7 +43,7 @@ class FoliosConcurrentesTest extends TestCase
             $variantes = [];
             for ($i = 0; $i < 2; $i++) {
                 $usuarios[$i] = Usuario::factory()->create(['tenant_id' => $tenant->id, 'sucursal_id' => $sucursal->id]);
-                CajaSesion::factory()->create(['sucursal_id' => $sucursal->id, 'usuario_id' => $usuarios[$i]->id]);
+                $cajas[$i] = CajaSesion::factory()->create(['sucursal_id' => $sucursal->id, 'usuario_id' => $usuarios[$i]->id]);
                 $producto = Producto::factory()->create(['tenant_id' => $tenant->id, 'precio_venta' => 100]);
                 $variantes[$i] = ProductoVariante::factory()->create(['producto_id' => $producto->id]);
                 InventarioStock::factory()->create(['sucursal_id' => $sucursal->id, 'variante_id' => $variantes[$i]->id, 'stock_actual' => 1]);
@@ -65,7 +66,7 @@ class FoliosConcurrentesTest extends TestCase
                     descuentoManual: 0.0,
                     giftCardCodigo: null,
                     notaCreditoId: null,
-                ), $usuarios[0]);
+                ), $usuarios[0], terminal: Terminal::sinTenant()->findOrFail($cajas[0]->terminal_id));
                 $this->assertSame("V-{$sucursal->id}-1", $venta->folio);
                 $this->assertTrue($lecturaBloqueante);
             } finally {
@@ -80,7 +81,7 @@ class FoliosConcurrentesTest extends TestCase
                 foreach ($usuarios as $i => $usuario) {
                     $hijos[] = ProcesosConcurrentes::iniciar('venta', [
                         'tenant' => $tenant->id, 'usuario' => $usuario->id, 'cliente' => $cliente->id,
-                        'metodo' => $metodo->id, 'variante' => $variantes[$i]->id,
+                        'metodo' => $metodo->id, 'variante' => $variantes[$i]->id, 'terminal' => $cajas[$i]->terminal_id,
                     ]);
                 }
                 foreach ($hijos as $hijo) {

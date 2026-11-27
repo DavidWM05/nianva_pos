@@ -71,7 +71,8 @@ class DecimalesAltaTest extends TestCase
         InventarioStock::factory()->create(['variante_id' => $variante->id, 'sucursal_id' => $this->sucursal->id, 'stock_actual' => 2]);
         $cliente = Cliente::factory()->create(['tenant_id' => $this->tenant->id]);
         $metodo = MetodoPago::factory()->create(['tenant_id' => $this->tenant->id, 'nombre' => 'Efectivo API-02', 'tipo' => 'efectivo']);
-        CajaSesion::factory()->create(['sucursal_id' => $this->sucursal->id, 'usuario_id' => auth()->id()]);
+        $cajaOperativa = CajaSesion::factory()->create(['sucursal_id' => $this->sucursal->id, 'usuario_id' => auth()->id()]);
+        $this->seleccionarTerminalParaPrueba((int) $cajaOperativa->terminal_id);
         $this->postJson('/api/v1/ventas', [
             'cliente_id' => $cliente->ulid,
             'items' => [['variante_id' => $variante->id, 'cantidad' => '0.500']],

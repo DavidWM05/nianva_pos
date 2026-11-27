@@ -16,6 +16,7 @@ class CuentaPagarExistsTenantTest extends TestCase
     {
         parent::setUp();
         $this->prepararNegocio(['cuentas_pagar.registrar_pago']);
+        $this->seleccionarTerminalDeCaja();
     }
 
     private function crearCuentaPagar(): CuentaPagar

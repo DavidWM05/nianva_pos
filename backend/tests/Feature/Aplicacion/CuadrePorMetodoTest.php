@@ -52,7 +52,7 @@ class CuadrePorMetodoTest extends TestCase
         ]);
         $dto = new RegistrarAbonoApartadoDto(50, [new PagoApartadoDto($d['metodo']->id, 50)], null);
 
-        $this->rechazaSinCaja(fn () => app(RegistrarAbonoApartado::class)->ejecutar($dto, $apartado, $d['usuario']));
+        $this->rechazaSinCaja(fn () => app(RegistrarAbonoApartado::class)->ejecutar($dto, $apartado, $d['usuario'], terminal: $d['terminal']));
 
         $this->assertSame('0.00', $apartado->fresh()->total_abonado);
         $this->assertSame(0, ApartadoAbono::query()->count());
@@ -79,7 +79,7 @@ class CuadrePorMetodoTest extends TestCase
         $d['caja']->update(['estado' => 'cerrada']);
         $dto = new CrearDevolucionDto($venta->id, 'devolucion', [new ItemDevueltoDto($d['variante']->id, 1, false)], [], [new PagoDevolucionDto($d['metodo']->id, 100)], null, 'efectivo');
 
-        $this->rechazaSinCaja(fn () => app(RegistrarDevolucion::class)->ejecutar($dto, $d['usuario']));
+        $this->rechazaSinCaja(fn () => app(RegistrarDevolucion::class)->ejecutar($dto, $d['usuario'], terminal: $d['terminal']));
 
         $this->assertSame(9, $d['stock']->fresh()->stock_actual);
         $this->assertSame(0, Devolucion::query()->count());
@@ -94,7 +94,7 @@ class CuadrePorMetodoTest extends TestCase
         $antes = CajaMovimiento::query()->count();
         $dto = new CrearDevolucionDto($venta->id, 'devolucion', [new ItemDevueltoDto($d['variante']->id, 1, false)], [], [], null, 'nota_credito');
 
-        $resultado = app(RegistrarDevolucion::class)->ejecutar($dto, $d['usuario']);
+        $resultado = app(RegistrarDevolucion::class)->ejecutar($dto, $d['usuario'], terminal: $d['terminal']);
 
         $this->assertNotNull($resultado['nota_credito']);
         $this->assertSame('100.00', $resultado['nota_credito']->monto_original);
@@ -114,7 +114,7 @@ class CuadrePorMetodoTest extends TestCase
 
     private function vender(array $d): Venta
     {
-        return app(RegistrarVenta::class)->ejecutar(new CrearVentaDto($d['cliente']->id, [new LineaVentaDto($d['variante']->id, 1)], [new PagoDto($d['metodo']->id, 100)], null, 0, null, null), $d['usuario']);
+        return app(RegistrarVenta::class)->ejecutar(new CrearVentaDto($d['cliente']->id, [new LineaVentaDto($d['variante']->id, 1)], [new PagoDto($d['metodo']->id, 100)], null, 0, null, null), $d['usuario'], terminal: $d['terminal']);
     }
 
     private function rechazaSinCaja(Closure $operacion): void
@@ -132,7 +132,7 @@ class CuadrePorMetodoTest extends TestCase
         $d = $this->negocio04b(cajaAbierta: false);
         $metodo = MetodoPago::factory()->global()->create(['nombre' => 'Nota de Crédito', 'tipo' => 'digital']);
         $apartado = Apartado::factory()->create(['tenant_id' => $d['tenant']->id, 'sucursal_id' => $d['sucursal']->id, 'usuario_id' => $d['usuario']->id, 'cliente_id' => $d['cliente']->id]);
-        app(RegistrarAbonoApartado::class)->ejecutar(new RegistrarAbonoApartadoDto(50, [new PagoApartadoDto($metodo->id, 50)], null), $apartado, $d['usuario']);
+        app(RegistrarAbonoApartado::class)->ejecutar(new RegistrarAbonoApartadoDto(50, [new PagoApartadoDto($metodo->id, 50)], null), $apartado, $d['usuario'], terminal: $d['terminal']);
         $this->assertSame('50.00', $apartado->fresh()->total_abonado);
         $this->assertSame(0, CajaMovimiento::query()->count());
     }
@@ -156,7 +156,7 @@ class CuadrePorMetodoTest extends TestCase
         $d = $this->negocio04b();
         $venta = $this->vender($d);
         $metodo = MetodoPago::factory()->global()->create(['nombre' => 'Nota de Crédito', 'tipo' => 'digital']);
-        $resultado = app(RegistrarDevolucion::class)->ejecutar(new CrearDevolucionDto($venta->id, 'devolucion', [new ItemDevueltoDto($d['variante']->id, 1, false)], [], [new PagoDevolucionDto($d['metodo']->id, 40), new PagoDevolucionDto($metodo->id, 60)], null, 'efectivo'), $d['usuario'], self::conSupervisor($d['usuario'], AccionSupervisor::Reembolsar, [], $venta->ulid));
+        $resultado = app(RegistrarDevolucion::class)->ejecutar(new CrearDevolucionDto($venta->id, 'devolucion', [new ItemDevueltoDto($d['variante']->id, 1, false)], [], [new PagoDevolucionDto($d['metodo']->id, 40), new PagoDevolucionDto($metodo->id, 60)], null, 'efectivo'), $d['usuario'], self::conSupervisor($d['usuario'], AccionSupervisor::Reembolsar, [], $venta->ulid), $d['terminal']);
         $filas = CajaMovimiento::query()->where('referencia_tabla', 'devoluciones')->where('referencia_id', $resultado['devolucion']->id)->get();
         $this->assertCount(1, $filas);
         $this->assertSame('-40.00', $filas->sole()->getAttribute('monto'));
@@ -170,7 +170,7 @@ class CuadrePorMetodoTest extends TestCase
         $d['metodo']->update(['tipo' => 'efectivo']);
         $tarjeta = MetodoPago::factory()->create(['tenant_id' => $d['tenant']->id, 'nombre' => 'Tarjeta', 'tipo' => 'tarjeta']);
         $apartado = Apartado::factory()->create(['tenant_id' => $d['tenant']->id, 'sucursal_id' => $d['sucursal']->id, 'usuario_id' => $d['usuario']->id, 'cliente_id' => $d['cliente']->id, 'total' => 100]);
-        $abono = app(RegistrarAbonoApartado::class)->ejecutar(new RegistrarAbonoApartadoDto(50, [new PagoApartadoDto($d['metodo']->id, 20), new PagoApartadoDto($tarjeta->id, 30)], null), $apartado, $d['usuario']);
+        $abono = app(RegistrarAbonoApartado::class)->ejecutar(new RegistrarAbonoApartadoDto(50, [new PagoApartadoDto($d['metodo']->id, 20), new PagoApartadoDto($tarjeta->id, 30)], null), $apartado, $d['usuario'], terminal: $d['terminal']);
         $this->assertSame($d['caja']->id, $abono->getAttribute('caja_sesion_id'));
         $this->assertSame('100.00', $d['caja']->fresh()->getAttribute('saldo_teorico'));
         $saldos = CajaSesionSaldo::query()->where('caja_sesion_id', $d['caja']->id)->get()->keyBy('metodo_pago_id');
@@ -186,7 +186,7 @@ class CuadrePorMetodoTest extends TestCase
         $d['caja']->update(['estado' => 'cerrada']);
         $antes = CajaMovimiento::query()->count();
         $dto = new CrearDevolucionDto($venta->id, 'cambio', [new ItemDevueltoDto($d['variante']->id, 1, false)], [new ItemNuevoDto($d['variante']->id, 1)], [], null, 'efectivo');
-        $resultado = app(RegistrarDevolucion::class)->ejecutar($dto, $d['usuario']);
+        $resultado = app(RegistrarDevolucion::class)->ejecutar($dto, $d['usuario'], terminal: $d['terminal']);
         $this->assertSame('0.00', $resultado['devolucion']->getAttribute('diferencia'));
         $this->assertNull($resultado['devolucion']->getAttribute('caja_sesion_id'));
         $this->assertSame($antes, CajaMovimiento::query()->count());
@@ -197,7 +197,7 @@ class CuadrePorMetodoTest extends TestCase
         $d = $this->negocio04b();
         $venta = $this->vender($d);
         $dto = new CrearDevolucionDto($venta->id, 'cambio', [new ItemDevueltoDto($d['variante']->id, 1, false)], [new ItemNuevoDto($d['variante']->id, 1)], [], null, 'efectivo');
-        $resultado = app(RegistrarDevolucion::class)->ejecutar($dto, $d['usuario']);
+        $resultado = app(RegistrarDevolucion::class)->ejecutar($dto, $d['usuario'], terminal: $d['terminal']);
         $sombra = Venta::query()->findOrFail($resultado['devolucion']->getAttribute('venta_sombra_id'));
         $this->assertSame($d['caja']->id, $sombra->getAttribute('caja_sesion_id'));
     }
@@ -210,7 +210,7 @@ class CuadrePorMetodoTest extends TestCase
             $d['caja']->update(['estado' => 'cerrada']);
             $d['producto']->update(['precio_venta' => $precio]);
             $dto = new CrearDevolucionDto($venta->id, 'cambio', [new ItemDevueltoDto($d['variante']->id, 1, false)], [new ItemNuevoDto($d['variante']->id, 1)], [new PagoDevolucionDto($d['metodo']->id, 50)], null, 'efectivo');
-            $this->rechazaSinCaja(fn () => app(RegistrarDevolucion::class)->ejecutar($dto, $d['usuario']));
+            $this->rechazaSinCaja(fn () => app(RegistrarDevolucion::class)->ejecutar($dto, $d['usuario'], terminal: $d['terminal']));
             $this->assertSame(0, Venta::query()->where('tenant_id', $d['tenant']->id)->where('es_venta_sombra', true)->count());
             $this->assertSame(9, $d['stock']->fresh()->stock_actual);
         }
@@ -223,7 +223,7 @@ class CuadrePorMetodoTest extends TestCase
         $d['caja']->update(['estado' => 'cerrada']);
         $d['producto']->update(['precio_venta' => 50]);
         $dto = new CrearDevolucionDto($venta->id, 'cambio', [new ItemDevueltoDto($d['variante']->id, 1, false)], [new ItemNuevoDto($d['variante']->id, 1)], [], null, 'nota_credito');
-        $this->rechazaSinCaja(fn () => app(RegistrarDevolucion::class)->ejecutar($dto, $d['usuario']));
+        $this->rechazaSinCaja(fn () => app(RegistrarDevolucion::class)->ejecutar($dto, $d['usuario'], terminal: $d['terminal']));
         $this->assertSame(0, Venta::query()->where('tenant_id', $d['tenant']->id)->where('es_venta_sombra', true)->count());
     }
 }

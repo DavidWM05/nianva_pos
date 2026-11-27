@@ -63,7 +63,7 @@ class ActionsSaldosTest extends TestCase
     public function test_abonar_cxc_usa_la_caja_del_usuario_y_no_se_puede_anular(): void
     {
         $d = $this->negocio04d();
-        $abono = app(RegistrarAbono::class)->ejecutar(new RegistrarAbonoDto(30, $d['metodo']->id, 'abono'), $d['cxc']->id, $d['usuario']);
+        $abono = app(RegistrarAbono::class)->ejecutar(new RegistrarAbonoDto(30, $d['metodo']->id, 'abono'), $d['cxc']->id, $d['usuario'], terminal: $d['terminal']);
         $this->assertSame($d['caja']->id, $abono->caja_sesion_id);
         $this->assertSame(70.0, (float) $d['cxc']->fresh()->saldo_pendiente);
         $this->expectException(CuentaConAbonosException::class);
@@ -73,7 +73,7 @@ class ActionsSaldosTest extends TestCase
     public function test_pagar_cxp_usa_la_caja_del_usuario_y_no_se_puede_anular(): void
     {
         $d = $this->negocio04d();
-        $pago = app(RegistrarPago::class)->ejecutar(new RegistrarPagoDto(30, $d['metodo']->id, null), $d['cxp']->id, $d['usuario']);
+        $pago = app(RegistrarPago::class)->ejecutar(new RegistrarPagoDto(30, $d['metodo']->id, null), $d['cxp']->id, $d['usuario'], $d['terminal']);
         $this->assertSame($d['caja']->id, $pago->caja_sesion_id);
         $this->assertSame(70.0, (float) $d['cxp']->fresh()->saldo_pendiente);
         $this->expectException(CuentaPagarConAbonosException::class);
@@ -85,7 +85,7 @@ class ActionsSaldosTest extends TestCase
         $d = $this->negocio04d();
         $gift = app(EmitirGiftCard::class)->ejecutar(new EmitirGiftCardDto($d['cliente']->id, 100, null), $d['tenant']->id);
         $this->assertSame(100.0, (float) $gift->saldo_actual);
-        $recargada = app(RecargarGiftCard::class)->ejecutar(new RecargarGiftCardDto(20, [new PagoDto($d['metodo']->id, 20)]), $gift->id, $d['usuario']);
+        $recargada = app(RecargarGiftCard::class)->ejecutar(new RecargarGiftCardDto(20, [new PagoDto($d['metodo']->id, 20)]), $gift->id, $d['usuario'], $d['terminal']);
         $this->assertSame(120.0, (float) $recargada->saldo_actual);
         $this->assertDatabaseHas('gift_card_recargas', ['gift_card_id' => $gift->id, 'caja_sesion_id' => $d['caja']->id, 'monto' => 20]);
         app(CargarGiftCard::class)->ejecutar(new CargarGiftCardDto($gift->id, 120));
@@ -144,9 +144,9 @@ class ActionsSaldosTest extends TestCase
         $nivel = DB::transactionLevel();
         DB::beginTransaction();
         try {
-            app(RegistrarAbono::class)->ejecutar(new RegistrarAbonoDto(30, $d['metodo']->id, null), $d['cxc']->id, $d['usuario']);
-            app(RegistrarPago::class)->ejecutar(new RegistrarPagoDto(30, $d['metodo']->id, null), $d['cxp']->id, $d['usuario']);
-            app(RecargarGiftCard::class)->ejecutar(new RecargarGiftCardDto(20, [new PagoDto($d['metodo']->id, 20)]), $d['gift']->id, $d['usuario']);
+            app(RegistrarAbono::class)->ejecutar(new RegistrarAbonoDto(30, $d['metodo']->id, null), $d['cxc']->id, $d['usuario'], terminal: $d['terminal']);
+            app(RegistrarPago::class)->ejecutar(new RegistrarPagoDto(30, $d['metodo']->id, null), $d['cxp']->id, $d['usuario'], $d['terminal']);
+            app(RecargarGiftCard::class)->ejecutar(new RecargarGiftCardDto(20, [new PagoDto($d['metodo']->id, 20)]), $d['gift']->id, $d['usuario'], $d['terminal']);
             app(CargarGiftCard::class)->ejecutar(new CargarGiftCardDto($d['gift']->id, 30));
             app(AplicarNotaCredito::class)->ejecutar(new AplicarNotaCreditoDto($d['nota']->id, $d['venta']->id, 30));
             app(PagarCuota::class)->ejecutar(new PagarCuotaDto($d['cuota']->id, 100, ['monto']), $d['plan']->id);

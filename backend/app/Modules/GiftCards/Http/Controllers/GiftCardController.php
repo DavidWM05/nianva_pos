@@ -5,6 +5,7 @@ namespace App\Modules\GiftCards\Http\Controllers;
 use App\Aplicacion\GiftCards\CancelarGiftCard;
 use App\Aplicacion\GiftCards\EmitirGiftCard;
 use App\Aplicacion\GiftCards\RecargarGiftCard;
+use App\Aplicacion\Sesion\TerminalDeSesion;
 use App\Http\Controllers\Controller;
 use App\Modules\GiftCards\Http\Requests\EmitirGiftCardRequest;
 use App\Modules\GiftCards\Http\Requests\RecargarGiftCardRequest;
@@ -74,7 +75,7 @@ class GiftCardController extends Controller
      * DAT-08: la ruta resuelve la tarjeta por ulid (binding); la Action sigue recibiendo el id
      * interno y bloqueando por él.
      */
-    public function recargar(RecargarGiftCardRequest $request, GiftCard $giftCard, RecargarGiftCard $action)
+    public function recargar(RecargarGiftCardRequest $request, GiftCard $giftCard, RecargarGiftCard $action, TerminalDeSesion $terminalDeSesion)
     {
         $usuario = $request->user();
 
@@ -82,7 +83,7 @@ class GiftCardController extends Controller
             abort(401);
         }
 
-        $giftCard = $action->ejecutar($request->toDto(), (int) $giftCard->getKey(), $usuario);
+        $giftCard = $action->ejecutar($request->toDto(), (int) $giftCard->getKey(), $usuario, $terminalDeSesion->actual($usuario, $request->hasSession() ? $request->session() : null));
 
         return new GiftCardResource($giftCard);
     }

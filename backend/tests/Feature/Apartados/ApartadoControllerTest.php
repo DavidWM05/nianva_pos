@@ -129,7 +129,8 @@ class ApartadoControllerTest extends TestCase
     public function test_registrar_abono_con_pago_mixto_actualiza_total_abonado(): void
     {
         $ctx = $this->prepararTenantConCatalogo();
-        app(AbrirCaja::class)->ejecutar(new AbrirCajaDto(0), $ctx['usuario']);
+        $cajaOperativa = app(AbrirCaja::class)->ejecutar(new AbrirCajaDto(0), $ctx['usuario'], Bloqueos04e::terminal($ctx['sucursal']->id));
+        $this->seleccionarTerminalParaPrueba((int) $cajaOperativa->terminal_id);
         $this->actingAs($ctx['usuario']);
 
         $apartado = $this->postJson('/api/v1/apartados', [
@@ -151,7 +152,8 @@ class ApartadoControllerTest extends TestCase
     public function test_registrar_abono_que_no_cuadra_devuelve_422_con_error_code(): void
     {
         $ctx = $this->prepararTenantConCatalogo();
-        app(AbrirCaja::class)->ejecutar(new AbrirCajaDto(0), $ctx['usuario']);
+        $cajaOperativa = app(AbrirCaja::class)->ejecutar(new AbrirCajaDto(0), $ctx['usuario'], Bloqueos04e::terminal($ctx['sucursal']->id));
+        $this->seleccionarTerminalParaPrueba((int) $cajaOperativa->terminal_id);
         $this->actingAs($ctx['usuario']);
 
         $apartado = $this->postJson('/api/v1/apartados', [
@@ -168,7 +170,8 @@ class ApartadoControllerTest extends TestCase
     public function test_liquidar_con_saldo_cubierto_completa_el_apartado(): void
     {
         $ctx = $this->prepararTenantConCatalogo();
-        app(CajaService::class)->abrirCajaConSucursal(Bloqueos04e::sucursal($ctx['sucursal']->id), $ctx['usuario']->id, 0);
+        $cajaOperativa = app(CajaService::class)->abrirCajaConSucursal(Bloqueos04e::sucursal($ctx['sucursal']->id), $ctx['usuario']->id, 0, Bloqueos04e::terminal($ctx['sucursal']->id), now()->setTimezone('America/Mexico_City')->toDateString(), now());
+        $this->seleccionarTerminalParaPrueba((int) $cajaOperativa->terminal_id);
         $this->actingAs($ctx['usuario']);
 
         $apartado = $this->postJson('/api/v1/apartados', [
@@ -205,7 +208,8 @@ class ApartadoControllerTest extends TestCase
     public function test_cancelar_devuelve_abonos_pendientes_en_la_respuesta(): void
     {
         $ctx = $this->prepararTenantConCatalogo();
-        app(AbrirCaja::class)->ejecutar(new AbrirCajaDto(0), $ctx['usuario']);
+        $cajaOperativa = app(AbrirCaja::class)->ejecutar(new AbrirCajaDto(0), $ctx['usuario'], Bloqueos04e::terminal($ctx['sucursal']->id));
+        $this->seleccionarTerminalParaPrueba((int) $cajaOperativa->terminal_id);
         $this->actingAs($ctx['usuario']);
 
         $apartado = $this->postJson('/api/v1/apartados', [
@@ -219,7 +223,7 @@ class ApartadoControllerTest extends TestCase
         ])->assertOk();
 
         $datosSupervisor1 = ['motivo' => 'Cliente se arrepintio'];
-        $respuesta = $this->patchJson("/api/v1/apartados/{$apartado['id']}/cancelar", $datosSupervisor1, ['X-Autorizacion-Supervisor' => self::conSupervisor($ctx['usuario'], AccionSupervisor::CancelarApartado, $datosSupervisor1, $apartado['id'])->token]);
+        $respuesta = $this->patchJson("/api/v1/apartados/{$apartado['id']}/cancelar", $datosSupervisor1, ['X-Autorizacion-Supervisor' => self::conSupervisor($ctx['usuario'], AccionSupervisor::CancelarApartado, $datosSupervisor1, $apartado['id'], sesionHash: hash('sha256', session()->getId()))->token]);
 
         $respuesta->assertOk()
             ->assertJsonPath('data.estado', 'cancelado')
@@ -243,7 +247,8 @@ class ApartadoControllerTest extends TestCase
     public function test_show_incluye_detalles_y_abonos(): void
     {
         $ctx = $this->prepararTenantConCatalogo();
-        app(AbrirCaja::class)->ejecutar(new AbrirCajaDto(0), $ctx['usuario']);
+        $cajaOperativa = app(AbrirCaja::class)->ejecutar(new AbrirCajaDto(0), $ctx['usuario'], Bloqueos04e::terminal($ctx['sucursal']->id));
+        $this->seleccionarTerminalParaPrueba((int) $cajaOperativa->terminal_id);
         $this->actingAs($ctx['usuario']);
 
         $apartado = $this->postJson('/api/v1/apartados', [

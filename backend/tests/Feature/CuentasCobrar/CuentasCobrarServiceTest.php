@@ -78,7 +78,7 @@ class CuentasCobrarServiceTest extends TestCase
         $items04e2 = [['variante_id' => $variante->id, 'cantidad' => 100, 'precio_compra' => 10]];
         $this->inventarioService->registrarCompraConStocks($datos04e2, $items04e2, Bloqueos04e::stocks((int) $datos04e2['sucursal_id'], array_column($items04e2, 'variante_id')));
 
-        $this->cajaService->abrirCajaConSucursal(Bloqueos04e::sucursal($this->sucursal->id), $this->usuario->id, 500);
+        $this->cajaService->abrirCajaConSucursal(Bloqueos04e::sucursal($this->sucursal->id), $this->usuario->id, 500, Bloqueos04e::terminal($this->sucursal->id), now()->setTimezone('America/Mexico_City')->toDateString(), now());
 
         // Crear venta como base para las CxC
         $datos04e3 = ['tenant_id' => $this->tenant->id, 'sucursal_id' => $this->sucursal->id, 'usuario_id' => $this->usuario->id, 'cliente_id' => $this->cliente->id];

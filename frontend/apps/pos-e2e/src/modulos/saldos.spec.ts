@@ -1,6 +1,7 @@
 import { capturarPantalla50h } from '../soporte/capturas-50h';
 import { expect, test } from '@playwright/test';
 import { abrirPantalla, sinErrores, vigilarErrores } from '../soporte/humo';
+import { asegurarCajaAbierta } from '../soporte/api';
 import { iniciarSesion } from '../soporte/sesion';
 import { prepararSaldos50h } from '../soporte/saldos-50h';
 
@@ -9,6 +10,7 @@ test('saldos: cobrar y pagar conservan abonos, referencias y saldo al recargar',
 }) => {
   test.setTimeout(120000);
   await iniciarSesion(page, 'vendedor@abarrotes.test');
+  await asegurarCajaAbierta(page);
   prepararSaldos50h();
   const errores = vigilarErrores(page);
   for (const [ruta, nombre, accion, confirmar] of [
@@ -69,6 +71,7 @@ test('saldos: cobrar y pagar conservan abonos, referencias y saldo al recargar',
 test('saldos: emitir, buscar y recargar una gift card', async ({ page }) => {
   test.setTimeout(120000);
   await iniciarSesion(page, 'vendedor@abarrotes.test');
+  await asegurarCajaAbierta(page);
   const errores = vigilarErrores(page);
   await abrirPantalla(page, '/gift-cards');
   await page
@@ -148,6 +151,7 @@ test('saldos: crear un plan, pagar una cuota y comprobar el estado guardado', as
 }) => {
   test.setTimeout(120000);
   await iniciarSesion(page, 'vendedor@abarrotes.test');
+  await asegurarCajaAbierta(page);
   const datos = prepararSaldos50h();
   const errores = vigilarErrores(page);
   await abrirPantalla(page, '/ventas-plazos');

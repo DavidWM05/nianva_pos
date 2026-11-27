@@ -6,9 +6,9 @@ use App\Modules\Nucleo\Exceptions\ExcepcionNegocio;
 
 class CajaYaAbiertaException extends ExcepcionNegocio
 {
-    public function __construct(public readonly int $sucursalId)
+    public function __construct(public readonly int $sucursalId, public readonly int $terminalId)
     {
-        parent::__construct("Ya hay una caja abierta para la sucursal {$sucursalId}.");
+        parent::__construct("Ya hay una caja abierta para la terminal {$terminalId}.");
     }
 
     public function errorCode(): string
@@ -20,6 +20,7 @@ class CajaYaAbiertaException extends ExcepcionNegocio
     {
         return [
             'sucursal_id' => $this->sucursalId,
+            'terminal_id' => $this->terminalId,
         ];
     }
 }

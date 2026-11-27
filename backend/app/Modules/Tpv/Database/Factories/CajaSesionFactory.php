@@ -3,6 +3,7 @@
 namespace App\Modules\Tpv\Database\Factories;
 
 use App\Modules\Nucleo\Models\Sucursal;
+use App\Modules\Nucleo\Models\Terminal;
 use App\Modules\Nucleo\Models\Usuario;
 use App\Modules\Tpv\Models\CajaSesion;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -16,6 +17,7 @@ class CajaSesionFactory extends Factory
     {
         return [
             'sucursal_id' => fn () => Sucursal::factory()->create()->id,
+            'terminal_id' => fn (array $a) => Terminal::factory()->create(['sucursal_id' => $a['sucursal_id']])->id,
             'usuario_id' => fn (array $a) => Usuario::factory()->create([
                 'tenant_id' => Sucursal::query()->withoutGlobalScopes()->whereKey($a['sucursal_id'])->firstOrFail()->getAttribute('tenant_id'),
                 'sucursal_id' => $a['sucursal_id'],
@@ -26,6 +28,7 @@ class CajaSesionFactory extends Factory
             'total_ventas_sistema' => null,
             'diferencia' => null,
             'fecha_apertura' => now(),
+            'fecha_operativa' => fn (array $a) => (new \DateTimeImmutable((string) $a['fecha_apertura']))->setTimezone(new \DateTimeZone('America/Mexico_City'))->format('Y-m-d'),
             'fecha_cierre' => null,
             'estado' => 'abierta',
         ];

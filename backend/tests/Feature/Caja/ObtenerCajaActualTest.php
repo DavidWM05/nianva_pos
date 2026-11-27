@@ -4,6 +4,7 @@ namespace Tests\Feature\Caja;
 
 use App\Aplicacion\Caja\ObtenerCajaActual;
 use App\Modules\Gastos\Models\Gasto;
+use App\Modules\Nucleo\Models\Terminal;
 use App\Modules\Nucleo\Models\Usuario;
 use App\Modules\Tpv\Models\CajaSesion;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -23,7 +24,9 @@ class ObtenerCajaActualTest extends TestCase
     public function test_con_caja_abierta_y_gastos_devuelve_la_sesion_y_el_total(): void
     {
         $usuario = Usuario::factory()->create();
+        $terminal = Terminal::factory()->create(['sucursal_id' => $usuario->sucursal_id]);
         $caja = CajaSesion::factory()->create([
+            'terminal_id' => $terminal->id,
             'sucursal_id' => $usuario->sucursal_id,
             'usuario_id' => $usuario->id,
         ]);
@@ -34,7 +37,7 @@ class ObtenerCajaActualTest extends TestCase
             'monto' => 80,
         ]);
 
-        $resultado = app(ObtenerCajaActual::class)->ejecutar($usuario);
+        $resultado = app(ObtenerCajaActual::class)->ejecutar($usuario, $terminal);
 
         $this->assertSame($caja->id, $resultado['sesion']?->id);
         $this->assertSame(0, $resultado['resumen']['ventas_count']);
@@ -45,8 +48,9 @@ class ObtenerCajaActualTest extends TestCase
     public function test_sin_caja_abierta_devuelve_la_misma_respuesta_vacia(): void
     {
         $usuario = Usuario::factory()->create();
+        $terminal = Terminal::factory()->create(['sucursal_id' => $usuario->sucursal_id]);
 
-        $resultado = app(ObtenerCajaActual::class)->ejecutar($usuario);
+        $resultado = app(ObtenerCajaActual::class)->ejecutar($usuario, $terminal);
 
         $this->assertNull($resultado['sesion']);
         $this->assertNull($resultado['resumen']);

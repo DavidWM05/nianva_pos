@@ -166,7 +166,8 @@ class ListasPrecioApiTest extends TestCase
         $producto = Producto::factory()->create(['tenant_id' => $usuario->tenant_id, 'precio_venta' => 100]);
         $variante = ProductoVariante::factory()->create(['producto_id' => $producto->id]);
         InventarioStock::factory()->create(['sucursal_id' => $usuario->sucursal_id, 'variante_id' => $variante->id, 'stock_actual' => 10]);
-        CajaSesion::factory()->create(['sucursal_id' => $usuario->sucursal_id, 'usuario_id' => $usuario->id]);
+        $cajaOperativa = CajaSesion::factory()->create(['sucursal_id' => $usuario->sucursal_id, 'usuario_id' => $usuario->id]);
+        $this->seleccionarTerminalParaPrueba((int) $cajaOperativa->terminal_id);
         $metodo = MetodoPago::factory()->create(['tenant_id' => $usuario->tenant_id]);
         $lista = ListaPrecio::factory()->create(['tenant_id' => $usuario->tenant_id]);
         ListaPrecioItem::factory()->create(['tenant_id' => $usuario->tenant_id, 'lista_precio_id' => $lista->id, 'producto_id' => $producto->id, 'precio' => 80]);
@@ -184,7 +185,8 @@ class ListasPrecioApiTest extends TestCase
         $producto = Producto::factory()->create(['tenant_id' => $usuario->tenant_id, 'precio_venta' => 100]);
         $variante = ProductoVariante::factory()->create(['producto_id' => $producto->id]);
         InventarioStock::factory()->create(['sucursal_id' => $usuario->sucursal_id, 'variante_id' => $variante->id, 'stock_actual' => 10]);
-        CajaSesion::factory()->create(['sucursal_id' => $usuario->sucursal_id, 'usuario_id' => $usuario->id]);
+        $cajaOperativa = CajaSesion::factory()->create(['sucursal_id' => $usuario->sucursal_id, 'usuario_id' => $usuario->id]);
+        $this->seleccionarTerminalParaPrueba((int) $cajaOperativa->terminal_id);
         $metodo = MetodoPago::factory()->create(['tenant_id' => $usuario->tenant_id]);
         $lista = ListaPrecio::factory()->create(['tenant_id' => $usuario->tenant_id]);
         ListaPrecioItem::factory()->create(['tenant_id' => $usuario->tenant_id, 'lista_precio_id' => $lista->id, 'producto_id' => $producto->id, 'precio' => 80]);

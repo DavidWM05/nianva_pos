@@ -83,7 +83,13 @@ class DevolucionControllerTest extends TestCase
 
         $cliente = Cliente::where('tenant_id', $tenant->id)->where('nombre', 'Publico General')->firstOrFail();
 
-        app(CajaService::class)->abrirCajaConSucursal(Bloqueos04e::sucursal($sucursal->id), $usuario->id, 0);
+        $terminal = Bloqueos04e::terminal($sucursal->id);
+        app(CajaService::class)->abrirCajaConSucursal(Bloqueos04e::sucursal($sucursal->id), $usuario->id, 0, $terminal, now()->setTimezone('America/Mexico_City')->toDateString(), now());
+        config(['sanctum.stateful' => ['localhost:4200']]);
+        $this->withHeader('Referer', 'http://localhost:4200/')
+            ->withSession(['auth.terminal_id' => $terminal->id])
+            ->withCredentials()
+            ->withCookie(session()->getName(), session()->getId());
 
         // Venta origen: E x2 (120 c/u) + F x1 (60) = 300.
         $datos04e3 = ['tenant_id' => $tenant->id, 'sucursal_id' => $sucursal->id, 'usuario_id' => $usuario->id, 'cliente_id' => $cliente->id];
@@ -111,7 +117,7 @@ class DevolucionControllerTest extends TestCase
             'pagos' => [['metodo_pago_id' => $ctx['efectivo']->id, 'monto' => 120]],
             'motivo' => 'Talla incorrecta',
         ];
-        $respuesta = $this->postJson('/api/v1/devoluciones', $datosSupervisor1, ['X-Autorizacion-Supervisor' => self::conSupervisor($ctx['usuario'], AccionSupervisor::Reembolsar, $datosSupervisor1, $ctx['ventaOrigenId'])->token]);
+        $respuesta = $this->postJson('/api/v1/devoluciones', $datosSupervisor1, ['X-Autorizacion-Supervisor' => self::conSupervisor($ctx['usuario'], AccionSupervisor::Reembolsar, $datosSupervisor1, $ctx['ventaOrigenId'], sesionHash: hash('sha256', session()->getId()))->token]);
 
         $respuesta->assertCreated()
             ->assertJsonPath('data.tipo', 'devolucion')
@@ -135,7 +141,7 @@ class DevolucionControllerTest extends TestCase
             'items_devueltos' => [['variante_id' => $ctx['varianteE']->id, 'cantidad' => 1, 'va_a_merma' => true]],
             'pagos' => [['metodo_pago_id' => $ctx['efectivo']->id, 'monto' => 120]],
         ];
-        $this->postJson('/api/v1/devoluciones', $datosSupervisor1, ['X-Autorizacion-Supervisor' => self::conSupervisor($ctx['usuario'], AccionSupervisor::Reembolsar, $datosSupervisor1, $ctx['ventaOrigenId'])->token])->assertCreated()->assertJsonPath('data.items.0.va_a_merma', true);
+        $this->postJson('/api/v1/devoluciones', $datosSupervisor1, ['X-Autorizacion-Supervisor' => self::conSupervisor($ctx['usuario'], AccionSupervisor::Reembolsar, $datosSupervisor1, $ctx['ventaOrigenId'], sesionHash: hash('sha256', session()->getId()))->token])->assertCreated()->assertJsonPath('data.items.0.va_a_merma', true);
 
         $this->assertSame($stockAntes, InventarioStock::sinTenant()->where('variante_id', $ctx['varianteE']->id)->first()->stock_actual);
     }
@@ -233,7 +239,7 @@ class DevolucionControllerTest extends TestCase
             'items_devueltos' => [['variante_id' => $ctx['varianteE']->id, 'cantidad' => 1, 'va_a_merma' => false]],
             'pagos' => [['metodo_pago_id' => $ctx['efectivo']->id, 'monto' => 120]],
         ];
-        $creada = $this->postJson('/api/v1/devoluciones', $datosSupervisor1, ['X-Autorizacion-Supervisor' => self::conSupervisor($ctx['usuario'], AccionSupervisor::Reembolsar, $datosSupervisor1, $ctx['ventaOrigenId'])->token])->json('data');
+        $creada = $this->postJson('/api/v1/devoluciones', $datosSupervisor1, ['X-Autorizacion-Supervisor' => self::conSupervisor($ctx['usuario'], AccionSupervisor::Reembolsar, $datosSupervisor1, $ctx['ventaOrigenId'], sesionHash: hash('sha256', session()->getId()))->token])->json('data');
 
         $respuesta = $this->getJson("/api/v1/devoluciones/{$creada['id']}");
 

@@ -159,7 +159,7 @@ class ApartadoServiceTest extends TestCase
         $stockCTrasReserva = InventarioStock::sinTenant()->where('variante_id', $ctx['varianteC']->id)->first()->stock_actual;
         $stockDTrasReserva = InventarioStock::sinTenant()->where('variante_id', $ctx['varianteD']->id)->first()->stock_actual;
 
-        $this->cajaService->abrirCajaConSucursal(Bloqueos04e::sucursal($ctx['sucursal']->id), $ctx['usuario']->id, 0);
+        $this->cajaService->abrirCajaConSucursal(Bloqueos04e::sucursal($ctx['sucursal']->id), $ctx['usuario']->id, 0, Bloqueos04e::terminal($ctx['sucursal']->id), now()->setTimezone('America/Mexico_City')->toDateString(), now());
 
         $caja04e19 = Bloqueos04c::caja((int) $apartado->getAttribute('sucursal_id'));
         $apartado04e19 = Bloqueos04d::modelo($apartado);

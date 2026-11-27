@@ -19,6 +19,7 @@ class RegistrarVentaAtomicidadTest extends TestCase
     {
         parent::setUp();
         $this->prepararNegocio(['ventas.crear']);
+        $this->seleccionarTerminalDeCaja();
     }
 
     public function test_si_falla_el_stock_se_revierte_el_descuento_de_la_gift_card_y_la_venta(): void

@@ -37,6 +37,15 @@ use App\Modules\VentasPlazos\Services\VentasPlazosService;
 
 trait PreparaNegocio
 {
+    protected function seleccionarTerminalDeCaja(): void
+    {
+        config(['sanctum.stateful' => ['localhost:4200']]);
+        $this->withHeader('Referer', 'http://localhost:4200/')
+            ->withSession(['auth.terminal_id' => (int) $this->caja->getAttribute('terminal_id')])
+            ->withCredentials()
+            ->withCookie(session()->getName(), session()->getId());
+    }
+
     private Tenant $tenant;
 
     private Sucursal $sucursal;
@@ -151,7 +160,7 @@ trait PreparaNegocio
         ];
         $this->compra = app(InventarioService::class)->registrarCompraConStocks($datos04e2, $items04e2, Bloqueos04e::stocks((int) $datos04e2['sucursal_id'], array_column($items04e2, 'variante_id')));
 
-        $this->caja = app(CajaService::class)->abrirCajaConSucursal(Bloqueos04e::sucursal($this->sucursal->id), $this->usuario->id, 500);
+        $this->caja = app(CajaService::class)->abrirCajaConSucursal(Bloqueos04e::sucursal($this->sucursal->id), $this->usuario->id, 500, Bloqueos04e::terminal($this->sucursal->id), now()->setTimezone('America/Mexico_City')->toDateString(), now());
 
         $this->cliente = Cliente::sinTenant()
             ->where('tenant_id', $this->tenant->id)
@@ -168,6 +177,8 @@ trait PreparaNegocio
             'password' => 'password-valida-123',
         ]);
         $this->cajaB = CajaSesion::create([
+            'fecha_operativa' => now()->setTimezone('America/Mexico_City')->toDateString(),
+            'terminal_id' => Bloqueos04e::terminal($this->sucursalB->id)->id,
             'sucursal_id' => $this->sucursalB->id,
             'usuario_id' => $this->usuarioB->id,
             'monto_apertura' => 0,

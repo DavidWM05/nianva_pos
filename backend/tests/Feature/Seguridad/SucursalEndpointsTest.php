@@ -5,6 +5,7 @@ namespace Tests\Feature\Seguridad;
 use App\Modules\Cotizaciones\Models\Cotizacion;
 use App\Modules\Delivery\Models\Pedido;
 use App\Modules\Nucleo\Models\Sucursal;
+use App\Modules\Nucleo\Models\Terminal;
 use App\Modules\Nucleo\Models\Usuario;
 use App\Modules\Payroll\Models\Empleado;
 use App\Modules\Payroll\Models\Nomina;
@@ -319,6 +320,8 @@ class SucursalEndpointsTest extends TestCase
     private function crearVentaEn(Sucursal $sucursal, float $total): Venta
     {
         $caja = CajaSesion::create([
+            'fecha_operativa' => now()->setTimezone('America/Mexico_City')->toDateString(),
+            'terminal_id' => Terminal::factory()->create(['sucursal_id' => $sucursal->id])->id,
             'sucursal_id' => $sucursal->id,
             'usuario_id' => $this->usuario->id,
             'monto_apertura' => 0,

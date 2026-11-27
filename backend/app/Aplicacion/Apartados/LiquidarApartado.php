@@ -4,15 +4,15 @@ declare(strict_types=1);
 
 namespace App\Aplicacion\Apartados;
 
+use App\Aplicacion\Caja\CajaDeTerminal;
 use App\Aplicacion\Folios\Folios;
 use App\Aplicacion\Inventario\RegistrarMovimiento;
 use App\Modules\Apartados\Dtos\LiquidarApartadoDto;
 use App\Modules\Apartados\Models\Apartado;
 use App\Modules\Apartados\Services\ApartadoService;
 use App\Modules\Inventario\Dtos\MovimientoInventarioDto;
+use App\Modules\Nucleo\Models\Terminal;
 use App\Modules\Nucleo\Models\Usuario;
-use App\Modules\Nucleo\Scopes\TenantScopeViaRelacion;
-use App\Modules\Tpv\Models\CajaSesion;
 use Illuminate\Support\Facades\DB;
 
 final class LiquidarApartado
@@ -20,14 +20,17 @@ final class LiquidarApartado
     public function __construct(private readonly ApartadoService $service, private readonly RegistrarMovimiento $movimiento) {}
 
     /** Reutiliza la transacción exterior; bloquea el estado antes de modificar la reserva. */
-    public function ejecutar(LiquidarApartadoDto $dto, Apartado $apartado, ?Usuario $usuario): Apartado
+    public function ejecutar(LiquidarApartadoDto $dto, Apartado $apartado, ?Usuario $usuario, ?Terminal $terminal = null): Apartado
     {
         if ($usuario === null) {
             abort(401);
         }
-        $operacion = function () use ($apartado, $usuario) {
-            $caja = CajaSesion::query()->withoutGlobalScope(TenantScopeViaRelacion::class)->where('sucursal_id', (int) $apartado->getAttribute('sucursal_id'))->where('estado', 'abierta')->latest('id')->lockForUpdate()->first();
+        $operacion = function () use ($apartado, $usuario, $terminal) {
+            $caja = CajaDeTerminal::bloquearAbierta($usuario, $terminal);
             $bloqueado = Apartado::query()->whereKey($apartado->id)->lockForUpdate()->firstOrFail();
+            if ((int) $bloqueado->getAttribute('sucursal_id') !== (int) $usuario->getAttribute('sucursal_id')) {
+                $caja = null;
+            }
             $sucursalId = (int) $bloqueado->getAttribute('sucursal_id');
             $items = $bloqueado->detalles->map(static fn ($detalle): array => ['variante_id' => (int) $detalle->getAttribute('variante_id')])->values()->all();
             $stocks = [];

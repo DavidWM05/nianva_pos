@@ -89,6 +89,7 @@ class UlidApiVentasTest extends TestCase
         $apartado = $this->crearApartado();
         $this->getJson("/api/v1/apartados/{$apartado->ulid}")
             ->assertJsonMissingPath('data.numero');
+        $this->seleccionarTerminalDeCaja();
         $this->getJson('/api/v1/caja/actual')
             ->assertJsonPath('data.id', $this->caja->ulid)
             ->assertJsonMissingPath('data.numero');
@@ -188,7 +189,8 @@ class UlidApiVentasTest extends TestCase
             'items_devueltos' => [$item + ['venta_detalle_id' => $linea->ulid]],
             'pagos' => [['metodo_pago_id' => $this->metodoPago->id, 'monto' => 100]],
         ];
-        $this->postJson('/api/v1/devoluciones', $datosSupervisor1, ['X-Autorizacion-Supervisor' => self::conSupervisor($this->usuario, AccionSupervisor::Reembolsar, $datosSupervisor1, $venta->ulid)->token])->assertCreated()->assertJsonPath('data.venta.id', $venta->ulid);
+        $this->seleccionarTerminalDeCaja();
+        $this->postJson('/api/v1/devoluciones', $datosSupervisor1, ['X-Autorizacion-Supervisor' => self::conSupervisor($this->usuario, AccionSupervisor::Reembolsar, $datosSupervisor1, $venta->ulid, sesionHash: hash('sha256', session()->getId()))->token])->assertCreated()->assertJsonPath('data.venta.id', $venta->ulid);
         $this->assertSame($venta->id, Devolucion::query()->latest('id')->firstOrFail()->venta_id);
     }
 

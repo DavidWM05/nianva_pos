@@ -8,6 +8,7 @@ use App\Modules\Apartados\Models\Apartado;
 use App\Modules\Inventario\Models\InventarioStock;
 use App\Modules\Inventario\Services\InventarioService;
 use App\Modules\Nucleo\Models\Sucursal;
+use App\Modules\Nucleo\Models\Terminal;
 use App\Modules\Nucleo\Scopes\TenantScope;
 use App\Modules\Nucleo\Scopes\TenantScopeViaRelacion;
 use Illuminate\Support\Facades\DB;
@@ -20,6 +21,17 @@ final class Bloqueos04e
         self::exigirTransaccion();
 
         return Sucursal::query()->withoutGlobalScope(TenantScope::class)->whereKey($id)->lockForUpdate()->firstOrFail();
+    }
+
+    public static function terminal(int $sucursalId): Terminal
+    {
+        $sucursal = self::sucursal($sucursalId);
+
+        return Terminal::sinTenant()->firstOrCreate([
+            'tenant_id' => $sucursal->tenant_id,
+            'sucursal_id' => $sucursal->id,
+            'nombre' => 'Terminal de prueba',
+        ]);
     }
 
     public static function stock(int $varianteId, int $sucursalId): InventarioStock

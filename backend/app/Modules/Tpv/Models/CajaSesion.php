@@ -9,6 +9,7 @@ use App\Modules\Nucleo\Models\Concerns\BelongsToTenantViaRelacion;
 use App\Modules\Nucleo\Models\Concerns\RutaPorUlid;
 use App\Modules\Nucleo\Models\Concerns\TieneUlid;
 use App\Modules\Nucleo\Models\Sucursal;
+use App\Modules\Nucleo\Models\Terminal;
 use App\Modules\Nucleo\Models\Usuario;
 use App\Modules\Tpv\Database\Factories\CajaSesionFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
@@ -22,8 +23,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * consultando sucursal.tenant_id (ver tenantRelacion()).
  */
 #[Fillable(['folio',
-    'sucursal_id', 'usuario_id', 'usuario_cierre_id', 'monto_apertura', 'saldo_teorico', 'monto_cierre',
-    'total_ventas_sistema', 'total_teorico', 'diferencia', 'fecha_apertura', 'fecha_cierre', 'estado',
+    'sucursal_id', 'terminal_id', 'caja_consolidado_id', 'supervisor_apertura_id', 'usuario_id', 'usuario_cierre_id', 'monto_apertura', 'saldo_teorico', 'monto_cierre',
+    'total_ventas_sistema', 'total_teorico', 'diferencia', 'fecha_apertura', 'fecha_operativa', 'fecha_cierre', 'estado',
 ])]
 class CajaSesion extends Model
 {
@@ -75,6 +76,12 @@ class CajaSesion extends Model
     public function sucursal(): BelongsTo
     {
         return $this->belongsTo(Sucursal::class);
+    }
+
+    /** @return BelongsTo<Terminal, $this> */
+    public function terminal(): BelongsTo
+    {
+        return $this->belongsTo(Terminal::class);
     }
 
     public function usuario(): BelongsTo

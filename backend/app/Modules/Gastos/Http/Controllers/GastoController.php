@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\Gastos\Http\Controllers;
 
 use App\Aplicacion\Gastos\RegistrarGasto;
+use App\Aplicacion\Sesion\TerminalDeSesion;
 use App\Http\Controllers\Controller;
 use App\Modules\Gastos\Http\Requests\CrearGastoRequest;
 use App\Modules\Gastos\Http\Requests\ListarGastosRequest;
@@ -38,7 +39,7 @@ class GastoController extends Controller
         return response()->json(['data' => GastoResource::collection($gastos)]);
     }
 
-    public function store(CrearGastoRequest $request, RegistrarGasto $registrarGasto)
+    public function store(CrearGastoRequest $request, RegistrarGasto $registrarGasto, TerminalDeSesion $terminalDeSesion)
     {
         $usuario = $request->user();
 
@@ -46,7 +47,7 @@ class GastoController extends Controller
             abort(401);
         }
 
-        $gasto = $registrarGasto->ejecutar($request->toDto(), $usuario);
+        $gasto = $registrarGasto->ejecutar($request->toDto(), $usuario, $terminalDeSesion->actual($usuario, $request->hasSession() ? $request->session() : null));
 
         return (new GastoResource($gasto))->response()->setStatusCode(201);
     }

@@ -1,15 +1,20 @@
 import { expect, test } from '@playwright/test';
 
 import { abrirPantalla, sinErrores, sinViolacionesSerias, vigilarErrores } from '../soporte/humo';
+import { limpiarMetodoPago } from '../soporte/backend';
 import { iniciarSesion } from '../soporte/sesion';
 
+const vendedor = 'vendedor@abarrotes.test';
+const nombre = `Pago E2E ${Date.now()}`;
+
+test.afterEach(() => limpiarMetodoPago(vendedor, nombre));
+
 test('metodos de pago: crear y ver el detalle', async ({ page }) => {
-  await iniciarSesion(page, 'vendedor@abarrotes.test');
+  await iniciarSesion(page, vendedor);
   const errores = vigilarErrores(page);
   await abrirPantalla(page, '/metodos-pago');
   await sinViolacionesSerias(page);
 
-  const nombre = `Pago E2E ${Date.now()}`;
   await page.getByText('Nuevo método de pago', { exact: true }).click();
   await page.locator('#nombre').fill(nombre);
   await page.getByRole('button', { name: 'Crear método de pago' }).click();

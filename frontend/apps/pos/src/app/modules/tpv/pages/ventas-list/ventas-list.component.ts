@@ -215,6 +215,14 @@ export class VentasListComponent {
         error: (error: HttpErrorResponse) => {
           this.anulando.set(false);
 
+          if (esErrorNegocio(error, 'anulacion_requiere_devolucion')) {
+            this.ventaEnAnulacion.set(null);
+            this.toast.error('La caja de esta venta ya está cerrada. Registra una devolución.');
+            this.cargar(this.ultimoEvento());
+
+            return;
+          }
+
           if (esErrorNegocio(error, 'venta_ya_anulada')) {
             this.toast.error(mensajeError(error, 'No se pudo anular la venta.'));
             this.cargar(this.ultimoEvento());
