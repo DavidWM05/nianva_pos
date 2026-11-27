@@ -8958,7 +8958,10 @@
                                             "type": "object",
                                             "properties": {
                                                 "actual": {
-                                                    "type": "string"
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
                                                 }
                                             },
                                             "required": [
@@ -15515,7 +15518,10 @@
                         "type": "boolean"
                     },
                     "perfil_giro": {
-                        "type": "string"
+                        "type": [
+                            "string",
+                            "null"
+                        ]
                     }
                 },
                 "required": [
@@ -21195,8 +21201,80 @@
                             "zona_horaria"
                         ]
                     },
+                    "licencia": {
+                        "type": [
+                            "object",
+                            "null"
+                        ],
+                        "properties": {
+                            "estado": {
+                                "type": "string",
+                                "enum": [
+                                    "sin_licencia",
+                                    "activa",
+                                    "prueba",
+                                    "vencida",
+                                    "revocada"
+                                ]
+                            },
+                            "modo_operativo": {
+                                "type": "string",
+                                "enum": [
+                                    "operativa",
+                                    "solo_lectura"
+                                ]
+                            },
+                            "motivo": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ],
+                                "enum": [
+                                    "revocada",
+                                    "instancia_distinta",
+                                    "token_invalido",
+                                    "gracia_agotada",
+                                    null
+                                ]
+                            },
+                            "gracia_hasta": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ]
+                            },
+                            "soporte_hasta": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ]
+                            }
+                        },
+                        "required": [
+                            "estado",
+                            "modo_operativo",
+                            "motivo",
+                            "gracia_hasta",
+                            "soporte_hasta"
+                        ]
+                    },
                     "perfil_giro": {
-                        "type": "null"
+                        "type": [
+                            "object",
+                            "null"
+                        ],
+                        "properties": {
+                            "clave": {
+                                "type": "string"
+                            },
+                            "nombre": {
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "clave",
+                            "nombre"
+                        ]
                     }
                 },
                 "required": [
@@ -21208,6 +21286,7 @@
                     "permisos",
                     "modulos_activos",
                     "regional",
+                    "licencia",
                     "perfil_giro"
                 ],
                 "title": "SesionResource"

@@ -12,6 +12,13 @@ const sesion: Sesion = {
   permisos: [],
   modulos_activos: [],
   regional: { locale: 'es-US', moneda: 'USD', zona_horaria: 'America/Tijuana' },
+  licencia: {
+    estado: 'sin_licencia',
+    modo_operativo: 'operativa',
+    motivo: null,
+    gracia_hasta: null,
+    soporte_hasta: null,
+  },
   perfil_giro: null,
 };
 

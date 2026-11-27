@@ -2889,7 +2889,7 @@ export interface components {
             /** Format: date-time */
             backup_ultimo: string | null;
             codigo_barras_automatico: boolean;
-            perfil_giro: string;
+            perfil_giro: string | null;
         };
         /** ConfirmTwoFactorRequest */
         ConfirmTwoFactorRequest: {
@@ -4233,7 +4233,20 @@ export interface components {
                 moneda: string;
                 zona_horaria: string;
             };
-            perfil_giro: null;
+            licencia: {
+                /** @enum {string} */
+                estado: "sin_licencia" | "activa" | "prueba" | "vencida" | "revocada";
+                /** @enum {string} */
+                modo_operativo: "operativa" | "solo_lectura";
+                /** @enum {string|null} */
+                motivo: "revocada" | "instancia_distinta" | "token_invalido" | "gracia_agotada" | null;
+                gracia_hasta: string | null;
+                soporte_hasta: string | null;
+            } | null;
+            perfil_giro: {
+                clave: string;
+                nombre: string;
+            } | null;
         };
         /** Sucursal */
         Sucursal: {
@@ -8748,7 +8761,7 @@ export interface operations {
                     "application/json": {
                         data: components["schemas"]["PerfilGiroResource"][];
                         meta: {
-                            actual: string;
+                            actual: string | null;
                         };
                     };
                 };

@@ -14,6 +14,13 @@ function sesion(permisos: string[], modulos: string[]): Sesion {
     permisos,
     modulos_activos: modulos,
     regional: { locale: 'es-MX', moneda: '$', zona_horaria: 'America/Mexico_City' },
+    licencia: {
+      estado: 'sin_licencia',
+      modo_operativo: 'operativa',
+      motivo: null,
+      gracia_hasta: null,
+      soporte_hasta: null,
+    },
     perfil_giro: null,
   };
 }

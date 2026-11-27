@@ -14,8 +14,7 @@ final class FuenteConcesionLicencia implements FuenteConcesion
     public function para(int $tenantId): ?array
     {
         $licencia = $this->estado->licencia($tenantId);
-        if ($licencia !== null && ($licencia->getAttribute('codigo_activacion') !== null
-            || $licencia->getAttribute('token_firmado') !== null)) {
+        if ($licencia !== null && $licencia->tieneCredencial()) {
             return $this->estado->verificar($licencia)['concesion'] ?? null;
         }
 

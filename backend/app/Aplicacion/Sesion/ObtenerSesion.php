@@ -6,9 +6,11 @@ namespace App\Aplicacion\Sesion;
 
 use App\Aplicacion\Planes\CuotasPlan;
 use App\Modules\Configuracion\Models\ConfiguracionTenant;
+use App\Modules\Configuracion\Support\PerfilesGiro;
 use App\Modules\Nucleo\Dtos\SesionDto;
 use App\Modules\Nucleo\Http\Middleware\ModuloActivo;
 use App\Modules\Nucleo\Models\Usuario;
+use App\Modules\Nucleo\Services\EstadoLicenciaPos;
 use App\Modules\Nucleo\Services\Planes;
 use Illuminate\Contracts\Session\Session;
 
@@ -18,7 +20,7 @@ use Illuminate\Contracts\Session\Session;
  * Configuracion (ARQ-03). Solo lectura: no abre transaccion.
  *
  * - terminal: seleccionada para esta sesión y limitada a la sucursal del usuario (SEG-12).
- * - perfil_giro: aun no existe; se define con los planes (Fase 7).
+ * - perfil_giro: resume el perfil elegido por el tenant. Queda en null hasta que elige uno.
  * - modulos_activos: los mismos que aplica el middleware `modulo:` (ModuloActivo::activos).
  * - locale: el tenant no lo guarda; se deriva del pais (MX -> es-MX).
  */
@@ -32,6 +34,7 @@ class ObtenerSesion
         private readonly TerminalDeSesion $terminalDeSesion,
         private readonly Planes $planes,
         private readonly CuotasPlan $cuotas,
+        private readonly EstadoLicenciaPos $estadoLicencia,
     ) {}
 
     public function ejecutar(Usuario $usuario, ?Session $sesion = null): SesionDto
@@ -42,6 +45,8 @@ class ObtenerSesion
         $terminal = $this->terminalDeSesion->actual($usuario, $sesion);
 
         $tenantId = $usuario->tenant?->id;
+        $claveGiro = $configuracion?->perfil_giro;
+        $perfil = $tenantId === null || $claveGiro === null ? null : PerfilesGiro::buscar($claveGiro);
 
         return new SesionDto(
             usuario: $usuario,
@@ -51,6 +56,8 @@ class ObtenerSesion
             modulosActivos: ModuloActivo::activos(),
             plan: $tenantId === null ? null : $this->planes->deTenant($tenantId)->paraSesion(),
             limites: $tenantId === null ? null : $this->cuotas->estado($tenantId),
+            licencia: $tenantId === null ? null : $this->estadoLicencia->paraSesion($tenantId),
+            perfilGiro: $perfil === null ? null : ['clave' => $perfil['clave'], 'nombre' => $perfil['nombre']],
             regional: [
                 'locale' => 'es-'.strtoupper($usuario->tenant->pais ?? 'MX'),
                 'moneda' => $configuracion->moneda ?? self::MONEDA_POR_DEFECTO,
