@@ -15,6 +15,7 @@ return new class extends Migration
             $table->foreignId('tenant_id')->constrained('tenants')->cascadeOnDelete();
             $table->foreignId('sucursal_id')->constrained('sucursales')->cascadeOnDelete();
             $table->string('nombre', 100);
+            $table->boolean('activo')->default(true);
             $table->timestamps();
         });
     }

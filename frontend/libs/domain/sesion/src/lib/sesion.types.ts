@@ -5,4 +5,4 @@ import type { SesionResource } from '@nianva/api-contrato';
  * docs/api/openapi.json (API-08). `terminal` refleja la selección de la sesión y
  * `perfil_giro` se reserva para la Fase 7.
  */
-export type Sesion = SesionResource;
+export type Sesion = Omit<SesionResource, 'plan' | 'limites'> & Partial<Pick<SesionResource, 'plan' | 'limites'>>;

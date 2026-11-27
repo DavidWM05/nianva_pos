@@ -58,7 +58,7 @@ import { AutorizacionSupervisorService } from '../../../../core/supervisor/autor
 export class CajaComponent implements OnInit {
   protected readonly compararDinero = compararDinero;
   protected readonly puedeConsolidar = computed(() =>
-    this.sesion.sesion()?.permisos.includes('caja.cerrar_remota') ?? false,
+    (this.sesion.sesion()?.permisos.includes('caja.cerrar_remota') ?? false) && this.sesion.concedida('multicaja'),
   );
   private readonly sesion = inject(SesionActualService);
   protected readonly sinTerminal = computed(() => {

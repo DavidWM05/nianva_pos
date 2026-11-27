@@ -43,6 +43,7 @@ Generado con `php artisan errores:catalogo` desde las excepciones de negocio y e
 | `dos_pasos_requeridos` | 423 | `App\Modules\Nucleo\Support\MapaErroresHttp` | Nucleo | - |
 | `empleado_ya_existe` | 422 | `App\Modules\Payroll\Exceptions\EmpleadoYaExisteException` | Payroll | — |
 | `error_interno` | 500 | `App\Modules\Nucleo\Support\MapaErroresHttp` | Nucleo | - |
+| `feature_no_concedida` | 403 | `App\Modules\Nucleo\Exceptions\FeatureNoConcedidaException` | Nucleo | feature |
 | `foto_incompleta` | 422 | `App\Modules\Nucleo\Exceptions\FotoIncompletaException` | Nucleo | campo, variante_id |
 | `gift_card_cancelada` | 422 | `App\Modules\GiftCards\Exceptions\GiftCardCanceladaException` | GiftCards | — |
 | `gift_card_expirada` | 422 | `App\Modules\GiftCards\Exceptions\GiftCardExpiradaException` | GiftCards | — |
@@ -52,6 +53,7 @@ Generado con `php artisan errores:catalogo` desde las excepciones de negocio y e
 | `idempotencia_clave_invalida` | 422 | `App\Modules\Nucleo\Exceptions\ClaveIdempotenciaInvalidaException` | Nucleo | — |
 | `idempotencia_conflicto` | 409 | `App\Modules\Nucleo\Exceptions\ConflictoIdempotenciaException` | Nucleo | — |
 | `libro_inmutable` | 409 | `App\Modules\Nucleo\Exceptions\LibroInmutableException` | Nucleo | libro, operacion |
+| `limite_plan_excedido` | 422 | `App\Modules\Nucleo\Exceptions\LimitePlanExcedidoException` | Nucleo | recurso, operacion, limite, uso |
 | `lista_precio_no_disponible` | 422 | `App\Modules\Precios\Exceptions\ListaPrecioNoDisponibleException` | Precios | lista_precio_id |
 | `metodo_efectivo_no_existe` | 422 | `App\Modules\Nucleo\Exceptions\MetodoEfectivoNoExisteException` | Nucleo | — |
 | `metodo_no_permitido` | 405 | `App\Modules\Nucleo\Support\MapaErroresHttp` | Nucleo | - |

@@ -9,6 +9,7 @@ use App\Aplicacion\Folios\Folios;
 use App\Aplicacion\Inventario\RegistrarMovimiento;
 use App\Aplicacion\Supervisor\Supervisor;
 use App\Modules\Configuracion\Models\ConfiguracionTenant;
+use App\Modules\Crm\Models\Cliente;
 use App\Modules\GiftCards\Models\GiftCard;
 use App\Modules\GiftCards\Services\GiftCardService;
 use App\Modules\Inventario\Dtos\MovimientoInventarioDto;
@@ -18,6 +19,7 @@ use App\Modules\Nucleo\Dtos\OperacionSupervisorDto;
 use App\Modules\Nucleo\Models\MetodoPago;
 use App\Modules\Nucleo\Models\Terminal;
 use App\Modules\Nucleo\Models\Usuario;
+use App\Modules\Nucleo\Services\Planes;
 use App\Modules\Nucleo\Support\AccionSupervisor;
 use App\Modules\Nucleo\Support\Dinero;
 use App\Modules\Precios\Exceptions\CuponInvalidoException;
@@ -75,6 +77,20 @@ class RegistrarVenta
 
         $tenantId = $usuario->tenant_id;
         $sucursalContextoId = $usuario->getAttribute('sucursal_id');
+        $planes = app(Planes::class);
+        $plan = $planes->deTenant($tenantId);
+        if (! $plan->incluye('clientes') && ! Cliente::sinTenant()->where('tenant_id', $tenantId)->whereKey($clienteId)->where('es_sistema', true)->exists()) {
+            $planes->exigir($tenantId, 'clientes');
+        }
+        if (! empty($cuponCodigo)) {
+            $planes->exigir($tenantId, 'cupones_promociones_mayoreo');
+        }
+        if (! empty($giftCardCodigo)) {
+            $planes->exigirModulo($tenantId, 'gift_cards');
+        }
+        if ($notaCreditoId !== null) {
+            $planes->exigirModulo($tenantId, 'notas_credito');
+        }
 
         $cuponId = null;
         $descuentoCupon = 0.0;

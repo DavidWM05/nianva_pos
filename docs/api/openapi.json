@@ -12052,10 +12052,41 @@
                                             "items": {
                                                 "$ref": "#/components/schemas/Sucursal"
                                             }
+                                        },
+                                        "meta": {
+                                            "type": "object",
+                                            "properties": {
+                                                "limite": {
+                                                    "type": [
+                                                        "object",
+                                                        "null"
+                                                    ],
+                                                    "properties": {
+                                                        "maximo": {
+                                                            "type": [
+                                                                "string",
+                                                                "number"
+                                                            ]
+                                                        },
+                                                        "uso": {
+                                                            "type": "integer",
+                                                            "minimum": 0
+                                                        }
+                                                    },
+                                                    "required": [
+                                                        "maximo",
+                                                        "uso"
+                                                    ]
+                                                }
+                                            },
+                                            "required": [
+                                                "limite"
+                                            ]
                                         }
                                     },
                                     "required": [
-                                        "data"
+                                        "data",
+                                        "meta"
                                     ]
                                 }
                             }
@@ -16707,7 +16738,10 @@
                         ]
                     },
                     "cliente_id": {
-                        "type": "string"
+                        "type": [
+                            "string",
+                            "null"
+                        ]
                     },
                     "items": {
                         "type": "array",
@@ -16788,7 +16822,6 @@
                     }
                 },
                 "required": [
-                    "cliente_id",
                     "items",
                     "pagos"
                 ],
@@ -18428,6 +18461,9 @@
             "GuardarTerminalRequest": {
                 "type": "object",
                 "properties": {
+                    "activo": {
+                        "type": "boolean"
+                    },
                     "nombre": {
                         "type": "string",
                         "maxLength": 100
@@ -21032,6 +21068,73 @@
                             "sucursal_id"
                         ]
                     },
+                    "plan": {
+                        "type": [
+                            "object",
+                            "null"
+                        ],
+                        "properties": {
+                            "codigo": {
+                                "type": "string"
+                            },
+                            "nombre": {
+                                "type": "string"
+                            },
+                            "features": {
+                                "type": "array",
+                                "items": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "required": [
+                            "codigo",
+                            "nombre",
+                            "features"
+                        ]
+                    },
+                    "limites": {
+                        "type": [
+                            "object",
+                            "null"
+                        ],
+                        "properties": {
+                            "terminales": {
+                                "type": "object",
+                                "properties": {
+                                    "maximo": {
+                                        "type": "integer"
+                                    },
+                                    "uso": {
+                                        "type": "integer"
+                                    }
+                                },
+                                "required": [
+                                    "maximo",
+                                    "uso"
+                                ]
+                            },
+                            "sucursales": {
+                                "type": "object",
+                                "properties": {
+                                    "maximo": {
+                                        "type": "integer"
+                                    },
+                                    "uso": {
+                                        "type": "integer"
+                                    }
+                                },
+                                "required": [
+                                    "maximo",
+                                    "uso"
+                                ]
+                            }
+                        },
+                        "required": [
+                            "terminales",
+                            "sucursales"
+                        ]
+                    },
                     "permisos": {
                         "type": "array",
                         "items": {
@@ -21071,6 +21174,8 @@
                     "usuario",
                     "sucursal",
                     "terminal",
+                    "plan",
+                    "limites",
                     "permisos",
                     "modulos_activos",
                     "regional",
@@ -21153,12 +21258,16 @@
                     },
                     "nombre": {
                         "type": "string"
+                    },
+                    "activo": {
+                        "type": "boolean"
                     }
                 },
                 "required": [
                     "id",
                     "sucursal_id",
-                    "nombre"
+                    "nombre",
+                    "activo"
                 ],
                 "title": "TerminalResource"
             },

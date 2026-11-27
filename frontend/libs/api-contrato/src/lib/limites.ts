@@ -1579,6 +1579,9 @@ export const LIMITES = {
   },
   "/terminales": {
     "post": {
+      "activo": {
+        "requerido": false
+      },
       "nombre": {
         "requerido": true,
         "maxLength": 100
@@ -1590,6 +1593,9 @@ export const LIMITES = {
   },
   "/terminales/{terminal}": {
     "put": {
+      "activo": {
+        "requerido": false
+      },
       "nombre": {
         "requerido": true,
         "maxLength": 100
@@ -1708,7 +1714,7 @@ export const LIMITES = {
         "requerido": false
       },
       "cliente_id": {
-        "requerido": true
+        "requerido": false
       },
       "items": {
         "requerido": true,

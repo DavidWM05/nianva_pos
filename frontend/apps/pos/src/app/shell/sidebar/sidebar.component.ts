@@ -36,7 +36,7 @@ export class SidebarComponent {
     this.groups
       .map((grupo) => ({
         ...grupo,
-        items: grupo.items.filter((item) => this.sesionActual.visible(item.permiso, item.modulo)),
+        items: grupo.items.filter((item) => this.sesionActual.visible(item.permiso, item.modulo, item.concesion)),
       }))
       .filter((grupo) => grupo.items.length > 0),
   );

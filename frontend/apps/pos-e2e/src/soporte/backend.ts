@@ -4,6 +4,7 @@ import { mkdtempSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 
+import concesion from '../../concesion-instalacion.json';
 import { PASSWORD } from './sesion';
 
 /**
@@ -16,6 +17,8 @@ const backendRoot = path.resolve(__dirname, '../../../../../backend');
 const entorno = {
   ...process.env,
   APP_ENV: 'local',
+  POS_ENTORNO_INSTALADO: 'propio',
+  POS_CONCESION_INSTALACION: JSON.stringify(concesion),
   APP_KEY: `base64:${Buffer.alloc(32, 7).toString('base64')}`,
   DB_CONNECTION: 'sqlite',
   DB_DATABASE: path.join(backendRoot, 'storage/framework/testing/pos-e2e.sqlite'),

@@ -4,11 +4,12 @@ declare(strict_types=1);
 
 namespace App\Modules\Nucleo\Http\Controllers;
 
+use App\Aplicacion\Caja\ModificarTerminal;
+use App\Aplicacion\Planes\CatalogoTerminales;
 use App\Http\Controllers\Controller;
 use App\Modules\Nucleo\Http\Requests\GuardarTerminalRequest;
 use App\Modules\Nucleo\Http\Resources\TerminalResource;
 use App\Modules\Nucleo\Models\Terminal;
-use App\Modules\Nucleo\Services\CatalogoTerminales;
 use App\Modules\Nucleo\Services\TenantContext;
 use App\Modules\Nucleo\Support\Listado;
 use Illuminate\Http\Request;
@@ -42,17 +43,14 @@ final class TerminalController extends Controller
         return new TerminalResource($terminal);
     }
 
-    public function update(GuardarTerminalRequest $request, Terminal $terminal): TerminalResource
+    public function update(GuardarTerminalRequest $request, Terminal $terminal, ModificarTerminal $modificar): TerminalResource
     {
-        $datos = $request->toDto();
-        $terminal->update(['sucursal_id' => $datos->sucursalId, 'nombre' => $datos->nombre]);
-
-        return new TerminalResource($terminal);
+        return new TerminalResource($modificar->ejecutar($terminal, $request->toDto()));
     }
 
-    public function destroy(Terminal $terminal): Response
+    public function destroy(Terminal $terminal, ModificarTerminal $modificar): Response
     {
-        $terminal->delete();
+        $modificar->ejecutar($terminal, null);
 
         return response()->noContent();
     }

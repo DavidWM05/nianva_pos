@@ -11,6 +11,7 @@ use App\Modules\Inventario\Models\ProductoVariante;
 use App\Modules\Inventario\Support\ImpuestoDeProducto;
 use App\Modules\Nucleo\Scopes\TenantScope;
 use App\Modules\Nucleo\Scopes\TenantScopeViaRelacion;
+use App\Modules\Nucleo\Services\Planes;
 use App\Modules\Nucleo\Support\Cantidad;
 use App\Modules\Nucleo\Support\Dinero;
 use App\Modules\Precios\Exceptions\CuponInvalidoException;
@@ -45,6 +46,12 @@ final class PricingService
      */
     public function cotizar(Carrito $carrito, ContextoPrecio $contexto): CotizacionPrecio
     {
+        $plan = app(Planes::class)->deTenant($contexto->tenantId);
+        $ofertas = $plan->incluye('cupones_promociones_mayoreo');
+        if ($carrito->codigoCupon !== null && ! $ofertas) {
+            app(Planes::class)->exigir($contexto->tenantId, 'cupones_promociones_mayoreo');
+        }
+
         $lineas = [];
         $subtotal = Dinero::desde(0);
         $tasas = [];
@@ -83,7 +90,7 @@ final class PricingService
                 }
             }
             $tasas[] = ImpuestoDeProducto::de($producto, $configuracion->getAttribute('tasa_iva_default'));
-            $aplicables = $this->reglasAplicables($variante, $producto, $contexto);
+            $aplicables = $ofertas ? $this->reglasAplicables($variante, $producto, $contexto) : [];
             $descuento = Dinero::desde(0);
             $totalLinea = $precioHeredado ? $precioUnitarioResuelto->multiplicar(Cantidad::cadena($cantidadBase)) : $precioBase->multiplicar(Cantidad::cadena($linea->cantidad));
             $reglas = [];

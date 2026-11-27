@@ -4,16 +4,19 @@ declare(strict_types=1);
 
 namespace App\Modules\Tpv\Http\Requests;
 
+use App\Modules\Crm\Models\Cliente;
 use App\Modules\Inventario\Support\PresentacionDeVariante;
 use App\Modules\Inventario\Support\ReglasCantidad;
 use App\Modules\Inventario\Support\ReglasVariante;
 use App\Modules\Nucleo\Http\Requests\SolicitudNegocio;
+use App\Modules\Nucleo\Services\Planes;
 use App\Modules\Nucleo\Support\Cantidad;
 use App\Modules\Nucleo\Support\ReglasTenant;
 use App\Modules\Nucleo\Support\UlidPublico;
 use App\Modules\Tpv\Dtos\CrearVentaDto;
 use App\Modules\Tpv\Dtos\LineaVentaDto;
 use App\Modules\Tpv\Dtos\PagoDto;
+use Illuminate\Validation\Rule;
 
 class CrearVentaRequest extends SolicitudNegocio
 {
@@ -26,7 +29,7 @@ class CrearVentaRequest extends SolicitudNegocio
 
         return [
             'lista_precio_id' => ['nullable', 'integer', ReglasTenant::existe('listas_precio', $tenantId)->where('activo', true)],
-            'cliente_id' => ['required', 'string', 'ulid', ReglasTenant::existeUlid('clientes', $tenantId)],
+            'cliente_id' => [Rule::requiredIf(fn (): bool => app(Planes::class)->deTenant($tenantId)->incluye('clientes')), 'nullable', 'string', 'ulid', ReglasTenant::existeUlid('clientes', $tenantId)],
             'items' => ['required', 'array', 'min:1'],
             'items.*.presentacion_id' => ['nullable', 'integer', new PresentacionDeVariante($tenantId)],
             'items.*.variante_id' => ['required', 'integer', ReglasVariante::delTenant($tenantId)],
@@ -73,7 +76,8 @@ class CrearVentaRequest extends SolicitudNegocio
 
         return new CrearVentaDto(
             listaPrecioId: isset($v['lista_precio_id']) ? (int) $v['lista_precio_id'] : null,
-            clienteId: UlidPublico::idInterno('clientes', (string) $v['cliente_id']),
+            clienteId: isset($v['cliente_id']) ? UlidPublico::idInterno('clientes', (string) $v['cliente_id'])
+                : (int) Cliente::query()->where('es_sistema', true)->firstOrFail()->getKey(),
             items: $items,
             pagos: $pagos,
             cuponCodigo: isset($v['cupon_codigo']) ? (string) $v['cupon_codigo'] : null,

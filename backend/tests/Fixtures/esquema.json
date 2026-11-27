@@ -9984,6 +9984,12 @@
     "terminales": {
         "columnas": [
             {
+                "nombre": "activo",
+                "tipo": "tinyint",
+                "nullable": false,
+                "default": "'1'"
+            },
+            {
                 "nombre": "created_at",
                 "tipo": "datetime",
                 "nullable": true,

@@ -24,6 +24,7 @@ use App\Modules\Nucleo\Models\Sucursal;
 use App\Modules\Nucleo\Models\Tenant;
 use App\Modules\Nucleo\Models\Terminal;
 use App\Modules\Nucleo\Models\Usuario;
+use App\Modules\Nucleo\Services\Planes;
 use App\Modules\Nucleo\Services\TwoFactorService;
 use App\Modules\Tpv\Dtos\AbrirCajaDto;
 use App\Modules\Tpv\Dtos\CrearVentaDto;
@@ -50,7 +51,14 @@ abstract class EscenarioSeederBase extends Seeder
      */
     public function __invoke(array $parameters = [])
     {
-        return DB::transaction(fn () => parent::__invoke($parameters));
+        $concesiones = config('planes.concesiones');
+        $entorno = config('planes.entorno');
+
+        try {
+            return DB::transaction(fn () => parent::__invoke($parameters));
+        } finally {
+            config(['planes.concesiones' => $concesiones, 'planes.entorno' => $entorno]);
+        }
     }
 
     protected function preparar(string $nombreTenant, int $semilla): ?Tenant
@@ -73,11 +81,23 @@ abstract class EscenarioSeederBase extends Seeder
         $this->call(MetodosPagoSeeder::class);
         $this->call(UnidadesMedidaSeeder::class);
 
-        return Tenant::factory()->create([
+        $tenant = Tenant::factory()->create([
             'nombre' => $nombreTenant,
             'pais' => 'MX',
             'activo' => true,
         ]);
+
+        // La concesión solo cubre este tenant durante la siembra.
+        config([
+            'planes.entorno' => 'propio',
+            'planes.concesiones.'.$tenant->id => [
+                'plan_codigo' => 'demostracion',
+                'features' => [...Planes::BASICO, ...Planes::AVANZADO, ...Planes::PRO, ...Planes::CONGELADAS],
+                'cuotas' => ['terminales' => 100, 'sucursales' => 100],
+            ],
+        ]);
+
+        return $tenant;
     }
 
     /**
