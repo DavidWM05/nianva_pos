@@ -1,11 +1,13 @@
 import { HttpErrorResponse, HttpInterceptorFn } from '@angular/common/http';
-import { inject } from '@angular/core';
+import { Injector, inject } from '@angular/core';
 import { CODIGOS_EN_PANTALLA, ERROR_EN_PANTALLA } from '@nianva/core-http';
 import { ToastService } from '@nianva/ui-feedback';
-import { leerErrorNegocio, mensajeError } from '@nianva/ui-shared';
+import { esErrorNegocio, leerErrorNegocio, mensajeError } from '@nianva/ui-shared';
 import { catchError, throwError } from 'rxjs';
 
-import { esUrlBackend } from './api-config';
+import { AuthStateService } from '../auth/auth-state.service';
+import { SesionEntrePestanasService } from '../auth/sesion-entre-pestanas.service';
+import { esUrlBackend, urlApi } from './api-config';
 
 // ERROR_EN_PANTALLA (marca una peticion cuyos errores maneja la pantalla, tambien los de
 // negocio) vive en @nianva/core-http para que la usen los servicios de libs/domain/* (ARQ-12b).
@@ -36,9 +38,15 @@ const CODIGOS_DE_FLUJO_GLOBAL = new Set(['supervisor_requerido', 'sesion_bloquea
  */
 export const erroresInterceptor: HttpInterceptorFn = (req, next) => {
   const toast = inject(ToastService);
+  const injector = inject(Injector);
 
   return next(req).pipe(
     catchError((error: unknown) => {
+      if (esUrlBackend(req.url) && req.url !== urlApi('/sesion') && invalidaCapacidades(error)
+        && injector.get(AuthStateService).refrescarCapacidades()) {
+        injector.get(SesionEntrePestanasService).notificarCapacidades();
+      }
+
       if (
         error instanceof HttpErrorResponse
         && esUrlBackend(req.url)
@@ -63,6 +71,13 @@ export const erroresInterceptor: HttpInterceptorFn = (req, next) => {
     }),
   );
 };
+
+function invalidaCapacidades(error: unknown): boolean {
+  return esErrorNegocio(error, 'feature_no_concedida')
+    || esErrorNegocio(error, 'limite_plan_excedido')
+    || esErrorNegocio(error, 'licencia_solo_lectura')
+    || esErrorNegocio(error, 'modulo_no_activo');
+}
 
 function esRechazoDeNegocio(
   metodo: string,

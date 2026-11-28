@@ -1,5 +1,8 @@
 import { inject } from '@angular/core';
-import { CanActivateFn, Router, UrlTree } from '@angular/router';
+import { CanActivateChildFn, CanActivateFn, PRIMARY_OUTLET, Router, UrlTree } from '@angular/router';
+import { SesionActualService } from '@nianva/domain-sesion';
+
+import { ITEM_FUNCION_NO_INCLUIDA, entradaDeRuta } from '../modules/modules.config';
 
 import { AuthStateService } from './auth-state.service';
 import { BloqueoSesionService } from './bloqueo-sesion.service';
@@ -22,6 +25,21 @@ export const authGuard: CanActivateFn = () => {
   }
 
   return decidir(authState, router);
+};
+
+/** Comprueba capacidades antes de que se activen los hijos del shell. */
+export const capacidadGuard: CanActivateChildFn = (_ruta, estado) => {
+  const router = inject(Router);
+  const sesion = inject(SesionActualService);
+  const ruta = router.parseUrl(estado.url).root.children[PRIMARY_OUTLET]?.segments.map((parte) => parte.path).join('/') ?? '';
+  const entrada = entradaDeRuta(ruta);
+  if (!entrada) return true;
+
+  const motivo = sesion.motivoNoDisponible(entrada.permiso, entrada.modulo, entrada.concesion, entrada.admiteSesionCentral);
+  // Un permiso ausente conserva el manejo de acceso denegado de la pantalla y su API.
+  if (motivo === null || motivo === 'permiso') return true;
+
+  return router.createUrlTree(['/', ITEM_FUNCION_NO_INCLUIDA.path], { queryParams: { funcion: entrada.key, motivo } });
 };
 
 function decidir(authState: AuthStateService, router: Router): boolean | UrlTree {

@@ -21,7 +21,9 @@ export interface NucleoModuleNavItem {
   permiso?: string;
   /** Slug de `modulo:` (ModuloActivo) si la pantalla es de un modulo que se puede apagar. */
   modulo?: string;
+  /** Feature de la concesión que requiere esta entrada. */
   concesion?: string;
+  admiteSesionCentral?: boolean;
 }
 
 export interface NucleoNavGroup {
@@ -76,6 +78,7 @@ export const NUCLEO_NAV_GROUPS: NucleoNavGroup[] = [
         icon: 'pi pi-megaphone',
         permiso: 'crm_campanas.enviar',
         modulo: 'crm_avanzado',
+        concesion: 'crm_avanzado',
       },
       {
         key: 'listas-precio',
@@ -96,16 +99,16 @@ export const NUCLEO_NAV_GROUPS: NucleoNavGroup[] = [
       { key: 'tpv-caja-remota', concesion: 'multicaja', label: 'Cierre remoto de caja', path: 'tpv/caja/remotas', icon: 'pi pi-lock', permiso: 'caja.cerrar_remota' },
       { key: 'tpv-caja-consolidado', concesion: 'multicaja', label: 'Consolidado de caja', path: 'tpv/caja/consolidado', icon: 'pi pi-file', permiso: 'caja.cerrar_remota' },
       { key: 'tpv-ventas', concesion: 'tpv', label: 'Ventas', path: 'tpv/ventas', icon: 'pi pi-receipt', permiso: 'ventas.ver' },
-      { key: 'cotizaciones', label: 'Cotizaciones', path: 'cotizaciones', icon: 'pi pi-file-edit', permiso: 'cotizaciones.ver', modulo: 'cotizaciones' },
-      { key: 'cuentas-cobrar', label: 'Cuentas por cobrar', path: 'cuentas-cobrar', icon: 'pi pi-wallet', permiso: 'cuentas_cobrar.ver', modulo: 'cxc' },
-      { key: 'cuentas-pagar', label: 'Cuentas por pagar', path: 'cuentas-pagar', icon: 'pi pi-arrow-up-right', permiso: 'cuentas_pagar.ver', modulo: 'cxp' },
-      { key: 'prestamos', label: 'Préstamos', path: 'prestamos', icon: 'pi pi-percentage', permiso: 'prestamos.ver', modulo: 'prestamos' },
-      { key: 'ventas-plazos', label: 'Ventas a plazos', path: 'ventas-plazos', icon: 'pi pi-calendar', permiso: 'ventas_plazos.ver', modulo: 'ventas_plazos' },
-      { key: 'pedidos', label: 'Pedidos', path: 'pedidos', icon: 'pi pi-truck', permiso: 'pedidos.ver', modulo: 'delivery' },
+      { key: 'cotizaciones', label: 'Cotizaciones', path: 'cotizaciones', icon: 'pi pi-file-edit', permiso: 'cotizaciones.ver', modulo: 'cotizaciones', concesion: 'cotizaciones' },
+      { key: 'cuentas-cobrar', label: 'Cuentas por cobrar', path: 'cuentas-cobrar', icon: 'pi pi-wallet', permiso: 'cuentas_cobrar.ver', modulo: 'cxc', concesion: 'credito_clientes' },
+      { key: 'cuentas-pagar', label: 'Cuentas por pagar', path: 'cuentas-pagar', icon: 'pi pi-arrow-up-right', permiso: 'cuentas_pagar.ver', modulo: 'cxp', concesion: 'cxp' },
+      { key: 'prestamos', label: 'Préstamos', path: 'prestamos', icon: 'pi pi-percentage', permiso: 'prestamos.ver', modulo: 'prestamos', concesion: 'prestamos' },
+      { key: 'ventas-plazos', label: 'Ventas a plazos', path: 'ventas-plazos', icon: 'pi pi-calendar', permiso: 'ventas_plazos.ver', modulo: 'ventas_plazos', concesion: 'ventas_plazos' },
+      { key: 'pedidos', label: 'Pedidos', path: 'pedidos', icon: 'pi pi-truck', permiso: 'pedidos.ver', modulo: 'delivery', concesion: 'delivery' },
       { key: 'apartados', concesion: 'apartados', label: 'Apartados', path: 'apartados', icon: 'pi pi-calendar-clock', permiso: 'apartados.ver' },
       { key: 'devoluciones', concesion: 'devoluciones', label: 'Devoluciones', path: 'devoluciones', icon: 'pi pi-replay', permiso: 'devoluciones.ver' },
-      { key: 'notas-credito', label: 'Notas de crédito', path: 'notas-credito', icon: 'pi pi-ticket', permiso: 'notas_credito.ver', modulo: 'notas_credito' },
-      { key: 'gift-cards', label: 'Gift cards', path: 'gift-cards', icon: 'pi pi-credit-card', permiso: 'gift_cards.ver', modulo: 'gift_cards' },
+      { key: 'notas-credito', label: 'Notas de crédito', path: 'notas-credito', icon: 'pi pi-ticket', permiso: 'notas_credito.ver', modulo: 'notas_credito', concesion: 'notas_credito' },
+      { key: 'gift-cards', label: 'Gift cards', path: 'gift-cards', icon: 'pi pi-credit-card', permiso: 'gift_cards.ver', modulo: 'gift_cards', concesion: 'gift_cards' },
       // Sin "Gastos": se registran dentro de Caja, y dos entradas no llevan a la
       // misma pantalla (UI-08). /gastos sigue redirigiendo a Caja.
     ],
@@ -114,18 +117,18 @@ export const NUCLEO_NAV_GROUPS: NucleoNavGroup[] = [
     key: 'nomina',
     label: 'Nómina',
     items: [
-      { key: 'empleados', label: 'Empleados', path: 'payroll/empleados', icon: 'pi pi-id-card', permiso: 'payroll.ver', modulo: 'payroll' },
-      { key: 'nominas', label: 'Nóminas', path: 'payroll/nominas', icon: 'pi pi-wallet', permiso: 'payroll.ver', modulo: 'payroll' },
+      { key: 'empleados', label: 'Empleados', path: 'payroll/empleados', icon: 'pi pi-id-card', permiso: 'payroll.ver', modulo: 'payroll', concesion: 'payroll' },
+      { key: 'nominas', label: 'Nóminas', path: 'payroll/nominas', icon: 'pi pi-wallet', permiso: 'payroll.ver', modulo: 'payroll', concesion: 'payroll' },
     ],
   },
   {
     key: 'produccion',
     label: 'Producción',
     items: [
-      { key: 'insumos', label: 'Insumos', path: 'produccion/insumos', icon: 'pi pi-box', permiso: 'produccion.ver', modulo: 'produccion' },
-      { key: 'recetas', label: 'Recetas', path: 'produccion/recetas', icon: 'pi pi-book', permiso: 'produccion.ver', modulo: 'produccion' },
-      { key: 'ordenes-produccion', label: 'Órdenes de producción', path: 'produccion/ordenes', icon: 'pi pi-cog', permiso: 'produccion.ver', modulo: 'produccion' },
-      { key: 'transformaciones', label: 'Transformaciones', path: 'produccion/transformaciones', icon: 'pi pi-sync', permiso: 'produccion.ver', modulo: 'produccion' },
+      { key: 'insumos', label: 'Insumos', path: 'produccion/insumos', icon: 'pi pi-box', permiso: 'produccion.ver', modulo: 'produccion', concesion: 'produccion' },
+      { key: 'recetas', label: 'Recetas', path: 'produccion/recetas', icon: 'pi pi-book', permiso: 'produccion.ver', modulo: 'produccion', concesion: 'produccion' },
+      { key: 'ordenes-produccion', label: 'Órdenes de producción', path: 'produccion/ordenes', icon: 'pi pi-cog', permiso: 'produccion.ver', modulo: 'produccion', concesion: 'produccion' },
+      { key: 'transformaciones', label: 'Transformaciones', path: 'produccion/transformaciones', icon: 'pi pi-sync', permiso: 'produccion.ver', modulo: 'produccion', concesion: 'produccion' },
     ],
   },
   {
@@ -134,9 +137,9 @@ export const NUCLEO_NAV_GROUPS: NucleoNavGroup[] = [
     key: 'reportes',
     label: 'Reportes',
     items: [
-      { key: 'reporte-cuentas-cobrar', label: 'Antigüedad de CxC', path: 'reportes/cuentas-cobrar', icon: 'pi pi-chart-line', permiso: 'reportes_cuentas_cobrar.ver', modulo: 'cxc' },
-      { key: 'reporte-cuentas-pagar', label: 'Antigüedad de CxP', path: 'reportes/cuentas-pagar', icon: 'pi pi-chart-line', permiso: 'reportes_cuentas_pagar.ver', modulo: 'cxp' },
-      { key: 'reporte-crm', label: 'CRM', path: 'reportes/crm', icon: 'pi pi-chart-line', permiso: 'reportes_crm.ver', modulo: 'crm_avanzado' },
+      { key: 'reporte-cuentas-cobrar', label: 'Antigüedad de CxC', path: 'reportes/cuentas-cobrar', icon: 'pi pi-chart-line', permiso: 'reportes_cuentas_cobrar.ver', modulo: 'cxc', concesion: 'credito_clientes' },
+      { key: 'reporte-cuentas-pagar', label: 'Antigüedad de CxP', path: 'reportes/cuentas-pagar', icon: 'pi pi-chart-line', permiso: 'reportes_cuentas_pagar.ver', modulo: 'cxp', concesion: 'cxp' },
+      { key: 'reporte-crm', label: 'CRM', path: 'reportes/crm', icon: 'pi pi-chart-line', permiso: 'reportes_crm.ver', modulo: 'crm_avanzado', concesion: 'crm_avanzado' },
       { key: 'reporte-ventas', concesion: 'reportes', label: 'Ventas por periodo', path: 'reportes/ventas', icon: 'pi pi-chart-bar', permiso: 'reportes.ver' },
     ],
   },
@@ -149,7 +152,7 @@ export const NUCLEO_NAV_GROUPS: NucleoNavGroup[] = [
     label: 'Configuración',
     items: [
       { key: 'usuarios', concesion: 'administracion', label: 'Usuarios', path: 'usuarios', icon: 'pi pi-user', permiso: 'usuarios.ver' },
-      { key: 'roles', concesion: 'administracion', label: 'Roles', path: 'roles', icon: 'pi pi-key', permiso: 'roles.ver' },
+      { key: 'roles', concesion: 'administracion', admiteSesionCentral: true, label: 'Roles', path: 'roles', icon: 'pi pi-key', permiso: 'roles.ver' },
       // Ruta 'configuracion': la pantalla en si ahora tiene tabs Empresa/
       // Licencia (RecordTabsComponent) -- ver ConfiguracionComponent.
       { key: 'empresa', label: 'Empresa', path: 'configuracion', icon: 'pi pi-briefcase', permiso: 'configuracion.editar' },
@@ -164,6 +167,20 @@ export const NUCLEO_NAV_GROUPS: NucleoNavGroup[] = [
   },
 ];
 
+export const ITEM_FUNCION_NO_INCLUIDA: NucleoModuleNavItem = {
+  key: 'funcion-no-incluida',
+  label: 'Función no incluida',
+  path: 'funcion-no-incluida',
+  icon: 'pi pi-lock',
+};
+
+export function entradaDeRuta(ruta: string): NucleoModuleNavItem | undefined {
+  return NUCLEO_NAV_GROUPS.flatMap((grupo) => grupo.items)
+    .filter((item) => ruta === item.path || ruta.startsWith(item.path + '/'))
+    .reduce<NucleoModuleNavItem | undefined>((mejor, item) =>
+      !mejor || item.path.length > mejor.path.length ? item : mejor, undefined);
+}
+
 /**
  * El mismo menu como registro de navegacion de ui/layout (UI-08): una
  * entrada por pantalla, de la que toman el nombre el sidebar y
@@ -171,6 +188,7 @@ export const NUCLEO_NAV_GROUPS: NucleoNavGroup[] = [
  */
 export const REGISTRO_NAVEGACION_POS: readonly EntradaNavegacion[] = [
   NUCLEO_ITEM_INICIO,
+  ITEM_FUNCION_NO_INCLUIDA,
   ...NUCLEO_NAV_GROUPS.flatMap((grupo) => grupo.items),
 ].map((item) => ({
   clave: item.key,

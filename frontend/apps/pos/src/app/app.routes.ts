@@ -1,6 +1,7 @@
 import { Route } from '@angular/router';
 
-import { authGuard, requiereSesionGuard } from './auth/auth.guard';
+import { authGuard, capacidadGuard, requiereSesionGuard } from './auth/auth.guard';
+import { ITEM_FUNCION_NO_INCLUIDA } from './modules/modules.config';
 import { atributosDeVarianteResolver } from './modules/inventario/atributos-de-variante.resolver';
 
 /**
@@ -51,9 +52,15 @@ export const appRoutes: Route[] = [
   {
     path: '',
     canActivate: [authGuard],
+    canActivateChild: [capacidadGuard],
     loadComponent: () => import('./shell/shell-layout/shell-layout.component').then((m) => m.ShellLayoutComponent),
     children: [
       { path: '', pathMatch: 'full', redirectTo: 'nucleo' },
+      {
+        path: ITEM_FUNCION_NO_INCLUIDA.path,
+        data: { breadcrumb: ITEM_FUNCION_NO_INCLUIDA.label },
+        loadComponent: () => import('./shell/funcion-no-incluida.component').then((m) => m.FuncionNoIncluidaComponent),
+      },
       {
         path: 'nucleo',
         data: { breadcrumb: 'Inicio' },

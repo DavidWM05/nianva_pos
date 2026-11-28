@@ -7,7 +7,7 @@ import { Sesion } from './sesion.types';
  * regional la leen sin arrastrar HttpClient. AuthStateService es quien la carga.
  *
  * Sin sesion cargada todo es visible: el menu solo oculta, la autoridad sigue siendo el
- * backend (`permiso:` y `modulo:` en cada ruta).
+ * backend (`permiso:`, `modulo:` y `feature:` en cada ruta).
  */
 @Injectable({ providedIn: 'root' })
 export class SesionActualService {
@@ -16,6 +16,13 @@ export class SesionActualService {
   private readonly modulos = computed(() => new Set(this.sesionSignal()?.modulos_activos ?? []));
 
   readonly sesion = this.sesionSignal.asReadonly();
+  readonly licencia = computed(() => this.sesion()?.licencia ?? null);
+  readonly modoOperativo = computed(() => this.licencia()?.modo_operativo ?? null);
+  readonly soloLectura = computed(() => this.modoOperativo() === 'solo_lectura');
+
+  limite(recurso: keyof NonNullable<Sesion['limites']>) {
+    return this.sesion()?.limites?.[recurso] ?? null;
+  }
 
   establecer(sesion: Sesion): void {
     this.sesionSignal.set(sesion);
@@ -30,14 +37,19 @@ export class SesionActualService {
     return plan === undefined || plan?.features.includes(feature) === true;
   }
 
-  /** Si una entrada del menu se muestra: tiene su permiso (si pide uno) y su modulo esta activo (si es de uno). */
-  visible(permiso?: string, modulo?: string, feature?: string): boolean {
-    if (this.sesionSignal() === null) {
-      return true;
-    }
+  /** Una entrada visible cumple el permiso, la concesión y el estado del módulo que declara. */
+  visible(permiso?: string, modulo?: string, feature?: string, admiteCentral = false): boolean {
+    return this.motivoNoDisponible(permiso, modulo, feature, admiteCentral) === null;
+  }
 
-    return (permiso === undefined || this.permisos().has(permiso))
-      && (modulo === undefined || this.modulos().has(modulo))
-      && (feature === undefined || this.concedida(feature));
+  motivoNoDisponible(permiso?: string, modulo?: string, feature?: string, admiteCentral = false): 'permiso' | 'feature' | 'modulo' | null {
+    const sesion = this.sesion();
+    if (sesion === null) return null;
+    if (permiso !== undefined && !this.permisos().has(permiso)) return 'permiso';
+    const centralAdmitida = admiteCentral && sesion.usuario.es_superadmin && sesion.usuario.tenant_id === null;
+    if (feature !== undefined && !centralAdmitida && !this.concedida(feature)) return 'feature';
+    if (modulo !== undefined && !this.modulos().has(modulo)) return 'modulo';
+
+    return null;
   }
 }
