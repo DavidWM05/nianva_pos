@@ -6,6 +6,7 @@ import { AuthStateService } from './auth-state.service';
 const CANAL = 'nianva-sesion';
 const CLAVE_STORAGE = 'nianva-sesion';
 const AVISO_INACTIVIDAD = 'inactividad';
+const AVISO_CAPACIDADES = 'capacidades:';
 const RUTAS_PUBLICAS = ['/login', '/forgot-password', '/reset-password', '/two-factor/verify'];
 
 type MotivoCierre = typeof AVISO_INACTIVIDAD;
@@ -28,7 +29,7 @@ export class SesionEntrePestanasService implements OnDestroy {
 
     if (typeof BroadcastChannel !== 'undefined') {
       this.canal = new BroadcastChannel(CANAL);
-      this.canal.onmessage = (evento) => this.cerrarLocalmente(this.motivoDe(evento.data));
+      this.canal.onmessage = (evento) => this.recibir(evento.data);
       return;
     }
 
@@ -54,6 +55,22 @@ export class SesionEntrePestanasService implements OnDestroy {
   private notificar(motivo?: MotivoCierre): void {
     const marca = motivo === AVISO_INACTIVIDAD ? `${AVISO_INACTIVIDAD}:${Date.now()}` : String(Date.now());
 
+    this.enviar(marca);
+  }
+
+  notificarCapacidades(): void {
+    this.enviar(AVISO_CAPACIDADES + Date.now());
+  }
+
+  private recibir(mensaje: unknown): void {
+    if (typeof mensaje === 'string' && mensaje.startsWith(AVISO_CAPACIDADES)) {
+      this.injector.get(AuthStateService).refrescarCapacidades();
+      return;
+    }
+    this.cerrarLocalmente(this.motivoDe(mensaje));
+  }
+
+  private enviar(marca: string): void {
     if (this.canal !== null) {
       this.canal.postMessage(marca);
       return;
@@ -101,7 +118,7 @@ export class SesionEntrePestanasService implements OnDestroy {
 
   private alRecibirStorage = (evento: StorageEvent): void => {
     if (evento.key === CLAVE_STORAGE) {
-      this.cerrarLocalmente(this.motivoDe(evento.newValue));
+      this.recibir(evento.newValue);
     }
   };
 

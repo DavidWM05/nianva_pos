@@ -20,6 +20,7 @@
       "@nianva/core-http": ["./libs/core/http/src/index.ts"],
       "@nianva/domain-perfil": ["./libs/domain/perfil/src/index.ts"],
       "@nianva/domain-sesion": ["./libs/domain/sesion/src/index.ts"],
+      "@nianva/domain-sesion/fixtures/*": ["./libs/domain/sesion/fixtures/*"],
       "@nianva/domain-prestamos": ["./libs/domain/prestamos/src/index.ts"],
       "@nianva/domain-payroll": ["./libs/domain/payroll/src/index.ts"],
       "@nianva/domain-delivery": ["./libs/domain/delivery/src/index.ts"],

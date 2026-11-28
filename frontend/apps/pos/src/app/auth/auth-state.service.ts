@@ -1,5 +1,5 @@
 import { Injectable, computed, inject, signal } from '@angular/core';
-import { catchError, firstValueFrom, of, tap } from 'rxjs';
+import { catchError, finalize, firstValueFrom, of, tap } from 'rxjs';
 
 import { AuthService } from './auth.service';
 import { SesionActualService, Usuario } from '@nianva/domain-sesion';
@@ -13,6 +13,8 @@ import { SesionActualService, Usuario } from '@nianva/domain-sesion';
 export class AuthStateService {
   private readonly authService = inject(AuthService);
   private readonly sesionActual = inject(SesionActualService);
+  private recargaCapacidades: object | null = null;
+  private ultimaInvalidacion = -Infinity;
 
   private readonly usuarioSignal = signal<Usuario | null>(null);
   /** true mientras se resuelve el estado inicial (ver initialize()) -- el
@@ -60,6 +62,10 @@ export class AuthStateService {
    * carga CargaSesionService al ver un usuario sin sesion.
    */
   setUsuario(usuario: Usuario | null): void {
+    if (this.usuario()?.id !== usuario?.id || usuario === null) {
+      this.recargaCapacidades = null;
+      this.ultimaInvalidacion = -Infinity;
+    }
     this.usuarioSignal.set(usuario);
 
     if (usuario === null) {
@@ -67,8 +73,32 @@ export class AuthStateService {
     }
   }
 
+  /** Si inicia la consulta, la pestaña de origen puede avisar a las demás. */
+  refrescarCapacidades(): boolean {
+    if (!this.autenticado()) return false;
+
+    const ahora = Date.now();
+    const repetida = ahora - this.ultimaInvalidacion < 2_000;
+    this.ultimaInvalidacion = ahora;
+    if (this.recargaCapacidades !== null || repetida) return false;
+
+    const solicitud = {};
+    this.recargaCapacidades = solicitud;
+    this.authService.obtenerSesion().pipe(finalize(() => {
+      if (this.recargaCapacidades === solicitud) this.recargaCapacidades = null;
+    })).subscribe({
+      next: (sesion) => {
+        if (this.recargaCapacidades !== solicitud) return;
+        this.usuarioSignal.set(sesion.usuario);
+        this.sesionActual.establecer(sesion);
+      },
+      // Una consulta fallida conserva la última sesión conocida.
+      error: () => undefined,
+    });
+    return true;
+  }
+
   clear(): void {
-    this.usuarioSignal.set(null);
-    this.sesionActual.limpiar();
+    this.setUsuario(null);
   }
 }
